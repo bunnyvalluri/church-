@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
-
-const prisma = new PrismaClient();
 
 // Define a strict schema for the incoming payload
 const contactSchema = z.object({
