@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { translations } from "@/lib/translations";
 
-type Language = "en" | "te";
+type Language = "en" | "te" | "hi";
 
 interface LanguageContextType {
   language: Language;
