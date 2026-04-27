@@ -31,7 +31,7 @@ You can provide prayer support, answer questions, and guide users. If the user s
       ]
     });
 
-    const stream = OpenAIStream(response);
+    const stream = OpenAIStream(response as any);
     return new StreamingTextResponse(stream);
 
   } catch (error) {
