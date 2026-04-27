@@ -160,6 +160,13 @@ export default function AIChat() {
                   </div>
                 </div>
               )}
+
+              {/* Error State */}
+              {!isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+                <div className="text-xs text-red-500 px-4 py-2 bg-red-50 dark:bg-red-900/20 rounded-lg mx-4 text-center">
+                  Connection issue. Please try again.
+                </div>
+              )}
             </div>
 
             {/* Input Area */}
