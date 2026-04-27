@@ -10,7 +10,7 @@ export default function AIChat() {
   const [isMinimized, setIsMinimized] = useState(false);
 
   // Vercel AI SDK hook
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
     api: "/api/chat",
   });
 
@@ -81,37 +81,37 @@ export default function AIChat() {
 
         {!isMinimized && (
           <>
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800/50" ref={scrollRef}>
-              {messages.length === 0 && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4 animate-scale-in">
-                    <Sparkles className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">
-                    How can I help you today?
-                  </h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                    Ask me about sermons, prayer requests, or church events.
-                  </p>
-                  <div className="grid gap-2">
-                    <button
-                      onClick={() => handleInputChange({ target: { value: "When is the next service?" } } as any)}
-                      className="text-sm bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:shadow-sm text-left transition-all"
-                    >
-                      🕒 When is the next service?
-                    </button>
-                    <button
-                      onClick={() => handleInputChange({ target: { value: "Can you pray for my anxiety?" } } as any)}
-                      className="text-sm bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:shadow-sm text-left transition-all"
-                    >
-                      🙏 Can you pray for my anxiety?
-                    </button>
-                  </div>
-                </div>
-              )}
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800/50" ref={scrollRef}>
+        {messages.length === 0 && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4 animate-scale-in">
+              <Sparkles className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+            </div>
+            <h4 className="font-bold text-gray-900 dark:text-white mb-2">
+              How can I help you today?
+            </h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Ask me about sermons, prayer requests, or church events.
+            </p>
+            <div className="grid gap-2">
+              <button
+                onClick={() => append({ role: 'user', content: "When is the next service?" })}
+                className="text-sm bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:shadow-sm text-left transition-all"
+              >
+                🕒 When is the next service?
+              </button>
+              <button
+                onClick={() => append({ role: 'user', content: "Can you pray for my anxiety?" })}
+                className="text-sm bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:shadow-sm text-left transition-all"
+              >
+                🙏 Can you pray for my anxiety?
+              </button>
+            </div>
+          </div>
+        )}
 
-              {messages.map((m) => (
+        {messages.map((m) => (
                 <div
                   key={m.id}
                   className={cn(

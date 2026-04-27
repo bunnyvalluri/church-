@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)"],
+        heading: ["var(--font-outfit)"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -98,8 +102,12 @@ const config = {
           "100%": { transform: "scale(1)", opacity: "1" },
         },
         "float": {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-20px)" },
+          "0%, 100%": { transform: "translateY(0px) scale(1)" },
+          "50%": { transform: "translateY(-20px) scale(1.05)" },
+        },
+        "float-delayed": {
+          "0%, 100%": { transform: "translateY(0px) scale(1.05)" },
+          "50%": { transform: "translateY(20px) scale(1)" },
         },
         "glow": {
           "0%, 100%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.5)" },
@@ -128,7 +136,8 @@ const config = {
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
         "scale-in": "scale-in 0.5s ease-out forwards",
         "bounce-in": "bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
-        "float": "float 3s ease-in-out infinite",
+        "float": "float 8s ease-in-out infinite",
+        "float-delayed": "float-delayed 10s ease-in-out infinite",
         "glow": "glow 2s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
         "pulse-slow": "pulse-slow 3s ease-in-out infinite",

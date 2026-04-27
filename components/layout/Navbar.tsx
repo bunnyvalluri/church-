@@ -47,60 +47,71 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isScrolled
-          ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg"
-          : "bg-transparent"
+          ? "bg-white/40 dark:bg-black/40 backdrop-blur-2xl border-b border-white/20 dark:border-white/10 shadow-lg shadow-primary/5 py-2"
+          : "bg-transparent py-4"
       )}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-3 group perspective">
             <div className="relative">
-              <Church className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
-              <div className="absolute inset-0 bg-primary/20 blur-xl group-hover:bg-primary/30 transition-all" />
+              <div className="p-2 rounded-xl bg-gradient-to-br from-primary via-indigo-500 to-pink-500 text-white shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all duration-500 card-flip">
+                <Church className="h-6 w-6" />
+              </div>
+              <div className="absolute inset-0 bg-primary/20 blur-xl group-hover:bg-primary/40 transition-all duration-500" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-lg leading-tight text-gray-900 dark:text-white">
+              <span className="font-black text-xl leading-tight text-foreground tracking-tight drop-shadow-sm">
                 Kingdom of Christ
               </span>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
+              <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
                 Ministries
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
+          <div className="hidden md:flex items-center space-x-2">
+            <div className="flex items-center bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/50 dark:border-white/10 p-1.5 rounded-2xl shadow-inner">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden group",
+                    activeSection === item.href.slice(1)
+                      ? "text-primary shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-white/10"
+                  )}
+                >
+                  {/* Active Background highlight */}
+                  {activeSection === item.href.slice(1) && (
+                    <div className="absolute inset-0 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-black/5 dark:border-white/5 -z-10" />
+                  )}
+                  <span className="relative z-10">{item.name}</span>
+                </Link>
+              ))}
+            </div>
+            
+            <div className="flex items-center space-x-2 pl-4">
+              <LanguageToggle />
+              <ThemeToggle />
               <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                  activeSection === item.href.slice(1)
-                    ? "bg-primary text-white shadow-lg shadow-primary/30"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                )}
+                href="/login"
+                className="ml-2 px-6 py-2.5 bg-gradient-to-r from-primary via-indigo-500 to-pink-500 text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-[1.05] hover:-translate-y-0.5 border border-white/20"
               >
-                {item.name}
+                {t.nav.login}
               </Link>
-            ))}
-            <LanguageToggle />
-            <ThemeToggle />
-            <Link
-              href="/login"
-              className="ml-4 px-6 py-2 bg-gradient-to-r from-primary to-purple-600 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/50 transition-all duration-200 hover:scale-105"
-            >
-              {t.nav.login}
-            </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md:hidden p-2 rounded-xl bg-white/50 dark:bg-black/50 backdrop-blur-md border border-white/50 dark:border-white/10 text-foreground hover:bg-white/80 dark:hover:bg-white/20 transition-all"
           >
             {isMobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -112,36 +123,41 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 animate-fade-in bg-white dark:bg-gray-900 rounded-b-2xl shadow-xl">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "block px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                  activeSection === item.href.slice(1)
-                    ? "bg-primary text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-            <div className="flex items-center justify-between px-4 py-2">
-              <span className="text-sm font-medium text-gray-500">Settings</span>
-              <div className="flex gap-2">
-                <LanguageToggle />
-                <ThemeToggle />
-              </div>
+          <div className="md:hidden mt-4 p-4 animate-scale-in bg-white/80 dark:bg-[#0A0A10]/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/50 dark:border-white/10">
+            <div className="space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "block px-4 py-3 rounded-xl text-base font-semibold transition-all",
+                    activeSection === item.href.slice(1)
+                      ? "bg-gradient-to-r from-primary/10 to-transparent text-primary border-l-4 border-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
             </div>
-            <Link
-              href="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block mx-4 px-4 py-3 bg-gradient-to-r from-primary to-purple-600 text-white rounded-lg font-medium text-center"
-            >
-              {t.nav.login}
-            </Link>
+            
+            <div className="mt-6 pt-6 border-t border-black/10 dark:border-white/10 flex flex-col gap-4">
+              <div className="flex items-center justify-between px-2">
+                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Settings</span>
+                <div className="flex gap-3">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                </div>
+              </div>
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full px-4 py-3.5 bg-gradient-to-r from-primary via-indigo-500 to-pink-500 text-white rounded-xl font-bold text-center shadow-lg shadow-primary/20"
+              >
+                {t.nav.login}
+              </Link>
+            </div>
           </div>
         )}
       </div>
