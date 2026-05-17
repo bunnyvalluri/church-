@@ -215,8 +215,16 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-400">
-              © {new Date().getFullYear()} Kingdom of Christ Ministries. All rights reserved.
+            <p className="text-sm text-gray-400 text-center md:text-left">
+              © {new Date().getFullYear()} Kingdom of Christ Ministries. All rights reserved. <br className="md:hidden" />
+              <a 
+                href="https://valluri-rahul-portfolio.vercel.app/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-purple-400/80 hover:text-purple-300 hover:underline transition-all"
+              >
+                Developed by VALLURI RAHUL.
+              </a>
             </p>
             <div className="flex gap-6 text-sm">
               <Link href="/privacy" className="hover:text-purple-400 transition-colors">

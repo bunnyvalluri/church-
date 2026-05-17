@@ -65,26 +65,40 @@ export async function incrementSermonViews(id: string): Promise<void> {
   }
 }
 
-// ── Get a single sermon by ID ─────────────────────────────────────────────────
-export async function getSermonById(id: string): Promise<Sermon | null> {
-  try {
-    return await prisma.sermon.findUnique({ where: { id } });
-  } catch (error) {
-    console.error(`[SERVER ACTION] getSermonById(${id}) failed:`, error);
-    return null;
+// ── Get a single sermon by ID (Cached) ────────────────────────────────────────
+export const getSermonById = unstable_cache(
+  async (id: string): Promise<Sermon | null> => {
+    try {
+      return await prisma.sermon.findUnique({ where: { id } });
+    } catch (error) {
+      console.error(`[SERVER ACTION] getSermonById(${id}) failed:`, error);
+      return null;
+    }
+  },
+  ["sermon-by-id"],
+  {
+    revalidate: 3600, // 1 hour cache since single sermons rarely change
+    tags: ["sermons"],
   }
-}
+);
 
-// ── Get sermons by category ───────────────────────────────────────────────────
-export async function getSermonsByCategory(category: string): Promise<Sermon[]> {
-  try {
-    return await prisma.sermon.findMany({
-      where: { category },
-      orderBy: { date: "desc" },
-      take: 12,
-    });
-  } catch (error) {
-    console.error(`[SERVER ACTION] getSermonsByCategory(${category}) failed:`, error);
-    return [];
+// ── Get sermons by category (Cached) ──────────────────────────────────────────
+export const getSermonsByCategory = unstable_cache(
+  async (category: string): Promise<Sermon[]> => {
+    try {
+      return await prisma.sermon.findMany({
+        where: { category },
+        orderBy: { date: "desc" },
+        take: 12,
+      });
+    } catch (error) {
+      console.error(`[SERVER ACTION] getSermonsByCategory(${category}) failed:`, error);
+      return [];
+    }
+  },
+  ["sermons-by-category"],
+  {
+    revalidate: 300, // 5 minutes
+    tags: ["sermons"],
   }
-}
+);

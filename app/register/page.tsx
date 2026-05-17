@@ -3,9 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
+
+const passwordStrength = (pw: string) => {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return score; // 0-4
+};
+
+const strengthLabel = ["Too short", "Weak", "Fair", "Good", "Strong"];
+const strengthColor = ["bg-gray-200", "bg-red-500", "bg-orange-400", "bg-yellow-400", "bg-green-500"];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,319 +29,343 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const pwScore = passwordStrength(formData.password);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
-
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError("Password must be at least 8 characters.");
       return;
     }
 
     setIsLoading(true);
-
     try {
-      // Create user
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-
-      // Update profile name
       if (userCredential.user) {
         await updateProfile(userCredential.user, {
-          displayName: `${formData.firstName} ${formData.lastName}`.trim()
+          displayName: `${formData.firstName} ${formData.lastName}`.trim(),
         });
       }
-
       router.push("/dashboard");
     } catch (err: any) {
-      console.error(err);
-
-      // Mock Fallback
-      if (!auth.app || err.code === 'auth/argument-error' || err.message.includes('auth instance')) {
-        console.warn("Using Mock Registration (No Firebase Keys found)");
-        await new Promise(r => setTimeout(r, 1000));
-        router.push("/dashboard");
-        return;
-      }
-
-      if (err.code === 'auth/email-already-in-use') {
-        setError("Email is already in use.");
-      } else if (err.code === 'auth/weak-password') {
-        setError("Password is too weak.");
-      } else {
-        setError("Registration failed. Please try again.");
-      }
+      const messages: Record<string, string> = {
+        "auth/email-already-in-use": "This email is already registered. Try signing in.",
+        "auth/weak-password": "Password is too weak. Please choose a stronger one.",
+        "auth/invalid-email": "Please enter a valid email address.",
+      };
+      setError(messages[err.code] ?? "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const inputClass =
+    "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl">
-        {/* Logo/Header */}
-        <div className="text-center mb-8 animate-fade-in-up">
-          <Link href="/" className="inline-block">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-              Kingdom of Christ
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">Ministries</p>
+    <div className="min-h-screen flex">
+      {/* ── Left Branding Panel ── */}
+      <div className="hidden lg:flex lg:w-5/12 relative flex-col justify-between p-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
+          <span className="text-white font-bold" style={{ fontSize: "40rem", lineHeight: 1 }}>✝</span>
+        </div>
+
+        <div className="relative z-10">
+          <Link href="/" className="flex items-center gap-3 group">
+            <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
+            <span className="text-white/60 text-sm group-hover:text-white transition-colors">Back to Home</span>
           </Link>
         </div>
 
-        {/* Register Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 animate-fade-in-up animate-delay-100">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Join Our Family
+        <div className="relative z-10 text-white">
+          <div className="flex items-center gap-4 mb-10">
+            <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center">
+              <span className="text-2xl">✝</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Kingdom of Christ</h1>
+              <p className="text-purple-200 text-sm">Ministries</p>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-light leading-relaxed text-white/90 mb-8">
+            Become part of our growing family of faith.
+          </h2>
+
+          {/* Benefits */}
+          <div className="space-y-4">
+            {[
+              "Access to exclusive sermons & Bible studies",
+              "Prayer request & community support",
+              "Event registrations & ministry updates",
+              "Member-only dashboard & resources",
+            ].map((benefit) => (
+              <div key={benefit} className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <span className="text-white/80 text-sm">{benefit}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-white/60 text-sm">Join 2,000+ members in our digital community</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Form Panel ── */}
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 bg-white dark:bg-gray-950 overflow-y-auto">
+        <Link href="/" className="lg:hidden flex items-center gap-2 mb-8 text-purple-600">
+          <ChevronLeft className="w-4 h-4" />
+          <span className="text-sm">Back to Home</span>
+        </Link>
+
+        <div className="w-full max-w-lg">
+          {/* Header */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+              Create your account 🙏
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Create your member account to get started
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              Join our community and grow in faith together.
             </p>
           </div>
 
+          {/* Error Alert */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg animate-shake">
-              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+            <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+              <span className="text-red-500 text-lg mt-0.5">⚠</span>
+              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name Row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   First Name
                 </label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                  placeholder="John"
-                />
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    className={inputClass}
+                    placeholder="John"
+                  />
+                </div>
               </div>
-              <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+              <div className="space-y-1.5">
+                <label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Last Name
                 </label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className={inputClass}
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  value={formData.lastName}
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                  placeholder="Doe"
+                  autoComplete="email"
+                  className={inputClass}
+                  placeholder="you@example.com"
                 />
               </div>
             </div>
 
-            {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Email Address
+            {/* Phone */}
+            <div className="space-y-1.5">
+              <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Phone Number <span className="text-gray-400 font-normal">(optional)</span>
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                placeholder="your.email@example.com"
-              />
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="+91 98765 43210"
+                />
+              </div>
             </div>
 
-            {/* Phone Field */}
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Phone Number
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Password
               </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                placeholder="+91 98765 43210"
-              />
-            </div>
-
-            {/* Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Password
-                </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  className={`${inputClass} pr-12`}
+                  placeholder="Min. 8 characters"
                 />
-              </div>
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                 >
-                  Confirm Password
-                </label>
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {/* Password Strength Meter */}
+              {formData.password && (
+                <div className="pt-1 space-y-1.5">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                          i <= pwScore ? strengthColor[pwScore] : "bg-gray-200 dark:bg-gray-700"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className={`text-xs font-medium ${pwScore <= 1 ? "text-red-500" : pwScore <= 2 ? "text-orange-500" : pwScore <= 3 ? "text-yellow-600" : "text-green-600"}`}>
+                    Password strength: {strengthLabel[pwScore]}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div className="space-y-1.5">
+              <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirm ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  className={`${inputClass} pr-12 ${
+                    formData.confirmPassword && formData.password !== formData.confirmPassword
+                      ? "border-red-400 focus:ring-red-400"
+                      : formData.confirmPassword && formData.password === formData.confirmPassword
+                      ? "border-green-400 focus:ring-green-400"
+                      : ""
+                  }`}
+                  placeholder="Repeat your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                >
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                <p className="text-xs text-red-500">Passwords do not match</p>
+              )}
             </div>
 
-            {/* Terms & Conditions */}
-            <div className="flex items-start">
+            {/* Terms */}
+            <div className="flex items-start gap-3 py-1">
               <input
                 id="terms"
                 type="checkbox"
                 required
-                className="w-4 h-4 mt-1 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                className="w-4 h-4 mt-0.5 accent-purple-600 rounded"
               />
-              <label htmlFor="terms" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+              <label htmlFor="terms" className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 I agree to the{" "}
-                <Link href="/terms" className="text-purple-600 hover:text-purple-700">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-purple-600 hover:text-purple-700">
-                  Privacy Policy
-                </Link>
+                <Link href="/terms" className="text-purple-600 hover:underline font-medium">Terms of Service</Link>
+                {" "}and{" "}
+                <Link href="/privacy" className="text-purple-600 hover:underline font-medium">Privacy Policy</Link>
               </label>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                <>
+                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
                   Creating account...
-                </span>
+                </>
               ) : (
-                "Create Account"
+                <>Create Account <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                Already have an account?
-              </span>
-            </div>
-          </div>
-
-          {/* Sign In Link */}
-          <div className="text-center">
-            <Link
-              href="/login"
-              className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
-            >
-              Sign in instead
+          <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
+            Already have an account?{" "}
+            <Link href="/login" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
+              Sign in
             </Link>
-          </div>
-        </div>
-
-        {/* Back to Home */}
-        <div className="text-center mt-6 animate-fade-in-up animate-delay-200">
-          <Link
-            href="/"
-            className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors inline-flex items-center gap-2"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Home
-          </Link>
+          </p>
         </div>
       </div>
     </div>
