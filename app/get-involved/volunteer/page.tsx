@@ -76,7 +76,7 @@ export default function VolunteerPage() {
               Why Volunteer?
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
-              Volunteering is more than just helping out—it's about using your God-given gifts
+              Volunteering is more than just helping out—it&apos;s about using your God-given gifts
               to make an eternal impact. When you serve, you grow in faith, build meaningful
               relationships, and experience the joy of being part of something bigger than yourself.
             </p>
@@ -241,7 +241,7 @@ export default function VolunteerPage() {
               Questions?
             </h2>
             <p className="text-xl text-purple-100 mb-8">
-              We're here to help you find the perfect place to serve
+              we&apos;re here to help you find the perfect place to serve
             </p>
             <Link
               href="/#contact"
@@ -256,3 +256,4 @@ export default function VolunteerPage() {
     </div>
   );
 }
+

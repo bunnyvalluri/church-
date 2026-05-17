@@ -97,7 +97,7 @@ export default function ResourcesPage() {
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Weekly Bible Study Guide</h2>
               <p className="text-xl text-purple-100 mb-8">
-                Download this week's study material on "The Power of Prayer" and follow along with your small group.
+                Download this week&apos;s study material on &ldquo;The Power of Prayer&rdquo; and follow along with your small group.
               </p>
               <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2 mx-auto">
                 <Download className="w-5 h-5" />

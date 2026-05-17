@@ -1,4 +1,5 @@
 import Sermons from "@/components/sections/Sermons";
+import Image from "next/image";
 import { PlayCircle, Mic2, FileText } from "lucide-react";
 
 export default function SermonsPage() {
@@ -32,11 +33,15 @@ export default function SermonsPage() {
             ].map((series, i) => (
               <div key={i} className="group relative rounded-2xl overflow-hidden cursor-pointer">
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all z-10" />
-                <img
-                  src={series.image}
-                  alt={series.title}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
-                />
+                <div className="relative w-full h-64">
+                  <Image
+                    src={series.image}
+                    alt={series.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
                 <div className="absolute bottom-0 left-0 p-6 z-20 text-white">
                   <div className="text-sm font-medium bg-purple-600 px-3 py-1 rounded-full inline-block mb-2">
                     {series.count}

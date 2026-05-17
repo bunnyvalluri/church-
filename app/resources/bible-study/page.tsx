@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { BookOpen, Download, Play, MessageCircle } from "lucide-react";
 
 export default function BibleStudyPage() {
@@ -45,7 +46,7 @@ export default function BibleStudyPage() {
             {studies.map((study, index) => (
               <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
                 <div className="relative h-56">
-                  <img src={study.image} alt={study.title} className="w-full h-full object-cover" />
+                  <Image src={study.image} alt={study.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
                   <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                     {study.type}
                   </div>
