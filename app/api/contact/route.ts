@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { isRateLimited, rateLimitHeaders } from "@/lib/rateLimit";
 import { ok, err, getClientIp, safeJson } from "@/lib/apiResponse";
+import sanitizeHtml from "sanitize-html";
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const contactSchema = z.object({
@@ -64,8 +65,12 @@ export async function POST(req: Request) {
 
   const { name, email, phone, subject, message } = parsed.data;
 
-  // 4. Sanitise: strip any HTML/script tags (basic XSS prevention)
-  const sanitize = (s: string) => s.replace(/<[^>]*>/g, "");
+  // 4. Sanitise: use sanitize-html for proper XSS prevention
+  const sanitize = (s: string) => sanitizeHtml(s, {
+    allowedTags: [], // Strip all HTML tags
+    allowedAttributes: {}
+  });
+  
   const safeData = {
     name: sanitize(name),
     email,

@@ -30,7 +30,7 @@ export default function Contact() {
 
       setSubmitStatus("success");
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-      
+
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitStatus("idle"), 5000);
     } catch (error) {
@@ -89,7 +89,7 @@ export default function Contact() {
                         Jeedimetla, Hyderabad,<br />
                         Telangana 500055
                       </span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                     </a>
                   </div>
                 </div>
@@ -147,7 +147,7 @@ export default function Contact() {
                 className="absolute inset-0 z-10 flex items-end p-4 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <span className="text-white text-sm font-semibold flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                   Open in Google Maps
                 </span>
               </a>
@@ -252,13 +252,12 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={isSubmitting || submitStatus === "success"}
-                className={`w-full py-4 text-white rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                  submitStatus === "success" 
-                    ? "bg-green-600 cursor-default" 
+                className={`w-full py-4 text-white rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${submitStatus === "success"
+                    ? "bg-green-600 cursor-default"
                     : submitStatus === "error"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02]"
-                } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02]"
+                  } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
