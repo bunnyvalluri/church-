@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
+import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -46,10 +47,51 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const socialLinks = [
+    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "hover:text-[#1877F2]" },
+    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "hover:text-[#E1306C]" },
+    { icon: Youtube, href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO", label: "YouTube", color: "hover:text-[#FF0000]" },
+    { icon: Twitter, href: "https://twitter.com", label: "Twitter / X", color: "hover:text-white" },
+  ];
+
   return (
-    <nav
+    <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
+      {/* ── Top Social Bar ── */}
+      <div className="bg-gray-900/95 backdrop-blur-md border-b border-white/10 text-gray-400 text-xs hidden md:block">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-9">
+            {/* Phone */}
+            <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-purple-400 transition-colors">
+              <Phone className="w-3 h-3" />
+              <span>+91 97040 90069</span>
+            </a>
+            {/* Socials */}
+            <div className="flex items-center gap-1">
+              <span className="mr-2 text-gray-500">Follow us:</span>
+              {socialLinks.map(({ icon: Icon, href, label, color }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className={cn(
+                    "w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:bg-white/10 hover:scale-110",
+                    color
+                  )}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Navbar ── */}
+      <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "transition-all duration-500",
         isScrolled
           ? "bg-white/40 dark:bg-black/40 backdrop-blur-2xl border-b border-white/20 dark:border-white/10 shadow-lg shadow-primary/5 py-2"
           : "bg-transparent py-4"
@@ -167,5 +209,6 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    </div>
   );
 }
