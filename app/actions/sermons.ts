@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import { LRUCache } from "@/lib/lruCache";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type Sermon = {
@@ -33,9 +34,13 @@ const SERMON_SELECT = {
   views: true,
 } as const;
 
-// ── Get latest sermons (cached 5 min) ────────────────────────────────────────
-export const getLatestSermons = unstable_cache(
-  async (limit = 6): Promise<Sermon[]> => {
+// ── O(1) In-Memory LRU Cache for search queries ──────────────────────────────
+// Caches up to 100 search queries in memory to avoid repetitive full-table scans
+const searchCache = new LRUCache<string, Sermon[]>(100);
+
+// ── Get latest sermons (cached 5 min per limit) ──────────────────────────────
+export const getLatestSermons = (limit = 6) => unstable_cache(
+  async (): Promise<Sermon[]> => {
     try {
       return await prisma.sermon.findMany({
         orderBy: { date: "desc" },
@@ -47,13 +52,13 @@ export const getLatestSermons = unstable_cache(
       return [];
     }
   },
-  ["latest-sermons"],
+  [`latest-sermons-${limit}`],
   { revalidate: 300, tags: ["sermons"] }
-);
+)();
 
-// ── Get sermon by ID (cached 1 hour) ─────────────────────────────────────────
-export const getSermonById = unstable_cache(
-  async (id: string): Promise<Sermon | null> => {
+// ── Get sermon by ID (cached 1 hour per ID) ──────────────────────────────────
+export const getSermonById = (id: string) => unstable_cache(
+  async (): Promise<Sermon | null> => {
     if (!id || typeof id !== "string") return null;
     try {
       return await prisma.sermon.findUnique({
@@ -65,13 +70,13 @@ export const getSermonById = unstable_cache(
       return null;
     }
   },
-  ["sermon-by-id"],
-  { revalidate: 3600, tags: ["sermons"] }
-);
+  [`sermon-by-id-${id}`],
+  { revalidate: 3600, tags: ["sermons", `sermon-${id}`] }
+)();
 
-// ── Get sermons by category (cached 5 min) ───────────────────────────────────
-export const getSermonsByCategory = unstable_cache(
-  async (category: string, limit = 12): Promise<Sermon[]> => {
+// ── Get sermons by category (cached 5 min per category/limit) ────────────────
+export const getSermonsByCategory = (category: string, limit = 12) => unstable_cache(
+  async (): Promise<Sermon[]> => {
     if (!category?.trim()) return [];
     try {
       return await prisma.sermon.findMany({
@@ -85,13 +90,13 @@ export const getSermonsByCategory = unstable_cache(
       return [];
     }
   },
-  ["sermons-by-category"],
-  { revalidate: 300, tags: ["sermons"] }
-);
+  [`sermons-by-category-${category}-${limit}`],
+  { revalidate: 300, tags: ["sermons", `category-${category}`] }
+)();
 
-// ── Get most-viewed sermons (cached 10 min) ──────────────────────────────────
-export const getMostViewedSermons = unstable_cache(
-  async (limit = 6): Promise<Sermon[]> => {
+// ── Get most-viewed sermons (cached 10 min per limit) ────────────────────────
+export const getMostViewedSermons = (limit = 6) => unstable_cache(
+  async (): Promise<Sermon[]> => {
     try {
       return await prisma.sermon.findMany({
         orderBy: { views: "desc" },
@@ -103,9 +108,9 @@ export const getMostViewedSermons = unstable_cache(
       return [];
     }
   },
-  ["most-viewed-sermons"],
+  [`most-viewed-sermons-${limit}`],
   { revalidate: 600, tags: ["sermons"] }
-);
+)();
 
 // ── Increment view count (fire-and-forget) ────────────────────────────────────
 export async function incrementSermonViews(id: string): Promise<void> {
@@ -121,12 +126,20 @@ export async function incrementSermonViews(id: string): Promise<void> {
   }
 }
 
-// ── Search sermons by title/description ─────────────────────────────────────
+// ── Search sermons by title/description (LRU-cached) ─────────────────────────
 export async function searchSermons(query: string, limit = 10): Promise<Sermon[]> {
-  const q = query?.trim();
+  const q = query?.trim().toLowerCase();
   if (!q || q.length < 2) return [];
+
+  // Check the memory O(1) LRU Cache first
+  const cacheKey = `${q}-${limit}`;
+  const cached = searchCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
-    return await prisma.sermon.findMany({
+    const results = await prisma.sermon.findMany({
       where: {
         OR: [
           { title:       { contains: q, mode: "insensitive" } },
@@ -138,6 +151,10 @@ export async function searchSermons(query: string, limit = 10): Promise<Sermon[]
       take: limit,
       select: SERMON_SELECT,
     });
+
+    // Populate search cache
+    searchCache.put(cacheKey, results);
+    return results;
   } catch (error) {
     console.error(`[SERMONS] searchSermons("${q}") failed:`, error);
     return [];

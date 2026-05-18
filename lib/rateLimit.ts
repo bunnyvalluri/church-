@@ -1,30 +1,14 @@
-/**
- * Production-grade in-memory rate limiter with auto-cleanup.
- *
- * For distributed deployments (multiple Vercel instances), replace
- * the `store` with Upstash Redis using @upstash/ratelimit.
- */
+import { LRUCache } from '@/lib/lruCache';
 
 type RateEntry = { count: number; lastReset: number };
 
-const store = new Map<string, RateEntry>();
+// Production-grade: Cap in-memory records to 5,000 unique IP addresses to completely
+// prevent malicious memory-exhaustion (Out-of-Memory) attacks in persistent server environments.
+const store = new LRUCache<string, RateEntry>(5000);
 
 export interface RateLimitOptions {
   windowMs: number;    // time window in ms
   maxRequests: number; // max requests per window
-}
-
-// ── Auto-cleanup stale entries every 10 minutes ──────────────────────────────
-// Prevents memory leak in long-running server processes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store.entries()) {
-      if (now - entry.lastReset > 10 * 60 * 1000) {
-        store.delete(key);
-      }
-    }
-  }, 10 * 60 * 1000);
 }
 
 // ── Check and record a request for the given IP ──────────────────────────────
@@ -34,7 +18,7 @@ export function isRateLimited(ip: string, opts: RateLimitOptions): boolean {
 
   // First request or window expired → reset
   if (!entry || now - entry.lastReset > opts.windowMs) {
-    store.set(ip, { count: 1, lastReset: now });
+    store.put(ip, { count: 1, lastReset: now });
     return false;
   }
 
@@ -43,7 +27,7 @@ export function isRateLimited(ip: string, opts: RateLimitOptions): boolean {
 
   // Within window, increment
   entry.count += 1;
-  store.set(ip, entry);
+  store.put(ip, entry);
   return false;
 }
 
