@@ -9,9 +9,11 @@ import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function Navbar() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -175,9 +177,9 @@ export default function Navbar() {
               <div className="flex items-center space-x-2 pl-3">
                 <LanguageToggle />
                 <ThemeToggle />
-                {/* Member Login ΓÇö pulsing glow button */}
+                {/* Member Login / Dashboard — pulsing glow button */}
                 <Link
-                  href="/login"
+                  href={user ? "/dashboard" : "/login"}
                   className="relative ml-2 px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group"
                 >
                   {/* Base gradient */}
@@ -186,7 +188,7 @@ export default function Navbar() {
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   {/* Outer glow */}
                   <span className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
-                  <span className="relative z-10">{t.nav.login}</span>
+                  <span className="relative z-10">{user ? "Dashboard" : t.nav.login}</span>
                 </Link>
               </div>
             </div>
@@ -248,11 +250,11 @@ export default function Navbar() {
                 </div>
 
                 <Link
-                  href="/login"
+                  href={user ? "/dashboard" : "/login"}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full px-4 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 text-white rounded-xl font-bold text-center shadow-lg shadow-purple-500/30"
                 >
-                  {t.nav.login}
+                  {user ? "Dashboard" : t.nav.login}
                 </Link>
               </div>
             </div>

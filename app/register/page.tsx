@@ -78,7 +78,7 @@ export default function RegisterPage() {
     "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-[100dvh] flex">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-5/12 relative flex-col justify-between p-12 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900" />
@@ -135,15 +135,29 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 bg-white dark:bg-gray-950 overflow-y-auto">
-        <Link href="/" className="lg:hidden flex items-center gap-2 mb-8 text-purple-600">
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-sm">Back to Home</span>
-        </Link>
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-white dark:bg-gray-950 overflow-y-auto relative">
+        {/* Mobile Header / Back Button */}
+        <div className="absolute top-6 left-6 lg:hidden">
+          <Link href="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+            <ChevronLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">Home</span>
+          </Link>
+        </div>
 
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-lg mt-12 lg:mt-0 pb-10 lg:pb-0">
+          {/* Mobile Branding (Visible only on smaller screens) */}
+          <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
+            <div className="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 flex items-center justify-center mb-3 shadow-sm">
+              <span className="text-2xl text-purple-600 dark:text-purple-400">✝</span>
+            </div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+              Kingdom of Christ
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Ministries</p>
+          </div>
+
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
               Create your account 🙏
             </h2>
@@ -162,7 +176,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Row */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   First Name

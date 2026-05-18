@@ -61,8 +61,8 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai",
-      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com",
+      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai https://*.firebaseapp.com",
+      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com https://*.firebaseapp.com",
     ].join('; ')
   );
   return response;

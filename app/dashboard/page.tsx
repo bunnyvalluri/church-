@@ -1,12 +1,12 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { user, status, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -39,14 +39,14 @@ export default function DashboardPage() {
             </Link>
             <div className="flex items-center gap-4">
               <span className="text-gray-600 dark:text-gray-400">
-                Welcome, {session?.user?.name || "Member"}
+                Welcome, {user?.name || "Member"}
               </span>
-              <Link
-                href="/api/auth/signout"
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              <button
+                onClick={logout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold text-sm active:scale-[0.98]"
               >
                 Sign Out
-              </Link>
+              </button>
             </div>
           </div>
         </div>

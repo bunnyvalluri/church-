@@ -52,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-[100dvh] flex">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
         {/* Gradient Background */}
@@ -100,20 +100,33 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-white dark:bg-gray-950">
-        {/* Mobile Header */}
-        <Link href="/" className="lg:hidden flex items-center gap-2 mb-8 text-purple-600">
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-sm">Back to Home</span>
-        </Link>
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-white dark:bg-gray-950 relative">
+        {/* Mobile Header / Back Button */}
+        <div className="absolute top-6 left-6 lg:hidden">
+          <Link href="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+            <ChevronLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">Home</span>
+          </Link>
+        </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md mt-10 lg:mt-0">
+          {/* Mobile Branding (Visible only on smaller screens) */}
+          <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
+            <div className="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 flex items-center justify-center mb-3 shadow-sm">
+              <span className="text-2xl text-purple-600 dark:text-purple-400">✝</span>
+            </div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+              Kingdom of Christ
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Ministries</p>
+          </div>
+
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
               Welcome back 👋
             </h2>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               Sign in to your member portal to continue
             </p>
           </div>
