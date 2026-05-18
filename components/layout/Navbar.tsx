@@ -48,10 +48,10 @@ export default function Navbar() {
   }, []);
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "hover:text-[#1877F2]" },
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "hover:text-[#E1306C]" },
-    { icon: Youtube, href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO", label: "YouTube", color: "hover:text-[#FF0000]" },
-    { icon: Twitter, href: "https://twitter.com", label: "Twitter / X", color: "hover:text-white" },
+    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "hover:text-[#1877F2]", bg: "bg-[#1877F2] hover:brightness-110" },
+    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "hover:text-[#E1306C]", bg: "bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:brightness-110" },
+    { icon: Youtube, href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO", label: "YouTube", color: "hover:text-[#FF0000]", bg: "bg-[#FF0000] hover:brightness-110" },
+    { icon: Twitter, href: "https://twitter.com", label: "Twitter / X", color: "hover:text-white", bg: "bg-black hover:bg-gray-800" },
   ];
 
   return (
@@ -197,6 +197,26 @@ export default function Navbar() {
                   <ThemeToggle />
                 </div>
               </div>
+
+              {/* Mobile Social Icons */}
+              <div className="px-2">
+                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider block mb-3">Follow Us</span>
+                <div className="flex items-center gap-3">
+                  {socialLinks.map(({ icon: Icon, href, label, color, bg }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className={cn("w-10 h-10 rounded-full text-white flex items-center justify-center transition-all duration-300 hover:scale-110 group shadow-md", bg)}
+                    >
+                      <Icon className="w-4 h-4 transition-transform duration-500 group-hover:rotate-[360deg]" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
               <Link
                 href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -209,6 +229,33 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+
+    {/* ── Floating Social Sidebar (Desktop) ── */}
+    <div className="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-1 pl-1">
+      {socialLinks.map(({ icon: Icon, href, label, color, bg }) => (
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          title={label}
+          className={cn(
+            "group relative flex items-center w-9 h-9 rounded-r-xl overflow-hidden transition-all duration-300 hover:w-28 shadow-lg text-white",
+            bg
+          )}
+        >
+          {/* Icon */}
+          <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center">
+            <Icon className="w-4 h-4 transition-transform duration-500 group-hover:rotate-[360deg]" />
+          </div>
+          {/* Label — slides in on hover */}
+          <span className="text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pr-3">
+            {label}
+          </span>
+        </a>
+      ))}
+    </div>
     </div>
   );
 }
