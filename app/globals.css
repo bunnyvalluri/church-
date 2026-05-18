@@ -456,30 +456,4 @@ main {
 
 .animate-bounce-in {
   animation: bounce-in 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
-}
-
-/* ── Social Icon Spin on Hover ───────────────────────────────────────────── */
-@keyframes icon-spin {
-  from { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(180deg) scale(1.2); }
-  to   { transform: rotate(360deg) scale(1); }
-}
-
-.social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s ease,
-              background-color 0.3s ease;
-}
-
-.social-icon:hover {
-  animation: icon-spin 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* Also target svg inside social buttons so the icon itself spins */
-.social-icon svg {
-  transition: inherit;
-}
-
+}

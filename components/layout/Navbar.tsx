@@ -76,11 +76,11 @@ export default function Navbar() {
                   rel="noopener noreferrer"
                   aria-label={label}
                   className={cn(
-                    "social-icon w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:bg-white/10",
+                    "w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-125 group",
                     color
                   )}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3.5 h-3.5 transition-transform duration-500 group-hover:rotate-[360deg]" />
                 </a>
               ))}
             </div>

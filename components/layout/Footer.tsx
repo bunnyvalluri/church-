@@ -84,33 +84,33 @@ export default function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-[#1877F2]/40 hover:brightness-110"
+                className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/40 hover:brightness-110 group"
               >
-                <Facebook className="h-5 w-5" />
+                <Facebook className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/40 hover:brightness-110"
+                className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/40 hover:brightness-110 group"
               >
-                <Instagram className="h-5 w-5" />
+                <Instagram className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
               </a>
               <a
                 href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon w-10 h-10 rounded-full bg-[#FF0000] text-white flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-[#FF0000]/40 hover:brightness-110"
+                className="w-10 h-10 rounded-full bg-[#FF0000] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#FF0000]/40 hover:brightness-110 group"
               >
-                <Youtube className="h-5 w-5" />
+                <Youtube className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
               </a>
               <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon w-10 h-10 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:shadow-[#1DA1F2]/40 hover:brightness-110"
+                className="w-10 h-10 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#1DA1F2]/40 hover:brightness-110 group"
               >
-                <Twitter className="h-5 w-5" />
+                <Twitter className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
               </a>
             </div>
           </div>
