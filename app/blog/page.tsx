@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { User, Calendar, Tag, ArrowRight } from "lucide-react";
 
 export default function BlogPage() {
@@ -81,10 +82,12 @@ export default function BlogPage() {
                 className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex flex-col h-full"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src={post.image}
                     alt={post.title}
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">
