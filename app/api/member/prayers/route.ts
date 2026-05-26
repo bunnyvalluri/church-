@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { getFallbackFilePath } from '@/lib/utils';
 
 export async function GET(req: Request) {
   try {
@@ -24,7 +25,7 @@ export async function GET(req: Request) {
       console.warn('[PRAYERS/GET] Database offline. Using local JSON fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_prayers.json');
+        const fallbackFile = getFallbackFilePath('fallback_prayers.json');
         
         if (!fs.existsSync(fallbackFile)) {
           return NextResponse.json({ success: true, prayers: [] });
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
       console.warn('[PRAYERS/CREATE] Database offline. Using local fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_prayers.json');
+        const fallbackFile = getFallbackFilePath('fallback_prayers.json');
         
         let prayers = [];
         if (fs.existsSync(fallbackFile)) {
@@ -92,6 +93,11 @@ export async function POST(req: Request) {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
+
+        const dir = path.dirname(fallbackFile);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
 
         prayers.push(newPrayerFallback);
         fs.writeFileSync(fallbackFile, JSON.stringify(prayers, null, 2), 'utf-8');

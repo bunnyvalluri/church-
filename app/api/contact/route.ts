@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-
-export const dynamic = 'force-dynamic';
 import { isRateLimited, rateLimitHeaders } from "@/lib/rateLimit";
 import { ok, err, getClientIp, safeJson } from "@/lib/apiResponse";
 import sanitizeHtml from "sanitize-html";

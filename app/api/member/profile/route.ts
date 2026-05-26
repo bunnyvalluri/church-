@@ -2,13 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
-
-function getFallbackFilePath() {
-  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
-    return path.join('/tmp', 'fallback_users.json');
-  }
-  return path.join(process.cwd(), 'prisma', 'fallback_users.json');
-}
+import { getFallbackFilePath } from '@/lib/utils';
 
 export async function POST(req: Request) {
   try {
@@ -40,7 +34,7 @@ export async function POST(req: Request) {
       console.warn('[PROFILE/UPDATE] Database offline. Using fallback JSON storage. Details:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = getFallbackFilePath();
+        const fallbackFile = getFallbackFilePath('fallback_users.json');
         
         let users = [];
         if (fs.existsSync(fallbackFile)) {

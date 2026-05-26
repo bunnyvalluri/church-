@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import path from "path"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -23,4 +24,11 @@ export function formatCurrency(amount: number, currency: string = 'INR'): string
     style: 'currency',
     currency: currency,
   }).format(amount);
+}
+
+export function getFallbackFilePath(fileName: string): string {
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    return path.join('/tmp', fileName);
+  }
+  return path.join(process.cwd(), 'prisma', fileName);
 }

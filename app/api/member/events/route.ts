@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { getFallbackFilePath } from '@/lib/utils';
 
 // Seed mock events for local fallback previews
 const MOCK_EVENTS = [
@@ -59,8 +60,8 @@ export async function GET(req: Request) {
       console.warn('[EVENTS/GET] Database offline. Using local JSON fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_events.json');
-        const regFile = path.join(process.cwd(), 'prisma', 'fallback_registrations.json');
+        const fallbackFile = getFallbackFilePath('fallback_events.json');
+        const regFile = getFallbackFilePath('fallback_registrations.json');
 
         if (!fs.existsSync(fallbackFile)) {
           fs.mkdirSync(path.dirname(fallbackFile), { recursive: true });
@@ -113,7 +114,7 @@ export async function POST(req: Request) {
       console.warn('[EVENTS/REGISTER] Database offline. Using local fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const regFile = path.join(process.cwd(), 'prisma', 'fallback_registrations.json');
+        const regFile = getFallbackFilePath('fallback_registrations.json');
         
         let registrations = [];
         if (fs.existsSync(regFile)) {
@@ -132,6 +133,10 @@ export async function POST(req: Request) {
             createdAt: new Date().toISOString(),
           };
           registrations.push(newReg);
+          const dir = path.dirname(regFile);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
           fs.writeFileSync(regFile, JSON.stringify(registrations, null, 2), 'utf-8');
         }
 
