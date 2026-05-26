@@ -324,18 +324,10 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
             {/* Right: online + bell */}
             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
-              {/* Language Selector */}
-              <div className="scale-90 sm:scale-100 origin-right">
+              {/* Unified Toggles Capsule */}
+              <div className="scale-90 sm:scale-100 origin-right flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-150 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
                 <LanguageToggle />
-              </div>
-
-              {/* Theme Toggle */}
-              <div className="scale-90 sm:scale-100 origin-right">
                 <ThemeToggle />
-              </div>
-
-              {/* Palette Toggle */}
-              <div className="scale-90 sm:scale-100 origin-right">
                 <PaletteToggle />
               </div>
 

@@ -400,18 +400,10 @@ export default function MemberDashboard() {
               Live
             </div>
 
-            {/* Language Switcher (Visible on desktop) */}
-            <div className="scale-90 sm:scale-100 origin-right hidden lg:block">
+            {/* Unified Toggles Capsule */}
+            <div className="scale-90 sm:scale-100 origin-right flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-150 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
               <LanguageToggle />
-            </div>
-
-            {/* Theme Toggle (Always visible) */}
-            <div className="scale-90 sm:scale-100 origin-right flex-shrink-0">
               <ThemeToggle />
-            </div>
-
-            {/* Palette Toggle (Always visible) */}
-            <div className="scale-90 sm:scale-100 origin-right flex-shrink-0">
               <PaletteToggle />
             </div>
 
