@@ -17,6 +17,7 @@ interface ProfileSnapshot {
   address: string;
   role: string;
   joinedAt: string;
+  image: string;
 }
 
 const profileTranslations = {
@@ -52,7 +53,10 @@ const profileTranslations = {
     tryAgain: "Try Again",
     toastSuccess: "Profile auto-saved successfully!",
     toastError: "Failed to load profile data",
-    toastSaveError: "Failed to auto-save profile"
+    toastSaveError: "Failed to auto-save profile",
+    uploadingPhoto: "Uploading...",
+    photoUpdated: "Photo updated!",
+    photoFailed: "Photo upload failed"
   },
   te: {
     title: "నా ప్రొఫైల్",
@@ -86,7 +90,10 @@ const profileTranslations = {
     tryAgain: "మళ్ళీ ప్రయత్నించండి",
     toastSuccess: "ప్రొఫైల్ విజయవంతంగా సేవ్ చేయబడింది!",
     toastError: "ప్రొఫైల్ డేటాను లోడ్ చేయడం విఫలమైంది",
-    toastSaveError: "ప్రొఫైల్ ఆటో-సేవ్ చేయడం విఫలమైంది"
+    toastSaveError: "ప్రొఫైల్ ఆటో-సేవ్ చేయడం విఫలమైంది",
+    uploadingPhoto: "అప్‌లోడ్ అవుతోంది...",
+    photoUpdated: "ఫోటో అప్‌డేట్ చేయబడింది!",
+    photoFailed: "ఫోటో అప్‌లోడ్ విఫలమైంది"
   },
   hi: {
     title: "मेरी प्रोफाइल",
@@ -120,7 +127,10 @@ const profileTranslations = {
     tryAgain: "पुनः प्रयास करें",
     toastSuccess: "प्रोफ़ाइल सफलतापूर्वक सहेजी गई!",
     toastError: "प्रोफ़ाइल डेटा लोड करने में विफल",
-    toastSaveError: "प्रोफ़ाइल ऑटो-सेव करने में विफल"
+    toastSaveError: "प्रोफ़ाइल ऑटो-सेव करने में विफल",
+    uploadingPhoto: "अपलोड हो रहा है...",
+    photoUpdated: "फ़ोटो अपडेट हो गई!",
+    photoFailed: "फ़ोटो अपलोड विफल"
   }
 };
 
@@ -136,6 +146,8 @@ export default function MemberProfile() {
   const [address, setAddress] = useState("");
   const [role, setRole] = useState("MEMBER");
   const [joinedAt, setJoinedAt] = useState("");
+  const [image, setImage] = useState("");
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -145,9 +157,10 @@ export default function MemberProfile() {
   const [isOnline, setIsOnline] = useState(true);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
-  const original = useRef<ProfileSnapshot>({ name: "", phone: "", address: "", role: "MEMBER", joinedAt: "" });
+  const original = useRef<ProfileSnapshot>({ name: "", phone: "", address: "", role: "MEMBER", joinedAt: "", image: "" });
   const syncTimer = useRef<NodeJS.Timeout | null>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string, type: "success" | "error") => {
     setToast({ msg, type });
@@ -181,12 +194,14 @@ export default function MemberProfile() {
             address: p.address || "",
             role: p.role || "MEMBER",
             joinedAt: p.createdAt || "",
+            image: p.image || "",
           };
           setName(snap.name);
           setPhone(snap.phone);
           setAddress(snap.address);
           setRole(snap.role);
           setJoinedAt(snap.joinedAt);
+          setImage(snap.image);
           original.current = snap;
           setHasChanges(false);
         }
@@ -199,20 +214,21 @@ export default function MemberProfile() {
     }
   }, [user?.uid, user?.name, pt.toastError]);
 
-  const handleSave = useCallback(async (e?: React.FormEvent) => {
+  const handleSave = useCallback(async (e?: React.FormEvent, currentImage?: string) => {
     if (e) e.preventDefault();
     if (!user?.uid) return;
     setSaving(true);
     setSaveState("saving");
+    const imageToSave = currentImage !== undefined ? currentImage : image;
     try {
       const res = await fetch("/api/member/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.uid, name, phone, address }),
+        body: JSON.stringify({ userId: user?.uid, name, phone, address, image: imageToSave }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        original.current = { ...original.current, name, phone, address };
+        original.current = { ...original.current, name, phone, address, image: imageToSave };
         setHasChanges(false);
         setSaveState("saved");
         setLastSynced(new Date());
@@ -231,7 +247,65 @@ export default function MemberProfile() {
     } finally {
       setSaving(false);
     }
-  }, [user?.uid, name, phone, address, refreshUser, pt.toastSuccess, pt.toastSaveError]);
+  }, [user?.uid, name, phone, address, image, refreshUser, pt.toastSuccess, pt.toastSaveError]);
+
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 250;
+          const MAX_HEIGHT = 250;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // 70% quality jpeg
+            resolve(dataUrl);
+          } else {
+            resolve(event.target?.result as string);
+          }
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setPhotoUploading(true);
+    try {
+      const compressed = await compressImage(file);
+      setImage(compressed);
+      await handleSave(undefined, compressed);
+    } catch (err) {
+      showToast(pt.photoFailed, "error");
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
 
   useEffect(() => {
     let activeSyncTimer: NodeJS.Timeout | null = null;
@@ -246,7 +320,7 @@ export default function MemberProfile() {
   }, [status, user, loadProfile]);
 
   useEffect(() => {
-    const changed = name !== original.current.name || phone !== original.current.phone || address !== original.current.address;
+    const changed = name !== original.current.name || phone !== original.current.phone || address !== original.current.address || image !== original.current.image;
     setHasChanges(changed);
     if (changed) {
       if (saveState === "saved") setSaveState("idle");
@@ -264,7 +338,7 @@ export default function MemberProfile() {
         clearTimeout(timer);
       };
     }
-  }, [name, phone, address, isOnline, saveState, handleSave]);
+  }, [name, phone, address, image, isOnline, saveState, handleSave]);
 
   const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
     ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
@@ -334,9 +408,33 @@ export default function MemberProfile() {
             </div>
             <div className="px-5 pb-5">
               <div className="relative -mt-8 mb-4 w-fit">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl">
-                  <User className="w-8 h-8 text-white" />
-                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  disabled={photoUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group relative w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
+                  title="Upload profile picture"
+                >
+                  {photoUploading ? (
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  ) : image ? (
+                    <img src={image} alt={name || "Member"} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-8 h-8 text-white" />
+                  )}
+                  {!photoUploading && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                </button>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
               </div>
               <h2 className="font-black text-gray-900 dark:text-white text-lg leading-tight">{name || user?.name || "Member"}</h2>

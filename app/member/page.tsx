@@ -375,9 +375,18 @@ export default function MemberDashboard() {
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
             </button>
-            <span className="text-sm font-semibold hidden md:inline text-gray-700 dark:text-gray-300">
-              {mt.welcome} <span className="text-purple-600 dark:text-purple-400">{user?.name?.split(" ")[0] || "Member"}</span>
-            </span>
+            <div className="flex items-center gap-2">
+              {user?.image ? (
+                <img src={user.image} alt={user.name || "Member"} className="w-7 h-7 rounded-lg object-cover border border-purple-100 dark:border-purple-900/30 shadow-sm" />
+              ) : (
+                <div className="w-7 h-7 bg-purple-50 dark:bg-purple-950/30 rounded-lg flex items-center justify-center border border-purple-100 dark:border-purple-900/30">
+                  <User className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                </div>
+              )}
+              <span className="text-sm font-semibold hidden md:inline text-gray-700 dark:text-gray-300">
+                {mt.welcome} <span className="text-purple-600 dark:text-purple-400">{user?.name?.split(" ")[0] || "Member"}</span>
+              </span>
+            </div>
             <button
               onClick={logout}
               className="px-3.5 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold text-xs flex items-center gap-1.5 active:scale-[0.98] transition-all"

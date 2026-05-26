@@ -13,17 +13,20 @@ function getFallbackFilePath() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, name, phone, address } = body;
+    const { userId, name, phone, address, image } = body;
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const updateData = {
+    const updateData: any = {
       name: name || 'Member',
       phone: phone || null,
       address: address || null,
     };
+    if (image !== undefined) {
+      updateData.image = image;
+    }
 
     // Try Prisma DB first
     try {

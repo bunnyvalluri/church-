@@ -156,8 +156,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         <div className="relative bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-4 text-white overflow-hidden">
           <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-lg" />
           <div className="relative flex items-center gap-3">
-            <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 flex-shrink-0">
-              <User className="w-5 h-5 text-white" />
+            <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 flex-shrink-0 overflow-hidden">
+              {user?.image ? (
+                <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-5 h-5 text-white" />
+              )}
             </div>
             <div className="min-w-0">
               <p className="font-bold text-sm truncate">{user?.name || "Member"}</p>

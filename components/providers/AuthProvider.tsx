@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser((prev) => prev ? {
           ...prev,
           name: dbUser.name || prev.name,
-          image: dbUser.image || prev.image,
+          image: dbUser.image !== undefined ? dbUser.image : prev.image,
           role: dbUser.role || prev.role,
         } : null);
       }
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           name: dbUser?.name || firebaseUser.displayName || "Member",
-          image: firebaseUser.photoURL || null,
+          image: dbUser?.image || firebaseUser.photoURL || null,
           role: dbUser?.role || "MEMBER",
         };
         
