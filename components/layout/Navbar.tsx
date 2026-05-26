@@ -18,6 +18,31 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
+  const colorThemes = [
+    { id: "purple", name: "Purple Theme", previewBg: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)" },
+    { id: "blue", name: "Ocean Blue Theme", previewBg: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)" },
+    { id: "emerald", name: "Emerald Theme", previewBg: "linear-gradient(135deg, #10b981 0%, #0d9488 100%)" },
+    { id: "gold", name: "Gold Theme", previewBg: "linear-gradient(135deg, #fbbf24 0%, #ea580c 100%)" },
+    { id: "red", name: "Crimson Theme", previewBg: "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)" },
+  ];
+
+  const [activeColorTheme, setActiveColorTheme] = useState("purple");
+
+  // Synchronize dynamic color theme state on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("color-theme");
+    if (saved) {
+      setActiveColorTheme(saved);
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+  }, []);
+
+  const handleSetColorTheme = (themeId: string) => {
+    setActiveColorTheme(themeId);
+    localStorage.setItem("color-theme", themeId);
+    document.documentElement.setAttribute("data-theme", themeId);
+  };
+
   const navItems = [
     { name: t.nav.home, href: "#home" },
     { name: t.nav.about, href: "#about" },
@@ -175,6 +200,27 @@ export default function Navbar() {
 
               {/* Right controls */}
               <div className="flex items-center space-x-2 pl-3">
+                {/* Desktop Theme Palette Switcher */}
+                <div className="flex items-center gap-1.5 bg-gray-100/50 dark:bg-white/5 backdrop-blur-md px-2 py-1.5 rounded-xl border border-gray-200/50 dark:border-white/10 shadow-sm mr-1">
+                  {colorThemes.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleSetColorTheme(t.id)}
+                      className={cn(
+                        "w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300 relative border",
+                        activeColorTheme === t.id
+                          ? "scale-110 shadow-sm border-white dark:border-gray-900 ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-950"
+                          : "border-black/5 dark:border-white/10 hover:scale-110"
+                      )}
+                      style={{ background: t.previewBg }}
+                      title={t.name}
+                    >
+                      {activeColorTheme === t.id && (
+                        <span className="w-1 h-1 rounded-full bg-white" />
+                      )}
+                    </button>
+                  ))}
+                </div>
                 <LanguageToggle />
                 <ThemeToggle />
                 {/* Member Login — always links to login page */}
@@ -228,11 +274,38 @@ export default function Navbar() {
               </div>
 
               <div className="mt-5 pt-5 border-t border-gray-200 dark:border-white/10 flex flex-col gap-4">
-                <div className="flex items-center justify-between px-2">
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Settings</span>
-                  <div className="flex gap-3">
-                    <LanguageToggle />
-                    <ThemeToggle />
+                <div className="flex flex-col gap-4 px-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Settings</span>
+                    <div className="flex gap-3">
+                      <LanguageToggle />
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                  
+                  {/* Theme Palette Switcher */}
+                  <div className="pt-3 border-t border-gray-100 dark:border-white/5">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2.5">🎨 Theme Colors</span>
+                    <div className="flex items-center gap-3">
+                      {colorThemes.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => handleSetColorTheme(t.id)}
+                          className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 relative border active:scale-90",
+                            activeColorTheme === t.id
+                              ? "scale-110 shadow-lg shadow-purple-500/20 border-white dark:border-gray-900 ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-950"
+                              : "border-black/5 dark:border-white/10 hover:scale-105"
+                          )}
+                          style={{ background: t.previewBg }}
+                          title={t.name}
+                        >
+                          {activeColorTheme === t.id && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
