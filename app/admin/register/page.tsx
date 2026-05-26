@@ -88,7 +88,7 @@ export default function AdminRegisterPage() {
     "w-full pl-11 pr-4 py-3 rounded-xl border border-red-900/20 bg-gray-950/60 text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all placeholder-gray-600 text-sm outline-none shadow-inner";
 
   return (
-    <div className="min-h-[100dvh] flex bg-gradient-to-br from-red-955 via-gray-955 to-purple-955 text-white relative">
+    <div className="min-h-[100dvh] flex bg-gradient-to-br from-red-950 via-gray-950 to-purple-950 text-white relative">
       {/* Absolute background stars/shimmer */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/10 via-purple-900/10 to-transparent pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
@@ -133,7 +133,7 @@ export default function AdminRegisterPage() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-xs text-red-400/70 bg-red-955/30 border border-red-900/30 px-3.5 py-2.5 rounded-xl max-w-sm">
+          <div className="flex items-center gap-2 text-xs text-red-400/70 bg-red-950/30 border border-red-900/30 px-3.5 py-2.5 rounded-xl max-w-sm">
             <div className="w-2 h-2 rounded-full bg-red-500 animate-ping flex-shrink-0" />
             <span>Secure Platform Database Syncing</span>
           </div>

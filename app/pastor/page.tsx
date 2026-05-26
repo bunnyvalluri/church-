@@ -152,7 +152,7 @@ export default function PastorDashboard() {
 
   if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400 text-sm">{pt.authenticating}</p>
@@ -162,7 +162,7 @@ export default function PastorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200">
       
       {/* Header Portal */}
       <header className="bg-white/70 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-150 dark:border-white/5 sticky top-0 z-40 transition-colors">
@@ -253,13 +253,13 @@ export default function PastorDashboard() {
                     <tool.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-955 dark:text-white text-lg leading-tight">{tool.title}</h4>
+                    <h4 className="font-bold text-gray-950 dark:text-white text-lg leading-tight">{tool.title}</h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{tool.desc}</p>
                   </div>
                 </div>
                 <Link
                   href={tool.href}
-                  className="mt-6 w-full py-2.5 bg-gray-55 dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-xs flex items-center justify-center gap-1 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-900 transition-all duration-300"
+                  className="mt-6 w-full py-2.5 bg-gray-50 dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-bold text-xs flex items-center justify-center gap-1 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-900 transition-all duration-300"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   {pt.configure}

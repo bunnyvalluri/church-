@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   User, Calendar, Heart, BookOpen, Briefcase, Gift,
   LogOut, Menu, X, ChevronRight, Bell, Wifi, WifiOff,
@@ -241,6 +242,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               {/* Language Selector */}
               <div className="scale-90 sm:scale-100 origin-right">
                 <LanguageToggle />
+              </div>
+
+              {/* Theme Toggle */}
+              <div className="scale-90 sm:scale-100 origin-right">
+                <ThemeToggle />
               </div>
 
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${

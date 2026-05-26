@@ -346,7 +346,7 @@ export default function AdminDashboard() {
   // Role Protection UI loader
   if (!mounted || status === "loading" || (user && user.role !== "ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-purple-50 dark:from-gray-955 dark:via-gray-900 dark:to-purple-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400 text-sm">{at.authenticating}</p>
@@ -382,7 +382,7 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-955 text-gray-800 dark:text-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-200">
       
       {/* Header Panel */}
       <header className="bg-white/70 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-150 dark:border-white/5 sticky top-0 z-40 transition-colors print:hidden">
@@ -401,7 +401,7 @@ export default function AdminDashboard() {
             </span>
             <button
               onClick={logout}
-              className="px-3.5 py-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-955/20 dark:hover:bg-red-955/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold text-xs flex items-center gap-1.5 active:scale-[0.98] transition-all"
+              className="px-3.5 py-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold text-xs flex items-center gap-1.5 active:scale-[0.98] transition-all"
             >
               <LogOut className="w-3.5 h-3.5" />
               {at.signOut}
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -10 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -10 }}
-              className="p-4 bg-green-50 dark:bg-green-955/20 border-l-4 border-green-500 text-green-700 dark:text-green-300 text-sm rounded-xl flex items-center gap-2 print:hidden shadow-sm"
+              className="p-4 bg-green-50 dark:bg-green-950/20 border-l-4 border-green-500 text-green-700 dark:text-green-300 text-sm rounded-xl flex items-center gap-2 print:hidden shadow-sm"
             >
               <CheckCircle className="w-5 h-5 flex-shrink-0" />
               <span>{successMsg}</span>
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -10 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -10 }}
-              className="p-4 bg-red-50 dark:bg-red-955/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-sm rounded-xl flex items-center gap-2 print:hidden shadow-sm"
+              className="p-4 bg-red-50 dark:bg-red-950/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-sm rounded-xl flex items-center gap-2 print:hidden shadow-sm"
             >
               <XCircle className="w-5 h-5 flex-shrink-0" />
               <span>{errorMsg}</span>
@@ -459,7 +459,7 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, y: -10 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -10 }}
-              className="p-4 bg-yellow-50 dark:bg-yellow-955/20 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 text-xs rounded-xl flex items-center gap-2 print:hidden shadow-sm"
+              className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 text-xs rounded-xl flex items-center gap-2 print:hidden shadow-sm"
             >
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span><strong>{at.syncNotice}</strong> {warningMsg}</span>
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
                             {(u.name || "U").substring(0, 2)}
                           </div>
                           <div className="overflow-hidden">
-                            <h4 className="font-extrabold text-gray-955 dark:text-white leading-tight truncate">{u.name || "Anonymous Member"}</h4>
+                            <h4 className="font-extrabold text-gray-950 dark:text-white leading-tight truncate">{u.name || "Anonymous Member"}</h4>
                             <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 truncate">{u.email}</p>
                           </div>
                         </div>
@@ -572,7 +572,7 @@ export default function AdminDashboard() {
                         </label>
                         <div className="relative">
                           {roleUpdatingId === u.id ? (
-                            <div className="w-full py-2 bg-gray-55 dark:bg-gray-900 rounded-xl flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700">
+                            <div className="w-full py-2 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700">
                               <Loader2 className="w-3.5 h-3.5 animate-spin text-red-500" />
                               <span className="text-[10px] font-bold text-gray-400">{at.updating}</span>
                             </div>
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                             <select
                               value={u.role || "MEMBER"}
                               onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                              className="w-full py-2 px-3.5 bg-gray-55 dark:bg-gray-905 text-xs font-bold rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all cursor-pointer outline-none"
+                              className="w-full py-2 px-3.5 bg-gray-50 dark:bg-gray-905 text-xs font-bold rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all cursor-pointer outline-none"
                             >
                               <option value="MEMBER">{at.roleMember}</option>
                               <option value="PASTOR">{at.rolePastor}</option>
@@ -603,10 +603,10 @@ export default function AdminDashboard() {
               {/* Financial Counter Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4 print:gap-2">
                 {[
-                  { label: at.totalIncome, count: `₹${totalFinancials.toLocaleString("en-IN")}`, desc: at.incomeSub, icon: IndianRupee, color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-955/20 border-green-100" },
-                  { label: at.tithesLedger, count: `₹${totalTithes.toLocaleString("en-IN")}`, desc: at.tithesSub, icon: TrendingUp, color: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-955/20 border-purple-100" },
-                  { label: at.worshipOfferings, count: `₹${totalOfferings.toLocaleString("en-IN")}`, desc: at.offeringsSub, icon: FileText, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-955/20 border-indigo-100" },
-                  { label: at.ledgerVolume, count: completedDonations.length, desc: at.ledgerSub, icon: CheckCircle, color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-955/20 border-red-100" },
+                  { label: at.totalIncome, count: `₹${totalFinancials.toLocaleString("en-IN")}`, desc: at.incomeSub, icon: IndianRupee, color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/20 border-green-100" },
+                  { label: at.tithesLedger, count: `₹${totalTithes.toLocaleString("en-IN")}`, desc: at.tithesSub, icon: TrendingUp, color: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20 border-purple-100" },
+                  { label: at.worshipOfferings, count: `₹${totalOfferings.toLocaleString("en-IN")}`, desc: at.offeringsSub, icon: FileText, color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-100" },
+                  { label: at.ledgerVolume, count: completedDonations.length, desc: at.ledgerSub, icon: CheckCircle, color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border-red-100" },
                 ].map((card, idx) => (
                   <div key={idx} className="bg-white dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-150 dark:border-white/5 shadow-md flex items-center justify-between gap-4">
                     <div>
@@ -632,7 +632,7 @@ export default function AdminDashboard() {
                     value={donationSearch}
                     onChange={(e) => setDonationSearch(e.target.value)}
                     placeholder={at.searchLedger}
-                    className="w-full py-3 pl-12 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm outline-none"
+                    className="w-full py-3 pl-12 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm outline-none"
                   />
                 </div>
                 
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
                   <select
                     value={donationTypeFilter}
                     onChange={(e) => setDonationTypeFilter(e.target.value)}
-                    className="flex-1 md:flex-initial py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-955 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm font-semibold outline-none cursor-pointer"
+                    className="flex-1 md:flex-initial py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm font-semibold outline-none cursor-pointer"
                   >
                     <option value="ALL">{at.allCategories}</option>
                     <option value="TITHE">{at.titheOnly}</option>
@@ -682,7 +682,7 @@ export default function AdminDashboard() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm border-collapse">
                       <thead>
-                        <tr className="bg-gray-55/50 dark:bg-gray-900/40 text-gray-500 dark:text-gray-450 text-[10px] uppercase font-black tracking-wider border-b border-gray-150 dark:border-white/5">
+                        <tr className="bg-gray-50/50 dark:bg-gray-900/40 text-gray-500 dark:text-gray-450 text-[10px] uppercase font-black tracking-wider border-b border-gray-150 dark:border-white/5">
                           <th className="py-4.5 px-6">{at.colDonor}</th>
                           <th className="py-4.5 px-6">{at.colOrder}</th>
                           <th className="py-4.5 px-6">{at.colCategory}</th>
@@ -693,10 +693,10 @@ export default function AdminDashboard() {
                       </thead>
                       <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                         {filteredDonations.map((d) => (
-                          <tr key={d.id} className="hover:bg-gray-55/30 dark:hover:bg-white/1 flex-row text-xs">
+                          <tr key={d.id} className="hover:bg-gray-50/30 dark:hover:bg-white/1 flex-row text-xs">
                             {/* Donor Info */}
                             <td className="py-4 px-6 space-y-1">
-                              <span className="font-bold text-gray-955 dark:text-white block">{d.donorName || "Believer"}</span>
+                              <span className="font-bold text-gray-950 dark:text-white block">{d.donorName || "Believer"}</span>
                               <span className="text-[10px] text-gray-400 block">{d.donorEmail || "No email"}</span>
                             </td>
                             {/* Tx IDs */}
@@ -708,15 +708,15 @@ export default function AdminDashboard() {
                             <td className="py-4 px-6">
                               <span className={`px-2.5 py-0.5 font-bold uppercase tracking-widest text-[9px] rounded-full ${
                                 d.type === 'TITHE' 
-                                  ? 'bg-purple-100 dark:bg-purple-955/20 text-purple-700 dark:text-purple-300' 
-                                  : 'bg-green-100 dark:bg-green-955/20 text-green-700 dark:text-green-300'
+                                  ? 'bg-purple-100 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300' 
+                                  : 'bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-300'
                               }`}>
                                 {d.type}
                               </span>
                             </td>
                             {/* Amount */}
                             <td className="py-4 px-6">
-                              <span className="font-extrabold text-gray-955 dark:text-white text-sm">
+                              <span className="font-extrabold text-gray-950 dark:text-white text-sm">
                                 ₹{d.amount.toLocaleString("en-IN")}
                               </span>
                             </td>
@@ -734,7 +734,7 @@ export default function AdminDashboard() {
                             <td className="py-4 px-6 text-center print:hidden">
                               <Link
                                 href={`/give/receipt/${d.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-55 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-purple-600 dark:text-purple-400 rounded-xl font-extrabold text-[10px] uppercase border border-gray-150 dark:border-white/5 active:scale-[0.98] transition-all"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-purple-600 dark:text-purple-400 rounded-xl font-extrabold text-[10px] uppercase border border-gray-150 dark:border-white/5 active:scale-[0.98] transition-all"
                               >
                                 <FileText className="w-3.5 h-3.5" />
                                 80G Receipt
@@ -754,11 +754,11 @@ export default function AdminDashboard() {
           {activeTab === "settings" && (
             <div className="bg-white dark:bg-gray-800/40 rounded-3xl border border-gray-150 dark:border-white/5 shadow-xl p-8 backdrop-blur-xl max-w-2xl mx-auto print:hidden animate-fade-in">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center animate-pulse">
+                <div className="w-12 h-12 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center animate-pulse">
                   <Settings className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-955 dark:text-white tracking-tight">{at.systemSettings}</h3>
+                  <h3 className="text-xl font-bold text-gray-950 dark:text-white tracking-tight">{at.systemSettings}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{at.systemSettingsDesc}</p>
                 </div>
               </div>
@@ -776,7 +776,7 @@ export default function AdminDashboard() {
                       onChange={(e) => setContactEmail(e.target.value)}
                       required
                       placeholder="support@church.com"
-                      className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm font-semibold outline-none"
+                      className="w-full py-3.5 pl-12 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-sm font-semibold outline-none"
                     />
                   </div>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
@@ -789,7 +789,7 @@ export default function AdminDashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-gray-955 dark:text-white text-sm block">{at.maintenanceMode}</span>
+                      <span className="font-bold text-gray-950 dark:text-white text-sm block">{at.maintenanceMode}</span>
                       <span className="text-[10px] text-gray-450 dark:text-gray-500 block max-w-sm mt-0.5">{at.maintenanceModeDesc}</span>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -805,7 +805,7 @@ export default function AdminDashboard() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-bold text-gray-955 dark:text-white text-sm block">{at.allowRegistrations}</span>
+                      <span className="font-bold text-gray-950 dark:text-white text-sm block">{at.allowRegistrations}</span>
                       <span className="text-[10px] text-gray-455 dark:text-gray-500 block max-w-sm mt-0.5">{at.allowRegistrationsDesc}</span>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -848,7 +848,7 @@ export default function AdminDashboard() {
                       loadDonations();
                       setSuccessMsg(at.syncSuccess);
                     }}
-                    className="py-3.5 px-5 bg-gray-55 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-250 rounded-xl font-extrabold border border-gray-150 dark:border-white/5 text-xs uppercase tracking-wider flex items-center gap-1.5 active:scale-[0.98] transition-all"
+                    className="py-3.5 px-5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-250 rounded-xl font-extrabold border border-gray-150 dark:border-white/5 text-xs uppercase tracking-wider flex items-center gap-1.5 active:scale-[0.98] transition-all"
                   >
                     <RefreshCw className="w-4 h-4" />
                     {at.btnSync}

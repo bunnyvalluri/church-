@@ -17,19 +17,16 @@ export default function LanguageToggle() {
     { code: "hi", label: "हिंदी", short: "HI" },
   ] as const;
 
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-1.5 p-1 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/10 h-9 w-[120px] animate-pulse" />
-    );
-  }
+  const activeLang = mounted ? language : "en";
 
   return (
     <div className="flex items-center gap-1 p-1 bg-gray-100/80 dark:bg-white/5 backdrop-blur-md rounded-xl border border-gray-200/60 dark:border-white/10 shadow-inner">
       {languages.map((lang) => {
-        const isActive = language === lang.code;
+        const isActive = activeLang === lang.code;
         return (
           <button
             key={lang.code}
+            type="button"
             onClick={() => setLanguage(lang.code)}
             className={`px-3 py-1.5 text-[10px] font-extrabold uppercase rounded-lg transition-all duration-300 active:scale-95 ${
               isActive
@@ -45,3 +42,4 @@ export default function LanguageToggle() {
     </div>
   );
 }
+

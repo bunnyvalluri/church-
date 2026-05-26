@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 
 const memberTranslations = {
@@ -50,6 +51,29 @@ const memberTranslations = {
     scriptureTitle: "Scripture of the Day",
     scriptureText: '"The Lord is my shepherd; I shall not want."',
     scriptureRef: "— Psalm 23:1",
+    liveIndicator: "Live",
+    liveSync: "Live sync active · Last updated",
+    statsSermons: "Sermons Available",
+    statsAnnouncements: "Announcements",
+    quickActions: "Quick Actions",
+    yourActivity: "Your Activity",
+    actEvents: "Events Registered",
+    actPrayers: "Prayers Submitted",
+    actAnswered: "Prayers Answered",
+    actionSubmitPrayer: "Submit a Prayer",
+    actionRegisterEvent: "Register for Event",
+    actionGiveOnline: "Give Online",
+    badges: {
+      update: "Update",
+      browse: "Browse",
+      submit: "Submit",
+      watch: "Watch",
+      apply: "Apply",
+      giveNow: "Give Now",
+      rsvps: "RSVPs",
+      requests: "Requests",
+      sermons: "Sermons"
+    },
     services: {
       profile: { title: "My Profile", desc: "Update phone numbers, profile images, and address." },
       events: { title: "Church Events", desc: "Browse upcoming schedules and secure seats." },
@@ -61,30 +85,53 @@ const memberTranslations = {
   },
   te: {
     portalName: "కింగ్డమ్ ఆఫ్ క్రైస్ట్ పోర్టల్",
-    roleName: "సభ్యుడు",
+    roleName: "సభ్య�డ�",
     welcome: "స్వాగతం,",
-    signOut: "లాగ్ అవుట్",
-    portalDashboard: "సభ్యుల పోర్టల్ డాష్‌బోర్డ్",
+    signOut: "లాగ్ అవ�ట్",
+    portalDashboard: "సభ్య�ల పోర్టల్ డాష్‌బోర్డ్",
     hello: "హలో,",
-    description: "మా ఆత్మీయ కుటుంబంలో మిమ్మల్ని కలిగి ఉన్నందుకు మేము చాలా సంతోషిస్తున్నాము. మీ ఈవెంట్‌లను యాక్సెస్ చేయండి, ప్రసంగాలను సమీక్షించండి, ప్రార్థనలను సమర్పించండి మరియు పరిచర్యలలో వాలంటీర్‌గా ఉండండి.",
-    registeredEvents: "నమోదైన కార్యక్రమాలు",
-    prayerRequests: "ప్రార్థన విన్నపాలు",
-    directoryTitle: "సభ్యుల సేవల డైరెక్టరీ",
-    latestAnnouncements: "తాజా ప్రకటనలు",
-    noAnnouncements: "ప్రస్తుతం చర్చి ప్రకటనలు ఏవీ లేవు.",
+    description: "మా ఆత్మీయ క�ట�ంబంలో మిమ్మల్ని కలిగి ఉన్నంద�క� మేమ� చాలా సంతోషిస్త�న్నామ�. మీ ఈవెంట్‌లన� యాక్సెస్ చేయండి, ప్రసంగాలన� సమీక్షించండి, ప్రార్థనలన� సమీక్షించండి మరియ� పరిచర్యలలో వాలంటీర్‌గా ఉండండి.",
+    registeredEvents: "నమోదైన కార్యక్రమాల�",
+    prayerRequests: "ప్రార్థన విన్నపాల�",
+    directoryTitle: "సభ్య�ల సేవల డైరెక్టరీ",
+    latestAnnouncements: "తాజా ప్రకటనల�",
+    noAnnouncements: "ప్రస్త�తం చర్చి ప్రకటనల� ఏవీ లేవ�.",
     urgent: "అత్యవసరం",
-    loadingFeeds: "ఫీడ్‌లను లోడ్ చేస్తోంది...",
-    loadingPortal: "సభ్యుల పోర్టల్ లోడ్ అవుతోంది...",
+    loadingFeeds: "ఫీడ్‌లన� లోడ్ చేస్తోంది...",
+    loadingPortal: "సభ్య�ల పోర్టల్ లోడ్ అవ�తోంది...",
     scriptureTitle: "నేటి దైవ వాక్యం",
-    scriptureText: '"యెహోవా నా కాపరి, నాకు లేమి కలుగదు."',
-    scriptureRef: "— కీర్తనలు 23:1",
+    scriptureText: '"యెహోవా నా కాపరి, నాక� లేమి కల�గద�."',
+    scriptureRef: "— కీర్తనల� 23:1",
+    liveIndicator: "లైవ్",
+    liveSync: "లైవ్ సమకాలీకరణ సక్రియంగా ఉంది · చివరిగా నవీకరించబడింది",
+    statsSermons: "అంద�బాట�లో ఉన్న ప్రసంగాల�",
+    statsAnnouncements: "ప్రకటనల�",
+    quickActions: "త్వరిత చర్యల�",
+    yourActivity: "మీ కార్యాచరణ",
+    actEvents: "నమోదైన ఈవెంట్‌ల�",
+    actPrayers: "సమర్పించిన ప్రార్థనల�",
+    actAnswered: "జవాబ� ఇవ్వబడిన ప్రార్థనల�",
+    actionSubmitPrayer: "ప్రార్థనన� సమర్పించండి",
+    actionRegisterEvent: "ఈవెంట్ కోసం నమోద� చేస�కోండి",
+    actionGiveOnline: "ఆన్‌లైన్ కాన�క ఇవ్వండి",
+    badges: {
+      update: "నవీకరించ�",
+      browse: "బ్రౌజ్ చేయి",
+      submit: "సమర్పించ�",
+      watch: "వీక్షించ�",
+      apply: "దరఖాస్త�",
+      giveNow: "ఇప్ప�డే ఇవ్వండి",
+      rsvps: "నమోద�ల�",
+      requests: "విన్నపాల�",
+      sermons: "ప్రసంగాల�"
+    },
     services: {
-      profile: { title: "నా ప్రొఫైల్", desc: "ఫోన్ నంబర్లు, ప్రొఫైల్ చిత్రాలు మరియు చిరునామాను నవీకరించండి." },
-      events: { title: "చర్చి కార్యక్రమాలు", desc: "రాబోయే షెడ్యూల్‌లను బ్రౌజ్ చేయండి మరియు సీట్లను బుక్ చేసుకోండి." },
-      prayers: { title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన విన్నపాలను సమర్పించండి మరియు ట్రాక్ చేయండి." },
-      sermons: { title: "ప్రసంగాల లైబ్రరీ", desc: "ఇటీవలి బైబిల్ సందేశాలు మరియు ప్రసంగాలు వీక్షించండి." },
-      volunteer: { title: "వాలంటీర్ నమోదు", desc: "సక్రియ చర్చి కార్యక్రమాలు మరియు పరిచర్యలలో సేవ చేయండి." },
-      giving: { title: "కానుకలు & రసీదులు", desc: "దశమభాగాలు, కానుకలు ఇవ్వండి మరియు రసీదులు డౌన్‌లోడ్ చేసుకోండి." },
+      profile: { title: "నా ప్రొఫైల్", desc: "ఫోన్ నంబర్ల�, ప్రొఫైల్ చిత్రాల� మరియ� చిర�నామాన� నవీకరించండి." },
+      events: { title: "చర్చి కార్యక్రమాల�", desc: "రాబోయే షెడ్యూల్‌లన� బ్రౌజ్ చేయండి మరియ� సీట్లన� బ�క్ చేస�కోండి." },
+      prayers: { title: "ప్రార్థన విన్నపాల�", desc: "ప్రార్థన విన్నపాలన� సమర్పించండి మరియ� ట్రాక్ చేయండి." },
+      sermons: { title: "ప్రసంగాల లైబ్రరీ", desc: "ఇటీవలి బైబిల్ సందేశాల� మరియ� ప్రసంగాల� వీక్షించండి." },
+      volunteer: { title: "వాలంటీర్ నమోద�", desc: "సక్రియ చర్చి కార్యక్రమాల� మరియ� పరిచర్యలలో సేవ చేయండి." },
+      giving: { title: "కాన�కల� & రసీద�ల�", desc: "దశమభాగాల�, కాన�కల� ఇవ్వండి మరియ� రసీద�ల� డౌన్‌లోడ్ చేస�కోండి." },
     },
   },
   hi: {
@@ -94,7 +141,7 @@ const memberTranslations = {
     signOut: "साइन आउट",
     portalDashboard: "सदस्य पोर्टल डैशबोर्ड",
     hello: "नमस्ते,",
-    description: "हमें अपने आध्यात्मिक परिवार में पाकर बहुत खुशी हुई है। अपने कार्यक्रमों तक पहुँचें, प्रवचनों की समीक्षा करें, प्रार्थनाएँ जमा करें, और सक्रिय मंत्रालयों में स्वयंसेवा करें।",
+    description: "हमें अपने आध्यात्मिक परिवार में पाकर बह�त ख�शी ह�ई है। अपने कार्यक्रमों तक पह��चें, प्रवचनों की समीक्षा करें, प्रार्थनाए� जमा करें, और सक्रिय मंत्रालयों में स्वयंसेवा करें।",
     registeredEvents: "पंजीकृत कार्यक्रम",
     prayerRequests: "प्रार्थना निवेदन",
     directoryTitle: "सदस्य सेवा निर्देशिका",
@@ -104,15 +151,38 @@ const memberTranslations = {
     loadingFeeds: "फ़ीड लोड हो रहा है...",
     loadingPortal: "सदस्य पोर्टल लोड हो रहा है...",
     scriptureTitle: "आज का पवित्र वचन",
-    scriptureText: '"यहोवा मेरा चरवाहा है, मुझे कोई घटी न होगी।"',
+    scriptureText: '"यहोवा मेरा चरवाहा है, म�झे कोई घटी न होगी।"',
     scriptureRef: "— भजन संहिता 23:1",
+    liveIndicator: "लाइव",
+    liveSync: "लाइव सिंक सक्रिय · अंतिम बार अपडेट किया गया",
+    statsSermons: "उपलब्ध प्रवचन",
+    statsAnnouncements: "घोषणाएं",
+    quickActions: "त्वरित कार्रवाई",
+    yourActivity: "आपकी गतिविधि",
+    actEvents: "पंजीकृत कार्यक्रम",
+    actPrayers: "प्रार्थनाए� प्रस्त�त की गईं",
+    actAnswered: "प्रार्थनाओं का उत्तर दिया गया",
+    actionSubmitPrayer: "प्रार्थना जमा करें",
+    actionRegisterEvent: "कार्यक्रम के लिए पंजीकरण करें",
+    actionGiveOnline: "ऑनलाइन दान दें",
+    badges: {
+      update: "अपडेट करें",
+      browse: "देखें",
+      submit: "प्रस्त�त करें",
+      watch: "देखें",
+      apply: "आवेदन करें",
+      giveNow: "अभी दान दें",
+      rsvps: "आरएसवीपी",
+      requests: "अन�रोध",
+      sermons: "प्रवचन"
+    },
     services: {
       profile: { title: "मेरी प्रोफाइल", desc: "फ़ोन नंबर, प्रोफ़ाइल चित्र और पता अपडेट करें।" },
-      events: { title: "चर्च कार्यक्रम", desc: "आगामी कार्यक्रम देखें और सीटें सुरक्षित करें।" },
+      events: { title: "चर्च कार्यक्रम", desc: "आगामी कार्यक्रम देखें और सीटें स�रक्षित करें।" },
       prayers: { title: "प्रार्थना निवेदन", desc: "प्रार्थना निवेदन जमा करें, संपादित करें और ट्रैक करें।" },
       sermons: { title: "प्रवचन लाइब्रेरी", desc: "हाल के बाइबिल सत्र और संदेश देखें।" },
       volunteer: { title: "स्वयंसेवक पंजीकरण", desc: "सक्रिय चर्च कार्यक्रमों और मंत्रालयों में सेवा करें।" },
-      giving: { title: "दान और रसीदें", desc: "दशमांश, प्रसाद दें और रसीदें डाउनलोड करें।" },
+      giving: { title: "दान और रसीदें", desc: "दान, प्रसाद दें और रसीदें डाउनलोड करें।" },
     },
   },
 };
@@ -290,6 +360,11 @@ export default function MemberDashboard() {
             {/* Language Switcher */}
             <div className="scale-90 sm:scale-100 origin-right">
               <LanguageToggle />
+            </div>
+
+            {/* Theme Toggle */}
+            <div className="scale-90 sm:scale-100 origin-right">
+              <ThemeToggle />
             </div>
 
             <button

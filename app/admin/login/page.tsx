@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
   const isNotAdmin = status === "authenticated" && user && user.role !== "ADMIN";
 
   return (
-    <div className="min-h-[100dvh] flex bg-gradient-to-br from-red-955 via-gray-950 to-purple-955 text-white relative">
+    <div className="min-h-[100dvh] flex bg-gradient-to-br from-red-950 via-gray-950 to-purple-950 text-white relative">
       {/* Absolute background stars/shimmer */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/10 via-purple-900/10 to-transparent pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
@@ -145,7 +145,7 @@ export default function AdminLoginPage() {
                 </Link>
                 <button
                   onClick={handleDemoteSignout}
-                  className="w-full py-3 bg-red-955/40 border border-red-900/40 text-red-400 hover:bg-red-955/70 hover:text-red-300 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
+                  className="w-full py-3 bg-red-950/40 border border-red-900/40 text-red-400 hover:bg-red-950/70 hover:text-red-300 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out of {user?.name || "Account"}

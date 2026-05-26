@@ -90,25 +90,9 @@ export default function MemberProfile() {
     }
   }, [user?.uid, user?.name]);
 
-  useEffect(() => {
-    if (status === "authenticated" && user?.uid) {
-      loadProfile();
-      syncTimer.current = setInterval(() => loadProfile(true), 60000);
-    }
-    return () => {
-      if (syncTimer.current) clearInterval(syncTimer.current);
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [status, user, loadProfile]);
-
-  useEffect(() => {
-    const changed = name !== original.current.name || phone !== original.current.phone || address !== original.current.address;
-    setHasChanges(changed);
-    if (changed && saveState === "saved") setSaveState("idle");
-  }, [name, phone, address, saveState]);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = useCallback(async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!user?.uid) return;
     setSaving(true);
     setSaveState("saving");
     try {
@@ -123,19 +107,52 @@ export default function MemberProfile() {
         setHasChanges(false);
         setSaveState("saved");
         setLastSynced(new Date());
-        showToast("Profile saved successfully!", "success");
+        showToast("Profile auto-saved successfully!", "success");
         setTimeout(() => setSaveState("idle"), 3000);
       } else {
         throw new Error(data.error || "Save failed");
       }
     } catch (err: any) {
       setSaveState("error");
-      showToast(err.message || "Failed to save profile", "error");
+      showToast(err.message || "Failed to auto-save profile", "error");
       setTimeout(() => setSaveState("idle"), 3000);
     } finally {
       setSaving(false);
     }
-  };
+  }, [user?.uid, name, phone, address]);
+
+  useEffect(() => {
+    let activeSyncTimer: NodeJS.Timeout | null = null;
+    if (status === "authenticated" && user?.uid) {
+      loadProfile();
+      activeSyncTimer = setInterval(() => loadProfile(true), 60000);
+      syncTimer.current = activeSyncTimer;
+    }
+    return () => {
+      if (activeSyncTimer) clearInterval(activeSyncTimer);
+    };
+  }, [status, user, loadProfile]);
+
+  useEffect(() => {
+    const changed = name !== original.current.name || phone !== original.current.phone || address !== original.current.address;
+    setHasChanges(changed);
+    if (changed) {
+      if (saveState === "saved") setSaveState("idle");
+      
+      // Debounce auto-save for 1.5s
+      const timer = setTimeout(() => {
+        if (isOnline) {
+          handleSave();
+        }
+      }, 1500);
+      
+      autoSaveTimer.current = timer;
+      
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [name, phone, address, isOnline, saveState, handleSave]);
 
   const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
     ADMIN: { label: "Administrator", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
@@ -349,11 +366,15 @@ export default function MemberProfile() {
 
             {/* Save Footer */}
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-4 text-xs text-gray-400">
                 {isOnline
-                  ? <><Wifi className="w-3.5 h-3.5 text-green-500" /> Connected</>
-                  : <><WifiOff className="w-3.5 h-3.5 text-red-500" /> Offline</>
+                  ? <div className="flex items-center gap-1.5"><Wifi className="w-3.5 h-3.5 text-green-500" /> Connected</div>
+                  : <div className="flex items-center gap-1.5"><WifiOff className="w-3.5 h-3.5 text-red-500" /> Offline</div>
                 }
+                <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                  Auto-save Active
+                </div>
               </div>
               <button
                 type="submit"

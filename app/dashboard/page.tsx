@@ -28,7 +28,7 @@ export default function DashboardPage() {
 
   // Keep identical layout and classnames during server-side render & first mount to prevent hydration mismatch!
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-955 transition-colors duration-500">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 transition-colors duration-500">
       <div className="relative p-10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-2xl rounded-3xl border border-white/40 dark:border-white/10 max-w-md w-full shadow-2xl shadow-indigo-500/5 dark:shadow-none text-center space-y-6 overflow-hidden">
         {/* Animated glow background inside the card */}
         <div className="absolute -top-24 -left-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />

@@ -70,7 +70,7 @@ export default function PastorMembers() {
 
   if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400 text-sm">Authenticating Pastor session...</p>

@@ -72,14 +72,14 @@ export default function PastorEvents() {
 
   if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-955">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200 py-12 px-4">
       <div className="max-w-2xl mx-auto space-y-8">
         
         {/* Back Link */}
