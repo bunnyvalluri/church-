@@ -3,7 +3,6 @@
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Loader2, ShieldAlert } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, status, mounted } = useAuth();
@@ -27,27 +26,42 @@ export default function DashboardPage() {
     }
   }, [mounted, status, user, router]);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-955" />
-    );
-  }
-
+  // Keep identical layout and classnames during server-side render & first mount to prevent hydration mismatch!
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
-      <div className="text-center p-8 bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-3xl border border-white/20 dark:border-white/5 max-w-sm w-full shadow-2xl">
-        <div className="relative w-16 h-16 mx-auto mb-6">
-          <Loader2 className="w-16 h-16 text-purple-600 dark:text-purple-400 animate-spin stroke-[2.5]" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="w-2.5 h-2.5 bg-purple-500 rounded-full animate-ping" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-955 transition-colors duration-500">
+      <div className="relative p-10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-2xl rounded-3xl border border-white/40 dark:border-white/10 max-w-md w-full shadow-2xl shadow-indigo-500/5 dark:shadow-none text-center space-y-6 overflow-hidden">
+        {/* Animated glow background inside the card */}
+        <div className="absolute -top-24 -left-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Central Premium Loading Icon */}
+        <div className="relative w-20 h-20 mx-auto">
+          {/* External rotating border */}
+          <div className="absolute inset-0 rounded-full border-4 border-purple-500/10 border-t-purple-600 dark:border-purple-500/20 dark:border-t-purple-400 animate-spin" />
+          
+          {/* Pulsing inner glow circle */}
+          <div className="absolute inset-2.5 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 opacity-20 animate-ping" />
+          
+          {/* Inner static branding symbol */}
+          <div className="absolute inset-2.5 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-purple-500/20">
+            ✝
           </div>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Identifying Portal
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-          Retrieving your church membership credentials and routing to your secure dashboard...
-        </p>
+
+        {/* Text Details */}
+        <div className="space-y-2 relative z-10">
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            Securing Connection
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+            Verifying your platform role and connecting you to your secure church fellowship portal...
+          </p>
+        </div>
+
+        {/* Subtle footer */}
+        <div className="pt-2 text-[10px] font-bold uppercase tracking-widest text-purple-600/50 dark:text-purple-400/50 relative z-10 animate-pulse">
+          Kingdom of Christ Ministries
+        </div>
       </div>
     </div>
   );
