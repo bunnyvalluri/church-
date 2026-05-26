@@ -19,7 +19,7 @@ interface ProfileSnapshot {
 }
 
 export default function MemberProfile() {
-  const { user, status, mounted } = useAuth();
+  const { user, status, mounted, refreshUser } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -108,6 +108,9 @@ export default function MemberProfile() {
         setSaveState("saved");
         setLastSynced(new Date());
         showToast("Profile auto-saved successfully!", "success");
+        if (refreshUser) {
+          await refreshUser();
+        }
         setTimeout(() => setSaveState("idle"), 3000);
       } else {
         throw new Error(data.error || "Save failed");
@@ -119,7 +122,7 @@ export default function MemberProfile() {
     } finally {
       setSaving(false);
     }
-  }, [user?.uid, name, phone, address]);
+  }, [user?.uid, name, phone, address, refreshUser]);
 
   useEffect(() => {
     let activeSyncTimer: NodeJS.Timeout | null = null;

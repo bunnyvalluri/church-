@@ -18,6 +18,7 @@ interface AuthContextType {
   mounted: boolean;
   status: "loading" | "authenticated" | "unauthenticated";
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   mounted: false,
   status: "loading",
   logout: async () => {},
+  refreshUser: async () => {},
 });
 
 async function syncUserToDatabase(firebaseUser: FirebaseUser): Promise<any | null> {
@@ -59,6 +61,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // mounted=true only after first client render — prevents hydration mismatch
   const [mounted, setMounted] = useState(false);
 
+  const refreshUser = async () => {
+    if (auth.currentUser) {
+      const dbUser = await syncUserToDatabase(auth.currentUser);
+      if (dbUser) {
+        setUser((prev) => prev ? {
+          ...prev,
+          name: dbUser.name || prev.name,
+          image: dbUser.image || prev.image,
+          role: dbUser.role || prev.role,
+        } : null);
+      }
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
 
@@ -70,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const mappedUser: AuthUser = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          name: firebaseUser.displayName || "Member",
+          name: dbUser?.name || firebaseUser.displayName || "Member",
           image: firebaseUser.photoURL || null,
           role: dbUser?.role || "MEMBER",
         };
@@ -98,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const status = loading ? "loading" : user ? "authenticated" : "unauthenticated";
 
   return (
-    <AuthContext.Provider value={{ user, loading, mounted, status, logout }}>
+    <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

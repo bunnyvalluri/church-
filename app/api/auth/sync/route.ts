@@ -14,11 +14,7 @@ export async function POST(req: Request) {
     try {
       const user = await prisma.user.upsert({
         where: { email },
-        update: {
-          name: name || 'Member',
-          image: photoURL || null,
-          phone: phoneNumber || null,
-        },
+        update: {}, // Keep existing user-modified profile details intact
         create: {
           id: uid, // Use Firebase UID as the primary key
           email,
@@ -46,20 +42,25 @@ export async function POST(req: Request) {
           } catch {}
         }
         
-        // Remove existing fallback user with same email to mock upsert
-        users = users.filter((u: any) => u.email !== email);
+        let existingUser = users.find((u: any) => u.email === email);
+        let fallbackUser;
         
-        const fallbackUser = {
-          id: uid,
-          email,
-          name: name || 'Member',
-          image: photoURL || null,
-          phone: phoneNumber || null,
-          role: 'MEMBER',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        users.push(fallbackUser);
+        if (existingUser) {
+          // If the user already exists, preserve their updated profile details
+          fallbackUser = existingUser;
+        } else {
+          fallbackUser = {
+            id: uid,
+            email,
+            name: name || 'Member',
+            image: photoURL || null,
+            phone: phoneNumber || null,
+            role: 'MEMBER',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          users.push(fallbackUser);
+        }
         
         if (!fs.existsSync(fallbackDir)) {
           fs.mkdirSync(fallbackDir, { recursive: true });
