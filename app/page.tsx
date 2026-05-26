@@ -12,7 +12,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen overflow-x-hidden">
       <Navbar />
       <Hero />
       <ScrollReveal><About /></ScrollReveal>

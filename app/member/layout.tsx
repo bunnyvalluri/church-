@@ -82,7 +82,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const { user, status, mounted, logout } = useAuth();
   const { language } = useLanguage();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [scrolled, setScrolled] = useState(false);
