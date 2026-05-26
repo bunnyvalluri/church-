@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   CreditCard, 
   Building, 
@@ -30,7 +31,8 @@ import {
   Server,
   Bell,
   RefreshCw,
-  Receipt
+  Receipt,
+  QrCode
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -41,16 +43,22 @@ export default function GivePage() {
   const { user } = useAuth();
   const pageT = t.pages.give;
 
-  // Form states
-  const [step, setStep] = useState(1); // 1: Amount & Purpose, 2: Donor Info, 3: Secure Checkout
+  // Payment mode selector: "GATEWAY" (Razorpay CC/NetBanking/Wallet) or "UPI" (Google Pay Scanner)
+  const [paymentMode, setPaymentMode] = useState<"GATEWAY" | "UPI">("GATEWAY");
+
+  // Form states (shared between modes)
+  const [step, setStep] = useState(1); // Gateway steps: 1 (Amount/Purpose), 2 (Donor Details)
+  const [upiStep, setUpiStep] = useState(1); // UPI steps: 1 (Scan & Pay), 2 (Submit Details)
+  
   const [amount, setAmount] = useState<string>("1000");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [purpose, setPurpose] = useState<string>("TITHE");
   const [donorName, setDonorName] = useState<string>("");
   const [donorEmail, setDonorEmail] = useState<string>("");
   const [donorPhone, setDonorPhone] = useState<string>("");
+  const [upiTransactionRef, setUpiTransactionRef] = useState<string>("");
 
-  // Payment states
+  // Payment backend execution states
   const [loading, setLoading] = useState(false);
   const [showSimulatedModal, setShowSimulatedModal] = useState(false);
   const [pendingDonationId, setPendingDonationId] = useState("");
@@ -289,6 +297,80 @@ export default function GivePage() {
     }
   };
 
+  // Submit manual UPI details for backend record auditing
+  const handleRegisterUPI = async () => {
+    setLoading(true);
+    setErrorMessage("");
+
+    if (!validateStep1() || !validateStep2()) {
+      setLoading(false);
+      return;
+    }
+
+    if (!upiTransactionRef.trim()) {
+      setErrorMessage("Please enter the 12-digit UTR/Reference ID from your UPI app receipt.");
+      setLoading(false);
+      return;
+    }
+
+    if (upiTransactionRef.trim().length < 8) {
+      setErrorMessage("Please enter a valid Transaction Reference ID.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const finalAmt = getFinalAmount();
+      
+      // Step 1: Create a pending order
+      const res = await fetch("/api/donations/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: Number(finalAmt),
+          purpose,
+          donorName,
+          donorEmail,
+          donorPhone,
+          userId: user?.uid || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "UPI registration initialization failed.");
+      }
+
+      // Step 2: Verify the payment using the entered UTR number directly (bypasses signature check in mock/manual fallback)
+      const verifyRes = await fetch("/api/donations/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          razorpayOrderId: data.orderId,
+          razorpayPaymentId: upiTransactionRef.trim(), // Stores UPI UTR as Payment ID
+          razorpaySignature: "", // falsy signature signals simulated/manual check
+          donationId: data.donationId,
+          amount: Number(finalAmt),
+          purpose,
+          donorName,
+          donorEmail,
+          donorPhone,
+          userId: user?.uid || null,
+        }),
+      });
+
+      const verifyData = await verifyRes.json();
+      if (verifyRes.ok && verifyData.success) {
+        window.location.href = `/give/receipt/${data.donationId}`;
+      } else {
+        throw new Error(verifyData.error || "Simulated UPI Verification failed.");
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to record UPI details. Please check connection and try again.");
+      setLoading(false);
+    }
+  };
+
   const handleSimulatePaymentSuccess = async () => {
     setLoading(true);
     setShowSimulatedModal(false);
@@ -410,17 +492,17 @@ export default function GivePage() {
           <div className="grid lg:grid-cols-12 gap-8 items-start">
             
             {/* Left Hand: The Giving Form */}
-            <div className="lg:col-span-8 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800/70 shadow-xl rounded-3xl p-6 md:p-8 space-y-8">
+            <div className="lg:col-span-8 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800/70 shadow-xl rounded-3xl p-6 md:p-8 space-y-6">
               
               {/* Top Form Header with Secure Indicator */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800/60">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800/60">
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-indigo-500" />
                     Online Offerings & Tithes
                   </h2>
                   <p className="text-slate-400 dark:text-slate-500 text-xs mt-0.5">
-                    Select your amount and details to worship securely.
+                    Select your payment method and details to support church ministries.
                   </p>
                 </div>
                 
@@ -432,50 +514,44 @@ export default function GivePage() {
                   
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold">
                     <Lock className="w-3.5 h-3.5" />
-                    <span>256-bit SSL</span>
+                    <span>Secure Gateway</span>
                   </div>
                 </div>
               </div>
 
-              {/* Step Navigation Indicators */}
-              <div className="flex items-center justify-between max-w-md mx-auto relative px-4">
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2 z-0" />
-                <div 
-                  className="absolute top-1/2 left-0 h-0.5 bg-indigo-500 -translate-y-1/2 z-0 transition-all duration-300"
-                  style={{ width: step === 1 ? "0%" : step === 2 ? "50%" : "100%" }}
-                />
-
-                {[
-                  { s: 1, label: "Amount & Purpose" },
-                  { s: 2, label: "Donor Details" },
-                  { s: 3, label: "Secure Payment" }
-                ].map((item) => {
-                  const isCompleted = step > item.s;
-                  const isActive = step === item.s;
-                  return (
-                    <div key={item.s} className="relative z-10 flex flex-col items-center gap-1.5">
-                      <button
-                        onClick={() => {
-                          if (item.s === 1) setStep(1);
-                          if (item.s === 2 && validateStep1()) setStep(2);
-                        }}
-                        disabled={item.s === 3}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center border font-bold text-xs transition-all ${
-                          isCompleted
-                            ? "bg-indigo-600 text-white border-transparent"
-                            : isActive
-                            ? "bg-white dark:bg-slate-900 border-indigo-500 text-indigo-600 dark:text-indigo-400 ring-4 ring-indigo-500/10"
-                            : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
-                        }`}
-                      >
-                        {isCompleted ? <Check className="w-4 h-4 stroke-[3]" /> : item.s}
-                      </button>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider hidden sm:block ${
-                        isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"
-                      }`}>{item.label}</span>
-                    </div>
-                  );
-                })}
+              {/* Payment Mode Navigation Tabs */}
+              <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-850">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentMode("GATEWAY");
+                    setStep(1);
+                  }}
+                  className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                    paymentMode === "GATEWAY"
+                      ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-md border border-slate-100 dark:border-slate-800"
+                      : "text-slate-450 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Card / NetBanking / UPI</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentMode("UPI");
+                    setUpiStep(1);
+                  }}
+                  className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                    paymentMode === "UPI"
+                      ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-md border border-slate-100 dark:border-slate-800"
+                      : "text-slate-455 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Instant UPI QR Code</span>
+                </button>
               </div>
 
               {errorMessage && (
@@ -485,230 +561,557 @@ export default function GivePage() {
                 </div>
               )}
 
-              {/* Form Content Steps */}
+              {/* DYNAMIC FORMS ACCORDING TO paymentMode */}
               <AnimatePresence mode="wait">
-                {step === 1 && (
+                {paymentMode === "GATEWAY" ? (
+                  // GATEWAY CARD CHECKOUT WIZARD
                   <motion.div
-                    key="step-1"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
+                    key="gateway-wizard"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
                     className="space-y-6"
                   >
-                    {/* Amount Selection presets */}
-                    <div className="space-y-3">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Select Offering Amount (₹)
-                      </label>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-                        {["500", "1000", "2000", "5000", "10000"].map((preset) => (
-                          <button
-                            key={preset}
-                            type="button"
-                            onClick={() => {
-                              setAmount(preset);
-                              setCustomAmount("");
-                            }}
-                            className={`py-3 px-3 rounded-xl border text-center font-extrabold text-sm transition-all duration-200 ${
-                              amount === preset && !customAmount
-                                ? "bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-600/15"
-                                : "bg-slate-50/50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-                            }`}
-                          >
-                            ₹{Number(preset).toLocaleString("en-IN")}
-                          </button>
-                        ))}
+                    {/* Step Navigation Indicators */}
+                    <div className="flex items-center justify-between max-w-xs mx-auto relative px-4 py-2">
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800/80 -translate-y-1/2 z-0" />
+                      <div 
+                        className="absolute top-1/2 left-0 h-0.5 bg-indigo-500 -translate-y-1/2 z-0 transition-all duration-300"
+                        style={{ width: step === 1 ? "0%" : "100%" }}
+                      />
 
-                        {/* Custom amount wrapper */}
-                        <div className="relative col-span-3 sm:col-span-1 border rounded-xl flex items-center bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden border-slate-200/60 dark:border-slate-800 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
-                          <span className="pl-3 text-slate-400 font-extrabold text-sm">₹</span>
-                          <input
-                            type="number"
-                            placeholder="Custom"
-                            value={customAmount}
-                            onChange={(e) => {
-                              setCustomAmount(e.target.value);
-                              setAmount("");
-                            }}
-                            className="w-full bg-transparent py-3 pl-1 pr-3 font-extrabold text-sm outline-none text-slate-900 dark:text-white"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Purpose Selection Cards Grid */}
-                    <div className="space-y-3">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Purpose of Giving
-                      </label>
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        {[
-                          { id: "TITHE", name: "Tithe (పదియవ భాగం)", desc: "10% of monthly income" },
-                          { id: "OFFERING", name: "Online Offering (ఆరాధన కానుక)", desc: "General offerings to the Lord" },
-                          { id: "BUILDING", name: "Building Fund (భవన నిధి)", desc: "Church expansion projects" },
-                          { id: "MISSIONS", name: "Missions (మిషన్స్ నిధి)", desc: "Local and global outreach" },
-                          { id: "CHARITY", name: "Benevolence (ధర్మకార్యాలు)", desc: "Supporting the poor & widows" },
-                          { id: "OTHER", name: "Other Specific Offering", desc: "Special vow or pledge gifts" }
-                        ].map((item) => {
-                          const isSelected = purpose === item.id;
-                          return (
-                            <div
-                              key={item.id}
-                              onClick={() => setPurpose(item.id)}
-                              className={`p-4 rounded-2xl border cursor-pointer select-none transition-all flex items-start gap-3.5 ${
-                                isSelected
-                                  ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 ring-4 ring-indigo-500/5"
-                                  : "border-slate-200/60 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/20 dark:bg-slate-900/40"
+                      {[
+                        { s: 1, label: "Amount & Purpose" },
+                        { s: 2, label: "Donor Details" }
+                      ].map((item) => {
+                        const isCompleted = step > item.s;
+                        const isActive = step === item.s;
+                        return (
+                          <div key={item.s} className="relative z-10 flex flex-col items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (item.s === 1) setStep(1);
+                              }}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border font-bold text-[11px] transition-all ${
+                                isCompleted
+                                  ? "bg-indigo-600 text-white border-transparent"
+                                  : isActive
+                                  ? "bg-white dark:bg-slate-900 border-indigo-500 text-indigo-600 dark:text-indigo-400 ring-4 ring-indigo-500/10"
+                                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
                               }`}
                             >
-                              <div className={`p-2.5 rounded-xl flex-shrink-0 ${
-                                isSelected ? "bg-indigo-500/10 text-indigo-500" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
-                              }`}>
-                                {getPurposeIcon(item.id)}
-                              </div>
-                              <div className="space-y-0.5">
-                                <span className="block font-bold text-slate-900 dark:text-white text-[13px] leading-tight">
-                                  {item.name}
-                                </span>
-                                <span className="block text-slate-400 dark:text-slate-500 text-[11px]">
-                                  {item.desc}
-                                </span>
-                              </div>
-                              
-                              {isSelected && (
-                                <div className="ml-auto w-4.5 h-4.5 bg-indigo-500 rounded-full flex items-center justify-center text-white flex-shrink-0">
-                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                              {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : item.s}
+                            </button>
+                            <span className={`text-[9px] font-bold uppercase tracking-wider hidden sm:block ${
+                              isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"
+                            }`}>{item.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleNextStep}
-                      className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] text-xs uppercase tracking-wider"
-                    >
-                      Continue to Details
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </motion.div>
-                )}
+                    <AnimatePresence mode="wait">
+                      {step === 1 ? (
+                        <motion.div
+                          key="gateway-step-1"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          className="space-y-6"
+                        >
+                          {/* Amount presets & input */}
+                          <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-450">
+                              Select Offering Amount (₹)
+                            </label>
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+                              {["500", "1000", "2005", "5000", "10000"].map((preset) => (
+                                <button
+                                  key={preset}
+                                  type="button"
+                                  onClick={() => {
+                                    setAmount(preset);
+                                    setCustomAmount("");
+                                  }}
+                                  className={`py-3 px-2.5 rounded-xl border text-center font-extrabold text-xs transition-all duration-200 ${
+                                    amount === preset && !customAmount
+                                      ? "bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-600/15"
+                                      : "bg-slate-50/50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                  }`}
+                                >
+                                  ₹{Number(preset).toLocaleString("en-IN")}
+                                </button>
+                              ))}
 
-                {step === 2 && (
+                              <div className="relative col-span-3 sm:col-span-1 border rounded-xl flex items-center bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden border-slate-200/60 dark:border-slate-800 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
+                                <span className="pl-3 text-slate-400 font-extrabold text-xs">₹</span>
+                                <input
+                                  type="number"
+                                  placeholder="Custom"
+                                  value={customAmount}
+                                  onChange={(e) => {
+                                    setCustomAmount(e.target.value);
+                                    setAmount("");
+                                  }}
+                                  className="w-full bg-transparent py-3 pl-1 pr-3 font-extrabold text-xs outline-none text-slate-900 dark:text-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Purpose selector */}
+                          <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-450">
+                              Purpose of Giving
+                            </label>
+                            <div className="grid sm:grid-cols-2 gap-3">
+                              {[
+                                { id: "TITHE", name: "Tithe (పదియవ భాగం)", desc: "10% of monthly income" },
+                                { id: "OFFERING", name: "Online Offering (ఆరాధన కానుక)", desc: "General offerings to the Lord" },
+                                { id: "BUILDING", name: "Building Fund (భవన నిధి)", desc: "Church expansion projects" },
+                                { id: "MISSIONS", name: "Missions (మిషన్స్ నిధి)", desc: "Local and global outreach" },
+                                { id: "CHARITY", name: "Benevolence (ధర్మకార్యాలు)", desc: "Supporting the poor & widows" },
+                                { id: "OTHER", name: "Other Specific Offering", desc: "Special vow or pledge gifts" }
+                              ].map((item) => {
+                                const isSelected = purpose === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    onClick={() => setPurpose(item.id)}
+                                    className={`p-4 rounded-2xl border cursor-pointer select-none transition-all flex items-start gap-3.5 ${
+                                      isSelected
+                                        ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 ring-4 ring-indigo-500/5"
+                                        : "border-slate-200/60 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/20 dark:bg-slate-905/40"
+                                    }`}
+                                  >
+                                    <div className={`p-2.5 rounded-xl flex-shrink-0 ${
+                                      isSelected ? "bg-indigo-500/10 text-indigo-500" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                                    }`}>
+                                      {getPurposeIcon(item.id)}
+                                    </div>
+                                    <div className="space-y-0.5">
+                                      <span className="block font-bold text-slate-900 dark:text-white text-[13px] leading-tight">
+                                        {item.name}
+                                      </span>
+                                      <span className="block text-slate-400 dark:text-slate-500 text-[11px]">
+                                        {item.desc}
+                                      </span>
+                                    </div>
+                                    
+                                    {isSelected && (
+                                      <div className="ml-auto w-4.5 h-4.5 bg-indigo-500 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handleNextStep}
+                            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] text-xs uppercase tracking-wider"
+                          >
+                            Continue to Details
+                            <ArrowRight className="h-4 w-4" />
+                          </button>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="gateway-step-2"
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          className="space-y-5"
+                        >
+                          <div className="space-y-4">
+                            <div className="space-y-1.5">
+                              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                Full Name *
+                              </label>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  placeholder="Enter your full name"
+                                  value={donorName}
+                                  onChange={(e) => setDonorName(e.target.value)}
+                                  className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                />
+                                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                              </div>
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                  Email Address *
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="email"
+                                    placeholder="example@email.com"
+                                    value={donorEmail}
+                                    onChange={(e) => setDonorEmail(e.target.value)}
+                                    className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                  />
+                                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                </div>
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                  Phone Number (Optional)
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="tel"
+                                    placeholder="10-digit mobile number"
+                                    value={donorPhone}
+                                    onChange={(e) => setDonorPhone(e.target.value)}
+                                    className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                  />
+                                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3 pt-2">
+                            <button
+                              type="button"
+                              onClick={() => setStep(1)}
+                              className="flex-1 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-all border border-slate-200 dark:border-slate-707 text-xs uppercase tracking-wider"
+                            >
+                              Back
+                            </button>
+                            <button
+                              type="button"
+                              disabled={loading}
+                              onClick={handleNextStep}
+                              className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] disabled:opacity-50 text-xs uppercase tracking-wider"
+                            >
+                              {loading ? (
+                                <>
+                                  <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                                  Initializing...
+                                </>
+                              ) : (
+                                <>
+                                  Pay Securely (₹{Number(getFinalAmount()).toLocaleString("en-IN")})
+                                  <ArrowRight className="h-4 w-4" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ) : (
+                  // INSTANT UPI QR CODE SCANNER WIZARD
                   <motion.div
-                    key="step-2"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
+                    key="upi-wizard"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
                     className="space-y-6"
                   >
-                    <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                        Donor Contact Information
-                      </h3>
-                      <p className="text-slate-400 dark:text-slate-500 text-xs mt-0.5">
-                        Receipts will be sent directly to this address.
-                      </p>
+                    {/* UPI Step Indicators */}
+                    <div className="flex items-center justify-between max-w-xs mx-auto relative px-4 py-2">
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-100 dark:bg-slate-800/80 -translate-y-1/2 z-0" />
+                      <div 
+                        className="absolute top-1/2 left-0 h-0.5 bg-indigo-500 -translate-y-1/2 z-0 transition-all duration-300"
+                        style={{ width: upiStep === 1 ? "0%" : "100%" }}
+                      />
+
+                      {[
+                        { s: 1, label: "Scan & Pay QR" },
+                        { s: 2, label: "Submit Ref Details" }
+                      ].map((item) => {
+                        const isCompleted = upiStep > item.s;
+                        const isActive = upiStep === item.s;
+                        return (
+                          <div key={item.s} className="relative z-10 flex flex-col items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (item.s === 1) setUpiStep(1);
+                              }}
+                              className={`w-8 h-8 rounded-full flex items-center justify-center border font-bold text-[11px] transition-all ${
+                                isCompleted
+                                  ? "bg-indigo-600 text-white border-transparent"
+                                  : isActive
+                                  ? "bg-white dark:bg-slate-900 border-indigo-500 text-indigo-600 dark:text-indigo-400 ring-4 ring-indigo-500/10"
+                                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
+                              }`}
+                            >
+                              {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : item.s}
+                            </button>
+                            <span className={`text-[9px] font-bold uppercase tracking-wider hidden sm:block ${
+                              isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"
+                            }`}>{item.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
 
-                    {/* Quick Login Invite if guest */}
-                    {!user && (
-                      <div className="p-4 bg-indigo-50/30 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/20 rounded-2xl flex items-center justify-between gap-4">
-                        <div className="space-y-0.5">
-                          <span className="block font-bold text-slate-900 dark:text-white text-xs">Logged-in Members Track Giving</span>
-                          <span className="block text-slate-500 dark:text-slate-400 text-[10px]">Log in to automatically save and track your donation histories.</span>
-                        </div>
-                        <Link 
-                          href="/login?redirect=/give" 
-                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold whitespace-nowrap transition-all"
+                    <AnimatePresence mode="wait">
+                      {upiStep === 1 ? (
+                        <motion.div
+                          key="upi-step-1"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          className="flex flex-col items-center space-y-6 text-center"
                         >
-                          Sign In
-                        </Link>
-                      </div>
-                    )}
+                          {/* QR Card Container */}
+                          <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-3xl border border-slate-100 dark:border-slate-850 shadow-inner flex flex-col items-center max-w-sm w-full mx-auto">
+                            <div className="relative w-56 h-80 bg-white rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-slate-100">
+                              <Image
+                                src="/upi_qr.png"
+                                alt="UPI Google Pay Scanner"
+                                fill unoptimized
+                                className="object-contain p-2"
+                              />
+                            </div>
 
-                    <div className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                          Full Name *
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="Enter your full name"
-                            value={donorName}
-                            onChange={(e) => setDonorName(e.target.value)}
-                            className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
-                          />
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                        </div>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            Email Address *
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="email"
-                              placeholder="example@email.com"
-                              value={donorEmail}
-                              onChange={(e) => setDonorEmail(e.target.value)}
-                              className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
-                            />
-                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            {/* Clickable UPI ID Copy wrapper */}
+                            <div className="mt-5 w-full bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold">
+                              <div className="text-left font-mono">
+                                <span className="block text-[9px] uppercase font-bold text-slate-400 tracking-wider">UPI Address</span>
+                                <span className="text-slate-750 dark:text-slate-200 font-bold select-all">kcm.kristhraj2004-1@okicici</span>
+                              </div>
+                              <button 
+                                type="button"
+                                onClick={() => copyToClipboard("kcm.kristhraj2004-1@okicici", "UPI ID")}
+                                className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-500 hover:text-indigo-500 transition-all border border-slate-200 dark:border-slate-700"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            Phone Number (Optional)
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="tel"
-                              placeholder="10-digit mobile number"
-                              value={donorPhone}
-                              onChange={(e) => setDonorPhone(e.target.value)}
-                              className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
-                            />
-                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                          <div className="space-y-2 max-w-md">
+                            <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Scan to pay with any UPI App</p>
+                            <p className="text-[11px] text-slate-500 leading-relaxed max-w-xs mx-auto">
+                              Open Google Pay, PhonePe, Paytm, BHIM, or your bank app to scan the code. After confirming the transfer, click the button below to register transaction details.
+                            </p>
                           </div>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="flex gap-3 pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setStep(1)}
-                        className="flex-1 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-all border border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="button"
-                        disabled={loading}
-                        onClick={handleNextStep}
-                        className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] disabled:opacity-50 text-xs uppercase tracking-wider"
-                      >
-                        {loading ? (
-                          <>
-                            <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                            Initializing...
-                          </>
-                        ) : (
-                          <>
-                            Pay Securely (₹{Number(getFinalAmount()).toLocaleString("en-IN")})
-                            <ArrowRight className="h-4 w-4" />
-                          </>
-                        )}
-                      </button>
-                    </div>
+                          {copiedLabel === "UPI ID" && (
+                            <div className="w-full max-w-sm py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-450 text-[10px] font-bold rounded-xl">
+                              UPI ID copied to clipboard!
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => setUpiStep(2)}
+                            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] text-xs uppercase tracking-wider"
+                          >
+                            I have scanned & paid
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="upi-step-2"
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          className="space-y-5"
+                        >
+                          {/* Amount presets & custom amount inputs */}
+                          <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-450">
+                              Donated Amount (₹)
+                            </label>
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+                              {["500", "1000", "2000", "5000", "10000"].map((preset) => (
+                                <button
+                                  key={preset}
+                                  type="button"
+                                  onClick={() => {
+                                    setAmount(preset);
+                                    setCustomAmount("");
+                                  }}
+                                  className={`py-3 px-2.5 rounded-xl border text-center font-extrabold text-xs transition-all duration-200 ${
+                                    amount === preset && !customAmount
+                                      ? "bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-600/15"
+                                      : "bg-slate-50/50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                  }`}
+                                >
+                                  ₹{Number(preset).toLocaleString("en-IN")}
+                                </button>
+                              ))}
+
+                              <div className="relative col-span-3 sm:col-span-1 border rounded-xl flex items-center bg-slate-50/50 dark:bg-slate-800/40 overflow-hidden border-slate-200/60 dark:border-slate-800 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
+                                <span className="pl-3 text-slate-400 font-extrabold text-xs">₹</span>
+                                <input
+                                  type="number"
+                                  placeholder="Custom"
+                                  value={customAmount}
+                                  onChange={(e) => {
+                                    setCustomAmount(e.target.value);
+                                    setAmount("");
+                                  }}
+                                  className="w-full bg-transparent py-3 pl-1 pr-3 font-extrabold text-xs outline-none text-slate-900 dark:text-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Purpose Grid Selection */}
+                          <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-450">
+                              Purpose of Giving
+                            </label>
+                            <div className="grid sm:grid-cols-2 gap-3">
+                              {[
+                                { id: "TITHE", name: "Tithe (పదియవ భాగం)", desc: "10% of monthly income" },
+                                { id: "OFFERING", name: "Online Offering (ఆరాధన కానుక)", desc: "General offerings to the Lord" },
+                                { id: "BUILDING", name: "Building Fund (భవన నిధి)", desc: "Church expansion projects" },
+                                { id: "MISSIONS", name: "Missions (మిషన్స్ నిధి)", desc: "Local and global outreach" },
+                                { id: "CHARITY", name: "Benevolence (ధర్మకార్యాలు)", desc: "Supporting the poor & widows" }
+                              ].map((item) => {
+                                const isSelected = purpose === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    onClick={() => setPurpose(item.id)}
+                                    className={`p-3.5 rounded-xl border cursor-pointer select-none transition-all flex items-start gap-3 ${
+                                      isSelected
+                                        ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 ring-4 ring-indigo-500/5"
+                                        : "border-slate-200/60 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/20 dark:bg-slate-905/40"
+                                    }`}
+                                  >
+                                    <div className={`p-2 rounded-lg flex-shrink-0 ${
+                                      isSelected ? "bg-indigo-500/10 text-indigo-500" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                                    }`}>
+                                      {getPurposeIcon(item.id)}
+                                    </div>
+                                    <div className="space-y-0.5">
+                                      <span className="block font-bold text-slate-900 dark:text-white text-[12px] leading-tight">
+                                        {item.name}
+                                      </span>
+                                      <span className="block text-slate-400 dark:text-slate-505 text-[10px]">
+                                        {item.desc}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Identity Forms */}
+                          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-850">
+                            <div className="space-y-1.5">
+                              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                Donor Name *
+                              </label>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  placeholder="Enter your full name"
+                                  value={donorName}
+                                  onChange={(e) => setDonorName(e.target.value)}
+                                  className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                />
+                                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                              </div>
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                  Email Address *
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="email"
+                                    placeholder="example@email.com"
+                                    value={donorEmail}
+                                    onChange={(e) => setDonorEmail(e.target.value)}
+                                    className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                  />
+                                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                </div>
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                  Phone Number (Optional)
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="tel"
+                                    placeholder="10-digit mobile number"
+                                    value={donorPhone}
+                                    onChange={(e) => setDonorPhone(e.target.value)}
+                                    className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-semibold"
+                                  />
+                                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* UTR/Transaction Reference */}
+                            <div className="space-y-1.5">
+                              <label className="block text-xs font-bold text-slate-600 dark:text-slate-350">
+                                UPI UTR / Transaction Reference ID (12 Digits) *
+                              </label>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  maxLength={16}
+                                  placeholder="e.g. 234890123456"
+                                  value={upiTransactionRef}
+                                  onChange={(e) => setUpiTransactionRef(e.target.value)}
+                                  className="w-full py-3 px-4 pl-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all font-mono font-bold text-indigo-600 dark:text-indigo-400 tracking-wider"
+                                />
+                                <Receipt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                              </div>
+                              <p className="text-[10px] text-slate-450 dark:text-slate-500">
+                                Locate the 12-digit UPI reference ID in your payment details screen to help us index your receipt voucher.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3 pt-2">
+                            <button
+                              type="button"
+                              onClick={() => setUpiStep(1)}
+                              className="flex-1 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-all border border-slate-200 dark:border-slate-707 text-xs uppercase tracking-wider"
+                            >
+                              Back to QR
+                            </button>
+                            
+                            <button
+                              type="button"
+                              disabled={loading}
+                              onClick={handleRegisterUPI}
+                              className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all shadow-indigo-600/10 active:scale-[0.99] disabled:opacity-50 text-xs uppercase tracking-wider"
+                            >
+                              {loading ? (
+                                <>
+                                  <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                                  Registering...
+                                </>
+                              ) : (
+                                <>
+                                  Submit UPI Record & Get Receipt
+                                  <ArrowRight className="h-4 w-4" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -734,12 +1137,14 @@ export default function GivePage() {
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                    <span className="text-slate-400">Gateway Provider</span>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">Razorpay India</span>
+                    <span className="text-slate-400">Payment Mode</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                      {paymentMode === "UPI" ? "Direct UPI Transfer" : "Razorpay Gateway"}
+                    </span>
                   </div>
                   <div className="flex justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                    <span className="text-slate-400">Tax Deductible</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-md">80G Approved</span>
+                    <span className="text-slate-400">Tax Exemption</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-md">Section 80G</span>
                   </div>
 
                   {/* Cutoff design element */}
@@ -764,7 +1169,7 @@ export default function GivePage() {
                         <Activity className="w-3.5 h-3.5 text-indigo-500" />
                         Live Giving History
                       </h4>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500">Auto-polls every 30s</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-505">Auto-polls every 30s</p>
                     </div>
 
                     <button 
@@ -893,97 +1298,98 @@ export default function GivePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Bank Transfer */}
-            <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 shadow-lg rounded-3xl p-6 md:p-8 flex flex-col justify-between space-y-6">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Direct QR Code Scanner shortcut */}
+            <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 shadow-lg rounded-3xl p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-500 rounded-2xl flex items-center justify-center">
+                  <QrCode className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Instant UPI Scanning</h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
+                    Instantly scan and pay using Google Pay, PhonePe, Paytm or Bhim. Select the scanner tab at the top.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMode("UPI");
+                  setUpiStep(1);
+                  window.scrollTo({ top: 180, behavior: "smooth" });
+                }}
+                className="w-full py-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all text-center"
+              >
+                Open QR Scanner Tab
+              </button>
+            </div>
+
+            {/* Bank Transfer */}
+            <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 shadow-lg rounded-3xl p-6 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-505 rounded-2xl flex items-center justify-center">
                   <Building className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Bank Transfer / NEFT / IMPS</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
-                    Make a direct transaction from your bank account to the church's official bank ledger.
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Bank Transfer (NEFT/IMPS)</h3>
+                  <p className="text-slate-505 dark:text-slate-400 text-xs leading-relaxed">
+                    Make direct wire transactions from your personal bank client account to the ministries Axis account.
                   </p>
                 </div>
               </div>
 
               {/* Bank Metadata detail list */}
-              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-4.5 space-y-3.5 text-xs">
+              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-4 space-y-3 text-[11px]">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 font-medium">Account Name</span>
+                  <span className="text-slate-400">Account Name</span>
                   <span className="font-bold text-slate-900 dark:text-white">Kingdom of Christ Ministries</span>
                 </div>
                 
-                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800/80 pt-3">
-                  <span className="text-slate-400 font-medium">Account Number</span>
-                  <div className="flex items-center gap-2 font-mono">
+                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800/80 pt-2.5">
+                  <span className="text-slate-400">Account Number</span>
+                  <div className="flex items-center gap-1.5 font-mono">
                     <span className="font-bold text-indigo-600 dark:text-indigo-400">12041203940129</span>
                     <button 
                       onClick={() => copyToClipboard("12041203940129", "Account Number")}
-                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-all text-slate-400"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800/80 pt-3">
-                  <span className="text-slate-400 font-medium">IFSC Code</span>
-                  <div className="flex items-center gap-2 font-mono">
+                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800/80 pt-2.5">
+                  <span className="text-slate-400">IFSC Code</span>
+                  <div className="flex items-center gap-1.5 font-mono">
                     <span className="font-bold text-indigo-600 dark:text-indigo-400">UTIB0001092</span>
                     <button 
                       onClick={() => copyToClipboard("UTIB0001092", "IFSC Code")}
-                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                      className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-all text-slate-400"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
-
-                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800/80 pt-3">
-                  <span className="text-slate-400 font-medium">Bank Name</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">Axis Bank, Jeedimetla</span>
-                </div>
               </div>
-              
-              {copiedLabel && (
-                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-xl text-center">
-                  Successfully copied {copiedLabel} to clipboard!
-                </div>
-              )}
             </div>
 
             {/* In-Person Envelope */}
-            <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 shadow-lg rounded-3xl p-6 md:p-8 flex flex-col justify-between space-y-6">
+            <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 shadow-lg rounded-3xl p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/30 text-rose-500 rounded-2xl flex items-center justify-center">
                   <Smartphone className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">In-Person Envelope Giving</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">In-Person Envelopes</h3>
                   <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
-                    Place your physical tithe and cash offerings in envelopes during any regular Sunday services.
+                    Submit check contributions or cash envelopes during services at Shapur, Subhash Nagar, or Bahadurpally.
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-3.5">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-slate-400">Service Locations</h4>
-                <div className="grid grid-cols-3 gap-2 text-center text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                  {["Shapur", "Subhash Nagar", "Bahadurpally"].map((loc) => (
-                    <div 
-                      key={loc} 
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 p-3.5 rounded-xl"
-                    >
-                      {loc}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed bg-slate-50/50 dark:bg-slate-950/25 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                Contact the parish ledger desk at the main hall if you require a physical signed society receipt booklet for your ledger files.
+              <p className="text-[10px] text-slate-400 dark:text-slate-550 leading-relaxed bg-slate-50/50 dark:bg-slate-950/25 p-3 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                Contact the parish ledger desk at the main hall if you require a physical signed society receipt booklet for tax files.
               </p>
             </div>
           </div>
@@ -1013,7 +1419,7 @@ export default function GivePage() {
                 No live payment credentials detected. This transaction is operating on local mock logs.
               </p>
 
-              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-2xl p-4.5 mb-6 text-left space-y-2 text-xs">
+              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl p-4.5 mb-6 text-left space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Donor Name</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{donorName}</span>
