@@ -193,7 +193,7 @@ export default function Navbar() {
 
                 {/* Admin Login — links to protected admin portal */}
                 <Link
-                  href="/admin"
+                  href="/admin/login"
                   className="relative ml-2 px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-red-500/20 flex items-center gap-1.5"
                 >
                   {/* Base gradient */}
@@ -272,7 +272,7 @@ export default function Navbar() {
                   Member Login
                 </Link>
                 <Link
-                  href="/admin"
+                  href="/admin/login"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full px-4 py-3.5 bg-gradient-to-r from-red-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold text-center shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-shadow flex items-center justify-center gap-1.5"
                 >
