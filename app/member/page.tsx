@@ -212,6 +212,21 @@ const SCRIPTURES = {
   ]
 };
 
+const MOCK_ANNOUNCEMENTS = {
+  en: [
+    { id: "1", title: "Sunday Worship Reschedule", content: "Our main worship service will start at 9:00 AM instead of 10:00 AM this Sunday only.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
+    { id: "2", title: "Youth Spiritual Fellowship", content: "Weekly youth meetups every Friday night at Bahadurpally. Join us for fellowship & study.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
+  ],
+  te: [
+    { id: "1", title: "ఆరాధన సమయం మార్పు", content: "ఈ ఆదివారం మాత్రమే మన ఆరాధన కూడిక ఉదయం 10:00 గంటలకు బదులుగా 9:00 గంటలకు ప్రారంభమవుతుంది.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
+    { id: "2", title: "యూత్ ఆత్మీయ కూడిక", content: "ప్రతి శుక్రవారం రాత్రి బహదూర్‌పల్లి చర్చిలో యవనస్థుల కూడిక ఉంటుంది. మీరందరూ ఆహ్వానితులే.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
+  ],
+  hi: [
+    { id: "1", title: "रविवार आराधना समय में बदलाव", content: "हमारी मुख्य आराधना सेवा इस रविवार को सुबह 10:00 बजे के बजाय केवल 9:00 बजे शुरू होगी।", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
+    { id: "2", title: "युवा आध्यात्मिक संगति", content: "बहादुरपल्ली में हर शुक्रवार रात साप्ताहिक युवा संगति होगी। संगति और अध्ययन के लिए हमारे साथ जुड़ें।", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
+  ]
+};
+
 interface DashboardStats {
   prayers: number;
   prayersAnswered: number;
@@ -303,10 +318,7 @@ export default function MemberDashboard() {
         }
         prevAnnouncementCount.current = announcements.length;
       } else {
-        announcements = [
-          { id: "1", title: "Sunday Worship Reschedule", content: "Our main worship service will start at 9:00 AM instead of 10:00 AM this Sunday only.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
-          { id: "2", title: "Youth Spiritual Fellowship", content: "Weekly youth meetups every Friday night at Bahadurpally. Join us for fellowship & study.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
-        ];
+        announcements = MOCK_ANNOUNCEMENTS[language as keyof typeof MOCK_ANNOUNCEMENTS] || MOCK_ANNOUNCEMENTS.en;
       }
 
       setStats({ prayers: prayersCount, prayersAnswered, events: eventsCount, sermons: sermonsCount, announcements });
@@ -317,7 +329,7 @@ export default function MemberDashboard() {
       setLoadingFeeds(false);
       setIsRefreshing(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, language]);
 
   useEffect(() => {
     if (status === "authenticated" && user?.uid) {
@@ -745,12 +757,12 @@ export default function MemberDashboard() {
             {/* Quick Actions Card */}
             <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl shadow-purple-500/20">
               <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-xl" />
-              <h4 className="font-black mb-4 text-sm relative">⚡ Quick Actions</h4>
+              <h4 className="font-black mb-4 text-sm relative">⚡ {mt.quickActions}</h4>
               <div className="space-y-2.5 relative">
                 {[
-                  { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
-                  { label: "Register for Event", href: "/member/events", icon: Calendar },
-                  { label: "Give Online", href: "/give", icon: Gift },
+                  { label: mt.actionSubmitPrayer, href: "/member/prayers", icon: Heart },
+                  { label: mt.actionRegisterEvent, href: "/member/events", icon: Calendar },
+                  { label: mt.actionGiveOnline, href: "/give", icon: Gift },
                 ].map(({ label, href, icon: Icon }) => (
                   <Link
                     key={href}
@@ -770,15 +782,15 @@ export default function MemberDashboard() {
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-green-500" />
-                  Your Activity
+                  {mt.yourActivity}
                 </span>
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               </div>
               <div className="space-y-2">
                 {[
-                  { label: "Events Registered", value: stats.events, color: "bg-purple-500" },
-                  { label: "Prayers Submitted", value: stats.prayers, color: "bg-rose-500" },
-                  { label: "Prayers Answered", value: stats.prayersAnswered, color: "bg-green-500" },
+                  { label: mt.actEvents, value: stats.events, color: "bg-purple-500" },
+                  { label: mt.actPrayers, value: stats.prayers, color: "bg-rose-500" },
+                  { label: mt.actAnswered, value: stats.prayersAnswered, color: "bg-green-500" },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex items-center gap-2.5">
                     <div className={`w-2 h-2 ${color} rounded-full`} />
