@@ -27,6 +27,7 @@ import {
   Star,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 import { motion, AnimatePresence } from "framer-motion";
 
 const memberTranslations = {
@@ -285,6 +286,12 @@ export default function MemberDashboard() {
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               Live
             </div>
+
+            {/* Language Switcher */}
+            <div className="scale-90 sm:scale-100 origin-right">
+              <LanguageToggle />
+            </div>
+
             <button
               onClick={() => loadFeeds(false)}
               disabled={isRefreshing}
