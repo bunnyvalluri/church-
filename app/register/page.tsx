@@ -208,6 +208,13 @@ export default function RegisterPage() {
               {loginT.churchName}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">{loginT.ministries}</p>
+            
+            {/* Glassmorphic Mobile Scripture Quote */}
+            <div className="mt-4 px-4 py-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/10 border border-purple-100/20 dark:border-purple-900/10 backdrop-blur-sm max-w-sm mx-auto shadow-sm">
+              <p className="text-xs italic text-gray-600 dark:text-gray-300 font-light leading-relaxed">
+                "{registerT.quote}"
+              </p>
+            </div>
           </div>
 
           {/* Header */}
