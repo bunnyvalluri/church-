@@ -130,10 +130,10 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                 <span className="font-black text-xl leading-tight text-gray-900 dark:text-white tracking-tight drop-shadow-sm group-hover:text-purple-700 dark:group-hover:text-purple-100 transition-colors duration-300">
-                  Kingdom of Christ
+                  {t.nav.churchName}
                 </span>
                 <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                  Ministries
+                  {t.nav.ministries}
                 </span>
               </div>
             </Link>

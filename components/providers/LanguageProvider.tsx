@@ -19,12 +19,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // Load saved preference
   useEffect(() => {
     const saved = localStorage.getItem("language") as Language;
-    if (saved) setLanguage(saved);
+    if (saved) {
+      setLanguage(saved);
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = saved;
+      }
+    } else {
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = "en";
+      }
+    }
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem("language", lang);
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+    }
   };
 
   const t = translations[language];

@@ -16,16 +16,11 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first = smallest file size
     minimumCacheTTL: 31536000,             // Cache images for 1 year
-    domains: [
-      'localhost',
-      'res.cloudinary.com',
-      'firebasestorage.googleapis.com',
-      'images.unsplash.com',
-    ],
     remotePatterns: [
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
   },
 

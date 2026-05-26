@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 // ── Global type extension for singleton pattern ───────────────────────────────
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
+  prismaDisconnectRegistered: boolean | undefined;
 };
 
 // ── Optimized Prisma Client ───────────────────────────────────────────────────
@@ -23,6 +24,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 // ── Graceful shutdown on process exit ────────────────────────────────────────
 // Ensures Prisma closes DB connections cleanly (avoids connection pool leaks)
-process.on('beforeExit', async () => {
-  await prisma.$disconnect();
-});
+if (!globalForPrisma.prismaDisconnectRegistered) {
+  process.on('beforeExit', async () => {
+    try {
+      await prisma.$disconnect();
+    } catch (e) {
+      // Ignore disconnect errors during exit
+    }
+  });
+  globalForPrisma.prismaDisconnectRegistered = true;
+}

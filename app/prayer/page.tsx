@@ -146,8 +146,8 @@ export default function PrayerPage() {
               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-6 text-center">
                 <Mail className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-3" />
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">{pageT.emailTitle}</h3>
-                <a href="mailto:prayer@kingdomofchrist.org" className="text-purple-600 dark:text-purple-400 hover:underline">
-                  prayer@kingdomofchrist.org
+                <a href="mailto:kingofchristministries23@gmail.com" className="text-purple-600 dark:text-purple-400 hover:underline">
+                  kingofchristministries23@gmail.com
                 </a>
               </div>
 

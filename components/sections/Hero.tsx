@@ -4,9 +4,15 @@ import { ArrowRight, Calendar, Users, Heart, Sparkles, Cross } from "lucide-reac
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useState, useEffect } from "react";
 
 export default function Hero() {
   const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,7 +67,9 @@ export default function Hero() {
           <motion.div variants={itemVariants} className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-full text-foreground shadow-2xl shadow-amber-500/10 hover:border-amber-500/30 transition-colors duration-300">
               <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
-              <span className="font-medium tracking-wide text-sm md:text-base">{t.hero.prayerBoxSub}</span>
+              <span className="font-medium tracking-wide text-sm md:text-base">
+                {mounted ? t.hero.prayerBoxSub : "We are here for you 24/7"}
+              </span>
               <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
             </div>
           </motion.div>
@@ -71,9 +79,12 @@ export default function Hero() {
             variants={itemVariants}
             className="text-6xl md:text-8xl lg:text-[6rem] font-black text-foreground mb-6 tracking-tighter leading-[1.1] drop-shadow-sm font-outfit"
           >
-            {t.hero.welcome}{" "}
+            {mounted ? t.hero.welcome : "Welcome to"}{" "}
             <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-indigo-600 bg-clip-text text-transparent pb-2 bg-[length:200%_auto] animate-shimmer">
-              Kingdom of Christ
+              {mounted ? t.hero.churchName : "Kingdom of Christ"}
+            </span>
+            <span className="block text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 bg-clip-text text-transparent mt-1">
+              {mounted ? t.hero.ministries : "Ministries"}
             </span>
           </motion.h1>
 
@@ -82,7 +93,7 @@ export default function Hero() {
             variants={itemVariants}
             className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
           >
-            {t.hero.subtitle}
+            {mounted ? t.hero.subtitle : "A place of Love, Faith, and Miracles"}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -93,7 +104,7 @@ export default function Hero() {
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">
-                {t.nav.events}
+                {mounted ? t.nav.events : "Events"}
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
@@ -101,7 +112,7 @@ export default function Hero() {
               href="#contact"
               className="px-8 py-4 bg-white/5 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 text-foreground rounded-full font-bold hover:bg-gray-50 dark:hover:bg-white/10 transition-all hover:scale-105"
             >
-              {t.hero.ctaPrimary}
+              {mounted ? t.hero.ctaPrimary : "Plan A Visit"}
             </Link>
           </motion.div>
 

@@ -9,6 +9,7 @@ export interface AuthUser {
   email: string | null;
   name: string | null;
   image: string | null;
+  role: "MEMBER" | "PASTOR" | "ADMIN";
 }
 
 interface AuthContextType {
@@ -27,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
 });
 
-async function syncUserToDatabase(firebaseUser: FirebaseUser) {
+async function syncUserToDatabase(firebaseUser: FirebaseUser): Promise<any | null> {
   try {
     const response = await fetch("/api/auth/sync", {
       method: "POST",
@@ -41,12 +42,15 @@ async function syncUserToDatabase(firebaseUser: FirebaseUser) {
       }),
     });
     const result = await response.json();
-    if (!response.ok) {
+    if (response.ok && result.success) {
+      return result.user;
+    } else {
       console.warn("[AUTH] Server sync failed:", result.error);
     }
   } catch (error) {
     console.error("[AUTH] Server sync network error:", error);
   }
+  return null;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -60,16 +64,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        setLoading(true);
+        const dbUser = await syncUserToDatabase(firebaseUser);
+        
         const mappedUser: AuthUser = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           name: firebaseUser.displayName || "Member",
           image: firebaseUser.photoURL || null,
+          role: dbUser?.role || "MEMBER",
         };
+        
         setUser(mappedUser);
         setLoading(false);
-        // Sync in background — non-blocking
-        syncUserToDatabase(firebaseUser);
       } else {
         setUser(null);
         setLoading(false);

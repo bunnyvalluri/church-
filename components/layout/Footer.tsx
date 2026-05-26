@@ -59,10 +59,10 @@ export default function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-tight text-white">
-                  Kingdom of Christ
+                  {t.nav.churchName}
                 </span>
                 <span className="text-xs text-gray-400">
-                  Ministries
+                  {t.nav.ministries}
                 </span>
               </div>
             </Link>
@@ -202,8 +202,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Mail className="h-4 w-4 text-purple-400" />
-                <a href="mailto:info@kingdomofchrist.org" className="hover:text-purple-400 transition-colors">
-                  info@kingdomofchrist.org
+                <a href="mailto:kingofchristministries23@gmail.com" className="hover:text-purple-400 transition-colors">
+                  kingofchristministries23@gmail.com
                 </a>
               </div>
             </div>
@@ -216,7 +216,13 @@ export default function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-400 text-center md:text-left">
-              © {new Date().getFullYear()} Kingdom of Christ Ministries. All rights reserved. <br className="md:hidden" />
+              © {new Date().getFullYear()}{" "}
+              {language === "te"
+                ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్. అన్ని హక్కులు ప్రత్యేకించబడినవి."
+                : language === "hi"
+                ? "किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज। सर्वाधिकार सुरक्षित।"
+                : "Kingdom of Christ Ministries. All rights reserved."}{" "}
+              <br className="md:hidden" />
               <a 
                 href="https://valluri-rahul-portfolio.vercel.app/" 
                 target="_blank" 

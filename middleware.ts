@@ -57,12 +57,12 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com https://checkout.razorpay.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai https://*.firebaseapp.com",
-      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com https://*.firebaseapp.com",
+      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai https://*.firebaseapp.com https://api.razorpay.com",
+      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com https://*.firebaseapp.com https://api.razorpay.com https://checkout.razorpay.com",
     ].join('; ')
   );
   return response;
