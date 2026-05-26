@@ -8,6 +8,7 @@ import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
+import PaletteToggle from "@/components/PaletteToggle";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -17,31 +18,6 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-
-  const colorThemes = [
-    { id: "purple", name: "Purple Theme", previewBg: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)" },
-    { id: "blue", name: "Ocean Blue Theme", previewBg: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)" },
-    { id: "emerald", name: "Emerald Theme", previewBg: "linear-gradient(135deg, #10b981 0%, #0d9488 100%)" },
-    { id: "gold", name: "Gold Theme", previewBg: "linear-gradient(135deg, #fbbf24 0%, #ea580c 100%)" },
-    { id: "red", name: "Crimson Theme", previewBg: "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)" },
-  ];
-
-  const [activeColorTheme, setActiveColorTheme] = useState("purple");
-
-  // Synchronize dynamic color theme state on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("color-theme");
-    if (saved) {
-      setActiveColorTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
-  }, []);
-
-  const handleSetColorTheme = (themeId: string) => {
-    setActiveColorTheme(themeId);
-    localStorage.setItem("color-theme", themeId);
-    document.documentElement.setAttribute("data-theme", themeId);
-  };
 
   const navItems = [
     { name: t.nav.home, href: "#home" },
@@ -157,7 +133,7 @@ export default function Navbar() {
                 <span className="font-black text-xl leading-tight text-gray-900 dark:text-white tracking-tight drop-shadow-sm group-hover:text-purple-700 dark:group-hover:text-purple-100 transition-colors duration-300">
                   {t.nav.churchName}
                 </span>
-                <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
                   {t.nav.ministries}
                 </span>
               </div>
@@ -182,7 +158,7 @@ export default function Navbar() {
                     >
                       {/* Active pill background */}
                       {isActive && (
-                        <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-600/80 dark:to-indigo-600/80 rounded-xl shadow-inner shadow-white/20 dark:shadow-white/10" />
+                        <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] rounded-xl shadow-inner shadow-white/20 dark:shadow-white/10 animate-scale-in" />
                       )}
                       {/* Hover fill */}
                       {!isActive && (
@@ -200,36 +176,16 @@ export default function Navbar() {
 
               {/* Right controls */}
               <div className="flex items-center space-x-2 pl-3">
-                {/* Desktop Theme Palette Switcher */}
-                <div className="flex items-center gap-1.5 bg-gray-100/50 dark:bg-white/5 backdrop-blur-md px-2 py-1.5 rounded-xl border border-gray-200/50 dark:border-white/10 shadow-sm mr-1">
-                  {colorThemes.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => handleSetColorTheme(t.id)}
-                      className={cn(
-                        "w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300 relative border",
-                        activeColorTheme === t.id
-                          ? "scale-110 shadow-sm border-white dark:border-gray-900 ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-950"
-                          : "border-black/5 dark:border-white/10 hover:scale-110"
-                      )}
-                      style={{ background: t.previewBg }}
-                      title={t.name}
-                    >
-                      {activeColorTheme === t.id && (
-                        <span className="w-1 h-1 rounded-full bg-white" />
-                      )}
-                    </button>
-                  ))}
-                </div>
                 <LanguageToggle />
                 <ThemeToggle />
+                <PaletteToggle />
                 {/* Member Login — always links to login page */}
                 <Link
                   href="/login"
                   className="relative ml-2 px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-purple-500/20"
                 >
                   {/* Base gradient */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 transition-all duration-300 group-hover:opacity-90" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-90" />
                   {/* Animated shimmer sweep */}
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   {/* Outer glow */}
@@ -262,7 +218,7 @@ export default function Navbar() {
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all",
                         isActive
-                          ? "bg-gradient-to-r from-purple-100 to-indigo-50 dark:from-purple-600/30 dark:to-indigo-600/20 text-purple-700 dark:text-purple-300 border-l-4 border-purple-500"
+                          ? "bg-gradient-to-r from-[hsl(var(--primary)/0.15)] to-[hsl(var(--primary-gradient-end)/0.05)] text-[hsl(var(--primary))] border-l-4 border-[hsl(var(--primary))]"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5"
                       )}
                     >
@@ -274,38 +230,12 @@ export default function Navbar() {
               </div>
 
               <div className="mt-5 pt-5 border-t border-gray-200 dark:border-white/10 flex flex-col gap-4">
-                <div className="flex flex-col gap-4 px-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Settings</span>
-                    <div className="flex gap-3">
-                      <LanguageToggle />
-                      <ThemeToggle />
-                    </div>
-                  </div>
-                  
-                  {/* Theme Palette Switcher */}
-                  <div className="pt-3 border-t border-gray-100 dark:border-white/5">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2.5">🎨 Theme Colors</span>
-                    <div className="flex items-center gap-3">
-                      {colorThemes.map((t) => (
-                        <button
-                          key={t.id}
-                          onClick={() => handleSetColorTheme(t.id)}
-                          className={cn(
-                            "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 relative border active:scale-90",
-                            activeColorTheme === t.id
-                              ? "scale-110 shadow-lg shadow-purple-500/20 border-white dark:border-gray-900 ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-950"
-                              : "border-black/5 dark:border-white/10 hover:scale-105"
-                          )}
-                          style={{ background: t.previewBg }}
-                          title={t.name}
-                        >
-                          {activeColorTheme === t.id && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
+                <div className="flex items-center justify-between px-2">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Settings</span>
+                  <div className="flex gap-2">
+                    <LanguageToggle />
+                    <ThemeToggle />
+                    <PaletteToggle />
                   </div>
                 </div>
 
@@ -325,7 +255,7 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full px-4 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 text-white rounded-xl font-bold text-center shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-shadow"
+                  className="w-full px-4 py-3.5 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold text-center shadow-lg shadow-primary/20 hover:shadow-primary/45 transition-shadow"
                 >
                   Member Login
                 </Link>

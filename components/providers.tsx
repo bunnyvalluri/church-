@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
+import { ColorThemeProvider } from "@/components/providers/ColorThemeProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -14,9 +15,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
         storageKey="kcm-theme"
       >
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+        <ColorThemeProvider>
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
+        </ColorThemeProvider>
       </ThemeProvider>
     </AuthProvider>
   );
