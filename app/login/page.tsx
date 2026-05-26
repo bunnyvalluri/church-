@@ -193,7 +193,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-[image:none] lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
