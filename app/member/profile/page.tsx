@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Phone, MapPin, Check, Loader2, Save,
   RefreshCw, Shield, Star, Camera, Wifi, WifiOff,
@@ -18,9 +19,117 @@ interface ProfileSnapshot {
   joinedAt: string;
 }
 
+const profileTranslations = {
+  en: {
+    title: "My Profile",
+    subtitle: "Manage your account information and settings",
+    refresh: "Refresh",
+    syncedAt: "Synced",
+    avatarRole: {
+      ADMIN: "Administrator",
+      PASTOR: "Pastor",
+      MEMBER: "Member"
+    },
+    accountInfo: "Account Info",
+    email: "Email",
+    phone: "Phone",
+    memberSince: "Member Since",
+    editProfile: "Edit Profile",
+    unsavedChanges: "Unsaved changes",
+    fullName: "Full Name *",
+    fullNamePlaceholder: "Your full name",
+    emailAddress: "Email Address",
+    locked: "LOCKED",
+    mobileNumber: "Mobile Number",
+    homeAddress: "Home Address",
+    homeAddressPlaceholder: "House number, street, city...",
+    connected: "Connected",
+    offline: "Offline",
+    autoSave: "Auto-save Active",
+    saveChanges: "Save Changes",
+    saving: "Saving...",
+    saved: "Saved!",
+    tryAgain: "Try Again",
+    toastSuccess: "Profile auto-saved successfully!",
+    toastError: "Failed to load profile data",
+    toastSaveError: "Failed to auto-save profile"
+  },
+  te: {
+    title: "నా ప్రొఫైల్",
+    subtitle: "మీ ఖాతా సమాచారం మరియు సెట్టింగులను నిర్వహించండి",
+    refresh: "రిఫ్రెష్",
+    syncedAt: "సమకాలీకరించబడింది",
+    avatarRole: {
+      ADMIN: "నిర్వాహకుడు",
+      PASTOR: "పాస్టర్",
+      MEMBER: "సభ్యుడు"
+    },
+    accountInfo: "ఖాతా సమాచారం",
+    email: "ఈమెయిల్",
+    phone: "ఫోన్",
+    memberSince: "సభ్యత్వం ప్రారంభమైన తేదీ",
+    editProfile: "ప్రొఫైల్ సవరించండి",
+    unsavedChanges: "సేవ్ చేయని మార్పులు",
+    fullName: "పూర్తి పేరు *",
+    fullNamePlaceholder: "మీ పూర్తి పేరు",
+    emailAddress: "ఈమెయిల్ చిరునామా",
+    locked: "లాక్ చేయబడింది",
+    mobileNumber: "మొబైల్ సంఖ్య",
+    homeAddress: "ఇంటి చిరునామా",
+    homeAddressPlaceholder: "ఇంటి నంబర్, వీధి, నగరం...",
+    connected: "కనెక్ట్ చేయబడింది",
+    offline: "ఆఫ్‌లైన్",
+    autoSave: "ఆటో-సేవ్ సక్రియంగా ఉంది",
+    saveChanges: "మార్పులను సేవ్ చేయి",
+    saving: "సేవ్ అవుతోంది...",
+    saved: "సేవ్ చేయబడింది!",
+    tryAgain: "మళ్ళీ ప్రయత్నించండి",
+    toastSuccess: "ప్రొఫైల్ విజయవంతంగా సేవ్ చేయబడింది!",
+    toastError: "ప్రొఫైల్ డేటాను లోడ్ చేయడం విఫలమైంది",
+    toastSaveError: "ప్రొఫైల్ ఆటో-సేవ్ చేయడం విఫలమైంది"
+  },
+  hi: {
+    title: "मेरी प्रोफाइल",
+    subtitle: "अपने खाते की जानकारी और सेटिंग्स प्रबंधित करें",
+    refresh: "रिफ्रेश",
+    syncedAt: "सिंक किया गया",
+    avatarRole: {
+      ADMIN: "प्रशासक",
+      PASTOR: "पादरी",
+      MEMBER: "सदस्य"
+    },
+    accountInfo: "खाता जानकारी",
+    email: "ईमेल",
+    phone: "फ़ोन",
+    memberSince: "सदस्यता की शुरुआत",
+    editProfile: "प्रोफ़ाइल संपादित करें",
+    unsavedChanges: "असुरक्षित परिवर्तन",
+    fullName: "पूरा नाम *",
+    fullNamePlaceholder: "आपका पूरा नाम",
+    emailAddress: "ईमेल पता",
+    locked: "लॉक किया गया",
+    mobileNumber: "मोबाइल नंबर",
+    homeAddress: "घर का पता",
+    homeAddressPlaceholder: "मकान नंबर, गली, शहर...",
+    connected: "कनेक्टेड",
+    offline: "ऑफ़लाइन",
+    autoSave: "ऑटो-सेव सक्रिय है",
+    saveChanges: "परिवर्तन सहेजें",
+    saving: "सहेज रहा है...",
+    saved: "सहेजा गया!",
+    tryAgain: "पुनः प्रयास करें",
+    toastSuccess: "प्रोफ़ाइल सफलतापूर्वक सहेजी गई!",
+    toastError: "प्रोफ़ाइल डेटा लोड करने में विफल",
+    toastSaveError: "प्रोफ़ाइल ऑटो-सेव करने में विफल"
+  }
+};
+
 export default function MemberProfile() {
   const { user, status, mounted, refreshUser } = useAuth();
+  const { language } = useLanguage();
   const router = useRouter();
+
+  const pt = profileTranslations[language as keyof typeof profileTranslations] || profileTranslations.en;
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -84,11 +193,11 @@ export default function MemberProfile() {
       }
       setLastSynced(new Date());
     } catch {
-      if (!silent) showToast("Failed to load profile data", "error");
+      if (!silent) showToast(pt.toastError, "error");
     } finally {
       setSyncing(false);
     }
-  }, [user?.uid, user?.name]);
+  }, [user?.uid, user?.name, pt.toastError]);
 
   const handleSave = useCallback(async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -107,7 +216,7 @@ export default function MemberProfile() {
         setHasChanges(false);
         setSaveState("saved");
         setLastSynced(new Date());
-        showToast("Profile auto-saved successfully!", "success");
+        showToast(pt.toastSuccess, "success");
         if (refreshUser) {
           await refreshUser();
         }
@@ -117,12 +226,12 @@ export default function MemberProfile() {
       }
     } catch (err: any) {
       setSaveState("error");
-      showToast(err.message || "Failed to auto-save profile", "error");
+      showToast(err.message || pt.toastSaveError, "error");
       setTimeout(() => setSaveState("idle"), 3000);
     } finally {
       setSaving(false);
     }
-  }, [user?.uid, name, phone, address, refreshUser]);
+  }, [user?.uid, name, phone, address, refreshUser, pt.toastSuccess, pt.toastSaveError]);
 
   useEffect(() => {
     let activeSyncTimer: NodeJS.Timeout | null = null;
@@ -158,9 +267,9 @@ export default function MemberProfile() {
   }, [name, phone, address, isOnline, saveState, handleSave]);
 
   const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
-    ADMIN: { label: "Administrator", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
-    PASTOR: { label: "Pastor", color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/30" },
-    MEMBER: { label: "Member", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/30" },
+    ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
+    PASTOR: { label: pt.avatarRole.PASTOR, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/30" },
+    MEMBER: { label: pt.avatarRole.MEMBER, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/30" },
   };
   const rc = roleConfig[role] || roleConfig.MEMBER;
 
@@ -190,13 +299,13 @@ export default function MemberProfile() {
       {/* Page Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">My Profile</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your account information and settings</p>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{pt.title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
           {lastSynced && (
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Synced {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+              {pt.syncedAt} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
           <button
@@ -205,7 +314,7 @@ export default function MemberProfile() {
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-purple-600 hover:border-purple-200 dark:hover:border-purple-800 transition-all text-xs font-semibold"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
-            Refresh
+            {pt.refresh}
           </button>
         </div>
       </div>
@@ -246,14 +355,14 @@ export default function MemberProfile() {
             transition={{ delay: 0.05 }}
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 space-y-4"
           >
-            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Account Info</h3>
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{pt.accountInfo}</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 bg-purple-50 dark:bg-purple-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-3.5 h-3.5 text-purple-500" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Email</p>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.email}</p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "—"}</p>
                 </div>
               </div>
@@ -262,8 +371,8 @@ export default function MemberProfile() {
                   <Phone className="w-3.5 h-3.5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Phone</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{phone || "Not set"}</p>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.phone}</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{phone || "—"}</p>
                 </div>
               </div>
               {joinedAt && (
@@ -272,9 +381,9 @@ export default function MemberProfile() {
                     <Star className="w-3.5 h-3.5 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Member Since</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.memberSince}</p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {new Date(joinedAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+                      {new Date(joinedAt).toLocaleDateString(language === "en" ? "en-US" : "en-IN", { month: "long", year: "numeric" })}
                     </p>
                   </div>
                 </div>
@@ -294,12 +403,12 @@ export default function MemberProfile() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-purple-500" />
-                <h3 className="font-bold text-gray-900 dark:text-white">Edit Profile</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white">{pt.editProfile}</h3>
               </div>
               {hasChanges && (
                 <span className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-semibold">
                   <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-                  Unsaved changes
+                  {pt.unsavedChanges}
                 </span>
               )}
             </div>
@@ -307,14 +416,14 @@ export default function MemberProfile() {
             <div className="p-6 space-y-5">
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Full Name *</label>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.fullName}</label>
                 <div className="relative">
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    placeholder="Your full name"
+                    placeholder={pt.fullNamePlaceholder}
                     className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-sm"
                   />
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
@@ -323,7 +432,7 @@ export default function MemberProfile() {
 
               {/* Email (Read-only) */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.emailAddress}</label>
                 <div className="relative">
                   <input
                     type="email"
@@ -332,13 +441,13 @@ export default function MemberProfile() {
                     className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm"
                   />
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">LOCKED</span>
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">{pt.locked}</span>
                 </div>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Mobile Number</label>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.mobileNumber}</label>
                 <div className="relative">
                   <input
                     type="tel"
@@ -353,12 +462,12 @@ export default function MemberProfile() {
 
               {/* Address */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Home Address</label>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.homeAddress}</label>
                 <div className="relative">
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="House number, street, city..."
+                    placeholder={pt.homeAddressPlaceholder}
                     rows={3}
                     className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all resize-none text-sm"
                   />
@@ -371,12 +480,12 @@ export default function MemberProfile() {
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
               <div className="flex items-center gap-4 text-xs text-gray-400">
                 {isOnline
-                  ? <div className="flex items-center gap-1.5"><Wifi className="w-3.5 h-3.5 text-green-500" /> Connected</div>
-                  : <div className="flex items-center gap-1.5"><WifiOff className="w-3.5 h-3.5 text-red-500" /> Offline</div>
+                  ? <div className="flex items-center gap-1.5"><Wifi className="w-3.5 h-3.5 text-green-500" /> {pt.connected}</div>
+                  : <div className="flex items-center gap-1.5"><WifiOff className="w-3.5 h-3.5 text-red-500" /> {pt.offline}</div>
                 }
                 <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider text-[10px]">
                   <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                  Auto-save Active
+                  {pt.autoSave}
                 </div>
               </div>
               <button
@@ -393,13 +502,13 @@ export default function MemberProfile() {
                 }`}
               >
                 {saveState === "saving" ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
+                  <><Loader2 className="w-4 h-4 animate-spin" /> {pt.saving}</>
                 ) : saveState === "saved" ? (
-                  <><CheckCircle2 className="w-4 h-4" /> Saved!</>
+                  <><CheckCircle2 className="w-4 h-4" /> {pt.saved}</>
                 ) : saveState === "error" ? (
-                  <><AlertCircle className="w-4 h-4" /> Try Again</>
+                  <><AlertCircle className="w-4 h-4" /> {pt.tryAgain}</>
                 ) : (
-                  <><Save className="w-4 h-4" /> Save Changes</>
+                  <><Save className="w-4 h-4" /> {pt.saveChanges}</>
                 )}
               </button>
             </div>
