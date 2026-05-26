@@ -570,13 +570,17 @@ export default function MemberDashboard() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               {[
-                { label: mt.registeredEvents, value: stats.events, icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", trend: mt.badges.rsvps },
-                { label: mt.prayerRequests, value: stats.prayers, icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/20", trend: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${mt.badges.requests}` : mt.badges.requests },
-                { label: mt.statsSermons, value: stats.sermons, icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/20", trend: mt.badges.sermons },
-                { label: mt.statsAnnouncements, value: stats.announcements.length, icon: Bell, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", trend: stats.announcements.some(a => a.priority === "HIGH" || a.priority === "URGENT") ? `⚠️ ${mt.urgent}` : mt.badges.update },
-              ].map(({ label, value, icon: Icon, color, bg, trend }, idx) => (
-                <div key={idx} className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-4 md:p-5 lg:p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group">
-                  <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3`}>
+                { label: mt.registeredEvents, value: stats.events, icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", trend: mt.badges.rsvps, href: "/member/events" },
+                { label: mt.prayerRequests, value: stats.prayers, icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/20", trend: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${mt.badges.requests}` : mt.badges.requests, href: "/member/prayers" },
+                { label: mt.statsSermons, value: stats.sermons, icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/20", trend: mt.badges.sermons, href: "/member/sermons" },
+                { label: mt.statsAnnouncements, value: stats.announcements.length, icon: Bell, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", trend: stats.announcements.some(a => a.priority === "HIGH" || a.priority === "URGENT") ? `⚠️ ${mt.urgent}` : mt.badges.update, href: "#announcements-section" },
+              ].map(({ label, value, icon: Icon, color, bg, trend, href }, idx) => (
+                <Link
+                  key={idx}
+                  href={href}
+                  className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-4 md:p-5 lg:p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-950/40 hover:scale-[1.03] transition-all duration-300 relative overflow-hidden group block cursor-pointer"
+                >
+                  <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className={`w-5 h-5 ${color}`} />
                   </div>
                   <span className="text-gray-400 dark:text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider block leading-tight">{label}</span>
@@ -595,7 +599,7 @@ export default function MemberDashboard() {
                   {trend && <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold mt-0.5 block">{trend}</span>}
                   {/* Pulse dot for live */}
                   <div className="absolute top-3 right-3 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                </div>
+                </Link>
               ))}
             </motion.div>
  
@@ -690,10 +694,11 @@ export default function MemberDashboard() {
 
           {/* RIGHT: Announcements Sidebar */}
           <motion.div
+            id="announcements-section"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-4 space-y-4"
+            className="lg:col-span-4 space-y-4 scroll-mt-20"
           >
             {/* Announcements Card */}
             <div className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl p-6 space-y-5">
