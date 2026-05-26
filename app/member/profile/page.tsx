@@ -3,17 +3,19 @@
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
-import Link from "next/link";
-import { User, Phone, MapPin, ArrowLeft, Check, Loader2, Save, RefreshCw, Wifi, Shield, Star, Camera, Bell } from "lucide-react";
+import {
+  User, Phone, MapPin, Check, Loader2, Save,
+  RefreshCw, Shield, Star, Camera, Wifi, WifiOff,
+  Mail, Bell, Edit3, CheckCircle2, AlertCircle
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface ProfileData {
+interface ProfileSnapshot {
   name: string;
   phone: string;
   address: string;
-  role?: string;
-  joinedAt?: string;
-  lastSeen?: string;
+  role: string;
+  joinedAt: string;
 }
 
 export default function MemberProfile() {
@@ -26,68 +28,63 @@ export default function MemberProfile() {
   const [role, setRole] = useState("MEMBER");
   const [joinedAt, setJoinedAt] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
-  const [isOnline, setIsOnline] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
-  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
-  const originalData = useRef<ProfileData>({ name: "", phone: "", address: "" });
-  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
+  const original = useRef<ProfileSnapshot>({ name: "", phone: "", address: "", role: "MEMBER", joinedAt: "" });
+  const syncTimer = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const showToast = (msg: string, type: "success" | "error" | "info" = "info") => {
+  const showToast = (msg: string, type: "success" | "error") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") {
-      router.replace("/login");
-    }
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
-  // Online/offline detection
   useEffect(() => {
-    const handleOnline = () => { setIsOnline(true); showToast("Connection restored", "success"); };
-    const handleOffline = () => { setIsOnline(false); showToast("You are offline", "error"); };
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
+    const on = () => setIsOnline(true);
+    const off = () => setIsOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
   }, []);
 
-  const loadProfileData = useCallback(async (silent = false) => {
+  const loadProfile = useCallback(async (silent = false) => {
     if (!user?.uid) return;
     if (!silent) setSyncing(true);
     try {
       const res = await fetch(`/api/admin/users`);
       const data = await res.json();
       if (res.ok && data.success) {
-        const currentProfile = data.users.find((u: any) => u.id === user?.uid);
-        if (currentProfile) {
-          const newName = currentProfile.name || user?.name || "";
-          const newPhone = currentProfile.phone || "";
-          const newAddress = currentProfile.address || "";
-          const newRole = currentProfile.role || "MEMBER";
-          const newJoinedAt = currentProfile.createdAt || "";
-          setName(newName);
-          setPhone(newPhone);
-          setAddress(newAddress);
-          setRole(newRole);
-          setJoinedAt(newJoinedAt);
-          originalData.current = { name: newName, phone: newPhone, address: newAddress };
+        const p = data.users.find((u: any) => u.id === user?.uid);
+        if (p) {
+          const snap: ProfileSnapshot = {
+            name: p.name || user?.name || "",
+            phone: p.phone || "",
+            address: p.address || "",
+            role: p.role || "MEMBER",
+            joinedAt: p.createdAt || "",
+          };
+          setName(snap.name);
+          setPhone(snap.phone);
+          setAddress(snap.address);
+          setRole(snap.role);
+          setJoinedAt(snap.joinedAt);
+          original.current = snap;
           setHasChanges(false);
         }
       }
       setLastSynced(new Date());
-    } catch (e) {
-      if (!silent) showToast("Sync failed. Check connection.", "error");
+    } catch {
+      if (!silent) showToast("Failed to load profile data", "error");
     } finally {
       setSyncing(false);
     }
@@ -95,323 +92,293 @@ export default function MemberProfile() {
 
   useEffect(() => {
     if (status === "authenticated" && user?.uid) {
-      loadProfileData();
-      // Live sync every 60s
-      syncIntervalRef.current = setInterval(() => loadProfileData(true), 60000);
+      loadProfile();
+      syncTimer.current = setInterval(() => loadProfile(true), 60000);
     }
     return () => {
-      if (syncIntervalRef.current) clearInterval(syncIntervalRef.current);
-      if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+      if (syncTimer.current) clearInterval(syncTimer.current);
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-  }, [user, status, loadProfileData]);
+  }, [status, user, loadProfile]);
 
-  // Track changes
   useEffect(() => {
-    const changed =
-      name !== originalData.current.name ||
-      phone !== originalData.current.phone ||
-      address !== originalData.current.address;
+    const changed = name !== original.current.name || phone !== original.current.phone || address !== original.current.address;
     setHasChanges(changed);
-  }, [name, phone, address]);
+    if (changed && saveState === "saved") setSaveState("idle");
+  }, [name, phone, address, saveState]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setSuccessMsg("");
-    setErrorMsg("");
-
+    setSaving(true);
+    setSaveState("saving");
     try {
       const res = await fetch("/api/member/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user?.uid, name, phone, address }),
       });
-
       const data = await res.json();
       if (res.ok && data.success) {
-        originalData.current = { name, phone, address };
+        original.current = { ...original.current, name, phone, address };
         setHasChanges(false);
+        setSaveState("saved");
         setLastSynced(new Date());
         showToast("Profile saved successfully!", "success");
-        setSuccessMsg("Profile updated successfully!");
+        setTimeout(() => setSaveState("idle"), 3000);
       } else {
-        throw new Error(data.error || "Failed to update profile");
+        throw new Error(data.error || "Save failed");
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Something went wrong. Please try again.");
-      showToast(err.message || "Save failed", "error");
+      setSaveState("error");
+      showToast(err.message || "Failed to save profile", "error");
+      setTimeout(() => setSaveState("idle"), 3000);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const roleColors: Record<string, string> = {
-    ADMIN: "bg-red-100 dark:bg-red-950/30 text-red-700 dark:text-red-400",
-    PASTOR: "bg-purple-100 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400",
-    MEMBER: "bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400",
+  const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
+    ADMIN: { label: "Administrator", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
+    PASTOR: { label: "Pastor", color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/30" },
+    MEMBER: { label: "Member", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/30" },
   };
+  const rc = roleConfig[role] || roleConfig.MEMBER;
 
-  if (!mounted || status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-950 dark:to-gray-900">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl animate-pulse">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Loading your profile...</p>
-        </div>
-      </div>
-    );
-  }
+  if (!mounted || status === "loading") return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-indigo-50 dark:from-gray-950 dark:via-purple-950/10 dark:to-gray-900 text-gray-800 dark:text-gray-200">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: -60, scale: 0.95 }}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -60, scale: 0.95 }}
-            className={`fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-semibold flex items-center gap-2.5 max-w-sm backdrop-blur-xl border ${
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-xs backdrop-blur-xl ${
               toast.type === "success"
-                ? "bg-green-500/90 text-white border-green-400/30"
-                : toast.type === "error"
-                ? "bg-red-500/90 text-white border-red-400/30"
-                : "bg-gray-900/90 text-white border-gray-700/30"
+                ? "bg-green-500 text-white border-green-400/30"
+                : "bg-red-500 text-white border-red-400/30"
             }`}
           >
-            {toast.type === "success" ? <Check className="w-4 h-4" /> : toast.type === "error" ? <Bell className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+            {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
             {toast.msg}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="/member"
-            className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold hover:gap-3 transition-all text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Link>
-
-          <div className="flex items-center gap-2">
-            {/* Live indicator */}
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${
-              isOnline
-                ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400"
-            }`}>
-              <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-              {isOnline ? "Live" : "Offline"}
-            </div>
-
-            <button
-              onClick={() => loadProfileData(false)}
-              disabled={syncing}
-              className="p-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all"
-              title="Refresh profile"
-            >
-              <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-            </button>
-          </div>
+      {/* Page Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">My Profile</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your account information and settings</p>
         </div>
+        <div className="flex items-center gap-2">
+          {lastSynced && (
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              Synced {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
+          <button
+            onClick={() => loadProfile(false)}
+            disabled={syncing}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-purple-600 hover:border-purple-200 dark:hover:border-purple-800 transition-all text-xs font-semibold"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
+      </div>
 
-        {/* Hero Profile Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-700 rounded-3xl p-8 text-white overflow-hidden shadow-2xl"
-        >
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-20" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-12" />
-          </div>
-          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            <div className="relative">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30 shadow-xl">
-                <User className="w-10 h-10 text-white" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-white animate-pulse" />
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left: Profile Card */}
+        <div className="lg:col-span-1 space-y-4">
+          {/* Avatar Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+          >
+            {/* Gradient top */}
+            <div className="h-20 bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 relative">
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E\")" }} />
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <h1 className="text-2xl font-black truncate">{name || user?.name || "Church Member"}</h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-white/20 text-white border border-white/30`}>
-                  {role}
-                </span>
+            <div className="px-5 pb-5">
+              <div className="relative -mt-8 mb-4 w-fit">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
               </div>
-              <p className="text-purple-200 text-sm truncate">{user?.email}</p>
+              <h2 className="font-black text-gray-900 dark:text-white text-lg leading-tight">{name || user?.name || "Member"}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
+              <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-xs font-bold border ${rc.bg} ${rc.color}`}>
+                <Shield className="w-3 h-3" />
+                {rc.label}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Info Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 space-y-4"
+          >
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Account Info</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 bg-purple-50 dark:bg-purple-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-3.5 h-3.5 text-purple-500" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Email</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-3.5 h-3.5 text-indigo-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Phone</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{phone || "Not set"}</p>
+                </div>
+              </div>
               {joinedAt && (
-                <p className="text-purple-300 text-xs mt-1 flex items-center gap-1">
-                  <Star className="w-3 h-3" />
-                  Member since {new Date(joinedAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
-                </p>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 bg-amber-50 dark:bg-amber-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Star className="w-3.5 h-3.5 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Member Since</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {new Date(joinedAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/20 flex-shrink-0">
-              <Shield className="w-4 h-4 text-purple-200" />
-              <span className="text-xs font-bold text-purple-200">Verified Member</span>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Sync Status */}
-        {lastSynced && (
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
-            <div className="flex items-center gap-1.5">
-              <Wifi className="w-3.5 h-3.5 text-green-500" />
-              <span>Last synced: {lastSynced.toLocaleTimeString("en-IN")}</span>
-            </div>
-            {hasChanges && (
-              <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse inline-block" />
-                Unsaved changes
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Profile Form Card */}
+        {/* Right: Edit Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl p-8 backdrop-blur-xl"
+          className="lg:col-span-2"
         >
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center">
-              <User className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-gray-950 dark:text-white">Profile Settings</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Changes auto-sync with the church database</p>
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {successMsg && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-6 p-4 bg-green-50 dark:bg-green-950/20 border-l-4 border-green-500 text-green-700 dark:text-green-300 text-sm rounded-lg flex items-center gap-2"
-              >
-                <Check className="w-4 h-4 flex-shrink-0" />
-                {successMsg}
-              </motion.div>
-            )}
-
-            {errorMsg && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-sm rounded-lg"
-              >
-                {errorMsg}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Full Name *
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  placeholder="Enter your full name"
-                  className="w-full py-3.5 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-400 focus:outline-none transition-all text-sm"
-                />
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <form onSubmit={handleSave} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-purple-500" />
+                <h3 className="font-bold text-gray-900 dark:text-white">Edit Profile</h3>
               </div>
-            </div>
-
-            {/* Email (Read-only) */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Email Address (Read-only)
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={user?.email || ""}
-                  disabled
-                  className="w-full py-3.5 px-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/80 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm"
-                />
-                <Shield className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-600 w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Mobile */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Mobile Number
-              </label>
-              <div className="relative">
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 XXXXX XXXXX"
-                  className="w-full py-3.5 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-400 focus:outline-none transition-all text-sm"
-                />
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Address */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                Residential Address
-              </label>
-              <div className="relative">
-                <textarea
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Enter your house details and street address..."
-                  rows={3}
-                  className="w-full py-3.5 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-400 focus:outline-none transition-all resize-none text-sm"
-                />
-                <MapPin className="absolute left-4 top-4 text-gray-400 w-4 h-4" />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !hasChanges}
-              className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-sm ${
-                hasChanges
-                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-500/20 hover:shadow-xl active:scale-[0.99]"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed"
-              } disabled:opacity-60`}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Saving changes...
-                </>
-              ) : hasChanges ? (
-                <>
-                  <Save className="w-5 h-5" />
-                  Save Profile Changes
-                </>
-              ) : (
-                <>
-                  <Check className="w-5 h-5" />
-                  Profile is up to date
-                </>
+              {hasChanges && (
+                <span className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-semibold">
+                  <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+                  Unsaved changes
+                </span>
               )}
-            </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Full Name */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Full Name *</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    placeholder="Your full name"
+                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-sm"
+                  />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                </div>
+              </div>
+
+              {/* Email (Read-only) */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm"
+                  />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">LOCKED</span>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Mobile Number</label>
+                <div className="relative">
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+91 XXXXX XXXXX"
+                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-sm"
+                  />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Home Address</label>
+                <div className="relative">
+                  <textarea
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="House number, street, city..."
+                    rows={3}
+                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all resize-none text-sm"
+                  />
+                  <MapPin className="absolute left-3.5 top-3.5 w-3.5 h-3.5 text-gray-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Save Footer */}
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                {isOnline
+                  ? <><Wifi className="w-3.5 h-3.5 text-green-500" /> Connected</>
+                  : <><WifiOff className="w-3.5 h-3.5 text-red-500" /> Offline</>
+                }
+              </div>
+              <button
+                type="submit"
+                disabled={saving || !hasChanges}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                  saveState === "saved"
+                    ? "bg-green-500 text-white"
+                    : saveState === "error"
+                    ? "bg-red-500 text-white"
+                    : hasChanges
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-500/20 hover:shadow-xl active:scale-[0.98]"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                {saveState === "saving" ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
+                ) : saveState === "saved" ? (
+                  <><CheckCircle2 className="w-4 h-4" /> Saved!</>
+                ) : saveState === "error" ? (
+                  <><AlertCircle className="w-4 h-4" /> Try Again</>
+                ) : (
+                  <><Save className="w-4 h-4" /> Save Changes</>
+                )}
+              </button>
+            </div>
           </form>
         </motion.div>
       </div>
