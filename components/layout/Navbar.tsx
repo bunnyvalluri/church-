@@ -140,9 +140,9 @@ export default function Navbar() {
             </Link>
 
             {/* ── Desktop Nav ── */}
-            <div className="hidden md:flex items-center space-x-2">
-              {/* Nav pill */}
-              <div className="flex items-center bg-gray-100/50 dark:bg-white/5 backdrop-blur-xl border border-gray-200/50 dark:border-white/20 p-1.5 rounded-2xl shadow-sm dark:shadow-none">
+            <div className="hidden md:flex items-center space-x-6">
+              {/* Borderless Nav Pill with active underline */}
+              <div className="flex items-center space-x-1">
                 {navItems.map((item) => {
                   const isActive = activeSection === item.href.slice(1);
                   return (
@@ -150,24 +150,18 @@ export default function Navbar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 overflow-hidden group",
+                        "relative px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-300 rounded-xl",
                         isActive
-                          ? "text-white"
+                          ? "text-[hsl(var(--primary))] font-extrabold"
                           : "text-gray-600 hover:text-gray-900 dark:text-white/70 dark:hover:text-white"
                       )}
                     >
-                      {/* Active pill background */}
+                      {/* Active underline indicator */}
                       {isActive && (
-                        <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] rounded-xl shadow-inner shadow-white/20 dark:shadow-white/10 animate-scale-in" />
+                        <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-full shadow-sm shadow-[hsl(var(--primary))]/50" />
                       )}
-                      {/* Hover fill */}
-                      {!isActive && (
-                        <span className="absolute inset-0 bg-gray-200/50 dark:bg-white/0 dark:group-hover:bg-white/10 rounded-xl transition-colors duration-200 opacity-0 group-hover:opacity-100" />
-                      )}
-                      {/* Active dot indicator */}
-                      {isActive && (
-                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-purple-200 dark:bg-purple-300" />
-                      )}
+                      {/* Hover background */}
+                      <span className="absolute inset-0 bg-transparent hover:bg-gray-100/50 dark:hover:bg-white/5 rounded-xl transition-all duration-200" />
                       <span className="relative z-10">{item.name}</span>
                     </Link>
                   );
@@ -175,10 +169,13 @@ export default function Navbar() {
               </div>
 
               {/* Right controls */}
-              <div className="flex items-center space-x-2 pl-3">
-                <LanguageToggle />
-                <ThemeToggle />
-                <PaletteToggle />
+              <div className="flex items-center space-x-4 pl-3">
+                {/* Unified Toggles Capsule */}
+                <div className="flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-150 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                  <PaletteToggle />
+                </div>
                 
                 {/* Sleek Vertical Divider */}
                 <div className="h-6 w-[1px] bg-gray-200 dark:bg-white/10 mx-1" />
@@ -186,12 +183,10 @@ export default function Navbar() {
                 {/* Member Login — always links to login page */}
                 <Link
                   href="/login"
-                  className="relative px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-105 active:scale-95 transition-all duration-300"
+                  className="relative px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.35] hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   {/* Base gradient */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] via-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-95" />
-                  {/* Animated shimmer sweep */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-95" />
                   {/* Outer glow */}
                   <span className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-xl blur opacity-0 group-hover:opacity-65 transition-opacity duration-500 -z-10" />
                   <span className="relative z-10">Member Login</span>
