@@ -188,13 +188,29 @@ const memberTranslations = {
   },
 };
 
-const SCRIPTURES = [
-  { text: '"The Lord is my shepherd; I shall not want."', ref: "— Psalm 23:1" },
-  { text: '"I can do all things through Christ who strengthens me."', ref: "— Philippians 4:13" },
-  { text: '"For God so loved the world that He gave His only Son."', ref: "— John 3:16" },
-  { text: '"Trust in the Lord with all your heart."', ref: "— Proverbs 3:5" },
-  { text: '"Be still, and know that I am God."', ref: "— Psalm 46:10" },
-];
+const SCRIPTURES = {
+  en: [
+    { text: '"The Lord is my shepherd; I shall not want."', ref: "— Psalm 23:1" },
+    { text: '"I can do all things through Christ who strengthens me."', ref: "— Philippians 4:13" },
+    { text: '"For God so loved the world that He gave His only Son."', ref: "— John 3:16" },
+    { text: '"Trust in the Lord with all your heart."', ref: "— Proverbs 3:5" },
+    { text: '"Be still, and know that I am God."', ref: "— Psalm 46:10" },
+  ],
+  te: [
+    { text: '"యెహోవా నా కాపరి, నాకు లేమి కలుగదు."', ref: "— కీర్తనలు 23:1" },
+    { text: '"నన్ను బలపరచువానియందే నేను సమస్తమును చేయగలను."', ref: "— ఫిలిప్పీయులకు 4:13" },
+    { text: '"దేవుడు లోకమును ఎంతో ప్రేమించెను, ఆయన తన అద్వితీయ కుమారునిగా పుట్టిన వానిని ఇచ్చెను."', ref: "— యోహాను 3:16" },
+    { text: '"నీ పూర్ణహృదయముతో యెహోవాయందు నమ్మకముంచుము."', ref: "— సామెతలు 3:5" },
+    { text: '"ఊరకుండుడి, నేనే దేవుడనని తెలిసికొనుడి."', ref: "— కీర్తనలు 46:10" },
+  ],
+  hi: [
+    { text: '"यहोवा मेरा चरवाहा है, मुझे कोई घटी न होगी।"', ref: "— भजन संहिता 23:1" },
+    { text: '"जो मुझे सामर्थ्य देता है उसमें मैं सब कुछ कर सकता हूँ।"', ref: "— फिलिप्पियों 4:13" },
+    { text: '"क्योंकि परमेश्वर ने जगत से ऐसा प्रेम रखा कि उसने अपना एकलौता पुत्र दे दिया।"', ref: "— यूहन्ना 3:16" },
+    { text: '"तू अपनी समझ का सहारा न लेना, वरन सम्पूर्ण मन से यहोवा पर भरोसा रखना।"', ref: "— नीतिवचन 3:5" },
+    { text: '"शांत हो जाओ, और जानलें कि मैं ही परमेश्वर हूँ।"', ref: "— भजन संहिता 46:10" },
+  ]
+};
 
 interface DashboardStats {
   prayers: number;
@@ -238,7 +254,7 @@ export default function MemberDashboard() {
 
   // Set random scripture ONLY on client (avoid SSR/hydration mismatch)
   useEffect(() => {
-    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.length));
+    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.en.length));
   }, []);
 
   const showToast = (msg: string, type: "success" | "info" | "error" = "info") => {
@@ -311,7 +327,8 @@ export default function MemberDashboard() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [user, status, loadFeeds]);
 
-  const scripture = SCRIPTURES[scriptureIndex];
+  const activeScriptures = SCRIPTURES[language as keyof typeof SCRIPTURES] || SCRIPTURES.en;
+  const scripture = activeScriptures[scriptureIndex];
 
   if (!mounted || status === "loading") {
     return (
