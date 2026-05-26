@@ -193,21 +193,31 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-white dark:bg-gray-950 relative">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+        {/* Background Decorative Circles (Mobile Only) */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/10 rounded-full blur-2xl lg:hidden pointer-events-none" />
+        
+        {/* Cross Watermark (Mobile Only) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none lg:hidden">
+          <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
+        </div>
+
         {/* Language Selection */}
         <div className="absolute top-6 right-6 z-20">
           <LanguageToggle />
         </div>
 
         {/* Mobile Header / Back Button */}
-        <div className="absolute top-6 left-6 lg:hidden">
-          <Link href="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-            <ChevronLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">{loginT.backToHome}</span>
+        <div className="absolute top-6 left-6 lg:hidden z-20">
+          <Link href="/" className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-white/10 dark:bg-white/5 border border-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full">
+            <ChevronLeft className="w-4 h-4" />
+            <span className="text-xs font-medium">{loginT.backToHome}</span>
           </Link>
         </div>
 
-        <div className="w-full max-w-md mt-10 lg:mt-0">
+        <div className="w-full max-w-md mt-12 lg:mt-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
             <div className="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 flex items-center justify-center mb-3 shadow-sm">
