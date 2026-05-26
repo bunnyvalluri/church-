@@ -105,7 +105,7 @@ export default function Navbar() {
           : "bg-white/40 dark:bg-black/30 backdrop-blur-xl py-4"
       )}>
         {/* Animated gradient border at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--primary))/0.6] to-transparent" />
         {/* Top subtle glow */}
         {isScrolled && (
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent" />
@@ -118,8 +118,8 @@ export default function Navbar() {
             <Link href="/" className="flex items-center space-x-3 group perspective">
               <div className="relative w-12 h-12 flex-shrink-0">
                 {/* Rotating glow ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-indigo-500 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-110" />
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-300/50 dark:border-purple-400/30 shadow-lg shadow-purple-500/10 dark:shadow-primary/20 group-hover:border-purple-400/70 transition-all duration-500 group-hover:scale-105 bg-white">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[hsl(var(--primary-gradient-start))] via-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-110" />
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))/0.3] dark:border-[hsl(var(--primary))/0.2] shadow-lg shadow-[hsl(var(--primary))/0.1] group-hover:border-[hsl(var(--primary))/0.6] transition-all duration-500 group-hover:scale-105 bg-white">
                   <Image
                     src="/logo.png"
                     alt="Kingdom of Christ Ministries Logo"
@@ -130,7 +130,7 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-xl leading-tight text-gray-900 dark:text-white tracking-tight drop-shadow-sm group-hover:text-purple-700 dark:group-hover:text-purple-100 transition-colors duration-300">
+                <span className="font-black text-xl leading-tight text-gray-900 dark:text-white tracking-tight drop-shadow-sm group-hover:bg-gradient-to-r group-hover:from-[hsl(var(--primary-gradient-start))] group-hover:to-[hsl(var(--primary-gradient-end))] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                   {t.nav.churchName}
                 </span>
                 <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
@@ -179,17 +179,21 @@ export default function Navbar() {
                 <LanguageToggle />
                 <ThemeToggle />
                 <PaletteToggle />
+                
+                {/* Sleek Vertical Divider */}
+                <div className="h-6 w-[1px] bg-gray-200 dark:bg-white/10 mx-1" />
+
                 {/* Member Login — always links to login page */}
                 <Link
                   href="/login"
-                  className="relative ml-2 px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-purple-500/20"
+                  className="relative px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   {/* Base gradient */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-90" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] via-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-95" />
                   {/* Animated shimmer sweep */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                   {/* Outer glow */}
-                  <span className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
+                  <span className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-xl blur opacity-0 group-hover:opacity-65 transition-opacity duration-500 -z-10" />
                   <span className="relative z-10">Member Login</span>
                 </Link>
               </div>
