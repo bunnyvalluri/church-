@@ -3,6 +3,13 @@ import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
 
+function getFallbackFilePath() {
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    return path.join('/tmp', 'fallback_users.json');
+  }
+  return path.join(process.cwd(), 'prisma', 'fallback_users.json');
+}
+
 export async function GET(req: Request) {
   try {
     // Try database fetch first
@@ -16,7 +23,7 @@ export async function GET(req: Request) {
       console.warn('[ADMIN/USERS/GET] Database offline. Using local JSON fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_users.json');
+        const fallbackFile = getFallbackFilePath();
         
         if (!fs.existsSync(fallbackFile)) {
           return NextResponse.json({ success: true, users: [] });
@@ -65,15 +72,14 @@ export async function POST(req: Request) {
       console.warn('[ADMIN/USERS/UPDATE] Database offline. Using local fallback. Detail:', dbError?.message || dbError);
 
       try {
-        const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_users.json');
+        const fallbackFile = getFallbackFilePath();
         
-        if (!fs.existsSync(fallbackFile)) {
-          return NextResponse.json({ error: 'No user database found on fallback storage.' }, { status: 404 });
+        let users = [];
+        if (fs.existsSync(fallbackFile)) {
+          users = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
         }
 
-        let users = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
         let found = false;
-
         users = users.map((u: any) => {
           if (u.id === userId) {
             found = true;
@@ -87,7 +93,22 @@ export async function POST(req: Request) {
         });
 
         if (!found) {
-          return NextResponse.json({ error: 'User not found in local fallback storage.' }, { status: 404 });
+          // Create fallback user if not found
+          const newUser = {
+            id: userId,
+            email: `user_${userId.substring(0, 5)}@fallback.com`,
+            name: 'Member',
+            role: newRole,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          users.push(newUser);
+        }
+
+        // Ensure directories exist
+        const dir = path.dirname(fallbackFile);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
         }
 
         fs.writeFileSync(fallbackFile, JSON.stringify(users, null, 2), 'utf-8');

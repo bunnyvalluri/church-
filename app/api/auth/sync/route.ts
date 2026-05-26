@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import fs from 'fs';
+import path from 'path';
+
+function getFallbackFilePath() {
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    return path.join('/tmp', 'fallback_users.json');
+  }
+  return path.join(process.cwd(), 'prisma', 'fallback_users.json');
+}
 
 export async function POST(req: Request) {
   try {
@@ -30,10 +39,7 @@ export async function POST(req: Request) {
       console.warn('[AUTH/SYNC] Database unavailable (Prisma/DB offline). Using local file fallback. Details:', dbError?.message || dbError);
 
       try {
-        const fs = require('fs');
-        const path = require('path');
-        const fallbackDir = path.join(process.cwd(), 'prisma');
-        const fallbackFile = path.join(fallbackDir, 'fallback_users.json');
+        const fallbackFile = getFallbackFilePath();
         
         let users = [];
         if (fs.existsSync(fallbackFile)) {
@@ -62,11 +68,14 @@ export async function POST(req: Request) {
           users.push(fallbackUser);
         }
         
-        if (!fs.existsSync(fallbackDir)) {
-          fs.mkdirSync(fallbackDir, { recursive: true });
+        // Ensure directories exist
+        const dir = path.dirname(fallbackFile);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
         }
+        
         fs.writeFileSync(fallbackFile, JSON.stringify(users, null, 2), 'utf-8');
-        console.info(`[AUTH/SYNC/FALLBACK] ✅ Synced user ${email} locally in prisma/fallback_users.json`);
+        console.info(`[AUTH/SYNC/FALLBACK] ✅ Synced user ${email} locally in ${fallbackFile}`);
 
         return NextResponse.json({
           success: true,
