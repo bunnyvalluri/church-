@@ -309,7 +309,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             </div>
 
             {/* Right: online + bell */}
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {/* Language Selector */}
               <div className="scale-90 sm:scale-100 origin-right">
                 <LanguageToggle />
@@ -320,13 +320,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <ThemeToggle />
               </div>
 
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] font-bold border flex-shrink-0 ${
                 isOnline
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-                <span className="hidden sm:inline">{isOnline ? lt.live : lt.offline}</span>
+                <span className="hidden md:inline">{isOnline ? lt.live : lt.offline}</span>
               </div>
             </div>
           </div>
