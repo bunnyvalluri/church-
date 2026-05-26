@@ -10,35 +10,35 @@ export default function ResourcesPage() {
       description: "Watch or listen to life-changing messages from our services.",
       icon: Video,
       href: "/sermons",
-      color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
+      color: "bg-[hsl(var(--primary))/0.1] text-[hsl(var(--primary))]",
     },
     {
       title: "Bible Study",
       description: "Deep dive into God's word with our study guides and materials.",
       icon: BookOpen,
       href: "/resources/bible-study",
-      color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+      color: "bg-[hsl(var(--primary-gradient-start))/0.1] text-[hsl(var(--primary-gradient-start))]",
     },
     {
       title: "Media Library",
       description: "Access worship music, photos, and event recordings.",
       icon: ImageIcon,
       href: "/resources/media",
-      color: "bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400",
+      color: "bg-[hsl(var(--primary-gradient-end))/0.1] text-[hsl(var(--primary-gradient-end))]",
     },
     {
       title: "Blog & Articles",
       description: "Read inspiring articles and ministry updates.",
       icon: Share2,
       href: "/blog",
-      color: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
+      color: "bg-[hsl(var(--accent))] text-[hsl(var(--primary))]",
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent" />
 
@@ -47,7 +47,7 @@ export default function ResourcesPage() {
             Grow in Faith
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
-            Resources for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Spiritual Journey</span>
+            Resources for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))]">Spiritual Journey</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10 animate-fade-in-up animate-delay-100">
             Equip yourself with tools, teachings, and materials designed to help you know Christ more deeply.
@@ -69,7 +69,7 @@ export default function ResourcesPage() {
                   <resource.icon className="w-7 h-7" />
                 </div>
 
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-[hsl(var(--primary))] transition-colors">
                   {resource.title}
                 </h3>
 
@@ -77,7 +77,7 @@ export default function ResourcesPage() {
                   {resource.description}
                 </p>
 
-                <div className="flex items-center text-purple-600 dark:text-purple-400 font-semibold group-hover:translate-x-2 transition-transform">
+                <div className="flex items-center text-[hsl(var(--primary))] font-semibold group-hover:translate-x-2 transition-transform">
                   Explore <span className="ml-2">→</span>
                 </div>
               </Link>
@@ -89,17 +89,17 @@ export default function ResourcesPage() {
       {/* Featured Resource */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-8 md:p-16 text-white text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-3xl p-8 md:p-16 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <BookOpen className="w-64 h-64" />
             </div>
 
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Weekly Bible Study Guide</h2>
-              <p className="text-xl text-purple-100 mb-8">
+              <p className="text-xl text-white/80 mb-8">
                 Download this week&apos;s study material on &ldquo;The Power of Prayer&rdquo; and follow along with your small group.
               </p>
-              <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2 mx-auto">
+              <button className="px-8 py-4 bg-white text-[hsl(var(--primary))] rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2 mx-auto">
                 <Download className="w-5 h-5" />
                 Download PDF Guide
               </button>

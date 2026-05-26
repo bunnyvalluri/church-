@@ -19,7 +19,7 @@ export default function Services() {
       title: language === 'te' ? "ఆరాధన (సండే సర్వీస్)" : "Worship (Sunday Service)",
       time: language === 'te' ? "ఆదివారం ఉదయం 8:30" : "Sunday 8:30 AM",
       description: language === 'te' ? "శక్తివంతమైన ఆరాధన మరియు దేవుని వాక్యాన్ని వినడానికి మాతో చేరండి." : "Join us for powerful worship and the word of God.",
-      color: "from-purple-500 to-indigo-500",
+      color: "from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))]",
     },
     {
       icon: BookHeart,
@@ -47,7 +47,7 @@ export default function Services() {
       title: language === 'te' ? "ఉపవాస ప్రార్థన" : "Fasting Prayer",
       time: language === 'te' ? "ప్రతి గురువారం ఉదయం 7 & 10" : "Thursday 7:00 AM & 10:00 AM",
       description: language === 'te' ? "ఉపవాస ప్రార్థన ద్వారా ఆత్మీయ బలం. (సంప్రదించండి: 91215 23544)" : "Spiritual strengthening through fasting prayer. (Contact: 91215 23544)",
-      color: "from-indigo-500 to-purple-500",
+      color: "from-[hsl(var(--primary-gradient-end))] to-[hsl(var(--primary))]",
     },
   ];
 
@@ -71,7 +71,7 @@ export default function Services() {
             return (
               <div
                 key={index}
-                className="group relative bg-slate-50 dark:bg-white/[0.02] rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-purple-500/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl overflow-hidden"
+                className="group relative bg-slate-50 dark:bg-white/[0.02] rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl overflow-hidden"
               >
                 {/* Background Gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
@@ -82,7 +82,7 @@ export default function Services() {
                     <Icon className="h-8 w-8 text-white" />
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors">
                     {service.title}
                   </h3>
 
@@ -106,7 +106,7 @@ export default function Services() {
           </p>
           <a
             href="#contact"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
           >
             {t.services.cta}
           </a>

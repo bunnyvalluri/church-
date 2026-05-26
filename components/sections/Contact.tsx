@@ -71,7 +71,7 @@ export default function Contact() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-6 w-6 text-white" />
                   </div>
                   <div>
@@ -82,7 +82,7 @@ export default function Contact() {
                       href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-600 dark:text-white/70 hover:text-purple-600 dark:hover:text-purple-300 transition-colors leading-relaxed group flex items-start gap-1"
+                      className="text-slate-600 dark:text-white/70 hover:text-[hsl(var(--primary))] dark:hover:text-[hsl(var(--primary))] transition-colors leading-relaxed group flex items-start gap-1"
                     >
                       <span>
                         Kingdom of Christ Ministries,<br />
@@ -90,7 +90,7 @@ export default function Contact() {
                         Jeedimetla, Hyderabad,<br />
                         Telangana 500055
                       </span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-[hsl(var(--primary))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                     </a>
                   </div>
                 </div>
@@ -184,7 +184,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
                     placeholder={t.contact.namePlaceholder}
                   />
                 </div>
@@ -199,7 +199,7 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
                     placeholder={t.contact.emailPlaceholder}
                   />
                 </div>
@@ -213,7 +213,7 @@ export default function Contact() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
                     placeholder={t.contact.phonePlaceholder}
                   />
                 </div>
@@ -227,7 +227,7 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
                   >
                     <option value="">{t.contact.subjectPlaceholder}</option>
                     <option value="general">{t.contact.subjectGeneral}</option>
@@ -249,7 +249,7 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-white/20"
+                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-white/20"
                   placeholder={t.contact.messagePlaceholder}
                 />
               </div>
@@ -262,7 +262,7 @@ export default function Contact() {
                     ? "bg-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border dark:border-emerald-500/30 cursor-default"
                     : submitStatus === "error"
                     ? "bg-rose-500 dark:bg-rose-500/20 dark:text-rose-400 dark:border dark:border-rose-500/30"
-                    : "bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02]"
+                    : "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
                 } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting ? (

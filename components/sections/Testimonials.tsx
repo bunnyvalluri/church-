@@ -23,11 +23,11 @@ export default function Testimonials() {
   }));
 
   return (
-    <section id="testimonials" className="py-24 bg-gradient-to-br from-purple-900 via-purple-700 to-indigo-900 relative overflow-hidden">
+    <section id="testimonials" className="py-24 bg-gradient-to-br from-[hsl(var(--primary)/0.9)] via-[hsl(var(--primary-gradient-start)/0.85)] to-[hsl(var(--primary-gradient-end)/0.9)] relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -39,7 +39,7 @@ export default function Testimonials() {
               {t.testimonials.titleHighlight}
             </span>
           </h2>
-          <p className="text-lg text-purple-100">
+          <p className="text-lg text-white/90">
             {t.testimonials.subtitle}
           </p>
         </div>
@@ -52,7 +52,7 @@ export default function Testimonials() {
               className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 hover:-translate-y-2"
             >
               {/* Quote Icon */}
-              <Quote className="h-10 w-10 text-purple-300 mb-4" />
+              <Quote className="h-10 w-10 text-white/40 mb-4" />
 
               {/* Rating */}
               <div className="flex gap-1 mb-4">
@@ -82,7 +82,7 @@ export default function Testimonials() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-white">{testimonial.name}</h4>
-                  <p className="text-sm text-purple-200">{testimonial.role}</p>
+                  <p className="text-sm text-white/70">{testimonial.role}</p>
                 </div>
               </div>
             </div>
@@ -91,12 +91,12 @@ export default function Testimonials() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <p className="text-lg text-purple-100 mb-6">
+          <p className="text-lg text-white/90 mb-6">
             {t.testimonials.sharePrompt}
           </p>
           <a
             href="#contact"
-            className="inline-block px-8 py-4 bg-white text-purple-900 rounded-lg font-semibold hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105"
+            className="inline-block px-8 py-4 bg-white text-[hsl(var(--primary))] rounded-lg font-semibold hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105"
           >
             {t.testimonials.shareBtn}
           </a>

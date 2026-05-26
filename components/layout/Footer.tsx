@@ -42,14 +42,14 @@ export default function Footer() {
   return (
     <footer className="relative bg-slate-950 dark:bg-black/40 dark:backdrop-blur-2xl text-slate-300 border-t border-white/10 dark:border-white/5">
       {/* Gradient Top Border */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))]" />
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-3 mb-6">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30 bg-white flex-shrink-0">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))/0.3] bg-white flex-shrink-0">
                 <Image 
                   src="/logo.png" 
                   alt="Kingdom of Christ Ministries Logo" 
@@ -73,7 +73,7 @@ export default function Footer() {
               href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-purple-400 mb-6 flex items-start gap-2 hover:text-purple-300 transition-colors"
+              className="text-sm text-[hsl(var(--primary))] mb-6 flex items-start gap-2 hover:text-[hsl(var(--primary-gradient-end))] transition-colors"
             >
               <MapPin className="h-5 w-5 flex-shrink-0" />
               <span>Kingdom of Christ Ministries, 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad – 500055</span>
@@ -123,7 +123,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -140,7 +140,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -157,7 +157,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -174,7 +174,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="hover:text-purple-400 transition-colors"
+                    className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -183,26 +183,26 @@ export default function Footer() {
             </ul>
             <div className="mt-6 pt-6 border-t border-gray-800">
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                <Phone className="h-4 w-4 text-purple-400" />
-                <a href="tel:+919704090069" className="hover:text-purple-400 transition-colors block">
+                <Phone className="h-4 w-4 text-[hsl(var(--primary))]" />
+                <a href="tel:+919704090069" className="hover:text-[hsl(var(--primary))] transition-colors block">
                   +91 97040 90069
                 </a>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <Phone className="h-4 w-4 opacity-0" />
-                <a href="tel:+919640943777" className="hover:text-purple-400 transition-colors block">
+                <a href="tel:+919640943777" className="hover:text-[hsl(var(--primary))] transition-colors block">
                   +91 96409 43777
                 </a>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <Phone className="h-4 w-4 opacity-0" />
-                <a href="tel:+919505202748" className="hover:text-purple-400 transition-colors block">
+                <a href="tel:+919505202748" className="hover:text-[hsl(var(--primary))] transition-colors block">
                   +91 95052 02748 (Senior Pastor)
                 </a>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400">
-                <Mail className="h-4 w-4 text-purple-400" />
-                <a href="mailto:kingofchristministries23@gmail.com" className="hover:text-purple-400 transition-colors">
+                <Mail className="h-4 w-4 text-[hsl(var(--primary))]" />
+                <a href="mailto:kingofchristministries23@gmail.com" className="hover:text-[hsl(var(--primary))] transition-colors">
                   kingofchristministries23@gmail.com
                 </a>
               </div>
@@ -227,16 +227,16 @@ export default function Footer() {
                 href="https://valluri-rahul-portfolio.vercel.app/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-purple-400/80 hover:text-purple-300 hover:underline transition-all"
+                className="text-[hsl(var(--primary))/0.8] hover:text-[hsl(var(--primary-gradient-end))] hover:underline transition-all"
               >
                 Developed by VALLURI RAHUL.
               </a>
             </p>
             <div className="flex gap-6 text-sm">
-              <Link href="/privacy" className="hover:text-purple-400 transition-colors">
+              <Link href="/privacy" className="hover:text-[hsl(var(--primary))] transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-purple-400 transition-colors">
+              <Link href="/terms" className="hover:text-[hsl(var(--primary))] transition-colors">
                 Terms of Service
               </Link>
             </div>

@@ -129,7 +129,7 @@ export default function Sermons() {
           {sermons.map((sermon, index) => (
             <div
               key={index}
-              className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-purple-500/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl"
+              className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl"
             >
               {/* Thumbnail */}
               <div
@@ -146,7 +146,7 @@ export default function Sermons() {
                 {/* Play Overlay */}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
-                    <Play className="h-8 w-8 text-purple-600 ml-1" fill="currentColor" />
+                    <Play className="h-8 w-8 text-[hsl(var(--primary))] ml-1" fill="currentColor" />
                   </div>
                 </div>
                 {/* Duration Badge */}
@@ -154,30 +154,30 @@ export default function Sermons() {
                   {sermon.duration}
                 </div>
                 {/* Category Badge */}
-                <div className="absolute top-3 left-3 px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+                <div className="absolute top-3 left-3 px-3 py-1 bg-[hsl(var(--primary))] text-white text-xs font-semibold rounded-full">
                   {sermon.category}
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-6 md:p-8">
-                <h3 className="text-xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                <h3 className="text-xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors">
                   {sermon.title}
                 </h3>
 
                 {/* Meta Info */}
                 <div className="space-y-3 text-sm text-slate-600 dark:text-white/70 font-medium">
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-purple-600" />
+                    <User className="h-4 w-4 text-[hsl(var(--primary))]" />
                     <span>{sermon.pastor}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-purple-600" />
+                      <Calendar className="h-4 w-4 text-[hsl(var(--primary))]" />
                       <span>{sermon.date}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4 text-purple-600" />
+                      <Eye className="h-4 w-4 text-[hsl(var(--primary))]" />
                       <span>{sermon.views} {t.sermons.views}</span>
                     </div>
                   </div>
@@ -186,7 +186,7 @@ export default function Sermons() {
                 {/* Watch Button */}
                 <button
                   onClick={() => setSelectedVideo(sermon.videoId)}
-                  className="mt-4 w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95"
+                  className="mt-4 w-full py-3 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95"
                 >
                   <Play className="h-5 w-5" fill="currentColor" />
                   {t.sermons.watch}
@@ -200,7 +200,7 @@ export default function Sermons() {
         <div className="mt-16 text-center">
           <a
             href="/sermons"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
           >
             {t.sermons.viewAll}
           </a>

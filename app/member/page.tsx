@@ -30,6 +30,7 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import PaletteToggle from "@/components/PaletteToggle";
 import { motion, AnimatePresence } from "framer-motion";
 
 const memberTranslations = {
@@ -381,11 +382,11 @@ export default function MemberDashboard() {
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
         <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-xl flex items-center justify-center shadow-md shadow-[hsl(var(--primary))/0.2] group-hover:scale-105 transition-transform">
               <Star className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight leading-none">
+              <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent tracking-tight leading-none">
                 {mt.portalName}
               </h1>
               <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest hidden md:inline">{mt.roleName}</span>
@@ -399,7 +400,7 @@ export default function MemberDashboard() {
               Live
             </div>
 
-            {/* Language Switcher (Desktop only) */}
+            {/* Language Switcher (Visible on desktop) */}
             <div className="scale-90 sm:scale-100 origin-right hidden lg:block">
               <LanguageToggle />
             </div>
@@ -409,11 +410,16 @@ export default function MemberDashboard() {
               <ThemeToggle />
             </div>
 
+            {/* Palette Toggle (Always visible) */}
+            <div className="scale-90 sm:scale-100 origin-right flex-shrink-0">
+              <PaletteToggle />
+            </div>
+
             {/* Refresh Button (Desktop only) */}
             <button
               onClick={() => loadFeeds(false)}
               disabled={isRefreshing}
-              className="hidden lg:inline-flex p-2 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-gray-400 hover:text-purple-600 transition-all flex-shrink-0"
+              className="hidden lg:inline-flex p-2 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 hover:bg-[hsl(var(--primary))/0.08] text-gray-400 hover:text-[hsl(var(--primary))] transition-all flex-shrink-0"
               title="Refresh dashboard"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -423,23 +429,23 @@ export default function MemberDashboard() {
             <div className="relative flex-shrink-0" ref={profileMenuRef}>
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-1 sm:gap-2 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-purple-200 dark:hover:border-purple-900/40 hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2]"
                 aria-label="Toggle profile menu"
               >
-                <div className="relative">
+                <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
                   {user?.image ? (
-                    <img src={user.image} alt={user.name || "Member"} className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover border border-purple-100 dark:border-purple-900/30 shadow-sm" />
+                    <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center border border-purple-100 dark:border-purple-900/30">
-                      <User className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                      <User className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
                     </div>
                   )}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
                 </div>
-                <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[90px] truncate">
-                  {mt.welcome} <span className="text-purple-600 dark:text-purple-400">{user?.name?.split(" ")[0] || "Member"}</span>
+                <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[90px] truncate pr-1">
+                  {mt.welcome} <span className="text-[hsl(var(--primary))]">{user?.name?.split(" ")[0] || "Member"}</span>
                 </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 mr-1 ${isProfileOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -453,17 +459,19 @@ export default function MemberDashboard() {
                   >
                     {/* User Profile Card */}
                     <div className="flex items-center gap-3">
-                      {user?.image ? (
-                        <img src={user.image} alt={user.name || "Member"} className="w-10 h-10 rounded-xl object-cover border border-purple-100 dark:border-purple-900/30" />
-                      ) : (
-                        <div className="w-10 h-10 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center border border-purple-100 dark:border-purple-900/30">
-                          <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                      )}
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
+                        {user?.image ? (
+                          <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                            <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          </div>
+                        )}
+                      </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="font-extrabold text-sm text-gray-950 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate leading-none mt-0.5">{user?.email}</p>
-                        <span className="inline-block text-[9px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 mt-1 px-2 py-0.5 bg-purple-50 dark:bg-purple-950/30 rounded-full border border-purple-100 dark:border-purple-900/10">
+                        <span className="inline-block text-[9px] font-black uppercase tracking-wider text-[hsl(var(--primary))] mt-1 px-2 py-0.5 bg-[hsl(var(--primary))/0.08] rounded-full border border-[hsl(var(--primary))/0.1]">
                           {mt.roleName}
                         </span>
                       </div>
@@ -487,7 +495,7 @@ export default function MemberDashboard() {
                         <button
                           onClick={() => { loadFeeds(false); setIsProfileOpen(false); }}
                           disabled={isRefreshing}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all text-xs font-semibold"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-[hsl(var(--primary))/0.08] text-gray-500 dark:text-gray-400 hover:text-[hsl(var(--primary))] transition-all text-xs font-semibold"
                         >
                           <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
                           Refresh
@@ -509,6 +517,15 @@ export default function MemberDashboard() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Logout Button (Direct in Header) */}
+            <button
+              onClick={logout}
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </header>

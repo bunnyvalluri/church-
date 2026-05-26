@@ -11,8 +11,8 @@ export default function About() {
       icon: Church,
       title: t.about.values.worship,
       description: t.about.values.worshipDesc,
-      iconBg: "bg-purple-50 dark:bg-purple-500/10",
-      iconColor: "text-purple-600 dark:text-purple-400",
+      iconBg: "bg-[hsl(var(--primary)/0.1)]",
+      iconColor: "text-[hsl(var(--primary))]",
     },
     {
       icon: Heart,
@@ -87,10 +87,10 @@ export default function About() {
 
         {/* Church Info (Premium Deep Banner) */}
         <div className="mt-16 md:mt-24 max-w-5xl mx-auto">
-          <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-[2.5rem] p-8 sm:p-10 md:p-14 text-white relative overflow-hidden shadow-2xl">
+          <div className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] rounded-[2.5rem] p-8 sm:p-10 md:p-14 text-white relative overflow-hidden shadow-2xl">
             {/* Atmospheric Glows */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-purple-400/20 blur-[100px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-indigo-400/20 blur-[100px] pointer-events-none"></div>
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-[hsl(var(--primary-gradient-start))]/20 blur-[100px] pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-[hsl(var(--primary-gradient-end))]/20 blur-[100px] pointer-events-none"></div>
 
             <div className="relative z-10">
               {/* Pastor Info */}

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useTheme } from "next-themes";
 
-export type ColorTheme = "violet" | "emerald" | "ocean" | "crimson" | "gold";
+export type ColorTheme = "violet" | "emerald" | "ocean" | "crimson" | "gold" | "rose" | "sky" | "olive" | "earth" | "platinum";
 
 export interface ColorPalette {
   name: string;
@@ -18,54 +18,104 @@ export interface ColorPalette {
 
 export const palettes: Record<ColorTheme, ColorPalette> = {
   violet: {
-    name: "Royal Violet",
-    primary: "262 83% 58%",
-    primaryDark: "262 83% 65%",
-    gradientStart: "262 83% 58%",
-    gradientEnd: "280 90% 65%",
-    accent: "262 83% 96%",
-    accentDark: "262 40% 16%",
-    color: "bg-purple-600"
+    name: "Imperial Amethyst",
+    primary: "268 75% 52%",
+    primaryDark: "268 85% 62%",
+    gradientStart: "268 75% 52%",
+    gradientEnd: "290 80% 55%",
+    accent: "268 75% 96%",
+    accentDark: "268 35% 14%",
+    color: "bg-[#7a3db8]"
   },
   emerald: {
-    name: "Emerald Glory",
-    primary: "142 76% 36%",
-    primaryDark: "142 70% 45%",
-    gradientStart: "142 76% 36%",
-    gradientEnd: "160 84% 39%",
-    accent: "142 76% 95%",
-    accentDark: "142 40% 12%",
-    color: "bg-emerald-600"
+    name: "Sacred Emerald",
+    primary: "160 84% 28%",
+    primaryDark: "160 75% 38%",
+    gradientStart: "160 84% 28%",
+    gradientEnd: "175 80% 32%",
+    accent: "160 84% 96%",
+    accentDark: "160 40% 10%",
+    color: "bg-[#0a6646]"
   },
   ocean: {
-    name: "Ocean Grace",
-    primary: "200 95% 48%",
-    primaryDark: "200 90% 55%",
-    gradientStart: "200 95% 48%",
-    gradientEnd: "185 85% 45%",
-    accent: "200 95% 95%",
-    accentDark: "200 40% 14%",
-    color: "bg-sky-500"
+    name: "Graceful Sapphire",
+    primary: "225 80% 45%",
+    primaryDark: "225 85% 58%",
+    gradientStart: "225 80% 45%",
+    gradientEnd: "200 90% 48%",
+    accent: "225 80% 96%",
+    accentDark: "225 40% 12%",
+    color: "bg-[#1a4db8]"
   },
   crimson: {
-    name: "Crimson Salvation",
-    primary: "346 84% 50%",
-    primaryDark: "346 80% 58%",
-    gradientStart: "346 84% 50%",
-    gradientEnd: "325 80% 48%",
-    accent: "346 84% 96%",
-    accentDark: "346 40% 15%",
-    color: "bg-rose-600"
+    name: "Divine Ruby",
+    primary: "350 78% 46%",
+    primaryDark: "350 82% 56%",
+    gradientStart: "350 78% 46%",
+    gradientEnd: "328 75% 42%",
+    accent: "350 78% 96%",
+    accentDark: "350 40% 12%",
+    color: "bg-[#b81a3d]"
   },
   gold: {
-    name: "Anointed Amber",
-    primary: "38 92% 50%",
-    primaryDark: "38 85% 55%",
-    gradientStart: "38 92% 50%",
-    gradientEnd: "25 90% 50%",
-    accent: "38 92% 95%",
-    accentDark: "38 40% 14%",
-    color: "bg-amber-500"
+    name: "Crown Amber",
+    primary: "36 72% 44%",
+    primaryDark: "36 80% 52%",
+    gradientStart: "36 72% 44%",
+    gradientEnd: "22 75% 48%",
+    accent: "36 72% 95%",
+    accentDark: "36 40% 12%",
+    color: "bg-[#b8701a]"
+  },
+  rose: {
+    name: "Rose Covenant",
+    primary: "340 55% 58%",
+    primaryDark: "340 65% 66%",
+    gradientStart: "340 55% 58%",
+    gradientEnd: "355 60% 64%",
+    accent: "340 55% 96%",
+    accentDark: "340 30% 15%",
+    color: "bg-[#cc5c7d]"
+  },
+  sky: {
+    name: "Heavenly Sky",
+    primary: "215 85% 46%",
+    primaryDark: "215 90% 58%",
+    gradientStart: "215 85% 46%",
+    gradientEnd: "240 75% 54%",
+    accent: "215 85% 96%",
+    accentDark: "215 45% 12%",
+    color: "bg-[#1349c5]"
+  },
+  olive: {
+    name: "Anointed Olive",
+    primary: "76 48% 36%",
+    primaryDark: "76 52% 45%",
+    gradientStart: "76 48% 36%",
+    gradientEnd: "120 40% 32%",
+    accent: "76 48% 95%",
+    accentDark: "76 30% 10%",
+    color: "bg-[#608020]"
+  },
+  earth: {
+    name: "Sacred Earth",
+    primary: "18 68% 44%",
+    primaryDark: "18 75% 54%",
+    gradientStart: "18 68% 44%",
+    gradientEnd: "30 75% 42%",
+    accent: "18 68% 95%",
+    accentDark: "18 40% 12%",
+    color: "bg-[#ba4c18]"
+  },
+  platinum: {
+    name: "Divine Platinum",
+    primary: "215 15% 45%",
+    primaryDark: "215 20% 65%",
+    gradientStart: "215 15% 45%",
+    gradientEnd: "220 20% 55%",
+    accent: "215 15% 95%",
+    accentDark: "215 15% 20%",
+    color: "bg-[#6b7c8f]"
   }
 };
 

@@ -6,10 +6,11 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import PaletteToggle from "@/components/PaletteToggle";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Calendar, Heart, BookOpen, Briefcase, Gift,
-  LogOut, Menu, X, ChevronRight, Bell, Wifi, WifiOff,
+  LogOut, Menu, X, ChevronRight, ChevronDown, Bell, Wifi, WifiOff,
   Home, Activity, Star, Shield, Sparkles, TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -85,6 +86,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const lt = layoutTranslations[language as keyof typeof layoutTranslations] || layoutTranslations.en;
 
@@ -117,6 +120,17 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   // Close sidebar on route change
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
+
+  // Click outside to close profile dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
@@ -309,7 +323,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             </div>
 
             {/* Right: online + bell */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
               {/* Language Selector */}
               <div className="scale-90 sm:scale-100 origin-right">
                 <LanguageToggle />
@@ -320,6 +334,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <ThemeToggle />
               </div>
 
+              {/* Palette Toggle */}
+              <div className="scale-90 sm:scale-100 origin-right">
+                <PaletteToggle />
+              </div>
+
               <div className={`flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] font-bold border flex-shrink-0 ${
                 isOnline
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
@@ -328,6 +347,95 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
                 <span className="hidden md:inline">{isOnline ? lt.live : lt.offline}</span>
               </div>
+
+              {/* Profile Dropdown Container */}
+              <div className="relative flex-shrink-0" ref={profileMenuRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2]"
+                  aria-label="Toggle profile menu"
+                >
+                  <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
+                    {user?.image ? (
+                      <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                        <User className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                    )}
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[90px] truncate pr-1">
+                    Welcome <span className="text-[hsl(var(--primary))]">{user?.name?.split(" ")[0] || "Member"}</span>
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 mr-1 ${isProfileOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute right-0 mt-3 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-2xl p-5 space-y-4 z-50 origin-top-right"
+                    >
+                      {/* User Profile Card */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
+                          {user?.image ? (
+                            <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                              <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-extrabold text-sm text-gray-950 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate leading-none mt-0.5">{user?.email}</p>
+                          <span className="inline-block text-[9px] font-black uppercase tracking-wider text-[hsl(var(--primary))] mt-1 px-2 py-0.5 bg-[hsl(var(--primary))/0.08] rounded-full border border-[hsl(var(--primary))/0.1]">
+                            {lt.verifiedMember}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="h-[1px] bg-gray-100 dark:bg-gray-800" />
+
+                      {/* Regional Dropdown Utilities */}
+                      <div className="space-y-4">
+                        {/* Language Selection (Visible on screens < lg) */}
+                        <div className="lg:hidden space-y-1.5">
+                          <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🌐 Choose Language</span>
+                          <div className="scale-[0.98] origin-left">
+                            <LanguageToggle />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="lg:hidden h-[1px] bg-gray-100 dark:bg-gray-800" />
+
+                      {/* Sign Out Button */}
+                      <button
+                        onClick={logout}
+                        className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        {lt.signOut}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Logout Button (Direct in Header) */}
+              <button
+                onClick={logout}
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </header>

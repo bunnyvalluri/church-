@@ -42,8 +42,11 @@ export default function SmoothScroll() {
     <>
       {/* Progress bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-purple-600 via-amber-500 to-indigo-600 origin-left z-[9999]"
-        style={{ scaleX }}
+        className="fixed top-0 left-0 right-0 h-[3px] origin-left z-[9999]"
+        style={{ 
+          scaleX,
+          background: "linear-gradient(to right, hsl(var(--primary-gradient-start)), hsl(var(--primary)), hsl(var(--primary-gradient-end)))"
+        }}
       />
     </>
   );

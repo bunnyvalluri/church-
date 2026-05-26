@@ -124,15 +124,15 @@ export default function RegisterPage() {
   };
 
   const inputClass =
-    "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
+    "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
 
   return (
     <div className="min-h-[100dvh] flex">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-5/12 relative flex-col justify-between p-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900" />
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)]" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-start))]/20 rounded-full blur-3xl" />
         <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
           <span className="text-white font-bold" style={{ fontSize: "40rem", lineHeight: 1 }}>✝</span>
         </div>
@@ -151,7 +151,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">{loginT.churchName}</h1>
-              <p className="text-purple-200 text-sm">{loginT.ministries}</p>
+              <p className="text-white/80 text-sm">{loginT.ministries}</p>
             </div>
           </div>
 
@@ -184,10 +184,10 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-[image:none] lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-[image:none] lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden">
         {/* Background Decorative Circles (Mobile Only) */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-start))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         
         {/* Cross Watermark (Mobile Only) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none lg:hidden">
@@ -210,16 +210,16 @@ export default function RegisterPage() {
         <div className="w-full max-w-lg mt-16 lg:mt-0 pb-10 lg:pb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
-            <div className="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/50 flex items-center justify-center mb-3 shadow-sm">
-              <span className="text-2xl text-purple-600 dark:text-purple-400">✝</span>
+            <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))/0.08] dark:bg-[hsl(var(--primary))/0.15] border border-[hsl(var(--primary))/0.15] dark:border-[hsl(var(--primary))/0.3] flex items-center justify-center mb-3 shadow-sm">
+              <span className="text-2xl text-[hsl(var(--primary))]">✝</span>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">{loginT.ministries}</p>
             
             {/* Glassmorphic Mobile Scripture Quote */}
-            <div className="mt-4 px-4 py-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/10 border border-purple-100/20 dark:border-purple-900/10 backdrop-blur-sm max-w-sm mx-auto shadow-sm">
+            <div className="mt-4 px-4 py-3 rounded-xl bg-[hsl(var(--primary))/0.03] dark:bg-[hsl(var(--primary))/0.08] border border-[hsl(var(--primary))/0.1] dark:border-[hsl(var(--primary))/0.2] backdrop-blur-sm max-w-sm mx-auto shadow-sm">
               <p className="text-xs italic text-gray-600 dark:text-gray-300 font-light leading-relaxed">
                 "{registerT.quote}"
               </p>
@@ -414,13 +414,13 @@ export default function RegisterPage() {
                 id="terms"
                 type="checkbox"
                 required
-                className="w-4 h-4 mt-0.5 accent-purple-600 rounded"
+                className="w-4 h-4 mt-0.5 accent-[hsl(var(--primary))] rounded"
               />
               <label htmlFor="terms" className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 {registerT.agreeTo}{" "}
-                <Link href="/terms" className="text-purple-600 hover:underline font-medium">{registerT.terms}</Link>
+                <Link href="/terms" className="text-[hsl(var(--primary))] hover:underline font-medium">{registerT.terms}</Link>
                 {" "}{registerT.and}{" "}
-                <Link href="/privacy" className="text-purple-600 hover:underline font-medium">{registerT.privacy}</Link>
+                <Link href="/privacy" className="text-[hsl(var(--primary))] hover:underline font-medium">{registerT.privacy}</Link>
               </label>
             </div>
 
@@ -428,7 +428,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white font-semibold shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -446,7 +446,7 @@ export default function RegisterPage() {
 
           <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
             {registerT.alreadyHaveAccount}{" "}
-            <Link href="/login" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
+            <Link href="/login" className="text-[hsl(var(--primary))] font-semibold hover:underline">
               {registerT.signInLink}
             </Link>
           </p>
