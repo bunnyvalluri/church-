@@ -17,12 +17,16 @@ export default function LanguageToggle() {
     { code: "hi", label: "हिंदी", short: "HI" },
   ] as const;
 
-  const activeLang = mounted ? language : "en";
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-1 p-1 bg-gray-100/80 dark:bg-white/5 backdrop-blur-md rounded-xl border border-gray-200/60 dark:border-white/10 shadow-inner w-[128px] h-[36px]" />
+    );
+  }
 
   return (
     <div className="flex items-center gap-1 p-1 bg-gray-100/80 dark:bg-white/5 backdrop-blur-md rounded-xl border border-gray-200/60 dark:border-white/10 shadow-inner">
       {languages.map((lang) => {
-        const isActive = activeLang === lang.code;
+        const isActive = language === lang.code;
         return (
           <button
             key={lang.code}
