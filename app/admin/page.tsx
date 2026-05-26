@@ -664,7 +664,7 @@ export default function AdminDashboard() {
                 <div className="hidden print:block p-8 border-b border-gray-200 dark:border-gray-700 text-center space-y-2">
                   <h1 className="text-3xl font-black tracking-tight text-purple-950">KINGDOM OF CHRIST MINISTRIES</h1>
                   <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">{at.statementTitle}</p>
-                  <p className="text-[10px] text-gray-400">Statement Generated: {new Date().toLocaleString("en-IN")} • Contact Email: {contactEmail}</p>
+                  <p className="text-[10px] text-gray-400" suppressHydrationWarning>Statement Generated: {new Date().toLocaleString("en-IN")} • Contact Email: {contactEmail}</p>
                 </div>
 
                 {loadingDonations ? (

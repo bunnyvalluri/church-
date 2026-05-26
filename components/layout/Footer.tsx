@@ -215,7 +215,7 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-400 text-center md:text-left">
+            <p className="text-sm text-gray-400 text-center md:text-left" suppressHydrationWarning>
               © {new Date().getFullYear()}{" "}
               {language === "te"
                 ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్. అన్ని హక్కులు ప్రత్యేకించబడినవి."

@@ -139,7 +139,7 @@ export default function SelectLanguagePage() {
 
       {/* Footer Info */}
       <footer className="relative z-10 text-center max-w-md mx-auto pt-6 text-xs text-gray-500">
-        <p>© {new Date().getFullYear()} Kingdom of Christ Ministries. All rights reserved.</p>
+        <p suppressHydrationWarning>© {new Date().getFullYear()} Kingdom of Christ Ministries. All rights reserved.</p>
         <p className="mt-1">
           Return to the <Link href="/" className="text-purple-400 hover:underline">Homepage</Link> or view your secure <Link href="/dashboard" className="text-purple-400 hover:underline">Dashboard Portal</Link>.
         </p>

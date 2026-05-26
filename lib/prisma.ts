@@ -7,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // ── Optimized Prisma Client ───────────────────────────────────────────────────
-export const prisma =
+const realPrisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log:
@@ -19,8 +19,20 @@ export const prisma =
 
 // ── Prevent multiple instances during hot-reload in dev ──────────────────────
 if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
+  globalForPrisma.prisma = realPrisma;
 }
+
+export const prisma = new Proxy(realPrisma, {
+  get(target, prop) {
+    if (process.env.DB_OFFLINE === 'true') {
+      if (prop === '$disconnect' || prop === '$connect') {
+        return () => Promise.resolve();
+      }
+      throw new Error('Database offline: Bypassed via DB_OFFLINE environment variable.');
+    }
+    return Reflect.get(target, prop);
+  },
+}) as unknown as PrismaClient;
 
 // ── Graceful shutdown on process exit ────────────────────────────────────────
 // Ensures Prisma closes DB connections cleanly (avoids connection pool leaks)

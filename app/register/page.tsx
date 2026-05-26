@@ -7,6 +7,8 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 
 const passwordStrength = (pw: string) => {
   let score = 0;
@@ -17,12 +19,15 @@ const passwordStrength = (pw: string) => {
   return score; // 0-4
 };
 
-const strengthLabel = ["Too short", "Weak", "Fair", "Good", "Strong"];
 const strengthColor = ["bg-gray-200", "bg-red-500", "bg-orange-400", "bg-yellow-400", "bg-green-500"];
 
 export default function RegisterPage() {
   const router = useRouter();
   const { mounted, status } = useAuth();
+  const { t } = useLanguage();
+  const registerT = t.pages.register;
+  const loginT = t.pages.login;
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -45,6 +50,47 @@ export default function RegisterPage() {
 
   const pwScore = passwordStrength(formData.password);
 
+  const getStrengthLabel = (score: number) => {
+    const labels = [
+      registerT.tooShort,
+      registerT.weak,
+      registerT.fair,
+      registerT.good,
+      registerT.strong
+    ];
+    return labels[score] || "";
+  };
+
+  // Resolve localized error dynamically so it changes instantly when language toggles
+  const getLocalizedError = (errStr: string) => {
+    if (!errStr) return "";
+    
+    // Map of raw codes or exact English strings to their translated keys
+    const errorMap: Record<string, string> = {
+      "passwords-mismatch": registerT.errors.mismatch,
+      "password-too-short": registerT.errors.tooShort,
+      "auth/email-already-in-use": registerT.errors.emailInUse,
+      "auth/weak-password": registerT.errors.weakPassword,
+      "auth/invalid-email": registerT.errors.invalidEmail,
+      "registration-failed": registerT.errors.genericFailed,
+    };
+
+    if (errorMap[errStr]) return errorMap[errStr];
+    
+    const msgMap: Record<string, string> = {
+      "Passwords do not match.": registerT.errors.mismatch,
+      "Password must be at least 8 characters.": registerT.errors.tooShort,
+      "This email is already registered. Try signing in.": registerT.errors.emailInUse,
+      "Password is too weak. Please choose a stronger one.": registerT.errors.weakPassword,
+      "Please enter a valid email address.": registerT.errors.invalidEmail,
+      "Registration failed. Please try again.": registerT.errors.genericFailed,
+    };
+
+    if (msgMap[errStr]) return msgMap[errStr];
+
+    return errStr;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -54,11 +100,11 @@ export default function RegisterPage() {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("passwords-mismatch");
       return;
     }
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError("password-too-short");
       return;
     }
 
@@ -71,12 +117,7 @@ export default function RegisterPage() {
         });
       }
     } catch (err: any) {
-      const messages: Record<string, string> = {
-        "auth/email-already-in-use": "This email is already registered. Try signing in.",
-        "auth/weak-password": "Password is too weak. Please choose a stronger one.",
-        "auth/invalid-email": "Please enter a valid email address.",
-      };
-      setError(messages[err.code] ?? "Registration failed. Please try again.");
+      setError(err.code || "registration-failed");
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +140,7 @@ export default function RegisterPage() {
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3 group">
             <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-            <span className="text-white/60 text-sm group-hover:text-white transition-colors">Back to Home</span>
+            <span className="text-white/60 text-sm group-hover:text-white transition-colors">{registerT.backToHome}</span>
           </Link>
         </div>
 
@@ -109,22 +150,22 @@ export default function RegisterPage() {
               <span className="text-2xl">✝</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Kingdom of Christ</h1>
-              <p className="text-purple-200 text-sm">Ministries</p>
+              <h1 className="text-2xl font-bold">{loginT.churchName}</h1>
+              <p className="text-purple-200 text-sm">{loginT.ministries}</p>
             </div>
           </div>
 
           <h2 className="text-3xl font-light leading-relaxed text-white/90 mb-8">
-            Become part of our growing family of faith.
+            {registerT.quote}
           </h2>
 
           {/* Benefits */}
           <div className="space-y-4">
             {[
-              "Access to exclusive sermons & Bible studies",
-              "Prayer request & community support",
-              "Event registrations & ministry updates",
-              "Member-only dashboard & resources",
+              registerT.benefit1,
+              registerT.benefit2,
+              registerT.benefit3,
+              registerT.benefit4,
             ].map((benefit) => (
               <div key={benefit} className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
@@ -137,18 +178,23 @@ export default function RegisterPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-white/60 text-sm">Join 2,000+ members in our digital community</span>
+            <span className="text-white/60 text-sm">{registerT.footerTicker}</span>
           </div>
         </div>
       </div>
 
       {/* ── Right Form Panel ── */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-white dark:bg-gray-950 overflow-y-auto relative">
+        {/* Language Selection */}
+        <div className="absolute top-6 right-6 z-20">
+          <LanguageToggle />
+        </div>
+
         {/* Mobile Header / Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
           <Link href="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
             <ChevronLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Home</span>
+            <span className="text-sm font-medium">{registerT.backToHome}</span>
           </Link>
         </div>
 
@@ -159,18 +205,18 @@ export default function RegisterPage() {
               <span className="text-2xl text-purple-600 dark:text-purple-400">✝</span>
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
-              Kingdom of Christ
+              {loginT.churchName}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Ministries</p>
+            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">{loginT.ministries}</p>
           </div>
 
           {/* Header */}
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-              Create your account 🙏
+              {registerT.title}
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Join our community and grow in faith together.
+              {registerT.subtitle}
             </p>
           </div>
 
@@ -178,7 +224,7 @@ export default function RegisterPage() {
           {error && (
             <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
               <span className="text-red-500 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
             </div>
           )}
 
@@ -187,7 +233,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  First Name
+                  {registerT.firstName}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -205,7 +251,7 @@ export default function RegisterPage() {
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Last Name
+                  {registerT.lastName}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -226,7 +272,7 @@ export default function RegisterPage() {
             {/* Email */}
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email Address
+                {registerT.email}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -239,7 +285,7 @@ export default function RegisterPage() {
                   required
                   autoComplete="email"
                   className={inputClass}
-                  placeholder="you@example.com"
+                  placeholder={registerT.emailPlaceholder}
                 />
               </div>
             </div>
@@ -247,7 +293,7 @@ export default function RegisterPage() {
             {/* Phone */}
             <div className="space-y-1.5">
               <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Phone Number <span className="text-gray-400 font-normal">(optional)</span>
+                {registerT.phone}
               </label>
               <div className="relative">
                 <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -266,7 +312,7 @@ export default function RegisterPage() {
             {/* Password */}
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
+                {registerT.password}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -279,7 +325,7 @@ export default function RegisterPage() {
                   required
                   autoComplete="new-password"
                   className={`${inputClass} pr-12`}
-                  placeholder="Min. 8 characters"
+                  placeholder={registerT.passwordPlaceholder}
                 />
                 <button
                   type="button"
@@ -303,7 +349,7 @@ export default function RegisterPage() {
                     ))}
                   </div>
                   <p className={`text-xs font-medium ${pwScore <= 1 ? "text-red-500" : pwScore <= 2 ? "text-orange-500" : pwScore <= 3 ? "text-yellow-600" : "text-green-600"}`}>
-                    Password strength: {strengthLabel[pwScore]}
+                    {registerT.strengthLabel} {getStrengthLabel(pwScore)}
                   </p>
                 </div>
               )}
@@ -312,7 +358,7 @@ export default function RegisterPage() {
             {/* Confirm Password */}
             <div className="space-y-1.5">
               <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Confirm Password
+                {registerT.confirmPassword}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -331,7 +377,7 @@ export default function RegisterPage() {
                       ? "border-green-400 focus:ring-green-400"
                       : ""
                   }`}
-                  placeholder="Repeat your password"
+                  placeholder={registerT.confirmPasswordPlaceholder}
                 />
                 <button
                   type="button"
@@ -342,7 +388,7 @@ export default function RegisterPage() {
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-xs text-red-500">Passwords do not match</p>
+                <p className="text-xs text-red-500">{registerT.mismatch}</p>
               )}
             </div>
 
@@ -355,10 +401,10 @@ export default function RegisterPage() {
                 className="w-4 h-4 mt-0.5 accent-purple-600 rounded"
               />
               <label htmlFor="terms" className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                I agree to the{" "}
-                <Link href="/terms" className="text-purple-600 hover:underline font-medium">Terms of Service</Link>
-                {" "}and{" "}
-                <Link href="/privacy" className="text-purple-600 hover:underline font-medium">Privacy Policy</Link>
+                {registerT.agreeTo}{" "}
+                <Link href="/terms" className="text-purple-600 hover:underline font-medium">{registerT.terms}</Link>
+                {" "}{registerT.and}{" "}
+                <Link href="/privacy" className="text-purple-600 hover:underline font-medium">{registerT.privacy}</Link>
               </label>
             </div>
 
@@ -374,18 +420,18 @@ export default function RegisterPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account...
+                  {registerT.creating}
                 </>
               ) : (
-                <>Create Account <ArrowRight className="w-4 h-4" /></>
+                <>{registerT.createBtn} <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
           </form>
 
           <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-            Already have an account?{" "}
+            {registerT.alreadyHaveAccount}{" "}
             <Link href="/login" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
-              Sign in
+              {registerT.signInLink}
             </Link>
           </p>
         </div>

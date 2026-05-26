@@ -7,10 +7,15 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider, facebookProvider, twitterProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export default function LoginPage() {
   const router = useRouter();
   const { mounted, status } = useAuth();
+  const { t } = useLanguage();
+  const loginT = t.pages.login;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +30,49 @@ export default function LoginPage() {
     }
   }, [mounted, status, router]);
   
+  // Resolve localized error dynamically so it changes instantly when language toggles
+  const getLocalizedError = (errStr: string) => {
+    if (!errStr) return "";
+    
+    // Map of raw codes or exact English strings to their translated keys
+    const errorMap: Record<string, string> = {
+      "auth/invalid-credential": loginT.errors.invalidCredential,
+      "auth/user-not-found": loginT.errors.userNotFound,
+      "auth/wrong-password": loginT.errors.wrongPassword,
+      "auth/too-many-requests": loginT.errors.tooManyRequests,
+      "auth/operation-not-allowed": loginT.errors.operationNotAllowed,
+      "auth/popup-blocked": loginT.errors.popupBlocked,
+      "auth/cancelled-popup-request": loginT.errors.popupClosed,
+      "auth/popup-closed-by-user": loginT.errors.popupClosed,
+      "auth/network-request-failed": loginT.errors.networkFailed,
+      "social-redirect-failed": loginT.errors.socialFailed,
+      "social-generic-failed": loginT.errors.socialFailed,
+      "sign-in-failed": loginT.errors.genericFailed,
+    };
+
+    if (errorMap[errStr]) return errorMap[errStr];
+    
+    const msgMap: Record<string, string> = {
+      "Invalid email or password. Please try again.": loginT.errors.invalidCredential,
+      "No account found with this email.": loginT.errors.userNotFound,
+      "Incorrect password.": loginT.errors.wrongPassword,
+      "Too many attempts. Please wait a moment.": loginT.errors.tooManyRequests,
+      "Social login redirect failed. Please try again.": loginT.errors.socialFailed,
+      "Sign-in failed. Please check your connection.": loginT.errors.genericFailed,
+    };
+
+    if (msgMap[errStr]) return msgMap[errStr];
+    
+    if (errStr.includes("sign-in failed")) {
+      return loginT.errors.socialFailed;
+    }
+    if (errStr.includes("Google login is not enabled")) {
+      return loginT.errors.operationNotAllowed;
+    }
+
+    return errStr;
+  };
+
   // Handle social redirect result (popup fallbacks/compatibility)
   useEffect(() => {
     if (mounted) {
@@ -38,9 +86,9 @@ export default function LoginPage() {
         } catch (err: any) {
           console.error("[AUTH] Redirect sign-in error:", err);
           if (err.code === "auth/operation-not-allowed") {
-            setError(`Google login is not enabled in your Firebase Console. Please enable "Google" under Sign-in methods in your Firebase Console.`);
+            setError("auth/operation-not-allowed");
           } else {
-            setError("Social login redirect failed. Please try again.");
+            setError("social-redirect-failed");
           }
         }
       };
@@ -70,14 +118,14 @@ export default function LoginPage() {
           await signInWithRedirect(auth, provider);
         } catch (redirectErr: any) {
           console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
-          setError(`${name} sign-in failed. Please try using your email and password or enable popups.`);
+          setError("auth/popup-blocked");
           setSocialLoading(null);
         }
       } else if (err.code === "auth/operation-not-allowed") {
-        setError(`Google login is not enabled in your Firebase Console. Please enable "Google" under Sign-in methods in your Firebase Console.`);
+        setError("auth/operation-not-allowed");
         setSocialLoading(null);
       } else {
-        setError(err.message || `${name} sign-in failed. Please try again.`);
+        setError(err.code || "social-generic-failed");
         setSocialLoading(null);
       }
     }
@@ -90,13 +138,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
-      const messages: Record<string, string> = {
-        "auth/invalid-credential": "Invalid email or password. Please try again.",
-        "auth/user-not-found": "No account found with this email.",
-        "auth/wrong-password": "Incorrect password.",
-        "auth/too-many-requests": "Too many attempts. Please wait a moment.",
-      };
-      setError(messages[err.code] ?? "Sign-in failed. Please check your connection.");
+      setError(err.code || "sign-in-failed");
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +163,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3 group">
             <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-            <span className="text-white/60 text-sm group-hover:text-white transition-colors">Back to Home</span>
+            <span className="text-white/60 text-sm group-hover:text-white transition-colors">{loginT.backToHome}</span>
           </Link>
         </div>
 
@@ -131,32 +173,37 @@ export default function LoginPage() {
               <span className="text-2xl">✝</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Kingdom of Christ</h1>
-              <p className="text-purple-200 text-sm">Ministries</p>
+              <h1 className="text-2xl font-bold">{loginT.churchName}</h1>
+              <p className="text-purple-200 text-sm">{loginT.ministries}</p>
             </div>
           </div>
 
           <blockquote className="text-3xl font-light leading-relaxed text-white/90 mb-6">
-            "Come to me, all you who are weary and burdened, and I will give you rest."
+            "{loginT.quote}"
           </blockquote>
-          <cite className="text-purple-300 text-sm">— Matthew 11:28</cite>
+          <cite className="text-purple-300 text-sm">{loginT.author}</cite>
         </div>
 
         <div className="relative z-10">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-white/60 text-sm">Worship Services Every Sunday at 9:00 AM & 11:00 AM</span>
+            <span className="text-white/60 text-sm">{loginT.footerTicker}</span>
           </div>
         </div>
       </div>
 
       {/* ── Right Form Panel ── */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-white dark:bg-gray-950 relative">
+        {/* Language Selection */}
+        <div className="absolute top-6 right-6 z-20">
+          <LanguageToggle />
+        </div>
+
         {/* Mobile Header / Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
           <Link href="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
             <ChevronLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Home</span>
+            <span className="text-sm font-medium">{loginT.backToHome}</span>
           </Link>
         </div>
 
@@ -167,18 +214,18 @@ export default function LoginPage() {
               <span className="text-2xl text-purple-600 dark:text-purple-400">✝</span>
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
-              Kingdom of Christ
+              {loginT.churchName}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Ministries</p>
+            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">{loginT.ministries}</p>
           </div>
 
           {/* Header */}
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-              Welcome back 👋
+              {loginT.title}
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Sign in to your member portal to continue
+              {loginT.subtitle}
             </p>
           </div>
 
@@ -186,7 +233,7 @@ export default function LoginPage() {
           {error && (
             <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
               <span className="text-red-500 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
             </div>
           )}
 
@@ -195,7 +242,7 @@ export default function LoginPage() {
             {/* Email */}
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email Address
+                {loginT.email}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 w-5 h-5" />
@@ -207,7 +254,7 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600"
-                  placeholder="you@example.com"
+                  placeholder={loginT.emailPlaceholder}
                 />
               </div>
             </div>
@@ -216,13 +263,13 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Password
+                  {loginT.password}
                 </label>
                 <Link
                   href="/forgot-password"
                   className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 font-medium transition-colors"
                 >
-                  Forgot password?
+                  {loginT.forgotPassword}
                 </Link>
               </div>
               <div className="relative">
@@ -235,7 +282,7 @@ export default function LoginPage() {
                   required
                   autoComplete="current-password"
                   className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600"
-                  placeholder="••••••••"
+                  placeholder={loginT.passwordPlaceholder}
                 />
                 <button
                   type="button"
@@ -260,10 +307,10 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Signing in...
+                  {loginT.signingIn}
                 </>
               ) : (
-                <>Sign In <ArrowRight className="w-4 h-4" /></>
+                <>{loginT.signInBtn} <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
           </form>
@@ -274,7 +321,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200 dark:border-gray-800" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-4 bg-white dark:bg-gray-950 text-sm text-gray-400">or continue with</span>
+              <span className="px-4 bg-white dark:bg-gray-950 text-sm text-gray-400">{loginT.orContinueWith}</span>
             </div>
           </div>
 
@@ -286,7 +333,7 @@ export default function LoginPage() {
               onClick={() => handleSocialLogin(googleProvider, "Google")}
               disabled={!!socialLoading}
               className="flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm disabled:opacity-60 group"
-              title="Sign in with Google"
+              title={loginT.googleSignIn}
             >
               {socialLoading === "Google" ? (
                 <svg className="animate-spin w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24">
@@ -309,7 +356,7 @@ export default function LoginPage() {
               onClick={() => handleSocialLogin(facebookProvider, "Facebook")}
               disabled={!!socialLoading}
               className="flex items-center justify-center py-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white transition-all shadow-sm disabled:opacity-60"
-              title="Sign in with Facebook"
+              title={loginT.facebookSignIn}
             >
               {socialLoading === "Facebook" ? (
                 <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
@@ -329,7 +376,7 @@ export default function LoginPage() {
               onClick={() => handleSocialLogin(twitterProvider, "X")}
               disabled={!!socialLoading}
               className="flex items-center justify-center py-3 rounded-xl bg-black hover:bg-gray-800 text-white transition-all shadow-sm disabled:opacity-60"
-              title="Sign in with X"
+              title={loginT.twitterSignIn}
             >
               {socialLoading === "X" ? (
                 <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
@@ -346,9 +393,9 @@ export default function LoginPage() {
 
           {/* Register Link */}
           <p className="text-center mt-8 text-sm text-gray-500 dark:text-gray-400">
-            New to the ministry?{" "}
+            {loginT.newToMinistry}{" "}
             <Link href="/register" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
-              Create an account
+              {loginT.createAccountLink}
             </Link>
           </p>
         </div>

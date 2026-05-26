@@ -315,7 +315,7 @@ export default function MemberDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
+    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
@@ -337,7 +337,7 @@ export default function MemberDashboard() {
 
       {/* Sticky Header */}
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3.5 flex items-center justify-between">
+        <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
               <Star className="w-4 h-4 text-white" />
@@ -350,7 +350,7 @@ export default function MemberDashboard() {
             </div>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 lg:gap-3">
             {/* Live indicator */}
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -383,16 +383,16 @@ export default function MemberDashboard() {
                   <User className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 </div>
               )}
-              <span className="text-sm font-semibold hidden md:inline text-gray-700 dark:text-gray-300">
+              <span className="text-sm font-semibold hidden lg:inline text-gray-700 dark:text-gray-300">
                 {mt.welcome} <span className="text-purple-600 dark:text-purple-400">{user?.name?.split(" ")[0] || "Member"}</span>
               </span>
             </div>
             <button
               onClick={logout}
-              className="px-3.5 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold text-xs flex items-center gap-1.5 active:scale-[0.98] transition-all"
+              className="px-2.5 sm:px-3.5 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl font-bold text-xs flex items-center gap-1 sm:gap-1.5 active:scale-[0.98] transition-all"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              {mt.signOut}
+              <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="hidden sm:inline">{mt.signOut}</span>
             </button>
           </div>
         </div>
@@ -452,25 +452,25 @@ export default function MemberDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               {[
-                { label: mt.registeredEvents, value: stats.events, icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", trend: "+" },
-                { label: mt.prayerRequests, value: stats.prayers, icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/20", trend: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} answered` : "" },
-                { label: "Sermons Available", value: stats.sermons, icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/20", trend: "📖" },
-                { label: "Announcements", value: stats.announcements.length, icon: Bell, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", trend: stats.announcements.some(a => a.priority === "HIGH" || a.priority === "URGENT") ? "🔴 Urgent" : "" },
+                { label: mt.registeredEvents, value: stats.events, icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", trend: mt.badges.rsvps },
+                { label: mt.prayerRequests, value: stats.prayers, icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/20", trend: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${mt.badges.requests}` : mt.badges.requests },
+                { label: mt.statsSermons, value: stats.sermons, icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/20", trend: mt.badges.sermons },
+                { label: mt.statsAnnouncements, value: stats.announcements.length, icon: Bell, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", trend: stats.announcements.some(a => a.priority === "HIGH" || a.priority === "URGENT") ? `⚠️ ${mt.urgent}` : mt.badges.update },
               ].map(({ label, value, icon: Icon, color, bg, trend }, idx) => (
-                <div key={idx} className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-5 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group">
+                <div key={idx} className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-4 md:p-5 lg:p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group">
                   <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3`}>
                     <Icon className={`w-5 h-5 ${color}`} />
                   </div>
-                  <span className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider block leading-tight">{label}</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider block leading-tight">{label}</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={value}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`text-3xl font-black ${color} block mt-1.5 tracking-tight`}
+                      className={`text-2xl md:text-3xl lg:text-4xl font-black ${color} block mt-1.5 tracking-tight`}
                     >
                       {loadingFeeds ? (
                         <span className="inline-block w-8 h-7 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
@@ -483,7 +483,7 @@ export default function MemberDashboard() {
                 </div>
               ))}
             </motion.div>
-
+ 
             {/* Services Navigation Grid */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -495,8 +495,8 @@ export default function MemberDashboard() {
                 <Sparkles className="w-4 h-4 text-purple-500" />
                 {mt.directoryTitle}
               </h3>
-
-              <div className="grid md:grid-cols-2 gap-4">
+ 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   {
                     title: mt.services.profile.title,
@@ -550,16 +550,16 @@ export default function MemberDashboard() {
                   <Link
                     key={idx}
                     href={link.href}
-                    className="group bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-gray-100 dark:border-white/5 shadow-md p-6 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900/40 hover:scale-[1.01] transition-all duration-300 flex items-center gap-4"
+                    className="group bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-gray-100 dark:border-white/5 shadow-md p-4 md:p-6 lg:p-8 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900/40 hover:scale-[1.01] transition-all duration-300 flex items-center gap-4"
                   >
                     <div className={`w-12 h-12 bg-gradient-to-br ${link.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                       <link.icon className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors text-sm">
+                      <h4 className="font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors text-sm md:text-base lg:text-lg">
                         {link.title}
                       </h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed truncate">{link.desc}</p>
+                      <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 leading-relaxed truncate">{link.desc}</p>
                     </div>
                     <div className="flex-shrink-0 flex flex-col items-end gap-1">
                       <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded-full border border-purple-100 dark:border-purple-900/30">
