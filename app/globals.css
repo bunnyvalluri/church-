@@ -557,8 +557,6 @@ html[lang="hi"] h3 {
 /* Overriding background gradients */
 .bg-gradient-to-r.from-purple-600.to-indigo-600,
 .bg-gradient-to-br.from-purple-600.to-indigo-600,
-.bg-gradient-to-br.from-indigo-900.via-purple-900.to-pink-900,
-.bg-gradient-to-br.from-purple-900.via-indigo-900.to-purple-800,
 .bg-gradient-to-r.from-purple-600.via-indigo-500.to-pink-500,
 .bg-gradient-to-r.from-purple-600.via-amber-500.to-indigo-600,
 .bg-gradient-to-br.from-purple-600.via-indigo-600.to-violet-700 {
