@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Calendar, Heart, BookOpen, Briefcase, Gift,
   LogOut, Menu, X, ChevronRight, Bell, Wifi, WifiOff,
@@ -13,22 +14,88 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const NAV_LINKS = [
-  { href: "/member/profile", label: "My Profile", icon: User, color: "from-purple-500 to-violet-600", bg: "bg-purple-50 dark:bg-purple-950/30", text: "text-purple-600 dark:text-purple-400", desc: "Account & settings" },
-  { href: "/member/events", label: "Church Events", icon: Calendar, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-950/30", text: "text-indigo-600 dark:text-indigo-400", desc: "RSVP & schedules" },
-  { href: "/member/prayers", label: "Prayer Requests", icon: Heart, color: "from-rose-500 to-pink-600", bg: "bg-rose-50 dark:bg-rose-950/30", text: "text-rose-600 dark:text-rose-400", desc: "Prayer wall" },
-  { href: "/member/sermons", label: "Sermon Library", icon: BookOpen, color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30", text: "text-blue-600 dark:text-blue-400", desc: "Watch & listen" },
-  { href: "/member/volunteer", label: "Volunteer", icon: Briefcase, color: "from-amber-500 to-orange-500", bg: "bg-amber-50 dark:bg-amber-950/30", text: "text-amber-600 dark:text-amber-400", desc: "Serve in ministry" },
-  { href: "/give", label: "Give & Tithe", icon: Gift, color: "from-green-500 to-emerald-600", bg: "bg-green-50 dark:bg-green-950/30", text: "text-green-600 dark:text-green-400", desc: "Online offerings" },
-];
+const layoutTranslations = {
+  en: {
+    loadingPortal: "Securing Member Fellowship Space...",
+    portalName: "KCM Portal",
+    memberArea: "Member Area",
+    verifiedMember: "Verified Member",
+    live: "Live",
+    offline: "Offline",
+    dashboard: "Dashboard",
+    servicesHeader: "Services",
+    signOut: "Sign Out",
+    menu: "Menu",
+    links: {
+      profile: { label: "My Profile", desc: "Account & settings" },
+      events: { label: "Church Events", desc: "RSVP & schedules" },
+      prayers: { label: "Prayer Requests", desc: "Prayer wall" },
+      sermons: { label: "Sermon Library", desc: "Watch & listen" },
+      volunteer: { label: "Volunteer", desc: "Serve in ministry" },
+      give: { label: "Give & Tithe", desc: "Online offerings" }
+    }
+  },
+  te: {
+    loadingPortal: "సభ్యుల పోర్టల్ లోడ్ అవుతోంది...",
+    portalName: "కింగ్డమ్ ఆఫ్ క్రైస్ట్ పోర్టల్",
+    memberArea: "సభ్యుల ప్రాంతం",
+    verifiedMember: "ధృవీకరించబడిన సభ్యుడు",
+    live: "లైవ్",
+    offline: "ఆఫ్‌లైన్",
+    dashboard: "డాష్‌బోర్డ్",
+    servicesHeader: "సేవలు",
+    signOut: "లాగ్ అవుట్",
+    menu: "మెనూ",
+    links: {
+      profile: { label: "నా ప్రొఫైల్", desc: "ఖాతా & సెట్టింగులు" },
+      events: { label: "చర్చి కార్యక్రమాలు", desc: "నమోదు & షెడ్యూల్స్" },
+      prayers: { label: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన గోడ" },
+      sermons: { label: "ప్రసంగాల లైబ్రరీ", desc: "వీక్షించండి & వినండి" },
+      volunteer: { label: "వాలంటీర్", desc: "పరిచర్యలో సేవ చేయండి" },
+      give: { label: "కానుకలు & దశమభాగాలు", desc: "ఆన్‌లైన్ కానుకలు" }
+    }
+  },
+  hi: {
+    loadingPortal: "सदस्य पोर्टल लोड हो रहा है...",
+    portalName: "केसीएम पोर्टल",
+    memberArea: "सदस्य क्षेत्र",
+    verifiedMember: "सत्यापित सदस्य",
+    live: "लाइव",
+    offline: "ऑफ़लाइन",
+    dashboard: "डैशबोर्ड",
+    servicesHeader: "सेवाएं",
+    signOut: "साइन आउट",
+    menu: "मेनू",
+    links: {
+      profile: { label: "मेरी प्रोफाइल", desc: "खाता और सेटिंग्स" },
+      events: { label: "चर्च कार्यक्रम", desc: "पंजीकरण और कार्यक्रम" },
+      prayers: { label: "प्रार्थना निवेदन", desc: "प्रार्थना वाल" },
+      sermons: { label: "प्रवचन लाइब्रेरी", desc: "देखें और सुनें" },
+      volunteer: { label: "स्वयंसेवक", desc: "मंत्रालय में सेवा" },
+      give: { label: "दान और प्रसाद", desc: "ऑनलाइन दान" }
+    }
+  }
+};
 
 export default function MemberLayout({ children }: { children: React.ReactNode }) {
   const { user, status, mounted, logout } = useAuth();
+  const { language } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+
+  const lt = layoutTranslations[language as keyof typeof layoutTranslations] || layoutTranslations.en;
+
+  const translatedLinks = [
+    { href: "/member/profile", label: lt.links.profile.label, icon: User, color: "from-purple-500 to-violet-600", bg: "bg-purple-50 dark:bg-purple-950/30", text: "text-purple-600 dark:text-purple-400", desc: lt.links.profile.desc },
+    { href: "/member/events", label: lt.links.events.label, icon: Calendar, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-950/30", text: "text-indigo-600 dark:text-indigo-400", desc: lt.links.events.desc },
+    { href: "/member/prayers", label: lt.links.prayers.label, icon: Heart, color: "from-rose-500 to-pink-600", bg: "bg-rose-50 dark:bg-rose-950/30", text: "text-rose-600 dark:text-rose-400", desc: lt.links.prayers.desc },
+    { href: "/member/sermons", label: lt.links.sermons.label, icon: BookOpen, color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30", text: "text-blue-600 dark:text-blue-400", desc: lt.links.sermons.desc },
+    { href: "/member/volunteer", label: lt.links.volunteer.label, icon: Briefcase, color: "from-amber-500 to-orange-500", bg: "bg-amber-50 dark:bg-amber-950/30", text: "text-amber-600 dark:text-amber-400", desc: lt.links.volunteer.desc },
+    { href: "/give", label: lt.links.give.label, icon: Gift, color: "from-green-500 to-emerald-600", bg: "bg-green-50 dark:bg-green-950/30", text: "text-green-600 dark:text-green-400", desc: lt.links.give.desc },
+  ];
 
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
@@ -51,7 +118,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   // Close sidebar on route change
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  const activeLink = NAV_LINKS.find(l => pathname.startsWith(l.href)) || NAV_LINKS[0];
+  const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
 
   if (!mounted || status === "loading") {
@@ -61,7 +128,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
             <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Loading portal...</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{lt.loadingPortal}</p>
         </div>
       </div>
     );
@@ -78,8 +145,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             <Star className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight">KCM Portal</p>
-            <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Member Area</p>
+            <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight">{lt.portalName}</p>
+            <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lt.memberArea}</p>
           </div>
         </Link>
       </div>
@@ -99,11 +166,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           </div>
           <div className="relative flex items-center gap-1.5 mt-3">
             <Shield className="w-3 h-3 text-purple-200" />
-            <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider">Verified Member</span>
+            <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider">{lt.verifiedMember}</span>
             <div className="ml-auto flex items-center gap-1">
               {isOnline ? <Wifi className="w-3 h-3 text-green-300" /> : <WifiOff className="w-3 h-3 text-red-300" />}
               <span className={`text-[9px] font-bold ${isOnline ? "text-green-300" : "text-red-300"}`}>
-                {isOnline ? "Live" : "Offline"}
+                {isOnline ? lt.live : lt.offline}
               </span>
             </div>
           </div>
@@ -121,12 +188,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           }`}
         >
           <Home className="w-4 h-4 flex-shrink-0" />
-          Dashboard
+          {lt.dashboard}
         </Link>
 
-        <p className="text-[10px] font-extrabold text-gray-300 dark:text-gray-600 uppercase tracking-widest px-3 pt-3 pb-1">Services</p>
+        <p className="text-[10px] font-extrabold text-gray-300 dark:text-gray-600 uppercase tracking-widest px-3 pt-3 pb-1">{lt.servicesHeader}</p>
 
-        {NAV_LINKS.map((link) => {
+        {translatedLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname.startsWith(link.href);
           return (
@@ -163,7 +230,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
         >
           <LogOut className="w-4 h-4" />
-          Sign Out
+          {lt.signOut}
         </button>
       </div>
     </aside>
@@ -195,7 +262,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               className="fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-900 z-50 lg:hidden shadow-2xl flex flex-col"
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
-                <span className="font-black text-gray-900 dark:text-white">Menu</span>
+                <span className="font-black text-gray-900 dark:text-white">{lt.menu}</span>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500">
                   <X className="w-5 h-5" />
                 </button>
@@ -224,7 +291,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm min-w-0 flex-1">
               <Link href="/member" className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap font-medium hidden sm:block">
-                Dashboard
+                {lt.dashboard}
               </Link>
               <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0 hidden sm:block" />
               {activeLink && (
@@ -255,7 +322,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-                <span className="hidden sm:inline">{isOnline ? "Live" : "Offline"}</span>
+                <span className="hidden sm:inline">{isOnline ? lt.live : lt.offline}</span>
               </div>
             </div>
           </div>
