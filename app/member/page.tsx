@@ -144,13 +144,18 @@ export default function MemberDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "info" | "error" } | null>(null);
-  const [scriptureIndex] = useState(() => Math.floor(Math.random() * SCRIPTURES.length));
+  const [scriptureIndex, setScriptureIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevAnnouncementCount = useRef(0);
 
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
+
+  // Set random scripture ONLY on client (avoid SSR/hydration mismatch)
+  useEffect(() => {
+    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.length));
+  }, []);
 
   const showToast = (msg: string, type: "success" | "info" | "error" = "info") => {
     setToast({ msg, type });
@@ -199,8 +204,8 @@ export default function MemberDashboard() {
         prevAnnouncementCount.current = announcements.length;
       } else {
         announcements = [
-          { id: "1", title: "Sunday Worship Reschedule", content: "Our main worship service will start at 9:00 AM instead of 10:00 AM this Sunday only.", priority: "HIGH", createdAt: new Date().toISOString() },
-          { id: "2", title: "Youth Spiritual Fellowship", content: "Weekly youth meetups every Friday night at Bahadurpally. Join us for fellowship & study.", priority: "NORMAL", createdAt: new Date().toISOString() },
+          { id: "1", title: "Sunday Worship Reschedule", content: "Our main worship service will start at 9:00 AM instead of 10:00 AM this Sunday only.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
+          { id: "2", title: "Youth Spiritual Fellowship", content: "Weekly youth meetups every Friday night at Bahadurpally. Join us for fellowship & study.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
         ];
       }
 
@@ -366,7 +371,7 @@ export default function MemberDashboard() {
               ].map(({ label, value, icon: Icon, color, bg, trend }, idx) => (
                 <div key={idx} className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-5 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300 relative overflow-hidden group">
                   <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3`}>
-                    <Icon className={`w-4.5 h-4.5 ${color}`} />
+                    <Icon className={`w-5 h-5 ${color}`} />
                   </div>
                   <span className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider block leading-tight">{label}</span>
                   <AnimatePresence mode="wait">
