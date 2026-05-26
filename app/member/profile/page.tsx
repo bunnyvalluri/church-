@@ -251,12 +251,12 @@ export default function MemberProfile() {
     if (changed) {
       if (saveState === "saved") setSaveState("idle");
       
-      // Debounce auto-save for 1.5s
+      // Debounce auto-save for 10s
       const timer = setTimeout(() => {
         if (isOnline) {
           handleSave();
         }
-      }, 1500);
+      }, 10000);
       
       autoSaveTimer.current = timer;
       
