@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Phone, ChevronRight } from "lucide-react";
+import { Menu, X, Phone, ChevronRight, ShieldAlert } from "lucide-react";
 import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -190,6 +190,21 @@ export default function Navbar() {
                   <span className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
                   <span className="relative z-10">Member Login</span>
                 </Link>
+
+                {/* Admin Login — links to protected admin portal */}
+                <Link
+                  href="/admin"
+                  className="relative ml-2 px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-red-500/20 flex items-center gap-1.5"
+                >
+                  {/* Base gradient */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-purple-600 to-pink-600 transition-all duration-300 group-hover:opacity-90" />
+                  {/* Animated shimmer sweep */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                  {/* Outer glow */}
+                  <span className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-pink-600 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
+                  <ShieldAlert className="w-4 h-4 relative z-10 animate-pulse text-red-100" />
+                  <span className="relative z-10">Admin Login</span>
+                </Link>
               </div>
             </div>
 
@@ -255,6 +270,14 @@ export default function Navbar() {
                   className="w-full px-4 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500 text-white rounded-xl font-bold text-center shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-shadow"
                 >
                   Member Login
+                </Link>
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full px-4 py-3.5 bg-gradient-to-r from-red-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold text-center shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-shadow flex items-center justify-center gap-1.5"
+                >
+                  <ShieldAlert className="w-4 h-4 animate-pulse text-red-100" />
+                  Admin Login
                 </Link>
               </div>
             </div>
