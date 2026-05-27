@@ -4,9 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Instagram, Youtube, Twitter, Mail, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useState, useEffect } from "react";
 
 export default function Footer() {
   const { t, language } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const footerLinks = {
     about: [
@@ -67,7 +73,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-gray-400 mb-2">
-              {language === 'te' ? "కాలము సంభవమైయున్నది, దేవునిరాజ్యము సమీపించియున్నది, మారుమనస్సు పొంది సువార్త నమ్ముడి. — మార్కు 1:15" : "“Time is fulfilled, and the Kingdom of God is at hand; repent and believe in the Gospel.” — Mark 1:15"}
+              {mounted && language === 'te' ? "కాలము సంభవమైయున్నది, దేవునిరాజ్యము సమీపించియున్నది, మారుమనస్సు పొంది సువార్త నమ్ముడి. — మార్కు 1:15" : "“Time is fulfilled, and the Kingdom of God is at hand; repent and believe in the Gospel.” — Mark 1:15"}
             </p>
             <a
               href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
@@ -217,9 +223,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-400 text-center md:text-left" suppressHydrationWarning>
               © {new Date().getFullYear()}{" "}
-              {language === "te"
+              {mounted && language === "te"
                 ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్. అన్ని హక్కులు ప్రత్యేకించబడినవి."
-                : language === "hi"
+                : mounted && language === "hi"
                 ? "किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज। सर्वाधिकार सुरक्षित।"
                 : "Kingdom of Christ Ministries. All rights reserved."}{" "}
               <br className="md:hidden" />

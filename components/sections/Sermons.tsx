@@ -126,11 +126,36 @@ export default function Sermons() {
 
         {/* Sermons Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sermons.map((sermon, index) => (
-            <div
-              key={index}
-              className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl"
-            >
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-slate-50 dark:bg-white/[0.01] rounded-3xl overflow-hidden border border-slate-100 dark:border-white/[0.05] p-0 flex flex-col h-full animate-pulse shadow-[0_8px_30px_rgb(0,0,0,0.02)]"
+                >
+                  {/* Image Placeholder */}
+                  <div className="w-full h-48 bg-slate-200 dark:bg-white/[0.03] relative" />
+                  {/* Content Placeholder */}
+                  <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
+                    <div>
+                      {/* Title Placeholder */}
+                      <div className="h-6 bg-slate-200 dark:bg-white/[0.03] rounded-xl w-5/6 mb-3" />
+                      <div className="h-6 bg-slate-200 dark:bg-white/[0.03] rounded-xl w-2/3 mb-6" />
+                      {/* Meta Info Placeholders */}
+                      <div className="space-y-3">
+                        <div className="h-4 bg-slate-200 dark:bg-white/[0.03] rounded-lg w-1/2" />
+                        <div className="h-4 bg-slate-200 dark:bg-white/[0.03] rounded-lg w-2/3" />
+                      </div>
+                    </div>
+                    {/* Button Placeholder */}
+                    <div className="h-11 bg-slate-200 dark:bg-white/[0.03] rounded-xl w-full mt-6" />
+                  </div>
+                </div>
+              ))
+            : sermons.map((sermon, index) => (
+                <div
+                  key={index}
+                  className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl"
+                >
               {/* Thumbnail */}
               <div
                 className="relative h-48 overflow-hidden cursor-pointer"

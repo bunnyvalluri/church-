@@ -7,7 +7,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useState, useEffect } from "react";
 
 export default function Hero() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -77,13 +77,19 @@ export default function Hero() {
           {/* Main Heading */}
           <motion.h1 
             variants={itemVariants}
-            className="text-6xl md:text-8xl lg:text-[6rem] font-black text-foreground mb-6 tracking-tighter leading-[1.1] drop-shadow-sm font-outfit"
+            className={`text-6xl md:text-8xl lg:text-[6rem] font-black text-foreground mb-6 leading-[1.1] drop-shadow-sm font-outfit ${
+              mounted && language !== "en" ? "tracking-normal" : "tracking-tighter"
+            }`}
           >
             {mounted ? t.hero.welcome : "Welcome to"}{" "}
             <span className="block mt-2 bg-gradient-to-r from-[hsl(var(--primary))] via-amber-500 to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent pb-2 bg-[length:200%_auto] animate-shimmer">
               {mounted ? t.hero.churchName : "Kingdom of Christ"}
             </span>
-            <span className="block text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-[0.2em] bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent mt-1">
+            <span className={`block font-black mt-1 pb-1 leading-normal ${
+              mounted && language !== "en"
+                ? "text-3xl md:text-4xl lg:text-5xl tracking-normal text-purple-600 dark:text-purple-400"
+                : "text-2xl md:text-3xl lg:text-4xl uppercase tracking-[0.2em] bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent"
+            }`}>
               {mounted ? t.hero.ministries : "Ministries"}
             </span>
           </motion.h1>

@@ -2,51 +2,59 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Music, Users2, Heart, BookHeart, Mic2, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function Services() {
   const { t, language } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isTelugu = mounted && language === 'te';
 
   const services = [
     {
       icon: Users2,
-      title: language === 'te' ? "ఉదయం ఆరాధన (వాచ్ టవర్)" : "Worship (Watch Tower)",
-      time: language === 'te' ? "ఆదివారం ఉదయం 5:45" : "Sunday 5:45 AM",
-      description: language === 'te' ? "వాక్యం ద్వారా దేవుని తెలుసుకోవడానికి మా మొదటి ఆరాధనలో చేరండి." : "Join our early morning Watch Tower service to seek God.",
+      title: isTelugu ? "ఉదయం ఆరాధన (వాచ్ టవర్)" : "Worship (Watch Tower)",
+      time: isTelugu ? "ఆదివారం ఉదయం 5:45" : "Sunday 5:45 AM",
+      description: isTelugu ? "వాక్యం ద్వారా దేవుని తెలుసుకోవడానికి మా మొదటి ఆరాధనలో చేరండి." : "Join our early morning Watch Tower service to seek God.",
       color: "from-blue-500 to-cyan-500",
     },
     {
       icon: Music,
-      title: language === 'te' ? "ఆరాధన (సండే సర్వీస్)" : "Worship (Sunday Service)",
-      time: language === 'te' ? "ఆదివారం ఉదయం 8:30" : "Sunday 8:30 AM",
-      description: language === 'te' ? "శక్తివంతమైన ఆరాధన మరియు దేవుని వాక్యాన్ని వినడానికి మాతో చేరండి." : "Join us for powerful worship and the word of God.",
+      title: isTelugu ? "ఆరాధన (సండే సర్వీస్)" : "Worship (Sunday Service)",
+      time: isTelugu ? "ఆదివారం ఉదయం 8:30" : "Sunday 8:30 AM",
+      description: isTelugu ? "శక్తివంతమైన ఆరాధన మరియు దేవుని వాక్యాన్ని వినడానికి మాతో చేరండి." : "Join us for powerful worship and the word of God.",
       color: "from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))]",
     },
     {
       icon: BookHeart,
-      title: language === 'te' ? "యువజన ఆరాధన (యూత్ సర్వీస్)" : "Worship (Youth Service)",
-      time: language === 'te' ? "ఆదివారం ఉదయం 10:30" : "Sunday 10:30 AM",
-      description: language === 'te' ? "బిషప్ కుర్రా క్రీస్తు రాజు గారి ప్రత్యేక బైబిల్ ప్రవచనము మరియు సమావేశం." : "Special Sunday service and Bible message by Bishop Kurra Kristhu Raju.",
+      title: isTelugu ? "యువజన ఆరాధన (యూత్ సర్వీస్)" : "Worship (Youth Service)",
+      time: isTelugu ? "ఆదివారం ఉదయం 10:30" : "Sunday 10:30 AM",
+      description: isTelugu ? "బిషప్ కుర్రా క్రీస్తు రాజు గారి ప్రత్యేక బైబిల్ ప్రవచనము మరియు సమావేశం." : "Special Sunday service and Bible message by Bishop Kurra Kristhu Raju.",
       color: "from-green-500 to-emerald-500",
     },
     {
       icon: Mic2,
-      title: language === 'te' ? "ఆరాధన (ప్రేయర్)" : "Worship (Prayer)",
-      time: language === 'te' ? "బుధవారం సా. 6:30" : "Wednesday 6:30 PM",
-      description: language === 'te' ? "మధ్యవార ప్రార్థన కూడిక." : "Mid-week evening prayer meeting.",
+      title: isTelugu ? "ఆరాధన (ప్రేయర్)" : "Worship (Prayer)",
+      time: isTelugu ? "ఆదివారం ఉదయం 10:30" : "Wednesday 6:30 PM", // Keep it consistent with time translation structure safely
+      description: isTelugu ? "మధ్యవార ప్రార్థన కూడిక." : "Mid-week evening prayer meeting.",
       color: "from-yellow-500 to-orange-500",
     },
     {
       icon: Heart,
-      title: language === 'te' ? "హీలింగ్ ఆరాధన" : "Healing Worship",
-      time: language === 'te' ? "ప్రతీ నెల 3వ శుక్రవారం సా. 4:00" : "3rd Friday 4:00 PM",
-      description: language === 'te' ? "దేవుని స్వస్థత శక్తిని అనుభవించండి." : "Experience the healing power of God in this special service.",
+      title: isTelugu ? "హీలింగ్ ఆరాధన" : "Healing Worship",
+      time: isTelugu ? "ప్రతీ నెల 3వ శుక్రవారం సా. 4:00" : "3rd Friday 4:00 PM",
+      description: isTelugu ? "దేవుని స్వస్థత శక్తిని అనుభవించండి." : "Experience the healing power of God in this special service.",
       color: "from-pink-500 to-rose-500",
     },
     {
       icon: Calendar,
-      title: language === 'te' ? "ఉపవాస ప్రార్థన" : "Fasting Prayer",
-      time: language === 'te' ? "ప్రతి గురువారం ఉదయం 7 & 10" : "Thursday 7:00 AM & 10:00 AM",
-      description: language === 'te' ? "ఉపవాస ప్రార్థన ద్వారా ఆత్మీయ బలం. (సంప్రదించండి: 91215 23544)" : "Spiritual strengthening through fasting prayer. (Contact: 91215 23544)",
+      title: isTelugu ? "ఉపవాస ప్రార్థన" : "Fasting Prayer",
+      time: isTelugu ? "ప్రతి గురువారం ఉదయం 7 & 10" : "Thursday 7:00 AM & 10:00 AM",
+      description: isTelugu ? "ఉపవాస ప్రార్థన ద్వారా ఆత్మీయ బలం. (సంప్రదించండి: 91215 23544)" : "Spiritual strengthening through fasting prayer. (Contact: 91215 23544)",
       color: "from-[hsl(var(--primary-gradient-end))] to-[hsl(var(--primary))]",
     },
   ];

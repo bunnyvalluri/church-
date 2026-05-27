@@ -13,11 +13,12 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function Navbar() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [mounted, setMounted] = useState(false);
 
   const navItems = [
     { name: t.nav.home, href: "#home" },
@@ -36,6 +37,7 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       const sections = navItems.map(item => item.href.slice(1));
@@ -130,18 +132,26 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="font-black text-xl leading-tight text-gray-900 dark:text-white tracking-tight drop-shadow-sm group-hover:bg-gradient-to-r group-hover:from-[hsl(var(--primary-gradient-start))] group-hover:to-[hsl(var(--primary-gradient-end))] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
-                  {t.nav.churchName}
+                 <span className={cn(
+                  "font-black text-xl leading-tight text-gray-900 dark:text-white drop-shadow-sm group-hover:bg-gradient-to-r group-hover:from-[hsl(var(--primary-gradient-start))] group-hover:to-[hsl(var(--primary-gradient-end))] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 py-0.5",
+                  mounted && language !== 'en' ? "tracking-normal" : "tracking-tight"
+                )}>
+                  {mounted ? t.nav.churchName : "Kingdom of Christ"}
                 </span>
-                <span className="text-[0.65rem] font-bold uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
-                  {t.nav.ministries}
+                <span className={cn(
+                  "font-bold inline-block py-0.5 leading-normal",
+                  mounted && language !== 'en' 
+                    ? "text-[0.85rem] tracking-normal text-purple-600 dark:text-purple-400 font-extrabold" 
+                    : "text-[0.65rem] uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent"
+                )}>
+                  {mounted ? t.nav.ministries : "Ministries"}
                 </span>
               </div>
             </Link>
 
             {/* ── Desktop Nav ── */}
             <div className="hidden md:flex items-center space-x-6">
-              {/* Borderless Nav Pill with active underline */}
+              {/* Borderless Nav Pill with active glassmorphic highlight */}
               <div className="flex items-center space-x-1">
                 {navItems.map((item) => {
                   const isActive = activeSection === item.href.slice(1);
@@ -150,18 +160,18 @@ export default function Navbar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "relative px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-300 rounded-xl",
+                        "relative px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-350 rounded-xl overflow-hidden",
                         isActive
-                          ? "text-[hsl(var(--primary))] font-extrabold"
+                          ? "text-[hsl(var(--primary))] dark:text-purple-400 font-black"
                           : "text-gray-600 hover:text-gray-900 dark:text-white/70 dark:hover:text-white"
                       )}
                     >
-                      {/* Active underline indicator */}
-                      {isActive && (
-                        <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-full shadow-sm shadow-[hsl(var(--primary))]/50" />
+                      {/* Hover / Active glassmorphic background highlight */}
+                      {isActive ? (
+                        <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))/0.08] to-[hsl(var(--primary-gradient-end))/0.03] border border-[hsl(var(--primary))/0.15] dark:border-white/10 rounded-xl" />
+                      ) : (
+                        <span className="absolute inset-0 bg-transparent hover:bg-gray-100/40 dark:hover:bg-white/5 rounded-xl transition-all duration-200" />
                       )}
-                      {/* Hover background */}
-                      <span className="absolute inset-0 bg-transparent hover:bg-gray-100/50 dark:hover:bg-white/5 rounded-xl transition-all duration-200" />
                       <span className="relative z-10">{item.name}</span>
                     </Link>
                   );
@@ -183,7 +193,7 @@ export default function Navbar() {
                 {/* Member Login — always links to login page */}
                 <Link
                   href="/login"
-                  className="relative px-6 py-2.5 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.35] hover:scale-105 active:scale-95 transition-all duration-300"
+                  className="relative px-5 py-2.5 rounded-xl font-bold text-white text-xs lg:text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.35] hover:scale-105 active:scale-[0.98] transition-all duration-300 whitespace-nowrap flex items-center justify-center min-h-[38px] flex-shrink-0"
                 >
                   {/* Base gradient */}
                   <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-95" />

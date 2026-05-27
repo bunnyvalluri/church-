@@ -13,7 +13,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 export default function LoginPage() {
   const router = useRouter();
   const { mounted, status } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const loginT = t.pages.login;
 
   const [email, setEmail] = useState("");
@@ -226,7 +226,9 @@ export default function LoginPage() {
             <h1 className="text-xl font-bold bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">{loginT.ministries}</p>
+            <p className={`text-gray-500 dark:text-gray-400 font-bold mt-0.5 leading-normal ${
+              language === "en" ? "text-[10px] uppercase tracking-widest" : "text-xs tracking-normal"
+            }`}>{loginT.ministries}</p>
             
             {/* Glassmorphic Mobile Scripture Quote */}
             <div className="mt-4 px-4 py-3 rounded-xl bg-[hsl(var(--primary))/0.03] dark:bg-[hsl(var(--primary))/0.08] border border-[hsl(var(--primary))/0.1] dark:border-[hsl(var(--primary))/0.2] backdrop-blur-sm max-w-sm mx-auto shadow-sm">
