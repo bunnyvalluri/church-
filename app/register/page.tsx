@@ -40,6 +40,11 @@ export default function RegisterPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -47,6 +52,8 @@ export default function RegisterPage() {
       router.replace("/dashboard");
     }
   }, [mounted, status, router]);
+
+  if (!isClient) return null;
 
   const pwScore = passwordStrength(formData.password);
 

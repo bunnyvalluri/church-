@@ -15,9 +15,11 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
+  const [mounted, setMounted] = useState(false);
 
   // Load saved preference
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem("language") as Language;
     if (saved) {
       setLanguage(saved);
@@ -39,10 +41,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const t = translations[language];
+  const t = translations[mounted ? language : "en"];
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <LanguageContext.Provider value={{ language: mounted ? language : "en", setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

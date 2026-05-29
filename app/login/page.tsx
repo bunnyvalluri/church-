@@ -22,6 +22,11 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Instantly redirect if already authenticated
   useEffect(() => {
@@ -145,7 +150,7 @@ export default function LoginPage() {
     }
   };
 
-  if (!mounted) return null;
+  if (!isClient) return null;
 
   return (
     <div className="min-h-[100dvh] flex">
