@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 
       try {
         const { db } = await import('@/lib/firebase');
-        if (db) {
+        if (db && process.env.FIRESTORE_OFFLINE !== 'true') {
           try {
             const { collection, query, where, getDocs } = await import('firebase/firestore');
             const prayersRef = collection(db, 'prayers');
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
 
       try {
         const { db } = await import('@/lib/firebase');
-        if (db) {
+        if (db && process.env.FIRESTORE_OFFLINE !== 'true') {
           try {
             const { collection, addDoc } = await import('firebase/firestore');
             const newPrayerFallback = {

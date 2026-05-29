@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
       try {
         const { db } = await import('@/lib/firebase');
-        if (db) {
+        if (db && process.env.FIRESTORE_OFFLINE !== 'true') {
           try {
             const { doc, setDoc, getDoc } = await import('firebase/firestore');
             const userDocRef = doc(db, 'users', userId);
