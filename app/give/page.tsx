@@ -1241,15 +1241,18 @@ export default function GivePage() {
                     Place cash or checks in the offering envelope during any regular worship service at our locations.
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  <div className="bg-gray-55 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                    Shapur
+                <div className="grid grid-cols-3 gap-3 text-center text-xs sm:text-sm font-bold">
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/10 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-default">
+                    <span className="text-xl">⛪</span>
+                    <span>Shapur</span>
                   </div>
-                  <div className="bg-gray-55 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                    Subhash Nagar
+                  <div className="bg-gradient-to-br from-rose-50 to-pink-50/50 dark:from-rose-950/20 dark:to-pink-950/10 text-rose-700 dark:text-rose-350 p-3.5 rounded-2xl border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-default">
+                    <span className="text-xl">⛪</span>
+                    <span>Subhash Nagar</span>
                   </div>
-                  <div className="bg-gray-55 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                    Bahadurpally
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/10 text-emerald-700 dark:text-emerald-350 p-3.5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-default">
+                    <span className="text-xl">⛪</span>
+                    <span>Bahadurpally</span>
                   </div>
                 </div>
               </div>
