@@ -241,6 +241,16 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         })}
       </nav>
 
+      {/* Settings & Preferences Toggles for Mobile/Tablet */}
+      <div className="p-4 lg:hidden border-t border-gray-100 dark:border-white/5">
+        <p className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">Preferences</p>
+        <div className="flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1.5 rounded-2xl shadow-sm backdrop-blur-md w-full justify-around scale-95">
+          <LanguageToggle />
+          <ThemeToggle />
+          <PaletteToggle />
+        </div>
+      </div>
+
       {/* Bottom: Sign Out */}
       <div className="p-4 border-t border-gray-100 dark:border-white/5">
         <button
@@ -294,7 +304,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 max-w-full overflow-x-hidden lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
         {/* Top Bar */}
         <header className={`sticky top-0 z-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
           <div className="flex items-center gap-4 px-4 sm:px-6 h-14">
@@ -325,7 +335,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             {/* Right: online + bell */}
             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
               {/* Unified Toggles Capsule */}
-              <div className="scale-90 sm:scale-100 origin-right flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-150 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
+              <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
                 <LanguageToggle />
                 <ThemeToggle />
                 <PaletteToggle />
@@ -344,7 +354,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               <div className="relative flex-shrink-0" ref={profileMenuRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2]"
+                  className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2]"
                   aria-label="Toggle profile menu"
                 >
                   <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
@@ -423,7 +433,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               {/* Logout Button (Direct in Header) */}
               <button
                 onClick={logout}
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
+                className="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
