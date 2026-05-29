@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronRight } from "lucide-react";
 import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,8 @@ import { useAuth } from "@/components/providers/AuthProvider";
 export default function Navbar() {
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const pathname = usePathname() || "/";
+  const isHomePage = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -158,7 +161,7 @@ export default function Navbar() {
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={isHomePage ? item.href : `/${item.href}`}
                       className={cn(
                         "relative px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-350 rounded-xl overflow-hidden",
                         isActive
@@ -222,7 +225,7 @@ export default function Navbar() {
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={isHomePage ? item.href : `/${item.href}`}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all",
