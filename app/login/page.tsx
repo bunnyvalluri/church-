@@ -78,6 +78,7 @@ export default function LoginPage() {
     if (mounted) {
       const handleRedirectResult = async () => {
         try {
+          if (!auth || typeof auth.onIdTokenChanged !== "function") return;
           const { getRedirectResult } = await import("firebase/auth");
           const result = await getRedirectResult(auth);
           if (result) {
@@ -143,6 +144,8 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="min-h-[100dvh] flex">

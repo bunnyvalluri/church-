@@ -34,7 +34,7 @@ export default function LanguageToggle() {
             onClick={() => setLanguage(lang.code)}
             className={`px-3 py-1.5 text-[10px] font-extrabold uppercase rounded-lg transition-all duration-300 active:scale-95 ${
               isActive
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/10 scale-105"
+                ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white shadow-md shadow-[hsl(var(--primary))]/10 scale-105"
                 : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5"
             }`}
             title={lang.label}

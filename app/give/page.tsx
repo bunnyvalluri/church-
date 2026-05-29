@@ -40,9 +40,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export default function GivePage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { user } = useAuth();
-  const pageT = t.pages.give;
+  const gt = t.pages.give;
+  const pageT = gt;
 
   // Payment mode selector: "GATEWAY" (Razorpay) or "UPI" (Google Pay Scanner)
   const [paymentMode, setPaymentMode] = useState<"GATEWAY" | "UPI">("GATEWAY");
@@ -173,7 +174,7 @@ export default function GivePage() {
   const validateStep1 = () => {
     const finalAmt = getFinalAmount();
     if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) {
-      setErrorMessage("Please select or enter a valid amount greater than 0");
+      setErrorMessage(gt.errors.validAmount);
       return false;
     }
     setErrorMessage("");
@@ -182,12 +183,12 @@ export default function GivePage() {
 
   const validateStep2 = () => {
     if (!donorName.trim()) {
-      setErrorMessage("Please enter your name");
+      setErrorMessage(gt.errors.enterName);
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(donorEmail)) {
-      setErrorMessage("Please enter a valid email address");
+      setErrorMessage(gt.errors.enterEmail);
       return false;
     }
     setErrorMessage("");
@@ -321,13 +322,13 @@ export default function GivePage() {
     }
 
     if (!upiTransactionRef.trim()) {
-      setErrorMessage("Please enter the 12-digit UTR/Reference ID from your UPI app receipt.");
+      setErrorMessage(gt.errors.enterUtr);
       setLoading(false);
       return;
     }
 
     if (upiTransactionRef.trim().length < 8) {
-      setErrorMessage("Please enter a valid Transaction Reference ID.");
+      setErrorMessage(gt.errors.validUtr);
       setLoading(false);
       return;
     }
@@ -379,7 +380,7 @@ export default function GivePage() {
         throw new Error(verifyData.error || "Simulated UPI Verification failed.");
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed to record UPI details. Please check connection and try again.");
+      setErrorMessage(err.message || gt.errors.recordUpiFailed);
       setLoading(false);
     }
   };
@@ -415,7 +416,7 @@ export default function GivePage() {
         throw new Error(verifyData.error || "Simulation verification failed");
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Simulated payment failed.");
+      setErrorMessage(err.message || gt.errors.paymentFailed);
       setLoading(false);
     }
   };
@@ -439,6 +440,8 @@ export default function GivePage() {
 
   const formattedPingTime = pingTime !== null ? `${pingTime}ms` : "checking...";
 
+  if (!mounted) return null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <Navbar />
@@ -450,7 +453,7 @@ export default function GivePage() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }} 
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4.5 py-3.5 rounded-2xl shadow-2xl text-xs font-semibold border bg-purple-600 text-white border-purple-400/30 max-w-sm"
+            className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4.5 py-3.5 rounded-2xl shadow-2xl text-xs font-semibold border bg-[hsl(var(--primary))] text-white border-purple-400/30 max-w-sm"
           >
             <Bell className="w-4 h-4 text-purple-200 animate-bounce" />
             <div>{toast.msg}</div>
@@ -459,9 +462,9 @@ export default function GivePage() {
       </AnimatePresence>
 
       {/* Hero (Visual layout matches previous version) */}
-      <section className="relative py-24 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div 
@@ -471,7 +474,9 @@ export default function GivePage() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm mb-6"
             >
               <Heart className="h-4 w-4 text-pink-300 animate-pulse" />
-              <span className="font-medium tracking-wide">Generous Giving</span>
+              <span className="font-medium tracking-wide">
+                {language === 'en' ? 'Generous Giving' : language === 'te' ? 'దాతృత్వము' : 'उदार दान'}
+              </span>
             </motion.div>
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
@@ -503,17 +508,17 @@ export default function GivePage() {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-purple-500" />
-                    Online Offerings & Tithes
+                    <Sparkles className="h-6 w-6 text-[hsl(var(--primary))]" />
+                    {gt.formTitle}
                   </h2>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    Select your payment method below to support church ministries.
+                    {gt.formSubtitle}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/30 px-3 py-1.5 rounded-full text-purple-700 dark:text-purple-300 text-xs font-semibold">
+                  <div className="flex items-center gap-1.5 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 px-3 py-1.5 rounded-full text-[hsl(var(--primary))] text-xs font-semibold">
                     <Lock className="w-3.5 h-3.5" />
-                    Secure
+                    {language === 'en' ? 'Secure' : language === 'te' ? 'భద్రమైనది' : 'सुरक्षित'}
                   </div>
                   <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">Ping: {formattedPingTime}</span>
                 </div>
@@ -528,12 +533,12 @@ export default function GivePage() {
                   }}
                   className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                     paymentMode === "GATEWAY"
-                      ? "bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow-md border border-gray-100 dark:border-gray-700"
+                      ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-md border border-gray-100 dark:border-gray-700"
                       : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Card / NetBanking / UPI</span>
+                  <span>{gt.cardTab}</span>
                 </button>
                 
                 <button
@@ -543,25 +548,25 @@ export default function GivePage() {
                   }}
                   className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                     paymentMode === "UPI"
-                      ? "bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow-md border border-gray-100 dark:border-gray-700"
+                      ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-md border border-gray-100 dark:border-gray-700"
                       : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                   }`}
                 >
                   <QrCode className="w-4 h-4" />
-                  <span>Instant UPI QR Code</span>
+                  <span>{gt.qrTab}</span>
                 </button>
               </div>
 
               {/* Steps Indicator */}
               {paymentMode === "GATEWAY" ? (
                 <div className="flex items-center gap-2 mb-8">
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step >= 1 ? 'bg-purple-650' : 'bg-gray-200 dark:bg-gray-700'}`} style={{ backgroundColor: step >= 1 ? '#8B5CF6' : '' }} />
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step >= 2 ? 'bg-purple-650' : 'bg-gray-200 dark:bg-gray-700'}`} style={{ backgroundColor: step >= 2 ? '#8B5CF6' : '' }} />
+                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: step >= 1 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
+                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: step >= 2 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
                 </div>
               ) : (
                 <div className="flex items-center gap-2 mb-8">
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${upiStep >= 1 ? 'bg-purple-650' : 'bg-gray-200 dark:bg-gray-700'}`} style={{ backgroundColor: upiStep >= 1 ? '#8B5CF6' : '' }} />
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${upiStep >= 2 ? 'bg-purple-650' : 'bg-gray-200 dark:bg-gray-700'}`} style={{ backgroundColor: upiStep >= 2 ? '#8B5CF6' : '' }} />
+                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: upiStep >= 1 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
+                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: upiStep >= 2 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
                 </div>
               )}
 
@@ -588,7 +593,7 @@ export default function GivePage() {
                         {/* Amount Selection */}
                         <div>
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            Select Donation Amount (₹)
+                            {gt.presetsTitle}
                           </label>
                           <div className="grid grid-cols-3 gap-3">
                             {["500", "1000", "2500", "5000", "10000"].map((preset) => (
@@ -601,7 +606,7 @@ export default function GivePage() {
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
                                   amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 border-transparent text-white shadow-lg shadow-purple-500/20"
+                                    ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 }`}
                               >
@@ -611,15 +616,15 @@ export default function GivePage() {
                             <div className="relative">
                               <input
                                 type="number"
-                                placeholder="Custom"
+                                placeholder={gt.customPlaceholder}
                                 value={customAmount}
                                 onChange={(e) => {
                                   setCustomAmount(e.target.value);
                                   setAmount("");
                                 }}
-                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
+                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
                                   customAmount 
-                                    ? "border-purple-500 ring-2 ring-purple-500/20" 
+                                    ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
                                     : "border-gray-200 dark:border-gray-700"
                                 }`}
                               />
@@ -631,23 +636,16 @@ export default function GivePage() {
                         {/* Purpose Selection */}
                         <div>
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            Purpose of Giving
+                            {gt.purposeLabel}
                           </label>
                           <div className="grid md:grid-cols-2 gap-3">
-                            {[
-                              { id: "TITHE", name: "Tithe (పదియవ భాగం)", desc: "10% of monthly income" },
-                              { id: "OFFERING", name: "Online Offering (ఆరాధన కానుక)", desc: "General offerings to the Lord" },
-                              { id: "BUILDING", name: "Building Fund (భవన నిధి)", desc: "Church expansion projects" },
-                              { id: "MISSIONS", name: "Missions (మిషన్స్ నిధి)", desc: "Local and global outreach" },
-                              { id: "CHARITY", name: "Benevolence (ధర్మకార్యాలు)", desc: "Supporting the poor & widows" },
-                              { id: "OTHER", name: "Other Specific Offering", desc: "Special vow or pledge gifts" }
-                            ].map((item) => (
+                            {Object.entries(gt.purposes).map(([id, item]) => (
                               <div
-                                key={item.id}
-                                onClick={() => setPurpose(item.id)}
+                                key={id}
+                                onClick={() => setPurpose(id)}
                                 className={`p-4 rounded-xl border cursor-pointer select-none transition-all flex flex-col justify-between ${
-                                  purpose === item.id
-                                    ? "border-purple-600 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-600/25"
+                                  purpose === id
+                                    ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
                                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
                                 }`}
                               >
@@ -667,9 +665,9 @@ export default function GivePage() {
                         <button
                           type="button"
                           onClick={handleNextStep}
-                          className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-purple-500/10 active:scale-[0.99]"
+                          className="w-full py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
                         >
-                          Continue
+                          {gt.continueBtn}
                           <ArrowRight className="h-5 w-5" />
                         </button>
                       </motion.div>
@@ -684,25 +682,25 @@ export default function GivePage() {
                       >
                         <div>
                           <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">
-                            Donor Contact Information
+                            {gt.contactTitle}
                           </h3>
                           <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            Receipts will be sent directly to this address.
+                            {gt.contactSubtitle}
                           </p>
                         </div>
 
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                              Full Name *
+                              {gt.fullNameLabel}
                             </label>
                             <div className="relative">
                               <input
                                 type="text"
-                                placeholder="Enter your full name"
+                                placeholder={gt.fullNamePlaceholder}
                                 value={donorName}
                                 onChange={(e) => setDonorName(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
                               <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             </div>
@@ -710,15 +708,15 @@ export default function GivePage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                              Email Address *
+                              {gt.emailLabel}
                             </label>
                             <div className="relative">
                               <input
                                 type="email"
-                                placeholder="example@email.com"
+                                placeholder={gt.emailPlaceholder}
                                 value={donorEmail}
                                 onChange={(e) => setDonorEmail(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
                               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             </div>
@@ -726,15 +724,15 @@ export default function GivePage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                              Phone Number (Optional)
+                              {gt.phoneLabel}
                             </label>
                             <div className="relative">
                               <input
                                 type="tel"
-                                placeholder="10-digit mobile number"
+                                placeholder={gt.phonePlaceholder}
                                 value={donorPhone}
                                 onChange={(e) => setDonorPhone(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
                               <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             </div>
@@ -747,22 +745,22 @@ export default function GivePage() {
                             onClick={() => setStep(1)}
                             className="flex-1 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all"
                           >
-                            Back
+                            {gt.backBtn}
                           </button>
                           <button
                             type="button"
                             disabled={loading}
                             onClick={handleNextStep}
-                            className="flex-[2] py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-purple-500/10 active:scale-[0.99] disabled:opacity-50"
+                            className="flex-[2] py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
                           >
                             {loading ? (
                               <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Initializing...
+                                {gt.initializing}
                               </>
                             ) : (
                               <>
-                                Pay Securely (₹{Number(getFinalAmount()).toLocaleString("en-IN")})
+                                {gt.paySecurely} (₹{Number(getFinalAmount()).toLocaleString("en-IN")})
                                 <ArrowRight className="h-5 w-5" />
                               </>
                             )}
@@ -796,13 +794,13 @@ export default function GivePage() {
                           {/* UPI Copy block */}
                           <div className="mt-5 w-full bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-750 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold">
                             <div className="text-left font-mono">
-                              <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-wider">UPI Address</span>
+                              <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-wider">{gt.upiIdLabel}</span>
                               <span className="text-gray-800 dark:text-gray-200 font-bold select-all">kcm.kristhraj2004-1@okicici</span>
                             </div>
                             <button 
                               type="button"
                               onClick={() => copyToClipboard("kcm.kristhraj2004-1@okicici", "UPI ID")}
-                              className="p-2 bg-gray-55 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-500 hover:text-purple-600 transition-all border border-gray-200 dark:border-gray-700"
+                              className="p-2 bg-gray-55 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-500 hover:text-[hsl(var(--primary))] transition-all border border-gray-200 dark:border-gray-700"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
@@ -810,24 +808,24 @@ export default function GivePage() {
                         </div>
 
                         <div className="space-y-2 max-w-md">
-                          <p className="font-bold text-gray-800 dark:text-gray-200">Scan to pay with any UPI App</p>
+                          <p className="font-bold text-gray-800 dark:text-gray-200">{gt.scanTitle}</p>
                           <p className="text-xs text-gray-500 leading-relaxed max-w-xs mx-auto">
-                            Open Google Pay, PhonePe, Paytm, BHIM, or your bank app to scan the code. After confirming the transfer, click the button below to register transaction details.
+                            {gt.scanDesc}
                           </p>
                         </div>
 
                         {copiedLabel === "UPI ID" && (
                           <div className="w-full max-w-sm py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl">
-                            UPI ID copied to clipboard!
+                            {gt.copiedToast}
                           </div>
                         )}
 
                         <button
                           type="button"
                           onClick={() => setUpiStep(2)}
-                          className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-purple-500/10 active:scale-[0.99]"
+                          className="w-full py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
                         >
-                          I have scanned & paid
+                          {gt.scannedPaidBtn}
                           <ArrowRight className="h-5 w-5" />
                         </button>
                       </motion.div>
@@ -842,7 +840,7 @@ export default function GivePage() {
                         {/* Amount presets & inputs */}
                         <div>
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            Donated Amount (₹)
+                            {gt.presetsTitleUpi}
                           </label>
                           <div className="grid grid-cols-3 gap-3">
                             {["500", "1000", "2500", "5000", "10000"].map((preset) => (
@@ -855,7 +853,7 @@ export default function GivePage() {
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
                                   amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 border-transparent text-white shadow-lg shadow-purple-500/20"
+                                    ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 }`}
                               >
@@ -865,15 +863,15 @@ export default function GivePage() {
                             <div className="relative">
                               <input
                                 type="number"
-                                placeholder="Custom"
+                                placeholder={gt.customPlaceholder}
                                 value={customAmount}
                                 onChange={(e) => {
                                   setCustomAmount(e.target.value);
                                   setAmount("");
                                 }}
-                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
+                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
                                   customAmount 
-                                    ? "border-purple-500 ring-2 ring-purple-500/20" 
+                                    ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
                                     : "border-gray-200 dark:border-gray-700"
                                 }`}
                               />
@@ -885,22 +883,16 @@ export default function GivePage() {
                         {/* Purpose Selection */}
                         <div>
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            Purpose of Giving
+                            {gt.purposeLabel}
                           </label>
                           <div className="grid md:grid-cols-2 gap-3">
-                            {[
-                              { id: "TITHE", name: "Tithe (పదియవ భాగం)", desc: "10% of monthly income" },
-                              { id: "OFFERING", name: "Online Offering (ఆరాధన కానుక)", desc: "General offerings to the Lord" },
-                              { id: "BUILDING", name: "Building Fund (భవన నిధి)", desc: "Church expansion projects" },
-                              { id: "MISSIONS", name: "Missions (మిషన్స్ నిధి)", desc: "Local and global outreach" },
-                              { id: "CHARITY", name: "Benevolence (ధర్మకార్యాలు)", desc: "Supporting the poor & widows" }
-                            ].map((item) => (
+                            {Object.entries(gt.purposes).map(([id, item]) => (
                               <div
-                                key={item.id}
-                                onClick={() => setPurpose(item.id)}
+                                key={id}
+                                onClick={() => setPurpose(id)}
                                 className={`p-4 rounded-xl border cursor-pointer select-none transition-all flex flex-col justify-between ${
-                                  purpose === item.id
-                                    ? "border-purple-600 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-600/25"
+                                  purpose === id
+                                    ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
                                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
                                 }`}
                               >
@@ -921,15 +913,15 @@ export default function GivePage() {
                         <div className="space-y-4 pt-4 border-t border-gray-150 dark:border-gray-700">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                              Donor Full Name *
+                              {gt.fullNameLabel}
                             </label>
                             <div className="relative">
                               <input
                                 type="text"
-                                placeholder="Enter your full name"
+                                placeholder={gt.fullNamePlaceholder}
                                 value={donorName}
                                 onChange={(e) => setDonorName(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none font-semibold"
+                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-semibold"
                               />
                               <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             </div>
@@ -938,15 +930,15 @@ export default function GivePage() {
                           <div className="grid sm:grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Email Address *
+                                {gt.emailLabel}
                               </label>
                               <div className="relative">
                                 <input
                                   type="email"
-                                  placeholder="example@email.com"
+                                  placeholder={gt.emailPlaceholder}
                                   value={donorEmail}
                                   onChange={(e) => setDonorEmail(e.target.value)}
-                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none font-semibold"
+                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-semibold"
                                 />
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                               </div>
@@ -954,15 +946,15 @@ export default function GivePage() {
 
                             <div>
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Phone Number (Optional)
+                                {gt.phoneLabel}
                               </label>
                               <div className="relative">
                                 <input
                                   type="tel"
-                                  placeholder="10-digit mobile number"
+                                  placeholder={gt.phonePlaceholder}
                                   value={donorPhone}
                                   onChange={(e) => setDonorPhone(e.target.value)}
-                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                                 />
                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                               </div>
@@ -972,21 +964,21 @@ export default function GivePage() {
                           {/* UPI Transaction Ref */}
                           <div>
                             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                              UPI UTR / Transaction Reference ID (12 Digits) *
+                              {gt.utrLabel}
                             </label>
                             <div className="relative">
                               <input
                                 type="text"
                                 maxLength={16}
-                                placeholder="e.g. 234890123456"
+                                placeholder={gt.utrPlaceholder}
                                 value={upiTransactionRef}
                                 onChange={(e) => setUpiTransactionRef(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono font-bold text-purple-650 dark:text-purple-400 tracking-wider"
+                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-mono font-bold text-[hsl(var(--primary))] tracking-wider"
                               />
                               <Receipt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             </div>
                             <p className="text-[10px] text-gray-400 mt-1">
-                              Locate the 12-digit UPI reference ID in your payment details screen to help us index your receipt voucher.
+                              {gt.utrDesc}
                             </p>
                           </div>
                         </div>
@@ -997,14 +989,14 @@ export default function GivePage() {
                             onClick={() => setUpiStep(1)}
                             className="flex-1 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all"
                           >
-                            Back to QR
+                            {gt.backToQrBtn}
                           </button>
                           
                           <button
                             type="button"
                             disabled={loading}
                             onClick={handleNextStep}
-                            className="flex-[2] py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-purple-500/10 active:scale-[0.99] disabled:opacity-50"
+                            className="flex-[2] py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
                           >
                             {loading ? (
                               <>
@@ -1030,33 +1022,33 @@ export default function GivePage() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Payment Summary Box */}
-              <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full filter blur-xl transform translate-x-10 -translate-y-10" />
                 
                 <h3 className="font-bold text-lg uppercase tracking-wider text-purple-200 mb-6 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-purple-300" />
-                  Gift Summary
+                  {gt.summaryTitle}
                 </h3>
 
                 <div className="space-y-4">
                   <div className="flex justify-between border-b border-white/10 pb-4">
-                    <span className="text-purple-200">Giving Type</span>
+                    <span className="text-purple-200">{gt.summaryType}</span>
                     <span className="font-bold bg-white/10 px-3 py-1 rounded-full text-xs tracking-wider">
                       {purpose.replace('_', ' ')}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-white/10 pb-4">
-                    <span className="text-purple-200">Gateway Method</span>
+                    <span className="text-purple-200">{gt.summaryMethod}</span>
                     <span className="font-semibold">
-                      {paymentMode === "UPI" ? "Direct UPI Transfer" : "Razorpay India"}
+                      {paymentMode === "UPI" ? gt.summaryMethodUpi : gt.summaryMethodReal}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-white/10 pb-4">
-                    <span className="text-purple-200">Tax Deductible</span>
-                    <span className="font-semibold text-green-300">Yes (Section 80G)</span>
+                    <span className="text-purple-200">{gt.summaryTax}</span>
+                    <span className="font-semibold text-green-300">{gt.summaryTaxValue}</span>
                   </div>
                   <div className="flex justify-between pt-2">
-                    <span className="text-2xl font-semibold text-purple-200 align-middle">Total Gift</span>
+                    <span className="text-2xl font-semibold text-purple-200 align-middle">{gt.summaryTotal}</span>
                     <span className="text-3xl font-extrabold flex items-center gap-1">
                       <IndianRupee className="w-6 h-6 stroke-[2.5]" />
                       {Number(getFinalAmount() || "0").toLocaleString("en-IN")}
@@ -1071,16 +1063,16 @@ export default function GivePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1.5">
-                        <Activity className="w-4 h-4 text-purple-500 animate-pulse" />
-                        Live Giving History
+                        <Activity className="w-4 h-4 text-[hsl(var(--primary))] animate-pulse" />
+                        {gt.liveHistoryTitle}
                       </h4>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500">Auto-polls every 30s</p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500">{gt.liveHistorySubtitle}</p>
                     </div>
 
                     <button 
                       onClick={() => loadHistory()} 
                       disabled={historyLoading}
-                      className="p-1.5 rounded-lg bg-gray-55 dark:bg-gray-900 text-gray-400 hover:text-purple-600 transition-all border border-gray-200 dark:border-gray-700"
+                      className="p-1.5 rounded-lg bg-gray-55 dark:bg-gray-900 text-gray-400 hover:text-[hsl(var(--primary))] transition-all border border-gray-200 dark:border-gray-700"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? "animate-spin" : ""}`} />
                     </button>
@@ -1088,19 +1080,19 @@ export default function GivePage() {
 
                   {historyLoading && history.length === 0 ? (
                     <div className="py-8 flex items-center justify-center">
-                      <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-[hsl(var(--primary))] animate-spin" />
                     </div>
                   ) : history.length === 0 ? (
                     <div className="text-center py-6 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
                       <Receipt className="w-6 h-6 text-gray-300 dark:text-gray-650 mx-auto mb-1.5" />
-                      <p className="text-xs text-gray-400 font-bold">No recent giving records</p>
+                      <p className="text-xs text-gray-400 font-bold">{gt.noRecords}</p>
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                       {history.slice(0, 4).map((item) => (
                         <div 
-                          key={item.id}
-                          className="p-3 bg-gray-55/50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700/50 rounded-xl flex items-center justify-between text-xs hover:border-purple-100/50 dark:hover:border-purple-900/30 transition-all"
+                           key={item.id}
+                           className="p-3 bg-gray-55/50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700/50 rounded-xl flex items-center justify-between text-xs hover:border-[hsl(var(--primary))]/35 transition-all"
                         >
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1.5">
@@ -1122,7 +1114,7 @@ export default function GivePage() {
                               href={`/give/receipt/${item.id}`} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="p-1 rounded bg-purple-50 dark:bg-purple-950/40 text-purple-650 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-all"
+                              className="p-1 rounded bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/40 text-[hsl(var(--primary))] hover:bg-[hsl(var(--accent))]/80 dark:hover:bg-[hsl(var(--accent))]/60 transition-all font-semibold"
                             >
                               <ExternalLink className="w-3 h-3" />
                             </a>
@@ -1134,8 +1126,8 @@ export default function GivePage() {
 
                   {lastHistorySynced && (
                     <div className="text-[9px] text-gray-450 dark:text-gray-500 flex items-center justify-between">
-                      <span>Sync active</span>
-                      <span>Updated {lastHistorySynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
+                      <span>{gt.syncActive}</span>
+                      <span>{gt.updatedAt} {lastHistorySynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
                     </div>
                   )}
                 </div>
@@ -1145,25 +1137,25 @@ export default function GivePage() {
               <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700/50">
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                   <Check className="h-5 w-5 text-green-500 bg-green-50 dark:bg-green-900/30 rounded-full p-1" />
-                  Honorable Tithes (Malachi 3:10)
+                  {gt.malachiTitle}
                 </h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed italic">
-                  "Bring all the tithes into the storehouse, that there may be food in My house, and try Me now in this," says the Lord of hosts.
+                  {gt.malachiDesc}
                 </p>
               </div>
 
               {/* Help & Support Card */}
               <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700/50">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Need Assistance?</h4>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">{gt.helpTitle}</h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                  For issues relating to online payments or tax receipts, contact us at:
+                  {gt.helpDesc}
                 </p>
                 <div className="space-y-1.5 text-sm">
-                  <p className="text-purple-600 dark:text-purple-400 font-semibold">
-                    Email: <a href="mailto:kingofchristministries23@gmail.com" className="hover:underline">kingofchristministries23@gmail.com</a>
+                  <p className="text-[hsl(var(--primary))] dark:text-purple-400 font-semibold">
+                    {gt.helpEmail}: <a href="mailto:kingofchristministries23@gmail.com" className="hover:underline">kingofchristministries23@gmail.com</a>
                   </p>
-                  <p className="text-purple-600 dark:text-purple-400 font-semibold">
-                    Phone: <a href="tel:+919640943777" className="hover:underline">+91 96409 43777</a>
+                  <p className="text-[hsl(var(--primary))] dark:text-purple-400 font-semibold">
+                    {gt.helpPhone}: <a href="tel:+919640943777" className="hover:underline">+91 96409 43777</a>
                   </p>
                 </div>
               </div>
@@ -1177,22 +1169,15 @@ export default function GivePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              {pageT.why}
+              {gt.whyHeading}
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
-              Giving is an act of worship and obedience to God. Your generosity helps us:
+              {gt.whySubtitle}
             </p>
             <div className="grid md:grid-cols-2 gap-6 text-left">
-              {[
-                "Spread the Gospel locally and globally",
-                "Support ministries and programs",
-                "Serve the community with compassion",
-                "Build and maintain our facilities",
-                "Train and equip leaders",
-                "Reach the next generation",
-              ].map((item, index) => (
+              {gt.whyItems.map((item, index) => (
                 <div key={index} className="flex items-start gap-3 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
-                  <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-[hsl(var(--primary))] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Check className="h-4 w-4 text-white" />
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 font-medium">{item}</p>

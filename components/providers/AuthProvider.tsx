@@ -78,6 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
 
+    if (!auth || typeof auth.onIdTokenChanged !== "function") {
+      console.warn("[AUTH] Firebase Auth not initialized or mocked. Running in offline fallback mode.");
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setLoading(true);

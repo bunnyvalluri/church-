@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { RotateCw, Home, AlertOctagon } from "lucide-react";
-import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -11,20 +10,21 @@ interface ErrorProps {
 }
 
 export default function Error({ error, reset }: ErrorProps) {
-  // Safe language detection with fallback
-  let currentLang = "en";
-  try {
-    const { language } = useLanguage();
-    currentLang = language || "en";
-  } catch (e) {
-    // Fallback if provider crashed or context not found
+  const [currentLang, setCurrentLang] = useState("en");
+
+  useEffect(() => {
+    // Safe language detection from localStorage
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("language");
-      if (saved === "te" || saved === "hi") {
-        currentLang = saved;
+      try {
+        const saved = localStorage.getItem("language");
+        if (saved === "te" || saved === "hi" || saved === "en") {
+          setCurrentLang(saved);
+        }
+      } catch (e) {
+        console.error("Error reading language preference:", e);
       }
     }
-  }
+  }, []);
 
   useEffect(() => {
     // Log the error to console for debugging

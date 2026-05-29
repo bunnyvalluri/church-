@@ -22,9 +22,32 @@ export async function GET(req: Request) {
 
       return NextResponse.json({ success: true, prayers });
     } catch (dbError: any) {
-      console.warn('[PRAYERS/GET] Database offline. Using local JSON fallback. Detail:', dbError?.message || dbError);
+      console.warn('[PRAYERS/GET] Database offline. Trying Firestore or local JSON fallback. Detail:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        if (db) {
+          try {
+            const { collection, query, where, getDocs } = await import('firebase/firestore');
+            const prayersRef = collection(db, 'prayers');
+            const q = query(prayersRef, where('userId', '==', userId));
+            const querySnapshot = await getDocs(q);
+            const userPrayers = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+            console.info(`[PRAYERS/GET/FIRESTORE] ✅ Retrieved ${userPrayers.length} prayers directly from Cloud Firestore`);
+            return NextResponse.json({
+              success: true,
+              prayers: userPrayers,
+              warning: 'Retrieved from Cloud Firestore (DB offline).',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[PRAYERS/GET/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const fallbackFile = getFallbackFilePath('fallback_prayers.json');
         
         if (!fs.existsSync(fallbackFile)) {
@@ -77,9 +100,32 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true, prayer: newPrayer });
     } catch (dbError: any) {
-      console.warn('[PRAYERS/CREATE] Database offline. Using local fallback. Detail:', dbError?.message || dbError);
+      console.warn('[PRAYERS/CREATE] Database offline. Trying Firestore or local fallback. Detail:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        if (db) {
+          try {
+            const { collection, addDoc } = await import('firebase/firestore');
+            const newPrayerFallback = {
+              ...prayerData,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            const docRef = await addDoc(collection(db, 'prayers'), newPrayerFallback);
+            const savedPrayer = { id: docRef.id, ...newPrayerFallback };
+
+            console.info(`[PRAYERS/CREATE/FIRESTORE] ✅ Saved prayer request ${docRef.id} directly in Cloud Firestore`);
+            return NextResponse.json({
+              success: true,
+              prayer: savedPrayer,
+              warning: 'Database offline. Prayer request recorded directly in Cloud Firestore.',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[PRAYERS/CREATE/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const fallbackFile = getFallbackFilePath('fallback_prayers.json');
         
         let prayers = [];

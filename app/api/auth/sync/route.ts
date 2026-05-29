@@ -36,9 +36,44 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true, user });
     } catch (dbError: any) {
-      console.warn('[AUTH/SYNC] Database unavailable (Prisma/DB offline). Using local file fallback. Details:', dbError?.message || dbError);
+      console.warn('[AUTH/SYNC] Database unavailable (Prisma/DB offline). Trying Firestore or local file fallback. Details:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        if (db) {
+          try {
+            const { doc, setDoc, getDoc } = await import('firebase/firestore');
+            const userDocRef = doc(db, 'users', uid);
+            const userSnap = await getDoc(userDocRef);
+            
+            let fallbackUser;
+            if (userSnap.exists()) {
+              fallbackUser = userSnap.data();
+            } else {
+              fallbackUser = {
+                id: uid,
+                email,
+                name: name || 'Member',
+                image: photoURL || null,
+                phone: phoneNumber || null,
+                role: 'MEMBER',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
+              await setDoc(userDocRef, fallbackUser);
+            }
+            
+            console.info(`[AUTH/SYNC/FIRESTORE] ✅ Synced user ${email} directly to Cloud Firestore`);
+            return NextResponse.json({
+              success: true,
+              user: fallbackUser,
+              warning: 'Database offline. User saved directly to Firebase Firestore.',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[AUTH/SYNC/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const fallbackFile = getFallbackFilePath();
         
         let users = [];

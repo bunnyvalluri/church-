@@ -57,9 +57,46 @@ export async function GET(req: Request) {
 
       return NextResponse.json({ success: true, events: dbEvents, registeredEventIds: registeredIds });
     } catch (dbError: any) {
-      console.warn('[EVENTS/GET] Database offline. Using local JSON fallback. Detail:', dbError?.message || dbError);
+      console.warn('[EVENTS/GET] Database offline. Trying Firestore or local JSON fallback. Detail:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        let registeredIds: string[] = [];
+        let fallbackEvents = MOCK_EVENTS;
+        
+        if (db) {
+          try {
+            const { collection, query, where, getDocs } = await import('firebase/firestore');
+            
+            // Try to get custom events list from Firestore
+            try {
+              const eventsSnapshot = await getDocs(collection(db, 'events'));
+              if (!eventsSnapshot.empty) {
+                fallbackEvents = eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+              }
+            } catch (err) {
+              console.info('[EVENTS/GET/FIRESTORE] Using mock events fallback');
+            }
+
+            if (userId) {
+              const registrationsRef = collection(db, 'event_registrations');
+              const q = query(registrationsRef, where('userId', '==', userId));
+              const querySnapshot = await getDocs(q);
+              registeredIds = querySnapshot.docs.map(doc => doc.data().eventId);
+            }
+
+            console.info(`[EVENTS/GET/FIRESTORE] ✅ Retrieved ${registeredIds.length} registrations from Cloud Firestore`);
+            return NextResponse.json({
+              success: true,
+              events: fallbackEvents,
+              registeredEventIds: registeredIds,
+              warning: 'Retrieved from Cloud Firestore (DB offline).',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[EVENTS/GET/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const fallbackFile = getFallbackFilePath('fallback_events.json');
         const regFile = getFallbackFilePath('fallback_registrations.json');
 
@@ -68,9 +105,9 @@ export async function GET(req: Request) {
           fs.writeFileSync(fallbackFile, JSON.stringify(MOCK_EVENTS, null, 2), 'utf-8');
         }
 
-        const fallbackEvents = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
+        fallbackEvents = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
 
-        let registeredIds: string[] = [];
+        registeredIds = [];
         if (userId && fs.existsSync(regFile)) {
           const registrations = JSON.parse(fs.readFileSync(regFile, 'utf-8'));
           registeredIds = registrations
@@ -111,9 +148,42 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true, registration });
     } catch (dbError: any) {
-      console.warn('[EVENTS/REGISTER] Database offline. Using local fallback. Detail:', dbError?.message || dbError);
+      console.warn('[EVENTS/REGISTER] Database offline. Trying Firestore or local fallback. Detail:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        if (db) {
+          try {
+            const { collection, addDoc, query, where, getDocs } = await import('firebase/firestore');
+            const registrationsRef = collection(db, 'event_registrations');
+            
+            const q = query(registrationsRef, where('userId', '==', userId), where('eventId', '==', eventId));
+            const querySnapshot = await getDocs(q);
+            
+            let newReg;
+            if (querySnapshot.empty) {
+              const regData = {
+                userId,
+                eventId,
+                createdAt: new Date().toISOString()
+              };
+              const docRef = await addDoc(registrationsRef, regData);
+              newReg = { id: docRef.id, ...regData };
+              console.info(`[EVENTS/REGISTER/FIRESTORE] ✅ Saved event registration ${docRef.id} in Cloud Firestore`);
+            } else {
+              newReg = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+            }
+
+            return NextResponse.json({
+              success: true,
+              registration: newReg,
+              warning: 'Database offline. Event registration recorded directly in Cloud Firestore.',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[EVENTS/REGISTER/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const regFile = getFallbackFilePath('fallback_registrations.json');
         
         let registrations = [];

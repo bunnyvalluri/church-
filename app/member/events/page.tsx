@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Calendar, MapPin, Clock, CheckCircle2, UserCheck,
   Loader2, RefreshCw, Bell, Users, TrendingUp, Activity,
@@ -27,13 +28,97 @@ const CAT_STYLE: Record<string, { pill: string; bar: string }> = {
   FELLOWSHIP:  { pill: "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-100 dark:border-green-900/30",     bar: "bg-green-500"  },
   OUTREACH:    { pill: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900/30",           bar: "bg-blue-500"   },
 };
-const DEFAULT_STYLE = { pill: "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-900/30", bar: "bg-indigo-500" };
+const DEFAULT_STYLE = { pill: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 text-[hsl(var(--primary))] border-[hsl(var(--primary))]/10", bar: "bg-[hsl(var(--primary))]" };
 
 type FilterTab = "ALL" | "UPCOMING" | "REGISTERED";
 
+const eventsTranslations = {
+  en: {
+    title: "Church Events",
+    subtitle: "Browse upcoming programs and secure your seat",
+    updated: "Updated",
+    refresh: "Refresh",
+    totalEvents: "Total Events",
+    upcoming: "Upcoming",
+    myRsvps: "My RSVPs",
+    searchPlaceholder: "Search events or location...",
+    tabAll: "All",
+    tabUpcoming: "Upcoming",
+    tabRegistered: "My RSVPs",
+    newEventAlert: "New event added to the schedule!",
+    loadError: "Could not load events",
+    successRsvp: "Successfully registered! See you there 🙏",
+    failRsvp: "Registration failed. Please try again.",
+    netError: "Network error. Try again.",
+    noEvents: "No events scheduled",
+    noRegistered: "You haven't registered for any events yet",
+    noMatches: 'No events matching "{query}"',
+    pastBadge: "Past",
+    upcomingBadge: "Upcoming",
+    statusRegistered: "Registered",
+    statusRsvp: "RSVP",
+    statusEnded: "Ended",
+  },
+  te: {
+    title: "చర్చి కార్యక్రమాలు",
+    subtitle: "రాబోయే కార్యక్రమాలను బ్రౌజ్ చేయండి మరియు మీ సీటును భద్రపరుచుకోండి",
+    updated: "సమకాలీకరించబడింది",
+    refresh: "రిఫ్రెష్",
+    totalEvents: "మొత్తం ఈవెంట్స్",
+    upcoming: "రాబోయేవి",
+    myRsvps: "నా రిజిస్ట్రేషన్లు",
+    searchPlaceholder: "కార్యక్రమాలు లేదా స్థలాల కోసం వెతకండి...",
+    tabAll: "అన్నీ",
+    tabUpcoming: "రాబోయేవి",
+    tabRegistered: "నా రిజిస్ట్రేషన్లు",
+    newEventAlert: "షెడ్యూల్‌లో కొత్త కార్యక్రమం జోడించబడింది!",
+    loadError: "కార్యక్రమాలను లోడ్ చేయడం వీలుపడలేదు",
+    successRsvp: "విజయవంతంగా నమోదైంది! అక్కడ కలుద్దాం 🙏",
+    failRsvp: "నమోదు విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+    netError: "నెట్‌వర్క్ లోపం. మళ్ళీ ప్రయత్నించండి.",
+    noEvents: "ఎటువంటి కార్యక్రమాలు షెడ్యూల్ చేయబడలేదు",
+    noRegistered: "మీరు ఇంకా ఏ కార్యక్రమానికి నమోదు చేసుకోలేదు",
+    noMatches: '"{query}" కి సరిపోలే కార్యక్రమాలు ఏవీ లేవు',
+    pastBadge: "గతించినవి",
+    upcomingBadge: "రాబోయేవి",
+    statusRegistered: "నమోదైనవి",
+    statusRsvp: "బుక్ చేయి (RSVP)",
+    statusEnded: "ముగిసింది",
+  },
+  hi: {
+    title: "चर्च के कार्यक्रम",
+    subtitle: "आगामी कार्यक्रमों को देखें और अपनी सीट सुरक्षित करें",
+    updated: "अपडेट किया गया",
+    refresh: "रिफ्रेश",
+    totalEvents: "कुल कार्यक्रम",
+    upcoming: "आगामी",
+    myRsvps: "मेरे पंजीकरण",
+    searchPlaceholder: "कार्यक्रम या स्थान खोजें...",
+    tabAll: "सभी",
+    tabUpcoming: "आगामी",
+    tabRegistered: "मेरे पंजीकरण",
+    newEventAlert: "शेड्यूल में नया कार्यक्रम जोड़ा गया!",
+    loadError: "कार्यक्रम लोड नहीं किए जा सके",
+    successRsvp: "सफलतापूर्वक पंजीकृत! वहाँ मिलते हैं 🙏",
+    failRsvp: "पंजीकरण विफल रहा। कृपया पुन: प्रयास करें।",
+    netError: "नेटवर्क त्रुटि। पुन: प्रयास करें।",
+    noEvents: "कोई कार्यक्रम निर्धारित नहीं है",
+    noRegistered: "आपने अभी तक किसी भी कार्यक्रम के लिए पंजीकरण नहीं कराया है",
+    noMatches: '"{query}" से मेल खाने वाला कोई कार्यक्रम नहीं मिला',
+    pastBadge: "बीता हुआ",
+    upcomingBadge: "आगामी",
+    statusRegistered: "पंजीकृत",
+    statusRsvp: "आरएसवीपी (RSVP)",
+    statusEnded: "समाप्त",
+  }
+};
+
 export default function MemberEvents() {
   const { user, status, mounted } = useAuth();
+  const { language } = useLanguage();
   const router = useRouter();
+
+  const et = eventsTranslations[language as keyof typeof eventsTranslations] || eventsTranslations.en;
 
   const [events, setEvents] = useState<ChurchEvent[]>([]);
   const [registeredIds, setRegisteredIds] = useState<string[]>([]);
@@ -66,7 +151,7 @@ export default function MemberEvents() {
         const newEvents: ChurchEvent[] = data.events || [];
         const newIds = newEvents.map((e: ChurchEvent) => e.id);
         if (prevIds.current.length && newIds.filter((id: string) => !prevIds.current.includes(id)).length) {
-          showToast("New event added to the schedule!", "info");
+          showToast(et.newEventAlert, "info");
         }
         prevIds.current = newIds;
         setEvents(newEvents);
@@ -74,12 +159,12 @@ export default function MemberEvents() {
         setLastSynced(new Date());
       }
     } catch {
-      if (!silent) showToast("Could not load events", "error");
+      if (!silent) showToast(et.loadError, "error");
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, et.newEventAlert, et.loadError]);
 
   useEffect(() => {
     if (status === "authenticated" && user?.uid) {
@@ -99,14 +184,14 @@ export default function MemberEvents() {
         body: JSON.stringify({ userId: user?.uid, eventId }),
       });
       if (res.ok) {
-        showToast("Successfully registered! See you there 🙏", "success");
+        showToast(et.successRsvp, "success");
       } else {
         setRegisteredIds(prev => prev.filter(id => id !== eventId));
-        showToast("Registration failed. Please try again.", "error");
+        showToast(et.failRsvp, "error");
       }
     } catch {
       setRegisteredIds(prev => prev.filter(id => id !== eventId));
-      showToast("Network error. Try again.", "error");
+      showToast(et.netError, "error");
     } finally {
       setProcessingId(null);
     }
@@ -140,7 +225,7 @@ export default function MemberEvents() {
             className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-xs ${
               toast.type === "success" ? "bg-green-500 text-white border-green-400/30" :
               toast.type === "error"   ? "bg-red-500 text-white border-red-400/30" :
-                                         "bg-indigo-600 text-white border-indigo-400/30"
+                                         "bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]/30"
             }`}
           >
             <Bell className="w-4 h-4 flex-shrink-0" />
@@ -152,15 +237,15 @@ export default function MemberEvents() {
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Church Events</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Browse upcoming programs and secure your seat</p>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{et.title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
-          {lastSynced && <span className="text-xs text-gray-400">Updated {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
+          {lastSynced && <span className="text-xs text-gray-400">{et.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
           <button onClick={() => load()} disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all text-xs font-semibold">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
+            {et.refresh}
           </button>
         </div>
       </div>
@@ -168,9 +253,9 @@ export default function MemberEvents() {
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Total Events", value: stats.total, icon: Activity, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/30" },
-          { label: "Upcoming",     value: stats.upcoming, icon: TrendingUp, color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-950/30" },
-          { label: "My RSVPs",     value: stats.registered, icon: UserCheck, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30" },
+          { label: et.totalEvents, value: stats.total, icon: Activity, color: "text-[hsl(var(--primary))]", bg: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30" },
+          { label: et.upcoming,     value: stats.upcoming, icon: TrendingUp, color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-950/30" },
+          { label: et.myRsvps,     value: stats.registered, icon: UserCheck, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30" },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3">
             <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -192,8 +277,8 @@ export default function MemberEvents() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search events or location..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all text-sm shadow-sm"
+            placeholder={et.searchPlaceholder}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm shadow-sm"
           />
         </div>
         <div className="flex bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-sm">
@@ -201,10 +286,10 @@ export default function MemberEvents() {
             <button key={tab} onClick={() => setFilter(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                 filter === tab
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-[hsl(var(--primary))] text-white shadow-sm"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}>
-              {tab === "ALL" ? "All" : tab === "UPCOMING" ? "Upcoming" : "My RSVPs"}
+              {tab === "ALL" ? et.tabAll : tab === "UPCOMING" ? et.tabUpcoming : et.tabRegistered}
             </button>
           ))}
         </div>
@@ -217,9 +302,9 @@ export default function MemberEvents() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-650 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400 font-semibold text-sm">
-            {search ? `No events matching "${search}"` : filter === "REGISTERED" ? "You haven't registered for any events yet" : "No events scheduled"}
+            {search ? et.noMatches.replace("{query}", search) : filter === "REGISTERED" ? et.noRegistered : et.noEvents}
           </p>
         </div>
       ) : (
@@ -239,7 +324,7 @@ export default function MemberEvents() {
                   className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden transition-all hover:shadow-md group ${
                     isRegistered ? "border-green-200 dark:border-green-900/30" :
                     isPast       ? "border-gray-100 dark:border-gray-800 opacity-60" :
-                                   "border-gray-100 dark:border-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900/40"
+                                   "border-gray-100 dark:border-gray-800 hover:border-[hsl(var(--primary))]/30 dark:hover:border-[hsl(var(--primary))]/20"
                   }`}
                 >
                   <div className={`h-1 ${style.bar}`} />
@@ -258,10 +343,10 @@ export default function MemberEvents() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${style.pill}`}>{event.category}</span>
-                        {!isPast && <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 dark:text-green-400"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />Upcoming</span>}
-                        {isPast && <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">Past</span>}
+                        {!isPast && <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 dark:text-green-400"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />{et.upcomingBadge}</span>}
+                        {isPast && <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{et.pastBadge}</span>}
                       </div>
-                      <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">{event.title}</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-[hsl(var(--primary))] transition-colors truncate">{event.title}</h3>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">{event.description}</p>
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 dark:text-gray-500">
                         <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{event.time}</span>
@@ -273,19 +358,19 @@ export default function MemberEvents() {
                     <div className="flex-shrink-0">
                       {isRegistered ? (
                         <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-xl text-xs font-bold border border-green-200 dark:border-green-900/30">
-                          <UserCheck className="w-4 h-4" /> Registered
+                          <UserCheck className="w-4 h-4" /> {et.statusRegistered}
                         </span>
                       ) : !isPast ? (
                         <button
                           onClick={() => handleRegister(event.id)}
                           disabled={processingId === event.id}
-                          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98] disabled:opacity-50"
+                          className="flex items-center gap-1.5 px-4 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 active:scale-[0.98] disabled:opacity-50"
                         >
                           {processingId === event.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                          RSVP
+                          {et.statusRsvp}
                         </button>
                       ) : (
-                        <span className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl text-xs font-bold">Ended</span>
+                        <span className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl text-xs font-bold">{et.statusEnded}</span>
                       )}
                     </div>
                   </div>

@@ -60,7 +60,7 @@ export default function Navbar() {
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
 
       {/* ── Top Announcement Bar ── */}
-      <div className="relative bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 dark:from-purple-950 dark:via-indigo-950 dark:to-purple-950 border-b border-purple-800/30 text-gray-200 dark:text-gray-300 text-xs hidden md:block overflow-hidden">
+      <div className="relative bg-gradient-to-r from-[hsl(var(--primary-gradient-start))]/90 via-[hsl(var(--primary))]/90 to-[hsl(var(--primary-gradient-end))]/90 border-b border-[hsl(var(--primary))]/20 text-gray-200 dark:text-gray-300 text-xs hidden md:block overflow-hidden">
         {/* Animated shimmer line */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/10 to-transparent animate-shimmer" />
         <div className="container mx-auto px-4 relative z-10">
@@ -141,7 +141,7 @@ export default function Navbar() {
                 <span className={cn(
                   "font-bold inline-block py-0.5 leading-normal",
                   mounted && language !== 'en' 
-                    ? "text-[0.85rem] tracking-normal text-purple-600 dark:text-purple-400 font-extrabold" 
+                    ? "text-[0.85rem] tracking-normal text-[hsl(var(--primary))] font-extrabold" 
                     : "text-[0.65rem] uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent"
                 )}>
                   {mounted ? t.nav.ministries : "Ministries"}
@@ -231,7 +231,7 @@ export default function Navbar() {
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5"
                       )}
                     >
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-purple-500 dark:bg-purple-400 flex-shrink-0" />}
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary))] flex-shrink-0" />}
                       {item.name}
                     </Link>
                   );

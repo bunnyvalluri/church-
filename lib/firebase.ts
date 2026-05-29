@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,8 +17,9 @@ if (!firebaseConfig.apiKey) {
 }
 
 // Initialize Firebase (singleton pattern) with fallback
-let app;
+let app: any;
 let auth: any;
+let db: any;
 let googleProvider: any;
 let facebookProvider: any;
 let twitterProvider: any;
@@ -25,16 +27,19 @@ let twitterProvider: any;
 try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   auth = getAuth(app);
+  db = getFirestore(app);
   googleProvider = new GoogleAuthProvider();
   facebookProvider = new FacebookAuthProvider();
   twitterProvider = new TwitterAuthProvider();
 } catch (e) {
   console.error("Firebase Init Error:", e);
-  // Mock auth to prevent crash
+  // Mock auth and db to prevent crash
   auth = { currentUser: null };
+  db = null;
   googleProvider = {};
   facebookProvider = {};
   twitterProvider = {};
 }
 
-export { auth, googleProvider, facebookProvider, twitterProvider };
+export { auth, db, googleProvider, facebookProvider, twitterProvider };
+

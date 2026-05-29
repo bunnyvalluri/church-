@@ -31,9 +31,46 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true, user: updatedUser });
     } catch (dbError: any) {
-      console.warn('[PROFILE/UPDATE] Database offline. Using fallback JSON storage. Details:', dbError?.message || dbError);
+      console.warn('[PROFILE/UPDATE] Database unavailable (Prisma/DB offline). Trying Firestore or local file fallback. Details:', dbError?.message || dbError);
 
       try {
+        const { db } = await import('@/lib/firebase');
+        if (db) {
+          try {
+            const { doc, setDoc, getDoc } = await import('firebase/firestore');
+            const userDocRef = doc(db, 'users', userId);
+            const userSnap = await getDoc(userDocRef);
+            
+            let fallbackUser;
+            if (userSnap.exists()) {
+              fallbackUser = {
+                ...userSnap.data(),
+                ...updateData,
+                updatedAt: new Date().toISOString(),
+              };
+            } else {
+              fallbackUser = {
+                id: userId,
+                email: '',
+                ...updateData,
+                role: 'MEMBER',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            await setDoc(userDocRef, fallbackUser);
+            
+            console.info(`[PROFILE/UPDATE/FIRESTORE] ✅ Updated user ${userId} directly in Cloud Firestore`);
+            return NextResponse.json({
+              success: true,
+              user: fallbackUser,
+              warning: 'Database offline. Profile updated directly in Firebase Firestore.',
+            });
+          } catch (firestoreError: any) {
+            console.warn('[PROFILE/UPDATE/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
+          }
+        }
+
         const fallbackFile = getFallbackFilePath('fallback_users.json');
         
         let users = [];
