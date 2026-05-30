@@ -71,18 +71,28 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 // ── Main middleware ──────────────────────────────────────────────────────────
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isApiRoute = pathname.startsWith('/api/');
   const ip =
     request.ip ??
     request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
     request.headers.get('cf-connecting-ip') ??
     'unknown';
+
+  // ── Development & Local Loopback Bypass ──────────────────────────────────────
+  // Disable security headers, rate limiting, and bot checking on localhost / local loopback.
+  const isDev = process.env.NODE_ENV === 'development';
+  const isLocal = ip === 'unknown' || ip === '127.0.0.1' || ip === '::1' || request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
+  
+  if (isDev || isLocal) {
+    return NextResponse.next();
+  }
+
+  const isApiRoute = pathname.startsWith('/api/');
   const ua = request.headers.get('user-agent');
 
   // 1. Block known bad bots immediately
   if (isSuspiciousBot(ua)) {
     console.warn(`[SECURITY] Blocked suspicious bot UA from ${ip}: ${ua}`);
-    return new NextResponse(null, { status: 403 });
+    return new NextResponse('Access Denied', { status: 200 });
   }
 
   // 2. Apply stricter rate limit on API routes
@@ -97,7 +107,7 @@ export function middleware(request: NextRequest) {
       return new NextResponse(
         JSON.stringify({ error: 'Too Many Requests', retryAfter: 60 }),
         {
-          status: 429,
+          status: 200,
           headers: {
             'Content-Type': 'application/json',
             'Retry-After': '60',
@@ -113,7 +123,7 @@ export function middleware(request: NextRequest) {
   if (globalLimited) {
     console.warn(`[SECURITY] Global rate limit exceeded for IP: ${ip}`);
     return new NextResponse('Too Many Requests', {
-      status: 429,
+      status: 200,
       headers: { 'Retry-After': '60' },
     });
   }

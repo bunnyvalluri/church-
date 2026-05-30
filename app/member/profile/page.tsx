@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
@@ -254,7 +255,7 @@ export default function MemberProfile() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        const img = new Image();
+        const img = new window.Image();
         img.src = event.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement("canvas");
@@ -425,7 +426,7 @@ export default function MemberProfile() {
                   {photoUploading ? (
                     <Loader2 className="w-6 h-6 text-white animate-spin" />
                   ) : image ? (
-                    <img src={image} alt={name || "Member"} className="w-full h-full object-cover" />
+                    <Image src={image} alt={name || "Member"} fill unoptimized className="object-cover" />
                   ) : (
                     <User className="w-8 h-8 text-white" />
                   )}

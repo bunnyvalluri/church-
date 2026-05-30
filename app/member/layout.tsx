@@ -4,6 +4,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import PaletteToggle from "@/components/PaletteToggle";
@@ -172,7 +173,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           <div className="relative flex items-center gap-3">
             <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 flex-shrink-0 overflow-hidden">
               {user?.image ? (
-                <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                <Image src={user.image} alt={user.name || "Member"} width={44} height={44} unoptimized className="w-full h-full object-cover" />
               ) : (
                 <User className="w-5 h-5 text-white" />
               )}
@@ -359,7 +360,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 >
                   <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
                     {user?.image ? (
-                      <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                      <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
                     ) : (
                       <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
                         <User className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
@@ -386,7 +387,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
                           {user?.image ? (
-                            <img src={user.image} alt={user.name || "Member"} className="w-full h-full object-cover" />
+                            <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
                               <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
