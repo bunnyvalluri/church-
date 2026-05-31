@@ -12,7 +12,7 @@ export default function ContactPage() {
       <Navbar />
 
       {/* Hero Header */}
-      <section className="relative py-20 bg-gradient-to-r from-indigo-750 via-purple-750 to-indigo-750 overflow-hidden mt-20">
+      <section className="relative py-20 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] overflow-hidden mt-20">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
