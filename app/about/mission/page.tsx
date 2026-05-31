@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function MissionPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
       {/* Hero */}
-      <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
               Mission & Vision
@@ -27,9 +27,9 @@ export default function MissionPage() {
 
       {/* Mission */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-glow">
+            <div className="w-20 h-20 bg-gradient-to-br from-gradient-start to-gradient-end rounded-full flex items-center justify-center mx-auto mb-6 animate-glow">
               <Target className="h-10 w-10 text-white" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
@@ -38,7 +38,7 @@ export default function MissionPage() {
             <p className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-8">
               "To know Christ and make Him known"
             </p>
-            <div className="grid md:grid-cols-2 gap-6 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover-lift">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Worship</h3>
                 <p className="text-gray-600 dark:text-gray-400">God with all our hearts</p>
@@ -62,7 +62,7 @@ export default function MissionPage() {
 
       {/* Vision */}
       <section className="py-16 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <Eye className="h-10 w-10 text-white" />
@@ -73,7 +73,7 @@ export default function MissionPage() {
             <p className="text-2xl md:text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-12">
               "A church where every person experiences transformation through Christ"
             </p>
-            <div className="grid md:grid-cols-2 gap-6 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
               {[
                 "A community where everyone belongs",
                 "Believers growing in spiritual maturity",
@@ -95,12 +95,12 @@ export default function MissionPage() {
 
       {/* Core Values */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
               Core Values
             </h2>
-            <div className="grid md:grid-cols-3 gap-6 stagger-children">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
               {[
                 { icon: "🙏", title: "Prayer First", desc: "We seek God in everything" },
                 { icon: "📖", title: "Bible-Based", desc: "Scripture guides our lives" },
@@ -121,8 +121,8 @@ export default function MissionPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-600">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Join Our Mission

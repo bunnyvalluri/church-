@@ -46,7 +46,7 @@ export default function Hero() {
         <motion.div 
           animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-10 left-[-10%] w-[40rem] h-[40rem] bg-gradient-to-r from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary-gradient-end)/0.3)] rounded-full blur-[120px] mix-blend-screen" 
+          className="absolute top-10 left-[-10%] w-[40rem] h-[40rem] bg-gradient-to-r from-primary/30 to-gradient-end/30 rounded-full blur-[120px] mix-blend-screen" 
         />
         <motion.div 
           animate={{ scale: [1, 1.1, 1], x: [0, -40, 0], y: [0, -50, 0] }}
@@ -56,7 +56,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-32 mt-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 mt-16">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -83,14 +83,14 @@ export default function Hero() {
             style={{ fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
           >
             {mounted ? t.hero.welcome : "Welcome to"}{" "}
-            <span className="block mt-2 bg-gradient-to-r from-[hsl(var(--primary))] via-amber-500 to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer">
+            <span className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer">
               {mounted ? t.hero.churchName : "Kingdom of Christ"}
             </span>
             <span 
               className={`block font-black mt-1 pb-1 leading-normal ${
                 mounted && language !== "en"
                   ? "tracking-normal text-purple-600 dark:text-purple-400"
-                  : "uppercase tracking-[0.2em] bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent"
+                  : "uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
               }`}
               style={{ fontSize: "clamp(1.1rem, 3.5vw, 2.25rem)" }}
             >
@@ -114,7 +114,7 @@ export default function Hero() {
           >
             <Link
               href="#services"
-              className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-full font-bold overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 text-center"
+              className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-primary to-gradient-end text-white rounded-full font-bold overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 text-center"
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">
@@ -130,7 +130,7 @@ export default function Hero() {
             </Link>
             <Link
               href="/prayer"
-              className="w-full sm:w-auto px-8 py-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-[hsl(var(--primary))] rounded-full font-bold transition-all hover:scale-105 active:scale-95 text-center"
+              className="w-full sm:w-auto px-8 py-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-primary rounded-full font-bold transition-all hover:scale-105 active:scale-95 text-center"
             >
               Prayer Request
             </Link>
@@ -142,7 +142,7 @@ export default function Hero() {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto px-4"
           >
             {[
-              { icon: Users, count: "1000+", label: "Members", color: "from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))]", shadow: "shadow-primary/20" },
+              { icon: Users, count: "1000+", label: "Members", color: "from-primary to-gradient-end", shadow: "shadow-primary/20" },
               { icon: HeartHandshake, count: "150+", label: "Volunteers", color: "from-emerald-400 to-teal-500", shadow: "shadow-emerald-500/20" },
               { icon: Award, count: "25+", label: "Years of Ministry", color: "from-amber-400 to-orange-500", shadow: "shadow-amber-500/20" },
               { icon: BookOpen, count: "100+", label: "Community Programs", color: "from-rose-400 to-red-500", shadow: "shadow-rose-500/20" }

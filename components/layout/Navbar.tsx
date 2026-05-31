@@ -70,8 +70,7 @@ export default function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
 
-      {/* ── Top Announcement Bar ── */}
-      <div className="relative bg-gradient-to-r from-[hsl(var(--primary-gradient-start))]/90 via-[hsl(var(--primary))]/90 to-[hsl(var(--primary-gradient-end))]/90 border-b border-[hsl(var(--primary))]/20 text-gray-200 dark:text-gray-300 text-xs hidden md:block overflow-hidden">
+      <div className="relative bg-gradient-to-r from-gradient-start/90 via-primary/90 to-gradient-end/90 border-b border-primary/20 text-gray-200 dark:text-gray-300 text-xs hidden md:block overflow-hidden">
         {/* Animated shimmer line */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/10 to-transparent animate-shimmer" />
         <div className="container mx-auto px-4 relative z-10">
@@ -124,15 +123,15 @@ export default function Navbar() {
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent" />
         )}
 
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
             {/* ── Logo ── */}
             <Link href="/" className="flex items-center space-x-3 group perspective">
               <div className="relative w-12 h-12 flex-shrink-0">
                 {/* Rotating glow ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[hsl(var(--primary-gradient-start))] via-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-110" />
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))/0.3] dark:border-[hsl(var(--primary))/0.2] shadow-lg shadow-[hsl(var(--primary))/0.1] group-hover:border-[hsl(var(--primary))/0.6] transition-all duration-500 group-hover:scale-105 bg-white">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-gradient-start via-primary to-gradient-end opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-110" />
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30 dark:border-primary/20 shadow-lg shadow-primary/10 group-hover:border-primary/60 transition-all duration-500 group-hover:scale-105 bg-white">
                   <Image
                     src="/logo.png"
                     alt="Kingdom of Christ Ministries Logo"
@@ -144,7 +143,7 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                  <span className={cn(
-                  "font-black text-xl leading-tight text-gray-900 dark:text-white drop-shadow-sm group-hover:bg-gradient-to-r group-hover:from-[hsl(var(--primary-gradient-start))] group-hover:to-[hsl(var(--primary-gradient-end))] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 py-0.5",
+                  "font-black text-xl leading-tight text-gray-900 dark:text-white drop-shadow-sm group-hover:bg-gradient-to-r group-hover:from-gradient-start group-hover:to-gradient-end group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 py-0.5",
                   mounted && language !== 'en' ? "tracking-normal" : "tracking-tight"
                 )}>
                   {mounted ? t.nav.churchName : "Kingdom of Christ"}
@@ -152,8 +151,8 @@ export default function Navbar() {
                 <span className={cn(
                   "font-bold inline-block py-0.5 leading-normal",
                   mounted && language !== 'en' 
-                    ? "text-[0.85rem] tracking-normal text-[hsl(var(--primary))] font-extrabold" 
-                    : "text-[0.65rem] uppercase tracking-widest bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent"
+                    ? "text-[0.85rem] tracking-normal text-primary font-extrabold" 
+                    : "text-[0.65rem] uppercase tracking-widest bg-gradient-to-r from-primary to-gradient-end bg-clip-text text-transparent"
                 )}>
                   {mounted ? t.nav.ministries : "Ministries"}
                 </span>
@@ -207,9 +206,9 @@ export default function Navbar() {
                   className="relative px-5 py-2.5 rounded-xl font-bold text-white text-xs lg:text-sm overflow-hidden group shadow-md shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.35] hover:scale-105 active:scale-[0.98] transition-all duration-300 whitespace-nowrap flex items-center justify-center min-h-[38px] flex-shrink-0"
                 >
                   {/* Base gradient */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] transition-all duration-300 group-hover:opacity-95" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-gradient-start to-gradient-end transition-all duration-300 group-hover:opacity-95" />
                   {/* Outer glow */}
-                  <span className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-xl blur opacity-0 group-hover:opacity-65 transition-opacity duration-500 -z-10" />
+                  <span className="absolute -inset-0.5 bg-gradient-to-r from-gradient-start to-gradient-end rounded-xl blur opacity-0 group-hover:opacity-65 transition-opacity duration-500 -z-10" />
                   <span className="relative z-10">Member Login</span>
                 </Link>
               </div>
@@ -275,7 +274,7 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full px-4 py-3.5 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold text-center shadow-lg shadow-primary/20 hover:shadow-primary/45 transition-shadow"
+                  className="w-full px-4 py-3.5 bg-gradient-to-r from-primary via-gradient-start to-gradient-end text-white rounded-xl font-bold text-center shadow-lg shadow-primary/20 hover:shadow-primary/45 transition-shadow"
                 >
                   Member Login
                 </Link>

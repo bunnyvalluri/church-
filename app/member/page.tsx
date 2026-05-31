@@ -381,7 +381,7 @@ export default function MemberDashboard() {
 
       {/* Sticky Header */}
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
-        <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 bg-gradient-to-br from-gradient-start to-gradient-end rounded-xl flex items-center justify-center shadow-md shadow-[hsl(var(--primary))/0.2] group-hover:scale-105 transition-transform">
               <Star className="w-4 h-4 text-white" />
@@ -523,7 +523,7 @@ export default function MemberDashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-10 max-w-7xl">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* LEFT: Main Dashboard Content */}
           <div className="lg:col-span-8 space-y-7">

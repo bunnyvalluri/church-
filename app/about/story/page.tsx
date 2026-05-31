@@ -9,11 +9,11 @@ export default function OurStoryPage() {
   const pageT = t.pages.story;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm mb-6 animate-bounce-in">
               <Church className="h-4 w-4" />
@@ -31,7 +31,7 @@ export default function OurStoryPage() {
 
       {/* Content Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
 
             {/* How It Began */}
@@ -59,7 +59,7 @@ export default function OurStoryPage() {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
                 Our Journey
               </h2>
-              <div className="grid md:grid-cols-2 gap-6 stagger-children">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 stagger-children">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
                     <Church className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -126,8 +126,8 @@ export default function OurStoryPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-600">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up">
               Join Our Story

@@ -460,10 +460,10 @@ export default function GivePage() {
         )}
       </AnimatePresence>
 
-      <section className="relative py-24 bg-gradient-to-r from-gradient-start to-gradient-end overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }}
@@ -498,8 +498,8 @@ export default function GivePage() {
 
       {/* Main Interactive Segment (Matches 2-column layout width of previous version) */}
       <section className="py-20 -mt-10 relative z-20">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-12 max-w-6xl mx-auto items-start">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 max-w-6xl mx-auto items-start">
             
             {/* Left Column: Giving Form */}
             <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700/50">
@@ -1164,7 +1164,7 @@ export default function GivePage() {
 
       {/* Why We Give (Full width bottom section matching previous layout) */}
       <section className="py-16 border-t border-gray-150 dark:border-gray-800">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               {gt.whyHeading}
@@ -1188,7 +1188,7 @@ export default function GivePage() {
 
       {/* Ways to Give: Other methods */}
       <section className="py-16 bg-gradient-to-br from-purple-50/50 to-indigo-50/50 dark:from-purple-900/10 dark:to-indigo-900/10">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
               Other Ways to Give

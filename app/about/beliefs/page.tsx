@@ -41,11 +41,11 @@ export default function BeliefsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
       {/* Hero */}
-      <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
               Our Beliefs
@@ -59,12 +59,12 @@ export default function BeliefsPage() {
 
       {/* Core Doctrines */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center animate-fade-in-up">
               Core Doctrines
             </h2>
-            <div className="grid md:grid-cols-2 gap-8 stagger-children">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
               {beliefs.map((belief, index) => (
                 <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover-lift">
                   <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
@@ -84,13 +84,13 @@ export default function BeliefsPage() {
       </section>
 
       {/* Values */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
               Our Values
             </h2>
-            <div className="grid md:grid-cols-3 gap-6 stagger-children">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
               {values.map((value, index) => (
                 <div key={index} className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover-lift">
                   <div className="text-4xl mb-4">{value.icon}</div>
@@ -108,8 +108,8 @@ export default function BeliefsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-600">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Learn More

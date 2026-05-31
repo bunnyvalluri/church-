@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function LeadershipPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm mb-6 animate-bounce-in">
               <Users className="h-4 w-4" />
@@ -31,7 +31,7 @@ export default function LeadershipPage() {
 
       {/* Senior Pastor Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
 
             {/* Senior Pastor */}
@@ -40,7 +40,7 @@ export default function LeadershipPage() {
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
                   Senior Pastor
                 </h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full"></div>
+                <div className="w-24 h-1 bg-gradient-to-r from-gradient-start to-gradient-end mx-auto rounded-full"></div>
               </div>
 
               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-3xl p-8 md:p-12 shadow-xl">
@@ -86,7 +86,7 @@ export default function LeadershipPage() {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 stagger-children">
                 {/* Worship Ministry */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift card-flip">
                   <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4 mx-auto">
@@ -190,8 +190,8 @@ export default function LeadershipPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-600">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up">
               Serve With Us
