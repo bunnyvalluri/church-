@@ -82,7 +82,7 @@ export default function Error({ error, reset }: ErrorProps) {
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
           <button
             onClick={() => reset()}
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-full font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
+            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-full font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
           >
             <RotateCw className="w-4 h-4" />
             {active.tryAgain}

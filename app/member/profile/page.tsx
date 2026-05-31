@@ -404,7 +404,7 @@ export default function MemberProfile() {
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
           >
             {/* Gradient top */}
-            <div className="h-20 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] relative">
+            <div className="h-20 bg-gradient-to-r from-gradient-start to-gradient-end relative">
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E\")" }} />
             </div>
             <div className="px-5 pb-5">
@@ -420,7 +420,7 @@ export default function MemberProfile() {
                   type="button"
                   disabled={photoUploading}
                   onClick={() => fileInputRef.current?.click()}
-                  className="group relative w-16 h-16 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
+                  className="group relative w-16 h-16 bg-gradient-to-r from-gradient-start to-gradient-end rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
                   title="Upload profile picture"
                 >
                   {photoUploading ? (
@@ -596,7 +596,7 @@ export default function MemberProfile() {
                     : saveState === "error"
                     ? "bg-red-500 text-white"
                     : hasChanges
-                    ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] hover:opacity-90 text-white shadow-lg shadow-[hsl(var(--primary))]/20 hover:shadow-xl active:scale-[0.98]"
+                    ? "bg-gradient-to-r from-gradient-start to-gradient-end hover:opacity-90 text-white shadow-lg shadow-[hsl(var(--primary))]/20 hover:shadow-xl active:scale-[0.98]"
                     : "bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
                 }`}
               >

@@ -284,7 +284,7 @@ export default function MemberVolunteer() {
       </div>
 
       {/* Total open slots banner */}
-      <div className="bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-2xl p-4 flex items-center justify-between text-white">
+      <div className="bg-gradient-to-r from-gradient-start to-gradient-end rounded-2xl p-4 flex items-center justify-between text-white">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <Users className="w-5 h-5" />
@@ -306,7 +306,7 @@ export default function MemberVolunteer() {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white dark:bg-gray-900 rounded-2xl border border-green-200 dark:border-green-900/30 shadow-sm p-12 text-center"
         >
-          <div className="w-20 h-20 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[hsl(var(--primary))]/20">
+          <div className="w-20 h-20 bg-gradient-to-r from-gradient-start to-gradient-end rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[hsl(var(--primary))]/20">
             <Check className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{vt.successTitle}</h2>
@@ -315,7 +315,7 @@ export default function MemberVolunteer() {
           </p>
           <button
             onClick={() => { setSubmitted(false); setSelected(null); setSkills(""); }}
-            className="px-6 py-3 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all"
+            className="px-6 py-3 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all"
           >
             {vt.btnApplyAnother}
           </button>
@@ -406,7 +406,7 @@ export default function MemberVolunteer() {
                     </div>
 
                     <button type="submit" disabled={loading || !skills.trim()}
-                      className="w-full py-3 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] hover:opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 transition-all active:scale-[0.99] disabled:opacity-50">
+                      className="w-full py-3 bg-gradient-to-r from-gradient-start to-gradient-end hover:opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 transition-all active:scale-[0.99] disabled:opacity-50">
                       {loading
                         ? <><Loader2 className="w-4 h-4 animate-spin" />{vt.btnSubmitting}</>
                         : <><Send className="w-4 h-4" />{vt.btnSubmit}</>}

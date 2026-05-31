@@ -391,7 +391,7 @@ export default function MemberPrayers() {
             </label>
             <button
               type="submit" disabled={submitting}
-              className="w-full py-3 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] hover:opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 transition-all active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-gradient-start to-gradient-end hover:opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 transition-all active:scale-[0.99] disabled:opacity-50"
             >
               {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
             </button>

@@ -10,8 +10,7 @@ export default function PrayerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      {/* Hero */}
-      <section className="relative py-20 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-r from-gradient-start to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -50,7 +49,7 @@ export default function PrayerPage() {
                 { step: "4", title: pageT.step4Title, desc: pageT.step4Desc },
               ].map((item, index) => (
                 <div key={index} className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gradient-start to-gradient-end rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold">
                     {item.step}
                   </div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
@@ -126,7 +125,7 @@ export default function PrayerPage() {
 
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-semibold shadow-lg shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.4] transition-all duration-300 hover:scale-105 hover-lift"
+                  className="w-full px-8 py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-semibold shadow-lg shadow-[hsl(var(--primary))/0.2] hover:shadow-[hsl(var(--primary))/0.4] transition-all duration-300 hover:scale-105 hover-lift"
                 >
                   {pageT.submit}
                 </button>
@@ -184,7 +183,7 @@ export default function PrayerPage() {
       </section>
 
       {/* Prayer Meeting Times */}
-      <section className="py-16 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))]">
+      <section className="py-16 bg-gradient-to-r from-gradient-start to-gradient-end">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">

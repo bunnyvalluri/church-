@@ -17,14 +17,14 @@ export default function ResourcesPage() {
       description: "Deep dive into God's word with our study guides and materials.",
       icon: BookOpen,
       href: "/resources/bible-study",
-      color: "bg-[hsl(var(--primary-gradient-start))/0.1] text-[hsl(var(--primary-gradient-start))]",
+      color: "bg-gradient-start/10 text-gradient-start",
     },
     {
       title: "Media Library",
       description: "Access worship music, photos, and event recordings.",
       icon: ImageIcon,
       href: "/resources/media",
-      color: "bg-[hsl(var(--primary-gradient-end))/0.1] text-[hsl(var(--primary-gradient-end))]",
+      color: "bg-gradient-end/10 text-gradient-end",
     },
     {
       title: "Blog & Articles",
@@ -38,7 +38,7 @@ export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent" />
 
@@ -47,7 +47,7 @@ export default function ResourcesPage() {
             Grow in Faith
           </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
-            Resources for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))]">Spiritual Journey</span>
+            Resources for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-gradient-start to-gradient-end">Spiritual Journey</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10 animate-fade-in-up animate-delay-100">
             Equip yourself with tools, teachings, and materials designed to help you know Christ more deeply.
@@ -89,7 +89,7 @@ export default function ResourcesPage() {
       {/* Featured Resource */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-3xl p-8 md:p-16 text-white text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-gradient-start to-gradient-end rounded-3xl p-8 md:p-16 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <BookOpen className="w-64 h-64" />
             </div>

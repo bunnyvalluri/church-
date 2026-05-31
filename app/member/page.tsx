@@ -383,11 +383,11 @@ export default function MemberDashboard() {
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
         <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] rounded-xl flex items-center justify-center shadow-md shadow-[hsl(var(--primary))/0.2] group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 bg-gradient-to-br from-gradient-start to-gradient-end rounded-xl flex items-center justify-center shadow-md shadow-[hsl(var(--primary))/0.2] group-hover:scale-105 transition-transform">
               <Star className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent tracking-tight leading-none">
+              <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight leading-none">
                 {mt.portalName}
               </h1>
               <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest hidden md:inline">{mt.roleName}</span>

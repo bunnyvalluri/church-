@@ -156,12 +156,11 @@ export default function LoginPage() {
     <div className="min-h-[100dvh] flex flex-col lg:flex-row">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end" />
         {/* Decorative Circles */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[hsl(var(--primary-gradient-start))]/10 rounded-full blur-2xl" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-start/10 rounded-full blur-2xl" />
         {/* Cross Watermark */}
         <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
           <span className="text-white font-bold" style={{ fontSize: "40rem", lineHeight: 1 }}>✝</span>
@@ -189,7 +188,7 @@ export default function LoginPage() {
           <blockquote className="text-3xl font-light leading-relaxed text-white/90 mb-6">
             "{loginT.quote}"
           </blockquote>
-          <cite className="text-[hsl(var(--primary-gradient-start))] text-sm font-semibold filter brightness-150">{loginT.author}</cite>
+          <cite className="text-gradient-start text-sm font-semibold filter brightness-150">{loginT.author}</cite>
         </div>
 
         <div className="relative z-10">
@@ -201,11 +200,11 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[hsl(var(--primary-gradient-start))]/10 rounded-full blur-2xl lg:hidden pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-start/10 rounded-full blur-2xl lg:hidden pointer-events-none" />
         
         {/* Cross Watermark (Mobile Only) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none lg:hidden">
@@ -231,7 +230,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))/0.08] dark:bg-[hsl(var(--primary))/0.15] border border-[hsl(var(--primary))/0.15] dark:border-[hsl(var(--primary))/0.3] flex items-center justify-center mb-3 shadow-sm">
               <span className="text-2xl text-[hsl(var(--primary))]">✝</span>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
             <p className={`text-gray-500 dark:text-gray-400 font-bold mt-0.5 leading-normal ${
@@ -329,7 +328,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white font-semibold shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>

@@ -460,8 +460,7 @@ export default function GivePage() {
         )}
       </AnimatePresence>
 
-      {/* Hero (Visual layout matches previous version) */}
-      <section className="relative py-24 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-r from-gradient-start to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
         <div className="container mx-auto px-4 relative z-10">
@@ -605,7 +604,7 @@ export default function GivePage() {
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
                                   amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
+                                    ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 }`}
                               >
@@ -664,7 +663,7 @@ export default function GivePage() {
                         <button
                           type="button"
                           onClick={handleNextStep}
-                          className="w-full py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
+                          className="w-full py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
                         >
                           {gt.continueBtn}
                           <ArrowRight className="h-5 w-5" />
@@ -822,7 +821,7 @@ export default function GivePage() {
                         <button
                           type="button"
                           onClick={() => setUpiStep(2)}
-                          className="w-full py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
+                          className="w-full py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
                         >
                           {gt.scannedPaidBtn}
                           <ArrowRight className="h-5 w-5" />
@@ -852,7 +851,7 @@ export default function GivePage() {
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
                                   amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
+                                    ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 }`}
                               >
@@ -995,7 +994,7 @@ export default function GivePage() {
                             type="button"
                             disabled={loading}
                             onClick={handleNextStep}
-                            className="flex-[2] py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
+                            className="flex-[2] py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
                           >
                             {loading ? (
                               <>
@@ -1021,7 +1020,7 @@ export default function GivePage() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Payment Summary Box */}
-              <div className="bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-gradient-start to-gradient-end text-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full filter blur-xl transform translate-x-10 -translate-y-10" />
                 
                 <h3 className="font-bold text-lg uppercase tracking-wider text-purple-200 mb-6 flex items-center gap-2">

@@ -158,7 +158,7 @@ export default function Hero() {
                   <div className={`w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-lg ${stat.shadow} group-hover:scale-110 transition-transform duration-300`}>
                     <stat.icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
                   </div>
-                  <div className="text-2xl md:text-4xl font-black text-foreground mb-1 font-outfit">{stat.count}</div>
+                  <div suppressHydrationWarning className="text-2xl md:text-4xl font-black text-foreground mb-1 font-outfit">{stat.count}</div>
                   <div className="text-muted-foreground font-semibold uppercase tracking-widest text-[9px] md:text-xs">{stat.label}</div>
                 </div>
               </motion.div>
