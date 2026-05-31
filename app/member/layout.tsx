@@ -407,8 +407,29 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
                       {/* Regional Dropdown Utilities */}
                       <div className="space-y-4">
-                        {/* Language Selection (Visible on screens < lg) */}
-                        <div className="lg:hidden space-y-1.5">
+                        {/* Mobile Preferences (Visible on screens < md) */}
+                        <div className="md:hidden space-y-3">
+                          <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">⚙️ Preferences</span>
+                          <div className="flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-white/5 border border-gray-150 dark:border-white/5 rounded-2xl">
+                            <div className="flex flex-col gap-1.5">
+                              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
+                              <div className="scale-[0.9] origin-left">
+                                <LanguageToggle />
+                              </div>
+                            </div>
+                            <div className="h-[1px] bg-gray-200/50 dark:bg-gray-800/50" />
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Appearance</span>
+                              <div className="flex gap-2 items-center">
+                                <ThemeToggle />
+                                <PaletteToggle />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Tablet Language Selection (Visible on screens md to lg) */}
+                        <div className="hidden md:block lg:hidden space-y-1.5">
                           <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🌐 Choose Language</span>
                           <div className="scale-[0.98] origin-left">
                             <LanguageToggle />

@@ -89,7 +89,7 @@ export default function Hero() {
             <span 
               className={`block font-black mt-1 pb-1 leading-normal ${
                 mounted && language !== "en"
-                  ? "tracking-normal text-purple-600 dark:text-purple-400"
+                  ? "tracking-normal text-primary"
                   : "uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
               }`}
               style={{ fontSize: "clamp(1.1rem, 3.5vw, 2.25rem)" }}
@@ -130,7 +130,7 @@ export default function Hero() {
             </Link>
             <Link
               href="/prayer"
-              className="w-full sm:w-auto px-8 py-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-primary rounded-full font-bold transition-all hover:scale-105 active:scale-95 text-center"
+              className="w-full sm:w-auto px-8 py-4 bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary rounded-full font-bold transition-all hover:scale-105 active:scale-95 text-center"
             >
               Prayer Request
             </Link>
