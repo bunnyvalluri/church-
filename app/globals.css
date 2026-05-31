@@ -95,6 +95,13 @@
 
   /* Performance-Optimized: SVG noise overlays cause massive paint lag on scroll.
      We removed the full-screen feTurbulence filter to ensure 60fps scrolling and fast rendering. */
+
+  /* content-visibility: auto — tells the browser to skip layout+paint for off-screen sections
+     until the user scrolls to them. Massive initial render speedup on long pages. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px; /* estimated height prevents layout shift */
+  }
 }
 
 @layer utilities {
@@ -418,6 +425,44 @@ main {
   animation: shimmer 4s linear infinite;
 }
 
+/* ── Hero background orbs (GPU compositor thread via CSS keyframes) ── */
+@keyframes hero-orb-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(50px, 30px) scale(1.2); }
+  66%       { transform: translate(25px, 15px) scale(1.1); }
+}
+@keyframes hero-orb-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-40px, -50px) scale(1.1); }
+  66%       { transform: translate(-20px, -25px) scale(1.05); }
+}
+
+.hero-orb-1 {
+  will-change: transform;
+  animation: hero-orb-1 15s ease-in-out infinite;
+  position: absolute;
+  top: 2.5rem;
+  left: -10%;
+  width: 40rem;
+  height: 40rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary-gradient-end) / 0.15) 60%, transparent 100%);
+  filter: blur(80px);
+}
+
+.hero-orb-2 {
+  will-change: transform;
+  animation: hero-orb-2 18s ease-in-out 2s infinite;
+  position: absolute;
+  bottom: -10%;
+  right: -5%;
+  width: 35rem;
+  height: 35rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.08) 60%, transparent 100%);
+  filter: blur(80px);
+}
+
 /* Float animation */
 @keyframes float {
   0%, 100% { transform: translateY(0px) scale(1); }
@@ -497,43 +542,38 @@ html[lang="hi"] h3 {
 }
 
 /* ==========================================================================
-   🌀 PREMIUM SENIOR UI/UX DYNAMIC HOVER ROTATION FOR ALL ICONS
-   Adds a smooth 360-degree elastic rotation transition to all Lucide and SVG icons.
+   🌀 ICON HOVER — lightweight scale only (rotation causes GPU layer per-SVG)
    ========================================================================== */
 
-svg.lucide, 
-.lucide, 
+svg.lucide,
+.lucide,
 [class^="lucide-"],
-.lucide-react, 
-svg:not(.animate-spin):not(.animate-pulse) {
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+.lucide-react {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-svg.lucide:hover,
-a:hover svg.lucide, 
-button:hover svg.lucide, 
+a:hover svg.lucide,
+button:hover svg.lucide,
 .group:hover svg.lucide,
-.smooth-card:hover svg.lucide,
 [role="button"]:hover svg.lucide,
 a:hover .lucide,
 button:hover .lucide,
-.group:hover .lucide,
-a:hover svg:not(.animate-spin):not(.animate-pulse),
-button:hover svg:not(.animate-spin):not(.animate-pulse),
-.group:hover svg:not(.animate-spin):not(.animate-pulse) {
-  transform: rotate(360deg) scale(1.1) !important;
+.group:hover .lucide {
+  transform: scale(1.15);
 }
 
 /* ==========================================================================
    🌌 PREMIUM HARDWARE-ACCELERATED DYNAMIC GLOW BACKGROUND
-   Eliminates scrolling paint bottlenecks and delivers smooth 60fps scrolling.
+   background-attachment:fixed is removed — it disables GPU compositing on
+   iOS / mobile Safari causing jank on every scroll frame.
    ========================================================================== */
 .premium-glow-bg {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-attachment: fixed;
+  will-change: transform; /* promote to own compositor layer */
+  transform: translateZ(0);
   background-image: 
     radial-gradient(at 0% 0%, hsla(var(--primary-gradient-start) / 0.08) 0px, transparent 50%),
     radial-gradient(at 100% 20%, hsla(var(--primary-gradient-end) / 0.05) 0px, transparent 50%),

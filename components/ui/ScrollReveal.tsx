@@ -17,30 +17,21 @@ export default function ScrollReveal({
   className = "",
 }: ScrollRevealProps) {
   const directions = {
-    up: { y: 20, x: 0 },
-    down: { y: -20, x: 0 },
-    left: { x: 20, y: 0 },
+    up:    { y: 20, x: 0 },
+    down:  { y: -20, x: 0 },
+    left:  { x: 20, y: 0 },
     right: { x: -20, y: 0 },
   };
 
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        filter: "blur(4px)",
-        ...directions[direction],
-      }}
-      whileInView={{
-        opacity: 1,
-        filter: "blur(0px)",
-        x: 0,
-        y: 0,
-      }}
-      viewport={{ once: true, margin: "-30px" }}
+      initial={{ opacity: 0, ...directions[direction] }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{
-        duration: 0.55,
-        delay: delay,
-        ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier (easeOutExpo) for ultra-premium responsive feel
+        duration: 0.5,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
     >

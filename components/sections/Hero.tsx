@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Calendar, Users, Heart, Sparkles, Cross, HeartHandshake, Award, BookOpen } from "lucide-react";
+import { ArrowRight, Users, HeartHandshake, Award, BookOpen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -39,20 +39,11 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Animated Background */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Animated Background — CSS keyframes in globals.css (no inline style tag) */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] dark:opacity-5" />
-        {/* Colorful Floating orbs tailored to the brand (Purple/Gold) */}
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-10 left-[-10%] w-[40rem] h-[40rem] bg-gradient-to-r from-primary/30 to-gradient-end/30 rounded-full blur-[120px] mix-blend-screen" 
-        />
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], x: [0, -40, 0], y: [0, -50, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-10%] right-[-5%] w-[35rem] h-[35rem] bg-gradient-to-r from-amber-500/20 to-orange-400/20 rounded-full blur-[120px] mix-blend-screen" 
-        />
+        <div className="hero-orb-1" />
+        <div className="hero-orb-2" />
       </div>
 
       {/* Content */}
@@ -67,7 +58,7 @@ export default function Hero() {
           <motion.div variants={itemVariants} className="flex justify-center mb-8">
             <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-full text-foreground shadow-2xl shadow-amber-500/10 hover:border-amber-500/30 transition-colors duration-300">
               <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
-              <span className="font-medium tracking-wide text-sm md:text-base">
+              <span suppressHydrationWarning className="font-medium tracking-wide text-sm md:text-base">
                 {mounted ? t.hero.prayerBoxSub : "We are here for you 24/7"}
               </span>
               <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
@@ -75,23 +66,21 @@ export default function Hero() {
           </motion.div>
 
           {/* Main Heading */}
-          <motion.h1 
+          <motion.h1
+            suppressHydrationWarning
             variants={itemVariants}
-            className={`font-black text-foreground mb-4 leading-[1.1] drop-shadow-sm font-outfit ${
-              mounted && language !== "en" ? "tracking-normal" : "tracking-tighter"
-            }`}
+            className="font-black text-foreground mb-4 leading-[1.1] drop-shadow-sm font-outfit tracking-tighter"
             style={{ fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
           >
-            {mounted ? t.hero.welcome : "Welcome to"}{" "}
-            <span className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer">
+            <span suppressHydrationWarning>
+              {mounted ? t.hero.welcome : "Welcome to"}{" "}
+            </span>
+            <span suppressHydrationWarning className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer">
               {mounted ? t.hero.churchName : "Kingdom of Christ"}
             </span>
-            <span 
-              className={`block font-black mt-1 pb-1 leading-normal ${
-                mounted && language !== "en"
-                  ? "tracking-normal text-primary"
-                  : "uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
-              }`}
+            <span
+              suppressHydrationWarning
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
               style={{ fontSize: "clamp(1.1rem, 3.5vw, 2.25rem)" }}
             >
               {mounted ? t.hero.ministries : "Ministries"}
@@ -99,7 +88,8 @@ export default function Hero() {
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
+            suppressHydrationWarning
             variants={itemVariants}
             className="text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed font-medium px-4"
             style={{ fontSize: "clamp(0.95rem, 2.5vw, 1.25rem)" }}

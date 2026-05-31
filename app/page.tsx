@@ -1,14 +1,12 @@
-
 import Hero from "@/components/sections/Hero";
-import ScrollReveal from "@/components/ui/ScrollReveal";
 import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
 import Events from "@/components/sections/Events";
 import Sermons from "@/components/sections/Sermons";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
-
 import Navbar from "@/components/layout/Navbar";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function Home() {
   return (
@@ -24,3 +22,4 @@ export default function Home() {
     </main>
   );
 }
+
