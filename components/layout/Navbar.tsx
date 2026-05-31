@@ -160,7 +160,7 @@ export default function Navbar() {
             </Link>
 
             {/* ── Desktop Nav ── */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden lg:flex items-center space-x-6">
               {/* Borderless Nav Pill with active glassmorphic highlight */}
               <div className="flex items-center space-x-1">
                 {navItems.map((item) => {
@@ -217,7 +217,7 @@ export default function Navbar() {
             {/* ── Mobile Menu Button ── */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all shadow-sm"
+              className="lg:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all shadow-sm"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -225,7 +225,7 @@ export default function Navbar() {
 
           {/* ── Mobile Menu ── */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 p-4 animate-scale-in bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10">
+            <div className="lg:hidden mt-4 p-4 animate-scale-in bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10">
               <div className="space-y-1">
                 {navItems.map((item) => {
                   const isActive = activeSection === item.href.slice(1);
