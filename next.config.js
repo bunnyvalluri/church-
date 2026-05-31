@@ -2,7 +2,6 @@
 const nextConfig = {
   // ── Performance ──────────────────────────────────────────────────────────
   compress: true,
-  output: 'standalone',
   poweredByHeader: false,
 
   // Optimise large icon/animation package imports (tree-shaking)
