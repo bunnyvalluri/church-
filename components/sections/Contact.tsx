@@ -49,7 +49,7 @@ export default function Contact() {
 
   return (
     <section id="contact" className="py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
@@ -64,7 +64,7 @@ export default function Contact() {
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Info */}
           <div className="space-y-8">
-            <div className="bg-white dark:bg-white/[0.02] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl">
+            <div className="bg-white dark:bg-white/[0.02] rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl">
               <h3 className="text-2xl font-bold mb-8 text-slate-900 dark:text-white tracking-tight">
                 {t.contact.infoTitle}
               </h3>
@@ -82,7 +82,7 @@ export default function Contact() {
                       href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-600 dark:text-white/70 hover:text-[hsl(var(--primary))] dark:hover:text-[hsl(var(--primary))] transition-colors leading-relaxed group flex items-start gap-1"
+                      className="text-slate-600 dark:text-white/70 hover:text-[hsl(var(--primary))] dark:hover:text-[hsl(var(--primary))] transition-colors leading-relaxed group flex items-start gap-1 text-sm sm:text-base"
                     >
                       <span>
                         Kingdom of Christ Ministries,<br />
@@ -103,7 +103,7 @@ export default function Contact() {
                     <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
                       {t.contact.phone}
                     </h4>
-                    <p className="text-slate-600 dark:text-white/70">
+                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
                       +91 96409 43777
                     </p>
                   </div>
@@ -113,11 +113,11 @@ export default function Contact() {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
                     <Mail className="h-6 w-6 text-white" />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
                       {t.contact.email}
                     </h4>
-                    <p className="text-slate-600 dark:text-white/70">
+                    <p className="text-slate-605 dark:text-white/70 break-all text-sm sm:text-base font-medium">
                       kingofchristministries23@gmail.com
                     </p>
                   </div>
@@ -131,7 +131,7 @@ export default function Contact() {
                     <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
                       {t.contact.hours}
                     </h4>
-                    <p className="text-slate-600 dark:text-white/70">
+                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
                       {t.contact.hoursValue}
                     </p>
                   </div>
@@ -157,7 +157,8 @@ export default function Contact() {
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.5369!2d78.43506!3d17.52098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x2a6c6c6b6a6a6a6a!2sVivekananda+Nagar%2C+Jeedimetla%2C+Hyderabad%2C+Telangana+500055!5e0!3m2!1sen!2sin!4v1716000000000"
                   width="100%"
                   height="100%"
-                  style={{ border: 0, filter: "dark:invert(0.9) dark:hue-rotate(180deg)" }}
+                  style={{ border: 0 }}
+                  className="dark:invert-[0.9] dark:hue-rotate-180"
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -167,7 +168,7 @@ export default function Contact() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white dark:bg-white/[0.02] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl h-fit">
+          <div className="bg-white dark:bg-white/[0.02] rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl h-fit">
             <h3 className="text-2xl font-bold mb-8 text-slate-900 dark:text-white tracking-tight">
               {t.contact.formTitle}
             </h3>
