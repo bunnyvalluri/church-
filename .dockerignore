@@ -1,0 +1,30 @@
+# Local dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Next.js build directories
+.next
+out
+
+# Version control
+.git
+.gitignore
+.github
+
+# Local configuration files
+.env*.local
+.env
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# IDE files
+.vscode
+.idea
+.agent
+
+# Prisma Local DB migrations and sqlite files (if any)
+prisma/*.db
+prisma/*.db-journal

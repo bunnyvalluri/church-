@@ -153,11 +153,11 @@ export default function LoginPage() {
   if (!isClient) return null;
 
   return (
-    <div className="min-h-[100dvh] flex">
+    <div className="min-h-[100dvh] flex flex-col lg:flex-row">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
         {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))]" />
         {/* Decorative Circles */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
@@ -201,7 +201,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-[image:none] lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />

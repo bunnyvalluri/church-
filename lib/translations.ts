@@ -11,6 +11,7 @@ export const translations = {
       give: "Give Online",
       churchName: "Kingdom of Christ",
       ministries: "Ministries",
+      gallery: "Gallery",
     },
     hero: {
       welcome: "Welcome to",
@@ -635,6 +636,7 @@ export const translations = {
       give: "కానుకలు",
       churchName: "కింగ్డమ్ ఆఫ్ క్రైస్ట్",
       ministries: "మినిస్ట్రీస్",
+      gallery: "గ్యాలరీ",
     },
     hero: {
       welcome: "స్వాగతం",
@@ -1259,6 +1261,7 @@ export const translations = {
       give: "दान करें",
       churchName: "किंगडम ऑफ क्राइस्ट",
       ministries: "मिनिस्ट्रीज",
+      gallery: "गैलरी",
     },
     hero: {
       welcome: "स्वागत है",

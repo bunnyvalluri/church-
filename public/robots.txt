@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Exclude portal administration and members paths from search bots
+Disallow: /admin
+Disallow: /admin/
+Disallow: /member
+Disallow: /member/
+Disallow: /pastor
+Disallow: /pastor/
+Disallow: /dashboard
+Disallow: /dashboard/
+
+Sitemap: https://church-valluri-rahuls-projects.vercel.app/sitemap.xml

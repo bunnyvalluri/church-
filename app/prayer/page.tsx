@@ -135,26 +135,47 @@ export default function PrayerPage() {
 
             {/* Contact Info */}
             <div className="grid md:grid-cols-3 gap-6 stagger-children">
-              <div className="bg-gradient-to-br from-[hsl(var(--primary))/0.04] to-[hsl(var(--primary-gradient-end))/0.04] dark:from-[hsl(var(--primary))/0.1] dark:to-[hsl(var(--primary-gradient-end))/0.1] border border-[hsl(var(--primary))/0.08] rounded-xl p-6 text-center">
-                <Phone className="h-8 w-8 text-[hsl(var(--primary))] mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{pageT.callTitle}</h3>
-                <a href="tel:+919640943777" className="text-[hsl(var(--primary))] hover:underline">
-                  +91 96409 43777
-                </a>
+              {/* Phone Card */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/60 rounded-3xl p-8 text-center shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center">
+                <div className="w-14 h-14 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-base font-extrabold text-gray-950 dark:text-white tracking-tight leading-none mb-1">
+                  <a href="tel:+919640943777" className="hover:text-[hsl(var(--primary))] transition-colors">
+                    +91 96409 43777
+                  </a>
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mt-1.5">
+                  {pageT.callTitle.toUpperCase()}
+                </span>
               </div>
 
-              <div className="bg-gradient-to-br from-[hsl(var(--primary))/0.04] to-[hsl(var(--primary-gradient-end))/0.04] dark:from-[hsl(var(--primary))/0.1] dark:to-[hsl(var(--primary-gradient-end))/0.1] border border-[hsl(var(--primary))/0.08] rounded-xl p-6 text-center">
-                <Mail className="h-8 w-8 text-[hsl(var(--primary))] mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{pageT.emailTitle}</h3>
-                <a href="mailto:kingofchristministries23@gmail.com" className="text-[hsl(var(--primary))] hover:underline">
-                  kingofchristministries23@gmail.com
-                </a>
+              {/* Email Card */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/60 rounded-3xl p-8 text-center shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center">
+                <div className="w-14 h-14 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-purple-500/20">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xs font-extrabold text-gray-950 dark:text-white tracking-tight leading-none mb-1 break-all">
+                  <a href="mailto:kingofchristministries23@gmail.com" className="hover:text-[hsl(var(--primary))] transition-colors">
+                    kingofchristministries23@gmail.com
+                  </a>
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mt-1.5">
+                  {pageT.emailTitle.toUpperCase()}
+                </span>
               </div>
 
-              <div className="bg-gradient-to-br from-[hsl(var(--primary))/0.04] to-[hsl(var(--primary-gradient-end))/0.04] dark:from-[hsl(var(--primary))/0.1] dark:to-[hsl(var(--primary-gradient-end))/0.1] border border-[hsl(var(--primary))/0.08] rounded-xl p-6 text-center">
-                <Clock className="h-8 w-8 text-[hsl(var(--primary))] mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{pageT.supportTitle}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{pageT.supportDesc}</p>
+              {/* 24/7 Prayer Support Card */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/60 rounded-3xl p-8 text-center shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 flex flex-col items-center justify-center">
+                <div className="w-14 h-14 bg-gradient-to-tr from-rose-500 to-pink-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-rose-500/20 animate-pulse-slow">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-3xl font-black text-gray-950 dark:text-white tracking-tight leading-none mb-1">
+                  24/7
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mt-1.5">
+                  PRAYER SUPPORT
+                </span>
               </div>
             </div>
 

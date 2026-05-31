@@ -47,22 +47,22 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   // Force HTTPS (1 year)
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  // Restrict browser features
+  // Restrict browser features (enabling payment API for self, Razorpay, and Stripe)
   response.headers.set(
     'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+    'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com" "https://js.stripe.com"), usb=()'
   );
   // Basic Content Security Policy
   response.headers.set(
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com https://checkout.razorpay.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com https://*.razorpay.com https://checkout.razorpay.com https://js.stripe.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai https://*.firebaseapp.com https://api.razorpay.com",
-      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com https://*.firebaseapp.com https://api.razorpay.com https://checkout.razorpay.com",
+      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://openrouter.ai https://*.firebaseapp.com https://*.razorpay.com https://api.razorpay.com https://api.stripe.com",
+      "frame-src 'self' https://accounts.google.com https://www.google.com https://google.com https://www.youtube.com https://youtube.com https://*.firebaseapp.com https://*.razorpay.com https://api.razorpay.com https://checkout.razorpay.com https://js.stripe.com",
     ].join('; ')
   );
   return response;

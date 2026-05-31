@@ -42,7 +42,12 @@ export async function GET(
         return NextResponse.json({ error: 'Donation record not found (fallback file missing)' }, { status: 404 });
       }
 
-      const donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
+      let donations = [];
+      try {
+        donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
+      } catch (parseErr) {
+        console.error('[DONATION/RECEIPT] Fallback file parsing failed:', parseErr);
+      }
       const donation = donations.find((d: any) => d.id === donationId);
 
       if (!donation) {

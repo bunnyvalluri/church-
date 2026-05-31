@@ -18,54 +18,54 @@ export interface ColorPalette {
 
 export const palettes: Record<ColorTheme, ColorPalette> = {
   violet: {
-    name: "Imperial Amethyst",
-    primary: "268 75% 52%",
-    primaryDark: "268 85% 62%",
-    gradientStart: "268 75% 52%",
-    gradientEnd: "290 80% 55%",
-    accent: "268 75% 96%",
-    accentDark: "268 35% 14%",
-    color: "bg-[#7a3db8]"
+    name: "Purple Glory",
+    primary: "258 94% 66%",
+    primaryDark: "258 95% 75%",
+    gradientStart: "258 94% 66%",
+    gradientEnd: "280 90% 65%",
+    accent: "258 94% 96%",
+    accentDark: "258 40% 16%",
+    color: "bg-[#8B5CF6]"
   },
   emerald: {
-    name: "Sacred Emerald",
-    primary: "160 84% 28%",
-    primaryDark: "160 75% 38%",
-    gradientStart: "160 84% 28%",
+    name: "Emerald",
+    primary: "162 76% 46%",
+    primaryDark: "162 80% 55%",
+    gradientStart: "162 76% 46%",
     gradientEnd: "175 80% 32%",
-    accent: "160 84% 96%",
-    accentDark: "160 40% 10%",
-    color: "bg-[#0a6646]"
+    accent: "162 76% 96%",
+    accentDark: "162 40% 10%",
+    color: "bg-[#10B981]"
   },
   ocean: {
-    name: "Graceful Sapphire",
-    primary: "225 80% 45%",
-    primaryDark: "225 85% 58%",
-    gradientStart: "225 80% 45%",
+    name: "Holy Blue",
+    primary: "217 91% 60%",
+    primaryDark: "217 95% 70%",
+    gradientStart: "217 91% 60%",
     gradientEnd: "200 90% 48%",
-    accent: "225 80% 96%",
-    accentDark: "225 40% 12%",
-    color: "bg-[#1a4db8]"
+    accent: "217 91% 96%",
+    accentDark: "217 40% 12%",
+    color: "bg-[#3B82F6]"
   },
   crimson: {
-    name: "Divine Ruby",
-    primary: "350 78% 46%",
-    primaryDark: "350 82% 56%",
-    gradientStart: "350 78% 46%",
-    gradientEnd: "328 75% 42%",
-    accent: "350 78% 96%",
-    accentDark: "350 40% 12%",
-    color: "bg-[#b81a3d]"
+    name: "Crimson",
+    primary: "0 72% 51%",
+    primaryDark: "0 80% 60%",
+    gradientStart: "0 72% 51%",
+    gradientEnd: "350 78% 46%",
+    accent: "0 72% 96%",
+    accentDark: "0 40% 12%",
+    color: "bg-[#DC2626]"
   },
   gold: {
-    name: "Crown Amber",
-    primary: "36 72% 44%",
-    primaryDark: "36 80% 52%",
-    gradientStart: "36 72% 44%",
-    gradientEnd: "22 75% 48%",
-    accent: "36 72% 95%",
-    accentDark: "36 40% 12%",
-    color: "bg-[#b8701a]"
+    name: "Royal Gold",
+    primary: "46 65% 52%",
+    primaryDark: "46 75% 62%",
+    gradientStart: "46 65% 52%",
+    gradientEnd: "36 72% 44%",
+    accent: "46 65% 95%",
+    accentDark: "46 40% 12%",
+    color: "bg-[#D4AF37]"
   },
   rose: {
     name: "Rose Covenant",

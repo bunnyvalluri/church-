@@ -134,10 +134,10 @@ export default function RegisterPage() {
     "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
 
   return (
-    <div className="min-h-[100dvh] flex">
+    <div className="min-h-[100dvh] flex flex-col lg:flex-row">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-5/12 relative flex-col justify-between p-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))]" />
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-start))]/20 rounded-full blur-3xl" />
         <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
@@ -191,7 +191,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-[image:none] lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 sm:px-12 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[hsl(var(--primary-gradient-start))]/20 rounded-full blur-3xl lg:hidden pointer-events-none" />

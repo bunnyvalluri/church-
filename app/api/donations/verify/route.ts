@@ -73,7 +73,12 @@ export async function POST(req: Request) {
           return NextResponse.json({ error: 'No donation transaction history found on fallback file storage.' }, { status: 404 });
         }
 
-        let donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
+        let donations = [];
+        try {
+          donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
+        } catch (parseErr) {
+          console.error('[DONATION/VERIFY] Fallback file parsing failed, using empty list:', parseErr);
+        }
         let found = false;
 
         donations = donations.map((donation: any) => {

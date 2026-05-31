@@ -22,16 +22,11 @@ export default function PaletteToggle() {
   }, []);
 
   const colorThemes = [
-    { code: "violet", label: "Imperial Amethyst", desc: "Majesty & Faith", gradientStyle: "linear-gradient(135deg, #7a3db8 0%, #a044b8 100%)" },
-    { code: "emerald", label: "Sacred Emerald", desc: "Growth & Healing", gradientStyle: "linear-gradient(135deg, #0a6646 0%, #108552 100%)" },
-    { code: "ocean", label: "Graceful Sapphire", desc: "Serenity & Baptism", gradientStyle: "linear-gradient(135deg, #1a4db8 0%, #208fb8 100%)" },
-    { code: "crimson", label: "Divine Ruby", desc: "Love & Redemption", gradientStyle: "linear-gradient(135deg, #b81a3d 0%, #b81a7a 100%)" },
-    { code: "gold", label: "Crown Amber", desc: "Anointing & Light", gradientStyle: "linear-gradient(135deg, #b8701a 0%, #d88924 100%)" },
-    { code: "rose", label: "Rose Covenant", desc: "Purity & Peace", gradientStyle: "linear-gradient(135deg, #cc5c7d 0%, #e27d9c 100%)" },
-    { code: "sky", label: "Heavenly Sky", desc: "Grace & Devotion", gradientStyle: "linear-gradient(135deg, #1349c5 0%, #3a75e0 100%)" },
-    { code: "olive", label: "Anointed Olive", desc: "Serenity & Covenant", gradientStyle: "linear-gradient(135deg, #608020 0%, #2b5c1b 100%)" },
-    { code: "earth", label: "Sacred Earth", desc: "Warmth & Provision", gradientStyle: "linear-gradient(135deg, #ba4c18 0%, #d87130 100%)" },
-    { code: "platinum", label: "Divine Platinum", desc: "Refinement & Light", gradientStyle: "linear-gradient(135deg, #6b7c8f 0%, #8c9eae 100%)" },
+    { code: "violet", label: "Purple Glory", desc: "Grace & Glory", gradientStyle: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)" },
+    { code: "emerald", label: "Emerald", desc: "Growth & Healing", gradientStyle: "linear-gradient(135deg, #10B981 0%, #047857 100%)" },
+    { code: "ocean", label: "Holy Blue", desc: "Truth & Baptism", gradientStyle: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)" },
+    { code: "crimson", label: "Crimson", desc: "Redemption & Love", gradientStyle: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)" },
+    { code: "gold", label: "Royal Gold", desc: "Kingship & Anointing", gradientStyle: "linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)" },
   ] as const;
 
   return (

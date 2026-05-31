@@ -38,7 +38,7 @@ export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-[hsl(var(--primary-gradient-start)/0.95)] via-slate-950 to-[hsl(var(--primary-gradient-end)/0.95)] overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-br from-[hsl(var(--primary-gradient-start))] via-slate-950 to-[hsl(var(--primary-gradient-end))] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent" />
 

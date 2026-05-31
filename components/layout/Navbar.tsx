@@ -23,13 +23,19 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const [mounted, setMounted] = useState(false);
 
+  const resolveHref = (href: string) => {
+    if (href.startsWith("/")) return href;
+    return isHomePage ? href : `/${href}`;
+  };
+
   const navItems = [
-    { name: t.nav.home, href: "#home" },
-    { name: t.nav.about, href: "#about" },
-    { name: t.nav.services, href: "#services" },
-    { name: t.nav.events, href: "#events" },
-    { name: t.nav.sermons, href: "#sermons" },
-    { name: t.nav.contact, href: "#contact" },
+    { name: mounted ? t.nav.home : "Home", href: "#home" },
+    { name: mounted ? t.nav.about : "About", href: "#about" },
+    { name: mounted ? t.nav.ministries : "Ministries", href: "#services" },
+    { name: mounted ? t.nav.events : "Events", href: "#events" },
+    { name: mounted ? t.nav.sermons : "Sermons", href: "#sermons" },
+    { name: mounted ? t.nav.gallery : "Gallery", href: "/gallery" },
+    { name: mounted ? t.nav.contact : "Contact", href: "/contact" },
   ];
 
   const socialLinks = [
@@ -43,7 +49,9 @@ export default function Navbar() {
     setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      const sections = navItems.map(item => item.href.slice(1));
+      const sections = navItems
+        .filter(item => item.href.startsWith("#"))
+        .map(item => item.href.slice(1));
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -161,7 +169,7 @@ export default function Navbar() {
                   return (
                     <Link
                       key={item.href}
-                      href={isHomePage ? item.href : `/${item.href}`}
+                      href={resolveHref(item.href)}
                       className={cn(
                         "relative px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-350 rounded-xl overflow-hidden",
                         isActive
@@ -225,7 +233,7 @@ export default function Navbar() {
                   return (
                     <Link
                       key={item.href}
-                      href={isHomePage ? item.href : `/${item.href}`}
+                      href={resolveHref(item.href)}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all",

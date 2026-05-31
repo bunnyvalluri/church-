@@ -39,6 +39,8 @@
     --ring: 262 83% 58%;
     --radius: 0.75rem;
     /* Slightly rounder corners for modern feel */
+    --primary-gradient-start: 262 83% 58%;
+    --primary-gradient-end: 280 90% 65%;
   }
 
   .dark {
@@ -70,6 +72,8 @@
     --border: 260 20% 14%;
     --input: 260 20% 14%;
     --ring: 262 83% 65%;
+    --primary-gradient-start: 262 83% 65%;
+    --primary-gradient-end: 280 90% 70%;
   }
 }
 
