@@ -13,7 +13,15 @@ const nextConfig = {
       '@radix-ui/react-icons',
     ],
     serverActions: {
-      allowedOrigins: ['localhost:3000', 'church-valluri-rahuls-projects.vercel.app'],
+      allowedOrigins: [
+        'localhost:3000',
+        'localhost:3001',
+        'localhost:3002',
+        'localhost:3003',
+        'localhost:3004',
+        'localhost:3005',
+        'church-valluri-rahuls-projects.vercel.app'
+      ],
     },
   },
 
