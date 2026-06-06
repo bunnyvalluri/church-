@@ -63,7 +63,7 @@ const galleryItems = [
     title: "Shapur Village Outreach Program",
     category: "Outreach",
     type: "image",
-    url: "https://images.unsplash.com/photo-1445633814773-e68785c19ce0?w=1000&q=80",
+    url: "https://images.unsplash.com/photo-1544764200-d834fd210a23?w=1000&q=80",
     description: "Sharing the message of Christ's hope and grace with remote communities.",
   },
   {

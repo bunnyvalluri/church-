@@ -4,8 +4,8 @@ export default function Loading() {
       {/* Spectacular Glowing Ambient Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-[35rem] h-[35rem] bg-purple-600/10 rounded-full blur-[140px] animate-pulse duration-5000" />
-        <div className="absolute bottom-1/4 right-1/4 w-[35rem] h-[35rem] bg-indigo-600/10 rounded-full blur-[140px] animate-pulse duration-[7000ms] delay-2000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-amber-500/5 rounded-full blur-[160px] animate-pulse duration-[9000ms] delay-4000" />
+        <div className="absolute bottom-1/4 right-1/4 w-[35rem] h-[35rem] bg-indigo-600/10 rounded-full blur-[140px] animate-pulse delay-2000" style={{ animationDuration: '7000ms' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-amber-500/5 rounded-full blur-[160px] animate-pulse delay-4000" style={{ animationDuration: '9000ms' }} />
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-8">

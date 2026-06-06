@@ -44,8 +44,12 @@ export async function getLatestSermons(limit = 6): Promise<Sermon[]> {
       take: limit,
       select: SERMON_SELECT,
     });
-  } catch (error) {
-    console.error("[SERMONS] getLatestSermons failed:", error);
+  } catch (error: any) {
+    if (error?.message?.includes('DB_OFFLINE') || error?.message?.includes('Database offline')) {
+      console.warn("[SERMONS] DB offline — using fallback data");
+    } else {
+      console.error("[SERMONS] getLatestSermons failed:", error);
+    }
     return [];
   }
 }

@@ -28,7 +28,7 @@ export default function SermonsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { title: "Faith in Action", count: "4 Parts", image: "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?w=800&q=80" },
-              { title: "The Power of Prayer", count: "6 Parts", image: "https://images.unsplash.com/photo-1445633814773-e68785c19ce0?w=800&q=80" },
+              { title: "The Power of Prayer", count: "6 Parts", image: "https://images.unsplash.com/photo-1544764200-d834fd210a23?w=800&q=80" },
               { title: "Living in Victory", count: "8 Parts", image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&q=80" },
             ].map((series, i) => (
               <div key={i} className="group relative rounded-2xl overflow-hidden cursor-pointer">

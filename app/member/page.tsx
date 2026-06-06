@@ -420,9 +420,17 @@ export default function MemberDashboard() {
 
             {/* Profile Dropdown Container (Always visible & collapse-responsive) */}
             <div className="relative flex-shrink-0" ref={profileMenuRef}>
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2]"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setIsProfileOpen(!isProfileOpen);
+                  }
+                }}
+                className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2] cursor-pointer"
                 aria-label="Toggle profile menu"
               >
                 <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
@@ -439,7 +447,7 @@ export default function MemberDashboard() {
                   {mt.welcome} <span className="text-[hsl(var(--primary))]">{user?.name?.split(" ")[0] || "Member"}</span>
                 </span>
                 <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 mr-1 ${isProfileOpen ? "rotate-180" : ""}`} />
-              </button>
+              </div>
 
               <AnimatePresence>
                 {isProfileOpen && (

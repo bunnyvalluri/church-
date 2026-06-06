@@ -38,8 +38,8 @@ export default function AIChat() {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 p-1 bg-white dark:bg-gray-900 rounded-full shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 z-50 flex items-center justify-center border-2 border-purple-500/20"
       >
-        <div className="relative w-12 h-12 rounded-full overflow-hidden">
-          <Image src="/chatbot-bird-logo.png" alt="KCM AI Assistant" fill className="object-cover" />
+        <div className="rounded-full overflow-hidden">
+          <Image src="/chatbot-bird-logo.png" alt="KCM AI Assistant" width={48} height={48} className="object-cover" />
         </div>
       </button>
     );
@@ -61,8 +61,8 @@ export default function AIChat() {
           onClick={() => setIsMinimized(!isMinimized)}
         >
           <div className="flex items-center gap-3 text-white">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center shrink-0">
-              <Image src="/chatbot-bird-logo.png" alt="Bot" fill className="object-cover" />
+            <div className="rounded-full overflow-hidden bg-white flex items-center justify-center shrink-0">
+              <Image src="/chatbot-bird-logo.png" alt="Bot" width={32} height={32} className="object-cover" />
             </div>
             <div>
               <h3 className="font-semibold text-sm leading-tight">KCM Assistant</h3>
@@ -100,8 +100,8 @@ export default function AIChat() {
             <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gray-50 dark:bg-gray-900" ref={scrollRef}>
               {messages.length === 0 && (
                 <div className="text-center py-6 mt-4">
-                  <div className="relative w-16 h-16 bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                    <Image src="/chatbot-bird-logo.png" alt="Bot" fill className="object-cover" />
+                  <div className="bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                    <Image src="/chatbot-bird-logo.png" alt="Bot" width={64} height={64} className="object-cover" />
                   </div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">
                     How can I help you today?
@@ -168,13 +168,13 @@ export default function AIChat() {
                 >
                   <div
                     className={cn(
-                      "relative w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs shadow-sm overflow-hidden",
+                      "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs shadow-sm overflow-hidden",
                       m.role === "user"
                         ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
                         : "bg-white"
                     )}
                   >
-                    {m.role === "user" ? "You" : <Image src="/chatbot-bird-logo.png" alt="Bot" fill className="object-cover" />}
+                    {m.role === "user" ? "You" : <Image src="/chatbot-bird-logo.png" alt="Bot" width={28} height={28} className="object-cover" />}
                   </div>
                   <div
                     className={cn(
@@ -193,8 +193,8 @@ export default function AIChat() {
 
               {isLoading && (
                 <div className="flex gap-3 mr-auto max-w-[85%]">
-                  <div className="relative w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
-                    <Image src="/chatbot-bird-logo.png" alt="Bot" fill className="object-cover" />
+                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                    <Image src="/chatbot-bird-logo.png" alt="Bot" width={28} height={28} className="object-cover" />
                   </div>
                   <div className="px-4 py-3 rounded-2xl bg-white dark:bg-gray-800 rounded-tl-sm border border-gray-100 dark:border-gray-700 shadow-sm">
                     <div className="flex gap-1.5 h-4 items-center">

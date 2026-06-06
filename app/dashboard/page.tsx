@@ -825,9 +825,17 @@ export default function GraceDashboard() {
               <div className="p-6 py-5 flex-1 space-y-3.5">
                 
                 {/* Action 1 */}
-                <button 
+                <div 
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setIsMemberModalOpen(true)}
-                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-indigo-50/50 border border-gray-100 hover:border-indigo-100 rounded-2xl transition-all text-left group"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setIsMemberModalOpen(true);
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-indigo-50/50 border border-gray-100 hover:border-indigo-100 rounded-2xl transition-all text-left group cursor-pointer"
                 >
                   <div className="flex items-center gap-3.5 overflow-hidden">
                     <div className="w-9 h-9 rounded-xl bg-indigo-50 text-[#6366F1] flex items-center justify-center shrink-0">
@@ -836,10 +844,19 @@ export default function GraceDashboard() {
                     <span className="text-xs font-bold text-gray-700 group-hover:text-[#6366F1] transition-colors">Add New Member</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                </div>
 
                 {/* Action 2 */}
-                <button className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-emerald-50/50 border border-gray-100 hover:border-emerald-100 rounded-2xl transition-all text-left group">
+                <div 
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-emerald-50/50 border border-gray-100 hover:border-emerald-100 rounded-2xl transition-all text-left group cursor-pointer"
+                >
                   <div className="flex items-center gap-3.5 overflow-hidden">
                     <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#10B981] flex items-center justify-center shrink-0">
                       <DollarSign className="w-4.5 h-4.5" />
@@ -847,10 +864,19 @@ export default function GraceDashboard() {
                     <span className="text-xs font-bold text-gray-700 group-hover:text-[#10B981] transition-colors">Record Donation</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                </div>
 
                 {/* Action 3 */}
-                <button className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-blue-50/50 border border-gray-100 hover:border-blue-100 rounded-2xl transition-all text-left group">
+                <div 
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-blue-50/50 border border-gray-100 hover:border-blue-100 rounded-2xl transition-all text-left group cursor-pointer"
+                >
                   <div className="flex items-center gap-3.5 overflow-hidden">
                     <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center shrink-0">
                       <UserCheck className="w-4.5 h-4.5" />
@@ -858,10 +884,19 @@ export default function GraceDashboard() {
                     <span className="text-xs font-bold text-gray-700 group-hover:text-[#3B82F6] transition-colors">Mark Attendance</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                </div>
 
                 {/* Action 4 */}
-                <button className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-amber-50/50 border border-gray-100 hover:border-amber-100 rounded-2xl transition-all text-left group">
+                <div 
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-amber-50/50 border border-gray-100 hover:border-amber-100 rounded-2xl transition-all text-left group cursor-pointer"
+                >
                   <div className="flex items-center gap-3.5 overflow-hidden">
                     <div className="w-9 h-9 rounded-xl bg-amber-50 text-[#F59E0B] flex items-center justify-center shrink-0">
                       <Calendar className="w-4.5 h-4.5" />
@@ -869,10 +904,19 @@ export default function GraceDashboard() {
                     <span className="text-xs font-bold text-gray-700 group-hover:text-[#F59E0B] transition-colors">Create Event</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                </div>
 
                 {/* Action 5 */}
-                <button className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-pink-50/50 border border-gray-100 hover:border-pink-100 rounded-2xl transition-all text-left group">
+                <div 
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-pink-50/50 border border-gray-100 hover:border-pink-100 rounded-2xl transition-all text-left group cursor-pointer"
+                >
                   <div className="flex items-center gap-3.5 overflow-hidden">
                     <div className="w-9 h-9 rounded-xl bg-pink-50 text-[#EC4899] flex items-center justify-center shrink-0">
                       <Megaphone className="w-4.5 h-4.5" />
@@ -880,7 +924,7 @@ export default function GraceDashboard() {
                     <span className="text-xs font-bold text-gray-700 group-hover:text-[#EC4899] transition-colors">Add Announcement</span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                </div>
 
               </div>
             </div>
