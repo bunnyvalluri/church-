@@ -16,7 +16,7 @@ export default function About() {
       const maps = {
         shapur: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
         subhash: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
-        bahadur: "https://maps.google.com/?q=Bahadurpally,+Hyderabad,+Telangana",
+        bahadur: "https://maps.google.com/?q=17.567689,78.443963",
       };
       window.open(maps[branch], "_blank", "noopener,noreferrer");
     }

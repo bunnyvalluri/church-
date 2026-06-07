@@ -45,8 +45,8 @@ export default function Contact() {
         : language === "hi"
         ? "बहादुरपल्ली,\nकुतुबुल्लापुर, हैदराबाद,\nतेलंगाना 500043"
         : "Bahadurpally,\nQuthbullapur, Hyderabad,\nTelangana 500043",
-      mapsUrl: "https://maps.google.com/?q=Bahadurpally,+Hyderabad,+Telangana",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3804.093112349774!2d78.4143433!3d17.5507963!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb8fe016aa7417%3A0x643e9447e1329c2!2sBahadurpally%2C+Hyderabad%2C+Telangana!5e0!3m2!1sen!2sin!4v1716000000000"
+      mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
+      embedUrl: "https://www.google.com/maps/embed?pb=!3m2!1sen!2sin!4v1780827553254!5m2!1sen!2sin!6m8!1m7!1sazsiZeKFn9z7QJOYSv1GGA!2m2!1d17.56768931783489!2d78.44396285351614!3f51.39878812324778!4f3.2934943426209884!5f0.7820865974627469"
     }
   };
 
