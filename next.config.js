@@ -7,6 +7,7 @@ const nextConfig = {
 
   // Optimise large package imports (tree-shaking) — dramatically reduces bundle size
   experimental: {
+    serverComponentsExternalPackages: ['firebase', '@firebase/firestore'],
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',

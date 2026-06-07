@@ -17,10 +17,10 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // If already authenticated and role is ADMIN, take to /admin
+  // If already authenticated and role is ADMIN or SUPER_ADMIN, take to /admin
   useEffect(() => {
     if (mounted && status === "authenticated" && user) {
-      if (user.role === "ADMIN") {
+      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
         router.replace("/admin");
       }
     }
@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
   };
 
   // If authenticated but NOT an admin, show a beautiful Access Denied board
-  const isNotAdmin = status === "authenticated" && user && user.role !== "ADMIN";
+  const isNotAdmin = status === "authenticated" && user && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN";
 
   return (
     <div className="min-h-[100dvh] flex bg-gradient-to-br from-red-950 via-gray-950 to-purple-950 text-white relative">
@@ -131,7 +131,7 @@ export default function AdminLoginPage() {
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-red-400">Access Denied</h3>
                 <p className="text-gray-400 text-xs leading-relaxed">
-                  Your current account <span className="font-semibold text-white">({user?.email})</span> is not assigned to the <span className="text-red-400 font-bold">ADMIN</span> role. This console is strictly reserved for church administrators.
+                  Your current account <span className="font-semibold text-white">({user?.email})</span> is not assigned to the <span className="text-red-400 font-bold">ADMIN</span> or <span className="text-red-400 font-bold">SUPER_ADMIN</span> role. This console is strictly reserved for church administrators.
                 </p>
               </div>
               

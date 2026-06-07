@@ -9,7 +9,7 @@ export interface AuthUser {
   email: string | null;
   name: string | null;
   image: string | null;
-  role: "MEMBER" | "PASTOR" | "ADMIN";
+  role: "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN";
 }
 
 interface AuthContextType {
@@ -19,6 +19,7 @@ interface AuthContextType {
   status: "loading" | "authenticated" | "unauthenticated";
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUser: (updatedFields: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   status: "loading",
   logout: async () => {},
   refreshUser: async () => {},
+  updateUser: () => {},
 });
 
 async function syncUserToDatabase(firebaseUser: FirebaseUser): Promise<any | null> {
@@ -60,6 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   // mounted=true only after first client render — prevents hydration mismatch
   const [mounted, setMounted] = useState(false);
+
+  const updateUser = (updatedFields: Partial<AuthUser>) => {
+    setUser((prev) => prev ? { ...prev, ...updatedFields } : null);
+  };
 
   const refreshUser = async () => {
     if (auth.currentUser) {
@@ -120,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const status = loading ? "loading" : user ? "authenticated" : "unauthenticated";
 
   return (
-    <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

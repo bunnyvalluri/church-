@@ -138,7 +138,7 @@ export default function MemberEvents() {
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
+    if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
   const load = useCallback(async (silent = false) => {

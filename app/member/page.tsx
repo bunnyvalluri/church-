@@ -256,7 +256,7 @@ export default function MemberDashboard() {
   const prevAnnouncementCount = useRef(0);
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
+    if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
   useEffect(() => {
@@ -699,7 +699,7 @@ export default function MemberDashboard() {
                   {
                     title: mt.services.giving.title,
                     desc: mt.services.giving.desc,
-                    href: "/give",
+                    href: "/member/give",
                     icon: Gift,
                     gradient: "from-green-500 to-emerald-600",
                     badge: "Give Now",
@@ -806,7 +806,7 @@ export default function MemberDashboard() {
                 {[
                   { label: mt.actionSubmitPrayer, href: "/member/prayers", icon: Heart },
                   { label: mt.actionRegisterEvent, href: "/member/events", icon: Calendar },
-                  { label: mt.actionGiveOnline, href: "/give", icon: Gift },
+                  { label: mt.actionGiveOnline, href: "/member/give", icon: Gift },
                 ].map(({ label, href, icon: Icon }) => (
                   <Link
                     key={href}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "@/app/globals.css";
-import { Providers } from "@/components/providers";
+import { Providers } from "@/components/providers/index";
 import AIChat from "@/components/ai/AIChat";
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";

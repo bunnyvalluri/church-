@@ -133,7 +133,7 @@ export default function MemberSermons() {
   const showToast = (msg: string) => { setToast({ msg }); setTimeout(() => setToast(null), 3500); };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
+    if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
   const fetch_ = useCallback(async (silent = false) => {

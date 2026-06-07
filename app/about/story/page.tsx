@@ -5,6 +5,7 @@ import { ArrowRight, Church, Users, Heart, MapPin } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function OurStoryPage() {
+  console.log("useLanguage in story page:", typeof useLanguage, useLanguage);
   const { t } = useLanguage();
   const pageT = t.pages.story;
 

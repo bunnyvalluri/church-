@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User ID and new role are required' }, { status: 400 });
     }
 
-    if (!['MEMBER', 'PASTOR', 'ADMIN'].includes(newRole)) {
+    if (!['MEMBER', 'PASTOR', 'ADMIN', 'SUPER_ADMIN'].includes(newRole)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 

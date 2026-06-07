@@ -228,7 +228,7 @@ export default function MemberVolunteer() {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
+    if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
   const showToast = (msg: string, type: "success" | "error") => {

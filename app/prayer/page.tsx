@@ -190,12 +190,34 @@ export default function PrayerPage() {
               {pageT.meetingsTitle}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left mb-8">
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-md hover-lift">
-                <h3 className="font-bold text-white mb-2">{pageT.thursday}</h3>
+              <div 
+                onClick={() => {
+                  sessionStorage.setItem("pending-contact-branch", "subhash");
+                  window.location.href = "/#contact";
+                }}
+                className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-md hover-lift cursor-pointer group/loc"
+              >
+                <h3 className="font-bold text-white mb-2 flex justify-between items-center">
+                  <span>{pageT.thursday}</span>
+                  <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-normal text-white opacity-0 group-hover/loc:opacity-100 transition-opacity">
+                    View Map
+                  </span>
+                </h3>
                 <p className="text-white/80">Subhash Nagar Location</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-md hover-lift">
-                <h3 className="font-bold text-white mb-2">{pageT.tuesday}</h3>
+              <div 
+                onClick={() => {
+                  sessionStorage.setItem("pending-contact-branch", "bahadur");
+                  window.location.href = "/#contact";
+                }}
+                className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-md hover-lift cursor-pointer group/loc"
+              >
+                <h3 className="font-bold text-white mb-2 flex justify-between items-center">
+                  <span>{pageT.tuesday}</span>
+                  <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-normal text-white opacity-0 group-hover/loc:opacity-100 transition-opacity">
+                    View Map
+                  </span>
+                </h3>
                 <p className="text-white/80">Bahadurpally Location</p>
               </div>
             </div>

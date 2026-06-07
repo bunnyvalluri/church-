@@ -4,7 +4,23 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Church, Heart, Users, BookOpen } from "lucide-react";
 
 export default function About() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const handleBranchClick = (branch: "shapur" | "subhash" | "bahadur") => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+      const event = new CustomEvent("change-contact-branch", { detail: { branch } });
+      window.dispatchEvent(event);
+    } else {
+      const maps = {
+        shapur: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
+        subhash: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
+        bahadur: "https://maps.google.com/?q=Bahadurpally,+Hyderabad,+Telangana",
+      };
+      window.open(maps[branch], "_blank", "noopener,noreferrer");
+    }
+  };
 
   const values = [
     {
@@ -118,18 +134,42 @@ export default function About() {
                 <div className="mt-4 lg:mt-0">
                   <h3 className="text-xl md:text-2xl font-bold mb-5 text-center lg:text-left tracking-tight">{t.services.title}</h3>
                   <div className="space-y-4 text-purple-100">
-                    <div className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-colors">
-                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide">📍 {t.services.shapur.title.split(" ")[0]}</p>
+                    <div 
+                      onClick={() => handleBranchClick("shapur")}
+                      className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer group/loc"
+                    >
+                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide flex items-center justify-between">
+                        <span>📍 {t.services.shapur.title.split(" ")[0]}</span>
+                        <span className="text-[10px] bg-white/25 px-2 py-0.5 rounded font-normal text-white opacity-0 group-hover/loc:opacity-100 transition-opacity">
+                          {language === "te" ? "మ్యాప్ చూడండి" : language === "hi" ? "मानचित्र देखें" : "View Map"}
+                        </span>
+                      </p>
                       <p className="text-sm">{t.services.friday} & {t.services.sunday}: 6:00 PM</p>
                     </div>
-                    <div className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-colors">
-                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide">📍 {t.services.subhash.title.split(" ")[0]} {t.services.subhash.title.split(" ")[1]}</p>
+                    <div 
+                      onClick={() => handleBranchClick("subhash")}
+                      className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer group/loc"
+                    >
+                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide flex items-center justify-between">
+                        <span>📍 {t.services.subhash.title.split(" ")[0]} {t.services.subhash.title.split(" ")[1]}</span>
+                        <span className="text-[10px] bg-white/25 px-2 py-0.5 rounded font-normal text-white opacity-0 group-hover/loc:opacity-100 transition-opacity">
+                          {language === "te" ? "మ్యాప్ చూడండి" : language === "hi" ? "मानचित्र देखें" : "View Map"}
+                        </span>
+                      </p>
                       <p className="text-sm mb-1">{t.services.sunday}: 5:45 AM - 8:30 AM</p>
                       <p className="text-sm mb-1">{t.services.subhash.second}</p>
                       <p className="text-sm">{t.services.subhash.thursday}</p>
                     </div>
-                    <div className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-colors">
-                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide">📍 {t.services.bahadur.title.split(" ")[0]}</p>
+                    <div 
+                      onClick={() => handleBranchClick("bahadur")}
+                      className="bg-white/10 border border-white/10 rounded-2xl p-4 md:p-5 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer group/loc"
+                    >
+                      <p className="font-semibold text-yellow-200 mb-1 tracking-wide flex items-center justify-between">
+                        <span>📍 {t.services.bahadur.title.split(" ")[0]}</span>
+                        <span className="text-[10px] bg-white/25 px-2 py-0.5 rounded font-normal text-white opacity-0 group-hover/loc:opacity-100 transition-opacity">
+                          {language === "te" ? "మ్యాప్ చూడండి" : language === "hi" ? "मानचित्र देखें" : "View Map"}
+                        </span>
+                      </p>
                       <p className="text-sm mb-1">{t.services.sunday}: 11:00 AM - 2:00 PM</p>
                       <p className="text-sm">{t.services.bahadur.tuesday}</p>
                     </div>

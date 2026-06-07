@@ -206,7 +206,7 @@ export default function MemberPrayers() {
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
+    if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
   const load = useCallback(async (silent = false) => {

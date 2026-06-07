@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function Contact() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +15,60 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [selectedBranch, setSelectedBranch] = useState<"shapur" | "subhash" | "bahadur">("shapur");
+
+  const branches = {
+    shapur: {
+      name: language === "te" ? "షాపూర్" : language === "hi" ? "शापुर" : "Shapur",
+      address: language === "te" 
+        ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్,\n15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్,\nజీడిమెట్ల, హైదరాబాద్,\nతెలంగాణ 500055"
+        : language === "hi"
+        ? "किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज,\n15-201, विवेकानंद नगर, श्रीनिवास नगर,\nजीडीमेटला, हैदराबाद,\nतेलंगाना 500055"
+        : "Kingdom of Christ Ministries,\n15-201, Vivekananda Nagar, Srinivas Nagar,\nJeedimetla, Hyderabad,\nTelangana 500055",
+      mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.5369!2d78.43506!3d17.52098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x2a6c6c6b6a6a6a6a!2sVivekananda+Nagar%2C+Jeedimetla%2C+Hyderabad%2C+Telangana+500055!5e0!3m2!1sen!2sin!4v1716000000000"
+    },
+    subhash: {
+      name: language === "te" ? "సుభాష్ నగర్" : language === "hi" ? "सुभाष नगर" : "Subhash Nagar",
+      address: language === "te"
+        ? "సుభాష్ నగర్,\nజీడిమెట్ల, హైదరాబాద్,\nతెలంగాణ 500055"
+        : language === "hi"
+        ? "सुभाष नगर,\nजीडीमेटला, हैदराबाद,\nतेलंगाना 500055"
+        : "Subhash Nagar,\nJeedimetla, Hyderabad,\nTelangana 500055",
+      mapsUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d237.79921914456398!2d78.46086792647839!3d17.51765421733663!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9100098915ab%3A0x20eb0795ff675fe5!2sSubhash%20nagar%20jeedimetla%20119lp!5e0!3m2!1sen!2sin!4v1780826245365!5m2!1sen!2sin"
+    },
+    bahadur: {
+      name: language === "te" ? "బహదూర్‌పల్లి" : language === "hi" ? "बहादुरपल्ली" : "Bahadurpally",
+      address: language === "te"
+        ? "బహదూర్‌పల్లి,\nకుత్బుల్లాపూర్, హైదరాబాద్,\nతెలంగాణ 500043"
+        : language === "hi"
+        ? "बहादुरपल्ली,\nकुतुबुल्लापुर, हैदराबाद,\nतेलंगाना 500043"
+        : "Bahadurpally,\nQuthbullapur, Hyderabad,\nTelangana 500043",
+      mapsUrl: "https://maps.google.com/?q=Bahadurpally,+Hyderabad,+Telangana",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3804.093112349774!2d78.4143433!3d17.5507963!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb8fe016aa7417%3A0x643e9447e1329c2!2sBahadurpally%2C+Hyderabad%2C+Telangana!5e0!3m2!1sen!2sin!4v1716000000000"
+    }
+  };
+
+  useEffect(() => {
+    // Check sessionStorage for pending branch selection from other pages
+    const pending = sessionStorage.getItem("pending-contact-branch") as "shapur" | "subhash" | "bahadur" | null;
+    if (pending) {
+      setSelectedBranch(pending);
+      sessionStorage.removeItem("pending-contact-branch");
+    }
+
+    const handleBranchChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ branch: "shapur" | "subhash" | "bahadur" }>;
+      if (customEvent.detail && customEvent.detail.branch) {
+        setSelectedBranch(customEvent.detail.branch);
+      }
+    };
+    window.addEventListener("change-contact-branch", handleBranchChange);
+    return () => {
+      window.removeEventListener("change-contact-branch", handleBranchChange);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +123,24 @@ export default function Contact() {
                 {t.contact.infoTitle}
               </h3>
 
+              {/* Location Selector Tabs */}
+              <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-white/[0.03] rounded-2xl mb-8">
+                {(Object.keys(branches) as Array<keyof typeof branches>).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setSelectedBranch(key)}
+                    className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 ${
+                      selectedBranch === key
+                        ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-sm border border-slate-200/50 dark:border-white/[0.05]"
+                        : "text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {branches[key].name}
+                  </button>
+                ))}
+              </div>
+
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] flex items-center justify-center flex-shrink-0">
@@ -79,16 +151,18 @@ export default function Contact() {
                       {t.contact.address}
                     </h4>
                     <a
-                      href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
+                      href={branches[selectedBranch].mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-600 dark:text-white/70 hover:text-[hsl(var(--primary))] dark:hover:text-[hsl(var(--primary))] transition-colors leading-relaxed group flex items-start gap-1 text-sm sm:text-base"
+                      className="text-slate-600 dark:text-white/70 hover:text-[hsl(var(--primary))] dark:hover:text-[hsl(var(--primary))] transition-colors leading-relaxed group flex items-start gap-1 text-sm sm:text-base font-semibold"
                     >
                       <span>
-                        Kingdom of Christ Ministries,<br />
-                        15-201, Vivekananda Nagar, Srinivas Nagar,<br />
-                        Jeedimetla, Hyderabad,<br />
-                        Telangana 500055
+                        {branches[selectedBranch].address.split('\n').map((line, idx) => (
+                          <span key={idx}>
+                            {line}
+                            {idx < branches[selectedBranch].address.split('\n').length - 1 && <br />}
+                          </span>
+                        ))}
                       </span>
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-[hsl(var(--primary))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                     </a>
@@ -143,7 +217,7 @@ export default function Contact() {
             <div className="bg-white dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-white/[0.05] h-[20rem] relative group dark:backdrop-blur-3xl p-2">
               <div className="absolute inset-2 rounded-2xl overflow-hidden">
                 <a
-                  href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055"
+                  href={branches[selectedBranch].mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="absolute inset-0 z-10 flex items-end p-4 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
@@ -154,7 +228,7 @@ export default function Contact() {
                   </span>
                 </a>
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.5369!2d78.43506!3d17.52098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x2a6c6c6b6a6a6a6a!2sVivekananda+Nagar%2C+Jeedimetla%2C+Hyderabad%2C+Telangana+500055!5e0!3m2!1sen!2sin!4v1716000000000"
+                  src={branches[selectedBranch].embedUrl}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
