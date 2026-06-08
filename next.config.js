@@ -1,17 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ── Performance ──────────────────────────────────────────────────────────
+  // -- Performance --
   compress: true,
   poweredByHeader: false,
   swcMinify: true,
 
-  // Optimise large package imports (tree-shaking) — dramatically reduces bundle size
+  // Optimise large package imports (tree-shaking)
   experimental: {
-    serverComponentsExternalPackages: ['firebase', '@firebase/firestore'],
-    optimizePackageImports: [
-      'lucide-react',
-      'framer-motion',
-      '@radix-ui/react-icons',
+    serverComponentsExternalPackages: [
+      'firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore',
+      'react-markdown', 'remark-gfm', 'remark-parse', 'rehype-raw', 'unified',
+      'vfile', 'bail', 'is-plain-obj', 'trough', 'zwitch', 'unist-util-stringify-position',
+      'mdast-util-from-markdown', 'mdast-util-to-string', 'micromark',
     ],
     serverActions: {
       allowedOrigins: [
@@ -21,15 +21,16 @@ const nextConfig = {
         'localhost:3003',
         'localhost:3004',
         'localhost:3005',
-        'church-valluri-rahuls-projects.vercel.app'
+        'church-valluri-rahuls-projects.vercel.app',
+        'church-eight-hazel.vercel.app',
       ],
     },
   },
 
-  // ── Images ───────────────────────────────────────────────────────────────
+  // -- Images --
   images: {
-    formats: ['image/avif', 'image/webp'],   // AVIF first = smallest file size
-    minimumCacheTTL: 31536000,               // Cache images for 1 year
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
     remotePatterns: [
@@ -40,16 +41,14 @@ const nextConfig = {
     ],
   },
 
-  // ── Security & caching headers ────────────────────────────────────────────
+  // -- Security & caching headers --
   async headers() {
     return [
       {
-        // Cache static JS/CSS assets for 1 year (immutable = browser never re-validates)
         source: '/_next/static/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
-        // Cache public fonts and images
         source: '/(fonts|images)/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
