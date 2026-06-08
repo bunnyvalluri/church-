@@ -255,9 +255,15 @@ export default function MemberDashboard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevAnnouncementCount = useRef(0);
 
+  // 🔒 SECURITY: Redirect unauthenticated users to homepage — nothing renders
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
+
+  // 🔒 SECURITY: Return null while loading or not authenticated — no content flash
+  if (!mounted || status === "loading" || status === "unauthenticated") {
+    return null;
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -344,7 +350,8 @@ export default function MemberDashboard() {
   const activeScriptures = SCRIPTURES[language as keyof typeof SCRIPTURES] || SCRIPTURES.en;
   const scripture = activeScriptures[scriptureIndex];
 
-  if (!mounted || status === "loading") {
+  // Loading spinner only shown to authenticated users while data loads
+  if (loadingFeeds && stats.sermons === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <div className="text-center space-y-4">

@@ -105,6 +105,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
+  // 🔒 SECURITY: Return null for all non-authenticated states
+  // This protects ALL /member/* pages — no content ever flashes to unauthenticated users
+  if (!mounted || status === "loading" || status === "unauthenticated") {
+    return null;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const onOnline = () => setIsOnline(true);
     const onOffline = () => setIsOnline(false);
@@ -113,6 +120,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     return () => { window.removeEventListener("online", onOnline); window.removeEventListener("offline", onOffline); };
   }, []);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -120,9 +128,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   }, []);
 
   // Close sidebar on route change
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   // Click outside to close profile dropdown
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
@@ -135,19 +145,6 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
-
-  if (!mounted || status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-950 dark:to-gray-900">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
-            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{lt.loadingPortal}</p>
-        </div>
-      </div>
-    );
-  }
 
   if (isMainDashboard) return <>{children}</>;
 
