@@ -36,7 +36,7 @@ export default function Contact() {
         ? "सुभाष नगर,\nजीडीमेटला, हैदराबाद,\nतेलंगाना 500055"
         : "Subhash Nagar,\nJeedimetla, Hyderabad,\nTelangana 500055",
       mapsUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d237.79921914456398!2d78.46086792647839!3d17.51765421733663!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9100098915ab%3A0x20eb0795ff675fe5!2sSubhash%20nagar%20jeedimetla%20119lp!5e0!3m2!1sen!2sin!4v1780826245365!5m2!1sen!2sin"
+      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922610976!6m8!1m7!1sPfdOpDBV-AUaCAX-pavx_g!2m2!1d17.51769104998973!2d78.46098218561453!3f42.5558951222148!4f33.27373317227213!5f0.4000000000000002"
     },
     bahadur: {
       name: language === "te" ? "బహదూర్‌పల్లి" : language === "hi" ? "बहादुरपल्ली" : "Bahadurpally",
@@ -46,7 +46,7 @@ export default function Contact() {
         ? "बहादुरपल्ली,\nकुतुबुल्लापुर, हैदराबाद,\nतेलंगाना 500043"
         : "Bahadurpally,\nQuthbullapur, Hyderabad,\nTelangana 500043",
       mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
-      embedUrl: "https://www.google.com/maps/embed?pb=!3m2!1sen!2sin!4v1780827553254!5m2!1sen!2sin!6m8!1m7!1sazsiZeKFn9z7QJOYSv1GGA!2m2!1d17.56768931783489!2d78.44396285351614!3f51.39878812324778!4f3.2934943426209884!5f0.7820865974627469"
+      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922487353!6m8!1m7!1sB6MuJsAZw1kA_ZCw4b2pGw!2m2!1d17.56771525177928!2d78.44416184725885!3f298.8926008480041!4f-1.3244437518344796!5f0.7820865974627469"
     }
   };
 
