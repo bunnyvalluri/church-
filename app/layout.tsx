@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "@/app/globals.css";
 import { Providers } from "@/components/providers/index";
-import AIChat from "@/components/ai/AIChat";
+import dynamic from "next/dynamic";
+const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
 
