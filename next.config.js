@@ -4,15 +4,15 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   swcMinify: true,
+  transpilePackages: [
+    'framer-motion', 'react-markdown', 'remark-gfm', 'remark-parse', 'rehype-raw', 'unified',
+    'vfile', 'bail', 'is-plain-obj', 'trough', 'zwitch', 'unist-util-stringify-position',
+    'mdast-util-from-markdown', 'mdast-util-to-string', 'micromark', 'ai', '@ai-sdk/react'
+  ],
 
-  // Optimise large package imports (tree-shaking)
   experimental: {
     serverComponentsExternalPackages: [
-      'firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore',
-      'react-markdown', 'remark-gfm', 'remark-parse', 'rehype-raw', 'unified',
-      'vfile', 'bail', 'is-plain-obj', 'trough', 'zwitch', 'unist-util-stringify-position',
-      'mdast-util-from-markdown', 'mdast-util-to-string', 'micromark',
-      'ai', '@ai-sdk/react',
+      'firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore'
     ],
     serverActions: {
       allowedOrigins: [

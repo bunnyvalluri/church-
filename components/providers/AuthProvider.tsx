@@ -1,8 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut as firebaseSignOut, User as FirebaseUser } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 export interface AuthUser {
   uid: string;
@@ -32,7 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   updateUser: () => {},
 });
 
-async function syncUserToDatabase(firebaseUser: FirebaseUser): Promise<any | null> {
+async function syncUserToDatabase(firebaseUser: any): Promise<any | null> {
   try {
     const response = await fetch("/api/auth/sync", {
       method: "POST",
@@ -60,63 +58,93 @@ async function syncUserToDatabase(firebaseUser: FirebaseUser): Promise<any | nul
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  // mounted=true only after first client render — prevents hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   const updateUser = (updatedFields: Partial<AuthUser>) => {
-    setUser((prev) => prev ? { ...prev, ...updatedFields } : null);
+    setUser((prev) => (prev ? { ...prev, ...updatedFields } : null));
   };
 
   const refreshUser = async () => {
-    if (auth.currentUser) {
-      const dbUser = await syncUserToDatabase(auth.currentUser);
-      if (dbUser) {
-        setUser((prev) => prev ? {
-          ...prev,
-          name: dbUser.name || prev.name,
-          image: dbUser.image !== undefined ? dbUser.image : prev.image,
-          role: dbUser.role || prev.role,
-        } : null);
+    try {
+      const { auth } = await import("@/lib/firebase");
+      if (auth && auth.currentUser) {
+        const dbUser = await syncUserToDatabase(auth.currentUser);
+        if (dbUser) {
+          setUser((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  name: dbUser.name || prev.name,
+                  image: dbUser.image !== undefined ? dbUser.image : prev.image,
+                  role: dbUser.role || prev.role,
+                }
+              : null
+          );
+        }
       }
+    } catch (err) {
+      console.error("[AUTH] refreshUser error:", err);
     }
   };
 
   useEffect(() => {
     setMounted(true);
 
-    if (!auth || typeof auth.onIdTokenChanged !== "function") {
-      console.warn("[AUTH] Firebase Auth not initialized or mocked. Running in offline fallback mode.");
-      setLoading(false);
-      return;
-    }
+    let unsubscribe: (() => void) | undefined;
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setLoading(true);
-        const dbUser = await syncUserToDatabase(firebaseUser);
-        
-        const mappedUser: AuthUser = {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: dbUser?.name || firebaseUser.displayName || "Member",
-          image: dbUser?.image || firebaseUser.photoURL || null,
-          role: dbUser?.role || "MEMBER",
-        };
-        
-        setUser(mappedUser);
-        setLoading(false);
-      } else {
-        setUser(null);
+    const initAuth = async () => {
+      try {
+        const { auth } = await import("@/lib/firebase");
+        const { onAuthStateChanged } = await import("firebase/auth");
+
+        if (!auth || typeof onAuthStateChanged !== "function") {
+          console.warn("[AUTH] Firebase Auth not available. Running in offline fallback mode.");
+          setLoading(false);
+          return;
+        }
+
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          if (firebaseUser) {
+            setLoading(true);
+            const dbUser = await syncUserToDatabase(firebaseUser);
+
+            const mappedUser: AuthUser = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              name: dbUser?.name || firebaseUser.displayName || "Member",
+              image: dbUser?.image || firebaseUser.photoURL || null,
+              role: dbUser?.role || "MEMBER",
+            };
+
+            setUser(mappedUser);
+            setLoading(false);
+          } else {
+            setUser(null);
+            setLoading(false);
+          }
+        });
+      } catch (err) {
+        console.error("[AUTH] Dynamic import error during initAuth:", err);
         setLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    initAuth();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const logout = async () => {
     try {
-      await firebaseSignOut(auth);
+      const { auth } = await import("@/lib/firebase");
+      const { signOut } = await import("firebase/auth");
+      if (auth && typeof signOut === "function") {
+        await signOut(auth);
+      }
       setUser(null);
     } catch (err) {
       console.error("[AUTH] Sign out error:", err);
