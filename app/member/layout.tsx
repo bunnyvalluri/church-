@@ -101,17 +101,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     { href: "/member/give", label: lt.links.give.label, icon: Gift, color: "from-green-500 to-emerald-600", bg: "bg-green-50 dark:bg-green-950/30", text: "text-green-600 dark:text-green-400", desc: lt.links.give.desc },
   ];
 
+  // Auth redirect — always runs (hooks must be before any return)
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
-  // 🔒 SECURITY: Return null for all non-authenticated states
-  // This protects ALL /member/* pages — no content ever flashes to unauthenticated users
-  if (!mounted || status === "loading" || status === "unauthenticated") {
-    return null;
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // Online/offline detection
   useEffect(() => {
     const onOnline = () => setIsOnline(true);
     const onOffline = () => setIsOnline(false);
@@ -120,7 +115,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     return () => { window.removeEventListener("online", onOnline); window.removeEventListener("offline", onOffline); };
   }, []);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // Scroll detection
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -128,11 +123,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   }, []);
 
   // Close sidebar on route change
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   // Click outside to close profile dropdown
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
@@ -145,6 +138,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
+
+  // 🔒 SECURITY: Return null for unauthenticated/loading states (after ALL hooks)
+  if (!mounted || status === "loading" || status === "unauthenticated") {
+    return null;
+  }
 
   if (isMainDashboard) return <>{children}</>;
 

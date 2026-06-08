@@ -255,16 +255,12 @@ export default function MemberDashboard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevAnnouncementCount = useRef(0);
 
-  // 🔒 SECURITY: Redirect unauthenticated users to homepage — nothing renders
+  // Auth redirect — always runs (all hooks must be before any return)
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/");
   }, [mounted, status, router]);
 
-  // 🔒 SECURITY: Return null while loading or not authenticated — no content flash
-  if (!mounted || status === "loading" || status === "unauthenticated") {
-    return null;
-  }
-
+  // Click outside to close profile dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
@@ -320,7 +316,6 @@ export default function MemberDashboard() {
       if (announcementsRes.status === "fulfilled" && announcementsRes.value.ok) {
         const d = await announcementsRes.value.json();
         announcements = d.announcements || [];
-        // Notify on new announcements
         if (prevAnnouncementCount.current > 0 && announcements.length > prevAnnouncementCount.current) {
           showToast(`📢 ${announcements.length - prevAnnouncementCount.current} new announcement(s)!`, "info");
         }
@@ -350,19 +345,9 @@ export default function MemberDashboard() {
   const activeScriptures = SCRIPTURES[language as keyof typeof SCRIPTURES] || SCRIPTURES.en;
   const scripture = activeScriptures[scriptureIndex];
 
-  // Loading spinner only shown to authenticated users while data loads
-  if (loadingFeeds && stats.sermons === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
-        <div className="text-center space-y-4">
-          <div className="relative w-14 h-14 mx-auto">
-            <div className="animate-spin rounded-full h-14 w-14 border-2 border-purple-500/10 border-t-purple-600" />
-            <div className="absolute inset-2 rounded-full bg-purple-500/20 animate-ping" />
-          </div>
-          <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">{mt.loadingPortal}</p>
-        </div>
-      </div>
-    );
+  // 🔒 SECURITY: Return null after ALL hooks
+  if (!mounted || status === "loading" || status === "unauthenticated") {
+    return null;
   }
 
   return (
