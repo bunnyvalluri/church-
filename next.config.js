@@ -12,6 +12,7 @@ const nextConfig = {
       'react-markdown', 'remark-gfm', 'remark-parse', 'rehype-raw', 'unified',
       'vfile', 'bail', 'is-plain-obj', 'trough', 'zwitch', 'unist-util-stringify-position',
       'mdast-util-from-markdown', 'mdast-util-to-string', 'micromark',
+      'ai', '@ai-sdk/react',
     ],
     serverActions: {
       allowedOrigins: [
