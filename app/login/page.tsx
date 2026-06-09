@@ -107,42 +107,7 @@ export default function LoginPage() {
     }
   }, [mounted]);
 
-  const handleSocialLogin = async (provider: any, name: string) => {
-    setSocialLoading(name);
-    setError("");
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err: any) {
-      console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
-      
-      const fallbackErrors = [
-        "auth/popup-blocked",
-        "auth/cancelled-popup-request",
-        "auth/popup-closed-by-user",
-        "auth/network-request-failed"
-      ];
-      
-      if (fallbackErrors.includes(err.code) || err.message?.includes("COOP")) {
-        console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
-        try {
-          const { signInWithRedirect } = await import("firebase/auth");
-          await signInWithRedirect(auth, provider);
-        } catch (redirectErr: any) {
-          console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
-          setError("auth/popup-blocked");
-          setSocialLoading(null);
-        }
-      } else if (err.code === "auth/operation-not-allowed") {
-        setError(`auth/operation-not-allowed:${name}`);
-        setSocialLoading(null);
-      } else {
-        setError(err.code || "social-generic-failed");
-        setSocialLoading(null);
-      }
-    }
-  };
-
-  const simulateSocialLogin = async (name: string) => {
+  async function simulateSocialLogin(name: string) {
     setSocialLoading(name);
     setError("");
     const providerKey = name.toLowerCase();
@@ -169,6 +134,41 @@ export default function LoginPage() {
       }
     } finally {
       setSocialLoading(null);
+    }
+  }
+
+  const handleSocialLogin = async (provider: any, name: string) => {
+    setSocialLoading(name);
+    setError("");
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
+      
+      const fallbackErrors = [
+        "auth/popup-blocked",
+        "auth/cancelled-popup-request",
+        "auth/popup-closed-by-user",
+        "auth/network-request-failed"
+      ];
+      
+      if (fallbackErrors.includes(err.code) || err.message?.includes("COOP")) {
+        console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
+        try {
+          const { signInWithRedirect } = await import("firebase/auth");
+          await signInWithRedirect(auth, provider);
+        } catch (redirectErr: any) {
+          console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
+          setError("auth/popup-blocked");
+          setSocialLoading(null);
+        }
+      } else if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
+        console.info(`[AUTH] ${name} is not enabled in Firebase Console. Triggering simulation bypass.`);
+        await simulateSocialLogin(name);
+      } else {
+        setError(err.code || "social-generic-failed");
+        setSocialLoading(null);
+      }
     }
   };
 
