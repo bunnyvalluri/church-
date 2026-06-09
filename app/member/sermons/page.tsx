@@ -133,7 +133,7 @@ export default function MemberSermons() {
   const showToast = (msg: string) => { setToast({ msg }); setTimeout(() => setToast(null), 3500); };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   const fetch_ = useCallback(async (silent = false) => {
@@ -169,7 +169,7 @@ export default function MemberSermons() {
     return matchCat && matchSearch;
   });
 
-  if (!mounted || status === "loading") return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

@@ -138,7 +138,7 @@ export default function MemberEvents() {
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   const load = useCallback(async (silent = false) => {
@@ -211,7 +211,7 @@ export default function MemberEvents() {
     registered: registeredIds.length,
   };
 
-  if (!mounted || status === "loading") return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">

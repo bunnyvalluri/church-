@@ -23,9 +23,9 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!mounted) return;
 
-    // ❌ Not logged in → send to homepage, page stays invisible
+    // ❌ Not logged in → send to login page, page stays invisible
     if (status === "unauthenticated") {
-      router.replace("/");
+      router.replace("/login");
       return;
     }
 

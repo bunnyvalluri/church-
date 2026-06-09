@@ -211,7 +211,7 @@ export default function MemberProfile() {
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   useEffect(() => {
@@ -352,7 +352,7 @@ export default function MemberProfile() {
   };
   const rc = roleConfig[role] || roleConfig.MEMBER;
 
-  if (!mounted || status === "loading") return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

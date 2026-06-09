@@ -228,7 +228,7 @@ export default function MemberVolunteer() {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   const showToast = (msg: string, type: "success" | "error") => {
@@ -261,7 +261,7 @@ export default function MemberVolunteer() {
   const selectedData = MINISTRIES.find(m => m.id === selected);
   const selectedDetails = selected ? vt.ministries[selected as keyof typeof vt.ministries] : null;
 
-  if (!mounted || status === "loading") return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">

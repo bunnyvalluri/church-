@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, googleProvider, facebookProvider, twitterProvider } from "@/lib/firebase";
+import { auth, googleProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -107,35 +107,7 @@ export default function LoginPage() {
     }
   }, [mounted]);
 
-  async function simulateSocialLogin(name: string) {
-    setSocialLoading(name);
-    setError("");
-    const providerKey = name.toLowerCase();
-    const mockEmail = `${providerKey}-test@kcm-portal.org`;
-    const mockPassword = "MockSocialPassword123!";
-    const displayName = `${name} Tester`;
 
-    try {
-      await signInWithEmailAndPassword(auth, mockEmail, mockPassword);
-    } catch (err: any) {
-      if (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, mockEmail, mockPassword);
-          if (userCredential.user) {
-            await updateProfile(userCredential.user, { displayName });
-          }
-        } catch (createErr: any) {
-          console.error(`[AUTH] Simulated ${name} Registration Failed:`, createErr);
-          setError("social-generic-failed");
-        }
-      } else {
-        console.error(`[AUTH] Simulated ${name} Login Failed:`, err);
-        setError("social-generic-failed");
-      }
-    } finally {
-      setSocialLoading(null);
-    }
-  }
 
   const handleSocialLogin = async (provider: any, name: string) => {
     setSocialLoading(name);
@@ -163,8 +135,8 @@ export default function LoginPage() {
           setSocialLoading(null);
         }
       } else if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
-        console.info(`[AUTH] ${name} is not enabled in Firebase Console. Triggering simulation bypass.`);
-        await simulateSocialLogin(name);
+        setError("auth/operation-not-allowed");
+        setSocialLoading(null);
       } else {
         setError(err.code || "social-generic-failed");
         setSocialLoading(null);
@@ -300,18 +272,7 @@ export default function LoginPage() {
                 <span className="text-red-500 text-lg mt-0.5">⚠</span>
                 <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
               </div>
-              {error.startsWith("auth/operation-not-allowed:") && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const providerName = error.split(":")[1];
-                    simulateSocialLogin(providerName);
-                  }}
-                  className="mt-1 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline text-left self-start"
-                >
-                  ⚙️ [Dev Mode Bypass] Click here to simulate {error.split(":")[1]} Sign-In
-                </button>
-              )}
+
             </div>
           )}
 
@@ -403,14 +364,13 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Social Buttons */}
-          <div className="grid grid-cols-3 gap-3">
+              <div className="w-full">
             {/* Google */}
             <button
               type="button"
               onClick={() => handleSocialLogin(googleProvider, "Google")}
               disabled={!!socialLoading}
-              className="flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm disabled:opacity-60 group"
+              className="flex items-center justify-center gap-3 py-3 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm disabled:opacity-60 group"
               title={loginT.googleSignIn}
             >
               {socialLoading === "Google" ? (
@@ -419,52 +379,17 @@ export default function LoginPage() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-              )}
-            </button>
-
-            {/* Facebook */}
-            <button
-              type="button"
-              onClick={() => handleSocialLogin(facebookProvider, "Facebook")}
-              disabled={!!socialLoading}
-              className="flex items-center justify-center py-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white transition-all shadow-sm disabled:opacity-60"
-              title={loginT.facebookSignIn}
-            >
-              {socialLoading === "Facebook" ? (
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v2.277h-1.55c-2.006 0-2.327.945-2.327 2.308v2.675h4.417l-.59 3.667h-3.827v7.98h-4.59Z" />
-                </svg>
-              )}
-            </button>
-
-            {/* X / Twitter */}
-            <button
-              type="button"
-              onClick={() => handleSocialLogin(twitterProvider, "X")}
-              disabled={!!socialLoading}
-              className="flex items-center justify-center py-3 rounded-xl bg-black hover:bg-gray-800 text-white transition-all shadow-sm disabled:opacity-60"
-              title={loginT.twitterSignIn}
-            >
-              {socialLoading === "X" ? (
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
+                <>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                    {loginT.googleSignIn}
+                  </span>
+                </>
               )}
             </button>
           </div>
@@ -477,30 +402,7 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          {/* Dev Quick Login Section */}
-          {process.env.NODE_ENV === "development" && (
-            <div className="mt-8 pt-6 border-t border-dashed border-gray-200 dark:border-gray-800 text-left">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
-                ⚙️ Developer Bypass (Offline Dev Tools)
-              </h3>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => simulateSocialLogin("Facebook")}
-                  className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition text-left font-medium"
-                >
-                  👥 Simulate Facebook
-                </button>
-                <button
-                  type="button"
-                  onClick={() => simulateSocialLogin("X")}
-                  className="p-2 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition text-left font-medium"
-                >
-                  🐦 Simulate X / Twitter
-                </button>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
     </div>

@@ -103,7 +103,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   // Auth redirect — always runs (hooks must be before any return)
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   // Online/offline detection

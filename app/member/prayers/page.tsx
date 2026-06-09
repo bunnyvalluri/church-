@@ -206,7 +206,7 @@ export default function MemberPrayers() {
   };
 
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   const load = useCallback(async (silent = false) => {
@@ -283,7 +283,7 @@ export default function MemberPrayers() {
     answered: prayers.filter(p => p.status === "ANSWERED").length,
   };
 
-  if (!mounted || status === "loading") return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

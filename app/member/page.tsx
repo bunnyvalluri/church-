@@ -257,7 +257,7 @@ export default function MemberDashboard() {
 
   // Auth redirect — always runs (all hooks must be before any return)
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/");
+    if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
   // Click outside to close profile dropdown
