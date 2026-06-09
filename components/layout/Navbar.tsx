@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronRight } from "lucide-react";
-import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
+import { Instagram, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -37,10 +37,8 @@ export default function Navbar() {
   ];
 
   const socialLinks = [
-    { icon: Facebook,  href: "https://facebook.com",  label: "Facebook",   color: "hover:text-[#1877F2]", bg: "bg-[#1877F2]" },
     { icon: Instagram, href: "https://instagram.com", label: "Instagram",  color: "hover:text-[#E1306C]", bg: "bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]" },
     { icon: Youtube,   href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO", label: "YouTube", color: "hover:text-[#FF0000]", bg: "bg-[#FF0000]" },
-    { icon: Twitter,   href: "https://twitter.com",   label: "X / Twitter", color: "hover:text-white",    bg: "bg-black" },
   ];
 
   useEffect(() => {

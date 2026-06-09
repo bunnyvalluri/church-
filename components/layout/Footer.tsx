@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Facebook, Instagram, Youtube, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useState, useEffect } from "react";
 
@@ -87,14 +87,6 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4">
               <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/40 hover:brightness-110 group"
-              >
-                <Facebook className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
-              </a>
-              <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -109,14 +101,6 @@ export default function Footer() {
                 className="w-10 h-10 rounded-full bg-[#FF0000] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#FF0000]/40 hover:brightness-110 group"
               >
                 <Youtube className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#1DA1F2]/40 hover:brightness-110 group"
-              >
-                <Twitter className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
               </a>
             </div>
           </div>
