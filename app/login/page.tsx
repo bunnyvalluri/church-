@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, googleProvider, facebookProvider, twitterProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -142,6 +142,36 @@ export default function LoginPage() {
     }
   };
 
+  const simulateSocialLogin = async (name: string) => {
+    setSocialLoading(name);
+    setError("");
+    const providerKey = name.toLowerCase();
+    const mockEmail = `${providerKey}-test@kcm-portal.org`;
+    const mockPassword = "MockSocialPassword123!";
+    const displayName = `${name} Tester`;
+
+    try {
+      await signInWithEmailAndPassword(auth, mockEmail, mockPassword);
+    } catch (err: any) {
+      if (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, mockEmail, mockPassword);
+          if (userCredential.user) {
+            await updateProfile(userCredential.user, { displayName });
+          }
+        } catch (createErr: any) {
+          console.error(`[AUTH] Simulated ${name} Registration Failed:`, createErr);
+          setError("social-generic-failed");
+        }
+      } else {
+        console.error(`[AUTH] Simulated ${name} Login Failed:`, err);
+        setError("social-generic-failed");
+      }
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -265,9 +295,23 @@ export default function LoginPage() {
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
-              <span className="text-red-500 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
+            <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex flex-col gap-2">
+              <div className="flex items-start gap-3">
+                <span className="text-red-500 text-lg mt-0.5">⚠</span>
+                <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
+              </div>
+              {error.startsWith("auth/operation-not-allowed:") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const providerName = error.split(":")[1];
+                    simulateSocialLogin(providerName);
+                  }}
+                  className="mt-1 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline text-left self-start"
+                >
+                  ⚙️ [Dev Mode Bypass] Click here to simulate {error.split(":")[1]} Sign-In
+                </button>
+              )}
             </div>
           )}
 
@@ -432,6 +476,31 @@ export default function LoginPage() {
               {loginT.createAccountLink}
             </Link>
           </p>
+
+          {/* Dev Quick Login Section */}
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 pt-6 border-t border-dashed border-gray-200 dark:border-gray-800 text-left">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
+                ⚙️ Developer Bypass (Offline Dev Tools)
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => simulateSocialLogin("Facebook")}
+                  className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition text-left font-medium"
+                >
+                  👥 Simulate Facebook
+                </button>
+                <button
+                  type="button"
+                  onClick={() => simulateSocialLogin("X")}
+                  className="p-2 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition text-left font-medium"
+                >
+                  🐦 Simulate X / Twitter
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
