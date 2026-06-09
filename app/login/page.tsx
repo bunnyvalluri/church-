@@ -74,6 +74,11 @@ export default function LoginPage() {
     if (errStr.includes("Google login is not enabled")) {
       return loginT.errors.operationNotAllowed;
     }
+    if (errStr.startsWith("auth/operation-not-allowed")) {
+      const parts = errStr.split(":");
+      const provider = parts[1] || "Google";
+      return loginT.errors.operationNotAllowed.replace("Google", provider);
+    }
 
     return errStr;
   };
@@ -128,7 +133,7 @@ export default function LoginPage() {
           setSocialLoading(null);
         }
       } else if (err.code === "auth/operation-not-allowed") {
-        setError("auth/operation-not-allowed");
+        setError(`auth/operation-not-allowed:${name}`);
         setSocialLoading(null);
       } else {
         setError(err.code || "social-generic-failed");

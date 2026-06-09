@@ -28,6 +28,17 @@ NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
 5.  Enable **Google**.
     - For Google, you usually don't need extra setup for localhost.
     - For production (`verified.app`), add your domain to "Authorized domains" in Firebase settings.
+6.  Enable **Facebook**.
+    - You will need a developer account on the [Facebook Developers Portal](https://developers.facebook.com/).
+    - Create a new App, select the "Use cases" or "Facebook Login", and configure the App ID and App Secret.
+    - Copy the "OAuth redirect URI" provided by Firebase (under the Facebook provider setup) and paste it into your Facebook App settings under Facebook Login Client OAuth Settings.
+    - Enter your Facebook **App ID** and **App Secret** in the Firebase Console setup for Facebook and save.
+7.  Enable **Twitter (X)**.
+    - You will need a developer account on the [X Developer Portal](https://developer.x.com/).
+    - Set up a Project and App in the X Developer Portal with User Authentication settings enabled (OAuth 2.0 or OAuth 1.0a).
+    - Copy the "OAuth redirect URI" from your Firebase Console's Twitter sign-in setup page.
+    - Paste this redirect URI into your X App settings under **Callback URI / Redirect URL**.
+    - Enter your Twitter **API Key (Consumer Key)** and **API Key Secret (Consumer Secret)** in the Firebase Console setup for Twitter and save.
 
 ## Step 4: Add Real Users
 You can now go to `/register` (if implemented) or manually add users in the Firebase Console "Users" tab to test logging in.
