@@ -73,7 +73,6 @@ export default function RootLayout({
           {children}
           <BackToTop />
           <AIChat />
-          {process.env.NODE_ENV === "development" && <DevToolbar />}
         </Providers>
       </body>
     </html>

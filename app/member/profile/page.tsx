@@ -429,7 +429,7 @@ export default function MemberProfile() {
                 >
                   {photoUploading ? (
                     <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : image ? (
+                  ) : image && typeof image === 'string' && image.length > 0 ? (
                     <Image src={image} alt={name || "Member"} fill unoptimized className="object-cover" />
                   ) : (
                     <User className="w-8 h-8 text-white" />

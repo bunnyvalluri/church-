@@ -40,6 +40,7 @@ import ContentManagement from "@/components/admin/ContentManagement";
 import SettingsManagement from "@/components/admin/SettingsManagement";
 import AdminControlBar from "@/components/admin/AdminControlBar";
 import { adminTranslations } from "@/components/admin/adminTranslations";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type ActiveViewType = 
   | "dashboard"
@@ -671,7 +672,7 @@ export default function AdminDashboard() {
       )}
 
       {/* ────────────────── 1. LEFT SIDEBAR NAVIGATION ────────────────── */}
-      <aside className={`admin-sidebar w-64 text-gray-600 dark:text-gray-300 flex flex-col shrink-0 border-r border-gray-200 dark:border-white/[0.05] fixed inset-y-0 left-0 z-40 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`admin-sidebar w-64 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl shadow-2xl text-gray-600 dark:text-gray-300 flex flex-col shrink-0 border-r border-gray-200 dark:border-white/[0.05] fixed inset-y-0 left-0 z-40 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-200 dark:border-white/[0.05]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-500/30">
@@ -895,6 +896,9 @@ export default function AdminDashboard() {
             <div className="hidden md:flex">
               <AdminControlBar onNavigateSettings={() => setActiveView("settings")} />
             </div>
+
+            {/* Theme Toggle Switch */}
+            <ThemeToggle />
 
             {/* Notification Bell */}
             <div className="relative">

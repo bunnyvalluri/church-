@@ -8,7 +8,12 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed": "node prisma/seed-complete.js",
+    "db:check": "node prisma/check-db.js",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.15",

@@ -22,8 +22,6 @@
 import { NextResponse } from 'next/server';
 import { verifyFirebaseToken } from '@/lib/firebaseAdmin';
 import { prisma } from '@/lib/prisma';
-import fs from 'fs';
-import path from 'path';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface AuthenticatedUser {
@@ -45,25 +43,11 @@ function extractToken(req: Request): string | null {
   return null;
 }
 
-// ── Internal: Look up user role from DB or fallback file ───────────────────────
+// ── Internal: Look up user role from DB ───────────────────────
 async function resolveRole(uid: string, email: string): Promise<AuthenticatedUser['role']> {
-  try {
-    const user = await prisma.user.findUnique({ where: { id: uid }, select: { role: true } })
-      ?? await prisma.user.findUnique({ where: { email }, select: { role: true } });
-    if (user) return user.role as AuthenticatedUser['role'];
-  } catch {
-    // DB offline — check local fallback file
-    try {
-      const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_users.json');
-      if (fs.existsSync(fallbackFile)) {
-        const users: any[] = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-        const found = users.find((u) => u.id === uid || u.email === email);
-        if (found?.role) return found.role as AuthenticatedUser['role'];
-      }
-    } catch {
-      // Ignore fallback errors
-    }
-  }
+  const user = await prisma.user.findUnique({ where: { id: uid }, select: { role: true } })
+    ?? await prisma.user.findUnique({ where: { email }, select: { role: true } });
+  if (user) return user.role as AuthenticatedUser['role'];
   return 'MEMBER'; // Safest default
 }
 

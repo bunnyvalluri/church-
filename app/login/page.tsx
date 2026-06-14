@@ -28,15 +28,21 @@ export default function LoginPage() {
     setIsClient(true);
   }, []);
 
-  // Instantly redirect if already authenticated to their authorized page
+  // Instantly redirect if already authenticated to their authorized portal
   useEffect(() => {
     if (mounted && status === "authenticated" && user) {
-      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
-        router.replace("/admin");
-      } else if (user.role === "PASTOR") {
-        router.replace("/pastor");
-      } else {
-        router.replace("/member");
+      switch (user.role) {
+        case "SUPER_ADMIN":
+          router.replace("/portal-select");
+          break;
+        case "ADMIN":
+          router.replace("/admin");
+          break;
+        case "PASTOR":
+          router.replace("/pastor");
+          break;
+        default:
+          router.replace("/member");
       }
     }
   }, [mounted, status, user, router]);

@@ -120,7 +120,7 @@ export default function AdminProfile() {
             name: p.name || user?.name || "",
             phone: p.phone || "",
             address: p.address || "",
-            image: p.image || user?.image || "",
+            image: p.image || user?.image || "", // ensure never null
             role: p.role || user?.role || "ADMIN",
             createdAt: p.createdAt || "",
           };
@@ -129,7 +129,7 @@ export default function AdminProfile() {
           setAddress(snap.address);
           setRole(snap.role);
           setJoinedAt(snap.createdAt);
-          setImage(snap.image);
+          setImage(snap.image || ""); // guard null from DB
           original.current = snap;
           setHasChanges(false);
         }
@@ -351,7 +351,7 @@ export default function AdminProfile() {
                 >
                   {photoUploading ? (
                     <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : image ? (
+                  ) : image && typeof image === "string" && image.length > 0 ? (
                     <Image src={image} alt={name || "Admin"} fill unoptimized className="object-cover" />
                   ) : (
                     <span className="text-white font-black text-xl uppercase">

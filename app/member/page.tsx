@@ -426,7 +426,7 @@ export default function MemberDashboard() {
                 aria-label="Toggle profile menu"
               >
                 <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
-                  {user?.image ? (
+                  {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                     <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
                   ) : (
                     <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
@@ -453,7 +453,7 @@ export default function MemberDashboard() {
                     {/* User Profile Card */}
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
-                        {user?.image ? (
+                        {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                           <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">

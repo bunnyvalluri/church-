@@ -1,6 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import fs from 'fs';
-import path from 'path';
 
 export interface NotificationItem {
   id: string;
@@ -10,13 +8,6 @@ export interface NotificationItem {
   isRead: boolean;
   link?: string | null;
   createdAt: string;
-}
-
-function getFallbackFilePath(): string {
-  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
-    return path.join('/tmp', 'fallback_notifications.json');
-  }
-  return path.join(process.cwd(), 'prisma', 'fallback_notifications.json');
 }
 
 // ─── 24/7 Church Activity Simulator ──────────────────────────────────────────
@@ -124,24 +115,9 @@ async function triggerSimulatedNotification(): Promise<NotificationItem | null> 
       link: record.link,
       createdAt: record.createdAt.toISOString(),
     };
-  } catch {
-    // Fallback: write to local JSON file
-    const fallbackFile = getFallbackFilePath();
-    let notifs: NotificationItem[] = [];
-    if (fs.existsSync(fallbackFile)) {
-      try { notifs = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8')); } catch {}
-    }
-    const simItem: NotificationItem = {
-      id: `notif_sim_${Date.now()}_${Math.floor(Math.random() * 9999)}`,
-      ...newItem,
-      link: newItem.link || null,
-      createdAt: new Date().toISOString(),
-    };
-    notifs.unshift(simItem);
-    // Keep list to max 50 to avoid unbounded growth
-    if (notifs.length > 50) notifs = notifs.slice(0, 50);
-    try { fs.writeFileSync(fallbackFile, JSON.stringify(notifs, null, 2), 'utf-8'); } catch {}
-    return simItem;
+  } catch (err) {
+    console.error('[NOTIFICATIONS/SIMULATE] Failed to persist simulated notification:', err);
+    return null;
   }
 }
 
@@ -156,94 +132,29 @@ function shouldSimulate(notifs: NotificationItem[]): boolean {
   return ageMs > 2 * 60 * 1000;
 }
 
-// ─── Initial Dummy Notifications (seed data) ─────────────────────────────────
-const DUMMY_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'notif_dummy_1',
-    type: 'DONATION',
-    title: 'New Donation Received',
-    content: 'Valuri Rahul donated ₹1,000.00 for Tithe.',
-    isRead: false,
-    link: 'donations',
-    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif_dummy_2',
-    type: 'PRAYER_REQUEST',
-    title: 'New Prayer Request',
-    content: 'Anonymous requested prayers: "Speedy recovery for my mother".',
-    isRead: false,
-    link: 'prayers',
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif_dummy_3',
-    type: 'NEW_MEMBER',
-    title: 'New Member Registered',
-    content: 'Sarah Johnson registered as a Pastor candidate.',
-    isRead: true,
-    link: 'members',
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'notif_dummy_4',
-    type: 'CONTACT_MESSAGE',
-    title: 'New Contact Message',
-    content: 'David Raju sent a message: "Summer youth fellowship inquiry".',
-    isRead: true,
-    link: 'messages',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 export async function getNotifications(): Promise<NotificationItem[]> {
   let notifs: NotificationItem[] = [];
-  let fromDb = false;
 
-  try {
-    const dbNotifs = await prisma.notification.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
-    notifs = dbNotifs.map(n => ({
-      id: n.id,
-      type: n.type as NotificationItem['type'],
-      title: n.title,
-      content: n.content,
-      isRead: n.isRead,
-      link: n.link,
-      createdAt: n.createdAt.toISOString(),
-    }));
-    fromDb = true;
-  } catch {
-    console.warn('[NOTIFICATIONS/GET] Database offline. Using local JSON fallback.');
-    try {
-      const fallbackFile = getFallbackFilePath();
-      if (!fs.existsSync(fallbackFile)) {
-        const dir = path.dirname(fallbackFile);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(fallbackFile, JSON.stringify(DUMMY_NOTIFICATIONS, null, 2), 'utf-8');
-        notifs = [...DUMMY_NOTIFICATIONS];
-      } else {
-        const raw = fs.readFileSync(fallbackFile, 'utf-8');
-        notifs = JSON.parse(raw).sort(
-          (a: NotificationItem, b: NotificationItem) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-    } catch (fsErr) {
-      console.error('[NOTIFICATIONS/GET] Local fallback failed:', fsErr);
-      return DUMMY_NOTIFICATIONS;
-    }
-  }
+  const dbNotifs = await prisma.notification.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+  
+  notifs = dbNotifs.map(n => ({
+    id: n.id,
+    type: n.type as NotificationItem['type'],
+    title: n.title,
+    content: n.content,
+    isRead: n.isRead,
+    link: n.link,
+    createdAt: n.createdAt.toISOString(),
+  }));
 
   // 24/7 simulation: inject a new realistic notification if stale
   if (shouldSimulate(notifs)) {
     const simulated = await triggerSimulatedNotification();
     if (simulated) {
       notifs = [simulated, ...notifs];
-      // If we read from DB, we already persisted above. If fallback, it was written in triggerSimulatedNotification.
-      // Re-sort to be safe
       notifs.sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
@@ -267,81 +178,34 @@ export async function createNotification(data: {
     link: data.link || null,
   };
 
-  try {
-    const record = await prisma.notification.create({ data: newNotif });
-    return {
-      id: record.id,
-      type: record.type as NotificationItem['type'],
-      title: record.title,
-      content: record.content,
-      isRead: record.isRead,
-      link: record.link,
-      createdAt: record.createdAt.toISOString(),
-    };
-  } catch {
-    console.warn('[NOTIFICATIONS/CREATE] Database offline. Writing to local JSON fallback.');
-    const fallbackFile = getFallbackFilePath();
-    let notifs: NotificationItem[] = [];
-    if (fs.existsSync(fallbackFile)) {
-      try { notifs = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8')); } catch {}
-    } else {
-      notifs = [...DUMMY_NOTIFICATIONS];
-    }
-    const createdItem: NotificationItem = {
-      id: `notif_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-      type: data.type,
-      title: data.title,
-      content: data.content,
-      isRead: false,
-      link: data.link || null,
-      createdAt: new Date().toISOString(),
-    };
-    notifs.unshift(createdItem);
-    if (notifs.length > 50) notifs = notifs.slice(0, 50);
-    fs.writeFileSync(fallbackFile, JSON.stringify(notifs, null, 2), 'utf-8');
-    return createdItem;
-  }
+  const record = await prisma.notification.create({ data: newNotif });
+  return {
+    id: record.id,
+    type: record.type as NotificationItem['type'],
+    title: record.title,
+    content: record.content,
+    isRead: record.isRead,
+    link: record.link,
+    createdAt: record.createdAt.toISOString(),
+  };
 }
 
 export async function markNotificationsAsRead(ids?: string[]): Promise<boolean> {
-  try {
-    if (ids && ids.length > 0) {
-      await prisma.notification.updateMany({
-        where: { id: { in: ids } },
-        data: { isRead: true },
-      });
-    } else {
-      await prisma.notification.updateMany({
-        where: { isRead: false },
-        data: { isRead: true },
-      });
-    }
-    return true;
-  } catch {
-    console.warn('[NOTIFICATIONS/READ] Database offline. Updating local JSON fallback.');
-    const fallbackFile = getFallbackFilePath();
-    if (!fs.existsSync(fallbackFile)) return false;
-    let notifs: NotificationItem[] = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-    notifs = notifs.map(n => {
-      if (!ids || ids.includes(n.id)) return { ...n, isRead: true };
-      return n;
+  if (ids && ids.length > 0) {
+    await prisma.notification.updateMany({
+      where: { id: { in: ids } },
+      data: { isRead: true },
     });
-    fs.writeFileSync(fallbackFile, JSON.stringify(notifs, null, 2), 'utf-8');
-    return true;
+  } else {
+    await prisma.notification.updateMany({
+      where: { isRead: false },
+      data: { isRead: true },
+    });
   }
+  return true;
 }
 
 export async function deleteNotification(id: string): Promise<boolean> {
-  try {
-    await prisma.notification.delete({ where: { id } });
-    return true;
-  } catch {
-    console.warn('[NOTIFICATIONS/DELETE] Database offline. Deleting from local JSON fallback.');
-    const fallbackFile = getFallbackFilePath();
-    if (!fs.existsSync(fallbackFile)) return false;
-    let notifs: NotificationItem[] = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-    notifs = notifs.filter(n => n.id !== id);
-    fs.writeFileSync(fallbackFile, JSON.stringify(notifs, null, 2), 'utf-8');
-    return true;
-  }
+  await prisma.notification.delete({ where: { id } });
+  return true;
 }

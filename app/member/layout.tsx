@@ -167,7 +167,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-lg" />
           <div className="relative flex items-center gap-3">
             <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 flex-shrink-0 overflow-hidden">
-              {user?.image ? (
+              {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                 <Image src={user.image} alt={user.name || "Member"} width={44} height={44} unoptimized className="w-full h-full object-cover" />
               ) : (
                 <User className="w-5 h-5 text-white" />
@@ -362,7 +362,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   aria-label="Toggle profile menu"
                 >
                   <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
-                    {user?.image ? (
+                    {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                       <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
                     ) : (
                       <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
@@ -389,7 +389,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                       {/* User Profile Card */}
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
-                          {user?.image ? (
+                          {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                             <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">

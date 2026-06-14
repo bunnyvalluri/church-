@@ -1107,13 +1107,19 @@ export default function PastorDashboard() {
         <div className="p-4 border-t border-slate-200/50 dark:border-[#1E203B] bg-slate-50/50 dark:bg-[#0A0B16]/50 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 rounded-2xl border border-slate-200/60 dark:border-gray-805 overflow-hidden relative shrink-0">
-              <Image 
-                src={pastorProfile.image} 
-                alt={pastorProfile.name} 
-                fill 
-                sizes="40px"
-                className="object-cover" 
-              />
+              {pastorProfile.image && typeof pastorProfile.image === 'string' && pastorProfile.image.length > 0 ? (
+                <Image 
+                  src={pastorProfile.image} 
+                  alt={pastorProfile.name} 
+                  fill 
+                  sizes="40px"
+                  className="object-cover" 
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-black text-sm">{(pastorProfile.name || 'P').charAt(0)}</span>
+                </div>
+              )}
             </div>
             <div className="overflow-hidden">
               <h4 className="text-xs font-bold text-slate-800 dark:text-white truncate">{pastorProfile.name}</h4>
@@ -1589,7 +1595,13 @@ export default function PastorDashboard() {
                       <div key={req.id} className="flex items-center justify-between gap-3 p-2 rounded-2xl bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/80 dark:hover:bg-white/[0.03] border border-slate-100/30 dark:border-white/[0.02] hover:border-emerald-50/10 dark:hover:border-emerald-500/10 transition-all duration-200">
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className="w-10 h-10 rounded-2xl overflow-hidden relative shrink-0 border border-slate-200/50 dark:border-white/10 bg-slate-100 dark:bg-white/5 shadow-sm">
-                            <Image src={req.avatar} alt={req.name} fill sizes="40px" className="object-cover" />
+                            {req.avatar && typeof req.avatar === 'string' && req.avatar.length > 0 ? (
+                              <Image src={req.avatar} alt={req.name} fill sizes="40px" className="object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+                                <span className="text-white font-black text-xs">{(req.name || 'U').charAt(0)}</span>
+                              </div>
+                            )}
                           </div>
                           <div className="overflow-hidden">
                             <h4 className="text-xs font-bold text-slate-800 dark:text-white truncate leading-snug">{req.name}</h4>
@@ -1924,7 +1936,13 @@ export default function PastorDashboard() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full overflow-hidden relative shrink-0 border border-gray-200 dark:border-white/5">
-                              <Image src={req.avatar} alt={req.name} fill sizes="32px" className="object-cover" />
+                              {req.avatar && typeof req.avatar === 'string' && req.avatar.length > 0 ? (
+                                <Image src={req.avatar} alt={req.name} fill sizes="32px" className="object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+                                  <span className="text-white font-black text-xs">{(req.name || 'U').charAt(0)}</span>
+                                </div>
+                              )}
                             </div>
                             <div>
                               <span className="text-xs font-bold text-gray-800 dark:text-white block">{req.name}</span>
@@ -2538,7 +2556,13 @@ export default function PastorDashboard() {
               <form onSubmit={handleSaveProfile} className="space-y-5">
                 <div className="flex items-center gap-4 pb-4 border-b admin-divider">
                   <div className="w-16 h-16 rounded-full overflow-hidden relative border border-gray-250 dark:border-white/10 shrink-0 bg-gray-50 dark:bg-white/5">
-                    <Image src={pastorProfile.image} alt={pastorProfile.name} fill sizes="64px" className="object-cover" />
+                    {pastorProfile.image && typeof pastorProfile.image === 'string' && pastorProfile.image.length > 0 ? (
+                      <Image src={pastorProfile.image} alt={pastorProfile.name} fill sizes="64px" className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <span className="text-white font-black text-xl">{(pastorProfile.name || 'P').charAt(0)}</span>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <button type="button" onClick={() => triggerToast("Picture upload is mock-simulated.", "success")} className="admin-btn-ghost">

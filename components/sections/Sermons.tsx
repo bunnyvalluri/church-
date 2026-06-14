@@ -162,7 +162,7 @@ export default function Sermons() {
                 onClick={() => setSelectedVideo(sermon.videoId)}
               >
                 <Image
-                  src={sermon.thumbnail}
+                  src={sermon.thumbnail || "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600&q=80"}
                   alt={sermon.title}
                   fill
                   loading="lazy"

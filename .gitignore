@@ -46,3 +46,6 @@ next-env.d.ts
 
 # agent reports
 eslint-report*.txt
+
+# scratch files
+/scratch/
