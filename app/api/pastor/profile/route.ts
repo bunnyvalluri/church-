@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fs from 'fs';
-import path from 'path';
 
-// Seed initial mock profile
+// Default values if database is empty
 const defaultProfile = {
   name: "Bishop Kurra Kristhu Raju",
   title: "Senior Pastor & Founder",
@@ -13,41 +11,22 @@ const defaultProfile = {
   image: "/pastor.png"
 };
 
-const getFallbackFile = () => path.join(process.cwd(), 'prisma', 'fallback_pastor_profile.json');
-
-const readPastorProfile = async () => {
-  const file = getFallbackFile();
-  const fsLib = require('fs');
-  if (!fsLib.existsSync(file)) {
-    fsLib.writeFileSync(file, JSON.stringify(defaultProfile, null, 2), 'utf-8');
-    return defaultProfile;
-  }
-  try {
-    return JSON.parse(fsLib.readFileSync(file, 'utf-8'));
-  } catch (err) {
-    console.error('Error reading pastor profile file:', err);
-    return defaultProfile;
-  }
-};
-
-const writePastorProfile = async (profile: any) => {
-  const file = getFallbackFile();
-  const fsLib = require('fs');
-  fsLib.writeFileSync(file, JSON.stringify(profile, null, 2), 'utf-8');
-};
-
 export async function GET() {
   try {
-    try {
-      // Attempt database check
-      const profile = await readPastorProfile();
-      return NextResponse.json({ success: true, profile });
-    } catch (dbError) {
-      const profile = await readPastorProfile();
-      return NextResponse.json({ success: true, profile, warning: 'Using local storage' });
+    let pastor = await prisma.pastor.findFirst();
+    if (!pastor) {
+      // Create default pastor record in DB
+      pastor = await prisma.pastor.create({
+        data: defaultProfile
+      });
     }
+    return NextResponse.json({ success: true, profile: pastor });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PASTOR/PROFILE/GET] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while fetching pastor profile' },
+      { status: 500 }
+    );
   }
 }
 
@@ -60,7 +39,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Name, title, email, and phone are required' }, { status: 400 });
     }
 
-    const profile = {
+    const profileData = {
       name,
       title,
       email,
@@ -69,10 +48,25 @@ export async function POST(req: Request) {
       image: image || "/pastor.png"
     };
 
-    await writePastorProfile(profile);
+    let pastor = await prisma.pastor.findFirst();
+    if (pastor) {
+      pastor = await prisma.pastor.update({
+        where: { id: pastor.id },
+        data: profileData
+      });
+    } else {
+      pastor = await prisma.pastor.create({
+        data: profileData
+      });
+    }
 
-    return NextResponse.json({ success: true, profile });
+    return NextResponse.json({ success: true, profile: pastor });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PASTOR/PROFILE/POST] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while updating pastor profile' },
+      { status: 500 }
+    );
   }
 }
+

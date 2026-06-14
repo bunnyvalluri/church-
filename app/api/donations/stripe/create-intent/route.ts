@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
-import fs from 'fs';
-import path from 'path';
 
 // ── Stripe client (lazy-init to avoid crash if key is missing) ────────────────
 function getStripeClient(): Stripe | null {
@@ -109,24 +107,7 @@ export async function POST(req: Request) {
       status: 'PENDING' as const,
     };
 
-    try {
-      await prisma.donation.create({ data: donationData });
-    } catch (dbError: any) {
-      console.warn('[STRIPE/CREATE-INTENT] DB offline — using local fallback. Detail:', dbError?.message);
-      try {
-        const fallbackDir = path.join(process.cwd(), 'prisma');
-        const fallbackFile = path.join(fallbackDir, 'fallback_donations.json');
-        let donations = [];
-        if (fs.existsSync(fallbackFile)) {
-          try { donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8')); } catch {}
-        }
-        donations.push({ ...donationData, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        if (!fs.existsSync(fallbackDir)) fs.mkdirSync(fallbackDir, { recursive: true });
-        fs.writeFileSync(fallbackFile, JSON.stringify(donations, null, 2), 'utf-8');
-      } catch (fsErr) {
-        console.error('[STRIPE/CREATE-INTENT] Fallback saving failed:', fsErr);
-      }
-    }
+    await prisma.donation.create({ data: donationData });
 
     return NextResponse.json({
       success: true,
@@ -140,7 +121,11 @@ export async function POST(req: Request) {
     });
 
   } catch (err: any) {
-    console.error('[STRIPE/CREATE-INTENT] Internal error:', err);
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[STRIPE/CREATE-INTENT] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while initializing payment intent' },
+      { status: 500 }
+    );
   }
 }
+

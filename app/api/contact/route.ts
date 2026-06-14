@@ -116,61 +116,11 @@ export async function POST(req: Request) {
     );
   } catch (dbError: unknown) {
     const msg = dbError instanceof Error ? dbError.message : String(dbError);
-    console.warn(`[CONTACT] Database unavailable (Prisma/DB offline). Using local file fallback. Details:`, msg);
-
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const fallbackDir = path.join(process.cwd(), 'prisma');
-      const fallbackFile = path.join(fallbackDir, 'fallback_messages.json');
-      
-      let messages = [];
-      if (fs.existsSync(fallbackFile)) {
-        try {
-          messages = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-        } catch {}
-      }
-      
-      const newMsg = {
-        id: `fallback-${Date.now()}`,
-        ...safeData,
-        createdAt: new Date().toISOString(),
-      };
-      messages.push(newMsg);
-      
-      if (!fs.existsSync(fallbackDir)) {
-        fs.mkdirSync(fallbackDir, { recursive: true });
-      }
-      fs.writeFileSync(fallbackFile, JSON.stringify(messages, null, 2), 'utf-8');
-      console.info(`[CONTACT/FALLBACK] ✅ Saved message #${newMsg.id} locally in prisma/fallback_messages.json`);
-
-      // Trigger notification
-      try {
-        const { createNotification } = await import('@/lib/notification');
-        await createNotification({
-          type: 'CONTACT_MESSAGE',
-          title: 'New Contact Message',
-          content: `Contact from ${safeData.name}: "${safeData.subject.substring(0, 40)}"`,
-          link: 'prayers',
-        });
-      } catch (notifErr) {
-        console.warn('[CONTACT/FALLBACK] Notification creation failed:', notifErr);
-      }
-      
-      return ok(
-        { 
-          message: "Your message has been received. We will get back to you soon!",
-          note: "Saved locally (DB connection offline)" 
-        },
-        201
-      );
-    } catch (fsErr) {
-      console.error(`[CONTACT] ❌ Local fallback also failed:`, fsErr);
-      return err(
-        "We are temporarily unable to process your request. Please try again later.",
-        500
-      );
-    }
+    console.error(`[CONTACT] Database error:`, msg);
+    return err(
+      "We are temporarily unable to process your request due to a database error. Please try again later.",
+      500
+    );
   }
 }
 

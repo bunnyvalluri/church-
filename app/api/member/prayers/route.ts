@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fs from 'fs';
-import path from 'path';
-import { getFallbackFilePath } from '@/lib/utils';
 
 export async function GET(req: Request) {
   try {
@@ -13,64 +10,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // Try Prisma DB first
-    try {
-      const prayers = await prisma.prayerRequest.findMany({
-        where: { userId },
-        orderBy: { createdAt: 'desc' },
-      });
+    const prayers = await prisma.prayerRequest.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
 
-      return NextResponse.json({ success: true, prayers });
-    } catch (dbError: any) {
-      console.warn('[PRAYERS/GET] Database offline. Trying Firestore or local JSON fallback. Detail:', dbError?.message || dbError);
-
-      try {
-        const { db } = await import('@/lib/firebase');
-        if (db && process.env.FIRESTORE_OFFLINE !== 'true') {
-          try {
-            const { collection, query, where, getDocs } = await import('firebase/firestore');
-            const prayersRef = collection(db, 'prayers');
-            const q = query(prayersRef, where('userId', '==', userId));
-            const querySnapshot = await getDocs(q);
-            const userPrayers = querySnapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-            console.info(`[PRAYERS/GET/FIRESTORE] ✅ Retrieved ${userPrayers.length} prayers directly from Cloud Firestore`);
-            return NextResponse.json({
-              success: true,
-              prayers: userPrayers,
-              warning: 'Retrieved from Cloud Firestore (DB offline).',
-            });
-          } catch (firestoreError: any) {
-            console.warn('[PRAYERS/GET/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
-          }
-        }
-
-        const fallbackFile = getFallbackFilePath('fallback_prayers.json');
-        
-        if (!fs.existsSync(fallbackFile)) {
-          return NextResponse.json({ success: true, prayers: [] });
-        }
-
-        const allPrayers = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-        const userPrayers = allPrayers
-          .filter((p: any) => p.userId === userId)
-          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        return NextResponse.json({
-          success: true,
-          prayers: userPrayers,
-          warning: 'Retrieved from local fallback file (DB offline).',
-        });
-      } catch (fsErr) {
-        console.error('[PRAYERS/GET] Local fallback failed:', fsErr);
-        return NextResponse.json({ success: true, prayers: [] });
-      }
-    }
+    return NextResponse.json({ success: true, prayers });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PRAYERS/GET] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while fetching prayer requests' },
+      { status: 500 }
+    );
   }
 }
 
@@ -92,113 +43,30 @@ export async function POST(req: Request) {
       status: 'PENDING' as const,
     };
 
-    // Try Prisma DB first
+    const newPrayer = await prisma.prayerRequest.create({
+      data: prayerData,
+    });
+
+    // Trigger notification
     try {
-      const newPrayer = await prisma.prayerRequest.create({
-        data: prayerData,
+      const { createNotification } = await import('@/lib/notification');
+      await createNotification({
+        type: 'PRAYER_REQUEST',
+        title: 'New Prayer Request',
+        content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
+        link: 'prayers',
       });
-
-      // Trigger notification
-      try {
-        const { createNotification } = await import('@/lib/notification');
-        await createNotification({
-          type: 'PRAYER_REQUEST',
-          title: 'New Prayer Request',
-          content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
-          link: 'prayers',
-        });
-      } catch (notifErr) {
-        console.warn('[PRAYERS/CREATE] Notification creation failed:', notifErr);
-      }
-
-      return NextResponse.json({ success: true, prayer: newPrayer });
-    } catch (dbError: any) {
-      console.warn('[PRAYERS/CREATE] Database offline. Trying Firestore or local fallback. Detail:', dbError?.message || dbError);
-
-      try {
-        const { db } = await import('@/lib/firebase');
-        if (db && process.env.FIRESTORE_OFFLINE !== 'true') {
-          try {
-            const { collection, addDoc } = await import('firebase/firestore');
-            const newPrayerFallback = {
-              ...prayerData,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            };
-            const docRef = await addDoc(collection(db, 'prayers'), newPrayerFallback);
-            const savedPrayer = { id: docRef.id, ...newPrayerFallback };
-
-            console.info(`[PRAYERS/CREATE/FIRESTORE] ✅ Saved prayer request ${docRef.id} directly in Cloud Firestore`);
-
-            // Trigger notification
-            try {
-              const { createNotification } = await import('@/lib/notification');
-              await createNotification({
-                type: 'PRAYER_REQUEST',
-                title: 'New Prayer Request',
-                content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
-                link: 'prayers',
-              });
-            } catch (notifErr) {
-              console.warn('[PRAYERS/CREATE/FIRESTORE] Notification creation failed:', notifErr);
-            }
-
-            return NextResponse.json({
-              success: true,
-              prayer: savedPrayer,
-              warning: 'Database offline. Prayer request recorded directly in Cloud Firestore.',
-            });
-          } catch (firestoreError: any) {
-            console.warn('[PRAYERS/CREATE/FIRESTORE] Firestore fallback failed, resorting to local file. Details:', firestoreError?.message || firestoreError);
-          }
-        }
-
-        const fallbackFile = getFallbackFilePath('fallback_prayers.json');
-        
-        let prayers = [];
-        if (fs.existsSync(fallbackFile)) {
-          prayers = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-        }
-
-        const newPrayerFallback = {
-          id: `pry_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          ...prayerData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        const dir = path.dirname(fallbackFile);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-
-        prayers.push(newPrayerFallback);
-        fs.writeFileSync(fallbackFile, JSON.stringify(prayers, null, 2), 'utf-8');
-
-        // Trigger notification
-        try {
-          const { createNotification } = await import('@/lib/notification');
-          await createNotification({
-            type: 'PRAYER_REQUEST',
-            title: 'New Prayer Request',
-            content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
-            link: 'prayers',
-          });
-        } catch (notifErr) {
-          console.warn('[PRAYERS/CREATE/FALLBACK] Notification creation failed:', notifErr);
-        }
-
-        return NextResponse.json({
-          success: true,
-          prayer: newPrayerFallback,
-          warning: 'Database offline. Prayer request recorded in local fallback storage.',
-        });
-      } catch (fsErr) {
-        console.error('[PRAYERS/CREATE] Local fallback failed:', fsErr);
-        return NextResponse.json({ error: 'Database is offline and local fallback failed.' }, { status: 500 });
-      }
+    } catch (notifErr) {
+      console.warn('[PRAYERS/CREATE] Notification creation failed:', notifErr);
     }
+
+    return NextResponse.json({ success: true, prayer: newPrayer });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PRAYERS/CREATE] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while submitting prayer request' },
+      { status: 500 }
+    );
   }
 }
+

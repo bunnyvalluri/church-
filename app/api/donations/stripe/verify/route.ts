@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
-import fs from 'fs';
-import path from 'path';
 
 // ── POST /api/donations/stripe/verify ────────────────────────────────────────
 // Verifies a Stripe payment after the client confirms the PaymentIntent.
@@ -66,7 +64,7 @@ export async function POST(req: Request) {
   }
 }
 
-// ── Helper: update donation status in DB or fallback ─────────────────────────
+// ── Helper: update donation status in DB ─────────────────────────────────────
 async function updateDonationStatus(
   donationId: string,
   stripePaymentIntentId: string,
@@ -94,20 +92,11 @@ async function updateDonationStatus(
 
     return NextResponse.json({ success: true, donation: updated, status });
   } catch (dbError: any) {
-    console.warn('[STRIPE/VERIFY] DB offline — updating fallback file.', dbError?.message);
-    try {
-      const fallbackFile = path.join(process.cwd(), 'prisma', 'fallback_donations.json');
-      if (!fs.existsSync(fallbackFile)) {
-        return NextResponse.json({ success: status === 'COMPLETED', status, warning: 'DB offline; no fallback record found.' });
-      }
-      let donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-      donations = donations.map((d: any) =>
-        d.id === donationId ? { ...d, status, stripeId: stripePaymentIntentId, updatedAt: new Date().toISOString() } : d
-      );
-      fs.writeFileSync(fallbackFile, JSON.stringify(donations, null, 2), 'utf-8');
-      return NextResponse.json({ success: status === 'COMPLETED', status, warning: 'DB offline — fallback file updated.' });
-    } catch (fsErr) {
-      return NextResponse.json({ error: 'DB offline and fallback update failed.' }, { status: 500 });
-    }
+    console.error('[STRIPE/VERIFY] Database update failed:', dbError);
+    return NextResponse.json(
+      { error: dbError?.message || 'Database error occurred during status update' },
+      { status: 500 }
+    );
   }
 }
+

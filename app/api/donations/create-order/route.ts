@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import Razorpay from 'razorpay';
-import fs from 'fs';
-import path from 'path';
 
 // Helper to generate a unique donation ID
 function generateDonationId() {
@@ -82,71 +80,26 @@ export async function POST(req: Request) {
       status: 'PENDING' as const,
     };
 
-    // Attempt to save to Prisma DB
-    try {
-      const donation = await prisma.donation.create({
-        data: donationData,
-      });
+    // Save to Prisma DB
+    const donation = await prisma.donation.create({
+      data: donationData,
+    });
 
-      return NextResponse.json({
-        success: true,
-        orderId: razorpayOrderId,
-        amount: amountInPaise,
-        currency: 'INR',
-        keyId: razorpayKeyId,
-        donationId: donation.id,
-        isMock: !hasRealKeys,
-      });
-    } catch (dbError: any) {
-      console.warn('[DONATION/CREATE-ORDER] Database offline or unavailable. Using fallback JSON file. Detail:', dbError?.message || dbError);
-
-      try {
-        const fallbackDir = path.join(process.cwd(), 'prisma');
-        const fallbackFile = path.join(fallbackDir, 'fallback_donations.json');
-        
-        let donations = [];
-        if (fs.existsSync(fallbackFile)) {
-          try {
-            donations = JSON.parse(fs.readFileSync(fallbackFile, 'utf-8'));
-          } catch (e) {
-            console.error('[DONATION/FALLBACK] Error reading existing file, resetting:', e);
-          }
-        }
-
-        const newDonationFallback = {
-          ...donationData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        donations.push(newDonationFallback);
-        
-        if (!fs.existsSync(fallbackDir)) {
-          fs.mkdirSync(fallbackDir, { recursive: true });
-        }
-        fs.writeFileSync(fallbackFile, JSON.stringify(donations, null, 2), 'utf-8');
-        console.info(`[DONATION/CREATE-ORDER] ✅ Saved pending donation ${donationId} locally in prisma/fallback_donations.json`);
-
-        return NextResponse.json({
-          success: true,
-          orderId: razorpayOrderId,
-          amount: amountInPaise,
-          currency: 'INR',
-          keyId: razorpayKeyId,
-          donationId,
-          isMock: !hasRealKeys,
-          warning: 'Saved to local fallback file (DB offline).',
-        });
-      } catch (fsErr) {
-        console.error('[DONATION/CREATE-ORDER] ❌ Fallback saving failed:', fsErr);
-        return NextResponse.json({
-          error: 'Database is offline and local fallback failed.',
-          details: dbError?.message || String(dbError),
-        }, { status: 500 });
-      }
-    }
+    return NextResponse.json({
+      success: true,
+      orderId: razorpayOrderId,
+      amount: amountInPaise,
+      currency: 'INR',
+      keyId: razorpayKeyId,
+      donationId: donation.id,
+      isMock: !hasRealKeys,
+    });
   } catch (err: any) {
-    console.error('[DONATION/CREATE-ORDER] Internal error:', err);
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[DONATION/CREATE-ORDER] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while creating order' },
+      { status: 500 }
+    );
   }
 }
+

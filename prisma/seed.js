@@ -194,6 +194,172 @@ async function main() {
     }
   }
 
+  // 7. Seed Church Settings
+  const settingsFile = path.join(__dirname, 'fallback_church_settings.json');
+  if (fs.existsSync(settingsFile)) {
+    const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+    console.log('Seeding Church Settings...');
+    await prisma.churchSettings.upsert({
+      where: { id: 'settings' },
+      update: {
+        churchName: settings.churchName,
+        tagline: settings.tagline,
+        primaryEmail: settings.primaryEmail,
+        contactPhone: settings.contactPhone,
+        address: settings.address,
+        worshipServices: settings.worshipServices,
+        bilingualSupport: settings.bilingualSupport,
+        visitorRegistrationEnabled: settings.visitorRegistrationEnabled,
+      },
+      create: {
+        id: 'settings',
+        churchName: settings.churchName,
+        tagline: settings.tagline,
+        primaryEmail: settings.primaryEmail,
+        contactPhone: settings.contactPhone,
+        address: settings.address,
+        worshipServices: settings.worshipServices,
+        bilingualSupport: settings.bilingualSupport,
+        visitorRegistrationEnabled: settings.visitorRegistrationEnabled,
+      },
+    });
+  }
+
+  // 8. Seed Pastor Profile
+  const pastorFile = path.join(__dirname, 'fallback_pastor_profile.json');
+  if (fs.existsSync(pastorFile)) {
+    const pastor = JSON.parse(fs.readFileSync(pastorFile, 'utf8'));
+    console.log('Seeding Pastor Profile...');
+    const existingPastor = await prisma.pastor.findFirst();
+    if (existingPastor) {
+      await prisma.pastor.update({
+        where: { id: existingPastor.id },
+        data: {
+          name: pastor.name,
+          title: pastor.title,
+          email: pastor.email,
+          phone: pastor.phone,
+          bio: pastor.bio,
+          image: pastor.image,
+        },
+      });
+    } else {
+      await prisma.pastor.create({
+        data: {
+          name: pastor.name,
+          title: pastor.title,
+          email: pastor.email,
+          phone: pastor.phone,
+          bio: pastor.bio,
+          image: pastor.image,
+        },
+      });
+    }
+  }
+
+  // 9. Seed Member Requests
+  const requestsFile = path.join(__dirname, 'fallback_member_requests.json');
+  if (fs.existsSync(requestsFile)) {
+    const requests = JSON.parse(fs.readFileSync(requestsFile, 'utf8'));
+    console.log(`Seeding ${requests.length} member requests...`);
+    for (const req of requests) {
+      await prisma.memberRequest.upsert({
+        where: { id: req.id },
+        update: {
+          status: req.status,
+        },
+        create: {
+          id: req.id,
+          name: req.name,
+          email: req.email,
+          phone: req.phone,
+          type: req.type,
+          time: req.time,
+          status: req.status,
+          avatar: req.avatar,
+        },
+      });
+    }
+  }
+
+  // 10. Seed Small Groups
+  const smallGroupsFile = path.join(__dirname, 'fallback_small_groups.json');
+  if (fs.existsSync(smallGroupsFile)) {
+    const groups = JSON.parse(fs.readFileSync(smallGroupsFile, 'utf8'));
+    console.log(`Seeding ${groups.length} small groups...`);
+    for (const group of groups) {
+      await prisma.smallGroup.upsert({
+        where: { id: group.id },
+        update: {
+          name: group.name,
+          leader: group.leader,
+          location: group.location,
+          meetingTime: group.meetingTime,
+          attendanceAvg: group.attendanceAvg,
+        },
+        create: {
+          id: group.id,
+          name: group.name,
+          leader: group.leader,
+          location: group.location,
+          meetingTime: group.meetingTime,
+          attendanceAvg: group.attendanceAvg,
+        },
+      });
+    }
+  }
+
+  // 11. Seed Volunteers
+  const volunteersFile = path.join(__dirname, 'fallback_volunteers.json');
+  if (fs.existsSync(volunteersFile)) {
+    const volunteers = JSON.parse(fs.readFileSync(volunteersFile, 'utf8'));
+    console.log(`Seeding ${volunteers.length} volunteers...`);
+    for (const v of volunteers) {
+      await prisma.volunteer.upsert({
+        where: { id: v.id },
+        update: {
+          status: v.status,
+        },
+        create: {
+          id: v.id,
+          name: v.name,
+          email: v.email,
+          phone: v.phone,
+          ministry: v.ministry,
+          status: v.status,
+          appliedAt: v.appliedAt,
+        },
+      });
+    }
+  }
+
+  // 12. Seed Bible Studies
+  const bibleStudiesFile = path.join(__dirname, 'fallback_bible_studies.json');
+  if (fs.existsSync(bibleStudiesFile)) {
+    const studies = JSON.parse(fs.readFileSync(bibleStudiesFile, 'utf8'));
+    console.log(`Seeding ${studies.length} bible studies...`);
+    for (const s of studies) {
+      await prisma.bibleStudy.upsert({
+        where: { id: s.id },
+        update: {
+          name: s.name,
+          leader: s.leader,
+          time: s.time,
+          membersCount: s.membersCount,
+          day: s.day,
+        },
+        create: {
+          id: s.id,
+          name: s.name,
+          leader: s.leader,
+          time: s.time,
+          membersCount: s.membersCount,
+          day: s.day,
+        },
+      });
+    }
+  }
+
   console.log('Seed process completed successfully.');
 }
 

@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fs from 'fs';
-import path from 'path';
 
-// Seed initial mock settings
+// Default values if database is empty
 const defaultSettings = {
   churchName: "Kingdom of Christ Ministries",
   tagline: "Grace Community Sanctuary",
@@ -15,38 +13,28 @@ const defaultSettings = {
   visitorRegistrationEnabled: true
 };
 
-const getFallbackFile = () => path.join(process.cwd(), 'prisma', 'fallback_church_settings.json');
-
-const readChurchSettings = () => {
-  const file = getFallbackFile();
-  if (!fs.existsSync(file)) {
-    fs.writeFileSync(file, JSON.stringify(defaultSettings, null, 2), 'utf-8');
-    return defaultSettings;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf-8'));
-  } catch (err) {
-    console.error('Error reading church settings file:', err);
-    return defaultSettings;
-  }
-};
-
-const writeChurchSettings = (settings: any) => {
-  const file = getFallbackFile();
-  fs.writeFileSync(file, JSON.stringify(settings, null, 2), 'utf-8');
-};
-
 export async function GET() {
   try {
-    try {
-      const settings = readChurchSettings();
-      return NextResponse.json({ success: true, settings });
-    } catch (dbError) {
-      const settings = readChurchSettings();
-      return NextResponse.json({ success: true, settings, warning: 'Using local storage' });
+    let settings = await prisma.churchSettings.findUnique({
+      where: { id: 'settings' }
+    });
+
+    if (!settings) {
+      settings = await prisma.churchSettings.create({
+        data: {
+          id: 'settings',
+          ...defaultSettings
+        }
+      });
     }
+
+    return NextResponse.json({ success: true, settings });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PASTOR/CHURCH-SETTINGS/GET] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while fetching church settings' },
+      { status: 500 }
+    );
   }
 }
 
@@ -59,7 +47,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Required fields are missing' }, { status: 400 });
     }
 
-    const settings = {
+    const settingsData = {
       churchName,
       tagline: tagline || "",
       primaryEmail,
@@ -70,10 +58,22 @@ export async function POST(req: Request) {
       visitorRegistrationEnabled: !!visitorRegistrationEnabled
     };
 
-    writeChurchSettings(settings);
+    const settings = await prisma.churchSettings.upsert({
+      where: { id: 'settings' },
+      update: settingsData,
+      create: {
+        id: 'settings',
+        ...settingsData
+      }
+    });
 
     return NextResponse.json({ success: true, settings });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
+    console.error('[PASTOR/CHURCH-SETTINGS/POST] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while updating church settings' },
+      { status: 500 }
+    );
   }
 }
+

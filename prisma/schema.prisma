@@ -243,3 +243,60 @@ model Notification {
   createdAt DateTime @default(now())
 }
 
+model ChurchSettings {
+  id                         String   @id @default("settings")
+  churchName                 String
+  tagline                    String
+  primaryEmail               String
+  contactPhone               String
+  address                    String
+  worshipServices            String
+  bilingualSupport           Boolean  @default(true)
+  visitorRegistrationEnabled Boolean  @default(true)
+  updatedAt                  DateTime @updatedAt
+}
+
+model MemberRequest {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  type      String
+  time      String
+  status    String   @default("New")
+  avatar    String?
+  createdAt DateTime @default(now())
+}
+
+model SmallGroup {
+  id            String   @id @default(cuid())
+  name          String
+  leader        String
+  location      String
+  meetingTime   String
+  attendanceAvg Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model Volunteer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  ministry  String
+  status    String   @default("Pending")
+  appliedAt String
+  createdAt DateTime @default(now())
+}
+
+model BibleStudy {
+  id           String   @id @default(cuid())
+  name         String
+  leader       String
+  time         String
+  membersCount Int      @default(0)
+  day          String
+  createdAt    DateTime @default(now())
+}
+
+
