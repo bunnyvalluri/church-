@@ -45,18 +45,113 @@ export async function POST(req: Request) {
       where: { email: sanitizedEmail },
     });
 
-    const user = await prisma.user.upsert({
-      where: { email: sanitizedEmail },
-      update: {}, // Keep existing user-modified profile details intact
-      create: {
-        id: sanitizedUid, // Use Firebase UID as the primary key
-        email: sanitizedEmail,
-        name: sanitizedName || 'Member',
-        password: 'firebase-authenticated', // Dummy placeholder to satisfy required schema constraint
-        image: sanitizedPhotoURL || null,
-        phone: sanitizedPhoneNumber || null,
-      },
-    });
+    let user;
+    if (existingUserDb) {
+      if (existingUserDb.id !== sanitizedUid) {
+        // Check if another parallel call has already created the new user
+        const alreadyMigrated = await prisma.user.findUnique({
+          where: { id: sanitizedUid },
+        });
+        if (alreadyMigrated) {
+          user = alreadyMigrated;
+        } else {
+          console.info(`[AUTH/SYNC] User ID mismatch (DB: ${existingUserDb.id}, Firebase: ${sanitizedUid}). Migrating user ID and preserving role: ${existingUserDb.role}`);
+          
+          user = await prisma.$transaction(async (tx) => {
+            // Check again inside the transaction to avoid race conditions
+            const txAlreadyMigrated = await tx.user.findUnique({
+              where: { id: sanitizedUid },
+            });
+            if (txAlreadyMigrated) {
+              return txAlreadyMigrated;
+            }
+
+            // Verify the old user record still exists
+            const oldUser = await tx.user.findUnique({
+              where: { id: existingUserDb.id },
+            });
+            if (!oldUser) {
+              const fallbackUser = (await tx.user.findUnique({ where: { id: sanitizedUid } }))
+                || (await tx.user.findUnique({ where: { email: sanitizedEmail } }));
+              if (fallbackUser) return fallbackUser;
+              throw new Error('User migration source record disappeared.');
+            }
+
+            // 1. Temporarily change the email of the old user to free up the unique constraint
+            const tempEmail = `${oldUser.email}_old_${Date.now()}`;
+            await tx.user.update({
+              where: { id: oldUser.id },
+              data: { email: tempEmail },
+            });
+
+            // 2. Create the new user record with the Firebase UID and correct email
+            const newUser = await tx.user.upsert({
+              where: { id: sanitizedUid },
+              update: {
+                role: oldUser.role, // Preserve role!
+                name: sanitizedName || oldUser.name,
+                phone: sanitizedPhoneNumber || oldUser.phone,
+                address: oldUser.address,
+                image: sanitizedPhotoURL || oldUser.image,
+              },
+              create: {
+                id: sanitizedUid,
+                email: sanitizedEmail,
+                name: sanitizedName || oldUser.name || 'Member',
+                password: 'firebase-authenticated',
+                role: oldUser.role, // Preserve role!
+                phone: sanitizedPhoneNumber || oldUser.phone || null,
+                address: oldUser.address || null,
+                image: sanitizedPhotoURL || oldUser.image || null,
+              },
+            });
+
+            // 3. Update related tables to reference the new Firebase UID
+            await tx.eventRegistration.updateMany({
+              where: { userId: oldUser.id },
+              data: { userId: sanitizedUid },
+            });
+
+            await tx.prayerRequest.updateMany({
+              where: { userId: oldUser.id },
+              data: { userId: sanitizedUid },
+            });
+
+            await tx.testimonial.updateMany({
+              where: { userId: oldUser.id },
+              data: { userId: sanitizedUid },
+            });
+
+            await tx.donation.updateMany({
+              where: { userId: oldUser.id },
+              data: { userId: sanitizedUid },
+            });
+
+            // 4. Delete the old user record
+            await tx.user.delete({
+              where: { id: oldUser.id },
+            });
+
+            return newUser;
+          });
+        }
+      } else {
+        // IDs match, just return existing user
+        user = existingUserDb;
+      }
+    } else {
+      // User doesn't exist, create a new record
+      user = await prisma.user.create({
+        data: {
+          id: sanitizedUid,
+          email: sanitizedEmail,
+          name: sanitizedName || 'Member',
+          password: 'firebase-authenticated',
+          image: sanitizedPhotoURL || null,
+          phone: sanitizedPhoneNumber || null,
+        },
+      });
+    }
 
     if (!existingUserDb) {
       try {
