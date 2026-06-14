@@ -126,9 +126,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // ── DEV AUTO-LOGIN SHORTCUT ──────────────────────────────────────────────
     // Priority: localStorage (DevToolbar) → env var → Firebase
     // Has ZERO effect in production (env var never set there).
-    const envRole = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toUpperCase();
-    const lsRole  = typeof window !== "undefined" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
-    const devRole = lsRole || envRole;
+    const envRole = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN;
+    const lsRole  = typeof window !== "undefined" && envRole !== "" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
+    const devRole = lsRole || (envRole?.toUpperCase() ?? "");
     const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER"];
     if (devRole && validRoles.includes(devRole)) {
       const roleMap: Record<string, AuthUser["role"]> = {

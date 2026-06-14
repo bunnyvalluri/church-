@@ -1232,7 +1232,7 @@ export default function PastorDashboard() {
             </button>
             <div className="min-w-0">
               <h2 className="text-sm sm:text-lg font-black text-gray-900 dark:text-white leading-tight truncate">
-                Welcome back, <span className="sm:hidden">Bishop Raju</span><span className="hidden sm:inline">{pastorProfile.name}</span>! 👋
+                Welcome back, <span className="sm:hidden">{user?.name?.split(" ")[0] || "Pastor"}</span><span className="hidden sm:inline">{user?.name || pastorProfile.name}</span>! 👋
               </h2>
               <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 truncate">Here&apos;s what&apos;s happening in your ministry today.</p>
             </div>
