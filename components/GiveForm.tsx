@@ -38,6 +38,32 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Load Razorpay script dynamically outside the component
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && (window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const getPurposeIcon = (pId: string) => {
+  switch (pId) {
+    case "TITHE": return <IndianRupee className="w-5 h-5 text-indigo-500" />;
+    case "OFFERING": return <Gift className="w-5 h-5 text-rose-500" />;
+    case "BUILDING": return <Building className="w-5 h-5 text-amber-500" />;
+    case "MISSIONS": return <Globe className="w-5 h-5 text-blue-500" />;
+    case "CHARITY": return <Heart className="w-5 h-5 text-emerald-500" />;
+    default: return <PlusCircle className="w-5 h-5 text-purple-500" />;
+  }
+};
 
 export default function GiveForm() {
   const { language, t } = useLanguage();
@@ -153,21 +179,7 @@ export default function GiveForm() {
     };
   }, [user, loadHistory, pingGateway]);
 
-  // Load Razorpay script dynamically
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      if (window.Razorpay) {
-        resolve(true);
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
+  // loadRazorpayScript is moved to module scope (above)
 
   const getFinalAmount = () => {
     return customAmount ? customAmount : amount;
@@ -429,16 +441,7 @@ export default function GiveForm() {
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  const getPurposeIcon = (pId: string) => {
-    switch (pId) {
-      case "TITHE": return <IndianRupee className="w-5 h-5 text-indigo-500" />;
-      case "OFFERING": return <Gift className="w-5 h-5 text-rose-500" />;
-      case "BUILDING": return <Building className="w-5 h-5 text-amber-500" />;
-      case "MISSIONS": return <Globe className="w-5 h-5 text-blue-500" />;
-      case "CHARITY": return <Heart className="w-5 h-5 text-emerald-500" />;
-      default: return <PlusCircle className="w-5 h-5 text-purple-500" />;
-    }
-  };
+  // getPurposeIcon is moved to module scope (above)
 
   const formattedPingTime = pingTime !== null ? `${pingTime}ms` : "checking...";
 
@@ -503,23 +506,23 @@ export default function GiveForm() {
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 max-w-6xl mx-auto items-start">
             
             {/* Left Column: Giving Form */}
-            <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700/50">
-              <div className="flex items-center justify-between mb-8">
+            <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-8 border border-gray-100 dark:border-gray-700/50">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-[hsl(var(--primary))]" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-[hsl(var(--primary))]" />
                     {gt.formTitle}
                   </h2>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
                     {gt.formSubtitle}
                   </p>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-1.5 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 px-3 py-1.5 rounded-full text-[hsl(var(--primary))] text-xs font-semibold">
-                    <Lock className="w-3.5 h-3.5" />
+                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 bg-gray-55/65 dark:bg-gray-900/60 sm:bg-transparent sm:dark:bg-transparent p-2 sm:p-0 rounded-xl w-full sm:w-auto">
+                  <div className="flex items-center gap-1.5 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 px-2.5 py-1 rounded-full text-[hsl(var(--primary))] text-[10px] sm:text-xs font-semibold">
+                    <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     {language === 'en' ? 'Secure' : language === 'te' ? 'భద్రమైనది' : 'सुरक्षित'}
                   </div>
-                  <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">Ping: {formattedPingTime}</span>
+                  <span className="text-[9px] sm:text-[10px] font-mono text-gray-400 dark:text-gray-500">Ping: {formattedPingTime}</span>
                 </div>
               </div>
 
@@ -594,7 +597,7 @@ export default function GiveForm() {
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
                             {gt.presetsTitle}
                           </label>
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {["500", "1000", "2500", "5000", "10000"].map((preset) => (
                               <button
                                 key={preset}
@@ -604,6 +607,8 @@ export default function GiveForm() {
                                   setCustomAmount("");
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
+                                  preset === "10000" ? "col-span-2 sm:col-span-1" : ""
+                                } ${
                                   amount === preset && !customAmount
                                     ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -612,7 +617,7 @@ export default function GiveForm() {
                                 ₹{preset}
                               </button>
                             ))}
-                            <div className="relative">
+                            <div className="relative col-span-2 sm:col-span-1">
                               <input
                                 type="number"
                                 placeholder={gt.customPlaceholder}
@@ -621,13 +626,13 @@ export default function GiveForm() {
                                   setCustomAmount(e.target.value);
                                   setAmount("");
                                 }}
-                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
+                                className={`w-full py-3.5 px-3 sm:px-4 pl-6 sm:pl-8 rounded-xl border font-bold text-sm sm:text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
                                   customAmount 
                                     ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
                                     : "border-gray-200 dark:border-gray-700"
                                 }`}
                               />
-                              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">₹</span>
+                              <span className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm sm:text-lg">₹</span>
                             </div>
                           </div>
                         </div>
@@ -639,10 +644,11 @@ export default function GiveForm() {
                           </label>
                           <div className="grid md:grid-cols-2 gap-3">
                             {Object.entries(gt.purposes).map(([id, item]) => (
-                              <div
+                              <button
                                 key={id}
+                                type="button"
                                 onClick={() => setPurpose(id)}
-                                className={`p-4 rounded-xl border cursor-pointer select-none transition-all flex flex-col justify-between ${
+                                className={`p-4 rounded-xl border text-left cursor-pointer select-none transition-all flex flex-col justify-between w-full ${
                                   purpose === id
                                     ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
                                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
@@ -656,7 +662,7 @@ export default function GiveForm() {
                                     {item.desc}
                                   </span>
                                 </div>
-                              </div>
+                              </button>
                             ))}
                           </div>
                         </div>
@@ -841,7 +847,7 @@ export default function GiveForm() {
                           <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
                             {gt.presetsTitleUpi}
                           </label>
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {["500", "1000", "2500", "5000", "10000"].map((preset) => (
                               <button
                                 key={preset}
@@ -851,6 +857,8 @@ export default function GiveForm() {
                                   setCustomAmount("");
                                 }}
                                 className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
+                                  preset === "10000" ? "col-span-2 sm:col-span-1" : ""
+                                } ${
                                   amount === preset && !customAmount
                                     ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
                                     : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -859,7 +867,7 @@ export default function GiveForm() {
                                 ₹{preset}
                               </button>
                             ))}
-                            <div className="relative">
+                            <div className="relative col-span-2 sm:col-span-1">
                               <input
                                 type="number"
                                 placeholder={gt.customPlaceholder}
@@ -868,13 +876,13 @@ export default function GiveForm() {
                                   setCustomAmount(e.target.value);
                                   setAmount("");
                                 }}
-                                className={`w-full py-3.5 px-4 pl-8 rounded-xl border font-bold text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
+                                className={`w-full py-3.5 px-3 sm:px-4 pl-6 sm:pl-8 rounded-xl border font-bold text-sm sm:text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
                                   customAmount 
                                     ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
                                     : "border-gray-200 dark:border-gray-700"
                                 }`}
                               />
-                              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">₹</span>
+                              <span className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm sm:text-lg">₹</span>
                             </div>
                           </div>
                         </div>
@@ -886,10 +894,11 @@ export default function GiveForm() {
                           </label>
                           <div className="grid md:grid-cols-2 gap-3">
                             {Object.entries(gt.purposes).map(([id, item]) => (
-                              <div
+                              <button
                                 key={id}
+                                type="button"
                                 onClick={() => setPurpose(id)}
-                                className={`p-4 rounded-xl border cursor-pointer select-none transition-all flex flex-col justify-between ${
+                                className={`p-4 rounded-xl border text-left cursor-pointer select-none transition-all flex flex-col justify-between w-full ${
                                   purpose === id
                                     ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
                                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
@@ -903,7 +912,7 @@ export default function GiveForm() {
                                     {item.desc}
                                   </span>
                                 </div>
-                              </div>
+                              </button>
                             ))}
                           </div>
                         </div>
@@ -1021,7 +1030,7 @@ export default function GiveForm() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Payment Summary Box */}
-              <div className="bg-gradient-to-br from-gradient-start to-gradient-end text-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-gradient-start to-gradient-end text-white rounded-3xl shadow-xl p-6 sm:p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full filter blur-xl transform translate-x-10 -translate-y-10" />
                 
                 <h3 className="font-bold text-lg uppercase tracking-wider text-purple-200 mb-6 flex items-center gap-2">
@@ -1196,7 +1205,7 @@ export default function GiveForm() {
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               {/* Bank Transfer Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700/30 flex flex-col justify-between">
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 dark:border-gray-700/30 flex flex-col justify-between">
                 <div>
                   <div className="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mb-6">
                     <Building className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
@@ -1229,7 +1238,7 @@ export default function GiveForm() {
               </div>
 
               {/* Envelope Giving Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700/30 flex flex-col justify-between">
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 dark:border-gray-700/30 flex flex-col justify-between">
                 <div>
                   <div className="w-14 h-14 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center mb-6">
                     <Smartphone className="h-7 w-7 text-pink-600 dark:text-pink-400" />
@@ -1242,36 +1251,39 @@ export default function GiveForm() {
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center text-xs sm:text-sm font-bold">
-                  <div 
+                  <button 
+                    type="button"
                     onClick={() => {
                       sessionStorage.setItem("pending-contact-branch", "shapur");
                       window.location.href = "/#contact";
                     }}
-                    className="bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/10 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+                    className="bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/10 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full"
                   >
                     <span className="text-xl">⛪</span>
                     <span>Shapur</span>
-                  </div>
-                  <div 
+                  </button>
+                  <button 
+                    type="button"
                     onClick={() => {
                       sessionStorage.setItem("pending-contact-branch", "subhash");
                       window.location.href = "/#contact";
                     }}
-                    className="bg-gradient-to-br from-rose-50 to-pink-50/50 dark:from-rose-950/20 dark:to-pink-950/10 text-rose-700 dark:text-rose-350 p-3.5 rounded-2xl border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+                    className="bg-gradient-to-br from-rose-50 to-pink-50/50 dark:from-rose-950/20 dark:to-pink-950/10 text-rose-700 dark:text-rose-350 p-3.5 rounded-2xl border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full"
                   >
                     <span className="text-xl">⛪</span>
                     <span>Subhash Nagar</span>
-                  </div>
-                  <div 
+                  </button>
+                  <button 
+                    type="button"
                     onClick={() => {
                       sessionStorage.setItem("pending-contact-branch", "bahadur");
                       window.location.href = "/#contact";
                     }}
-                    className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/10 text-emerald-700 dark:text-emerald-350 p-3.5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+                    className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/10 text-emerald-700 dark:text-emerald-350 p-3.5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full"
                   >
                     <span className="text-xl">⛪</span>
                     <span>Bahadurpally</span>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1287,7 +1299,7 @@ export default function GiveForm() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden"
             >
               <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-purple-500 to-indigo-600" />
               

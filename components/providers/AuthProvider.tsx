@@ -18,6 +18,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateUser: (updatedFields: Partial<AuthUser>) => void;
+  /** Returns a fresh Firebase ID token for authenticated API calls, or null in dev-bypass / unauthenticated state. */
+  getIdToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,7 +30,22 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   refreshUser: async () => {},
   updateUser: () => {},
+  getIdToken: async () => null,
 });
+
+// ── Cookie helpers (lightweight presence cookies for Edge Middleware) ──────────
+function setSessionCookies(uid: string, role: string) {
+  if (typeof document === "undefined") return;
+  const maxAge = 60 * 60; // 1 hour — matches Firebase ID token lifetime
+  document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+  document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+}
+
+function clearSessionCookies() {
+  if (typeof document === "undefined") return;
+  document.cookie = "__kcm_session_uid=; path=/; max-age=0; SameSite=Strict";
+  document.cookie = "__kcm_session_role=; path=/; max-age=0; SameSite=Strict";
+}
 
 async function syncUserToDatabase(firebaseUser: any): Promise<any | null> {
   try {
@@ -64,6 +81,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser((prev) => (prev ? { ...prev, ...updatedFields } : null));
   };
 
+  /**
+   * Returns a fresh Firebase ID token for use in Authorization: Bearer headers.
+   * Returns null in dev-bypass mode or if the user is unauthenticated.
+   */
+  const getIdToken = async (): Promise<string | null> => {
+    try {
+      const { auth } = await import("@/lib/firebase");
+      if (auth?.currentUser) {
+        return await auth.currentUser.getIdToken(/* forceRefresh */ false);
+      }
+    } catch (err) {
+      console.error("[AUTH] getIdToken error:", err);
+    }
+    return null;
+  };
+
   const refreshUser = async () => {
     try {
       const { auth } = await import("@/lib/firebase");
@@ -89,6 +122,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
+
+    // ── DEV AUTO-LOGIN SHORTCUT ──────────────────────────────────────────────
+    // Priority: localStorage (DevToolbar) → env var → Firebase
+    // Has ZERO effect in production (env var never set there).
+    const envRole = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toUpperCase();
+    const lsRole  = typeof window !== "undefined" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
+    const devRole = lsRole || envRole;
+    const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER"];
+    if (devRole && validRoles.includes(devRole)) {
+      const roleMap: Record<string, AuthUser["role"]> = {
+        PASTOR: "PASTOR",
+        ADMIN: "ADMIN",
+        SUPER_ADMIN: "SUPER_ADMIN",
+        MEMBER: "MEMBER",
+      };
+      const mockUser: AuthUser = {
+        uid: "dev-auto-login-uid",
+        email: "bishop.kraju@kcmchurch.org",
+        name: "Bishop Kurra Kristhu Raju",
+        image: "/pastor.png",
+        role: roleMap[devRole],
+      };
+      console.info(`%c[DEV] Auto-login active → role: ${mockUser.role}`, "color: #6366f1; font-weight: bold;");
+      setSessionCookies(mockUser.uid, mockUser.role);
+      setUser(mockUser);
+      setLoading(false);
+      return;
+    }
+    // ────────────────────────────────────────────────────────────────────────
 
     let unsubscribe: (() => void) | undefined;
 
@@ -116,9 +178,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               role: dbUser?.role || "MEMBER",
             };
 
+            // Set lightweight session cookies for Edge Middleware (presence-only check)
+            setSessionCookies(mappedUser.uid, mappedUser.role);
             setUser(mappedUser);
             setLoading(false);
           } else {
+            clearSessionCookies();
             setUser(null);
             setLoading(false);
           }
@@ -145,16 +210,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (auth && typeof signOut === "function") {
         await signOut(auth);
       }
+      clearSessionCookies();
       setUser(null);
     } catch (err) {
       console.error("[AUTH] Sign out error:", err);
+      clearSessionCookies();
+      setUser(null);
     }
   };
 
   const status = loading ? "loading" : user ? "authenticated" : "unauthenticated";
 
   return (
-    <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser, updateUser, getIdToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdminOrDev } from '@/lib/authMiddleware';
 import fs from 'fs';
 import path from 'path';
 
@@ -7,6 +8,10 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
+  // ── Auth Guard ─────────────────────────────────────────────────────────────
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     // Try database query first
     try {

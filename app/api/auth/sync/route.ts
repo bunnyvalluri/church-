@@ -51,6 +51,10 @@ export async function POST(req: Request) {
 
     // 3. Try to sync with the database. Wrap in try/catch to handle connection/migration issues.
     try {
+      const existingUserDb = await prisma.user.findUnique({
+        where: { email: sanitizedEmail },
+      });
+
       const user = await prisma.user.upsert({
         where: { email: sanitizedEmail },
         update: {}, // Keep existing user-modified profile details intact
@@ -63,6 +67,20 @@ export async function POST(req: Request) {
           phone: sanitizedPhoneNumber || null,
         },
       });
+
+      if (!existingUserDb) {
+        try {
+          const { createNotification } = await import('@/lib/notification');
+          await createNotification({
+            type: 'NEW_MEMBER',
+            title: 'New Member Registered',
+            content: `${sanitizedName || 'A new member'} (${sanitizedEmail}) registered.`,
+            link: 'members',
+          });
+        } catch (notifErr) {
+          console.warn('[AUTH/SYNC] Notification creation failed:', notifErr);
+        }
+      }
 
       return NextResponse.json({ success: true, user });
     } catch (dbError: any) {
@@ -131,6 +149,19 @@ export async function POST(req: Request) {
             updatedAt: new Date().toISOString(),
           };
           users.push(fallbackUser);
+
+          // Trigger notification
+          try {
+            const { createNotification } = await import('@/lib/notification');
+            await createNotification({
+              type: 'NEW_MEMBER',
+              title: 'New Member Registered',
+              content: `${sanitizedName || 'A new member'} (${sanitizedEmail}) registered.`,
+              link: 'members',
+            });
+          } catch (notifErr) {
+            console.warn('[AUTH/SYNC/FALLBACK] Notification creation failed:', notifErr);
+          }
         }
         
         // Ensure directories exist

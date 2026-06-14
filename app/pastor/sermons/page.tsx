@@ -10,6 +10,11 @@ import { motion } from "framer-motion";
 export default function PastorSermons() {
   const { user, status, mounted } = useAuth();
   const router = useRouter();
+  const [localMounted, setLocalMounted] = useState(false);
+
+  useEffect(() => {
+    setLocalMounted(true);
+  }, []);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -80,7 +85,11 @@ export default function PastorSermons() {
     }
   };
 
-  if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
+  if (!localMounted) {
+    return null;
+  }
+
+  if (status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto" />

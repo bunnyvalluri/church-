@@ -579,4 +579,260 @@ button:hover .lucide,
     radial-gradient(at 100% 20%, hsla(var(--primary-gradient-end) / 0.05) 0px, transparent 50%),
     radial-gradient(at 20% 100%, hsla(var(--primary) / 0.06) 0px, transparent 50%);
   background-color: transparent;
+}
+
+/* ==========================================================================
+   Custom Responsive Breakpoints for Pastor Dashboard
+   Small Mobile: 320px - 375px
+   Large Mobile: 376px - 480px
+   Tablet: 481px - 768px
+   Small Laptop: 769px - 1024px
+   Desktop: 1025px - 1440px
+   Large Desktop: 1441px+
+   ========================================================================== */
+
+/* Page Outer Body Padding wrapper */
+.pastor-body-padding {
+  padding: 1rem;
+}
+@media (min-width: 481px) {
+  .pastor-body-padding {
+    padding: 1.25rem;
+  }
+}
+@media (min-width: 769px) {
+  .pastor-body-padding {
+    padding: 2rem;
+  }
+}
+
+/* 5 Column Metric Stats Grid */
+.pastor-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (min-width: 481px) {
+  .pastor-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+@media (min-width: 769px) {
+  .pastor-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1025px) {
+  .pastor-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+@media (min-width: 1441px) {
+  .pastor-stats-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Dashboard Middle and Bottom Main Grid Panels */
+.pastor-main-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+@media (min-width: 481px) {
+  .pastor-main-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1025px) {
+  .pastor-main-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Archive Grid cards (Sermons, Events, etc) */
+.pastor-card-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+@media (min-width: 481px) {
+  .pastor-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1025px) {
+  .pastor-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Premium Unified Admin Dashboard Classes
+   ========================================================================== */
+
+.admin-card {
+  @apply bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all duration-300;
+}
+
+.admin-title {
+  @apply text-slate-800 dark:text-white font-black tracking-tight;
+}
+
+.admin-subtitle {
+  @apply text-xs text-slate-400 dark:text-gray-400 font-medium;
+}
+
+.admin-divider {
+  @apply border-slate-200/50 dark:border-white/[0.05];
+}
+
+.admin-btn-ghost {
+  @apply bg-slate-50/50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] text-slate-700 dark:text-gray-300 border border-slate-200/50 dark:border-white/[0.05] hover:border-slate-300 dark:hover:border-white/10 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98];
+}
+
+.admin-table-wrapper {
+  @apply rounded-2xl overflow-hidden border border-slate-200/40 dark:border-white/[0.04] bg-slate-50/30 dark:bg-white/[0.01];
+}
+
+.admin-table-head {
+  @apply bg-slate-100/50 dark:bg-white/[0.02] border-b border-slate-200/40 dark:border-white/[0.04] text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider;
+}
+
+.admin-table-row {
+  @apply border-b border-slate-100/40 dark:border-white/[0.02] hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-all;
+}
+
+/* ==========================================
+   PREMIUM MODAL & INPUT CLASSES
+   ========================================== */
+
+/* Modal Backdrop */
+.admin-modal-bg {
+  background-color: rgba(9, 10, 26, 0.65); /* Elegant dark-navy overlay */
+  backdrop-filter: blur(12px); /* Premium blur effect */
+  -webkit-backdrop-filter: blur(12px);
+  will-change: backdrop-filter;
+}
+
+/* Modal Content Card */
+.admin-modal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 20px 40px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -5px rgba(0, 0, 0, 0.08);
+  border-radius: 1.5rem; /* rounded-3xl */
+  position: relative;
+  z-index: 50;
+  max-width: 28rem; /* max-w-md */
+  width: 100%;
+}
+.dark .admin-modal {
+  background: #0f1021; /* Match general dashboard card backgrounds */
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2),
+    0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Labels */
+.admin-modal-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b; /* slate-500 */
+  margin-bottom: 0.375rem;
+}
+.dark .admin-modal-label {
+  color: #94a3b8; /* slate-400 */
+}
+
+/* Form Inputs */
+.admin-input {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e293b; /* slate-800 */
+  background-color: #f8fafc; /* slate-50 */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem; /* rounded-xl */
+  transition: all 0.2s ease-in-out;
+}
+.admin-input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+.admin-input:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+.admin-input:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: #6366f1; /* Indigo-500 */
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.dark .admin-input {
+  color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.dark .admin-input:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.dark .admin-input:focus {
+  background-color: #090a16;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+/* Form Select Elements */
+.admin-select {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e293b;
+  background-color: #f8fafc;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.admin-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+.dark .admin-select {
+  color: #f1f5f9;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.dark .admin-select:focus {
+  background-color: #090a16;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+/* Sidebar / Card labels */
+.admin-label {
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+.dark .admin-label {
+  color: #94a3b8;
 }

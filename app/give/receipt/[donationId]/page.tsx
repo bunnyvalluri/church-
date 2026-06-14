@@ -166,7 +166,7 @@ export default function ReceiptPage({ params }: { params: { donationId: string }
         transition={{ duration: 0.4 }}
         className="max-w-3xl mx-auto bg-white text-gray-900 shadow-xl rounded-3xl overflow-hidden border border-gray-200 print:shadow-none print:border-none print:rounded-none print:max-w-full"
       >
-        <div className="p-8 md:p-12 space-y-8 print:p-0">
+        <div className="p-4 sm:p-8 md:p-12 space-y-8 print:p-0">
           
           {/* Header Letterhead */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-purple-100 pb-8 gap-6">
@@ -250,7 +250,7 @@ export default function ReceiptPage({ params }: { params: { donationId: string }
 
           {/* Large Amount Display Box */}
           <div className="border-2 border-purple-100 rounded-3xl p-6 flex flex-col md:flex-row justify-between items-center bg-purple-50/20 gap-4">
-            <div>
+            <div className="text-center md:text-left">
               <span className="text-xs text-purple-700 font-bold uppercase tracking-wider block">Amount Received in Words</span>
               <span className="text-lg font-bold text-gray-900 block mt-1 italic">
                 {numberToWords(donation.amount)}

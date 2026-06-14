@@ -5,6 +5,7 @@ import { useChat } from "ai/react";
 import { Send, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 // Simple markdown-to-JSX renderer (avoids ESM-only react-markdown package)
 function SimpleMarkdown({ content }: { content: string }) {
@@ -34,6 +35,7 @@ function SimpleMarkdown({ content }: { content: string }) {
 }
 
 export default function AIChat() {
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -56,6 +58,7 @@ export default function AIChat() {
     }
   }, [messages]);
 
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/pastor")) return null;
   if (!mounted) return null;
 
   if (!isOpen) {

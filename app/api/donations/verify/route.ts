@@ -62,6 +62,19 @@ export async function POST(req: Request) {
         },
       });
 
+      // Trigger notification
+      try {
+        const { createNotification } = await import('@/lib/notification');
+        await createNotification({
+          type: 'DONATION',
+          title: 'New Donation Received',
+          content: `${updatedDonation.donorName || 'A member'} donated ₹${updatedDonation.amount.toLocaleString()} for ${updatedDonation.purpose}.`,
+          link: 'donations',
+        });
+      } catch (notifErr) {
+        console.warn('[DONATION/VERIFY] Notification creation failed:', notifErr);
+      }
+
       return NextResponse.json({ success: true, donation: updatedDonation });
     } catch (dbError: any) {
       console.warn('[DONATION/VERIFY] Database offline or unavailable. Using fallback JSON file. Detail:', dbError?.message || dbError);
@@ -119,6 +132,20 @@ export async function POST(req: Request) {
           donations.push(fallbackDonation);
           fs.writeFileSync(fallbackFile, JSON.stringify(donations, null, 2), 'utf-8');
           console.info(`[DONATION/VERIFY] ✅ Created and completed donation ${donationId} locally in fallback file.`);
+
+          // Trigger notification
+          try {
+            const { createNotification } = await import('@/lib/notification');
+            await createNotification({
+              type: 'DONATION',
+              title: 'New Donation Received',
+              content: `${fallbackDonation.donorName} donated ₹${fallbackDonation.amount.toLocaleString()} for ${fallbackDonation.purpose}.`,
+              link: 'donations',
+            });
+          } catch (notifErr) {
+            console.warn('[DONATION/VERIFY/FALLBACK] Notification creation failed:', notifErr);
+          }
+
           return NextResponse.json({ success: true, donation: fallbackDonation, warning: 'DB offline; created record in fallback.' });
         }
 
@@ -126,6 +153,19 @@ export async function POST(req: Request) {
         const finalizedFallback = donations.find((d: any) => d.id === donationId);
 
         console.info(`[DONATION/VERIFY] ✅ Updated local fallback donation ${donationId} to COMPLETED.`);
+
+        // Trigger notification
+        try {
+          const { createNotification } = await import('@/lib/notification');
+          await createNotification({
+            type: 'DONATION',
+            title: 'New Donation Received',
+            content: `${finalizedFallback.donorName || 'A member'} donated ₹${finalizedFallback.amount.toLocaleString()} for ${finalizedFallback.purpose}.`,
+            link: 'donations',
+          });
+        } catch (notifErr) {
+          console.warn('[DONATION/VERIFY/FALLBACK] Notification creation failed:', notifErr);
+        }
 
         return NextResponse.json({
           success: true,

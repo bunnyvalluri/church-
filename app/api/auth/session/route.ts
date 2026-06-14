@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
+import { verifyFirebaseToken, isAdminReady } from '@/lib/firebaseAdmin';
 import { getClientIp } from '@/lib/apiResponse';
 
 // ── GET /api/auth/session ─────────────────────────────────────────────────────
-// Returns current user session from Firebase ID token (sent as Authorization header)
-// Client calls: fetch('/api/auth/session', { headers: { Authorization: `Bearer ${token}` } })
+// Verifies the Firebase ID token sent as Authorization: Bearer <token>
+// Returns the decoded user if valid, { authenticated: false } if not.
 export async function GET(req: Request) {
   try {
     const authHeader = req.headers.get('Authorization') ?? '';
@@ -14,29 +15,37 @@ export async function GET(req: Request) {
       return NextResponse.json({ user: null, authenticated: false }, { status: 200 });
     }
 
-    // NOTE: Full server-side Firebase Admin token verification requires
-    // firebase-admin SDK. For now, we return a trusted client-side state.
-    // To enable server-side verification, add FIREBASE_ADMIN_SERVICE_ACCOUNT
-    // to your env and uncomment the verification block below.
+    // ── Real Firebase Admin token verification ──────────────────────────────
+    if (isAdminReady()) {
+      const decoded = await verifyFirebaseToken(token);
 
-    /*
-    import { adminAuth } from '@/lib/firebaseAdmin';
-    const decoded = await adminAuth.verifyIdToken(token);
+      if (!decoded) {
+        return NextResponse.json(
+          { user: null, authenticated: false, error: 'Invalid or expired token.' },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json({
+        authenticated: true,
+        user: {
+          uid: decoded.uid,
+          email: decoded.email,
+          name: decoded.name,
+          picture: decoded.picture,
+          email_verified: decoded.email_verified,
+        },
+      });
+    }
+
+    // ── Fallback: SDK not set up (stub mode) ────────────────────────────────
+    // IMPORTANT: This accepts any token without verification.
+    // To enable real verification: set FIREBASE_ADMIN_SERVICE_ACCOUNT in .env.local
+    console.warn('[AUTH/SESSION] ⚠️  Firebase Admin SDK not initialised — token NOT cryptographically verified.');
     return NextResponse.json({
       authenticated: true,
-      user: {
-        uid: decoded.uid,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture,
-      },
-    });
-    */
-
-    return NextResponse.json({
-      authenticated: true,
-      user: null, // populated when firebase-admin is wired up
-      note: 'Token received — server-side verification pending firebase-admin setup',
+      user: null,
+      note: 'Token received — set FIREBASE_ADMIN_SERVICE_ACCOUNT to enable server-side verification.',
     });
 
   } catch (err) {
@@ -49,6 +58,14 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
   const ip = getClientIp(req);
   console.log(`[AUTH/SESSION] Logout from IP: ${ip}`);
-  // When firebase-admin is set up, revoke refresh tokens here
+
+  // When Firebase Admin is set up: revoke refresh tokens here
+  // const authHeader = req.headers.get('Authorization') ?? '';
+  // const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  // if (token && isAdminReady()) {
+  //   const decoded = await verifyFirebaseToken(token);
+  //   if (decoded) await getAuth().revokeRefreshTokens(decoded.uid);
+  // }
+
   return NextResponse.json({ success: true, message: 'Logged out' });
 }

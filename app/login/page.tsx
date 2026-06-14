@@ -12,7 +12,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { mounted, status } = useAuth();
+  const { mounted, status, user } = useAuth();
   const { t, language } = useLanguage();
   const loginT = t.pages.login;
 
@@ -28,12 +28,18 @@ export default function LoginPage() {
     setIsClient(true);
   }, []);
 
-  // Instantly redirect if already authenticated
+  // Instantly redirect if already authenticated to their authorized page
   useEffect(() => {
-    if (mounted && status === "authenticated") {
-      router.replace("/dashboard");
+    if (mounted && status === "authenticated" && user) {
+      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+        router.replace("/admin");
+      } else if (user.role === "PASTOR") {
+        router.replace("/pastor");
+      } else {
+        router.replace("/member");
+      }
     }
-  }, [mounted, status, router]);
+  }, [mounted, status, user, router]);
   
   // Resolve localized error dynamically so it changes instantly when language toggles
   const getLocalizedError = (errStr: string) => {
@@ -113,7 +119,20 @@ export default function LoginPage() {
     setSocialLoading(name);
     setError("");
     try {
-      await signInWithPopup(auth, provider);
+      const credential = await signInWithPopup(auth, provider);
+      // Send login notification to admin (non-blocking)
+      if (credential?.user) {
+        fetch('/api/auth/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'LOGIN',
+            email: credential.user.email,
+            name: credential.user.displayName || credential.user.email,
+            method: 'google',
+          }),
+        }).catch(() => {});
+      }
     } catch (err: any) {
       console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
       
@@ -144,12 +163,27 @@ export default function LoginPage() {
     }
   };
 
+  // Fire-and-forget: send login notification without blocking UI
+  const sendLoginEmail = (userEmail: string, userName: string, method = 'email') => {
+    fetch('/api/auth/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'LOGIN', email: userEmail, name: userName, method }),
+    }).catch(() => {}); // Silently ignore failures — never block the user
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      // Send login notification to admin (non-blocking)
+      sendLoginEmail(
+        credential.user.email || email,
+        credential.user.displayName || email.split('@')[0],
+        'email'
+      );
     } catch (err: any) {
       setError(err.code || "sign-in-failed");
     } finally {
@@ -157,7 +191,7 @@ export default function LoginPage() {
     }
   };
 
-  if (!isClient) return null;
+  // Removed to prevent hydration mismatch
 
   return (
     <div className="min-h-[100dvh] flex flex-col lg:flex-row">

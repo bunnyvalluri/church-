@@ -97,6 +97,19 @@ export async function POST(req: Request) {
 
     console.log(`[CONTACT] ✅ Message #${record.id} from ${safeData.name} <${email}>`);
 
+    // Trigger notification
+    try {
+      const { createNotification } = await import('@/lib/notification');
+      await createNotification({
+        type: 'CONTACT_MESSAGE',
+        title: 'New Contact Message',
+        content: `Contact from ${safeData.name}: "${safeData.subject.substring(0, 40)}"`,
+        link: 'prayers', // Navigate to prayers/messages page
+      });
+    } catch (notifErr) {
+      console.warn('[CONTACT] Notification creation failed:', notifErr);
+    }
+
     return ok(
       { message: "Your message has been received. We will get back to you soon!" },
       201
@@ -130,6 +143,19 @@ export async function POST(req: Request) {
       }
       fs.writeFileSync(fallbackFile, JSON.stringify(messages, null, 2), 'utf-8');
       console.info(`[CONTACT/FALLBACK] ✅ Saved message #${newMsg.id} locally in prisma/fallback_messages.json`);
+
+      // Trigger notification
+      try {
+        const { createNotification } = await import('@/lib/notification');
+        await createNotification({
+          type: 'CONTACT_MESSAGE',
+          title: 'New Contact Message',
+          content: `Contact from ${safeData.name}: "${safeData.subject.substring(0, 40)}"`,
+          link: 'prayers',
+        });
+      } catch (notifErr) {
+        console.warn('[CONTACT/FALLBACK] Notification creation failed:', notifErr);
+      }
       
       return ok(
         { 

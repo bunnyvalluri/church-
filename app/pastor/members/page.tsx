@@ -23,6 +23,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function PastorMembers() {
   const { user, status, mounted } = useAuth();
   const router = useRouter();
+  const [localMounted, setLocalMounted] = useState(false);
+
+  useEffect(() => {
+    setLocalMounted(true);
+  }, []);
 
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +73,11 @@ export default function PastorMembers() {
     }
   }, [status]);
 
-  if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
+  if (!localMounted) {
+    return null;
+  }
+
+  if (status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <div className="text-center">

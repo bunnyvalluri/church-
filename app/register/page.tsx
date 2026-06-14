@@ -23,7 +23,7 @@ const strengthColor = ["bg-gray-200", "bg-red-500", "bg-orange-400", "bg-yellow-
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { mounted, status } = useAuth();
+  const { mounted, status, user } = useAuth();
   const { t, language } = useLanguage();
   const registerT = t.pages.register;
   const loginT = t.pages.login;
@@ -46,14 +46,20 @@ export default function RegisterPage() {
     setIsClient(true);
   }, []);
 
-  // Redirect if already logged in
+  // Redirect if already logged in to their authorized page
   useEffect(() => {
-    if (mounted && status === "authenticated") {
-      router.replace("/dashboard");
+    if (mounted && status === "authenticated" && user) {
+      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+        router.replace("/admin");
+      } else if (user.role === "PASTOR") {
+        router.replace("/pastor");
+      } else {
+        router.replace("/member");
+      }
     }
-  }, [mounted, status, router]);
+  }, [mounted, status, user, router]);
 
-  if (!isClient) return null;
+  // Removed to prevent hydration mismatch
 
   const pwScore = passwordStrength(formData.password);
 
@@ -118,11 +124,21 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-          displayName: `${formData.firstName} ${formData.lastName}`.trim(),
-        });
+        await updateProfile(userCredential.user, { displayName: fullName });
       }
+      // Fire-and-forget: welcome email to member + new member alert to admin
+      fetch('/api/auth/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'REGISTER',
+          name: fullName,
+          email: formData.email,
+          phone: formData.phone || '',
+        }),
+      }).catch(() => {}); // Never block the user on email failure
     } catch (err: any) {
       setError(err.code || "registration-failed");
     } finally {

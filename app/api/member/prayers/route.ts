@@ -98,6 +98,19 @@ export async function POST(req: Request) {
         data: prayerData,
       });
 
+      // Trigger notification
+      try {
+        const { createNotification } = await import('@/lib/notification');
+        await createNotification({
+          type: 'PRAYER_REQUEST',
+          title: 'New Prayer Request',
+          content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
+          link: 'prayers',
+        });
+      } catch (notifErr) {
+        console.warn('[PRAYERS/CREATE] Notification creation failed:', notifErr);
+      }
+
       return NextResponse.json({ success: true, prayer: newPrayer });
     } catch (dbError: any) {
       console.warn('[PRAYERS/CREATE] Database offline. Trying Firestore or local fallback. Detail:', dbError?.message || dbError);
@@ -116,6 +129,20 @@ export async function POST(req: Request) {
             const savedPrayer = { id: docRef.id, ...newPrayerFallback };
 
             console.info(`[PRAYERS/CREATE/FIRESTORE] ✅ Saved prayer request ${docRef.id} directly in Cloud Firestore`);
+
+            // Trigger notification
+            try {
+              const { createNotification } = await import('@/lib/notification');
+              await createNotification({
+                type: 'PRAYER_REQUEST',
+                title: 'New Prayer Request',
+                content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
+                link: 'prayers',
+              });
+            } catch (notifErr) {
+              console.warn('[PRAYERS/CREATE/FIRESTORE] Notification creation failed:', notifErr);
+            }
+
             return NextResponse.json({
               success: true,
               prayer: savedPrayer,
@@ -147,6 +174,19 @@ export async function POST(req: Request) {
 
         prayers.push(newPrayerFallback);
         fs.writeFileSync(fallbackFile, JSON.stringify(prayers, null, 2), 'utf-8');
+
+        // Trigger notification
+        try {
+          const { createNotification } = await import('@/lib/notification');
+          await createNotification({
+            type: 'PRAYER_REQUEST',
+            title: 'New Prayer Request',
+            content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
+            link: 'prayers',
+          });
+        } catch (notifErr) {
+          console.warn('[PRAYERS/CREATE/FALLBACK] Notification creation failed:', notifErr);
+        }
 
         return NextResponse.json({
           success: true,
