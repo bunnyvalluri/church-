@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => new Resend(process.env.RESEND_API_KEY || 're_dummy_key_build_fallback');
 
 const CHURCH_NAME   = 'Kingdom of Christ Ministries';
 const CHURCH_EMAIL  = 'kingofchristministries23@gmail.com';
@@ -260,20 +260,22 @@ export async function POST(req: Request) {
 
     let results: any[] = [];
 
+    const resendClient = getResend();
+
     // ── REGISTER: Send welcome email to user + notification to admin ──────────
     if (type === 'REGISTER') {
       const displayName = name || email.split('@')[0];
 
       const [welcomeResult, adminResult] = await Promise.allSettled([
         // 1. Welcome email → new member
-        resend.emails.send({
+        resendClient.emails.send({
           from: FROM_EMAIL,
           to: [email],
           subject: `✝ Welcome to Kingdom of Christ Ministries, ${displayName.split(' ')[0]}!`,
           html: welcomeEmailHtml(displayName, email),
         }),
         // 2. New member notification → admin/pastor
-        resend.emails.send({
+        resendClient.emails.send({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
           subject: `🧑‍🤝‍🧑 New Member Registered: ${displayName}`,
@@ -288,7 +290,7 @@ export async function POST(req: Request) {
     // ── LOGIN: Send login alert to admin ─────────────────────────────────────
     else if (type === 'LOGIN') {
       const loginMethod = method === 'google' ? 'Google OAuth' : 'Email & Password';
-      const result = await resend.emails.send({
+      const result = await resendClient.emails.send({
         from: FROM_EMAIL,
         to: [NOTIFY_EMAIL],
         subject: `🔔 Member Login: ${name || email}`,
