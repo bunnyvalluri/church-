@@ -1061,7 +1061,7 @@ export default function AdminDashboard() {
       </main>
       {/* ────────────────── 3. MOBILE BOTTOM NAVIGATION ────────────────── */}
       {/* Only visible on mobile/tablet (below lg breakpoint) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0E0F1E]/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/[0.05] flex items-center justify-around px-2 py-2 safe-area-pb">
+      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-40 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
         {[
           { id: "dashboard", label: "Home", icon: Layers },
           { id: "members", label: "Members", icon: Users },
@@ -1079,14 +1079,14 @@ export default function AdminDashboard() {
               key={item.id}
               type="button"
               onClick={() => setActiveView(item.id as any)}
-              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 border ${
                 isActive
-                  ? "text-white bg-indigo-600/20 dark:bg-indigo-600/20 border border-indigo-500/25"
-                  : "text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "text-[#6366F1] dark:text-[#818CF8] bg-white/45 dark:bg-white/[0.07] border-white/40 dark:border-white/[0.12] shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105"
+                  : "text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
-              <item.icon className={`w-5 h-5 transition-all ${isActive ? "text-indigo-400" : ""}`} />
-              <span className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? "text-indigo-300" : ""}`}>{item.label}</span>
+              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? "text-[#6366F1] dark:text-[#818CF8] scale-110" : ""}`} />
+              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? "text-[#6366F1] dark:text-[#818CF8]" : ""}`}>{item.label}</span>
             </button>
           );
         })}
