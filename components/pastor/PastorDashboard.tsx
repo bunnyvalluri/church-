@@ -985,7 +985,7 @@ export default function PastorDashboard() {
               alt="KCM Logo" 
               fill 
               sizes="36px"
-              className="object-cover rounded-xl" 
+              className="object-contain p-0.5 rounded-xl" 
               priority 
             />
           </div>
@@ -1013,33 +1013,39 @@ export default function PastorDashboard() {
           {/* MAIN MENU */}
           <div className="space-y-1">
             <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">MAIN</h4>
+            {/* Dashboard stays as internal tab */}
+            <button
+              type="button"
+              onClick={() => { setActiveNav("Dashboard"); if (onLinkClick) onLinkClick(); }}
+              className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
+                activeNav === "Dashboard"
+                  ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm"
+                  : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
+              }`}
+            >
+              {activeNav === "Dashboard" && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
+              )}
+              <Layers className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={1.5} />
+              Dashboard
+            </button>
+            {/* Route-based nav links */}
             {[
-              { name: "Dashboard", icon: Layers },
-              { name: "Sermons", icon: Play },
-              { name: "Member Requests", icon: Users },
-              { name: "Prayer Requests", icon: Heart },
-              { name: "Events", icon: Calendar },
-              { name: "Messages", icon: MessageSquare }
+              { name: "Sermons", icon: Play, href: "/pastor/sermons" },
+              { name: "Member Requests", icon: Users, href: "/pastor/member-requests" },
+              { name: "Prayer Requests", icon: Heart, href: "/pastor/prayer-requests" },
+              { name: "Events", icon: Calendar, href: "/pastor/events" },
+              { name: "Messages", icon: MessageSquare, href: "/pastor/messages" },
             ].map(item => (
-              <button
+              <Link
                 key={item.name}
-                type="button"
-                onClick={() => {
-                  setActiveNav(item.name);
-                  if (onLinkClick) onLinkClick();
-                }}
-                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
-                  activeNav === item.name 
-                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
-                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
-                }`}
+                href={item.href}
+                onClick={() => { if (onLinkClick) onLinkClick(); }}
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
               >
-                {activeNav === item.name && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
-                )}
-                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={1.5} />
                 {item.name}
-              </button>
+              </Link>
             ))}
           </div>
 
@@ -1047,29 +1053,19 @@ export default function PastorDashboard() {
           <div className="space-y-1">
             <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">MINISTRY</h4>
             {[
-              { name: "Bible Study Groups", icon: BookOpen },
-              { name: "Small Groups", icon: Users },
-              { name: "Volunteers", icon: UserCheck }
+              { name: "Bible Study Groups", icon: BookOpen, href: "/pastor/bible-study-groups" },
+              { name: "Small Groups", icon: Users, href: "/pastor/small-groups" },
+              { name: "Volunteers", icon: UserCheck, href: "/pastor/volunteers" },
             ].map(item => (
-              <button
+              <Link
                 key={item.name}
-                type="button"
-                onClick={() => {
-                  setActiveNav(item.name);
-                  if (onLinkClick) onLinkClick();
-                }}
-                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
-                  activeNav === item.name 
-                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
-                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
-                }`}
+                href={item.href}
+                onClick={() => { if (onLinkClick) onLinkClick(); }}
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
               >
-                {activeNav === item.name && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
-                )}
-                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={1.5} />
                 {item.name}
-              </button>
+              </Link>
             ))}
           </div>
 
@@ -1077,28 +1073,18 @@ export default function PastorDashboard() {
           <div className="space-y-1">
             <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">SETTINGS</h4>
             {[
-              { name: "Profile", icon: Settings },
-              { name: "Church Settings", icon: Settings }
+              { name: "Profile", icon: Settings, href: "/pastor/profile" },
+              { name: "Church Settings", icon: Settings, href: "/pastor/church-settings" },
             ].map(item => (
-              <button
+              <Link
                 key={item.name}
-                type="button"
-                onClick={() => {
-                  setActiveNav(item.name);
-                  if (onLinkClick) onLinkClick();
-                }}
-                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
-                  activeNav === item.name 
-                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
-                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
-                }`}
+                href={item.href}
+                onClick={() => { if (onLinkClick) onLinkClick(); }}
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
               >
-                {activeNav === item.name && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
-                )}
-                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={1.5} />
                 {item.name}
-              </button>
+              </Link>
             ))}
           </div>
         </div>
