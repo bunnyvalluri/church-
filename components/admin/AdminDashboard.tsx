@@ -215,35 +215,10 @@ export default function AdminDashboard() {
   const [sermonsDb, setSermonsDb] = useState<any[]>([]);
   const [eventsDb, setEventsDb] = useState<any[]>([]);
   const [announcementsDb, setAnnouncementsDb] = useState<any[]>([]);
-  const [attendanceRecordsDb, setAttendanceRecordsDb] = useState<any[]>([
-    {
-      id: "att_1",
-      date: "2024-05-12T00:00:00.000Z",
-      serviceType: "Sunday Worship Service",
-      location: "Subhash Nagar Sanctuary",
-      headcount: 450,
-      newVisitors: 12,
-      notes: "Main Sunday worship service. Blessed service with powerful sermon."
-    },
-    {
-      id: "att_2",
-      date: "2024-05-12T00:00:00.000Z",
-      serviceType: "Sunday Afternoon Prayer",
-      location: "Bahadurpally Location",
-      headcount: 180,
-      newVisitors: 5,
-      notes: "Afternoon service. Good gathering."
-    },
-    {
-      id: "att_3",
-      date: "2024-05-10T00:00:00.000Z",
-      serviceType: "Friday Evening Prayer",
-      location: "Shapur Location",
-      headcount: 120,
-      newVisitors: 3,
-      notes: "Weekly Friday evening service."
-    }
-  ]);
+  const [attendanceRecordsDb, setAttendanceRecordsDb] = useState<any[]>([]);
+  const [pledgesDb, setPledgesDb] = useState<any[]>([]);
+  const [transactionsDb, setTransactionsDb] = useState<any[]>([]);
+  const [accountsDb, setAccountsDb] = useState<any[]>([]);
 
   // Loading states
   const [loading, setLoading] = useState(true);
@@ -300,6 +275,26 @@ export default function AdminDashboard() {
       const evtRes = await fetch("/api/member/events", { headers });
       const evtData = await evtRes.json();
       setEventsDb(evtData.events || []);
+
+      // 6. Fetch Attendance Records
+      const attRes = await fetch("/api/admin/attendance", { headers });
+      const attData = await attRes.json();
+      setAttendanceRecordsDb(attData.records || []);
+
+      // 7. Fetch Pledges
+      const plgRes = await fetch("/api/admin/pledges", { headers });
+      const plgData = await plgRes.json();
+      setPledgesDb(plgData.pledges || []);
+
+      // 8. Fetch Transactions
+      const txRes = await fetch("/api/admin/transactions", { headers });
+      const txData = await txRes.json();
+      setTransactionsDb(txData.transactions || []);
+
+      // 9. Fetch Accounts
+      const accRes = await fetch("/api/admin/accounts", { headers });
+      const accData = await accRes.json();
+      setAccountsDb(accData.accounts || []);
 
     } catch (err) {
       console.error("Error loading admin workspace resources:", err);
@@ -564,20 +559,81 @@ export default function AdminDashboard() {
 
 
 
-  const handleAddAttendance = (record: any) => {
-    setAttendanceRecordsDb(prev => [
-      { id: `att_${Date.now()}`, ...record },
-      ...prev
-    ]);
-    showToast(
-      language === "te"
-        ? "హాజరు రికార్డు విజయవంతంగా జోడించబడింది!"
-        : language === "hi"
-        ? "उपस्थिति रिकॉर्ड सफलतापूर्वक जोड़ा गया!"
-        : "Attendance record added successfully!",
-      "success"
-    );
+  const handleAddAttendance = async (record: any) => {
+    try {
+      const headers = await authHeaders();
+      const res = await fetch("/api/admin/attendance", {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(record)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAttendanceRecordsDb(prev => [data.record, ...prev]);
+        showToast(
+          language === "te"
+            ? "హాజరు రికార్డు విజయవంతంగా జోడించబడింది!"
+            : language === "hi"
+            ? "उपस्थिति रिकॉर्ड सफलतापूर्वक जोड़ा गया!"
+            : "Attendance record added successfully!",
+          "success"
+        );
+      } else {
+        throw new Error(data.error || "Failed to add attendance record");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Failed to add attendance record.", "error");
+    }
   };
+
+  const handleAddPledge = async (pledge: any) => {
+    try {
+      const headers = await authHeaders();
+      const res = await fetch("/api/admin/pledges", {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(pledge)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPledgesDb(prev => [data.pledge, ...prev]);
+        showToast("Pledge created successfully!", "success");
+      } else {
+        throw new Error(data.error || "Failed to create pledge");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Failed to create pledge.", "error");
+    }
+  };
+
+  const handleAddTransaction = async (txData: any) => {
+    try {
+      const headers = await authHeaders();
+      const res = await fetch("/api/admin/transactions", {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify(txData)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Refetch transactions and accounts to get up-to-date balances
+        const txRes = await fetch("/api/admin/transactions", { headers });
+        const txData = await txRes.json();
+        setTransactionsDb(txData.transactions || []);
+
+        const accRes = await fetch("/api/admin/accounts", { headers });
+        const accData = await accRes.json();
+        setAccountsDb(accData.accounts || []);
+
+        showToast("Transaction logged and account balance updated!", "success");
+      } else {
+        throw new Error(data.error || "Failed to log transaction");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Failed to log transaction.", "error");
+    }
+  };
+
   const handleAddDonation = (don: any) => {
     setDonationsDb(prev => [don, ...prev]);
     showToast(
@@ -977,6 +1033,7 @@ export default function AdminDashboard() {
                   sermons={sermonsDb}
                   events={eventsDb}
                   announcements={announcementsDb}
+                  attendanceRecords={attendanceRecordsDb}
                   onAddMember={handleAddMember}
                   onDeleteMember={handleDeleteMember}
                   onAddSermon={handleAddSermon}
@@ -1016,7 +1073,12 @@ export default function AdminDashboard() {
                 <FinanceManagement
                   donations={donationsDb}
                   users={usersDb}
+                  pledges={pledgesDb}
+                  transactions={transactionsDb}
+                  accounts={accountsDb}
                   onAddDonation={handleAddDonation}
+                  onAddPledge={handleAddPledge}
+                  onAddTransaction={handleAddTransaction}
                   activeSubTab={activeView}
                   onOpenAddDonation={() => setIsAddDonationOpen(true)}
                 />

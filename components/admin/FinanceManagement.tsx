@@ -25,7 +25,12 @@ import { adminTranslations } from "@/components/admin/adminTranslations";
 interface FinanceManagementProps {
   donations: any[];
   users: any[];
+  pledges?: any[];
+  transactions?: any[];
+  accounts?: any[];
   onAddDonation: (donation: any) => void;
+  onAddPledge?: (pledge: any) => Promise<void>;
+  onAddTransaction?: (transaction: any) => Promise<void>;
   onOpenAddDonation?: () => void;
   activeSubTab?: "donations" | "pledges" | "transactions" | "accounts";
 }
@@ -54,7 +59,12 @@ interface Transaction {
 export default function FinanceManagement({ 
   donations, 
   users, 
+  pledges: pledgesProp = [],
+  transactions: transactionsProp = [],
+  accounts: accountsProp = [],
   onAddDonation, 
+  onAddPledge,
+  onAddTransaction,
   onOpenAddDonation,
   activeSubTab = "donations" 
 }: FinanceManagementProps) {
@@ -98,28 +108,10 @@ export default function FinanceManagement({
   const [newPledge, setNewPledge] = useState({ donorName: "", donorEmail: "", committedAmount: "", targetDate: "", purpose: "BUILDING" });
   const [newTx, setNewTx] = useState({ type: "OUTFLOW" as "INFLOW" | "OUTFLOW", amount: "", category: "Utilities", description: "", account: "General Fund" });
 
-  // Pledges Mock List
-  const [pledges, setPledges] = useState<Pledge[]>([
-    { id: "plg_1", donorName: "James Wilson", donorEmail: "james.wilson@email.com", committedAmount: 50000, paidAmount: 25000, targetDate: "2026-12-31", purpose: "Building Fund", status: "ACTIVE" },
-    { id: "plg_2", donorName: "Sarah Johnson", donorEmail: "sarah.j@email.com", committedAmount: 20000, paidAmount: 20000, targetDate: "2026-05-15", purpose: "Missions Fund", status: "FULFILLED" },
-    { id: "plg_3", donorName: "Michael Brown", donorEmail: "michael.b@email.com", committedAmount: 10000, paidAmount: 0, targetDate: "2026-09-01", purpose: "Youth Fellowship Support", status: "PENDING" }
-  ]);
-
-  // Transactions Mock List
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { id: "tx_1", type: "INFLOW", amount: 15000, category: "Tithe", description: "Sunday Morning Tithe Collections", date: "2026-06-07", account: "General Fund" },
-    { id: "tx_2", type: "OUTFLOW", amount: 3500, category: "Utilities", description: "Shapur Sanctuary Electricity Bill", date: "2026-06-05", account: "General Fund" },
-    { id: "tx_3", type: "OUTFLOW", amount: 12000, category: "Charity", description: "Believer Education Sponsorship Support", date: "2026-06-03", account: "Charity Fund" },
-    { id: "tx_4", type: "INFLOW", amount: 25000, category: "Pledge Pay", description: "James Wilson Pledge payment", date: "2026-06-02", account: "Building Fund" }
-  ]);
-
-  // Accounts Mock List
-  const [accounts, setAccounts] = useState([
-    { name: "General Fund", balance: 145000, description: "Daily operating expenses, utility payments, and staff salaries." },
-    { name: "Building Fund", balance: 280000, description: "Capital collections for church sanctuary expansion projects." },
-    { name: "Missions Fund", balance: 75000, description: "Support for rural gospel missions, pastors support, and outreach programs." },
-    { name: "Charity Fund", balance: 35000, description: "Emergency relief, believer education supports, and food distributions." }
-  ]);
+  // Synchronized lists from props
+  const pledges = pledgesProp;
+  const transactions = transactionsProp;
+  const accounts = accountsProp;
 
   // Calculations
   const totalFinancials = donations
@@ -138,49 +130,37 @@ export default function FinanceManagement({
     return matchesSearch && matchesPurpose;
   });
 
-  const handleAddPledge = (e: React.FormEvent) => {
+  const handleAddPledge = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPledge.donorName || !newPledge.committedAmount) return;
-    const added: Pledge = {
-      id: `plg_${Date.now()}`,
+    const added = {
       donorName: newPledge.donorName,
       donorEmail: newPledge.donorEmail || "pledger@email.com",
       committedAmount: Number(newPledge.committedAmount),
-      paidAmount: 0,
-      targetDate: newPledge.targetDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+      targetDate: newPledge.targetDate ? new Date(newPledge.targetDate).toISOString() : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
       purpose: newPledge.purpose === "BUILDING" ? "Building Fund" : "Missions Fund",
-      status: "PENDING"
     };
-    setPledges([added, ...pledges]);
+    if (onAddPledge) {
+      await onAddPledge(added);
+    }
     setNewPledge({ donorName: "", donorEmail: "", committedAmount: "", targetDate: "", purpose: "BUILDING" });
     setIsPledgeOpen(false);
   };
 
-  const handleAddTransaction = (e: React.FormEvent) => {
+  const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTx.amount || !newTx.description) return;
-    const added: Transaction = {
-      id: `tx_${Date.now()}`,
+    const added = {
       type: newTx.type,
       amount: Number(newTx.amount),
       category: newTx.category,
       description: newTx.description,
-      date: new Date().toISOString().split("T")[0],
-      account: newTx.account
+      account: newTx.account,
+      date: new Date().toISOString()
     };
-    setTransactions([added, ...transactions]);
-
-    // Update account balances
-    setAccounts(prev => prev.map(acc => {
-      if (acc.name === newTx.account) {
-        return {
-          ...acc,
-          balance: newTx.type === "INFLOW" ? acc.balance + Number(newTx.amount) : acc.balance - Number(newTx.amount)
-        };
-      }
-      return acc;
-    }));
-
+    if (onAddTransaction) {
+      await onAddTransaction(added);
+    }
     setNewTx({ type: "OUTFLOW", amount: "", category: "Utilities", description: "", account: "General Fund" });
     setIsTransactionOpen(false);
   };

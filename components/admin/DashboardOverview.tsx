@@ -32,6 +32,7 @@ interface DashboardOverviewProps {
   sermons: any[];
   events: any[];
   announcements: any[];
+  attendanceRecords?: any[];
   onAddMember: (member: any) => void;
   onDeleteMember: (id: string | number) => void;
   onAddSermon: (sermon: any) => void;
@@ -52,6 +53,7 @@ export default function DashboardOverview({
   sermons,
   events,
   announcements,
+  attendanceRecords = [],
   onAddMember,
   onDeleteMember,
   onAddSermon,
@@ -69,6 +71,24 @@ export default function DashboardOverview({
   
   const totalMembers = users.length > 0 ? users.length : 1248;
   const totalDonations = donations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0) || 24560;
+
+  // Dynamic Attendance Calculations
+  const latestAttendance = attendanceRecords[0]?.headcount || 856;
+  const latestNewVisitors = attendanceRecords[0]?.newVisitors || 25;
+  const avgAttendance = attendanceRecords.length > 0
+    ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
+    : 122;
+
+  const maxRecord = attendanceRecords.length > 0
+    ? attendanceRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, attendanceRecords[0])
+    : null;
+  const highestDayName = maxRecord
+    ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
+    : (language === "te" ? "ఆదివారం" : language === "hi" ? "रविवार" : "Sunday");
+
+  const latestReturningVisitors = attendanceRecords[0]
+    ? Math.max(0, attendanceRecords[0].headcount - attendanceRecords[0].newVisitors)
+    : 488;
 
   // Filter lists based on global search term
   const filteredUsers = users.filter(u => 
@@ -133,8 +153,8 @@ export default function DashboardOverview({
         {/* Card 3: Attendance */}
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("reports")}>
           <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.attendanceWeek}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">856</h3>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.attendanceWeek}</span>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString()}</h3>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
               <ArrowUp className="w-3 h-3 stroke-[2.5]" />
               <span>+8.3% {t.thisWeek}</span>
@@ -315,7 +335,6 @@ export default function DashboardOverview({
               <ChevronDown className="w-3 h-3 text-slate-500" />
             </div>
           </div>
-          
           <div className="p-6 py-4 flex-1 flex flex-col justify-between">
             {/* Bar Chart with Gridlines & tooltips */}
             <div className="h-32 flex items-end justify-between gap-3 px-2 relative mb-6">
@@ -327,37 +346,62 @@ export default function DashboardOverview({
                 <div className="w-full border-t border-slate-100 dark:border-white/[0.03]" />
               </div>
 
-              {[
-                { day: language === "te" ? "సోమ" : language === "hi" ? "సోమ" : "Mon", val: 80, height: "h-[30%]" },
-                { day: language === "te" ? "మం" : language === "hi" ? "मंगल" : "Tue", val: 120, height: "h-[45%]" },
-                { day: language === "te" ? "బుధ" : language === "hi" ? "बुध" : "Wed", val: 150, height: "h-[55%]" },
-                { day: language === "te" ? "గురు" : language === "hi" ? "गुरु" : "Thu", val: 90, height: "h-[35%]" },
-                { day: language === "te" ? "శుక్ర" : language === "hi" ? "शुक्र" : "Fri", val: 110, height: "h-[40%]" },
-                { day: language === "te" ? "శని" : language === "hi" ? "शनि" : "Sat", val: 0, height: "h-[0%]" },
-                { day: language === "te" ? "ఆది" : language === "hi" ? "रवि" : "Sun", val: 260, height: "h-[85%]" }
-              ].map((bar, idx) => (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group relative z-10">
-                  {/* Tooltip on hover */}
-                  <div className="absolute -top-7 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[9px] font-black px-2 py-0.5 rounded shadow-md pointer-events-none transition-all duration-200 z-20 whitespace-nowrap">
-                    {bar.val}
+              {(() => {
+                // Get latest 7 records (in chronological order for graph)
+                const chartRecords = [...attendanceRecords].slice(0, 7).reverse();
+                
+                // If we have records, map them to the bar chart
+                const barData = chartRecords.map((rec) => {
+                  const dateObj = new Date(rec.date);
+                  const dayLabel = dateObj.toLocaleDateString(
+                    language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US",
+                    { weekday: 'short' }
+                  );
+                  const heightPercent = Math.min(100, Math.round((rec.headcount / 500) * 100));
+                  return {
+                    day: dayLabel,
+                    val: rec.headcount,
+                    style: { height: `${heightPercent}%` }
+                  };
+                });
+                
+                // Fallback if no records
+                const defaultBars = [
+                  { day: language === "te" ? "సోమ" : language === "hi" ? "సోమ" : "Mon", val: 80, style: { height: "30%" } },
+                  { day: language === "te" ? "మం" : language === "hi" ? "मंगल" : "Tue", val: 120, style: { height: "45%" } },
+                  { day: language === "te" ? "బుధ" : language === "hi" ? "बुध" : "Wed", val: 150, style: { height: "55%" } },
+                  { day: language === "te" ? "గురు" : language === "hi" ? "गुरु" : "Thu", val: 90, style: { height: "35%" } },
+                  { day: language === "te" ? "శుక్ర" : language === "hi" ? "शुक्र" : "Fri", val: 110, style: { height: "40%" } },
+                  { day: language === "te" ? "శని" : language === "hi" ? "शनి" : "Sat", val: 0, style: { height: "0%" } },
+                  { day: language === "te" ? "ఆది" : language === "hi" ? "रవి" : "Sun", val: 260, style: { height: "85%" } }
+                ];
+                
+                const displayBars = barData.length > 0 ? barData : defaultBars;
+
+                return displayBars.map((bar, idx) => (
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group relative z-10">
+                    {/* Tooltip on hover */}
+                    <div className="absolute -top-7 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[9px] font-black px-2 py-0.5 rounded shadow-md pointer-events-none transition-all duration-200 z-20 whitespace-nowrap">
+                      {bar.val}
+                    </div>
+                    
+                    <div className="w-full bg-slate-50/80 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04] hover:bg-[#6366F1]/10 dark:hover:bg-[#6366F1]/10 rounded-t-xl transition-all flex items-end overflow-hidden h-24 min-h-[4px] cursor-pointer">
+                      <div className="w-full bg-gradient-to-t from-blue-600 to-sky-400 dark:from-blue-500 dark:to-sky-450 rounded-t-xl transition-all duration-500 group-hover:brightness-105" style={bar.style} />
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400 dark:text-gray-550">{bar.day}</span>
                   </div>
-                  
-                  <div className="w-full bg-slate-50/80 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04] hover:bg-[#6366F1]/10 dark:hover:bg-[#6366F1]/10 rounded-t-xl transition-all flex items-end overflow-hidden h-24 min-h-[4px] cursor-pointer">
-                    <div className={`w-full bg-gradient-to-t from-blue-600 to-sky-400 dark:from-blue-500 dark:to-sky-450 rounded-t-xl transition-all duration-500 ${bar.height} group-hover:brightness-105`} />
-                  </div>
-                  <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500">{bar.day}</span>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
             
             {/* Metrics List */}
             <div className="space-y-3">
               {[
-                { label: t.totalAttendance, val: "856" },
-                { label: t.averageDaily, val: "122" },
-                { label: t.highestDay, val: language === "te" ? "ఆదివారం" : language === "hi" ? "रविवार" : "Sunday", highlight: true },
-                { label: t.newVisitors, val: "25" },
-                { label: t.returningVisitors, val: "488" }
+                { label: t.totalAttendance, val: latestAttendance.toLocaleString() },
+                { label: t.averageDaily, val: avgAttendance.toLocaleString() },
+                { label: t.highestDay, val: highestDayName, highlight: true },
+                { label: t.newVisitors, val: latestNewVisitors.toLocaleString() },
+                { label: t.returningVisitors, val: latestReturningVisitors.toLocaleString() }
               ].map((stat, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs font-semibold border-b border-slate-50 dark:border-white/[0.02] pb-2 last:border-0 last:pb-0">
                   <span className="text-slate-500 dark:text-gray-400">{stat.label}</span>

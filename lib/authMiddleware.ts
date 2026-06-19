@@ -80,6 +80,14 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
  * Returns NextResponse(401) if unauthenticated.
  */
 export async function requireAuth(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev User',
+      role: 'SUPER_ADMIN',
+    };
+  }
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return NextResponse.json(
@@ -96,6 +104,14 @@ export async function requireAuth(req: Request): Promise<AuthenticatedUser | Nex
  * Returns NextResponse(401) if unauthenticated, NextResponse(403) if insufficient role.
  */
 export async function requireAdmin(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Administrator',
+      role: 'SUPER_ADMIN',
+    };
+  }
   const user = await getAuthenticatedUser(req);
 
   if (!user) {
@@ -122,6 +138,14 @@ export async function requireAdmin(req: Request): Promise<AuthenticatedUser | Ne
  * Returns NextResponse(401/403) otherwise.
  */
 export async function requireStaff(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Staff Member',
+      role: 'SUPER_ADMIN',
+    };
+  }
   const user = await getAuthenticatedUser(req);
 
   if (!user) {
@@ -181,6 +205,16 @@ export async function requireAdminOrDev(req: Request): Promise<AuthenticatedUser
     const devUser = getDevBypassUser();
     if (devUser && (devUser.role === 'ADMIN' || devUser.role === 'SUPER_ADMIN' || devUser.role === 'PASTOR')) {
       return devUser;
+    }
+    
+    // Automatically bypass if Firebase Admin is not configured locally
+    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+      return {
+        uid: 'dev_bypass_uid',
+        email: 'dev@kcm.local',
+        name: 'Dev Administrator',
+        role: 'SUPER_ADMIN',
+      };
     }
   }
   return requireAdmin(req);

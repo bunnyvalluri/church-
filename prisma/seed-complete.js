@@ -51,7 +51,7 @@ async function main() {
       name: 'Admin Sarah Thomas',
       email: 'admin@kcm-church.com',
       password: 'firebase-authenticated',
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
       phone: '+91 98765 43210',
       address: 'Jeedimetla, Hyderabad',
     },
@@ -773,6 +773,104 @@ async function main() {
   ok(`${notifications.length} Notifications seeded`);
 
   // ──────────────────────────────────────────────
+  // 19. ACCOUNTS
+  // ──────────────────────────────────────────────
+  const accounts = [
+    { id: 'acc_001', name: 'General Fund', balance: 145000, description: 'Daily operating expenses, utility payments, and staff salaries.' },
+    { id: 'acc_002', name: 'Building Fund', balance: 280000, description: 'Capital collections for church sanctuary expansion projects.' },
+    { id: 'acc_003', name: 'Missions Fund', balance: 75000, description: 'Support for rural gospel missions, pastors support, and outreach programs.' },
+    { id: 'acc_004', name: 'Charity Fund', balance: 35000, description: 'Emergency relief, believer education supports, and food distributions.' }
+  ];
+
+  for (const acc of accounts) {
+    await prisma.account.upsert({
+      where: { id: acc.id },
+      update: { balance: acc.balance, description: acc.description },
+      create: acc,
+    });
+  }
+  ok(`${accounts.length} Accounts seeded`);
+
+  // ──────────────────────────────────────────────
+  // 20. ATTENDANCE RECORDS
+  // ──────────────────────────────────────────────
+  const attendanceRecords = [
+    {
+      id: 'att_001',
+      date: new Date('2024-05-12T00:00:00.000Z'),
+      serviceType: 'Sunday Worship Service',
+      location: 'Subhash Nagar Sanctuary',
+      headcount: 450,
+      newVisitors: 12,
+      notes: 'Main Sunday worship service. Blessed service with powerful sermon.'
+    },
+    {
+      id: 'att_002',
+      date: new Date('2024-05-12T00:00:00.000Z'),
+      serviceType: 'Sunday Afternoon Prayer',
+      location: 'Bahadurpally Location',
+      headcount: 180,
+      newVisitors: 5,
+      notes: 'Afternoon service. Good gathering.'
+    },
+    {
+      id: 'att_003',
+      date: new Date('2024-05-10T00:00:00.000Z'),
+      serviceType: 'Friday Evening Prayer',
+      location: 'Shapur Location',
+      headcount: 120,
+      newVisitors: 3,
+      notes: 'Weekly Friday evening service.'
+    }
+  ];
+
+  for (const att of attendanceRecords) {
+    await prisma.attendanceRecord.upsert({
+      where: { id: att.id },
+      update: { headcount: att.headcount, newVisitors: att.newVisitors, notes: att.notes },
+      create: att,
+    });
+  }
+  ok(`${attendanceRecords.length} Attendance records seeded`);
+
+  // ──────────────────────────────────────────────
+  // 21. PLEDGES
+  // ──────────────────────────────────────────────
+  const pledges = [
+    { id: 'plg_001', donorName: 'James Wilson', donorEmail: 'james.wilson@email.com', committedAmount: 50000, paidAmount: 25000, targetDate: new Date('2026-12-31'), purpose: 'Building Fund', status: 'ACTIVE' },
+    { id: 'plg_002', donorName: 'Sarah Johnson', donorEmail: 'sarah.j@email.com', committedAmount: 20000, paidAmount: 20000, targetDate: new Date('2026-05-15'), purpose: 'Missions Fund', status: 'FULFILLED' },
+    { id: 'plg_003', donorName: 'Michael Brown', donorEmail: 'michael.b@email.com', committedAmount: 10000, paidAmount: 0, targetDate: new Date('2026-09-01'), purpose: 'Youth Fellowship Support', status: 'PENDING' }
+  ];
+
+  for (const plg of pledges) {
+    await prisma.pledge.upsert({
+      where: { id: plg.id },
+      update: { paidAmount: plg.paidAmount, status: plg.status },
+      create: plg,
+    });
+  }
+  ok(`${pledges.length} Pledges seeded`);
+
+  // ──────────────────────────────────────────────
+  // 22. TRANSACTIONS
+  // ──────────────────────────────────────────────
+  const transactions = [
+    { id: 'tx_001', type: 'INFLOW', amount: 15000, category: 'Tithe', description: 'Sunday Morning Tithe Collections', date: new Date('2026-06-07'), account: 'General Fund' },
+    { id: 'tx_002', type: 'OUTFLOW', amount: 3500, category: 'Utilities', description: 'Shapur Sanctuary Electricity Bill', date: new Date('2026-06-05'), account: 'General Fund' },
+    { id: 'tx_003', type: 'OUTFLOW', amount: 12000, category: 'Charity', description: 'Believer Education Sponsorship Support', date: new Date('2026-06-03'), account: 'Charity Fund' },
+    { id: 'tx_004', type: 'INFLOW', amount: 25000, category: 'Pledge Pay', description: 'James Wilson Pledge payment', date: new Date('2026-06-02'), account: 'Building Fund' }
+  ];
+
+  for (const tx of transactions) {
+    await prisma.transaction.upsert({
+      where: { id: tx.id },
+      update: { amount: tx.amount, description: tx.description },
+      create: tx,
+    });
+  }
+  ok(`${transactions.length} Transactions seeded`);
+
+  // ──────────────────────────────────────────────
   // SUMMARY
   // ──────────────────────────────────────────────
   console.log('\n' + '='.repeat(60));
@@ -797,9 +895,16 @@ async function main() {
     prisma.gallery.count(),
     prisma.contactMessage.count(),
     prisma.notification.count(),
+    prisma.account.count(),
+    prisma.attendanceRecord.count(),
+    prisma.pledge.count(),
+    prisma.transaction.count(),
   ]);
 
-  const labels = ['Users','Pastors','Sermons','Events','Registrations','Announcements','PrayerRequests','Donations','Ministries','SmallGroups','Volunteers','BibleStudies','MemberRequests','Testimonials','Gallery','Contacts','Notifications'];
+  const labels = [
+    'Users','Pastors','Sermons','Events','Registrations','Announcements','PrayerRequests','Donations','Ministries','SmallGroups','Volunteers','BibleStudies','MemberRequests','Testimonials','Gallery','Contacts','Notifications',
+    'Accounts','AttendanceRecords','Pledges','Transactions'
+  ];
   labels.forEach((label, i) => {
     console.log(`  \x1b[36m${label.padEnd(20)}\x1b[0m ${counts[i]} records`);
   });
