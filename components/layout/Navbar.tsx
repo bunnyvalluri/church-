@@ -106,10 +106,10 @@ export default function Navbar() {
             {/* ── Logo ── */}
             <Link href="/" className="flex items-center gap-3 group flex-shrink-0 min-w-0">
               {/* Logo circle */}
-              <div className="relative w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0">
+              <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500 via-purple-500 to-violet-600 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-125" />
-                <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-md transition-all duration-300 bg-white">
-                  <Image src="/logo.png" alt="KCM Logo" fill className="object-cover rounded-full" priority />
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-lg transition-all duration-300 bg-white flex items-center justify-center">
+                  <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
                 </div>
               </div>
 

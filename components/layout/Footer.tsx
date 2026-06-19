@@ -55,12 +55,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center space-x-3 mb-6">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))/0.3] bg-white flex-shrink-0">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-purple-500/30 bg-white flex-shrink-0 flex items-center justify-center shadow-lg">
                 <Image 
                   src="/logo.png" 
                   alt="Kingdom of Christ Ministries Logo" 
                   fill 
-                  className="object-cover rounded-full"
+                  className="object-contain p-0.5"
                 />
               </div>
               <div className="flex flex-col">
