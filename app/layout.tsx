@@ -34,8 +34,13 @@ export const metadata: Metadata = {
   keywords: ["church", "ministry", "worship", "prayer", "Hyderabad", "Jeedimetla", "Kingdom of Christ"],
   authors: [{ name: "Kingdom of Christ Ministries" }],
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
   },
   openGraph: {
     title: "Kingdom of Christ Ministries",
