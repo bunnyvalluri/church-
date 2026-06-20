@@ -9,6 +9,7 @@ import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import NgoShowcase from "@/components/sections/NgoShowcase";
 
 console.log("DEBUG HOME IMPORTS:");
 console.log("  Hero:", typeof Hero);
@@ -16,6 +17,7 @@ console.log("  About:", typeof About);
 console.log("  Services:", typeof Services);
 console.log("  Events:", typeof Events);
 console.log("  Sermons:", typeof Sermons);
+console.log("  NgoShowcase:", typeof NgoShowcase);
 console.log("  Contact:", typeof Contact);
 console.log("  Footer:", typeof Footer);
 console.log("  Navbar:", typeof Navbar);
@@ -30,6 +32,7 @@ export default function Home() {
       <ScrollReveal delay={0.1}><Services /></ScrollReveal>
       <ScrollReveal delay={0.1}><Events /></ScrollReveal>
       <ScrollReveal delay={0.1}><Sermons /></ScrollReveal>
+      <ScrollReveal delay={0.1}><NgoShowcase /></ScrollReveal>
       <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
       <Footer />
     </main>

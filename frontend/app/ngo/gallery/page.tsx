@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { ImageIcon, X, ChevronLeft, ChevronRight, Loader2, Filter } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 interface MediaItem {
   id: string;
@@ -13,10 +15,24 @@ interface MediaItem {
 }
 
 export default function NgoGalleryPage() {
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [displayLimit, setDisplayLimit] = useState(24);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ngoT = mounted ? t.ngo : translations.en.ngo;
+
+  // Reset display limit when selected category changes
+  useEffect(() => {
+    setDisplayLimit(24);
+  }, [selectedCategory]);
 
   // High quality curated placeholder images representing KCM NGO services
   const presetMedia: MediaItem[] = [
@@ -89,7 +105,7 @@ export default function NgoGalleryPage() {
   useEffect(() => {
     async function fetchMedia() {
       try {
-        const res = await fetch("/api/ngo/media?type=IMAGE");
+        const res = await fetch("/api/ngo/media?type=IMAGE&limit=1000");
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.media.length > 0) {
@@ -112,17 +128,19 @@ export default function NgoGalleryPage() {
   }, []);
 
   const categories = [
-    { label: "All Photos", value: "ALL" },
-    { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL" },
-    { label: "NIMS Hospital", value: "NIMS-HOSPITAL" },
-    { label: "Govt Hospital", value: "GOVT-HOSPITAL" },
-    { label: "Ashramams", value: "ASHRAMAM" },
-    { label: "Disabled Care", value: "DISABLED-AASHRAMAM" },
+    { label: ngoT.categories.all, value: "ALL" },
+    { label: ngoT.categories.gandhi, value: "GANDHI-HOSPITAL" },
+    { label: ngoT.categories.nims, value: "NIMS-HOSPITAL" },
+    { label: ngoT.categories.govt, value: "GOVT-HOSPITAL" },
+    { label: ngoT.categories.ashramam, value: "ASHRAMAM" },
+    { label: ngoT.categories.disabled, value: "DISABLED-AASHRAMAM" },
   ];
 
   const filteredMedia = selectedCategory === "ALL"
     ? media
     : media.filter(item => item.category === selectedCategory);
+
+  const displayedMedia = filteredMedia.slice(0, displayLimit);
 
   const openLightbox = (url: string) => {
     const idx = filteredMedia.findIndex(item => item.url === url);
@@ -151,19 +169,19 @@ export default function NgoGalleryPage() {
         
         {/* Header */}
         <div className="space-y-4 max-w-2xl text-left">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
-            Service Gallery
+          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
+            {ngoT.galleryTitle}
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            Witness our physical ministries in action. Browse through photographs showing food distributions, patient healthcare kits, and Ashramam support projects.
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+            {ngoT.gallerySubtitle}
           </p>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-6">
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-6">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mr-2 uppercase font-mono tracking-wider">
             <Filter className="w-3.5 h-3.5" />
-            Filter:
+            {ngoT.filterLabel}
           </div>
           {categories.map((cat) => (
             <button
@@ -171,8 +189,8 @@ export default function NgoGalleryPage() {
               onClick={() => setSelectedCategory(cat.value)}
               className={`px-4 py-2 text-xs font-semibold rounded-full border transition-all ${
                 selectedCategory === cat.value
-                  ? "bg-purple-600/20 text-purple-300 border-purple-500/30 shadow-md shadow-purple-500/5"
-                  : "text-slate-400 border-transparent hover:text-white hover:bg-white/5"
+                  ? "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-300 border-purple-400/30 dark:border-purple-500/30 shadow-md shadow-purple-500/5"
+                  : "text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
               }`}
             >
               {cat.label}
@@ -186,39 +204,53 @@ export default function NgoGalleryPage() {
             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
           </div>
         ) : filteredMedia.length === 0 ? (
-          <div className="min-h-[30vh] flex items-center justify-center border border-white/5 rounded-3xl bg-slate-900/40">
-            <div className="text-center space-y-2 text-slate-500">
+          <div className="min-h-[30vh] flex items-center justify-center border border-slate-200 dark:border-white/5 rounded-3xl bg-slate-100/40 dark:bg-slate-900/40">
+            <div className="text-center space-y-2 text-slate-505">
               <ImageIcon className="w-12 h-12 mx-auto" />
-              <p className="text-sm">No photos found in this category.</p>
+              <p className="text-sm">{ngoT.noPhotos}</p>
             </div>
           </div>
         ) : (
           /* True CSS Masonry Layout */
-          <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
-            {filteredMedia.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => openLightbox(item.url)}
-                className="break-inside-avoid relative group rounded-2xl overflow-hidden border border-white/5 bg-slate-900 cursor-pointer shadow-lg hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/5"
-              >
-                <img
-                  src={item.url}
-                  alt={item.title || "NGO Gallery Image"}
-                  loading="lazy"
-                  className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                />
-                
-                {/* Overlay details on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  {item.title && (
-                    <h3 className="font-bold text-white text-base truncate">{item.title}</h3>
-                  )}
-                  {item.description && (
-                    <p className="text-slate-300 text-xs mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
-                  )}
+          <div className="space-y-12">
+            <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
+              {displayedMedia.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => openLightbox(item.url)}
+                  className="break-inside-avoid relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 cursor-pointer shadow-lg hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/5"
+                >
+                  <img
+                    src={item.url}
+                    alt={item.title || "NGO Gallery Image"}
+                    loading="lazy"
+                    className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                  
+                  {/* Overlay details on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                    {item.title && (
+                      <h3 className="font-bold text-white text-base truncate">{item.title}</h3>
+                    )}
+                    {item.description && (
+                      <p className="text-slate-300 text-xs mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Load More Button */}
+            {filteredMedia.length > displayLimit && (
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={() => setDisplayLimit((prev) => prev + 24)}
+                  className="px-6 py-3 font-semibold text-sm rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-purple-600 dark:text-purple-300 hover:text-purple-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 hover:border-purple-400/50 dark:hover:border-purple-500/30 transition-all shadow-md shadow-purple-500/5"
+                >
+                  {ngoT.loadMoreBtn} ({filteredMedia.length - displayLimit} {ngoT.remainingLabel})
+                </button>
               </div>
-            ))}
+            )}
           </div>
         )}
 

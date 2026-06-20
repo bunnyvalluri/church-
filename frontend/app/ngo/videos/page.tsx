@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Video, Loader2, PlayCircle, Clock } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 interface VideoItem {
   id: string;
@@ -13,9 +15,17 @@ interface VideoItem {
 }
 
 export default function NgoVideosPage() {
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ngoT = mounted ? t.ngo : translations.en.ngo;
 
   // The 3 required YouTube embeds provided by the user
   const presetVideos: VideoItem[] = [
@@ -90,11 +100,11 @@ export default function NgoVideosPage() {
         
         {/* Header */}
         <div className="space-y-4 max-w-2xl text-left">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
-            Service Video Logs
+          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
+            {ngoT.videosPage.title}
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            Watch our social service activities, healthcare distribution drives, and community rehabilitation programs. Click a video from the playlist to watch.
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+            {ngoT.videosPage.desc}
           </p>
         </div>
 
@@ -111,7 +121,7 @@ export default function NgoVideosPage() {
               {activeVideo && (
                 <div className="space-y-6">
                   {/* Aspect Ratio Container for iFrame */}
-                  <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-slate-950">
+                  <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl bg-slate-950">
                     <iframe
                       src={activeVideo.url}
                       title={activeVideo.title}
@@ -124,15 +134,15 @@ export default function NgoVideosPage() {
                   </div>
 
                   {/* Active Video Info */}
-                  <div className="space-y-3 p-6 bg-slate-900/40 border border-white/5 rounded-3xl text-left">
-                    <div className="flex items-center gap-2 text-red-400 text-xs font-mono uppercase tracking-wider">
+                  <div className="space-y-3 p-6 bg-white/60 dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-3xl text-left">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-mono uppercase tracking-wider">
                       <PlayCircle className="w-4 h-4" />
-                      Now Playing
+                      {ngoT.videosPage.nowPlaying}
                     </div>
-                    <h2 className="text-2xl font-bold text-white tracking-tight">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                       {activeVideo.title}
                     </h2>
-                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
                       {activeVideo.description}
                     </p>
                   </div>
@@ -141,15 +151,15 @@ export default function NgoVideosPage() {
             </div>
 
             {/* Right: Playlist Panel */}
-            <div className="lg:col-span-4 bg-slate-900 border border-white/5 rounded-3xl overflow-hidden shadow-xl max-h-[80vh] flex flex-col">
-              <div className="p-5 border-b border-white/5 flex items-center gap-2 text-left">
-                <Video className="w-5 h-5 text-purple-400" />
-                <h3 className="font-bold text-sm sm:text-base uppercase tracking-wider text-slate-200">
-                  Service Playlist
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl overflow-hidden shadow-lg dark:shadow-xl max-h-[80vh] flex flex-col">
+              <div className="p-5 border-b border-slate-200 dark:border-white/5 flex items-center gap-2 text-left">
+                <Video className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <h3 className="font-bold text-sm sm:text-base uppercase tracking-wider text-slate-700 dark:text-slate-200">
+                  {ngoT.videosPage.playlistTitle}
                 </h3>
               </div>
 
-              <div className="overflow-y-auto divide-y divide-white/5 max-h-[60vh] sm:max-h-[500px]">
+              <div className="overflow-y-auto divide-y divide-slate-200 dark:divide-white/5 max-h-[60vh] sm:max-h-[500px]">
                 {videos.map((vid) => {
                   const isActive = activeVideo?.id === vid.id;
                   return (
@@ -158,12 +168,12 @@ export default function NgoVideosPage() {
                       onClick={() => setActiveVideo(vid)}
                       className={`p-4 flex gap-4 cursor-pointer text-left transition-colors ${
                         isActive
-                          ? "bg-purple-600/10 hover:bg-purple-600/15"
-                          : "hover:bg-white/5"
+                          ? "bg-purple-600/10 dark:bg-purple-600/15 hover:bg-purple-600/15"
+                          : "hover:bg-slate-50 dark:hover:bg-white/5"
                       }`}
                     >
                       {/* Thumbnail wrapper */}
-                      <div className="relative w-28 aspect-video rounded-lg overflow-hidden bg-slate-950 flex-shrink-0 border border-white/10 flex items-center justify-center">
+                      <div className="relative w-28 aspect-video rounded-lg overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-200 dark:border-white/10 flex items-center justify-center">
                         <img
                           src={vid.thumbnailUrl}
                           alt={vid.title}
@@ -177,13 +187,13 @@ export default function NgoVideosPage() {
                       {/* Text */}
                       <div className="space-y-1 select-none">
                         <h4 className={`text-sm font-bold leading-snug line-clamp-2 ${
-                          isActive ? "text-purple-400" : "text-white"
+                          isActive ? "text-purple-600 dark:text-purple-400" : "text-slate-800 dark:text-white"
                         }`}>
                           {vid.title}
                         </h4>
                         <p className="text-slate-500 text-[10px] sm:text-xs flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          <span>YouTube Embed</span>
+                          <span>{ngoT.videosPage.typeLabel}</span>
                         </p>
                       </div>
                     </div>

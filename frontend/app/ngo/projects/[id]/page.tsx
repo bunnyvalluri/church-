@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Heart, Users, ChevronLeft, Calendar, Loader2, Image as ImageIcon } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 interface MediaItem {
   id: string;
@@ -30,9 +32,17 @@ export default function NgoProjectDetailPage({
 }: {
   params: { id: string };
 }) {
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ngoT = mounted ? t.ngo : translations.en.ngo;
 
   useEffect(() => {
     async function loadProjectDetails() {
@@ -117,13 +127,13 @@ export default function NgoProjectDetailPage({
     return (
       <div className="min-h-[50vh] flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-md">
-          <h2 className="text-2xl font-bold text-red-400">Error Occurred</h2>
-          <p className="text-slate-400 text-sm leading-relaxed">{errorMsg || "The project detail page could not load."}</p>
+          <h2 className="text-2xl font-bold text-red-500 dark:text-red-400">Error Occurred</h2>
+          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{errorMsg || "The project detail page could not load."}</p>
           <Link
             href="/ngo/projects"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-750 border border-white/5 rounded-xl text-xs text-white font-bold transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-700 dark:text-white font-bold transition-all shadow-sm active:scale-95"
           >
-            <ChevronLeft className="w-4 h-4" /> Back to Projects
+            <ChevronLeft className="w-4 h-4" /> {ngoT.projectsPage.backToProjects}
           </Link>
         </div>
       </div>
@@ -141,19 +151,19 @@ export default function NgoProjectDetailPage({
         {/* Back Link */}
         <Link
           href="/ngo/projects"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors font-medium"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span>Back to Projects</span>
+          <span>{ngoT.projectsPage.backToProjects}</span>
         </Link>
 
         {/* Title */}
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full">
+            <span className="bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full font-bold">
               {project.status}
             </span>
-            <span className="text-slate-500 text-xs flex items-center gap-1">
+            <span className="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               {new Date(project.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -162,14 +172,14 @@ export default function NgoProjectDetailPage({
               })}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
             {project.title}
           </h1>
         </div>
 
         {/* Banner Cover Image */}
         {project.imageUrl && (
-          <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-slate-950">
+          <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl bg-slate-950">
             <img
               src={project.imageUrl}
               alt={project.title}
@@ -179,13 +189,13 @@ export default function NgoProjectDetailPage({
         )}
 
         {/* Progress Grid */}
-        <div className="grid md:grid-cols-3 gap-6 bg-slate-900 border border-white/5 p-6 rounded-3xl backdrop-blur-sm">
+        <div className="grid md:grid-cols-3 gap-6 bg-white/80 dark:bg-slate-900 border border-slate-200 dark:border-white/5 p-6 rounded-3xl backdrop-blur-sm shadow-sm">
           <div className="md:col-span-2 space-y-3 flex flex-col justify-center">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-400">Campaign Funds Progress</span>
-              <span className="text-purple-300 font-bold">{percent}% Complete</span>
+              <span className="text-slate-500 dark:text-slate-400">{ngoT.projectsPage.fundsProgress}</span>
+              <span className="text-purple-600 dark:text-purple-300 font-bold">{percent}% {ngoT.projectsPage.completeLabel}</span>
             </div>
-            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-red-500 to-purple-600 rounded-full"
                 style={{ width: `${percent}%` }}
@@ -193,42 +203,42 @@ export default function NgoProjectDetailPage({
             </div>
             <div className="flex justify-between text-xs">
               <div>
-                <span className="text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
-                <span className="text-slate-400 text-xs"> raised</span>
+                <span className="text-slate-900 dark:text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
+                <span className="text-slate-500 dark:text-slate-400 text-xs"> {ngoT.projectsPage.raised}</span>
               </div>
               {target > 0 && (
-                <div className="text-slate-400 text-xs">
-                  Goal Target: <span className="text-white font-bold">₹{target.toLocaleString("en-IN")}</span>
+                <div className="text-slate-500 dark:text-slate-400 text-xs">
+                  {ngoT.projectsPage.goalTarget} <span className="text-slate-900 dark:text-white font-bold">₹{target.toLocaleString("en-IN")}</span>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex md:flex-col gap-3 justify-center border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
+          <div className="flex md:flex-col gap-3 justify-center border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/5 pt-4 md:pt-0 md:pl-6">
             <Link
               href={`/ngo/donations?project=${project.id}`}
-              className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
+              className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md active:scale-95"
             >
               <Heart className="w-3.5 h-3.5 fill-current" />
-              Support Cause
+              {ngoT.projectsPage.supportCause}
             </Link>
             
             <Link
               href={`/ngo/volunteers?project=${project.id}`}
-              className="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 border border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
+              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
             >
               <Users className="w-3.5 h-3.5" />
-              Apply to Serve
+              {ngoT.projectsPage.applyServe}
             </Link>
           </div>
         </div>
 
         {/* Details Story */}
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-white">Project Overview</h3>
-          <div className="text-slate-300 text-sm sm:text-base leading-relaxed space-y-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white">{ngoT.projectsPage.overview}</h3>
+          <div className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed space-y-4">
             <p>{project.description}</p>
-            <p className="whitespace-pre-line bg-slate-900/30 p-6 rounded-2xl border border-white/5 leading-loose">
+            <p className="whitespace-pre-line bg-white/60 dark:bg-slate-900/30 p-6 rounded-2xl border border-slate-200 dark:border-white/5 leading-loose">
               {project.details}
             </p>
           </div>
@@ -236,17 +246,17 @@ export default function NgoProjectDetailPage({
 
         {/* Associated Media */}
         {project.media && project.media.length > 0 && (
-          <div className="space-y-6 pt-6 border-t border-white/5">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-purple-400" />
-              Campaign Media Log
+          <div className="space-y-6 pt-6 border-t border-slate-200 dark:border-white/5">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              {ngoT.projectsPage.mediaLog}
             </h3>
             
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
               {project.media.map((item) => (
                 <div
                   key={item.id}
-                  className="relative aspect-video rounded-xl overflow-hidden border border-white/5 bg-slate-900 group shadow-md"
+                  className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 group shadow-md"
                 >
                   <img
                     src={item.url}

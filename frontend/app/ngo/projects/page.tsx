@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Heart, DollarSign, Users, Award, Calendar, ArrowRight, Loader2 } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 interface Project {
   id: string;
@@ -16,8 +18,16 @@ interface Project {
 }
 
 export default function NgoProjectsPage() {
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ngoT = mounted ? t.ngo : translations.en.ngo;
 
   // Fallback / seed projects in case DB is empty on first load
   const presetProjects: Project[] = [
@@ -84,11 +94,11 @@ export default function NgoProjectsPage() {
         
         {/* Header */}
         <div className="space-y-4 max-w-2xl text-left">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
-            Social Service Projects
+          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
+            {ngoT.projectsPage.title}
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            Discover our active community initiatives and help us achieve our goals. Your support directly finances medical items, wheelchairs, food campaigns, and Ashramam expenses.
+          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+            {ngoT.projectsPage.desc}
           </p>
         </div>
 
@@ -97,7 +107,7 @@ export default function NgoProjectsPage() {
           <div className="min-h-[40vh] flex items-center justify-center">
             <div className="text-center space-y-3">
               <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto" />
-              <p className="text-slate-400 text-xs font-mono">Fetching active campaigns...</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-mono">{ngoT.projectsPage.fetching}</p>
             </div>
           </div>
         ) : (
@@ -110,7 +120,7 @@ export default function NgoProjectsPage() {
               return (
                 <div
                   key={project.id}
-                  className="bg-slate-900 border border-white/5 hover:border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1"
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 hover:border-purple-500/25 dark:hover:border-white/10 rounded-3xl overflow-hidden shadow-lg dark:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1"
                 >
                   <div>
                     {/* Cover image */}
@@ -133,11 +143,11 @@ export default function NgoProjectsPage() {
 
                     {/* Content */}
                     <div className="p-6 space-y-4">
-                      <h3 className="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {project.title}
                       </h3>
                       
-                      <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 leading-relaxed">
                         {project.description}
                       </p>
                     </div>
@@ -148,10 +158,10 @@ export default function NgoProjectsPage() {
                     {target > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs font-semibold">
-                          <span className="text-slate-500">Fundraising Progress</span>
-                          <span className="text-purple-300">{percent}% Complete</span>
+                          <span className="text-slate-500">{ngoT.projectsPage.progressLabel}</span>
+                          <span className="text-purple-600 dark:text-purple-300">{percent}% {ngoT.projectsPage.completeLabel}</span>
                         </div>
-                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-red-500 to-purple-600 rounded-full"
                             style={{ width: `${percent}%` }}
@@ -159,11 +169,11 @@ export default function NgoProjectsPage() {
                         </div>
                         <div className="flex justify-between text-xs">
                           <div>
-                            <span className="text-slate-400 font-bold">₹{raised.toLocaleString("en-IN")}</span>
-                            <span className="text-slate-600"> raised</span>
+                            <span className="text-slate-800 dark:text-slate-200 font-bold">₹{raised.toLocaleString("en-IN")}</span>
+                            <span className="text-slate-500"> {ngoT.projectsPage.raised}</span>
                           </div>
                           <div className="text-slate-500">
-                            Target: <span className="font-bold">₹{target.toLocaleString("en-IN")}</span>
+                            {ngoT.projectsPage.target} <span className="font-bold text-slate-800 dark:text-slate-300">₹{target.toLocaleString("en-IN")}</span>
                           </div>
                         </div>
                       </div>
@@ -175,14 +185,14 @@ export default function NgoProjectsPage() {
                         className="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
                       >
                         <Heart className="w-3.5 h-3.5 fill-current" />
-                        Donate
+                        {ngoT.projectsPage.donateBtn}
                       </Link>
                       
                       <Link
                         href={`/ngo/volunteers?project=${project.id}`}
-                        className="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 border border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
+                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
                       >
-                        Volunteer
+                        {ngoT.projectsPage.volunteerBtn}
                       </Link>
                     </div>
                   </div>

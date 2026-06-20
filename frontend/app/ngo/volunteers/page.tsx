@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Users, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 
 interface Project {
   id: string;
@@ -9,6 +11,8 @@ interface Project {
 }
 
 export default function NgoVolunteersPage() {
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -19,6 +23,12 @@ export default function NgoVolunteersPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"IDLE" | "SUCCESS" | "ERROR">("IDLE");
   const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ngoT = mounted ? t.ngo : translations.en.ngo;
 
   useEffect(() => {
     async function loadProjects() {
@@ -44,7 +54,7 @@ export default function NgoVolunteersPage() {
     setErrorMsg("");
 
     if (!name.trim() || !email.trim()) {
-      setErrorMsg("Name and email are required fields.");
+      setErrorMsg(ngoT.volunteersPage.errorFields);
       setStatus("ERROR");
       setLoading(false);
       return;
@@ -92,65 +102,65 @@ export default function NgoVolunteersPage() {
           
           {/* Left Pane: Info Card */}
           <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-semibold uppercase tracking-wider">
               <Users className="w-3.5 h-3.5" />
-              Get Involved
+              {ngoT.volunteersPage.tag}
             </div>
 
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
-              Become a Volunteer
+            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
+              {ngoT.volunteersPage.title}
             </h1>
 
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              Our community service initiatives depend on the dedication of volunteers. Whether you want to package meals, drive provisions to Ashramams, or assist patients in government hospitals, we have a place for you.
+            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
+              {ngoT.volunteersPage.desc}
             </p>
 
-            <div className="space-y-4 pt-4 border-t border-white/5">
+            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-white/5">
               <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-xs flex-shrink-0">1</div>
+                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">1</div>
                 <div>
-                  <h4 className="font-bold text-slate-200 text-sm">Register Details</h4>
-                  <p className="text-slate-400 text-xs mt-0.5">Let us know your skills and contact details.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step1Title}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step1Desc}</p>
                 </div>
               </div>
               
               <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-xs flex-shrink-0">2</div>
+                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">2</div>
                 <div>
-                  <h4 className="font-bold text-slate-200 text-sm">Review & Placement</h4>
-                  <p className="text-slate-400 text-xs mt-0.5">Our Pastor/Admin team will align you with a project.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step2Title}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step2Desc}</p>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold text-xs flex-shrink-0">3</div>
+                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">3</div>
                 <div>
-                  <h4 className="font-bold text-slate-200 text-sm">Start Serving</h4>
-                  <p className="text-slate-400 text-xs mt-0.5">Join the weekly outreaches and help distribute aid.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step3Title}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step3Desc}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Pane: Interactive Form */}
-          <div className="lg:col-span-7 bg-slate-900 border border-white/5 rounded-3xl p-6 sm:p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white text-left mb-6">Volunteer Application</h3>
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg dark:shadow-2xl">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-left mb-6">{ngoT.volunteersPage.formTitle}</h3>
 
             {status === "SUCCESS" && (
               <div className="mb-6 p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-start gap-3 text-left">
-                <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-emerald-400 text-sm">Registration Successful!</h4>
-                  <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                    Thank you for volunteering. The church pastoral team has received your application and will contact you shortly to coordinate scheduling.
+                  <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">{ngoT.volunteersPage.successTitle}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">
+                    {ngoT.volunteersPage.successDesc}
                   </p>
                 </div>
               </div>
             )}
 
             {status === "ERROR" && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2.5 text-left text-xs sm:text-sm text-red-300">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-400" />
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2.5 text-left text-xs sm:text-sm text-red-600 dark:text-red-300">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-500 dark:text-red-400" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -159,30 +169,30 @@ export default function NgoVolunteersPage() {
               {/* Row 1: Name & Email */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Full Name
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    {ngoT.volunteersPage.fullName}
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your name"
-                    className="w-full py-3 px-4 rounded-xl border border-white/10 bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder={ngoT.volunteersPage.fullName}
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Email Address
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    {ngoT.volunteersPage.email}
                   </label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="w-full py-3 px-4 rounded-xl border border-white/10 bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder={ngoT.volunteersPage.email}
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
               </div>
@@ -190,28 +200,28 @@ export default function NgoVolunteersPage() {
               {/* Row 2: Phone & Project */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Phone Number (Optional)
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    {ngoT.volunteersPage.phone}
                   </label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter phone number"
-                    className="w-full py-3 px-4 rounded-xl border border-white/10 bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder={ngoT.volunteersPage.phone}
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                    Preferred Initiative
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    {ngoT.volunteersPage.initiative}
                   </label>
                   <select
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
-                    className="w-full py-3 px-4 rounded-xl border border-white/10 bg-slate-950 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 transition-colors"
                   >
-                    <option value="">Any Initiative / General Service</option>
+                    <option value="">{ngoT.volunteersPage.initiativePlaceholder}</option>
                     {projects.map((proj) => (
                       <option key={proj.id} value={proj.id}>
                         {proj.title}
@@ -223,15 +233,15 @@ export default function NgoVolunteersPage() {
 
               {/* Row 3: Skills / Details */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                  Skills, Experience or Message
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                  {ngoT.volunteersPage.skills}
                 </label>
                 <textarea
                   rows={4}
                   value={skills}
                   onChange={(e) => setSkills(e.target.value)}
-                  placeholder="Tell us about yourself, your availability, or any specific skills you have..."
-                  className="w-full py-3 px-4 rounded-xl border border-white/10 bg-slate-950 text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                  placeholder={ngoT.volunteersPage.skillsPlaceholder}
+                  className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
                 />
               </div>
 
@@ -243,12 +253,12 @@ export default function NgoVolunteersPage() {
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Submitting Application...</span>
+                    <span>{ngoT.volunteersPage.submittingBtn}</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>Submit Volunteer Application</span>
+                    <span>{ngoT.volunteersPage.submitBtn}</span>
                   </>
                 )}
               </button>
