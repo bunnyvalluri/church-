@@ -33,7 +33,7 @@ export default function Navbar() {
     { name: mounted ? t.nav.events     : "Events",     href: "#events" },
     { name: mounted ? t.nav.sermons    : "Sermons",    href: "#sermons" },
     { name: mounted ? t.nav.gallery    : "Gallery",    href: "/gallery" },
-    { name: mounted ? t.nav.contact    : "Contact",    href: "/contact" },
+    { name: "NGO",                                     href: "/ngo" },
   ];
 
   const socialLinks = [
