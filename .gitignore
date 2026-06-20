@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -12,9 +13,12 @@
 # next.js
 /.next/
 /out/
+frontend/.next/
+frontend/out/
 
 # production
 /build
+frontend/build/
 
 # misc
 .DS_Store
@@ -35,17 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+frontend/next-env.d.ts
 
 # prisma
 /prisma/migrations
+backend/prisma/migrations
 
 # local fallbacks
 /prisma/fallback_*.json
 /prisma/dev.db
 /prisma/dev.db-journal
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
 
 # agent reports
 eslint-report*.txt
 
 # scratch files
 /scratch/
+
+# large media/NGO service files (store separately, not in code repo)
+KCM_NGO_SERVICES/
