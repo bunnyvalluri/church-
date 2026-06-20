@@ -10,6 +10,8 @@ jobs:
   validate:
     name: Build & Code Verification Audit
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
     steps:
       - name: Checkout Source Code
@@ -38,5 +40,4 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: 1
           NODE_ENV: production
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres" # Dummy DB for build compile validation
           DB_OFFLINE: "true"
