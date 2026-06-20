@@ -99,6 +99,10 @@ export default function NgoShowcase() {
         .marquee-group:hover .animate-marquee-reverse-slow {
           animation-play-state: paused;
         }
+        .marquee-row {
+          -webkit-mask-image: linear-gradient(to right, transparent 0px, black 120px, black calc(100% - 120px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0px, black 120px, black calc(100% - 120px), transparent 100%);
+        }
       ` }} />
 
       <div className="relative z-10 space-y-16">
@@ -120,14 +124,10 @@ export default function NgoShowcase() {
         </div>
 
         {/* Infinite Scroll Showcase Container (Full Bleed - Spans full page width) */}
-        <div className="marquee-group relative w-full overflow-hidden py-4 select-none pointer-events-auto">
-          
-          {/* Edge Fading Gradient Masks at screen boundaries */}
-          <div className="absolute top-0 bottom-0 left-0 w-24 sm:w-64 md:w-96 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent dark:from-[#05050A] dark:via-[#05050A]/80 dark:to-transparent z-20 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-24 sm:w-64 md:w-96 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent dark:from-[#05050A] dark:via-[#05050A]/80 dark:to-transparent z-20 pointer-events-none" />
+        <div className="marquee-group relative w-full py-4 select-none pointer-events-auto">
           
           {/* Row 1: Leftward Scroll (Hospital Outreaches) */}
-          <div className="relative flex overflow-hidden w-full mb-6">
+          <div className="marquee-row relative flex overflow-hidden w-full mb-6">
             <div className="animate-marquee-slow flex gap-6">
               {itemsRow1.map((src, idx) => (
                 <div 
@@ -152,7 +152,7 @@ export default function NgoShowcase() {
           </div>
 
           {/* Row 2: Rightward Scroll (Ashramam & Elders Care) */}
-          <div className="relative flex overflow-hidden w-full mb-6">
+          <div className="marquee-row relative flex overflow-hidden w-full mb-6">
             <div className="animate-marquee-reverse-slow flex gap-6">
               {itemsRow2.map((src, idx) => (
                 <div 
@@ -177,7 +177,7 @@ export default function NgoShowcase() {
           </div>
 
           {/* Row 3: Leftward Scroll (Disabled Rehabilitation) */}
-          <div className="relative flex overflow-hidden w-full">
+          <div className="marquee-row relative flex overflow-hidden w-full">
             <div className="animate-marquee-slow flex gap-6">
               {itemsRow3.map((src, idx) => (
                 <div 
