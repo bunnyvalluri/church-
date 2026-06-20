@@ -39,6 +39,7 @@ import AttendanceManagement from "@/components/admin/AttendanceManagement";
 import ContentManagement from "@/components/admin/ContentManagement";
 import SettingsManagement from "@/components/admin/SettingsManagement";
 import AdminControlBar from "@/components/admin/AdminControlBar";
+import NgoManagement from "@/components/admin/NgoManagement";
 import { adminTranslations } from "@/components/admin/adminTranslations";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -66,7 +67,11 @@ type ActiveViewType =
   | "pages"
   // SETTINGS
   | "settings"
-  | "users-roles";
+  | "users-roles"
+  // NGO
+  | "ngo-projects"
+  | "ngo-media"
+  | "ngo-volunteers";
 
 export default function AdminDashboard() {
   const { user, status, mounted, logout, getIdToken } = useAuth();
@@ -932,6 +937,30 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* NGO SECTION */}
+          <div className="space-y-2">
+            <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
+              NGO
+            </h4>
+            <div className="space-y-1">
+              {[
+                { id: "ngo-projects", label: language === "te" ? "NGO ప్రాజెక్ట్‌లు" : language === "hi" ? "एनजीओ परियोजनाएं" : "NGO Projects", icon: Heart },
+                { id: "ngo-media", label: language === "te" ? "NGO మీడియా" : language === "hi" ? "एनजीओ मीडिया" : "NGO Media", icon: ImageIcon },
+                { id: "ngo-volunteers", label: language === "te" ? "NGO స్వచ్ఛంద సేవకులు" : language === "hi" ? "एनजीओ स्वयंसेवक" : "NGO Volunteers", icon: Users }
+              ].map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  onClick={() => setActiveView(item.id as any)}
+                  className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${getActiveItemStyle(item.id as any)}`}
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* SETTINGS SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
@@ -1175,6 +1204,10 @@ export default function AdminDashboard() {
                   onOpenAddEvent={() => setIsAddEventOpen(true)}
                   onOpenAddAnnouncement={() => setIsAddAnnouncementOpen(true)}
                 />
+              )}
+
+              {(activeView === "ngo-projects" || activeView === "ngo-media" || activeView === "ngo-volunteers") && (
+                <NgoManagement />
               )}
 
               {activeView === "settings" && (

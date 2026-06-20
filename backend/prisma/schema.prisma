@@ -346,3 +346,46 @@ model Account {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model NgoProject {
+  id           String         @id @default(cuid())
+  title        String
+  description  String
+  details      String         @db.Text
+  imageUrl     String?        // Cover Image URL
+  targetAmount Float?
+  raisedAmount Float          @default(0)
+  status       String         @default("ACTIVE") // ACTIVE, COMPLETED, PLANNED
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  media        NgoMedia[]
+  volunteers   NgoVolunteer[]
+}
+
+model NgoMedia {
+  id           String      @id @default(cuid())
+  title        String?
+  description  String?
+  type         String      // IMAGE, VIDEO_LOCAL, VIDEO_YOUTUBE
+  url          String      // File URL, YouTube embed URL, or local path
+  publicId     String?     // Cloudinary asset public ID
+  thumbnailUrl String?     // Video preview image
+  projectId    String?
+  project      NgoProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category     String?     // GANDHI-HOSPITAL, GOVT-HOSPITAL, NIMS-HOSPITAL, BETHANY-SAMRAKSHANA, DISABLED-AASHRAMAM
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model NgoVolunteer {
+  id        String      @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  skills    String?     @db.Text
+  status    String      @default("PENDING") // PENDING, APPROVED, REJECTED
+  projectId String?
+  project   NgoProject? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
