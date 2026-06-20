@@ -59,4 +59,4 @@ eslint-report*.txt
 /scratch/
 
 # large media/NGO service files (store separately, not in code repo)
-KCM_NGO_SERVICES/
+/KCM_NGO_SERVICES/

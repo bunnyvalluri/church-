@@ -88,12 +88,12 @@ export default function NgoShowcase() {
         .animate-marquee-slow {
           display: flex;
           width: max-content;
-          animation: marquee 35s linear infinite;
+          animation: marquee 95s linear infinite;
         }
         .animate-marquee-reverse-slow {
           display: flex;
           width: max-content;
-          animation: marquee-reverse 35s linear infinite;
+          animation: marquee-reverse 95s linear infinite;
         }
         .marquee-group:hover .animate-marquee-slow,
         .marquee-group:hover .animate-marquee-reverse-slow {
@@ -101,10 +101,10 @@ export default function NgoShowcase() {
         }
       ` }} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative z-10 text-center">
+      <div className="relative z-10 space-y-16">
         
-        {/* Header Block */}
-        <div className="space-y-4 max-w-3xl mx-auto">
+        {/* Header Block (Constrained) */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 dark:border-red-500/30 text-red-600 dark:text-red-300 text-xs font-semibold uppercase tracking-wider">
             <Heart className="w-3.5 h-3.5 animate-pulse" />
             <span>KCM NGO Impact</span>
@@ -119,25 +119,32 @@ export default function NgoShowcase() {
           </p>
         </div>
 
-        {/* Infinite Scroll Showcase Container */}
-        <div className="marquee-group space-y-6 overflow-hidden py-4 select-none pointer-events-auto">
+        {/* Infinite Scroll Showcase Container (Full Bleed - Spans full page width) */}
+        <div className="marquee-group relative w-full overflow-hidden py-4 select-none pointer-events-auto">
+          
+          {/* Edge Fading Gradient Masks at screen boundaries */}
+          <div className="absolute top-0 bottom-0 left-0 w-24 sm:w-64 md:w-96 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent dark:from-[#05050A] dark:via-[#05050A]/80 dark:to-transparent z-20 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-24 sm:w-64 md:w-96 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent dark:from-[#05050A] dark:via-[#05050A]/80 dark:to-transparent z-20 pointer-events-none" />
           
           {/* Row 1: Leftward Scroll (Hospital Outreaches) */}
-          <div className="relative flex overflow-hidden w-full">
+          <div className="relative flex overflow-hidden w-full mb-6">
             <div className="animate-marquee-slow flex gap-6">
               {itemsRow1.map((src, idx) => (
                 <div 
                   key={`row1-${idx}`} 
-                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0"
+                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/5 hover:ring-2 hover:ring-red-500/30"
                 >
                   <img
                     src={src}
                     alt={`NGO Outreach Camp ${idx}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Hospital Services</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent opacity-0 group-hover:opacity-100 backdrop-blur-[1px] transition-all duration-300 flex items-end p-5">
+                    <div className="flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span>Hospital Services</span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -145,21 +152,24 @@ export default function NgoShowcase() {
           </div>
 
           {/* Row 2: Rightward Scroll (Ashramam & Elders Care) */}
-          <div className="relative flex overflow-hidden w-full">
+          <div className="relative flex overflow-hidden w-full mb-6">
             <div className="animate-marquee-reverse-slow flex gap-6">
               {itemsRow2.map((src, idx) => (
                 <div 
                   key={`row2-${idx}`} 
-                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0"
+                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/5 hover:ring-2 hover:ring-purple-500/30"
                 >
                   <img
                     src={src}
                     alt={`NGO Outreach Camp ${idx}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Ashramam & Elders Care</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent opacity-0 group-hover:opacity-100 backdrop-blur-[1px] transition-all duration-300 flex items-end p-5">
+                    <div className="flex items-center gap-1.5 bg-purple-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span>Ashramam Support</span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -172,16 +182,19 @@ export default function NgoShowcase() {
               {itemsRow3.map((src, idx) => (
                 <div 
                   key={`row3-${idx}`} 
-                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0"
+                  className="w-72 sm:w-80 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md group bg-slate-900 flex-shrink-0 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 hover:ring-2 hover:ring-indigo-500/30"
                 >
                   <img
                     src={src}
                     alt={`NGO Outreach Camp ${idx}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Disabled Rehab Services</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent opacity-0 group-hover:opacity-100 backdrop-blur-[1px] transition-all duration-300 flex items-end p-5">
+                    <div className="flex items-center gap-1.5 bg-indigo-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span>Disabled Care</span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -190,8 +203,8 @@ export default function NgoShowcase() {
 
         </div>
 
-        {/* Call to Action Button */}
-        <div className="pt-4 flex justify-center">
+        {/* Call to Action Button (Constrained) */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center pt-4">
           <Link
             href="/ngo"
             className="px-8 py-4 bg-gradient-to-r from-red-500 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2"
