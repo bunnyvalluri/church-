@@ -1,9 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ImageIcon, X, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
+
+// Encode a URL path so parentheses and spaces are safe for browsers
+function encodeSrc(src: string): string {
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
 
 // ─── Real local KCM NGO images organised by category ─────────────────────────
 
@@ -300,6 +308,9 @@ export default function NgoGalleryPage() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
+  // Lightbox image state
+  const [lbLoading, setLbLoading] = useState(false);
+  const [lbError, setLbError] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -312,34 +323,54 @@ export default function NgoGalleryPage() {
 
   const displayedItems = filteredItems.slice(0, displayLimit);
 
-  const openLightbox = (index: number) => setLightboxIndex(index);
-  const closeLightbox = () => setLightboxIndex(null);
+  // Open lightbox — find the item's actual position in filteredItems
+  const openLightbox = useCallback((filteredIdx: number) => {
+    setLbLoading(true);
+    setLbError(false);
+    setLightboxIndex(filteredIdx);
+    // Prevent body scroll
+    document.body.style.overflow = "hidden";
+  }, []);
 
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (lightboxIndex !== null) {
-      setLightboxIndex(lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1);
-    }
-  };
+  const closeLightbox = useCallback(() => {
+    setLightboxIndex(null);
+    setLbLoading(false);
+    setLbError(false);
+    document.body.style.overflow = "";
+  }, []);
 
-  const nextImage = (e: React.MouseEvent) => {
+  const goTo = useCallback((idx: number) => {
+    setLbLoading(true);
+    setLbError(false);
+    setLightboxIndex(idx);
+  }, []);
+
+  const prevImage = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (lightboxIndex !== null) {
-      setLightboxIndex(lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1);
-    }
-  };
+    if (lightboxIndex === null) return;
+    goTo(lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1);
+  }, [lightboxIndex, filteredItems.length, goTo]);
+
+  const nextImage = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex === null) return;
+    goTo(lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1);
+  }, [lightboxIndex, filteredItems.length, goTo]);
 
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (lightboxIndex === null) return;
-      if (e.key === "ArrowLeft") setLightboxIndex((i) => (i === null || i === 0) ? filteredItems.length - 1 : i - 1);
-      if (e.key === "ArrowRight") setLightboxIndex((i) => (i === null || i === filteredItems.length - 1) ? 0 : i + 1);
+      if (e.key === "ArrowLeft") goTo(lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1);
+      if (e.key === "ArrowRight") goTo(lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1);
       if (e.key === "Escape") closeLightbox();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIndex, filteredItems.length]);
+  }, [lightboxIndex, filteredItems.length, goTo, closeLightbox]);
+
+  // Clean up body scroll lock on unmount
+  useEffect(() => () => { document.body.style.overflow = ""; }, []);
 
   const handleImgError = (id: string) => {
     setImgErrors((prev) => new Set(prev).add(id));
@@ -420,13 +451,19 @@ export default function NgoGalleryPage() {
           <div className="space-y-8">
             {/* CSS Masonry using columns */}
             <div className="columns-1 sm:columns-2 md:columns-3 gap-5">
-              {displayedItems.map((item, idx) => {
+              {displayedItems.map((item, displayIdx) => {
                 if (imgErrors.has(item.id)) return null;
+                // Get the true index in filteredItems so lightbox is correct
+                const filteredIdx = filteredItems.findIndex((fi) => fi.id === item.id);
                 return (
                   <div
                     key={item.id}
-                    onClick={() => openLightbox(idx)}
+                    onClick={() => openLightbox(filteredIdx)}
                     className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 cursor-pointer shadow hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/10 hover:shadow-xl"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === "Enter" && openLightbox(filteredIdx)}
+                    aria-label={`Open ${item.label} photo`}
                   >
                     {/* Category badge */}
                     <div className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-white text-[10px] font-bold bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
@@ -434,17 +471,20 @@ export default function NgoGalleryPage() {
                     </div>
 
                     <img
-                      src={item.url}
+                      src={encodeSrc(item.url)}
                       alt={item.label}
                       loading="lazy"
                       onError={() => handleImgError(item.id)}
                       className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-500"
                     />
 
-                    {/* Dark hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    {/* Hover overlay with zoom icon */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                       <span className="text-white text-xs font-semibold drop-shadow">{item.label}</span>
                     </div>
+
+                    {/* Tap indicator: subtle pulse ring on touch */}
+                    <div className="absolute inset-0 rounded-2xl ring-2 ring-purple-500/0 group-active:ring-purple-500/60 transition-all duration-150" />
                   </div>
                 );
               })}
@@ -466,72 +506,139 @@ export default function NgoGalleryPage() {
         )}
 
         {/* ── Lightbox ──────────────────────────────────────────────────────── */}
-        {lightboxIndex !== null && filteredItems.length > 0 && (
-          <div
-            className="fixed inset-0 z-50 bg-slate-950/97 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
-            onClick={closeLightbox}
-          >
-            {/* Close */}
-            <button
-              onClick={closeLightbox}
-              id="lightbox-close"
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-white transition-colors z-10"
-              aria-label="Close lightbox"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Counter */}
-            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 text-xs text-white/50 font-mono">
-              {lightboxIndex + 1} / {filteredItems.length}
-            </div>
-
-            {/* Prev */}
-            <button
-              onClick={prevImage}
-              id="lightbox-prev"
-              className="absolute left-2 sm:left-4 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-white transition-colors"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-
-            {/* Next */}
-            <button
-              onClick={nextImage}
-              id="lightbox-next"
-              className="absolute right-2 sm:right-4 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 text-white transition-colors"
-              aria-label="Next image"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-
-            {/* Image card */}
+        {lightboxIndex !== null && filteredItems.length > 0 && (() => {
+          const currentItem = filteredItems[lightboxIndex];
+          const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
+          return (
             <div
-              className="max-w-5xl w-full flex flex-col items-center gap-4"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-[200] flex items-center justify-center"
+              style={{ backgroundColor: "rgba(0,0,0,0.88)" }}
+              onClick={closeLightbox}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Image lightbox"
             >
-              <div className="relative w-full flex items-center justify-center">
-                <img
-                  key={filteredItems[lightboxIndex].url}
-                  src={filteredItems[lightboxIndex].url}
-                  alt={filteredItems[lightboxIndex].label}
-                  className="max-w-full max-h-[78vh] object-contain rounded-xl border border-white/10 shadow-2xl"
-                />
+              {/* Backdrop blur layer */}
+              <div className="absolute inset-0 backdrop-blur-sm" />
+
+              {/* ── Top bar ── */}
+              <div className="absolute top-0 inset-x-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 bg-gradient-to-b from-black/60 to-transparent">
+                {/* Counter + label */}
+                <div className="flex items-center gap-3">
+                  <span className={`px-3 py-1 rounded-full text-white text-xs font-bold bg-gradient-to-r ${gradient}`}>
+                    {currentItem?.label}
+                  </span>
+                  <span className="text-white/50 text-xs font-mono tabular-nums">
+                    {lightboxIndex + 1} / {filteredItems.length}
+                  </span>
+                </div>
+
+                {/* Close button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+                  id="lightbox-close"
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:bg-white/30 text-white transition-all duration-200"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Category tag */}
-              <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-white text-xs font-bold bg-gradient-to-r ${CATEGORY_COLORS[filteredItems[lightboxIndex].category] ?? "from-slate-600 to-slate-500"}`}>
-                  {filteredItems[lightboxIndex].label}
-                </span>
-                <span className="text-white/40 text-xs font-mono">
-                  KCM NGO Services
-                </span>
+              {/* ── Navigation: Prev ── */}
+              <button
+                onClick={prevImage}
+                id="lightbox-prev"
+                className="absolute left-2 sm:left-5 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:scale-95 text-white transition-all duration-200 shadow-lg"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+
+              {/* ── Navigation: Next ── */}
+              <button
+                onClick={nextImage}
+                id="lightbox-next"
+                className="absolute right-2 sm:right-5 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:scale-95 text-white transition-all duration-200 shadow-lg"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              {/* ── Main image area ── */}
+              <div
+                className="relative z-10 flex items-center justify-center w-full h-full px-16 sm:px-24 py-20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Loading spinner */}
+                {lbLoading && !lbError && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+                      <span className="text-white/60 text-xs font-mono">Loading photo…</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Error state */}
+                {lbError && (
+                  <div className="flex flex-col items-center gap-4 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                      <AlertCircle className="w-8 h-8 text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">Failed to load image</p>
+                      <p className="text-white/40 text-xs mt-1">Please check your connection</p>
+                    </div>
+                    <button
+                      onClick={() => { setLbLoading(true); setLbError(false); }}
+                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {/* The image itself */}
+                {currentItem && (
+                  <img
+                    key={currentItem.id}
+                    src={encodeSrc(currentItem.url)}
+                    alt={currentItem.label}
+                    loading="eager"
+                    onLoad={() => setLbLoading(false)}
+                    onError={() => { setLbLoading(false); setLbError(true); }}
+                    className={`max-w-full max-h-full w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${lbLoading || lbError ? "opacity-0 absolute" : "opacity-100"}`}
+                    style={{ maxHeight: "calc(100vh - 10rem)" }}
+                  />
+                )}
+              </div>
+
+              {/* ── Thumbnail dot nav (bottom) ── */}
+              <div className="absolute bottom-0 inset-x-0 z-10 flex justify-center py-4 bg-gradient-to-t from-black/60 to-transparent">
+                <div className="flex items-center gap-1.5">
+                  {filteredItems.length <= 20 ? (
+                    filteredItems.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                        className={`rounded-full transition-all duration-200 ${
+                          i === lightboxIndex
+                            ? "w-6 h-2 bg-white"
+                            : "w-2 h-2 bg-white/30 hover:bg-white/60"
+                        }`}
+                        aria-label={`Go to photo ${i + 1}`}
+                      />
+                    ))
+                  ) : (
+                    <span className="text-white/40 text-xs font-mono">
+                      {currentItem?.label} · KCM NGO Services
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
       </div>
     </div>
