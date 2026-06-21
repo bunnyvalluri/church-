@@ -3,6 +3,7 @@
 import { Star, Quote } from "lucide-react";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { motion } from "framer-motion";
 
 const testimonialImages = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
@@ -19,88 +20,116 @@ export default function Testimonials() {
   const items = (t.testimonials.items || []).map((item: any, index: number) => ({
     ...item,
     image: testimonialImages[index] || testimonialImages[0],
-    rating: 5
+    rating: 5,
   }));
 
   return (
-    <section id="testimonials" className="py-24 bg-gradient-to-br from-[hsl(var(--primary)/0.9)] via-[hsl(var(--primary-gradient-start)/0.85)] to-[hsl(var(--primary-gradient-end)/0.9)] relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[hsl(var(--primary-gradient-end))]/20 rounded-full blur-3xl" />
-      </div>
+    <section id="testimonials" className="py-28 relative overflow-hidden">
+      {/* Gradient background — no blur layers */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary)/0.95)] via-[hsl(var(--primary-gradient-start)/0.9)] to-[hsl(var(--primary-gradient-end)/0.95)]" />
+
+      {/* Dot grid — CSS only, no animation */}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
+          backgroundSize: "32px 32px",
+        }}
+      />
 
       <div className="container mx-auto px-4 relative z-10">
+
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl mx-auto text-center mb-20"
+        >
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-yellow-200 mb-4 px-4 py-1.5 rounded-full bg-white/10 border border-white/20">
+            Testimonials
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black mb-5 text-white tracking-tight">
             {t.testimonials.title}{" "}
-            <span className="bg-gradient-to-r from-yellow-200 to-pink-200 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-200 via-amber-200 to-pink-200 bg-clip-text text-transparent">
               {t.testimonials.titleHighlight}
             </span>
           </h2>
-          <p className="text-lg text-white/90">
+          <p className="text-lg text-white/80 leading-relaxed">
             {t.testimonials.subtitle}
           </p>
-        </div>
+        </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Testimonials Grid — CSS hover, no whileHover */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {items.map((testimonial: any, index: number) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 hover:-translate-y-2"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.55, delay: index * 0.09, ease: [0.21, 0.47, 0.32, 0.98] }}
+              className="group relative bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/35 rounded-3xl p-7 transition-colors duration-300 overflow-hidden shadow-sm"
             >
-              {/* Quote Icon */}
-              <Quote className="h-10 w-10 text-white/40 mb-4" />
+              {/* Top sheen line */}
+              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
-              {/* Rating */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-5 w-5 text-yellow-400 fill-yellow-400"
-                  />
-                ))}
-              </div>
+              <div className="relative z-10">
+                <Quote className="h-8 w-8 text-yellow-300/60 mb-4" />
 
-              {/* Content */}
-              <p className="text-white mb-6 leading-relaxed">
-                &ldquo;{testimonial.content}&rdquo;
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-4">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/30">
-                  <Image
-                    src={testimonial.image || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"}
-                    alt={testimonial.name}
-                    fill
-                    className="object-cover"
-                    sizes="48px"
-                  />
+                {/* Stars */}
+                <div className="flex gap-1 mb-5">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-300 fill-yellow-300" />
+                  ))}
                 </div>
-                <div>
-                  <h4 className="font-semibold text-white">{testimonial.name}</h4>
-                  <p className="text-sm text-white/70">{testimonial.role}</p>
+
+                <p className="text-white/90 mb-6 leading-relaxed text-sm">
+                  &ldquo;{testimonial.content}&rdquo;
+                </p>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-5" />
+
+                <div className="flex items-center gap-4">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 shadow-md flex-shrink-0">
+                    <Image
+                      src={testimonial.image || testimonialImages[0]}
+                      alt={testimonial.name}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white text-sm">{testimonial.name}</h4>
+                    <p className="text-xs text-white/60 font-medium">{testimonial.role}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
-          <p className="text-lg text-white/90 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-20 text-center"
+        >
+          <p className="text-lg text-white/80 mb-8">
             {t.testimonials.sharePrompt}
           </p>
           <a
             href="#contact"
-            className="inline-block px-8 py-4 bg-white text-[hsl(var(--primary))] rounded-lg font-semibold hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-white text-[hsl(var(--primary))] rounded-2xl font-bold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
           >
             {t.testimonials.shareBtn}
+            <span>→</span>
           </a>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

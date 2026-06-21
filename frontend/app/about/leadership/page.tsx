@@ -45,9 +45,13 @@ export default function LeadershipPage() {
 
               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-3xl p-8 md:p-12 shadow-xl">
                 <div className="flex flex-col md:flex-row gap-8 items-center">
-                  {/* Photo Placeholder */}
-                  <div className="w-48 h-48 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-2xl">
-                    <User className="h-24 w-24 text-white" />
+                  {/* Photo */}
+                  <div className="w-48 h-48 rounded-full overflow-hidden flex-shrink-0 shadow-2xl border-4 border-white dark:border-gray-800 relative bg-slate-900">
+                    <img
+                      src="/pastor.png"
+                      alt="Bishop Kurra Kristhu Raju"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   {/* Info */}

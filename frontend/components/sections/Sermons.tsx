@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { getLatestSermons } from "@/app/actions/sermons";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { motion } from "framer-motion";
 
 // 1. Fallback data in case the database is completely empty (for new setups)
 const fallbackSermons = [
@@ -73,7 +74,7 @@ const fallbackSermons = [
 export default function Sermons() {
   const { t } = useLanguage();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  
+
   // 2. State to hold our dynamic database sermons
   const [sermons, setSermons] = useState<any[]>(fallbackSermons);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,18 +112,36 @@ export default function Sermons() {
   }, []);
 
   return (
-    <section id="sermons" className="py-24 bg-white dark:bg-transparent relative z-10 transition-colors duration-300">
+    <section id="sermons" className="py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl mx-auto text-center mb-20"
+        >
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-4 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
+            Latest Sermons
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black mb-5 text-slate-900 dark:text-white tracking-tight">
             {t.sermons.title.split(" ")[0]}{" "}
-            <span className="text-gradient">{t.sermons.title.split(" ").slice(1).join(" ")}</span>
+            <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
+              {t.sermons.title.split(" ").slice(1).join(" ")}
+            </span>
           </h2>
-          <p className="text-lg text-slate-600 dark:text-white/70">
+          <p className="text-lg text-slate-600 dark:text-white/60">
             {t.sermons.subtitle}
           </p>
-        </div>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
+            <div className="w-8 h-[2px] bg-gradient-to-r from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
+            <div className="w-3 h-3 rounded-full bg-[hsl(var(--primary))] shadow-[0_0_10px_hsl(var(--primary)/0.4)]" />
+            <div className="w-8 h-[2px] bg-gradient-to-l from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
+            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
+          </div>
+        </motion.div>
 
         {/* Sermons Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -152,9 +171,13 @@ export default function Sermons() {
                 </div>
               ))
             : sermons.map((sermon, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.5, delay: index * 0.08, ease: [0.21, 0.47, 0.32, 0.98] }}
+                  className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-sm hover:shadow-md dark:shadow-none transition-shadow duration-300 border border-slate-100 dark:border-white/[0.05]"
                 >
               {/* Thumbnail */}
               <div
@@ -218,19 +241,26 @@ export default function Sermons() {
                   {t.sermons.watch}
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* View All Sermons */}
-        <div className="mt-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-20 text-center"
+        >
           <a
             href="/sermons"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95"
           >
             {t.sermons.viewAll}
+            <span className="text-white/70">→</span>
           </a>
-        </div>
+        </motion.div>
       </div>
 
       {/* Video Modal */}

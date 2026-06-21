@@ -3,6 +3,7 @@
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Music, Users2, Heart, BookHeart, Mic2, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function Services() {
   const { t, language } = useLanguage();
@@ -21,6 +22,7 @@ export default function Services() {
       time: isTelugu ? "ఆదివారం ఉదయం 5:45" : "Sunday 5:45 AM",
       description: isTelugu ? "వాక్యం ద్వారా దేవుని తెలుసుకోవడానికి మా మొదటి ఆరాధనలో చేరండి." : "Join our early morning Watch Tower service to seek God.",
       color: "from-blue-500 to-cyan-500",
+      topLine: "bg-gradient-to-r from-blue-500 to-cyan-500",
     },
     {
       icon: Music,
@@ -28,6 +30,7 @@ export default function Services() {
       time: isTelugu ? "ఆదివారం ఉదయం 8:30" : "Sunday 8:30 AM",
       description: isTelugu ? "శక్తివంతమైన ఆరాధన మరియు దేవుని వాక్యాన్ని వినడానికి మాతో చేరండి." : "Join us for powerful worship and the word of God.",
       color: "from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))]",
+      topLine: "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))]",
     },
     {
       icon: BookHeart,
@@ -35,13 +38,15 @@ export default function Services() {
       time: isTelugu ? "ఆదివారం ఉదయం 10:30" : "Sunday 10:30 AM",
       description: isTelugu ? "బిషప్ కుర్రా క్రీస్తు రాజు గారి ప్రత్యేక బైబిల్ ప్రవచనము మరియు సమావేశం." : "Special Sunday service and Bible message by Bishop Kurra Kristhu Raju.",
       color: "from-green-500 to-emerald-500",
+      topLine: "bg-gradient-to-r from-green-500 to-emerald-500",
     },
     {
       icon: Mic2,
       title: isTelugu ? "ఆరాధన (ప్రేయర్)" : "Worship (Prayer)",
-      time: isTelugu ? "ఆదివారం ఉదయం 10:30" : "Wednesday 6:30 PM", // Keep it consistent with time translation structure safely
+      time: isTelugu ? "ఆదివారం ఉదయం 10:30" : "Wednesday 6:30 PM",
       description: isTelugu ? "మధ్యవార ప్రార్థన కూడిక." : "Mid-week evening prayer meeting.",
       color: "from-yellow-500 to-orange-500",
+      topLine: "bg-gradient-to-r from-yellow-500 to-orange-500",
     },
     {
       icon: Heart,
@@ -49,6 +54,7 @@ export default function Services() {
       time: isTelugu ? "ప్రతీ నెల 3వ శుక్రవారం సా. 4:00" : "3rd Friday 4:00 PM",
       description: isTelugu ? "దేవుని స్వస్థత శక్తిని అనుభవించండి." : "Experience the healing power of God in this special service.",
       color: "from-pink-500 to-rose-500",
+      topLine: "bg-gradient-to-r from-pink-500 to-rose-500",
     },
     {
       icon: Calendar,
@@ -56,69 +62,98 @@ export default function Services() {
       time: isTelugu ? "ప్రతి గురువారం ఉదయం 7 & 10" : "Thursday 7:00 AM & 10:00 AM",
       description: isTelugu ? "ఉపవాస ప్రార్థన ద్వారా ఆత్మీయ బలం. (సంప్రదించండి: 91215 23544)" : "Spiritual strengthening through fasting prayer. (Contact: 91215 23544)",
       color: "from-[hsl(var(--primary-gradient-end))] to-[hsl(var(--primary))]",
+      topLine: "bg-gradient-to-r from-[hsl(var(--primary-gradient-end))] to-[hsl(var(--primary))]",
     },
   ];
 
   return (
-    <section id="services" className="py-24 bg-white dark:bg-transparent relative z-10 transition-colors duration-300">
+    <section id="services" className="py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
-            {t.services.title}
+
+        {/* Section Header — single whileInView, no state */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl mx-auto text-center mb-20"
+        >
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-4 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
+            Our Services
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black mb-5 text-slate-900 dark:text-white tracking-tight leading-tight">
+            {t.services.title.split(" ").slice(0, -1).join(" ")}{" "}
+            <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
+              {t.services.title.split(" ").slice(-1)[0]}
+            </span>
           </h2>
-          <p className="text-lg text-slate-600 dark:text-white/70">
+          <p className="text-lg text-slate-600 dark:text-white/60 leading-relaxed">
             {t.services.subtitle}
           </p>
-        </div>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
+            <div className="w-8 h-[2px] bg-gradient-to-r from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
+            <div className="w-3 h-3 rounded-full bg-[hsl(var(--primary))] shadow-[0_0_10px_hsl(var(--primary)/0.4)]" />
+            <div className="w-8 h-[2px] bg-gradient-to-l from-[hsl(var(--primary)/0.3)] to-[hsl(var(--primary))]" />
+            <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.3)]" />
+          </div>
+        </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Services Grid — CSS hover only, no framer whileHover */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {services.map((service, index) => {
             const Icon = service.icon;
             return (
-              <div
+              <motion.div
                 key={index}
-                className="group relative bg-slate-50 dark:bg-white/[0.02] rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-2xl dark:hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl overflow-hidden"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: index * 0.08, ease: [0.21, 0.47, 0.32, 0.98] }}
+                className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden"
               >
-                {/* Background Gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                {/* Top border glow — CSS only */}
+                <div className={`absolute top-0 inset-x-0 h-[2px] ${service.topLine} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl`} />
 
-                {/* Content */}
                 <div className="relative z-10">
-                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 shadow-lg services-icon`}>
                     <Icon className="h-8 w-8 text-white" />
                   </div>
-
-                  <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors">
+                  <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
                     {service.title}
                   </h3>
-
-                  <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${service.color} text-white text-sm font-medium mb-4`}>
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r ${service.color} text-white text-xs font-semibold mb-4`}>
+                    <span>🕐</span>
                     {service.time}
                   </div>
-
-                  <p className="text-slate-600 dark:text-white/70 leading-relaxed">
+                  <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
                     {service.description}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
-          <p className="text-lg text-slate-600 dark:text-white/70 mb-8 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-20 text-center"
+        >
+          <p className="text-lg text-slate-600 dark:text-white/60 mb-8 max-w-2xl mx-auto">
             {t.services.ctaDesc}
           </p>
           <a
             href="#contact"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] dark:from-white/10 dark:to-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 dark:hover:bg-white/20 text-white rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95"
           >
             {t.services.cta}
+            <span className="text-white/70">→</span>
           </a>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

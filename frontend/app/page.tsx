@@ -11,28 +11,37 @@ import Navbar from "@/components/layout/Navbar";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import NgoShowcase from "@/components/sections/NgoShowcase";
 
-console.log("DEBUG HOME IMPORTS:");
-console.log("  Hero:", typeof Hero);
-console.log("  About:", typeof About);
-console.log("  Services:", typeof Services);
-console.log("  Events:", typeof Events);
-console.log("  Sermons:", typeof Sermons);
-console.log("  NgoShowcase:", typeof NgoShowcase);
-console.log("  Contact:", typeof Contact);
-console.log("  Footer:", typeof Footer);
-console.log("  Navbar:", typeof Navbar);
-console.log("  ScrollReveal:", typeof ScrollReveal);
-
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden">
       <Navbar />
       <Hero />
-      <ScrollReveal><About /></ScrollReveal>
-      <ScrollReveal delay={0.1}><Services /></ScrollReveal>
-      <ScrollReveal delay={0.1}><Events /></ScrollReveal>
-      <ScrollReveal delay={0.1}><Sermons /></ScrollReveal>
-      <ScrollReveal delay={0.1}><NgoShowcase /></ScrollReveal>
+
+      {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.3)] to-transparent" />
+
+      <About />
+
+      {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
+
+      <Services />
+
+      {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
+
+      <Events />
+
+      {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.3)] to-transparent" />
+
+      <Sermons />
+
+      {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
+
+      <NgoShowcase />
+
       <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
       <Footer />
     </main>

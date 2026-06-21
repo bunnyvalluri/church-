@@ -60,3 +60,7 @@ eslint-report*.txt
 
 # large media/NGO service files (store separately, not in code repo)
 /KCM_NGO_SERVICES/
+**/*.mp4
+**/*.avi
+**/*.mov
+**/*.wmv

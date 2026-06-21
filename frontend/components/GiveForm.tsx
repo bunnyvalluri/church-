@@ -241,6 +241,7 @@ export default function GiveForm() {
           donorEmail,
           donorPhone,
           userId: user?.uid || null,
+          paymentMode: "RAZORPAY",
         }),
       });
 
@@ -361,6 +362,7 @@ export default function GiveForm() {
           donorEmail,
           donorPhone,
           userId: user?.uid || null,
+          paymentMode: "UPI",
         }),
       });
 
@@ -810,6 +812,81 @@ export default function GiveForm() {
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                           </div>
+                        </div>
+
+                        {/* UPI Deep Link Buttons */}
+                        <div className="w-full max-w-sm">
+                          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 text-center">
+                            {language === 'en' ? '— or open directly in your UPI app —' : language === 'te' ? '— లేదా మీ UPI యాప్‌లో తెరవండి —' : '— या अपने UPI ऐप में सीधे खोलें —'}
+                          </p>
+                          <div className="grid grid-cols-2 gap-3">
+                            {/* Google Pay */}
+                            <a
+                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#1a73e8]/30 bg-[#e8f0fe] dark:bg-[#1a73e8]/10 hover:bg-[#d2e3fc] dark:hover:bg-[#1a73e8]/20 text-[#1a73e8] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
+                            >
+                              <svg viewBox="0 0 48 48" className="w-5 h-5" fill="none">
+                                <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" fill="#FFC107"/>
+                                <path d="M6.3 14.7l7.4 5.4C15.5 16.1 19.4 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 16.3 2 9.7 7.4 6.3 14.7z" fill="#FF3D00"/>
+                                <path d="M24 46c5.5 0 10.5-1.9 14.3-5l-6.6-5.6C29.7 36.8 26.9 38 24 38c-6.1 0-10.7-4.1-11.8-9.6l-7.4 5.7C8 40.5 15.5 46 24 46z" fill="#4CAF50"/>
+                                <path d="M44.5 20H24v8.5h11.8c-1 3-3.6 5.4-6.8 6.9l6.6 5.6C40.2 37.8 45 31.5 45 24c0-1.3-.2-2.7-.5-4z" fill="#1976D2"/>
+                              </svg>
+                              Google Pay
+                            </a>
+
+                            {/* PhonePe */}
+                            <a
+                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#6739B7]/30 bg-[#f3eeff] dark:bg-[#6739B7]/10 hover:bg-[#e8d9ff] dark:hover:bg-[#6739B7]/20 text-[#6739B7] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
+                            >
+                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
+                                <circle cx="32" cy="32" r="32" fill="#5F259F"/>
+                                <path d="M44 22h-6l-12 18h6l3-4.5h3V42h6V22zm-6 9h-3l3-4.5V31z" fill="white"/>
+                              </svg>
+                              PhonePe
+                            </a>
+
+                            {/* Paytm */}
+                            <a
+                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#00BAF2]/30 bg-[#e6f8fe] dark:bg-[#00BAF2]/10 hover:bg-[#ccf1fc] dark:hover:bg-[#00BAF2]/20 text-[#007bb5] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
+                            >
+                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
+                                <rect width="64" height="64" rx="12" fill="#00BAF2"/>
+                                <text x="10" y="44" fontSize="28" fontWeight="bold" fill="white" fontFamily="Arial">P</text>
+                              </svg>
+                              Paytm
+                            </a>
+
+                            {/* BHIM / Any UPI */}
+                            <a
+                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-300/50 bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
+                            >
+                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
+                                <circle cx="32" cy="32" r="32" fill="#138808"/>
+                                <text x="8" y="44" fontSize="20" fontWeight="900" fill="white" fontFamily="Arial">BHIM</text>
+                              </svg>
+                              BHIM UPI
+                            </a>
+                          </div>
+
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-3 leading-relaxed">
+                            {language === 'en'
+                              ? 'Tap to open in your UPI app. On desktop, scan the QR above.'
+                              : language === 'te'
+                              ? 'మీ UPI యాప్ తెరవడానికి నొక్కండి. డెస్క్‌టాప్‌లో పైన QR స్కాన్ చేయండి.'
+                              : 'अपने UPI ऐप में खोलने के लिए टैप करें। डेस्कटॉप पर ऊपर QR स्कैन करें।'
+                            }
+                          </p>
                         </div>
 
                         <div className="space-y-2 max-w-md">

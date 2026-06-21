@@ -39,11 +39,18 @@ import {
   Save,
   Info,
   UserPlus,
-  Menu
+  Menu,
+  IndianRupee,
+  Download,
+  Filter,
+  CheckCircle2,
+  XCircle,
+  RefreshCw
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
+import DonationsView from "@/components/pastor/views/DonationsView";
 
 // Types
 interface RecentSermon {
@@ -439,7 +446,9 @@ export default function PastorDashboard() {
     }
     if (notif.link) {
       let tabName = "Dashboard";
-      if (notif.link === "donations" || notif.link === "members") {
+      if (notif.link === "donations") {
+        tabName = "Donations";
+      } else if (notif.link === "members") {
         tabName = "Member Requests";
       } else if (notif.link === "prayers") {
         tabName = "Prayer Requests";
@@ -977,6 +986,7 @@ export default function PastorDashboard() {
             {[
               { name: "Dashboard", icon: Layers },
               { name: "Sermons", icon: Play },
+              { name: "Donations", icon: IndianRupee },
               { name: "Member Requests", icon: Users },
               { name: "Prayer Requests", icon: Heart },
               { name: "Events", icon: Calendar },
@@ -2584,6 +2594,11 @@ export default function PastorDashboard() {
                 </button>
               </form>
             </div>
+          )}
+
+          {/* TAB: DONATIONS VIEW */}
+          {activeNav === "Donations" && (
+            <DonationsView triggerToast={triggerToast} />
           )}
 
           {/* TAB 11: CHURCH SETTINGS VIEW */}

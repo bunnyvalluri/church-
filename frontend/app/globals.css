@@ -415,14 +415,14 @@ main {
   animation: pageEnter 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
 }
 
-/* Shimmer gradient animation */
+/* Shimmer gradient animation — slower = less GPU paint per frame */
 @keyframes shimmer {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
 }
 
 .animate-shimmer {
-  animation: shimmer 4s linear infinite;
+  animation: shimmer 8s linear infinite;
 }
 
 /* ── Hero background orbs (GPU compositor thread via CSS keyframes) ── */
@@ -461,6 +461,21 @@ main {
   border-radius: 9999px;
   background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.08) 60%, transparent 100%);
   filter: blur(80px);
+}
+
+/* ── CSS-only card hover (replaces Framer whileHover — no JS overhead) ── */
+.services-card {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease;
+}
+.services-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+}
+.services-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.services-card:hover .services-icon {
+  transform: scale(1.1) rotate(3deg);
 }
 
 /* Float animation */

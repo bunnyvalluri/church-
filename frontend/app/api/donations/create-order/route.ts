@@ -12,7 +12,7 @@ function generateDonationId() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { amount, purpose, donorName, donorEmail, donorPhone, userId } = body;
+    const { amount, purpose, donorName, donorEmail, donorPhone, userId, paymentMode } = body;
 
     if (!amount || isNaN(amount) || amount <= 0) {
       return NextResponse.json({ error: 'Valid amount is required' }, { status: 400 });
@@ -29,6 +29,9 @@ export async function POST(req: Request) {
     const donationId = generateDonationId();
     const amountInINR = parseFloat(amount);
     const amountInPaise = Math.round(amountInINR * 100);
+    // Determine which payment method to tag in DB
+    const paymentMethod = paymentMode === 'UPI' ? 'UPI' : 'RAZORPAY';
+
 
     const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
     const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
@@ -69,7 +72,7 @@ export async function POST(req: Request) {
       amount: amountInINR,
       currency: 'INR',
       purpose: purpose,
-      paymentMethod: 'RAZORPAY',
+      paymentMethod: paymentMethod,
       stripeId: null,
       razorpayOrderId,
       razorpayPaymentId: null,
