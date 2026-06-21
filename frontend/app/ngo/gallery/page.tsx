@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle } from "lucide-react";
+import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 
@@ -16,7 +16,6 @@ function encodeSrc(src: string): string {
 // ─── Real local KCM NGO images organised by category ─────────────────────────
 
 const NIMS_HOSPITAL_IMAGES: string[] = [
-  "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_122745601_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_122751528_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_122753030_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_122804756_HDR.jpg",
@@ -37,7 +36,6 @@ const NIMS_HOSPITAL_IMAGES: string[] = [
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_123129252_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_123304110_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_123402459_HDR.jpg",
-  "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_123721341_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG_20260311_123950653_HDR.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0037.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0043.jpg",
@@ -50,7 +48,6 @@ const NIMS_HOSPITAL_IMAGES: string[] = [
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0059.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0060.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0062.jpg",
-  "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0064.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0070.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0073.jpg",
   "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0076.jpg",
@@ -311,14 +308,64 @@ export default function NgoGalleryPage() {
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState(false);
 
+  // Admin and deletion states
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [deletedUrls, setDeletedUrls] = useState<Set<string>>(new Set());
+  const [deletingItem, setDeletingItem] = useState<GalleryItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   useEffect(() => { setMounted(true); }, []);
+
+  // Load deleted URLs from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("kcm_deleted_images");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setDeletedUrls(new Set(parsed));
+          }
+        } catch (e) {
+          console.error("Failed to parse deleted images", e);
+        }
+      }
+    }
+  }, []);
 
   // Reset page when filter changes
   useEffect(() => { setDisplayLimit(PAGE_SIZE); }, [selectedCategory]);
 
+  // Admin shortcut listener (Ctrl + Shift + D)
+  useEffect(() => {
+    const handleAdminKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")) {
+        e.preventDefault();
+        setIsAdminMode((prev) => {
+          const nextVal = !prev;
+          setToastMessage(nextVal ? "Admin Mode Enabled" : "Admin Mode Disabled");
+          return nextVal;
+        });
+      }
+    };
+    window.addEventListener("keydown", handleAdminKey);
+    return () => window.removeEventListener("keydown", handleAdminKey);
+  }, []);
+
+  // Toast automatic dismiss
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
+  const activeItems = ALL_ITEMS.filter((item) => !deletedUrls.has(item.url) && !imgErrors.has(item.id));
+
   const filteredItems = selectedCategory === "ALL"
-    ? ALL_ITEMS
-    : ALL_ITEMS.filter((item) => item.category === selectedCategory);
+    ? activeItems
+    : activeItems.filter((item) => item.category === selectedCategory);
 
   const displayedItems = filteredItems.slice(0, displayLimit);
 
@@ -375,11 +422,120 @@ export default function NgoGalleryPage() {
     setImgErrors((prev) => new Set(prev).add(id));
   };
 
+  const handleDeleteImage = async (item: GalleryItem) => {
+    setIsDeleting(true);
+    try {
+      // 1. Instantly hide on client side
+      const updated = new Set(deletedUrls);
+      updated.add(item.url);
+      setDeletedUrls(updated);
+      localStorage.setItem("kcm_deleted_images", JSON.stringify(Array.from(updated)));
+
+      // If lightbox is open and we are deleting the current image, close it
+      if (lightboxIndex !== null) {
+        const currentItem = filteredItems[lightboxIndex];
+        if (currentItem && currentItem.url === item.url) {
+          closeLightbox();
+        }
+      }
+
+      // 2. Call local deletion API
+      const res = await fetch("/api/ngo/gallery/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: item.url }),
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setToastMessage("Image deleted successfully");
+      } else {
+        setToastMessage("Image hidden client-side (Read-only host)");
+      }
+    } catch (err) {
+      console.error("Error deleting image:", err);
+      setToastMessage("Image hidden client-side");
+    } finally {
+      setIsDeleting(false);
+      setDeletingItem(null);
+    }
+  };
+
   const ngoT = mounted ? t.ngo : translations.en.ngo;
 
   return (
     <div className="py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+        {/* ── Admin Mode Banner ── */}
+        {isAdminMode && (
+          <div className="fixed top-4 inset-x-4 z-[150] flex justify-center pointer-events-none">
+            <div className="bg-slate-900/90 dark:bg-slate-955/90 text-white border border-red-500/30 px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md pointer-events-auto animate-in fade-in slide-in-from-top-4 duration-300">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+              </span>
+              <span className="text-xs font-mono tracking-wider font-semibold uppercase text-red-400">Admin Mode Active</span>
+              <span className="text-xs text-slate-400 border-l border-white/10 pl-3">Press <kbd className="bg-white/10 px-1.5 py-0.5 rounded font-bold">Ctrl+Shift+D</kbd> to exit</span>
+            </div>
+          </div>
+        )}
+
+        {/* ── Toast Notification ── */}
+        {toastMessage && (
+          <div className="fixed bottom-6 inset-x-6 z-[250] flex justify-center pointer-events-none">
+            <div className="bg-slate-900/95 dark:bg-slate-950/95 text-white border border-white/10 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 backdrop-blur-md pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+              <span className="text-xs font-semibold">{toastMessage}</span>
+            </div>
+          </div>
+        )}
+
+        {/* ── Custom Deletion Confirmation Modal ── */}
+        {deletingItem && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-opacity duration-300">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-600 to-rose-500" />
+              <div className="flex gap-4 items-start">
+                <div className="p-3 bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div className="space-y-2 flex-1">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Photo?</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Are you sure you want to delete this image?
+                    <span className="block mt-2 font-mono text-xs text-slate-400 dark:text-slate-500 truncate">
+                      {deletingItem.url.substring(deletingItem.url.lastIndexOf("/") + 1)}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setDeletingItem(null)}
+                  disabled={isDeleting}
+                  className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors hover:text-slate-900 dark:hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteImage(deletingItem)}
+                  disabled={isDeleting}
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20 active:scale-[0.98] transition-all flex items-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <div className="space-y-3 max-w-2xl">
@@ -421,7 +577,7 @@ export default function NgoGalleryPage() {
         {selectedCategory === "ALL" && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {CATEGORIES.slice(1).map((cat) => {
-              const count = ALL_ITEMS.filter(i => i.category === cat.value).length;
+              const count = activeItems.filter(i => i.category === cat.value).length;
               const gradient = CATEGORY_COLORS[cat.value] || "from-slate-600 to-slate-400";
               return (
                 <button
@@ -458,7 +614,7 @@ export default function NgoGalleryPage() {
                   <div
                     key={item.id}
                     onClick={() => openLightbox(filteredIdx)}
-                    className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 cursor-pointer shadow hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/10 hover:shadow-xl"
+                    className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 cursor-pointer shadow hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/10 hover:shadow-xl animate-in fade-in zoom-in-95 duration-200"
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === "Enter" && openLightbox(filteredIdx)}
@@ -468,6 +624,21 @@ export default function NgoGalleryPage() {
                     <div className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-white text-[10px] font-bold bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
                       {item.label}
                     </div>
+
+                    {/* Delete button (Admin Mode only) */}
+                    {isAdminMode && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeletingItem(item);
+                        }}
+                        className="absolute top-2 right-2 z-20 p-2 rounded-full bg-red-600/90 hover:bg-red-600 active:scale-95 text-white transition-all duration-200 shadow-md backdrop-blur-sm"
+                        title="Delete image"
+                        aria-label="Delete image"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
 
                     <img
                       src={encodeSrc(item.url)}
@@ -532,15 +703,30 @@ export default function NgoGalleryPage() {
                   </span>
                 </div>
 
-                {/* Close button */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
-                  id="lightbox-close"
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:bg-white/30 text-white transition-all duration-200"
-                  aria-label="Close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                {/* Close & Delete buttons */}
+                <div className="flex items-center gap-2">
+                  {isAdminMode && currentItem && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeletingItem(currentItem);
+                      }}
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600/80 border border-red-500/30 hover:bg-red-600 active:scale-95 text-white transition-all duration-200 shadow-md"
+                      title="Delete Image"
+                      aria-label="Delete Image"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+                    id="lightbox-close"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:bg-white/30 text-white transition-all duration-200"
+                    aria-label="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               {/* ── Navigation: Prev ── */}
@@ -565,7 +751,7 @@ export default function NgoGalleryPage() {
 
               {/* ── Main image area ── */}
               <div
-                className="relative z-10 flex items-center justify-center w-full h-full px-16 sm:px-24 py-20"
+                className="relative z-10 flex items-center justify-center w-full h-full p-4 sm:p-6 md:p-8"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Loading spinner */}
@@ -606,8 +792,8 @@ export default function NgoGalleryPage() {
                     loading="eager"
                     onLoad={() => setLbLoading(false)}
                     onError={() => { setLbLoading(false); setLbError(true); }}
-                    className={`max-w-full max-h-full w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${lbLoading || lbError ? "opacity-0 absolute" : "opacity-100"}`}
-                    style={{ maxHeight: "calc(100vh - 10rem)" }}
+                    className={`w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${lbError ? "opacity-0 absolute" : "opacity-100"}`}
+                    style={{ maxHeight: "85vh", maxWidth: "90vw" }}
                   />
                 )}
               </div>
