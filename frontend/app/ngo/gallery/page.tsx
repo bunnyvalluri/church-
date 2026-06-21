@@ -314,6 +314,30 @@ export default function NgoGalleryPage() {
   const [deletingItem, setDeletingItem] = useState<GalleryItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [clickCount, setClickCount] = useState(0);
+
+  const handleTitleClick = () => {
+    setClickCount((prev) => {
+      const next = prev + 1;
+      if (next >= 5) {
+        setIsAdminMode((curr) => {
+          const nextVal = !curr;
+          setToastMessage(nextVal ? "Admin Mode Enabled" : "Admin Mode Disabled");
+          return nextVal;
+        });
+        return 0;
+      }
+      return next;
+    });
+  };
+
+  // Reset click count after 3 seconds of inactivity
+  useEffect(() => {
+    if (clickCount > 0) {
+      const timer = setTimeout(() => setClickCount(0), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [clickCount]);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -337,10 +361,14 @@ export default function NgoGalleryPage() {
   // Reset page when filter changes
   useEffect(() => { setDisplayLimit(PAGE_SIZE); }, [selectedCategory]);
 
-  // Admin shortcut listener (Ctrl + Shift + D)
+  // Admin shortcut listener (Ctrl+Shift+D or Ctrl+Alt+D)
   useEffect(() => {
     const handleAdminKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")) {
+      const isD = e.key === "D" || e.key === "d";
+      const isCtrlShiftD = e.ctrlKey && e.shiftKey && isD;
+      const isCtrlAltD = e.ctrlKey && e.altKey && isD;
+
+      if (isCtrlShiftD || isCtrlAltD) {
         e.preventDefault();
         setIsAdminMode((prev) => {
           const nextVal = !prev;
@@ -476,7 +504,7 @@ export default function NgoGalleryPage() {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
               </span>
               <span className="text-xs font-mono tracking-wider font-semibold uppercase text-red-400">Admin Mode Active</span>
-              <span className="text-xs text-slate-400 border-l border-white/10 pl-3">Press <kbd className="bg-white/10 px-1.5 py-0.5 rounded font-bold">Ctrl+Shift+D</kbd> to exit</span>
+              <span className="text-xs text-slate-400 border-l border-white/10 pl-3">Press <kbd className="bg-white/10 px-1.5 py-0.5 rounded font-bold">Ctrl+Alt+D</kbd> or click title 5 times to exit</span>
             </div>
           </div>
         )}
@@ -539,7 +567,11 @@ export default function NgoGalleryPage() {
 
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <div className="space-y-3 max-w-2xl">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
+          <h1 
+            onClick={handleTitleClick}
+            className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent cursor-pointer select-none"
+            title="Click 5 times to toggle Admin Mode"
+          >
             {ngoT.galleryTitle}
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
