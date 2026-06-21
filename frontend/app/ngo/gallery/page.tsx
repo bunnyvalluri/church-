@@ -268,13 +268,40 @@ function buildItems(paths: string[], category: string, label: string): GalleryIt
   }));
 }
 
-const ALL_ITEMS: GalleryItem[] = [
-  ...buildItems(NIMS_HOSPITAL_IMAGES, "NIMS-HOSPITAL", "NIMS Hospital"),
-  ...buildItems(GOVT_HOSPITAL_IMAGES, "GOVT-HOSPITAL", "Govt Hospital"),
-  ...buildItems(GANDHI_HOSPITAL_IMAGES, "GANDHI-HOSPITAL", "Gandhi Hospital"),
-  ...buildItems(ASHRAMAM_IMAGES, "ASHRAMAM", "Bethany Ashramam"),
-  ...buildItems(DISABLED_AASHRAMAM_IMAGES, "DISABLED-AASHRAMAM", "Home for Disabled"),
-];
+const NIMS_ITEMS = buildItems(NIMS_HOSPITAL_IMAGES, "NIMS-HOSPITAL", "NIMS Hospital");
+const GOVT_ITEMS = buildItems(GOVT_HOSPITAL_IMAGES, "GOVT-HOSPITAL", "Govt Hospital");
+const GANDHI_ITEMS = buildItems(GANDHI_HOSPITAL_IMAGES, "GANDHI-HOSPITAL", "Gandhi Hospital");
+const ASHRAMAM_ITEMS = buildItems(ASHRAMAM_IMAGES, "ASHRAMAM", "Bethany Ashramam");
+const DISABLED_ITEMS = buildItems(DISABLED_AASHRAMAM_IMAGES, "DISABLED-AASHRAMAM", "Home for Disabled");
+
+// Interleave elements from each category array so that the gallery starts with a beautiful variety
+function interleaveGallery(
+  ashramam: GalleryItem[],
+  disabled: GalleryItem[],
+  gandhi: GalleryItem[],
+  nims: GalleryItem[],
+  govt: GalleryItem[]
+): GalleryItem[] {
+  const result: GalleryItem[] = [];
+  const maxLen = Math.max(ashramam.length, disabled.length, gandhi.length, nims.length, govt.length);
+  
+  for (let i = 0; i < maxLen; i++) {
+    if (i < ashramam.length) result.push(ashramam[i]);
+    if (i < disabled.length) result.push(disabled[i]);
+    if (i < gandhi.length) result.push(gandhi[i]);
+    if (i < nims.length) result.push(nims[i]);
+    if (i < govt.length) result.push(govt[i]);
+  }
+  return result;
+}
+
+const ALL_ITEMS: GalleryItem[] = interleaveGallery(
+  ASHRAMAM_ITEMS,
+  DISABLED_ITEMS,
+  GANDHI_ITEMS,
+  NIMS_ITEMS,
+  GOVT_ITEMS
+);
 
 // ─── Category config ──────────────────────────────────────────────────────────
 
