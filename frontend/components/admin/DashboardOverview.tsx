@@ -12,6 +12,7 @@ import {
   Edit2, 
   Trash2, 
   ArrowUp, 
+  ArrowDown, 
   ChevronDown, 
   Sparkles,
   Megaphone,
@@ -95,6 +96,104 @@ export default function DashboardOverview({
     return new Date(u.createdAt) > oneWeekAgo;
   }).length;
 
+  // Weekly growth / change calculations
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+  const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
+
+  // Donation percentage change this week vs previous week (for KPI card 2)
+  const thisWeekDonations = donations
+    .filter(d => new Date(d.createdAt).getTime() >= sevenDaysAgo)
+    .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
+  const prevWeekDonations = donations
+    .filter(d => {
+      const time = new Date(d.createdAt).getTime();
+      return time >= fourteenDaysAgo && time < sevenDaysAgo;
+    })
+    .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
+  let donWeeklyPercentChange = 0;
+  if (prevWeekDonations > 0) {
+    donWeeklyPercentChange = Math.round(((thisWeekDonations - prevWeekDonations) / prevWeekDonations) * 100);
+  } else if (thisWeekDonations > 0) {
+    donWeeklyPercentChange = 100;
+  }
+
+  // Donation Overview monthly percentage change (for Donation Overview panel)
+  const currentMonthDonations = donations
+    .filter(d => new Date(d.createdAt).getTime() >= thirtyDaysAgo)
+    .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
+  const previousMonthDonations = donations
+    .filter(d => {
+      const time = new Date(d.createdAt).getTime();
+      return time >= sixtyDaysAgo && time < thirtyDaysAgo;
+    })
+    .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
+  let donPercentChange = 0;
+  if (previousMonthDonations > 0) {
+    donPercentChange = Math.round(((currentMonthDonations - previousMonthDonations) / previousMonthDonations) * 100);
+  } else if (currentMonthDonations > 0) {
+    donPercentChange = 100;
+  }
+
+  // Weekly Attendance percentage change (latest week vs previous week)
+  const latestAtt = attendanceRecords[0]?.headcount || 0;
+  const prevAtt = attendanceRecords[1]?.headcount || 0;
+  let attPercentChange = 0;
+  if (prevAtt > 0) {
+    attPercentChange = Math.round(((latestAtt - prevAtt) / prevAtt) * 100);
+  } else if (latestAtt > 0) {
+    attPercentChange = 100;
+  }
+
+  // Donation Chart SVG Coordinates Calculation
+  const sortedDonations = [...donations].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+  const chartDonations = sortedDonations.slice(-10);
+  const N = chartDonations.length;
+
+  let linePath = "M 0 90 L 300 90"; 
+  let areaPath = "M 0 90 L 300 90 L 300 100 L 0 100 Z";
+  let lastX = 300;
+  let lastY = 90;
+
+  if (N > 0) {
+    const maxAmount = Math.max(...chartDonations.map(d => Number(d.amount) || 0), 100);
+    const points = chartDonations.map((d, idx) => {
+      const x = N > 1 ? (idx / (N - 1)) * 300 : 150;
+      const val = Number(d.amount) || 0;
+      const y = 90 - (val / maxAmount) * 75; 
+      return { x, y };
+    });
+
+    lastX = points[points.length - 1].x;
+    lastY = points[points.length - 1].y;
+
+    if (N === 1) {
+      linePath = `M 0 ${points[0].y} L 300 ${points[0].y}`;
+      areaPath = `M 0 ${points[0].y} L 300 ${points[0].y} L 300 100 L 0 100 Z`;
+    } else {
+      linePath = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
+      areaPath = linePath + ` L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
+    }
+  }
+
+  const startLabel = N > 0 
+    ? new Date(chartDonations[0].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
+    : "";
+  const endLabel = N > 0 
+    ? new Date(chartDonations[N - 1].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
+    : "";
+  const midLabel = N > 2 
+    ? new Date(chartDonations[Math.floor(N / 2)].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
+    : "";
+
 
   // Filter lists based on global search term
   const filteredUsers = users.filter(u => 
@@ -129,11 +228,11 @@ export default function DashboardOverview({
         {/* Card 1: Members */}
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
           <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.totalMembers}</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.totalMembers}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalMembers.toLocaleString()}</h3>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
               <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>+12 {t.thisWeek}</span>
+              <span>+{newUsersCount} {t.thisWeek}</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
@@ -146,9 +245,13 @@ export default function DashboardOverview({
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.totalDonations}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{formatCurrency(totalDonations)}</h3>
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
-              <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>+18.6% {t.thisWeek}</span>
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              donWeeklyPercentChange >= 0 
+                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20" 
+                : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-450 border-rose-100 dark:border-rose-500/20"
+            }`}>
+              {donWeeklyPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
+              <span>{donWeeklyPercentChange >= 0 ? `+${donWeeklyPercentChange}` : donWeeklyPercentChange}% {t.thisWeek}</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
@@ -159,11 +262,15 @@ export default function DashboardOverview({
         {/* Card 3: Attendance */}
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("reports")}>
           <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.attendanceWeek}</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.attendanceWeek}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString()}</h3>
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
-              <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>+8.3% {t.thisWeek}</span>
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              attPercentChange >= 0 
+                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20" 
+                : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-455 border-rose-100 dark:border-rose-500/20"
+            }`}>
+              {attPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
+              <span>{attPercentChange >= 0 ? `+${attPercentChange}` : attPercentChange}% {t.thisWeek}</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
@@ -174,8 +281,8 @@ export default function DashboardOverview({
         {/* Card 4: Events */}
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-pink-300/60 dark:hover:border-pink-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("events")}>
           <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.activeEvents}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{events.length > 0 ? events.length : 3}</h3>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.activeEvents}</span>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{events.length}</h3>
             <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 border border-slate-150 dark:border-white/[0.08] uppercase tracking-wider">
               <span>{t.upcomingEvents}</span>
             </div>
@@ -192,7 +299,7 @@ export default function DashboardOverview({
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{newUsersCount}</h3>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
               <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>{newUsersCount > 0 ? `+${newUsersCount}` : "0"} {t.thisWeek}</span>
+              <span>+{newUsersCount} {t.thisWeek}</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
@@ -200,7 +307,6 @@ export default function DashboardOverview({
           </div>
         </div>
       </section>
-
       {/* ─── Middle Section Grid ─── */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         
@@ -258,8 +364,8 @@ export default function DashboardOverview({
         <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.015)] dark:shadow-xl dark:shadow-black/30 backdrop-blur-xl rounded-2xl flex flex-col justify-between overflow-hidden hover:border-indigo-200 dark:hover:border-indigo-500/10 transition-all duration-300">
           <div className="p-6 pb-4 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between">
             <div>
-              <h3 className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.donationTracking}</h3>
-              <h2 className="text-base font-extrabold text-slate-950 dark:text-white mt-0.5">{t.donationOverview}</h2>
+              <h3 className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.donationTracking}</h3>
+              <h2 className="text-base font-extrabold text-slate-955 dark:text-white mt-0.5">{t.donationOverview}</h2>
             </div>
             <div className="flex items-center gap-1 px-3 py-1.5 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-100 dark:border-white/[0.08] rounded-xl text-[10px] font-bold text-slate-700 dark:text-gray-300 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1e203e] transition-colors">
               <span>{t.thisMonth}</span>
@@ -269,10 +375,9 @@ export default function DashboardOverview({
           
           <div className="p-6 py-4 flex-1 flex flex-col justify-between">
             <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-2xl font-extrabold text-slate-950 dark:text-white">{formatCurrency(totalDonations)}</span>
-              <span className="text-[10px] font-bold text-emerald-500 inline-flex items-center">
+              <span className={`text-[10px] font-bold inline-flex items-center ${donPercentChange >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
                 <TrendingUp className="w-3 h-3 mr-0.5" />
-                ▲ 18.6% {t.fromLastMonth}
+                {donPercentChange >= 0 ? `▲ +${donPercentChange}` : `▼ ${donPercentChange}`}% {t.fromLastMonth}
               </span>
             </div>
             
@@ -291,20 +396,18 @@ export default function DashboardOverview({
                 <line x1="0" y1="80" x2="300" y2="80" stroke="currentColor" strokeDasharray="3,3" className="text-slate-100 dark:text-white/[0.03]" />
                 
                 {/* Path Area */}
-                <path d="M 0 90 Q 50 85 75 65 T 150 45 T 225 70 T 300 15 L 300 100 L 0 100 Z" fill="url(#dbChartGrad)" />
+                <path d={areaPath} fill="url(#dbChartGrad)" />
                 {/* Glowing stroke path */}
-                <path d="M 0 90 Q 50 85 75 65 T 150 45 T 225 70 T 300 15" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" className="filter drop-shadow-[0_2px_4px_rgba(245,158,11,0.25)]" />
+                <path d={linePath} fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" className="filter drop-shadow-[0_2px_4px_rgba(245,158,11,0.25)]" />
                 {/* End Point Dot */}
-                <circle cx="300" cy="15" r="4.5" fill="#F59E0B" stroke="currentColor" className="text-white dark:text-[#121324] shadow-md" strokeWidth="1.5" />
+                <circle cx={lastX} cy={lastY} r="4.5" fill="#F59E0B" stroke="currentColor" className="text-white dark:text-[#121324] shadow-md" strokeWidth="1.5" />
               </svg>
-              <div className="flex justify-between text-[9px] font-bold text-slate-400 dark:text-gray-500 mt-1 px-1">
-                <span>May 1</span>
-                <span>May 6</span>
-                <span>May 11</span>
-                <span>May 16</span>
+              <div className="flex justify-between text-[9px] font-bold text-slate-400 dark:text-gray-550 mt-1 px-1">
+                <span>{startLabel}</span>
+                <span>{midLabel}</span>
+                <span>{endLabel}</span>
               </div>
             </div>
-            
             {/* Recent Donations List */}
             <div className="space-y-3">
               {donations.slice(0, 3).map((don, idx) => (
@@ -371,15 +474,15 @@ export default function DashboardOverview({
                   };
                 });
                 
-                // Fallback if no records
+                                // Fallback if no records
                 const defaultBars = [
-                  { day: language === "te" ? "సోమ" : language === "hi" ? "సోమ" : "Mon", val: 80, style: { height: "30%" } },
-                  { day: language === "te" ? "మం" : language === "hi" ? "मंगल" : "Tue", val: 120, style: { height: "45%" } },
-                  { day: language === "te" ? "బుధ" : language === "hi" ? "बुध" : "Wed", val: 150, style: { height: "55%" } },
-                  { day: language === "te" ? "గురు" : language === "hi" ? "गुरु" : "Thu", val: 90, style: { height: "35%" } },
-                  { day: language === "te" ? "శుక్ర" : language === "hi" ? "शुक्र" : "Fri", val: 110, style: { height: "40%" } },
-                  { day: language === "te" ? "శని" : language === "hi" ? "शनి" : "Sat", val: 0, style: { height: "0%" } },
-                  { day: language === "te" ? "ఆది" : language === "hi" ? "रవి" : "Sun", val: 260, style: { height: "85%" } }
+                  { day: language === "te" ? "సోమ" : language === "hi" ? "సోమ" : "Mon", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "మం" : language === "hi" ? "मंगल" : "Tue", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "బుధ" : language === "hi" ? "బుధ" : "Wed", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "గురు" : language === "hi" ? "गुरु" : "Thu", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "శుక్ర" : language === "hi" ? "शुक्र" : "Fri", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "శని" : language === "hi" ? "శని" : "Sat", val: 0, style: { height: "4px" } },
+                  { day: language === "te" ? "ఆది" : language === "hi" ? "రవి" : "Sun", val: 0, style: { height: "4px" } }
                 ];
                 
                 const displayBars = barData.length > 0 ? barData : defaultBars;
