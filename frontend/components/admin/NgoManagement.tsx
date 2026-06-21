@@ -54,8 +54,15 @@ interface Volunteer {
   createdAt: string;
 }
 
-export default function NgoManagement() {
-  const [subView, setSubView] = useState<"projects" | "media" | "volunteers">("projects");
+export default function NgoManagement({ activeSubView }: { activeSubView?: "projects" | "media" | "volunteers" }) {
+  const [subView, setSubView] = useState<"projects" | "media" | "volunteers">(activeSubView || "projects");
+  
+  useEffect(() => {
+    if (activeSubView) {
+      setSubView(activeSubView);
+    }
+  }, [activeSubView]);
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [volunteers, setVolunteers] = useState<Volunteer[]>([]);

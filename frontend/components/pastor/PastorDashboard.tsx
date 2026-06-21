@@ -25,6 +25,7 @@ import {
   TrendingUp,
   UserCheck,
   Heart,
+  Image as ImageIcon,
   ChevronRight,
   Sparkles,
   LogOut,
@@ -51,6 +52,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import DonationsView from "@/components/pastor/views/DonationsView";
+import NgoManagement from "@/components/admin/NgoManagement";
 
 // Types
 interface RecentSermon {
@@ -331,8 +333,14 @@ export default function PastorDashboard() {
     // Parse URL queries for tabs
     const tab = searchParams.get("tab");
     if (tab) {
-      const formatted = tab.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-      setActiveNav(formatted);
+      if (tab.startsWith("ngo-")) {
+        const sub = tab.replace("ngo-", "");
+        const formatted = "NGO " + sub.charAt(0).toUpperCase() + sub.slice(1);
+        setActiveNav(formatted);
+      } else {
+        const formatted = tab.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        setActiveNav(formatted);
+      }
     }
   }, [searchParams]);
 
@@ -1021,6 +1029,36 @@ export default function PastorDashboard() {
               { name: "Bible Study Groups", icon: BookOpen },
               { name: "Small Groups", icon: Users },
               { name: "Volunteers", icon: UserCheck }
+            ].map(item => (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => {
+                  setActiveNav(item.name);
+                  if (onLinkClick) onLinkClick();
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
+                  activeNav === item.name 
+                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
+                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
+                }`}
+              >
+                {activeNav === item.name && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
+                )}
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                {item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* NGO SECTION */}
+          <div className="space-y-1">
+            <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">NGO</h4>
+            {[
+              { name: "NGO Projects", icon: Heart },
+              { name: "NGO Media", icon: ImageIcon },
+              { name: "NGO Volunteers", icon: Users }
             ].map(item => (
               <button
                 key={item.name}
@@ -2594,6 +2632,14 @@ export default function PastorDashboard() {
                 </button>
               </form>
             </div>
+          )}
+
+          {/* TAB: NGO VIEWS */}
+          {(activeNav === "NGO Projects" || activeNav === "NGO Media" || activeNav === "NGO Volunteers") && (
+            <NgoManagement activeSubView={
+              activeNav === "NGO Projects" ? "projects" :
+              activeNav === "NGO Media" ? "media" : "volunteers"
+            } />
           )}
 
           {/* TAB: DONATIONS VIEW */}

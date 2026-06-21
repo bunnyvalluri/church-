@@ -1207,7 +1207,10 @@ export default function AdminDashboard() {
               )}
 
               {(activeView === "ngo-projects" || activeView === "ngo-media" || activeView === "ngo-volunteers") && (
-                <NgoManagement />
+                <NgoManagement activeSubView={
+                  activeView === "ngo-projects" ? "projects" :
+                  activeView === "ngo-media" ? "media" : "volunteers"
+                } />
               )}
 
               {activeView === "settings" && (
