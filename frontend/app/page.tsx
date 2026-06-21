@@ -18,6 +18,11 @@ export default function Home() {
       <Hero />
 
       {/* Section divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
+
+      <NgoShowcase />
+
+      {/* Section divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.3)] to-transparent" />
 
       <About />
@@ -39,8 +44,6 @@ export default function Home() {
 
       {/* Section divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
-
-      <NgoShowcase />
 
       <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
       <Footer />
