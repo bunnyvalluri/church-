@@ -29,11 +29,11 @@ export default function Navbar() {
   const navItems = [
     { name: mounted ? t.nav.home       : "Home",       href: "#home" },
     { name: mounted ? t.nav.about      : "About",      href: "#about" },
+    { name: mounted ? t.nav.ngo        : "NGO",        href: "/ngo" },
     { name: mounted ? t.nav.ministries : "Ministries", href: "#services" },
     { name: mounted ? t.nav.events     : "Events",     href: "#events" },
     { name: mounted ? t.nav.sermons    : "Sermons",    href: "#sermons" },
     { name: mounted ? t.nav.gallery    : "Gallery",    href: "/gallery" },
-    { name: mounted ? t.nav.ngo        : "NGO",        href: "/ngo" },
   ];
 
   const socialLinks = [

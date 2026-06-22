@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2, Calendar, Download, Share2 } from "lucide-react";
+import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2, Calendar, Download, Share2, Info } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 
@@ -396,6 +396,7 @@ export default function NgoGalleryPage() {
   // Lightbox image state
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState(false);
+  const [showMobileInfo, setShowMobileInfo] = useState(false);
 
   // Admin and deletion states
   const [isAdminMode, setIsAdminMode] = useState(false);
@@ -491,6 +492,7 @@ export default function NgoGalleryPage() {
     setLbLoading(true);
     setLbError(false);
     setLightboxIndex(filteredIdx);
+    setShowMobileInfo(false);
     // Prevent body scroll
     document.body.style.overflow = "hidden";
   }, []);
@@ -499,6 +501,7 @@ export default function NgoGalleryPage() {
     setLightboxIndex(null);
     setLbLoading(false);
     setLbError(false);
+    setShowMobileInfo(false);
     document.body.style.overflow = "";
   }, []);
 
@@ -506,6 +509,7 @@ export default function NgoGalleryPage() {
     setLbLoading(true);
     setLbError(false);
     setLightboxIndex(idx);
+    setShowMobileInfo(false);
   }, []);
 
   const prevImage = useCallback((e: React.MouseEvent) => {
@@ -821,6 +825,43 @@ export default function NgoGalleryPage() {
                 {/* ── Left Side: Main Image Area ── */}
                 <div className="relative flex-1 flex items-center justify-center bg-slate-950 p-4 sm:p-8 select-none group/img">
                   
+                  {/* Floating Mobile Top Bar */}
+                  <div className="lg:hidden absolute top-4 inset-x-4 z-20 flex items-center justify-between px-4 py-2 bg-slate-950/50 backdrop-blur-md rounded-2xl border border-white/5">
+                    <span className="text-white/60 text-xs font-mono font-medium">
+                      {lightboxIndex + 1} / {filteredItems.length}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowMobileInfo(prev => !prev); }}
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-200"
+                        title="Show Info"
+                        aria-label="Show Info"
+                      >
+                        <Info className={`w-4 h-4 ${showMobileInfo ? "text-purple-400" : "text-white"}`} />
+                      </button>
+                      {isAdminMode && currentItem && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeletingItem(currentItem);
+                          }}
+                          className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200"
+                          title="Delete Image"
+                          aria-label="Delete Image"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={closeLightbox}
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-200"
+                        aria-label="Close lightbox"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Navigation: Prev (Inside Image Area, Floating) */}
                   <button
                     onClick={prevImage}
@@ -880,13 +921,13 @@ export default function NgoGalleryPage() {
                       onLoad={() => setLbLoading(false)}
                       onError={() => { setLbLoading(false); setLbError(true); }}
                       className={`w-auto h-auto max-w-full max-h-full object-contain rounded-xl transition-opacity duration-300 ${lbError ? "opacity-0 absolute" : "opacity-100"}`}
-                      style={{ maxHeight: "calc(85vh - 200px)", lgMaxHeight: "85vh" }}
+                      style={{ maxHeight: "calc(85vh - 100px)", lgMaxHeight: "85vh" }}
                     />
                   )}
                 </div>
 
-                {/* ── Right Side: Details Sidebar ── */}
-                <div className="w-full lg:w-[360px] xl:w-[400px] border-t lg:border-t-0 lg:border-l border-white/10 bg-slate-900 p-6 flex flex-col justify-between overflow-y-auto">
+                {/* ── Desktop Details Sidebar (Hidden on mobile/tablet) ── */}
+                <div className="hidden lg:flex lg:w-[360px] xl:w-[400px] lg:border-l border-white/10 bg-slate-900 p-6 flex-col justify-between overflow-y-auto">
                   
                   {/* Top Portion */}
                   <div className="space-y-6 text-left">
@@ -983,6 +1024,85 @@ export default function NgoGalleryPage() {
                     </button>
                   </div>
 
+                </div>
+
+                {/* ── Mobile Collapsible Bottom Sheet (Hidden on desktop) ── */}
+                <div 
+                  className={`lg:hidden absolute bottom-0 inset-x-0 bg-slate-900/98 backdrop-blur-xl border-t border-white/10 p-6 rounded-t-3xl transition-transform duration-300 z-30 flex flex-col max-h-[60vh] overflow-y-auto ${
+                    showMobileInfo ? "translate-y-0" : "translate-y-full"
+                  }`}
+                >
+                  {/* Top drag indicator/header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+                    <span className="text-xs uppercase font-bold tracking-wider text-slate-400 font-mono">Outreach Details</span>
+                    <button 
+                      onClick={() => setShowMobileInfo(false)} 
+                      className="text-purple-400 hover:text-purple-300 text-xs font-bold font-sans"
+                    >
+                      Close info
+                    </button>
+                  </div>
+
+                  {currentItem && (() => {
+                    const details = getImageDetails(currentItem, currentItem.indexInCategory ?? 0);
+                    return (
+                      <div className="space-y-4 text-left">
+                        <div className="flex items-center justify-between">
+                          <span className={`px-3 py-1 rounded-full text-white text-[10px] font-black uppercase bg-gradient-to-r ${gradient}`}>
+                            {currentItem?.label}
+                          </span>
+                          <span className="text-white/40 text-xs font-mono font-medium">
+                            {lightboxIndex + 1} of {filteredItems.length}
+                          </span>
+                        </div>
+
+                        <h2 className="text-lg font-bold text-white tracking-tight leading-snug">
+                          {details.title}
+                        </h2>
+
+                        {details.date && (
+                          <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                            <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                            <span>{details.date}</span>
+                          </div>
+                        )}
+
+                        <p className="text-sm text-slate-300 leading-relaxed font-medium pt-2">
+                          {details.description}
+                        </p>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Actions inside mobile drawer */}
+                  <div className="pt-6 border-t border-white/5 space-y-3 mt-6">
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const link = document.createElement("a");
+                        link.href = encodeSrc(currentItem.url);
+                        link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
+                    >
+                      <Download className="w-4 h-4" /> Download Photo
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const absoluteUrl = window.location.origin + currentItem.url;
+                        navigator.clipboard.writeText(absoluteUrl);
+                        setToastMessage("Image link copied to clipboard");
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
+                    >
+                      <Share2 className="w-4 h-4" /> Share Link
+                    </button>
+                  </div>
                 </div>
 
               </div>
