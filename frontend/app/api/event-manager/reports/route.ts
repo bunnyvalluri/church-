@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireEventManagerOrDev } from "@/lib/authMiddleware";
+import { requireEventManagerOrDev, requireFieldVolunteerOrDev } from "@/lib/authMiddleware";
+
+export const dynamic = "force-dynamic";
 
 // GET /api/event-manager/reports
 // Fetch list of field reports with filters

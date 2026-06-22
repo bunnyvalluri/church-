@@ -4,6 +4,8 @@ import { requireFieldVolunteerOrDev } from "@/lib/authMiddleware";
 import { promises as fs } from "fs";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   // 1. Authenticate user
   const auth = await requireFieldVolunteerOrDev(req);
