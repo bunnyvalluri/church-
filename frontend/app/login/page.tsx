@@ -41,6 +41,10 @@ export default function LoginPage() {
         case "PASTOR":
           router.replace("/pastor");
           break;
+        case "EVENT_MANAGER":
+        case "FIELD_VOLUNTEER":
+          router.replace("/event-manager");
+          break;
         default:
           router.replace("/member");
       }

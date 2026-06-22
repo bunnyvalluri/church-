@@ -7,7 +7,7 @@ export interface AuthUser {
   email: string | null;
   name: string | null;
   image: string | null;
-  role: "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN";
+  role: "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN" | "EVENT_MANAGER" | "FIELD_VOLUNTEER";
 }
 
 interface AuthContextType {
@@ -130,13 +130,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const envRole = isDev ? process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN : "";
     const lsRole  = isDev && typeof window !== "undefined" && envRole !== "" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
     const devRole = lsRole || (envRole?.toUpperCase() ?? "");
-    const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER"];
+    const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER", "EVENT_MANAGER", "FIELD_VOLUNTEER"];
     if (devRole && validRoles.includes(devRole)) {
       const roleMap: Record<string, AuthUser["role"]> = {
         PASTOR: "PASTOR",
         ADMIN: "ADMIN",
         SUPER_ADMIN: "SUPER_ADMIN",
         MEMBER: "MEMBER",
+        EVENT_MANAGER: "EVENT_MANAGER",
+        FIELD_VOLUNTEER: "FIELD_VOLUNTEER",
       };
       const mockUser: AuthUser = {
         uid: "dev-auto-login-uid",

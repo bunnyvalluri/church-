@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { Shield, BookOpen, Users, Star, LogOut, ChevronRight, Crown, Lock } from "lucide-react";
+import { Shield, BookOpen, Users, Star, LogOut, ChevronRight, Crown, Lock, Camera, ClipboardCheck } from "lucide-react";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -35,9 +35,13 @@ export default function PortalSelectPage() {
       router.replace("/login");
       return;
     }
-    // MEMBER users should go directly to member portal
-    if (status === "authenticated" && user?.role === "MEMBER") {
-      router.replace("/member");
+    // MEMBER users should go directly to member portal, and event managers/volunteers to the event-manager portal
+    if (status === "authenticated" && user) {
+      if (user.role === "MEMBER") {
+        router.replace("/member");
+      } else if (user.role === "EVENT_MANAGER" || user.role === "FIELD_VOLUNTEER") {
+        router.replace("/event-manager");
+      }
     }
   }, [mounted, status, user, router]);
 
@@ -49,6 +53,8 @@ export default function PortalSelectPage() {
   const isSuperAdmin = role === "SUPER_ADMIN";
   const isAdmin      = role === "ADMIN" || isSuperAdmin;
   const isPastor     = role === "PASTOR" || isSuperAdmin;
+  const isEventManager = role === "EVENT_MANAGER" || isAdmin;
+  const isVolunteer    = role === "FIELD_VOLUNTEER" || isEventManager;
 
   const portals: Portal[] = [
     {
@@ -76,6 +82,18 @@ export default function PortalSelectPage() {
       allowed: isPastor,
     },
     {
+      id: "field-volunteer",
+      title: "Field Volunteer Portal",
+      subtitle: "Live Event Uploads",
+      description: "Submit live branch reports, record attendance, take camera captures, and sync offline updates.",
+      href: "/event-manager",
+      icon: Camera,
+      gradient: "from-pink-600 via-rose-600 to-orange-700",
+      badge: "VOLUNTEER",
+      badgeColor: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+      allowed: isVolunteer,
+    },
+    {
       id: "member",
       title: "Member Portal",
       subtitle: "Church Membership",
@@ -97,6 +115,8 @@ export default function PortalSelectPage() {
     ADMIN:       "Administrator",
     PASTOR:      "Pastor",
     MEMBER:      "Member",
+    EVENT_MANAGER: "Event Manager",
+    FIELD_VOLUNTEER: "Field Volunteer",
   };
 
   const roleGradientMap: Record<string, string> = {
@@ -104,6 +124,8 @@ export default function PortalSelectPage() {
     ADMIN:       "from-indigo-600 to-blue-700",
     PASTOR:      "from-amber-500 to-orange-600",
     MEMBER:      "from-emerald-500 to-teal-600",
+    EVENT_MANAGER: "from-blue-600 to-cyan-700",
+    FIELD_VOLUNTEER: "from-pink-600 to-rose-700",
   };
 
   return (

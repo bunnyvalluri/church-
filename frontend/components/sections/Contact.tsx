@@ -178,7 +178,13 @@ export default function Contact() {
                       {t.contact.phone}
                     </h4>
                     <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
+                      +91 97040 90069 (Senior Pastor)
+                    </p>
+                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
                       +91 96409 43777
+                    </p>
+                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
+                      +91 73964 33856
                     </p>
                   </div>
                 </div>

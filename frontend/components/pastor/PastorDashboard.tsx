@@ -312,7 +312,7 @@ export default function PastorDashboard() {
     name: "Bishop Kurra Kristhu Raju",
     title: "Senior Pastor & Founder",
     email: "bishop.kraju@kcmchurch.org",
-    phone: "+91 95052 02748",
+    phone: "+91 97040 90069",
     bio: "Bishop Kurra Kristhu Raju has been serving in ministry with unwavering dedication. His passion for souls and commitment to God's Word has transformed countless lives across Hyderabad and beyond.",
     image: "/pastor.png"
   });

@@ -73,7 +73,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   
   // Settings Form States
   const [contactEmail, setContactEmail] = useState("kingofchristministries23@gmail.com");
-  const [contactPhone, setContactPhone] = useState("+91 96409 43777");
+  const [contactPhone, setContactPhone] = useState("+91 97040 90069");
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [allowRegistrations, setAllowRegistrations] = useState(true);
   const [loading, setLoading] = useState(false);

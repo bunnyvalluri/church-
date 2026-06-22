@@ -73,7 +73,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-9">
             <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-white transition-colors group">
               <Phone className="w-3 h-3" />
-              <span className="font-medium">+91 97040 90069</span>
+              <span className="font-medium">+91 97040 90069 (Senior Pastor)</span>
             </a>
             <div className="flex items-center gap-2 text-purple-200/80">
               <ChevronRight className="w-3 h-3" />

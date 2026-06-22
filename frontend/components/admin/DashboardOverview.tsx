@@ -70,8 +70,10 @@ export default function DashboardOverview({
   const t = adminTranslations[language || "en"].dashboard;
   const [activeContentTab, setActiveContentTab] = useState<"Sermons" | "Events" | "Announcements">("Sermons");
   
+  const completedDonations = donations.filter(d => d.status === "COMPLETED");
+
   const totalMembers = users.length;
-  const totalDonations = donations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+  const totalDonations = completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
   // Dynamic Attendance Calculations
   const latestAttendance = attendanceRecords[0]?.headcount || 0;
@@ -104,11 +106,11 @@ export default function DashboardOverview({
   const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
 
   // Donation percentage change this week vs previous week (for KPI card 2)
-  const thisWeekDonations = donations
+  const thisWeekDonations = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= sevenDaysAgo)
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const prevWeekDonations = donations
+  const prevWeekDonations = completedDonations
     .filter(d => {
       const time = new Date(d.createdAt).getTime();
       return time >= fourteenDaysAgo && time < sevenDaysAgo;
@@ -123,11 +125,11 @@ export default function DashboardOverview({
   }
 
   // Donation Overview monthly percentage change (for Donation Overview panel)
-  const currentMonthDonations = donations
+  const currentMonthDonations = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= thirtyDaysAgo)
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const previousMonthDonations = donations
+  const previousMonthDonations = completedDonations
     .filter(d => {
       const time = new Date(d.createdAt).getTime();
       return time >= sixtyDaysAgo && time < thirtyDaysAgo;
@@ -152,7 +154,7 @@ export default function DashboardOverview({
   }
 
   // Donation Chart SVG Coordinates Calculation
-  const sortedDonations = [...donations].sort(
+  const sortedDonations = [...completedDonations].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
   const chartDonations = sortedDonations.slice(-10);
@@ -410,7 +412,7 @@ export default function DashboardOverview({
             </div>
             {/* Recent Donations List */}
             <div className="space-y-3">
-              {donations.slice(0, 3).map((don, idx) => (
+              {completedDonations.slice(0, 3).map((don, idx) => (
                 <div key={don.id || idx} className="flex items-center justify-between text-xs font-semibold border-b border-slate-50 dark:border-white/[0.02] pb-2 last:border-0 last:pb-0">
                   <div>
                     <p className="text-slate-900 dark:text-white truncate max-w-[140px] font-bold">{don.donorName || (language === "te" ? "అనామకుడు" : language === "hi" ? "गुमनाम" : "Anonymous")}</p>

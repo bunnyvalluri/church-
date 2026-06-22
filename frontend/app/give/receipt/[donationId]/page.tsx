@@ -179,7 +179,7 @@ export default function ReceiptPage({ params }: { params: { donationId: string }
               </p>
               <div className="text-sm text-gray-600 mt-3 space-y-0.5 leading-relaxed">
                 <p>15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, TS, 500055</p>
-                <p>Phone: +91 96409 43777 | Email: kingofchristministries23@gmail.com</p>
+                <p>Phone: +91 97040 90069 | +91 96409 43777 | +91 73964 33856 | Email: kingofchristministries23@gmail.com</p>
               </div>
             </div>
             

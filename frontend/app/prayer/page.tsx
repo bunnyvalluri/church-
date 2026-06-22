@@ -140,10 +140,20 @@ export default function PrayerPage() {
                   <Phone className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-base font-extrabold text-gray-955 dark:text-white tracking-tight leading-none mb-1">
+                  <a href="tel:+919704090069" className="hover:text-[hsl(var(--primary))] transition-colors">
+                    +91 97040 90069
+                  </a>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
                   <a href="tel:+919640943777" className="hover:text-[hsl(var(--primary))] transition-colors">
                     +91 96409 43777
                   </a>
-                </h3>
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                  <a href="tel:+917396433856" className="hover:text-[hsl(var(--primary))] transition-colors">
+                    +91 73964 33856
+                  </a>
+                </p>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mt-1.5">
                   {pageT.callTitle.toUpperCase()}
                 </span>

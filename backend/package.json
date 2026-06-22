@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start": "node server.js",
     "db:seed": "node prisma/seed-complete.js",
     "db:check": "node prisma/check-db.js",
     "db:push": "prisma db push",
@@ -10,7 +11,9 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^5.11.0"
+    "@prisma/client": "^5.11.0",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",

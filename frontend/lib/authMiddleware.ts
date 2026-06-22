@@ -28,7 +28,7 @@ export interface AuthenticatedUser {
   uid: string;
   email: string;
   name?: string;
-  role: 'SUPER_ADMIN' | 'ADMIN' | 'PASTOR' | 'MEMBER';
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'PASTOR' | 'MEMBER' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER';
 }
 
 type AdminRole = 'SUPER_ADMIN' | 'ADMIN';
@@ -183,6 +183,8 @@ export function getDevBypassUser(): AuthenticatedUser | null {
     super_admin: 'SUPER_ADMIN',
     pastor: 'PASTOR',
     member: 'MEMBER',
+    event_manager: 'EVENT_MANAGER',
+    field_volunteer: 'FIELD_VOLUNTEER',
   };
 
   const role = roleMap[devRole];
@@ -241,4 +243,94 @@ export async function requireStaffOrDev(req: Request): Promise<AuthenticatedUser
     }
   }
   return requireStaff(req);
+}
+
+// ── Public: Require EVENT_MANAGER, ADMIN, or SUPER_ADMIN role ─────────────────
+export async function requireEventManager(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Event Manager',
+      role: 'EVENT_MANAGER',
+    };
+  }
+  const user = await getAuthenticatedUser(req);
+  if (!user) {
+    return NextResponse.json(
+      { error: 'Authentication required. Please sign in.' },
+      { status: 401 }
+    );
+  }
+  const allowedRoles = ['EVENT_MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+  if (!allowedRoles.includes(user.role)) {
+    return NextResponse.json(
+      { error: 'Access denied. Event Manager privileges required.' },
+      { status: 403 }
+    );
+  }
+  return user;
+}
+
+// ── Public: Require FIELD_VOLUNTEER, EVENT_MANAGER, ADMIN, or SUPER_ADMIN role ──
+export async function requireFieldVolunteer(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Field Volunteer',
+      role: 'FIELD_VOLUNTEER',
+    };
+  }
+  const user = await getAuthenticatedUser(req);
+  if (!user) {
+    return NextResponse.json(
+      { error: 'Authentication required. Please sign in.' },
+      { status: 401 }
+    );
+  }
+  const allowedRoles = ['FIELD_VOLUNTEER', 'EVENT_MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+  if (!allowedRoles.includes(user.role)) {
+    return NextResponse.json(
+      { error: 'Access denied. Volunteer privileges required.' },
+      { status: 403 }
+    );
+  }
+  return user;
+}
+
+export async function requireEventManagerOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production') {
+    const devUser = getDevBypassUser();
+    if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER'].includes(devUser.role)) {
+      return devUser;
+    }
+    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+      return {
+        uid: 'dev_bypass_uid',
+        email: 'dev@kcm.local',
+        name: 'Dev Event Manager',
+        role: 'EVENT_MANAGER',
+      };
+    }
+  }
+  return requireEventManager(req);
+}
+
+export async function requireFieldVolunteerOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
+  if (process.env.NODE_ENV !== 'production') {
+    const devUser = getDevBypassUser();
+    if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER', 'FIELD_VOLUNTEER'].includes(devUser.role)) {
+      return devUser;
+    }
+    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
+      return {
+        uid: 'dev_bypass_uid',
+        email: 'dev@kcm.local',
+        name: 'Dev Field Volunteer',
+        role: 'FIELD_VOLUNTEER',
+      };
+    }
+  }
+  return requireFieldVolunteer(req);
 }
