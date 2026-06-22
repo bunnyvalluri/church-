@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2 } from "lucide-react";
+import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2, Calendar, Download, Share2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 
@@ -257,6 +257,7 @@ interface GalleryItem {
   url: string;
   category: string;
   label: string;
+  indexInCategory?: number;
 }
 
 function buildItems(paths: string[], category: string, label: string): GalleryItem[] {
@@ -265,7 +266,68 @@ function buildItems(paths: string[], category: string, label: string): GalleryIt
     url,
     category,
     label,
+    indexInCategory: i,
   }));
+}
+
+// Helper to construct professional titles/descriptions for each image dynamically
+function getImageDetails(item: GalleryItem, indexInCategory: number) {
+  let title = `Outreach Event Photo #${indexInCategory + 1}`;
+  let description = "KCM Social Service team in action, carrying out physical ministries to help the needy and underprivileged.";
+  let date = "";
+
+  // Extract date from url if present, e.g. "25-03-2026"
+  const dateMatch = item.url.match(/(\d{2}-\d{2}-\d{4})/);
+  if (dateMatch) {
+    const rawDate = dateMatch[1];
+    const parts = rawDate.split("-");
+    if (parts.length === 3) {
+      const d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      if (!isNaN(d.getTime())) {
+        date = d.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+      }
+    }
+  }
+
+  // If no date in folder, check for standard format like "20260615" (Home for disabled)
+  if (!date) {
+    const dateMatch2 = item.url.match(/(\d{4})(\d{2})(\d{2})/);
+    if (dateMatch2) {
+      const d = new Date(parseInt(dateMatch2[1]), parseInt(dateMatch2[2]) - 1, parseInt(dateMatch2[3]));
+      if (!isNaN(d.getTime())) {
+        date = d.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+      }
+    }
+  }
+
+  const dateSuffix = date ? ` · ${date}` : "";
+
+  if (item.category === "GANDHI-HOSPITAL") {
+    title = `Gandhi Hospital Food Outreach${dateSuffix}`;
+    description = "KCM volunteers distributing nutritious food packets, water, and fresh bread to patients and caregivers in the emergency wards of Gandhi Hospital.";
+  } else if (item.category === "NIMS-HOSPITAL") {
+    title = `NIMS Hospital Care Campaign${dateSuffix}`;
+    description = "Providing specialized patient kits containing required medicines, nutrition boxes, and hydration supplies to oncology and orthopedic departments at NIMS.";
+  } else if (item.category === "GOVT-HOSPITAL") {
+    title = `Govt Hospital Support Drive${dateSuffix}`;
+    description = "Volunteers distributing essential hygiene items, fruits, physical walkers, and financial support guides for patients at the government general hospital.";
+  } else if (item.category === "ASHRAMAM") {
+    title = `Bethany Ashramam Provisions${dateSuffix}`;
+    description = "Delivering monthly groceries, rice bags, school supplies, and healthy food items to children and residents of Bethany Samrakshana Ashramam.";
+  } else if (item.category === "DISABLED-AASHRAMAM") {
+    title = `Disabled Care Ashramam Visit${dateSuffix}`;
+    description = "Providing comfort kits, warm blankets, bedsheets, and moral support to residents at the Home for the Disabled Ashramam.";
+  }
+
+  return { title, description, date };
 }
 
 const NIMS_ITEMS = buildItems(NIMS_HOSPITAL_IMAGES, "NIMS-HOSPITAL", "NIMS Hospital");
@@ -740,145 +802,189 @@ export default function NgoGalleryPage() {
           const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
           return (
             <div
-              className="fixed inset-0 z-[200] flex items-center justify-center"
-              style={{ backgroundColor: "rgba(0,0,0,0.88)" }}
+              className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.92)" }}
               onClick={closeLightbox}
               role="dialog"
               aria-modal="true"
               aria-label="Image lightbox"
             >
               {/* Backdrop blur layer */}
-              <div className="absolute inset-0 backdrop-blur-sm" />
+              <div className="absolute inset-0 backdrop-blur-sm bg-black/40" />
 
-              {/* ── Top bar ── */}
-              <div className="absolute top-0 inset-x-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 bg-gradient-to-b from-black/60 to-transparent">
-                {/* Counter + label */}
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-white text-xs font-bold bg-gradient-to-r ${gradient}`}>
-                    {currentItem?.label}
-                  </span>
-                  <span className="text-white/50 text-xs font-mono tabular-nums">
-                    {lightboxIndex + 1} / {filteredItems.length}
-                  </span>
-                </div>
-
-                {/* Close & Delete buttons */}
-                <div className="flex items-center gap-2">
-                  {isAdminMode && currentItem && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeletingItem(currentItem);
-                      }}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600/80 border border-red-500/30 hover:bg-red-600 active:scale-95 text-white transition-all duration-200 shadow-md"
-                      title="Delete Image"
-                      aria-label="Delete Image"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  )}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
-                    id="lightbox-close"
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:bg-white/30 text-white transition-all duration-200"
-                    aria-label="Close"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* ── Navigation: Prev ── */}
-              <button
-                onClick={prevImage}
-                id="lightbox-prev"
-                className="absolute left-2 sm:left-5 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:scale-95 text-white transition-all duration-200 shadow-lg"
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-
-              {/* ── Navigation: Next ── */}
-              <button
-                onClick={nextImage}
-                id="lightbox-next"
-                className="absolute right-2 sm:right-5 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 active:scale-95 text-white transition-all duration-200 shadow-lg"
-                aria-label="Next image"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-
-              {/* ── Main image area ── */}
-              <div
-                className="relative z-10 flex items-center justify-center w-full h-full p-4 sm:p-6 md:p-8"
+              {/* ── Outer Layout Card ── */}
+              <div 
+                className="relative z-10 flex flex-col lg:flex-row w-full h-full max-w-[96vw] max-h-[92vh] md:max-w-[92vw] md:max-h-[85vh] bg-slate-900/95 dark:bg-slate-950/95 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Loading spinner */}
-                {lbLoading && !lbError && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
-                      <span className="text-white/60 text-xs font-mono">Loading photo…</span>
-                    </div>
-                  </div>
-                )}
+                
+                {/* ── Left Side: Main Image Area ── */}
+                <div className="relative flex-1 flex items-center justify-center bg-slate-950 p-4 sm:p-8 select-none group/img">
+                  
+                  {/* Navigation: Prev (Inside Image Area, Floating) */}
+                  <button
+                    onClick={prevImage}
+                    id="lightbox-prev"
+                    className="absolute left-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 text-white transition-all duration-200 shadow-lg backdrop-blur-md opacity-0 group-hover/img:opacity-100 focus:opacity-100"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
 
-                {/* Error state */}
-                {lbError && (
-                  <div className="flex flex-col items-center gap-4 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                      <AlertCircle className="w-8 h-8 text-red-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">Failed to load image</p>
-                      <p className="text-white/40 text-xs mt-1">Please check your connection</p>
-                    </div>
-                    <button
-                      onClick={() => { setLbLoading(true); setLbError(false); }}
-                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
-                    >
-                      Retry
-                    </button>
-                  </div>
-                )}
+                  {/* Navigation: Next (Inside Image Area, Floating) */}
+                  <button
+                    onClick={nextImage}
+                    id="lightbox-next"
+                    className="absolute right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 text-white transition-all duration-200 shadow-lg backdrop-blur-md opacity-0 group-hover/img:opacity-100 focus:opacity-100"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
 
-                {/* The image itself */}
-                {currentItem && (
-                  <img
-                    key={currentItem.id}
-                    src={encodeSrc(currentItem.url)}
-                    alt={currentItem.label}
-                    loading="eager"
-                    onLoad={() => setLbLoading(false)}
-                    onError={() => { setLbLoading(false); setLbError(true); }}
-                    className={`w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/10 transition-opacity duration-300 ${lbError ? "opacity-0 absolute" : "opacity-100"}`}
-                    style={{ maxHeight: "85vh", maxWidth: "90vw" }}
-                  />
-                )}
-              </div>
+                  {/* Loading spinner */}
+                  {lbLoading && !lbError && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-950/50">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+                        <span className="text-white/60 text-xs font-mono">Loading photo…</span>
+                      </div>
+                    </div>
+                  )}
 
-              {/* ── Thumbnail dot nav (bottom) ── */}
-              <div className="absolute bottom-0 inset-x-0 z-10 flex justify-center py-4 bg-gradient-to-t from-black/60 to-transparent">
-                <div className="flex items-center gap-1.5">
-                  {filteredItems.length <= 20 ? (
-                    filteredItems.map((_, i) => (
+                  {/* Error state */}
+                  {lbError && (
+                    <div className="flex flex-col items-center gap-4 text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                        <AlertCircle className="w-8 h-8 text-red-400" />
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Failed to load image</p>
+                        <p className="text-white/40 text-xs mt-1">Please check your connection</p>
+                      </div>
                       <button
-                        key={i}
-                        onClick={(e) => { e.stopPropagation(); goTo(i); }}
-                        className={`rounded-full transition-all duration-200 ${
-                          i === lightboxIndex
-                            ? "w-6 h-2 bg-white"
-                            : "w-2 h-2 bg-white/30 hover:bg-white/60"
-                        }`}
-                        aria-label={`Go to photo ${i + 1}`}
-                      />
-                    ))
-                  ) : (
-                    <span className="text-white/40 text-xs font-mono">
-                      {currentItem?.label} · KCM NGO Services
-                    </span>
+                        onClick={() => { setLbLoading(true); setLbError(false); }}
+                        className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  )}
+
+                  {/* The image itself */}
+                  {currentItem && (
+                    <img
+                      key={currentItem.id}
+                      src={encodeSrc(currentItem.url)}
+                      alt={currentItem.label}
+                      loading="eager"
+                      onLoad={() => setLbLoading(false)}
+                      onError={() => { setLbLoading(false); setLbError(true); }}
+                      className={`w-auto h-auto max-w-full max-h-full object-contain rounded-xl transition-opacity duration-300 ${lbError ? "opacity-0 absolute" : "opacity-100"}`}
+                      style={{ maxHeight: "calc(85vh - 200px)", lgMaxHeight: "85vh" }}
+                    />
                   )}
                 </div>
+
+                {/* ── Right Side: Details Sidebar ── */}
+                <div className="w-full lg:w-[360px] xl:w-[400px] border-t lg:border-t-0 lg:border-l border-white/10 bg-slate-900 p-6 flex flex-col justify-between overflow-y-auto">
+                  
+                  {/* Top Portion */}
+                  <div className="space-y-6 text-left">
+                    {/* Header: Close and Admin Actions */}
+                    <div className="flex items-center justify-between pb-4 border-b border-white/5">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-3 py-1 rounded-full text-white text-[10px] font-black uppercase bg-gradient-to-r ${gradient}`}>
+                          {currentItem?.label}
+                        </span>
+                        <span className="text-white/40 text-xs font-mono font-medium">
+                          {lightboxIndex + 1} of {filteredItems.length}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        {isAdminMode && currentItem && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeletingItem(currentItem);
+                            }}
+                            className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200 shadow-md"
+                            title="Delete Image"
+                            aria-label="Delete Image"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={closeLightbox}
+                          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/20 text-white transition-all duration-200"
+                          aria-label="Close details"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Metadata Details */}
+                    {currentItem && (() => {
+                      const details = getImageDetails(currentItem, currentItem.indexInCategory ?? 0);
+                      return (
+                        <div className="space-y-4">
+                          <h2 className="text-lg font-bold text-white tracking-tight leading-snug">
+                            {details.title}
+                          </h2>
+                          
+                          {/* Date details */}
+                          {details.date && (
+                            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                              <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                              <span>{details.date}</span>
+                            </div>
+                          )}
+                          
+                          <div className="space-y-1.5 pt-2">
+                            <h3 className="text-xs uppercase font-bold tracking-wider text-slate-400 font-mono">Outreach Description</h3>
+                            <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                              {details.description}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Bottom Portion: Action Buttons */}
+                  <div className="pt-6 border-t border-white/5 space-y-3 mt-6 lg:mt-0">
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const link = document.createElement("a");
+                        link.href = encodeSrc(currentItem.url);
+                        link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
+                    >
+                      <Download className="w-4 h-4" /> Download Photo
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const absoluteUrl = window.location.origin + currentItem.url;
+                        navigator.clipboard.writeText(absoluteUrl);
+                        setToastMessage("Image link copied to clipboard");
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
+                    >
+                      <Share2 className="w-4 h-4" /> Share Link
+                    </button>
+                  </div>
+
+                </div>
+
               </div>
             </div>
           );
