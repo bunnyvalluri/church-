@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 
-type AllowedRole = "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN";
+type AllowedRole = "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN" | "EVENT_MANAGER" | "FIELD_VOLUNTEER" | "NGO_ADMIN";
 
 interface UseProtectedRouteOptions {
   /** Roles that are allowed to access this page. Empty = any authenticated user. */

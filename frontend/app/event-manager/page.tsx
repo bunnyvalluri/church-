@@ -26,11 +26,15 @@ import {
   Activity,
   LogOut,
   Calendar,
-  Maximize2
+  Maximize2,
+  LayoutGrid,
+  ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
+import EventManagement from "@/components/admin/EventManagement";
+
 
 interface MediaItem {
   id: string;
@@ -90,6 +94,9 @@ export default function UnifiedEventManagementPortal() {
 
   const role = user?.role ?? "MEMBER";
   const isManagerOrAdmin = ["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER"].includes(role);
+
+  // Active tab: "reports" = field reports (existing), "events" = new event management
+  const [activeTab, setActiveTab] = useState<"reports" | "events">("events");
 
   // Monitor network status
   useEffect(() => {
@@ -372,7 +379,46 @@ export default function UnifiedEventManagementPortal() {
         </div>
       )}
 
-      {/* Main Grid Wrapper */}
+      {/* ── Tab Navigation Bar ────────────────────────────────────────────────── */}
+      <div className="sticky top-[73px] z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/[0.05] px-6">
+        <div className="max-w-7xl mx-auto flex items-center gap-1 py-2">
+          <button
+            onClick={() => setActiveTab("events")}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "events"
+                ? "bg-violet-600 text-white shadow-md shadow-violet-500/20"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white"
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            Event Management
+            {activeTab === "events" && (
+              <span className="bg-white/20 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">NEW</span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("reports")}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "reports"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white"
+            }`}
+          >
+            <ClipboardList className="w-3.5 h-3.5" />
+            Field Reports
+          </button>
+        </div>
+      </div>
+
+      {/* ── Event Management Tab ───────────────────────────────────────────────── */}
+      {activeTab === "events" && (
+        <main className="max-w-7xl mx-auto w-full px-6 mt-6 pb-16">
+          <EventManagement />
+        </main>
+      )}
+
+      {/* ── Field Reports Tab (existing) ────────────────────────────────────── */}
+      {activeTab === "reports" && (
       <main className="max-w-7xl mx-auto w-full px-6 mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
         
         {/* Left main content block (takes 3 cols) */}
@@ -714,6 +760,7 @@ export default function UnifiedEventManagementPortal() {
         </div>
 
       </main>
+      )}
     </div>
   );
 }

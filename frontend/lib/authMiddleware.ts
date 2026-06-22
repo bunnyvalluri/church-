@@ -28,7 +28,7 @@ export interface AuthenticatedUser {
   uid: string;
   email: string;
   name?: string;
-  role: 'SUPER_ADMIN' | 'ADMIN' | 'PASTOR' | 'MEMBER' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER';
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'PASTOR' | 'MEMBER' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' | 'NGO_ADMIN';
 }
 
 type AdminRole = 'SUPER_ADMIN' | 'ADMIN';

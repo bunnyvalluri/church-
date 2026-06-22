@@ -7,7 +7,7 @@ export interface AuthUser {
   email: string | null;
   name: string | null;
   image: string | null;
-  role: "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN" | "EVENT_MANAGER" | "FIELD_VOLUNTEER";
+  role: "MEMBER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN" | "EVENT_MANAGER" | "FIELD_VOLUNTEER" | "NGO_ADMIN";
 }
 
 interface AuthContextType {

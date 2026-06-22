@@ -25,6 +25,8 @@ model User {
   testimonials       Testimonial[]
   eventReports       EventReport[]
   mediaReports       MediaReport[]
+  eventsCreated      Event[]             @relation("EventCreator")
+  eventMediaUploads  EventMedia[]        @relation("EventMediaUploader")
 }
 
 model Event {
@@ -36,9 +38,29 @@ model Event {
   location      String
   image         String?
   category      EventCategory
+  status        EventStatus         @default(DRAFT)
+  branchId      String?
+  branch        Branch?             @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdById   String?
+  createdBy     User?               @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   registrations EventRegistration[]
+  media         EventMedia[]
+}
+
+model EventMedia {
+  id           String   @id @default(cuid())
+  eventId      String
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  imageUrl     String
+  publicId     String?  // Cloudinary public_id for deletion
+  caption      String?
+  uploadedById String?
+  uploadedBy   User?    @relation("EventMediaUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedAt   DateTime @default(now())
+
+  @@index([eventId])
 }
 
 model EventRegistration {
@@ -241,6 +263,7 @@ enum UserRole {
   MEMBER
   EVENT_MANAGER
   FIELD_VOLUNTEER
+  NGO_ADMIN
 }
 
 enum EventCategory {
@@ -251,6 +274,13 @@ enum EventCategory {
   WOMEN
   MEN
   SPECIAL
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
 }
 
 enum PrayerCategory {
@@ -399,6 +429,7 @@ model Branch {
   name         String        @unique // e.g. "Shapur Nagar", "Subhash Nagar", "Bahadurpally"
   createdAt    DateTime      @default(now())
   eventReports EventReport[]
+  events       Event[]
 }
 
 model EventReport {
