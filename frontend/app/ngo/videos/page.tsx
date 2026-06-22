@@ -27,31 +27,47 @@ export default function NgoVideosPage() {
 
   const ngoT = mounted ? t.ngo : translations.en.ngo;
 
-  // The 3 required YouTube embeds provided by the user
+  // The 5 required YouTube embeds provided by the user
   const presetVideos: VideoItem[] = [
     {
-      id: "vid-gandhi",
-      title: "Gandhi General Hospital Service Camp",
+      id: "vid-gandhi-new",
+      title: "Gandhi Hospital Food & Care Outreach",
       description: "Detailed video coverage of KCM volunteers distributing warm milk, food boxes, and basic sanitary kits to patient caretakers and critical care wards at Gandhi Hospital.",
       type: "VIDEO_YOUTUBE",
-      url: "https://www.youtube.com/embed/Hjvka2JqFjs?si=IqwISjphvA_f3ujG",
-      thumbnailUrl: "https://img.youtube.com/vi/Hjvka2JqFjs/maxresdefault.jpg",
+      url: "https://www.youtube.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r",
+      thumbnailUrl: "https://img.youtube.com/vi/cugBnrzyPF4/maxresdefault.jpg",
     },
     {
-      id: "vid-nims",
-      title: "NIMS Hospital Specialized Outreach",
+      id: "vid-nims-new",
+      title: "NIMS Hospital Care & Support Campaign",
       description: "Watch our volunteers distribute specialized medications, patient clothes, and nutritional foods to patients in the oncology and orthopedic departments at NIMS.",
       type: "VIDEO_YOUTUBE",
-      url: "https://www.youtube.com/embed/7qbYfF40FA4?si=ruUcBmIH8mqT5aQ1",
-      thumbnailUrl: "https://img.youtube.com/vi/7qbYfF40FA4/maxresdefault.jpg",
+      url: "https://www.youtube.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw",
+      thumbnailUrl: "https://img.youtube.com/vi/y7gLEkS9CcI/maxresdefault.jpg",
     },
     {
-      id: "vid-govt",
-      title: "Government General Hospital Distribution",
+      id: "vid-govt-new",
+      title: "Government General Hospital Distribution Drive",
       description: "Direct footage showing wheelchair provisions, walkers, patient beds, and food packet distribution drives organized at the local government hospital.",
       type: "VIDEO_YOUTUBE",
-      url: "https://www.youtube.com/embed/qP7lg0XSfyY?si=JiNpi0JOXMLMbXC3",
-      thumbnailUrl: "https://img.youtube.com/vi/qP7lg0XSfyY/maxresdefault.jpg",
+      url: "https://www.youtube.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd",
+      thumbnailUrl: "https://img.youtube.com/vi/u4-lrU41HAc/maxresdefault.jpg",
+    },
+    {
+      id: "vid-ashramam",
+      title: "Bethany Samrakshana Ashramam Support",
+      description: "Delivering monthly groceries, rice bags, academic books, and healthy food items to children and residents at Bethany Samrakshana Ashramam.",
+      type: "VIDEO_YOUTUBE",
+      url: "https://www.youtube.com/embed/IhcbOLPMmM8?si=tOGhSKfBExTLmAT0",
+      thumbnailUrl: "https://img.youtube.com/vi/IhcbOLPMmM8/maxresdefault.jpg",
+    },
+    {
+      id: "vid-disabled-ashramam",
+      title: "Disabled Care Ashramam Visitation",
+      description: "Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to the residents of the Home for the Disabled.",
+      type: "VIDEO_YOUTUBE",
+      url: "https://www.youtube.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi",
+      thumbnailUrl: "https://img.youtube.com/vi/mE5NiqLGVSw/maxresdefault.jpg",
     },
   ];
 
