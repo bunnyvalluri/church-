@@ -38,7 +38,18 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
-            setBranches(data.branches);
+            // Sort customly to guarantee: Shapur Nagar, Subhash Nagar, Bahadurpally
+            const getIndex = (name: string) => {
+              const norm = name.toLowerCase();
+              if (norm.includes("shapur")) return 0;
+              if (norm.includes("subhash")) return 1;
+              if (norm.includes("bahadur")) return 2;
+              return 3;
+            };
+            const sortedBranches = [...data.branches].sort(
+              (a: Branch, b: Branch) => getIndex(a.name) - getIndex(b.name)
+            );
+            setBranches(sortedBranches);
           }
         }
       } catch (err) {
