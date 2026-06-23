@@ -4,6 +4,14 @@ import { useBranch } from "@/components/providers/BranchProvider";
 import { useEffect, useState, useRef } from "react";
 import { MapPin, ChevronDown } from "lucide-react";
 
+const mapBranchNameToKey = (name: string): "shapur" | "subhash" | "bahadur" | null => {
+  const norm = name.toLowerCase().replace(/\s+nagar/g, "").trim();
+  if (norm.includes("shapur")) return "shapur";
+  if (norm.includes("subhash")) return "subhash";
+  if (norm.includes("bahadur")) return "bahadur";
+  return null;
+};
+
 export default function BranchSelector() {
   const { selectedBranchId, setSelectedBranchId, branches } = useBranch();
   const [mounted, setMounted] = useState(false);
@@ -73,6 +81,25 @@ export default function BranchSelector() {
                   onClick={() => {
                     setSelectedBranchId(branch.id);
                     setIsOpen(false);
+
+                    // Link branch selection to contact details
+                    const contactKey = mapBranchNameToKey(branch.name);
+                    if (contactKey) {
+                      if (window.location.pathname === "/") {
+                        const element = document.getElementById("contact");
+                        if (element) {
+                          element.scrollIntoView({ behavior: "smooth" });
+                        }
+                        window.dispatchEvent(
+                          new CustomEvent("change-contact-branch", {
+                            detail: { branch: contactKey }
+                          })
+                        );
+                      } else {
+                        sessionStorage.setItem("pending-contact-branch", contactKey);
+                        window.location.href = "/#contact";
+                      }
+                    }
                   }}
                   className={`w-full text-left px-3 py-2 text-xs font-bold rounded-xl transition-all truncate ${
                     isActive
@@ -80,7 +107,7 @@ export default function BranchSelector() {
                       : "text-gray-650 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
                   }`}
                 >
-                  {branch.name} Branch
+                  {branch.name}
                 </button>
               );
             })}
