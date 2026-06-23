@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 import { getQueuedReports, syncOfflineReports, registerAutoSync, OfflineReport } from "@/lib/offlineSync";
 import { io } from "socket.io-client";
 import { 
@@ -86,6 +88,7 @@ interface AttachedMedia {
 export default function UnifiedEventManagementPortal() {
   const router = useRouter();
   const { user, getIdToken, logout } = useAuth();
+  const { t } = useLanguage();
 
   // Parse greeting name professionally
   const getGreetingName = (fullName?: string | null) => {
@@ -656,8 +659,8 @@ export default function UnifiedEventManagementPortal() {
             <Image src="/logo.png" alt="KCM Logo" fill className="object-cover" />
           </div>
           <div>
-            <h1 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">Event Management</h1>
-            <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1 hidden sm:block">Field Reporting & Operations</p>
+            <h1 className="text-xs sm:text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">{t.eventManager?.title || "Event Management"}</h1>
+            <p className="text-[9px] font-bold text-slate-400 dark:text-slate-550 uppercase tracking-widest mt-1 hidden sm:block">{t.eventManager?.subtitle || "Field Reporting & Operations"}</p>
           </div>
         </div>
 
@@ -669,17 +672,19 @@ export default function UnifiedEventManagementPortal() {
               : "bg-amber-500/15 border-amber-500/30 text-amber-600 dark:text-amber-400 shadow-sm shadow-amber-500/5 animate-pulse"
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-ping"}`} />
-            <span className="hidden sm:inline">{isOnline ? "ONLINE" : "OFFLINE MODE"}</span>
+            <span className="hidden sm:inline">{isOnline ? (t.eventManager?.online || "ONLINE") : (t.eventManager?.offline || "OFFLINE MODE")}</span>
           </div>
+
+          <LanguageToggle />
 
           {["SUPER_ADMIN", "ADMIN"].includes(role) && (
             <button 
               onClick={() => router.push("/portal-select")}
               className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-bold transition-all border border-slate-200/60 dark:border-white/10 text-slate-700 dark:text-slate-300 shadow-inner"
-              title="Portal Selection"
+              title={t.eventManager?.portalSelection || "Portal Selection"}
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden sm:inline">Portal Selection</span>
+              <span className="hidden sm:inline">{t.eventManager?.portalSelection || "Portal Selection"}</span>
             </button>
           )}
 
@@ -695,10 +700,10 @@ export default function UnifiedEventManagementPortal() {
             <button
               onClick={logout}
               className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 text-xs font-black transition-all border border-rose-500/15"
-              title="Log Out"
+              title={t.eventManager?.signOut || "Sign Out"}
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <span className="hidden sm:inline">{t.eventManager?.signOut || "Sign Out"}</span>
             </button>
           </div>
         </div>
@@ -775,13 +780,13 @@ export default function UnifiedEventManagementPortal() {
               <div className="space-y-2 relative z-10">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest text-indigo-50">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-                  Operations Console
+                  {t.eventManager?.welcomeConsole || "Operations Console"}
                 </span>
                 <h2 className="text-2xl md:text-3xl font-black mt-2 tracking-tight leading-tight bg-gradient-to-r from-white via-indigo-50 to-indigo-100 bg-clip-text text-transparent">
-                  Welcome, Event Manager! 🙏
+                  {t.eventManager?.welcomeTitle || "Welcome, Event Manager! 🙏"}
                 </h2>
                 <p className="text-xs text-white/90 leading-relaxed max-w-md font-medium mt-1">
-                  Submit real-time reports of branch service attendance, tithes, prayers, and media captures. Offline data automatically syncs once connection is restored.
+                  {t.eventManager?.welcomeDesc || "Submit real-time reports of branch service attendance, tithes, prayers, and media captures. Offline data automatically syncs once connection is restored."}
                 </p>
               </div>
               
@@ -791,7 +796,7 @@ export default function UnifiedEventManagementPortal() {
                   className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all shadow-lg active:scale-95 hover:shadow-indigo-500/20"
                 >
                   <PlusCircle className="w-4 h-4 !text-[#0f1021]" />
-                  Create Field Report
+                  {t.eventManager?.createReportBtn || "Create Field Report"}
                 </Link>
 
                 <Link
@@ -799,7 +804,7 @@ export default function UnifiedEventManagementPortal() {
                   className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 border border-white/15 rounded-xl text-xs font-black text-white transition-all active:scale-95"
                 >
                   <Camera className="w-4 h-4 text-white/80" />
-                  Quick Capture
+                  {t.eventManager?.quickCaptureBtn || "Quick Capture"}
                 </Link>
               </div>
             </div>
@@ -809,15 +814,15 @@ export default function UnifiedEventManagementPortal() {
               <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 rounded-full bg-violet-500/10 blur-xl pointer-events-none" />
               <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 pb-3 relative z-10">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Offline Outbox</h3>
-                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">Queue status</p>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.outboxTitle || "Offline Outbox"}</h3>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">{t.eventManager?.outboxSubtitle || "Queue status"}</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                   queuedReports.length > 0
                     ? "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 animate-pulse shadow-sm"
                     : "bg-slate-100 border-slate-200 text-slate-500 dark:bg-white/5 dark:border-white/10 dark:text-slate-400"
                 }`}>
-                  {queuedReports.length} pending
+                  {queuedReports.length} {t.eventManager?.pendingOpt ? t.eventManager.pendingOpt.toLowerCase() : "pending"}
                 </span>
               </div>
 
@@ -826,8 +831,8 @@ export default function UnifiedEventManagementPortal() {
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2 shadow-inner shadow-emerald-500/5">
                     <CheckCircle className="w-6 h-6 text-emerald-500" />
                   </div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">All data in sync</p>
-                  <p className="text-[9px] text-slate-450 dark:text-slate-500 mt-0.5 font-medium">Ready for offline usage</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.eventManager?.outboxInSync || "All data in sync"}</p>
+                  <p className="text-[9px] text-slate-450 dark:text-slate-500 mt-0.5 font-medium">{t.eventManager?.outboxInSyncSub || "Ready for offline usage"}</p>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-24 overflow-y-auto my-3 pr-1 custom-scrollbar relative z-10">
@@ -850,11 +855,11 @@ export default function UnifiedEventManagementPortal() {
                   className="w-full h-10 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-violet-500/10"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
-                  Sync Outbox Now
+                  {t.eventManager?.syncNowBtn || "Sync Outbox Now"}
                 </button>
               ) : (
                 <div className="h-10 flex items-center justify-center text-[10px] text-slate-405 dark:text-slate-500 border border-dashed border-slate-200 dark:border-white/10 rounded-xl font-bold bg-slate-50/50 dark:bg-white/[0.01] relative z-10">
-                  {isOnline ? "Outbox in sync" : "Sync requires connection"}
+                  {isOnline ? (t.eventManager?.outboxDone || "Outbox in sync") : (t.eventManager?.outboxNeedsConn || "Sync requires connection")}
                 </div>
               )}
             </div>
@@ -886,10 +891,10 @@ export default function UnifiedEventManagementPortal() {
               >
                 <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-violet-500/10 blur-xl pointer-events-none" />
                 <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">Total Reports</span>
+                  <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">{t.eventManager?.totalReports || "Total Reports"}</span>
                   <div className="flex items-baseline gap-1.5">
                     <p className="text-3xl font-black text-violet-700 dark:text-violet-300 tracking-tight">{stats.total}</p>
-                    <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">logs</span>
+                    <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{t.eventManager?.logsUnit || "logs"}</span>
                   </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-violet-500/20 dark:bg-violet-500/30 flex items-center justify-center text-slate-500 group-hover:scale-110 transition-transform duration-300 relative z-10">
@@ -904,10 +909,10 @@ export default function UnifiedEventManagementPortal() {
               >
                 <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-amber-500/10 blur-xl pointer-events-none" />
                 <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block">Pending Review</span>
+                  <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block">{t.eventManager?.pendingReview || "Pending Review"}</span>
                   <div className="flex items-baseline gap-1.5">
                     <p className="text-3xl font-black text-amber-600 dark:text-amber-300 tracking-tight">{stats.pending}</p>
-                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">needs action</span>
+                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{t.eventManager?.needsActionUnit || "needs action"}</span>
                   </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-amber-500/20 dark:bg-amber-500/30 flex items-center justify-center text-amber-505 group-hover:scale-110 transition-transform duration-300 relative z-10">
@@ -922,10 +927,10 @@ export default function UnifiedEventManagementPortal() {
               >
                 <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl pointer-events-none" />
                 <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">Total Attendance</span>
+                  <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
                   <div className="flex items-baseline gap-1.5">
                     <p className="text-3xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight">{stats.attendance}</p>
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">people</span>
+                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{t.eventManager?.peopleUnit || "people"}</span>
                   </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 dark:bg-emerald-500/30 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform duration-300 relative z-10">
@@ -939,7 +944,7 @@ export default function UnifiedEventManagementPortal() {
           <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-4.5 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-violet-500 dark:text-violet-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Reports Database</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.dbTitle || "Reports Database"}</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
@@ -950,7 +955,7 @@ export default function UnifiedEventManagementPortal() {
                   title="Export reports data to CSV file"
                 >
                   <Download className="w-4 h-4" />
-                  Export CSV
+                  {t.eventManager?.exportCsvBtn || "Export CSV"}
                 </button>
               )}
 
@@ -960,7 +965,7 @@ export default function UnifiedEventManagementPortal() {
                   onChange={(e) => setBranchFilter(e.target.value)}
                   className="h-10 pl-3.5 pr-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-violet-500/30 dark:border-violet-500/20 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/50 flex-grow md:flex-initial cursor-pointer appearance-none"
                 >
-                  <option value="all">All Branches</option>
+                  <option value="all">{t.eventManager?.allBranchesOpt || "All Branches"}</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
@@ -974,10 +979,10 @@ export default function UnifiedEventManagementPortal() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="h-10 pl-3.5 pr-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-violet-500/30 dark:border-violet-500/20 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/50 flex-grow md:flex-initial cursor-pointer appearance-none"
                 >
-                  <option value="all">All Statuses</option>
-                  <option value="PENDING">Pending Approval</option>
-                  <option value="APPROVED">Approved</option>
-                  <option value="REJECTED">Rejected</option>
+                  <option value="all">{t.eventManager?.allStatusesOpt || "All Statuses"}</option>
+                  <option value="PENDING">{t.eventManager?.pendingOpt || "Pending Approval"}</option>
+                  <option value="APPROVED">{t.eventManager?.approvedOpt || "Approved"}</option>
+                  <option value="REJECTED">{t.eventManager?.rejectedOpt || "Rejected"}</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
               </div>
@@ -998,9 +1003,9 @@ export default function UnifiedEventManagementPortal() {
                 <AlertCircle className="w-8 h-8 text-violet-500" />
               </div>
               <div className="space-y-1 relative z-10">
-                <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">No Reports Found</p>
+                <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">{t.eventManager?.noReportsTitle || "No Reports Found"}</p>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium max-w-xs mx-auto leading-relaxed">
-                  There are no submitted logs matching your filters. Submit a field report or check another branch.
+                  {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters. Submit a field report or check another branch."}
                 </p>
               </div>
               <div className="pt-2 relative z-10">
@@ -1009,7 +1014,7 @@ export default function UnifiedEventManagementPortal() {
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20 active:scale-95"
                 >
                   <PlusCircle className="w-4 h-4" />
-                  Create First Report
+                  {t.eventManager?.createFirstReportBtn || "Create First Report"}
                 </Link>
               </div>
             </div>
@@ -1054,7 +1059,11 @@ export default function UnifiedEventManagementPortal() {
                               <span className={`w-1.5 h-1.5 rounded-full ${
                                 report.status === "APPROVED" ? "bg-white animate-pulse" : report.status === "REJECTED" ? "bg-white" : "bg-slate-950 animate-ping"
                               }`} />
-                              {report.status}
+                              {report.status === "APPROVED"
+                                ? (t.eventManager?.approvedOpt || "Approved")
+                                : report.status === "REJECTED"
+                                ? (t.eventManager?.rejectedOpt || "Rejected")
+                                : (t.eventManager?.pendingOpt || "Pending Approval")}
                             </span>
                           </div>
                           <h3 className="text-base font-black text-slate-900 dark:text-white leading-tight tracking-tight">{report.title}</h3>
@@ -1067,7 +1076,7 @@ export default function UnifiedEventManagementPortal() {
                           </div>
                           <div className="text-[9px] font-bold text-slate-400 dark:text-slate-400 flex items-center gap-1">
                             <User className="w-3 h-3 text-indigo-500" />
-                            <span>By: {report.createdBy.name}</span>
+                            <span>{t.eventManager?.byLabel || "By"}: {report.createdBy.name}</span>
                           </div>
                         </div>
                       </div>
@@ -1082,7 +1091,7 @@ export default function UnifiedEventManagementPortal() {
                       {/* Grid details */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-100/50 dark:bg-slate-950/60 border border-slate-200/40 dark:border-white/5 p-4 rounded-2xl text-xs">
                         <div className="space-y-0.5">
-                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">Attendance</span>
+                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">{t.eventManager?.attendanceLabel || "Attendance"}</span>
                           <span className="font-extrabold text-violet-600 dark:text-violet-400 text-sm flex items-center gap-1">
                             <Users className="w-3.5 h-3.5 text-violet-500" />
                             {report.attendanceCount}
@@ -1090,7 +1099,7 @@ export default function UnifiedEventManagementPortal() {
                         </div>
 
                         <div className="space-y-0.5">
-                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">Offering Collected</span>
+                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">{t.eventManager?.offeringLabel || "Offering Collected"}</span>
                           <span className="font-extrabold text-emerald-600 dark:text-emerald-450 text-sm flex items-center gap-1">
                             <span className="text-emerald-500 font-extrabold">₹</span>
                             {report.offeringAmount.toLocaleString("en-IN")}
@@ -1098,10 +1107,10 @@ export default function UnifiedEventManagementPortal() {
                         </div>
 
                         <div className="space-y-0.5 col-span-2">
-                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">GPS coordinates</span>
+                          <span className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-wider block">{t.eventManager?.gpsLabel || "GPS coordinates"}</span>
                           <span className="font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                             <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0 animate-bounce" />
-                            <span className="truncate tracking-wide">{report.gpsLocation || "Not recorded"}</span>
+                            <span className="truncate tracking-wide">{report.gpsLocation || (t.eventManager?.notRecorded || "Not recorded")}</span>
                           </span>
                         </div>
                       </div>
@@ -1148,7 +1157,7 @@ export default function UnifiedEventManagementPortal() {
                               className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/10 transition-all disabled:opacity-50 active:scale-95"
                             >
                               <X className="w-3.5 h-3.5" />
-                              Reject
+                              {t.eventManager?.rejectBtn || "Reject"}
                             </button>
 
                             <button
@@ -1157,7 +1166,7 @@ export default function UnifiedEventManagementPortal() {
                               className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold hover:from-emerald-500 hover:to-teal-500 shadow-md hover:shadow-emerald-500/10 transition-all disabled:opacity-50 active:scale-95"
                             >
                               <Check className="w-3.5 h-3.5" />
-                              Approve
+                              {t.eventManager?.approveBtn || "Approve"}
                             </button>
                           </div>
                         )}
@@ -1174,7 +1183,7 @@ export default function UnifiedEventManagementPortal() {
                             className="overflow-hidden space-y-4 border-t border-slate-100 dark:border-white/5 pt-4"
                           >
                             <div className="space-y-2">
-                              <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Report Notes</span>
+                              <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">{t.eventManager?.notesLabel || "Report Notes"}</span>
                               <p className="text-xs leading-relaxed text-slate-650 dark:text-slate-300 font-medium">
                                 {report.description || "No description provided."}
                               </p>
@@ -1183,7 +1192,7 @@ export default function UnifiedEventManagementPortal() {
                             {/* Attending list */}
                             {report.volunteerNames.length > 0 && (
                               <div className="space-y-2">
-                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Attending Volunteers</span>
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-550 uppercase tracking-widest block">{t.eventManager?.attendingLabel || "Attending Volunteers"}</span>
                                 <div className="flex flex-wrap gap-1.5">
                                   {report.volunteerNames.map((name, idx) => (
                                     <span key={idx} className="bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-xl text-[9px] font-bold text-violet-600 dark:text-violet-400">
@@ -1197,7 +1206,7 @@ export default function UnifiedEventManagementPortal() {
                             {/* Photo attachment list */}
                             {report.media.length > 0 && (
                               <div className="space-y-2 border-t border-slate-100 dark:border-white/5 pt-4">
-                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Event Snaps ({report.media.length})</span>
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-550 uppercase tracking-widest block">{t.eventManager?.snapsLabel || "Event Snaps"} ({report.media.length})</span>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                   {report.media.map((item) => (
                                     <div 
@@ -1235,8 +1244,8 @@ export default function UnifiedEventManagementPortal() {
               <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
                 <Building2 className="w-4 h-4 text-violet-500 dark:text-violet-400" />
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Branch Share</h3>
-                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">Offering & Log contribution</p>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.branchShareTitle || "Branch Share"}</h3>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">{t.eventManager?.branchShareDesc || "Offering & Log contribution"}</p>
                 </div>
               </div>
               
@@ -1285,8 +1294,8 @@ export default function UnifiedEventManagementPortal() {
             <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3">
               <Activity className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-pulse" />
               <div>
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Live Updates</h3>
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold font-medium">Real-time companion feed</p>
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.liveUpdatesTitle || "Live Updates"}</h3>
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">{t.eventManager?.liveUpdatesDesc || "Real-time companion feed"}</p>
               </div>
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-auto" />
             </div>
@@ -1357,9 +1366,9 @@ export default function UnifiedEventManagementPortal() {
                   <Trash2 className="w-6 h-6" />
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Delete Field Report</h3>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.eventManager?.deleteTitle || "Delete Field Report"}</h3>
                   <p className="text-xs text-slate-505 dark:text-slate-400 font-medium leading-relaxed">
-                    Are you sure you want to delete report <span className="font-bold text-slate-800 dark:text-white">"{deletingReport.title}"</span>? This action is permanent and will delete all associated media files from the disk.
+                    {(t.eventManager?.deleteConfirmText || "Are you sure you want to delete report \"{title}\"? This action is permanent and will delete all associated media files.").replace("{title}", deletingReport.title)}
                   </p>
                 </div>
               </div>
@@ -1369,7 +1378,7 @@ export default function UnifiedEventManagementPortal() {
                   onClick={() => setDeletingReport(null)}
                   className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-650 dark:text-slate-405 hover:bg-slate-50 dark:hover:bg-white/5 transition-all cursor-pointer"
                 >
-                  Cancel
+                  {t.eventManager?.cancelBtn || "Cancel"}
                 </button>
                 <button
                   onClick={() => handleDeleteReport(deletingReport.id)}
@@ -1379,7 +1388,7 @@ export default function UnifiedEventManagementPortal() {
                   {actionLoadingId === deletingReport.id ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : null}
-                  Delete Permanently
+                  {t.eventManager?.deleteBtn || "Delete Permanently"}
                 </button>
               </div>
             </motion.div>
@@ -1420,8 +1429,8 @@ export default function UnifiedEventManagementPortal() {
                   <Pencil className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Edit Field Report</h3>
-                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Update branch logs & media reports</p>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.eventManager?.editModalTitle || "Edit Field Report"}</h3>
+                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-bold uppercase mt-0.5 tracking-wider">{t.eventManager?.editModalSub || "Update branch logs & media reports"}</p>
                 </div>
               </div>
 
@@ -1439,7 +1448,7 @@ export default function UnifiedEventManagementPortal() {
                   
                   {/* Branch select */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Branch Location</label>
+                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.branchLocationLabel || "Branch Location"}</label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                         <Compass className="w-4 h-4" />
@@ -1460,7 +1469,7 @@ export default function UnifiedEventManagementPortal() {
 
                   {/* Date picker */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Report Date</label>
+                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.reportDateLabel || "Report Date"}</label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                         <Calendar className="w-4 h-4" />
@@ -1479,7 +1488,7 @@ export default function UnifiedEventManagementPortal() {
 
                 {/* Event Title */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Event / Activity Name</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.activityNameLabel || "Event / Activity Name"}</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                       <FileText className="w-4 h-4" />
@@ -1500,7 +1509,7 @@ export default function UnifiedEventManagementPortal() {
                   
                   {/* Attendance Count */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Attendance Count</label>
+                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.attendanceCountLabel || "Attendance Count"}</label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                         <Users className="w-4 h-4" />
@@ -1518,7 +1527,7 @@ export default function UnifiedEventManagementPortal() {
 
                   {/* Offering Amount */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Offering Collected (INR)</label>
+                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.offeringLabelFull || "Offering Collected (INR)"}</label>
                     <div className="relative">
                       <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-xs">
                         ₹
@@ -1539,7 +1548,7 @@ export default function UnifiedEventManagementPortal() {
 
                 {/* Description Textarea */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Daily Activity Notes & outcomes</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.notesLabel || "Daily Activity Notes & outcomes"}</label>
                   <textarea
                     required
                     rows={4}
@@ -1552,7 +1561,7 @@ export default function UnifiedEventManagementPortal() {
 
                 {/* Volunteer Names */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Volunteers Attended (Comma-separated)</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.volunteersLabel || "Volunteers Attended (Comma-separated)"}</label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                       <Users className="w-4 h-4" />
@@ -1570,7 +1579,7 @@ export default function UnifiedEventManagementPortal() {
                 {/* Existing Media Section */}
                 {existingMedia.length > 0 && (
                   <div className="space-y-2 border-t border-slate-100 dark:border-white/5 pt-4">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Existing Media Attachments</label>
+                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.existingMediaLabel || "Existing Media Attachments"}</label>
                     <div className="grid grid-cols-4 gap-3">
                       {existingMedia.map((item) => {
                         const isRemoved = removedMediaIds.includes(item.id);
@@ -1589,7 +1598,7 @@ export default function UnifiedEventManagementPortal() {
                                   onClick={() => setRemovedMediaIds(prev => prev.filter(id => id !== item.id))}
                                   className="px-2 py-1 bg-violet-600 hover:bg-violet-550 rounded-lg text-white text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer"
                                 >
-                                  Undo Remove
+                                  {t.eventManager?.undoRemoveText || "Undo Remove"}
                                 </button>
                               ) : (
                                 <button
@@ -1606,7 +1615,7 @@ export default function UnifiedEventManagementPortal() {
                             {/* Label showing removed status */}
                             {isRemoved && (
                               <span className="absolute bottom-2 left-2 text-[8px] font-black uppercase bg-rose-600 text-white px-1.5 py-0.5 border border-rose-750 rounded shadow-sm">
-                                Marked for Deletion
+                                {t.eventManager?.markedForDeletion || "Marked for Deletion"}
                               </span>
                             )}
                           </div>
@@ -1618,7 +1627,7 @@ export default function UnifiedEventManagementPortal() {
 
                 {/* Upload New Media Section */}
                 <div className="space-y-4 border-t border-slate-100 dark:border-white/5 pt-4">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Upload New Media Attachments</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.uploadMediaLabel || "Upload New Media Attachments"}</label>
                   
                   {/* File Upload drag-drop area */}
                   <div 
@@ -1656,7 +1665,7 @@ export default function UnifiedEventManagementPortal() {
                         <UploadCloud className="w-6 h-6" />
                       </div>
                       <p className="text-[11px] font-extrabold text-slate-705 dark:text-slate-200">
-                        Drag new images/videos here, or <span className="text-violet-650 dark:text-violet-400 group-hover:underline">browse files</span>
+                        {t.eventManager?.dragDropText || "Drag new images/videos here, or"} <span className="text-violet-650 dark:text-violet-400 group-hover:underline">{t.eventManager?.browseFilesText || "browse files"}</span>
                       </p>
                     </div>
 
@@ -1670,7 +1679,7 @@ export default function UnifiedEventManagementPortal() {
                       className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer"
                     >
                       <Camera className="w-3 h-3" />
-                      Snapshot
+                      {t.eventManager?.directCameraText || "Snapshot"}
                     </button>
                   </div>
 
@@ -1698,7 +1707,7 @@ export default function UnifiedEventManagementPortal() {
                               {item.type === "IMAGE" ? (
                                 <img src={item.base64} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full relative flex items-center justify-center bg-slate-950">
+                                <div className="w-full h-full relative flex items-center justify-center bg-slate-955">
                                   <video src={item.base64} className="w-full h-full object-cover" />
                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                     <div className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -1738,9 +1747,9 @@ export default function UnifiedEventManagementPortal() {
                   <button
                     type="button"
                     onClick={() => setEditingReport(null)}
-                    className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-55 dark:hover:bg-white/5 transition-all cursor-pointer"
+                    className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-650 dark:text-slate-405 hover:bg-slate-50 dark:hover:bg-white/5 transition-all cursor-pointer"
                   >
-                    Cancel
+                    {t.eventManager?.cancelBtn || "Cancel"}
                   </button>
                   <button
                     type="submit"
@@ -1750,12 +1759,12 @@ export default function UnifiedEventManagementPortal() {
                     {isSaving ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Saving Changes...
+                        {t.eventManager?.savingChangesText || "Saving Changes..."}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="w-3.5 h-3.5" />
-                        Save Updates
+                        {t.eventManager?.saveChangesBtn || "Save Updates"}
                       </>
                     )}
                   </button>
