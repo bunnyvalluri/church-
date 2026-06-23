@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2, Calendar, Download, Share2, Info } from "lucide-react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { ImageIcon, X, ChevronLeft, ChevronRight, Filter, Loader2, AlertCircle, Trash2, Calendar, Download, Share2, Info, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Encode a URL path so parentheses and spaces are safe for browsers
 function encodeSrc(src: string): string {
@@ -397,6 +399,13 @@ export default function NgoGalleryPage() {
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState(false);
   const [showMobileInfo, setShowMobileInfo] = useState(false);
+  
+  // Fullscreen Lightbox enhancements
+  const [zoomScale, setZoomScale] = useState(1);
+  const [direction, setDirection] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [lastTap, setLastTap] = useState(0);
 
   // Admin and deletion states
   const [isAdminMode, setIsAdminMode] = useState(false);
@@ -493,6 +502,8 @@ export default function NgoGalleryPage() {
     setLbError(false);
     setLightboxIndex(filteredIdx);
     setShowMobileInfo(false);
+    setZoomScale(1);
+    setDirection(0);
     // Prevent body scroll
     document.body.style.overflow = "hidden";
   }, []);
@@ -502,39 +513,79 @@ export default function NgoGalleryPage() {
     setLbLoading(false);
     setLbError(false);
     setShowMobileInfo(false);
+    setZoomScale(1);
     document.body.style.overflow = "";
   }, []);
 
-  const goTo = useCallback((idx: number) => {
+  const goTo = useCallback((idx: number, customDirection = 0) => {
     setLbLoading(true);
     setLbError(false);
+    setDirection(customDirection);
     setLightboxIndex(idx);
     setShowMobileInfo(false);
+    setZoomScale(1); // Reset zoom on image change
   }, []);
 
-  const prevImage = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const prevImage = useCallback((e?: React.MouseEvent | KeyboardEvent) => {
+    if (e && 'stopPropagation' in e) e.stopPropagation();
     if (lightboxIndex === null) return;
-    goTo(lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1);
+    const prevIdx = lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1;
+    goTo(prevIdx, -1);
   }, [lightboxIndex, filteredItems.length, goTo]);
 
-  const nextImage = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const nextImage = useCallback((e?: React.MouseEvent | KeyboardEvent) => {
+    if (e && 'stopPropagation' in e) e.stopPropagation();
     if (lightboxIndex === null) return;
-    goTo(lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1);
+    const nextIdx = lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1;
+    goTo(nextIdx, 1);
   }, [lightboxIndex, filteredItems.length, goTo]);
 
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (lightboxIndex === null) return;
-      if (e.key === "ArrowLeft") goTo(lightboxIndex === 0 ? filteredItems.length - 1 : lightboxIndex - 1);
-      if (e.key === "ArrowRight") goTo(lightboxIndex === filteredItems.length - 1 ? 0 : lightboxIndex + 1);
+      if (e.key === "ArrowLeft") prevImage(e);
+      if (e.key === "ArrowRight") nextImage(e);
       if (e.key === "Escape") closeLightbox();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIndex, filteredItems.length, goTo, closeLightbox]);
+  }, [lightboxIndex, prevImage, nextImage, closeLightbox]);
+
+  // Hover controls auto-hide effect
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    let timer: NodeJS.Timeout;
+    const handleMouseMove = () => {
+      setShowControls(true);
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // Only hide if we aren't zoomed in
+        if (zoomScale === 1) {
+          setShowControls(false);
+        }
+      }, 3500);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    handleMouseMove();
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(timer);
+    };
+  }, [lightboxIndex, zoomScale]);
+
+  // Thumbnail auto-scrolling effect
+  useEffect(() => {
+    if (lightboxIndex !== null && thumbnailRefs.current[lightboxIndex]) {
+      thumbnailRefs.current[lightboxIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [lightboxIndex]);
 
   // Clean up body scroll lock on unmount
   useEffect(() => () => { document.body.style.overflow = ""; }, []);
@@ -739,14 +790,14 @@ export default function NgoGalleryPage() {
                   <div
                     key={item.id}
                     onClick={() => openLightbox(filteredIdx)}
-                    className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 cursor-pointer shadow hover:border-purple-500/30 transition-all duration-300 hover:shadow-purple-500/10 hover:shadow-xl animate-in fade-in zoom-in-95 duration-200"
+                    className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/5 bg-slate-50 dark:bg-slate-900 cursor-pointer shadow-sm hover:border-purple-500/40 transition-all duration-500 hover:shadow-purple-500/10 hover:shadow-2xl animate-in fade-in duration-300"
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === "Enter" && openLightbox(filteredIdx)}
                     aria-label={`Open ${item.label} photo`}
                   >
                     {/* Category badge */}
-                    <div className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-white text-[10px] font-bold bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+                    <div className={`absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
                       {item.label}
                     </div>
 
@@ -757,7 +808,7 @@ export default function NgoGalleryPage() {
                           e.stopPropagation();
                           setDeletingItem(item);
                         }}
-                        className="absolute top-2 right-2 z-20 p-2 rounded-full bg-red-600/90 hover:bg-red-600 active:scale-95 text-white transition-all duration-200 shadow-md backdrop-blur-sm"
+                        className="absolute top-3 right-3 z-20 p-2 rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white transition-all duration-200 shadow-lg"
                         title="Delete image"
                         aria-label="Delete image"
                       >
@@ -765,21 +816,35 @@ export default function NgoGalleryPage() {
                       </button>
                     )}
 
-                    <img
-                      src={encodeSrc(item.url)}
-                      alt={item.label}
-                      loading="lazy"
-                      onError={() => handleImgError(item.id)}
-                      className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-
-                    {/* Hover overlay with zoom icon */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                      <span className="text-white text-xs font-semibold drop-shadow">{item.label}</span>
+                    {/* Image using Next.js Image component */}
+                    <div className="relative overflow-hidden w-full h-full bg-slate-100 dark:bg-slate-950">
+                      <Image
+                        src={encodeSrc(item.url)}
+                        alt={item.label}
+                        width={600}
+                        height={400}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        placeholder="blur"
+                        blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
+                        className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                        onError={() => handleImgError(item.id)}
+                      />
+                      
+                      {/* Premium Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                        <div className="flex justify-end">
+                          <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-500 delay-75">
+                            <Maximize2 className="w-4 h-4" />
+                          </div>
+                        </div>
+                        <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                          <p className="text-white text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">{item.label}</p>
+                          <p className="text-white/70 text-[10px] font-medium drop-shadow-sm truncate mt-0.5">
+                            {getImageDetails(item, item.indexInCategory ?? 0).title}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-
-                    {/* Tap indicator: subtle pulse ring on touch */}
-                    <div className="absolute inset-0 rounded-2xl ring-2 ring-purple-500/0 group-active:ring-purple-500/60 transition-all duration-150" />
                   </div>
                 );
               })}
@@ -801,314 +866,396 @@ export default function NgoGalleryPage() {
         )}
 
         {/* ── Lightbox ──────────────────────────────────────────────────────── */}
-        {lightboxIndex !== null && filteredItems.length > 0 && (() => {
-          const currentItem = filteredItems[lightboxIndex];
-          const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
-          return (
-            <div
-              className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
-              style={{ backgroundColor: "rgba(0, 0, 0, 0.92)" }}
-              onClick={closeLightbox}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Image lightbox"
-            >
-              {/* Backdrop blur layer */}
-              <div className="absolute inset-0 backdrop-blur-sm bg-black/40" />
+        <AnimatePresence>
+          {lightboxIndex !== null && filteredItems.length > 0 && (() => {
+            const currentItem = filteredItems[lightboxIndex];
+            const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
+            const details = currentItem ? getImageDetails(currentItem, currentItem.indexInCategory ?? 0) : null;
+            
+            // Motion variants for slide/fade of image
+            const slideVariants = {
+              enter: (dir: number) => ({
+                x: dir > 0 ? "100vw" : dir < 0 ? "-100vw" : 0,
+                opacity: 0,
+                scale: 0.95
+              }),
+              center: {
+                x: 0,
+                opacity: 1,
+                scale: 1,
+                zIndex: 10
+              },
+              exit: (dir: number) => ({
+                x: dir < 0 ? "100vw" : dir > 0 ? "-100vw" : 0,
+                opacity: 0,
+                scale: 0.95,
+                zIndex: 0
+              })
+            };
 
-              {/* ── Outer Layout Card ── */}
-              <div 
-                className="relative z-10 flex flex-col lg:flex-row w-full h-full max-w-[96vw] max-h-[92vh] md:max-w-[92vw] md:max-h-[85vh] bg-slate-900/95 dark:bg-slate-950/95 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-200"
-                onClick={(e) => e.stopPropagation()}
+            const handleImageTap = (e: React.MouseEvent | React.TouchEvent) => {
+              e.stopPropagation();
+              const now = Date.now();
+              if (now - lastTap < 300) {
+                // Double tap zoom toggle
+                setZoomScale((prev) => (prev > 1 ? 1 : 2.5));
+              } else {
+                setLastTap(now);
+              }
+            };
+
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 w-screen h-screen z-[200] flex flex-col justify-between items-center bg-black/95 backdrop-blur-sm overflow-hidden select-none"
+                onClick={closeLightbox}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Image lightbox"
               >
                 
-                {/* ── Left Side: Main Image Area ── */}
-                <div className="relative flex-1 flex items-center justify-center bg-slate-950 p-4 sm:p-8 select-none group/img">
-                  
-                  {/* Floating Mobile Top Bar */}
-                  <div className="lg:hidden absolute top-4 inset-x-4 z-20 flex items-center justify-between px-4 py-2 bg-slate-950/50 backdrop-blur-md rounded-2xl border border-white/5">
-                    <span className="text-white/60 text-xs font-mono font-medium">
+                {/* ── Prefetch adjacent images for instant transition ── */}
+                {filteredItems[lightboxIndex + 1] && (
+                  <img src={encodeSrc(filteredItems[lightboxIndex + 1].url)} className="hidden" alt="" />
+                )}
+                {filteredItems[lightboxIndex - 1] && (
+                  <img src={encodeSrc(filteredItems[lightboxIndex - 1].url)} className="hidden" alt="" />
+                )}
+
+                {/* ── Top Floating Controls Bar ── */}
+                <motion.div 
+                  animate={{ y: showControls ? 0 : -80, opacity: showControls ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-3 pointer-events-auto">
+                    <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md`}>
+                      {currentItem?.label}
+                    </span>
+                    <span className="text-white/70 text-xs font-mono font-bold drop-shadow-sm">
                       {lightboxIndex + 1} / {filteredItems.length}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setShowMobileInfo(prev => !prev); }}
-                        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-200"
-                        title="Show Info"
-                        aria-label="Show Info"
-                      >
-                        <Info className={`w-4 h-4 ${showMobileInfo ? "text-purple-400" : "text-white"}`} />
-                      </button>
-                      {isAdminMode && currentItem && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeletingItem(currentItem);
-                          }}
-                          className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200"
-                          title="Delete Image"
-                          aria-label="Delete Image"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={closeLightbox}
-                        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-200"
-                        aria-label="Close lightbox"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
                   </div>
 
-                  {/* Navigation: Prev (Inside Image Area, Floating) */}
-                  <button
-                    onClick={prevImage}
-                    id="lightbox-prev"
-                    className="absolute left-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 text-white transition-all duration-200 shadow-lg backdrop-blur-md opacity-0 group-hover/img:opacity-100 focus:opacity-100"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
+                  <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
+                    {/* Zoom Toggle Button */}
+                    <button
+                      onClick={() => setZoomScale((prev) => (prev > 1 ? 1 : 2.5))}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg active:scale-95"
+                      title={zoomScale > 1 ? "Zoom Out" : "Zoom In"}
+                    >
+                      {zoomScale > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
+                    </button>
 
-                  {/* Navigation: Next (Inside Image Area, Floating) */}
-                  <button
-                    onClick={nextImage}
-                    id="lightbox-next"
-                    className="absolute right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 text-white transition-all duration-200 shadow-lg backdrop-blur-md opacity-0 group-hover/img:opacity-100 focus:opacity-100"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
+                    {/* Download Photo Button */}
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const link = document.createElement("a");
+                        link.href = encodeSrc(currentItem.url);
+                        link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg active:scale-95"
+                      title="Download Photo"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
 
+                    {/* Share Link Button */}
+                    <button
+                      onClick={() => {
+                        if (!currentItem) return;
+                        const absoluteUrl = window.location.origin + currentItem.url;
+                        navigator.clipboard.writeText(absoluteUrl);
+                        setToastMessage("Image link copied to clipboard");
+                      }}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg active:scale-95"
+                      title="Share Link"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+
+                    {/* Information Toggle Button */}
+                    <button
+                      onClick={() => setShowMobileInfo((prev) => !prev)}
+                      className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all backdrop-blur-md border shadow-lg active:scale-95 ${
+                        showMobileInfo 
+                          ? "bg-purple-600 border-purple-500 text-white" 
+                          : "bg-white/10 hover:bg-white/20 border-white/10 text-white"
+                      }`}
+                      title="Toggle Information"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+
+                    {/* Admin Delete Button */}
+                    {isAdminMode && currentItem && (
+                      <button
+                        onClick={() => setDeletingItem(currentItem)}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200 shadow-lg active:scale-95"
+                        title="Delete Image"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    {/* Close Button */}
+                    <button
+                      onClick={closeLightbox}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg active:scale-95"
+                      title="Close Lightbox"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* ── Left / Right Floating Navigation Buttons ── */}
+                <AnimatePresence>
+                  {showControls && zoomScale === 1 && (
+                    <>
+                      {/* Previous Image */}
+                      <motion.button
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        onClick={prevImage}
+                        className="absolute left-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 transition-all shadow-xl backdrop-blur-md active:scale-90"
+                        aria-label="Previous Image"
+                      >
+                        <ChevronLeft className="w-6 h-6" />
+                      </motion.button>
+
+                      {/* Next Image */}
+                      <motion.button
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        onClick={nextImage}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 transition-all shadow-xl backdrop-blur-md active:scale-90"
+                        aria-label="Next Image"
+                      >
+                        <ChevronRight className="w-6 h-6" />
+                      </motion.button>
+                    </>
+                  )}
+                </AnimatePresence>
+
+                {/* ── Main Viewport Area ── */}
+                <div 
+                  className="relative flex-1 w-full h-[calc(100vh-160px)] sm:h-[calc(100vh-200px)] flex items-center justify-center overflow-hidden"
+                  onClick={closeLightbox}
+                >
                   {/* Loading spinner */}
                   {lbLoading && !lbError && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-slate-950/50">
-                      <div className="flex flex-col items-center gap-3">
-                        <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
-                        <span className="text-white/60 text-xs font-mono">Loading photo…</span>
-                      </div>
+                    <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/20 p-6 rounded-2xl backdrop-blur-sm">
+                      <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+                      <span className="text-white/60 text-xs font-mono">Loading Photo...</span>
                     </div>
                   )}
 
                   {/* Error state */}
                   {lbError && (
-                    <div className="flex flex-col items-center gap-4 text-center">
-                      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                        <AlertCircle className="w-8 h-8 text-red-400" />
+                    <div className="absolute z-30 flex flex-col items-center gap-4 text-center max-w-xs p-6 bg-slate-900/90 border border-white/10 rounded-2xl backdrop-blur-lg">
+                      <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                        <AlertCircle className="w-6 h-6" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold">Failed to load image</p>
-                        <p className="text-white/40 text-xs mt-1">Please check your connection</p>
+                        <p className="text-white text-sm font-semibold">Failed to load photo</p>
+                        <p className="text-white/40 text-xs mt-1">Check your internet connection</p>
                       </div>
                       <button
                         onClick={() => { setLbLoading(true); setLbError(false); }}
-                        className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+                        className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs transition-colors font-bold"
                       >
                         Retry
                       </button>
                     </div>
                   )}
 
-                  {/* The image itself */}
-                  {currentItem && (
-                    <img
-                      key={currentItem.id}
-                      src={encodeSrc(currentItem.url)}
-                      alt={currentItem.label}
-                      loading="eager"
-                      onLoad={() => setLbLoading(false)}
-                      onError={() => { setLbLoading(false); setLbError(true); }}
-                      className={`w-auto h-auto max-w-full max-h-full object-contain rounded-xl transition-opacity duration-300 ${lbError ? "opacity-0 absolute" : "opacity-100"}`}
-                      style={{ maxHeight: "calc(85vh - 100px)", lgMaxHeight: "85vh" }}
-                    />
-                  )}
-                </div>
-
-                {/* ── Desktop Details Sidebar (Hidden on mobile/tablet) ── */}
-                <div className="hidden lg:flex lg:w-[360px] xl:w-[400px] lg:border-l border-white/10 bg-slate-900 p-6 flex-col justify-between overflow-y-auto">
-                  
-                  {/* Top Portion */}
-                  <div className="space-y-6 text-left">
-                    {/* Header: Close and Admin Actions */}
-                    <div className="flex items-center justify-between pb-4 border-b border-white/5">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-3 py-1 rounded-full text-white text-[10px] font-black uppercase bg-gradient-to-r ${gradient}`}>
-                          {currentItem?.label}
-                        </span>
-                        <span className="text-white/40 text-xs font-mono font-medium">
-                          {lightboxIndex + 1} of {filteredItems.length}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        {isAdminMode && currentItem && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDeletingItem(currentItem);
-                            }}
-                            className="flex items-center justify-center w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200 shadow-md"
-                            title="Delete Image"
-                            aria-label="Delete Image"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={closeLightbox}
-                          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/20 text-white transition-all duration-200"
-                          aria-label="Close details"
+                  {/* Sliding image container */}
+                  <AnimatePresence initial={false} custom={direction}>
+                    <motion.div
+                      key={lightboxIndex}
+                      custom={direction}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 },
+                        scale: { duration: 0.3 }
+                      }}
+                      drag={zoomScale === 1 ? true : true}
+                      dragConstraints={zoomScale === 1 ? { left: 0, right: 0, top: 0, bottom: 0 } : { left: -400, right: 400, top: -400, bottom: 400 }}
+                      dragElastic={zoomScale === 1 ? 0.6 : 0.05}
+                      onDragEnd={(e, info) => {
+                        if (zoomScale === 1) {
+                          const swipeThresholdX = 100;
+                          const swipeThresholdY = 120;
+                          
+                          if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+                            // Horizontal Swipe
+                            if (info.offset.x > swipeThresholdX) {
+                              prevImage();
+                            } else if (info.offset.x < -swipeThresholdX) {
+                              nextImage();
+                            }
+                          } else {
+                            // Vertical Swipe down to close
+                            if (info.offset.y > swipeThresholdY) {
+                              closeLightbox();
+                            }
+                          }
+                        }
+                      }}
+                      className="absolute inset-0 flex items-center justify-center p-4 sm:p-8"
+                      onClick={closeLightbox}
+                    >
+                      <div 
+                        className="relative max-w-full max-h-full flex items-center justify-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <motion.div
+                          animate={{ scale: zoomScale }}
+                          transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                          className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in"
+                          onClick={handleImageTap}
                         >
-                          <X className="w-4 h-4" />
-                        </button>
+                          <Image
+                            src={encodeSrc(currentItem.url)}
+                            alt={currentItem.label}
+                            width={1620}
+                            height={1080}
+                            priority
+                            placeholder="blur"
+                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
+                            className={`max-w-[95vw] max-h-[70vh] sm:max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                              lbError ? "opacity-0" : "opacity-100"
+                            }`}
+                            onLoad={() => setLbLoading(false)}
+                            onError={() => { setLbLoading(false); setLbError(true); }}
+                            style={{
+                              pointerEvents: zoomScale > 1 ? "auto" : "none"
+                            }}
+                          />
+                        </motion.div>
                       </div>
-                    </div>
-
-                    {/* Metadata Details */}
-                    {currentItem && (() => {
-                      const details = getImageDetails(currentItem, currentItem.indexInCategory ?? 0);
-                      return (
-                        <div className="space-y-4">
-                          <h2 className="text-lg font-bold text-white tracking-tight leading-snug">
-                            {details.title}
-                          </h2>
-                          
-                          {/* Date details */}
-                          {details.date && (
-                            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
-                              <Calendar className="w-3.5 h-3.5 text-purple-400" />
-                              <span>{details.date}</span>
-                            </div>
-                          )}
-                          
-                          <div className="space-y-1.5 pt-2">
-                            <h3 className="text-xs uppercase font-bold tracking-wider text-slate-400 font-mono">Outreach Description</h3>
-                            <p className="text-sm text-slate-300 leading-relaxed font-medium">
-                              {details.description}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  {/* Bottom Portion: Action Buttons */}
-                  <div className="pt-6 border-t border-white/5 space-y-3 mt-6 lg:mt-0">
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const link = document.createElement("a");
-                        link.href = encodeSrc(currentItem.url);
-                        link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
-                    >
-                      <Download className="w-4 h-4" /> Download Photo
-                    </button>
-                    
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const absoluteUrl = window.location.origin + currentItem.url;
-                        navigator.clipboard.writeText(absoluteUrl);
-                        setToastMessage("Image link copied to clipboard");
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
-                    >
-                      <Share2 className="w-4 h-4" /> Share Link
-                    </button>
-                  </div>
-
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
 
-                {/* ── Mobile Collapsible Bottom Sheet (Hidden on desktop) ── */}
-                <div 
-                  className={`lg:hidden absolute bottom-0 inset-x-0 bg-slate-900/98 backdrop-blur-xl border-t border-white/10 p-6 rounded-t-3xl transition-transform duration-300 z-30 flex flex-col max-h-[60vh] overflow-y-auto ${
-                    showMobileInfo ? "translate-y-0" : "translate-y-full"
-                  }`}
-                >
-                  {/* Top drag indicator/header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
-                    <span className="text-xs uppercase font-bold tracking-wider text-slate-400 font-mono">Outreach Details</span>
-                    <button 
-                      onClick={() => setShowMobileInfo(false)} 
-                      className="text-purple-400 hover:text-purple-300 text-xs font-bold font-sans"
+                {/* ── Information Panel (Floating Sidebar on Right) ── */}
+                <AnimatePresence>
+                  {showMobileInfo && details && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 50 }}
+                      className="absolute top-20 right-4 bottom-24 w-80 sm:w-96 z-[60] p-6 bg-slate-900/90 backdrop-blur-lg border border-white/10 rounded-2xl text-left text-white shadow-2xl flex flex-col justify-between overflow-y-auto"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Close info
-                    </button>
-                  </div>
-
-                  {currentItem && (() => {
-                    const details = getImageDetails(currentItem, currentItem.indexInCategory ?? 0);
-                    return (
-                      <div className="space-y-4 text-left">
-                        <div className="flex items-center justify-between">
-                          <span className={`px-3 py-1 rounded-full text-white text-[10px] font-black uppercase bg-gradient-to-r ${gradient}`}>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                          <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-sm`}>
                             {currentItem?.label}
                           </span>
-                          <span className="text-white/40 text-xs font-mono font-medium">
-                            {lightboxIndex + 1} of {filteredItems.length}
-                          </span>
+                          <button
+                            onClick={() => setShowMobileInfo(false)}
+                            className="text-slate-400 hover:text-white transition-colors text-xs font-bold font-mono"
+                          >
+                            Hide details
+                          </button>
                         </div>
-
-                        <h2 className="text-lg font-bold text-white tracking-tight leading-snug">
+                        <h2 className="text-base font-black text-white tracking-tight leading-snug">
                           {details.title}
                         </h2>
-
                         {details.date && (
                           <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
                             <Calendar className="w-3.5 h-3.5 text-purple-400" />
                             <span>{details.date}</span>
                           </div>
                         )}
-
-                        <p className="text-sm text-slate-300 leading-relaxed font-medium pt-2">
-                          {details.description}
-                        </p>
+                        <div className="space-y-1.5 pt-2">
+                          <h3 className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono">Outreach Description</h3>
+                          <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                            {details.description}
+                          </p>
+                        </div>
                       </div>
-                    );
-                  })()}
+                      
+                      <div className="pt-4 border-t border-white/5 space-y-2 mt-6">
+                        <button
+                          onClick={() => {
+                            if (!currentItem) return;
+                            const link = document.createElement("a");
+                            link.href = encodeSrc(currentItem.url);
+                            link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                        >
+                          <Download className="w-3.5 h-3.5" /> Download Photo
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (!currentItem) return;
+                            const absoluteUrl = window.location.origin + currentItem.url;
+                            navigator.clipboard.writeText(absoluteUrl);
+                            setToastMessage("Image link copied to clipboard");
+                          }}
+                          className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                        >
+                          <Share2 className="w-3.5 h-3.5" /> Copy Image URL
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                  {/* Actions inside mobile drawer */}
-                  <div className="pt-6 border-t border-white/5 space-y-3 mt-6">
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const link = document.createElement("a");
-                        link.href = encodeSrc(currentItem.url);
-                        link.download = currentItem.url.substring(currentItem.url.lastIndexOf("/") + 1);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
-                    >
-                      <Download className="w-4 h-4" /> Download Photo
-                    </button>
-                    
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const absoluteUrl = window.location.origin + currentItem.url;
-                        navigator.clipboard.writeText(absoluteUrl);
-                        setToastMessage("Image link copied to clipboard");
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 hover:border-purple-500/30"
-                    >
-                      <Share2 className="w-4 h-4" /> Share Link
-                    </button>
+                {/* ── Bottom Thumbnail Strip ── */}
+                <motion.div
+                  animate={{ y: showControls ? 0 : 100, opacity: showControls ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute bottom-4 inset-x-0 z-50 flex flex-col items-center gap-3 w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="w-full max-w-4xl px-4 flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-2 scrollbar-none select-none">
+                    {filteredItems.map((item, idx) => (
+                      <button
+                        key={item.id}
+                        ref={(el) => { thumbnailRefs.current[idx] = el; }}
+                        onClick={() => goTo(idx, idx > lightboxIndex ? 1 : -1)}
+                        className={`relative flex-shrink-0 w-11 h-11 rounded-lg overflow-hidden border-2 transition-all ${
+                          idx === lightboxIndex 
+                            ? "border-purple-500 scale-110 opacity-100 shadow-lg shadow-purple-500/40" 
+                            : "border-transparent opacity-40 hover:opacity-80"
+                        }`}
+                      >
+                        <img
+                          src={encodeSrc(item.url)}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
                   </div>
-                </div>
+                </motion.div>
 
-              </div>
-            </div>
-          );
-        })()}
+              </motion.div>
+            );
+          })()}
+        </AnimatePresence>
 
       </div>
     </div>

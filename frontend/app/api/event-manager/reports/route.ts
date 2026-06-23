@@ -65,8 +65,79 @@ export async function PUT(req: Request) {
     const updatedReport = await prisma.eventReport.update({
       where: { id: reportId },
       data: { status },
-      include: { branch: true },
+      include: { branch: true, media: true },
     });
+
+    // ── Auto Publishing Engine ──────────────────────────────────────────────
+    if (status === "APPROVED") {
+      try {
+        // 1. Create the public Event record
+        const newEvent = await prisma.event.create({
+          data: {
+            title: updatedReport.title,
+            description: updatedReport.description,
+            date: updatedReport.reportDate,
+            time: "10:00 AM", // default church service time
+            location: updatedReport.branch.name,
+            category: "SPECIAL", // default category for branch activities
+            status: "PUBLISHED",
+            branchId: updatedReport.branchId,
+            createdById: updatedReport.createdById,
+            image: updatedReport.media.length > 0 ? updatedReport.media[0].url : null,
+          }
+        });
+
+        // 2. Map MediaReport attachments to public EventMedia and Gallery items
+        for (const item of updatedReport.media) {
+          // Copy to EventMedia
+          await prisma.eventMedia.create({
+            data: {
+              eventId: newEvent.id,
+              imageUrl: item.url,
+              caption: updatedReport.title,
+              uploadedById: item.uploadedById,
+            }
+          });
+
+          // Copy to Gallery for live website integration
+          await prisma.gallery.create({
+            data: {
+              title: updatedReport.title,
+              description: updatedReport.description,
+              imageUrl: item.url,
+              category: item.type === "VIDEO" ? "Outreach" : "Events",
+            }
+          });
+        }
+
+        // 3. Trigger Socket.io real-time update for live website updates
+        try {
+          await fetch("http://localhost:3001/api/trigger-event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "new-event",
+              payload: {
+                id: newEvent.id,
+                title: newEvent.title,
+                description: newEvent.description,
+                date: newEvent.date,
+                location: newEvent.location,
+                category: newEvent.category,
+                status: newEvent.status,
+                branchName: updatedReport.branch.name,
+                image: newEvent.image,
+              },
+            }),
+          });
+        } catch (wsErr) {
+          // Ignore websocket connection issues
+        }
+
+      } catch (pubErr) {
+        console.error("[API/EVENT_MANAGER/AUTO_PUBLISH] Fail:", pubErr);
+      }
+    }
 
     // Create DB notification for status change
     await prisma.notification.create({

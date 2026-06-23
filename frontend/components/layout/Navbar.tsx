@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import PaletteToggle from "@/components/PaletteToggle";
+import BranchSelector from "@/components/BranchSelector";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -21,19 +22,18 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled]       = useState(false);
   const [isMobileMenuOpen, setMobileMenu] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [mounted, setMounted]             = useState(false);
 
   const resolveHref = (href: string) =>
     href.startsWith("/") ? href : isHomePage ? href : `/${href}`;
 
   const navItems = [
-    { name: mounted ? t.nav.home       : "Home",       href: "#home" },
-    { name: mounted ? t.nav.about      : "About",      href: "#about" },
-    { name: mounted ? t.nav.ngo        : "NGO",        href: "/ngo" },
-    { name: mounted ? t.nav.ministries : "Ministries", href: "#services" },
-    { name: mounted ? t.nav.events     : "Events",     href: "#events" },
-    { name: mounted ? t.nav.sermons    : "Sermons",    href: "#sermons" },
-    { name: mounted ? t.nav.gallery    : "Gallery",    href: "/gallery" },
+    { name: t.nav.home,       href: "#home" },
+    { name: t.nav.about,      href: "#about" },
+    { name: t.nav.ngo,        href: "/ngo" },
+    { name: t.nav.ministries, href: "#services" },
+    { name: t.nav.events,     href: "#events" },
+    { name: t.nav.sermons,    href: "#sermons" },
+    { name: t.nav.gallery,    href: "/gallery" },
   ];
 
   const socialLinks = [
@@ -42,7 +42,6 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
-    setMounted(true);
     let rafId: number;
     const onScroll = () => {
       cancelAnimationFrame(rafId);
@@ -120,21 +119,21 @@ export default function Navbar() {
                   className={cn(
                     "font-black leading-tight text-gray-900 dark:text-white whitespace-nowrap",
                     "text-base sm:text-lg",
-                    mounted && language !== "en" ? "tracking-normal" : "tracking-tight"
+                    language !== "en" ? "tracking-normal" : "tracking-tight"
                   )}
                 >
-                  {mounted ? t.nav.churchName : "Kingdom of Christ"}
+                  {t.nav.churchName}
                 </span>
                 <span
                   suppressHydrationWarning
                   className={cn(
                     "leading-none whitespace-nowrap",
-                    mounted && language !== "en"
+                    language !== "en"
                       ? "text-sm font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
                       : "text-[0.6rem] font-bold uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 to-violet-500 bg-clip-text text-transparent"
                   )}
                 >
-                  {mounted ? t.nav.ministries : "Ministries"}
+                  {t.nav.ministries}
                 </span>
               </div>
             </Link>
@@ -165,6 +164,7 @@ export default function Navbar() {
 
             {/* ── Right Controls ── */}
             <div className="flex items-center gap-2 flex-shrink-0">
+              <BranchSelector />
               {/* Toggles — hidden on mobile to save space */}
               <div className="hidden md:flex items-center gap-1 bg-gray-100/70 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 p-1 rounded-xl backdrop-blur-md">
                 <LanguageToggle />
@@ -194,7 +194,7 @@ export default function Navbar() {
 
           {/* ── Mobile Dropdown Menu ── */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-3 mb-1 p-4 bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200/80 dark:border-white/10 animate-scale-in">
+            <div className="md:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in">
 
               {/* Nav links */}
               <nav className="space-y-0.5">

@@ -78,6 +78,22 @@ export async function POST(req: Request) {
     const { title, description, date, time, location, category, branchId, status, image } =
       parsed.data;
 
+    // Ensure creator user exists in DB (especially for local dev bypass users)
+    const existingUser = await prisma.user.findUnique({
+      where: { id: auth.uid }
+    });
+    if (!existingUser) {
+      await prisma.user.create({
+        data: {
+          id: auth.uid,
+          name: auth.name || "Dev User",
+          email: auth.email || "dev@kcm.local",
+          password: "dev_bypass_password_hash",
+          role: auth.role || "EVENT_MANAGER"
+        }
+      });
+    }
+
     const event = await prisma.event.create({
       data: {
         title,

@@ -17,6 +17,7 @@ import {
   Wifi,
 } from "lucide-react";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
+import { useBranch } from "@/components/providers/BranchProvider";
 
 // ── Inline EventCard for landing page (simpler, public-facing) ──────────────
 interface PublicEvent {
@@ -120,6 +121,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
 
 // ── Main Events Page ──────────────────────────────────────────────────────────
 export default function EventsPage() {
+  const { selectedBranchId } = useBranch();
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [newEventIds, setNewEventIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -132,8 +134,12 @@ export default function EventsPage() {
   // ── Fetch events ────────────────────────────────────────────────────────
   useEffect(() => {
     const loadEvents = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch("/api/events?status=PUBLISHED&limit=50");
+        const url = selectedBranchId === "all"
+          ? "/api/events?status=PUBLISHED&limit=50"
+          : `/api/branch/${selectedBranchId}/events`;
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           if (data.success) setEvents(data.events);
@@ -142,7 +148,7 @@ export default function EventsPage() {
       finally { setIsLoading(false); }
     };
     loadEvents();
-  }, []);
+  }, [selectedBranchId]);
 
   // ── Socket.io real-time updates ─────────────────────────────────────────
   useEffect(() => {

@@ -16,19 +16,44 @@ import {
   ArrowLeft, 
   Loader2, 
   CheckCircle,
-  FileText
+  FileText,
+  Video,
+  Play,
+  Compass,
+  FileSpreadsheet,
+  Check,
+  RefreshCw,
+  Eye,
+  AlertTriangle,
+  UploadCloud,
+  ChevronRight,
+  Sparkles,
+  Paperclip,
+  X
 } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface Branch {
   id: string;
   name: string;
 }
 
+interface AttachedMedia {
+  id: string;
+  type: "IMAGE" | "VIDEO";
+  base64: string;
+  name: string;
+  size: number;
+  progress: number;
+  isUploading: boolean;
+}
+
 export default function FieldReportForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { getIdToken } = useAuth();
+  const { user, getIdToken } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
@@ -36,21 +61,39 @@ export default function FieldReportForm() {
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [attendance, setAttendance] = useState("");
-  const [offering, setOffering] = useState("");
   const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
   const [volunteerNames, setVolunteerNames] = useState("");
-  const [gpsLocation, setGpsLocation] = useState<string | null>(null);
   
   // Media states
-  const [capturedImages, setCapturedImages] = useState<string[]>([]);
+  const [attachedMedia, setAttachedMedia] = useState<AttachedMedia[]>([]);
   const [showCamera, setShowCamera] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
   // Page status states
   const [isLoadingBranches, setIsLoadingBranches] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [gpsLoading, setGpsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Connection state
+  const [isOnline, setIsOnline] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   // Fetch branches on mount
   useEffect(() => {
@@ -59,7 +102,7 @@ export default function FieldReportForm() {
         const response = await fetch("/api/field-volunteer/branches");
         if (response.ok) {
           const data = await response.json();
-          if (data.success) {
+          if (data && data.success) {
             setBranches(data.branches);
             if (data.branches.length > 0) {
               setSelectedBranchId(data.branches[0].id);
@@ -81,53 +124,101 @@ export default function FieldReportForm() {
     }
   }, [searchParams]);
 
-  // Retrieve current GPS location
-  const getGpsCoordinates = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
-    }
 
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
-        setGpsLocation(coords);
-        setGpsLoading(false);
-      },
-      (error) => {
-        console.warn("[GPS] Geolocation error:", error.message);
-        alert(`Failed to obtain GPS coordinates: ${error.message}`);
-        setGpsLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  };
 
   // Add camera captured image
   const handlePhotoCapture = (base64: string) => {
-    setCapturedImages((prev) => [...prev, base64]);
+    const tempId = Math.random().toString(36).substring(2, 9);
+    const newItem: AttachedMedia = {
+      id: tempId,
+      type: "IMAGE",
+      base64,
+      name: `captured-snap-${Date.now()}.jpg`,
+      size: Math.round((base64.length * 3) / 4), // Approximate bytes size
+      progress: 100,
+      isUploading: false
+    };
+    setAttachedMedia((prev) => [...prev, newItem]);
     setShowCamera(false);
   };
 
-  // Delete captured photo preview
-  const removePhoto = (index: number) => {
-    setCapturedImages((prev) => prev.filter((_, i) => i !== index));
+  // Drag & drop logic
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
   };
 
-  // Handle uploading of existing images from file library
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach(processFile);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (files && files.length > 0) {
+      Array.from(files).forEach(processFile);
+    }
+    e.target.value = ""; // Reset
+  };
 
-    Array.from(files).forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`File "${file.name}" is too large. Max size is 10MB.`);
-        return;
-      }
+  const processFile = (file: File) => {
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    
+    if (!isImage && !isVideo) {
+      alert("Unsupported file type. Please upload an image or video.");
+      return;
+    }
+    
+    // Validate sizes
+    if (isImage && file.size > 10 * 1024 * 1024) {
+      alert(`Image "${file.name}" exceeds the 10MB limit.`);
+      return;
+    }
+    if (isVideo && file.size > 100 * 1024 * 1024) {
+      alert(`Video "${file.name}" exceeds the 100MB limit.`);
+      return;
+    }
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
+    const tempId = Math.random().toString(36).substring(2, 9);
+    
+    // Add temporary item with progress = 10
+    const newItem: AttachedMedia = {
+      id: tempId,
+      type: isImage ? "IMAGE" : "VIDEO",
+      base64: "",
+      name: file.name,
+      size: file.size,
+      progress: 10,
+      isUploading: true
+    };
+    
+    setAttachedMedia(prev => [...prev, newItem]);
+
+    // Simulate progress while reading
+    let simulatedProgress = 10;
+    const progressInterval = setInterval(() => {
+      simulatedProgress = Math.min(simulatedProgress + 15, 95);
+      setAttachedMedia(prev => 
+        prev.map(item => item.id === tempId ? { ...item, progress: simulatedProgress } : item)
+      );
+    }, 100);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      
+      if (isImage) {
+        // Resize image via canvas
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
@@ -147,15 +238,37 @@ export default function FieldReportForm() {
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
             const base64 = canvas.toDataURL("image/jpeg", 0.8);
-            setCapturedImages((prev) => [...prev, base64]);
+            
+            clearInterval(progressInterval);
+            setAttachedMedia(prev => 
+              prev.map(item => item.id === tempId ? { ...item, base64, progress: 100, isUploading: false } : item)
+            );
           }
         };
-        img.src = event.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    });
+        img.src = result;
+      } else {
+        // For video, write base64 directly
+        clearInterval(progressInterval);
+        setAttachedMedia(prev => 
+          prev.map(item => item.id === tempId ? { ...item, base64: result, progress: 100, isUploading: false } : item)
+        );
+      }
+    };
+    
+    reader.readAsDataURL(file);
+  };
 
-    e.target.value = "";
+  const removeMediaItem = (id: string) => {
+    setAttachedMedia(prev => prev.filter(item => item.id !== id));
+  };
+
+  const formatBytes = (bytes: number, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   };
 
   // Submit report
@@ -172,17 +285,21 @@ export default function FieldReportForm() {
       .map((name) => name.trim())
       .filter((name) => name.length > 0);
 
+    const images = attachedMedia.filter(item => item.type === "IMAGE" && !item.isUploading).map(item => item.base64);
+    const videos = attachedMedia.filter(item => item.type === "VIDEO" && !item.isUploading).map(item => item.base64);
+
     const reportPayload = {
       branchId: selectedBranchId,
       branchName,
       title,
       description,
-      attendanceCount: parseInt(attendance) || 0,
-      offeringAmount: parseFloat(offering) || 0,
+      attendanceCount: 0,
+      offeringAmount: 0,
       reportDate: new Date(reportDate).toISOString(),
-      gpsLocation,
+      gpsLocation: null,
       volunteerNames: volunteersList,
-      images: capturedImages, // array of base64 strings
+      images, // array of base64 strings
+      videos, // array of base64 strings
     };
 
     const isOffline = !navigator.onLine;
@@ -236,20 +353,64 @@ export default function FieldReportForm() {
     }
   };
 
+  // Live draft tracking info
+  const selectedBranchName = branches.find(b => b.id === selectedBranchId)?.name || "Select Branch";
+  const numVolunteers = volunteerNames.split(",").map(v => v.trim()).filter(Boolean).length;
+  
+  // Calculate completion percentage
+  const completionScore = () => {
+    let score = 0;
+    if (selectedBranchId) score += 25;
+    if (title.trim()) score += 25;
+    if (description.trim()) score += 35;
+    if (attachedMedia.length > 0) score += 15;
+    return score;
+  };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 text-slate-800 dark:text-white transition-colors duration-300 flex flex-col pb-10">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-16">
       
       {/* Top Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-slate-200/85 dark:border-white/[0.06] px-4 py-4 flex items-center gap-3">
-        <Link
-          href="/event-manager"
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all"
-        >
-          <ArrowLeft className="w-5 h-5 text-slate-500" />
-        </Link>
-        <div>
-          <h1 className="text-sm font-black uppercase tracking-wider">Activity Report</h1>
-          <p className="text-[10px] text-slate-400 dark:text-white/30 font-semibold uppercase tracking-widest mt-0.5">Submit branch data</p>
+      <header className="sticky top-0 z-30 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-white/[0.05] px-6 py-4 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/event-manager"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/[0.05] transition-all text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          <div>
+            <h1 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Activity Report</h1>
+            <p className="text-[10px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-widest mt-0.5">Submit branch data</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+            isOnline 
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+              : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-ping"}`} />
+            <span>{isOnline ? "ONLINE" : "OFFLINE MODE"}</span>
+          </div>
+
+          <ThemeToggle />
+
+          <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden sm:block" />
+
+          <div className="hidden sm:flex items-center gap-2">
+            <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">{user?.name || "Joseph"}</p>
+            <p className="text-[9px] text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-wider">Event Manager</p>
+          </div>
         </div>
       </header>
 
@@ -261,218 +422,436 @@ export default function FieldReportForm() {
         />
       )}
 
-      {/* Main Form container */}
-      <main className="flex-1 max-w-lg mx-auto w-full p-4">
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-sm space-y-5">
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto w-full px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Side: Real-time Draft Card & Checklist (Sticky) */}
+        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 h-fit">
           
-          {submitError && (
-            <div className="bg-red-50 border border-red-200 dark:bg-red-950/20 dark:border-red-800/30 p-4 rounded-2xl text-xs font-semibold text-red-600 dark:text-red-400">
-              {submitError}
-            </div>
-          )}
+          {/* Real-time Draft Card */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-800 text-white p-6 shadow-xl border border-violet-500/20 group">
+            
+            {/* Ambient Background Glows */}
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-pink-500/20 blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-blue-500/20 blur-2xl" />
 
-          {/* Branch Dropdown */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Branch Location</label>
-            {isLoadingBranches ? (
-              <div className="h-10 bg-slate-100 dark:bg-white/5 animate-pulse rounded-xl" />
-            ) : (
-              <select
-                required
-                value={selectedBranchId}
-                onChange={(e) => setSelectedBranchId(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
-              >
-                {branches.map((b) => (
-                  <option key={b.id} value={b.id} className="dark:bg-slate-900">{b.name}</option>
-                ))}
-              </select>
+            <div className="relative space-y-5">
+              
+              {/* Badge */}
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 border border-white/20 text-[9px] font-bold tracking-wider uppercase text-violet-100">
+                  <Sparkles className="w-3 h-3 text-pink-300 animate-pulse" />
+                  Live Draft Preview
+                </span>
+                <span className="text-[10px] font-semibold text-white/60">
+                  Ready Score: {completionScore()}%
+                </span>
+              </div>
+
+              {/* Title & Branch */}
+              <div className="space-y-1">
+                <h2 className="text-xl font-black tracking-tight leading-tight line-clamp-2">
+                  {title.trim() || "Untitled Activity Report"}
+                </h2>
+                <p className="text-xs text-violet-100/70 font-semibold uppercase tracking-wider flex items-center gap-1">
+                  <Compass className="w-3.5 h-3.5" />
+                  {selectedBranchName} Branch
+                </p>
+              </div>
+
+              {/* Volunteers Count */}
+              <div className="flex items-center gap-2 text-xs bg-white/5 border border-white/10 rounded-xl p-2.5">
+                <Users className="w-4 h-4 shrink-0 text-violet-200" />
+                <span className="truncate text-violet-100/90 font-medium">
+                  {numVolunteers} Volunteer{numVolunteers !== 1 ? 's' : ''} Attending
+                </span>
+              </div>
+
+              {/* Thumbnail Attachments */}
+              {attachedMedia.length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest block">Attached Assets ({attachedMedia.length})</span>
+                  <div className="flex flex-wrap gap-2">
+                    {attachedMedia.slice(0, 5).map((item, i) => (
+                      <div key={item.id} className="relative w-9 h-9 rounded-lg overflow-hidden border border-white/20 shadow-sm bg-black/20 flex items-center justify-center">
+                        {item.isUploading ? (
+                          <Loader2 className="w-3.5 h-3.5 text-white/60 animate-spin" />
+                        ) : item.type === "IMAGE" ? (
+                          <img src={item.base64} className="w-full h-full object-cover" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5 text-white/80" />
+                        )}
+                      </div>
+                    ))}
+                    {attachedMedia.length > 5 && (
+                      <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-[10px] font-bold border border-white/10">
+                        +{attachedMedia.length - 5}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* Form Completion Checklist */}
+          <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <FileSpreadsheet className="w-4 h-4 text-violet-500" />
+              Report Completion Checklist
+            </h3>
+
+            <div className="space-y-3 text-xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-white/5 pb-2">
+                <span>Current status</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-200">{isOnline ? "Online Upload" : "Queue Offline"}</span>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${selectedBranchId ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-100 dark:bg-white/5 text-slate-400"}`}>
+                      <Check className="w-3 h-3" />
+                    </div>
+                    <span className={selectedBranchId ? "text-slate-800 dark:text-slate-200 font-medium" : "text-slate-400"}>Branch Selected</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{selectedBranchId ? "OK" : "Required"}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${title.trim() ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-100 dark:bg-white/5 text-slate-400"}`}>
+                      <Check className="w-3 h-3" />
+                    </div>
+                    <span className={title.trim() ? "text-slate-800 dark:text-slate-200 font-medium" : "text-slate-400"}>Event Title Defined</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{title.trim() ? "OK" : "Required"}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${description.trim() ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-100 dark:bg-white/5 text-slate-400"}`}>
+                      <Check className="w-3 h-3" />
+                    </div>
+                    <span className={description.trim() ? "text-slate-800 dark:text-slate-200 font-medium" : "text-slate-400"}>Daily Notes Provided</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{description.trim() ? "OK" : "Required"}</span>
+                </div>
+
+
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${attachedMedia.length > 0 ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-100 dark:bg-white/5 text-slate-400"}`}>
+                      <Check className="w-3 h-3" />
+                    </div>
+                    <span className={attachedMedia.length > 0 ? "text-slate-800 dark:text-slate-200 font-medium" : "text-slate-400"}>Media Attached</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{attachedMedia.length > 0 ? `${attachedMedia.length} files` : "Optional"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Redesigned High-Fidelity Form */}
+        <div className="lg:col-span-7">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {submitError && (
+              <div className="bg-rose-50 border border-rose-200 dark:bg-rose-950/20 dark:border-rose-800/30 p-4 rounded-2xl flex items-start gap-2.5 text-rose-600 dark:text-rose-400">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="text-xs font-semibold">{submitError}</div>
+              </div>
             )}
-          </div>
 
-          {/* Event Title */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Event / Activity Name</label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. Sunday Service, Outreach Prayer"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
-            />
-          </div>
+            {/* Panel 1: Core Identification */}
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-5">
+              <div className="border-b border-slate-100 dark:border-white/5 pb-3">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">1. Core Identification</h3>
+                <p className="text-[9px] text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-widest mt-0.5">Where & when did this activity take place</p>
+              </div>
 
-          {/* Date & Attendance & Offerings row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Report Date</label>
-              <div className="relative">
-                <input
-                  type="date"
+              {/* Branch Dropdown */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Branch Location</label>
+                {isLoadingBranches ? (
+                  <div className="h-11 bg-slate-100 dark:bg-white/5 animate-pulse rounded-xl" />
+                ) : (
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+                      <Compass className="w-4 h-4" />
+                    </div>
+                    <select
+                      required
+                      value={selectedBranchId}
+                      onChange={(e) => setSelectedBranchId(e.target.value)}
+                      className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer"
+                    >
+                      {branches.map((b) => (
+                        <option key={b.id} value={b.id} className="dark:bg-slate-900 text-xs font-semibold">{b.name} Branch</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none border-l border-slate-200 dark:border-white/10 pl-2">
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 rotate-90" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Event Title */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Event / Activity Name</label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Sunday Service, Youth Fellowship"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Date selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Report Date</label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                    <CalendarIcon className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="date"
+                    required
+                    value={reportDate}
+                    onChange={(e) => setReportDate(e.target.value)}
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Panel 2: Outcomes & Volunteer Attendance */}
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-5">
+              <div className="border-b border-slate-100 dark:border-white/5 pb-3">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">2. Outcomes & Attendance</h3>
+                <p className="text-[9px] text-slate-400 dark:text-slate-555 font-semibold uppercase tracking-widest mt-0.5">Describe what happened and list helpers</p>
+              </div>
+
+              {/* Daily Activity Description */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Daily Activity Notes & outcomes</label>
+                <textarea
                   required
-                  value={reportDate}
-                  onChange={(e) => setReportDate(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-pink-500/20"
+                  rows={4}
+                  placeholder="Provide a report of the ministry outcome, prayer needs, and notable event actions..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all resize-none"
                 />
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-normal">
+                  💡 Tips: Note down highlights, prayer items, and new member details.
+                </p>
+              </div>
+
+              {/* Volunteer Names */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Volunteers Attended (Comma-separated)</label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-550">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="e.g. John Doe, Sarah Smith, Michael John"
+                    value={volunteerNames}
+                    onChange={(e) => setVolunteerNames(e.target.value)}
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                  />
+                </div>
+                {volunteerNames.trim() && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {volunteerNames.split(",").map(v => v.trim()).filter(Boolean).map((name, i) => (
+                      <span key={i} className="text-[9px] font-bold bg-violet-500/10 border border-violet-500/10 px-2 py-0.5 rounded-lg text-violet-600 dark:text-violet-400">
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">People Count</label>
-              <div className="relative">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"><Users className="w-4 h-4" /></div>
-                <input
-                  type="number"
-                  placeholder="0"
-                  value={attendance}
-                  onChange={(e) => setAttendance(e.target.value)}
-                  className="w-full h-11 pl-10 pr-3 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
-                />
+            {/* Panel 3: Redesigned Unified High-End Media Drag-and-Drop Uploader */}
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-6">
+              
+              <div className="border-b border-slate-100 dark:border-white/5 pb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Paperclip className="w-4 h-4 text-violet-500" />
+                    3. Media Attachments
+                  </h3>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-555 font-semibold uppercase tracking-widest mt-0.5">Drag and drop files to attach reports logs</p>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-white/5 rounded-lg border text-slate-550 border-slate-200/60 dark:border-white/10 dark:text-slate-400">
+                  {attachedMedia.length} files attached
+                </span>
               </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* Offerings */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Offering Amount (INR)</label>
-              <div className="relative">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">₹</div>
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={offering}
-                  onChange={(e) => setOffering(e.target.value)}
-                  className="w-full h-11 pl-8 pr-3 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
-                />
-              </div>
-            </div>
-
-            {/* GPS coordinates */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">GPS Geolocation</label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={getGpsCoordinates}
-                  disabled={gpsLoading}
-                  className="px-3 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 dark:text-white/60 flex items-center justify-center shrink-0 transition-all"
-                  title="Capture GPS Coordinates"
-                >
-                  {gpsLoading ? <Loader2 className="w-4 h-4 animate-spin text-pink-500" /> : <MapPin className="w-4 h-4" />}
-                </button>
-                <input
-                  type="text"
-                  placeholder="Tap pin to fetch"
-                  value={gpsLocation || ""}
-                  readOnly
-                  className="w-full h-11 px-3 rounded-xl bg-slate-100 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white/40 text-xs focus:outline-none cursor-not-allowed"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Daily Activity Description */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Daily Activity Notes & outcomes</label>
-            <textarea
-              required
-              rows={4}
-              placeholder="Provide a report of the ministry outcome, prayer needs, and notable event actions..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20 resize-none"
-            />
-          </div>
-
-          {/* Volunteer Names */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Volunteers Attended (Comma-separated)</label>
-            <input
-              type="text"
-              placeholder="e.g. John Doe, Sarah Smith"
-              value={volunteerNames}
-              onChange={(e) => setVolunteerNames(e.target.value)}
-              className="w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/20"
-            />
-          </div>
-
-          {/* Photo Captures Box */}
-          <div className="space-y-2 border-t border-slate-100 dark:border-white/5 pt-4">
-            <div className="flex items-center justify-between">
-              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest">Images Captured ({capturedImages.length})</label>
-              <div className="flex items-center gap-2">
+              {/* Combined Drag and Drop Zone */}
+              <div 
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 group flex flex-col items-center justify-center min-h-[160px] ${
+                  isDragging 
+                    ? "border-violet-500 bg-violet-500/5 dark:bg-violet-500/10 scale-[1.01]" 
+                    : "border-slate-200 hover:border-violet-500/50 dark:border-white/10 dark:hover:border-violet-500/35 hover:bg-slate-50/50 dark:hover:bg-white/[0.01]"
+                }`}
+              >
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  accept="image/*"
+                  onChange={handleFileSelect}
+                  accept="image/*,video/mp4,video/webm"
                   multiple
                   className="hidden"
                 />
-                
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all text-slate-600 dark:text-white/70"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Upload
-                </button>
 
+                <div className="flex flex-col items-center justify-center space-y-3 pointer-events-none">
+                  <div className={`p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-400 group-hover:text-violet-500 transition-colors shadow-sm ${isDragging ? "animate-bounce" : ""}`}>
+                    <UploadCloud className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-extrabold text-slate-700 dark:text-slate-200">
+                      Drag & drop images/videos here, or <span className="text-violet-600 dark:text-violet-400 group-hover:underline">browse files</span>
+                    </p>
+                    <p className="text-[10px] text-slate-450 dark:text-slate-500 font-medium max-w-sm mx-auto">
+                      Images (JPG, PNG, WEBP up to 10MB) & Videos (MP4, WEBM up to 100MB)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Direct Camera Shortcut Button */}
                 <button
                   type="button"
-                  onClick={() => setShowCamera(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Avoid triggering file browse click
+                    setShowCamera(true);
+                  }}
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                 >
                   <Camera className="w-3.5 h-3.5" />
-                  Capture
+                  Live Snapshot
                 </button>
               </div>
+
+              {/* Previews and Progress Lists */}
+              {attachedMedia.length > 0 && (
+                <div className="space-y-4">
+                  <span className="text-[9px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Upload Queue & Preview</span>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <AnimatePresence>
+                      {attachedMedia.map((item) => (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="relative aspect-video rounded-xl overflow-hidden border border-slate-200/60 dark:border-white/10 group shadow-sm bg-slate-900"
+                        >
+                          {item.isUploading ? (
+                            /* Uploading Skeleton UI */
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-slate-900 text-white space-y-2">
+                              <Loader2 className="w-5 h-5 text-violet-400 animate-spin" />
+                              <div className="min-w-0 w-full">
+                                <p className="text-[9px] font-bold truncate text-slate-350 px-1">{item.name}</p>
+                                <p className="text-[8px] text-slate-500 font-semibold uppercase">{formatBytes(item.size)}</p>
+                              </div>
+                              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mt-1 px-1.5">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-300"
+                                  style={{ width: `${item.progress}%` }}
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            /* Rendered Preview Card */
+                            <>
+                              {item.type === "IMAGE" ? (
+                                <img src={item.base64} alt={item.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full relative flex items-center justify-center">
+                                  <video src={item.base64} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-lg border border-white/20">
+                                      <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                                    </div>
+                                  </div>
+                                  <span className="absolute bottom-2 left-2 text-[8px] font-black uppercase bg-violet-650/90 text-white px-2 py-0.5 rounded-lg tracking-wider border border-violet-500/20">
+                                    Video
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Hover Action Overlay */}
+                              <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 text-white">
+                                <div className="flex justify-between items-start">
+                                  <span className="text-[8px] font-black bg-white/20 px-2 py-0.5 rounded border border-white/10 tracking-wide uppercase">
+                                    {formatBytes(item.size)}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeMediaItem(item.id);
+                                    }}
+                                    className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors active:scale-95 shadow-md"
+                                    title="Delete Attachment"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                                <p className="text-[9px] font-bold truncate pr-1">{item.name}</p>
+                              </div>
+                            </>
+                          )}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {capturedImages.length === 0 ? (
-              <div className="py-6 text-center border border-dashed border-slate-200 dark:border-white/10 rounded-2xl text-slate-400 dark:text-white/20">
-                <Camera className="w-6 h-6 mx-auto mb-1.5" />
-                <p className="text-[11px] font-semibold">No pictures captured yet</p>
-                <p className="text-[9px] mt-0.5">Capture snaps directly from the field camera.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-3">
-                {capturedImages.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group">
-                    <img src={img} alt="Snapshot Preview" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(idx)}
-                      className="absolute top-1 right-1 p-1 bg-black/60 hover:bg-red-600 rounded-lg text-white opacity-90 transition-all"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting || attachedMedia.some(item => item.isUploading)}
+              className="w-full h-12 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 hover:from-violet-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-md mt-6 gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                  Uploading and Syncing data...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4.5 h-4.5" />
+                  {isOnline ? "Submit Field Report" : "Queue Report in Offline Outbox"}
+                </>
+              )}
+            </button>
 
-          {/* Submit button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full h-11 bg-pink-600 hover:bg-pink-500 text-white rounded-xl flex items-center justify-center font-bold text-sm transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:scale-100"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Submitting report...
-              </>
-            ) : (
-              "Submit Field Report"
-            )}
-          </button>
-        </form>
+          </form>
+        </div>
+
       </main>
     </div>
   );

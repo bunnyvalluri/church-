@@ -23,7 +23,8 @@ export async function POST(req: Request) {
       reportDate, 
       gpsLocation, 
       volunteerNames, 
-      images 
+      images,
+      videos
     } = body;
 
     if (!branchId || !title || !description) {
@@ -31,6 +32,22 @@ export async function POST(req: Request) {
         { error: "Branch, Title, and Daily Notes are required." },
         { status: 400 }
       );
+    }
+
+    // Ensure creator user exists in DB (especially for local dev bypass users)
+    const existingUser = await prisma.user.findUnique({
+      where: { id: auth.uid }
+    });
+    if (!existingUser) {
+      await prisma.user.create({
+        data: {
+          id: auth.uid,
+          name: auth.name || "Dev User",
+          email: auth.email || "dev@kcm.local",
+          password: "dev_bypass_password_hash",
+          role: auth.role || "FIELD_VOLUNTEER"
+        }
+      });
     }
 
     // 2. Create the EventReport record
@@ -48,49 +65,82 @@ export async function POST(req: Request) {
       },
     });
 
-    // 3. Process and write images to public/uploads
+    const { validateFileSecurity } = await import("@/lib/uploadSecurity");
     const uploadedMedia = [];
-    if (images && Array.isArray(images) && images.length > 0) {
-      // Ensure upload directory exists
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await fs.mkdir(uploadDir, { recursive: true });
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadDir, { recursive: true });
 
+    const mimeExtensions: Record<string, string> = {
+      "image/jpeg": ".jpg",
+      "image/jpg": ".jpg",
+      "image/png": ".png",
+      "image/webp": ".webp",
+      "video/mp4": ".mp4",
+      "video/webm": ".webm"
+    };
+
+    // Helper to process a base64 media attachment
+    const processAttachment = async (base64Str: string, isVideo: boolean, index: number) => {
+      const matches = base64Str.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        throw new Error(`Invalid base64 payload at index ${index}`);
+      }
+
+      const mimeType = matches[1];
+      const buffer = Buffer.from(matches[2], "base64");
+      const ext = mimeExtensions[mimeType] || (isVideo ? ".mp4" : ".jpg");
+      const filename = `report-${report.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}${ext}`;
+      const relativeUrl = `/uploads/${filename}`;
+      const absolutePath = path.join(uploadDir, filename);
+
+      // Perform security check (virus/mime validation)
+      const securityCheck = validateFileSecurity(buffer, filename, mimeType);
+      if (!securityCheck.isValid) {
+        throw new Error(`Security validation failed: ${securityCheck.error}`);
+      }
+
+      // Write to filesystem
+      await fs.writeFile(absolutePath, buffer);
+
+      // Save in MediaReport DB table
+      const mediaRecord = await prisma.mediaReport.create({
+        data: {
+          eventReportId: report.id,
+          type: isVideo ? "VIDEO" : "IMAGE",
+          url: relativeUrl,
+          uploadedById: auth.uid,
+        },
+      });
+
+      uploadedMedia.push(mediaRecord);
+    };
+
+    // Process Images
+    if (images && Array.isArray(images)) {
       for (let i = 0; i < images.length; i++) {
-        const base64Str = images[i];
-        const matches = base64Str.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-        
-        if (!matches || matches.length !== 3) {
-          console.warn(`[API/REPORT] Skipping invalid base64 image string at index ${i}`);
-          continue;
+        try {
+          await processAttachment(images[i], false, i);
+        } catch (err: any) {
+          console.error(`[API/REPORT] Image process error:`, err);
+          return NextResponse.json({ error: err.message || "Failed to process image attachment." }, { status: 400 });
         }
+      }
+    }
 
-        const mimeType = matches[1];
-        const buffer = Buffer.from(matches[2], "base64");
-        const extension = mimeType.split("/")[1] || "jpg";
-        
-        const filename = `report-${report.id}-${Date.now()}-${i}.${extension}`;
-        const relativeUrl = `/uploads/${filename}`;
-        const absolutePath = path.join(uploadDir, filename);
-
-        // Write buffer to file system
-        await fs.writeFile(absolutePath, buffer);
-
-        // Create MediaReport model record
-        const mediaRecord = await prisma.mediaReport.create({
-          data: {
-            eventReportId: report.id,
-            type: "IMAGE",
-            url: relativeUrl,
-            uploadedById: auth.uid,
-          },
-        });
-
-        uploadedMedia.push(mediaRecord);
+    // Process Videos
+    if (videos && Array.isArray(videos)) {
+      for (let i = 0; i < videos.length; i++) {
+        try {
+          await processAttachment(videos[i], true, i);
+        } catch (err: any) {
+          console.error(`[API/REPORT] Video process error:`, err);
+          return NextResponse.json({ error: err.message || "Failed to process video attachment." }, { status: 400 });
+        }
       }
     }
 
     // 4. Create standard DB Notification item
-    const notifContent = `Branch: ${branchName}. Attendance: ${attendanceCount}. ${uploadedMedia.length} images added.`;
+    const notifContent = `Branch: ${branchName}. Attendance: ${attendanceCount}. ${uploadedMedia.length} attachments added.`;
     await prisma.notification.create({
       data: {
         type: "FIELD_REPORT",

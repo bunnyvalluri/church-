@@ -39,7 +39,9 @@ async function main() {
   const branches = [
     { name: 'Shapur Nagar' },
     { name: 'Subhash Nagar' },
-    { name: 'Bahadurpally' }
+    { name: 'Bahadurpally' },
+    { name: 'Kukatpally' },
+    { name: 'Miyapur' }
   ];
   for (const b of branches) {
     await prisma.branch.upsert({
@@ -144,6 +146,24 @@ async function main() {
       phone: '+91 92222 33333',
       address: 'Shapur Nagar, Hyderabad',
     },
+    {
+      id: 'user_branch_manager_011',
+      name: 'Branch Manager Thomas',
+      email: 'branchmanager@kcm-church.com',
+      password: 'event-handle-2026',
+      role: 'BRANCH_MANAGER',
+      phone: '+91 93333 44444',
+      address: 'Kukatpally, Hyderabad',
+    },
+    {
+      id: 'user_media_team_012',
+      name: 'Media Team Daniel',
+      email: 'mediateam@kcm-church.com',
+      password: 'event-handle-2026',
+      role: 'MEDIA_TEAM',
+      phone: '+91 94444 55555',
+      address: 'Miyapur, Hyderabad',
+    },
   ];
 
   for (const user of users) {
@@ -153,7 +173,7 @@ async function main() {
       create: user,
     });
   }
-  ok(`${users.length} Users seeded (1 Super Admin, 1 Admin, 1 Pastor, 5 Members, 1 Event Manager, 1 Volunteer)`);
+  ok(`${users.length} Users seeded (1 Super Admin, 1 Admin, 1 Pastor, 5 Members, 1 Event Manager, 1 Volunteer, 1 Branch Manager, 1 Media Team)`);
 
   // ──────────────────────────────────────────────
   // 3. PASTOR PROFILES

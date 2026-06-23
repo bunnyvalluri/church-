@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, RefreshCw, X, Check } from "lucide-react";
+import { Camera, RefreshCw, X, Check, Aperture, AlertTriangle, MonitorPlay } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CameraCaptureProps {
   onCapture: (base64Image: string) => void;
@@ -63,6 +64,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facingMode]);
 
   // Capture frame
@@ -71,7 +73,6 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
     if (!video || isLoading || error) return;
 
     const canvas = document.createElement("canvas");
-    // Preserve aspect ratio
     const videoWidth = video.videoWidth || 640;
     const videoHeight = video.videoHeight || 480;
 
@@ -125,115 +126,179 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col justify-between text-white md:p-6">
-      {/* Top controls */}
-      <div className="flex items-center justify-between p-4 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
-        <h3 className="font-bold text-sm tracking-wide text-slate-200">
-          {hasPhoto ? "PREVIEW CAPTURE" : "LIVE CAMERA"}
-        </h3>
-        <button
-          onClick={onClose}
-          className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Main Viewfinder / Canvas Preview */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden bg-black max-h-[70vh]">
-        {error ? (
-          <div className="max-w-xs text-center p-6 bg-red-950/20 border border-red-500/30 rounded-3xl">
-            <p className="text-red-400 font-semibold text-sm mb-4">{error}</p>
-            <button
-              onClick={startCamera}
-              className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-bold transition-all text-white"
-            >
-              Retry Camera Access
-            </button>
+    <div className="fixed inset-0 z-50 bg-[#07070b]/90 backdrop-blur-md flex items-center justify-center p-0 md:p-6 overflow-hidden">
+      
+      {/* Modal Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", damping: 25, stiffness: 350 }}
+        className="w-full h-full md:h-auto md:max-w-2xl md:aspect-[4/5] bg-[#0c0c14] border-0 md:border md:border-white/10 rounded-none md:rounded-3xl shadow-2xl flex flex-col justify-between text-white overflow-hidden"
+      >
+        {/* Top Header controls */}
+        <div className="flex items-center justify-between px-6 py-4 bg-[#11111c]/90 border-b border-white/5 z-10 shrink-0">
+          <div className="flex items-center gap-2">
+            <Aperture className={`w-4 h-4 ${hasPhoto ? "text-emerald-400" : "text-violet-400 animate-spin"}`} />
+            <h3 className="font-extrabold text-xs tracking-wider uppercase text-slate-200">
+              {hasPhoto ? "Preview Photo Capture" : "Field Lens Live"}
+            </h3>
           </div>
-        ) : isLoading ? (
-          <div className="flex flex-col items-center gap-3">
-            <RefreshCw className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-xs text-slate-400 font-semibold">Initializing lens...</p>
-          </div>
-        ) : null}
+          
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white border border-white/5"
+            title="Cancel Capture"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        {/* Video feed */}
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className={`w-full h-full object-cover max-w-xl max-h-full ${
-            hasPhoto || error || isLoading ? "hidden" : "block"
-          }`}
-        />
+        {/* Viewfinder / Lens window */}
+        <div className="flex-1 relative bg-[#050508] overflow-hidden flex items-center justify-center">
+          
+          {/* Geolocation status pulser inside viewfinder */}
+          {!hasPhoto && !isLoading && !error && (
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[8px] font-black tracking-widest text-white uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
+              <span>1080p Live Stream</span>
+            </div>
+          )}
 
-        {/* Photo review */}
-        {hasPhoto && photoData && (
-          <img
-            src={photoData}
-            alt="Captured outcome"
-            className="w-full h-full object-contain max-w-xl max-h-full"
+          {/* Rule of Thirds Viewfinder Grid Overlay */}
+          {!hasPhoto && !isLoading && !error && (
+            <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 border border-white/5 z-10">
+              <div className="border-r border-b border-white/10" />
+              <div className="border-r border-b border-white/10" />
+              <div className="border-b border-white/10" />
+              <div className="border-r border-b border-white/10" />
+              <div className="border-r border-b border-white/10" />
+              <div className="border-b border-white/10" />
+              <div className="border-r border-white/5" />
+              <div className="border-r border-white/5" />
+              <div />
+              
+              {/* Focus Ring */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 border border-violet-400/35 rounded-full flex items-center justify-center animate-pulse">
+                <div className="w-1.5 h-1.5 bg-violet-400/50 rounded-full" />
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error ? (
+            <div className="max-w-xs text-center p-6 bg-rose-950/20 border border-rose-500/30 rounded-3xl z-10 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto text-rose-500">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <p className="text-rose-450 font-bold text-xs leading-relaxed">{error}</p>
+              <button
+                type="button"
+                onClick={startCamera}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all text-white active:scale-95 shadow-md"
+              >
+                Retry camera access
+              </button>
+            </div>
+          ) : isLoading ? (
+            /* Loading State */
+            <div className="flex flex-col items-center gap-3 z-10">
+              <div className="relative w-16 h-16 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-4 border-violet-500/10 border-t-violet-500 animate-spin" />
+                <Camera className="w-6 h-6 text-violet-400 animate-pulse" />
+              </div>
+              <div className="text-center space-y-0.5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-350">Initializing Lens</p>
+                <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">Calibrating autofocus...</p>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Video feed */}
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className={`w-full h-full object-cover ${
+              hasPhoto || error || isLoading ? "hidden" : "block"
+            }`}
           />
-        )}
-      </div>
 
-      {/* Bottom controls */}
-      <div className="p-6 bg-slate-950 border-t border-white/5 flex items-center justify-center gap-8">
-        {!hasPhoto ? (
-          <>
-            {/* Flip lens */}
-            <button
-              onClick={flipCamera}
-              disabled={isLoading || !!error}
-              className="p-4 bg-white/15 hover:bg-white/25 rounded-full transition-all text-white disabled:opacity-30"
-              title="Flip Camera"
-            >
-              <RefreshCw className="w-6 h-6" />
-            </button>
+          {/* Photo review */}
+          {hasPhoto && photoData && (
+            <img
+              src={photoData}
+              alt="Captured outcomes preview"
+              className="w-full h-full object-contain"
+            />
+          )}
+        </div>
 
-            {/* Shutter button */}
-            <button
-              onClick={capturePhoto}
-              disabled={isLoading || !!error}
-              className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 hover:scale-105 transition-all disabled:opacity-30 disabled:scale-100"
-              title="Capture Photo"
-            >
-              <div className="w-full h-full bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-                <Camera className="w-8 h-8 text-white" />
-              </div>
-            </button>
-
-            {/* Dummy space for layout balancing */}
-            <div className="w-14" />
-          </>
-        ) : (
-          <>
-            {/* Retake */}
-            <button
-              onClick={retakePhoto}
-              className="flex flex-col items-center gap-1.5 group"
-            >
-              <div className="w-14 h-14 bg-white/10 group-hover:bg-white/20 rounded-full flex items-center justify-center transition-all text-white">
+        {/* Bottom controls panel */}
+        <div className="px-8 py-6 bg-[#11111c]/90 border-t border-white/5 shrink-0 flex items-center justify-center gap-8 relative">
+          
+          {!hasPhoto ? (
+            /* Shoot Mode Actions */
+            <>
+              {/* Flip camera lens */}
+              <button
+                type="button"
+                onClick={flipCamera}
+                disabled={isLoading || !!error}
+                className="w-12 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center justify-center text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:scale-100 active:scale-90"
+                title="Switch Camera Lens"
+              >
                 <RefreshCw className="w-5 h-5" />
-              </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Retake</span>
-            </button>
+              </button>
 
-            {/* Accept / Save */}
-            <button
-              onClick={confirmPhoto}
-              className="flex flex-col items-center gap-1.5 group"
-            >
-              <div className="w-16 h-16 bg-emerald-600 group-hover:bg-emerald-500 rounded-full flex items-center justify-center shadow-lg transition-all text-white">
-                <Check className="w-7 h-7" />
-              </div>
-              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Use Photo</span>
-            </button>
-          </>
-        )}
-      </div>
+              {/* Shutter Button (High-End Styling) */}
+              <button
+                type="button"
+                onClick={capturePhoto}
+                disabled={isLoading || !!error}
+                className="relative w-20 h-20 rounded-full border-4 border-white/90 dark:border-white/105 flex items-center justify-center p-1.5 active:scale-90 hover:scale-105 transition-all disabled:opacity-30 disabled:scale-100 shrink-0"
+                title="Capture Photo"
+              >
+                <div className="w-full h-full bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center shadow-lg transition-colors" />
+              </button>
+
+              {/* Layout balancer spacing */}
+              <div className="w-12" />
+            </>
+          ) : (
+            /* Review Mode Actions */
+            <>
+              {/* Retake */}
+              <button
+                type="button"
+                onClick={retakePhoto}
+                className="flex flex-col items-center gap-1 group active:scale-95"
+              >
+                <div className="w-12 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center justify-center transition-all text-slate-300 hover:text-white shadow-md">
+                  <RefreshCw className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform" />
+                </div>
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">Retake</span>
+              </button>
+
+              {/* Use photo */}
+              <button
+                type="button"
+                onClick={confirmPhoto}
+                className="flex flex-col items-center gap-1 group active:scale-95"
+              >
+                <div className="w-14 h-14 bg-gradient-to-br from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-full flex items-center justify-center transition-all text-white shadow-lg">
+                  <Check className="w-6 h-6" />
+                </div>
+                <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mt-1">Use Photo</span>
+              </button>
+            </>
+          )}
+
+        </div>
+      </motion.div>
+      
     </div>
   );
 }

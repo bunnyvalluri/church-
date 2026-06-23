@@ -264,6 +264,8 @@ enum UserRole {
   EVENT_MANAGER
   FIELD_VOLUNTEER
   NGO_ADMIN
+  BRANCH_MANAGER
+  MEDIA_TEAM
 }
 
 enum EventCategory {
