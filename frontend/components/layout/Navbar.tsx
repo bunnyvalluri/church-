@@ -164,7 +164,10 @@ export default function Navbar() {
 
             {/* ── Right Controls ── */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <BranchSelector />
+              {/* BranchSelector — hidden on mobile (shown in mobile menu) */}
+              <div className="hidden md:block">
+                <BranchSelector />
+              </div>
               {/* Toggles — hidden on mobile to save space */}
               <div className="hidden md:flex items-center gap-1 bg-gray-100/70 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 p-1 rounded-xl backdrop-blur-md">
                 <LanguageToggle />
@@ -219,6 +222,12 @@ export default function Navbar() {
               </nav>
 
               <div className="mt-4 pt-4 border-t border-gray-200/70 dark:border-white/10 space-y-3">
+                {/* Branch Selector row */}
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Branch</span>
+                  <BranchSelector />
+                </div>
+
                 {/* Toggles row */}
                 <div className="flex items-center justify-between px-1">
                   <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Preferences</span>
