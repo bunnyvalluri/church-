@@ -33,7 +33,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import ThemeToggle from "@/components/ThemeToggle";
 
 interface Branch {
   id: string;
@@ -405,12 +404,12 @@ export default function FieldReportForm() {
       <div className="absolute top-1/2 left-10 w-[300px] h-[300px] bg-pink-500/5 dark:bg-pink-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between shadow-md">
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-md">
         
         {/* Bottom Border Gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/event-manager"
             className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/[0.05] transition-all text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
@@ -418,28 +417,26 @@ export default function FieldReportForm() {
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <h1 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Activity Report</h1>
-            <p className="text-[10px] text-slate-400 dark:text-slate-550 font-bold uppercase tracking-widest mt-0.5">Submit branch data</p>
+            <h1 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Activity Report</h1>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5 hidden sm:block">Submit branch data</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
             isOnline 
               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
               : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-ping"}`} />
-            <span>{isOnline ? "ONLINE" : "OFFLINE MODE"}</span>
+            <span className="hidden sm:inline">{isOnline ? "ONLINE" : "OFFLINE MODE"}</span>
           </div>
-
-          <ThemeToggle />
 
           <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden sm:block" />
 
           <div className="hidden sm:flex items-center gap-2">
             <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">{user?.name || "Joseph"}</p>
-            <p className="text-[9px] text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-wider">Event Manager</p>
+            <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">Event Manager</p>
           </div>
         </div>
       </header>
@@ -453,35 +450,35 @@ export default function FieldReportForm() {
       )}
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto w-full px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 mt-8 grid grid-cols-1 md:grid-cols-12 gap-8 relative z-10">
         
         {/* Left Side: Real-time Draft Card & Checklist (Sticky) */}
-        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 h-fit">
+        <div className="md:col-span-5 space-y-6 md:sticky md:top-24 h-fit order-2 md:order-1">
           
           {/* Real-time Draft Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-650 via-indigo-600 to-purple-800 text-white p-6 shadow-2xl border border-violet-500/20 group">
+          <div className="relative overflow-hidden rounded-3xl bg-slate-900/80 dark:bg-slate-950/80 backdrop-blur-xl border border-slate-800 dark:border-white/10 text-white p-6 shadow-2xl group">
             
             {/* Ambient Background Glows */}
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-pink-500/30 blur-3xl group-hover:scale-125 transition-transform duration-750" />
-            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-blue-500/30 blur-2xl" />
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-indigo-500/20 blur-3xl group-hover:scale-125 transition-transform duration-750" />
+            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-violet-500/15 blur-2xl" />
 
             <div className="relative space-y-5">
               
               {/* Badge */}
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 border border-white/20 text-[9px] font-black tracking-wider uppercase text-violet-100">
-                  <Sparkles className="w-3.5 h-3.5 text-pink-300 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black tracking-wider uppercase text-indigo-300">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
                   Live Draft Preview
                 </span>
-                <span className="text-[10px] font-bold text-white/70">
+                <span className="text-[10px] font-bold text-slate-400">
                   Ready Score: {completionScore()}%
                 </span>
               </div>
 
               {/* Ready Score Progress Bar */}
-              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-800 dark:bg-white/5 h-1.5 rounded-full overflow-hidden">
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-full"
+                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${completionScore()}%` }}
                   transition={{ duration: 0.5 }}
@@ -490,19 +487,19 @@ export default function FieldReportForm() {
 
               {/* Title & Branch */}
               <div className="space-y-1">
-                <h2 className="text-2xl font-black tracking-tight leading-tight line-clamp-2">
+                <h2 className="text-2xl font-black tracking-tight leading-tight line-clamp-2 bg-gradient-to-r from-white to-slate-100 bg-clip-text text-transparent">
                   {title.trim() || "Untitled Activity Report"}
                 </h2>
-                <p className="text-xs text-violet-150/90 font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                  <Compass className="w-4 h-4 text-pink-300" />
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-indigo-400" />
                   {selectedBranchName} Branch
                 </p>
               </div>
 
               {/* Volunteers Count */}
-              <div className="flex items-center gap-2.5 text-xs bg-white/5 border border-white/10 rounded-xl p-3 shadow-inner">
-                <Users className="w-4.5 h-4.5 shrink-0 text-violet-200" />
-                <span className="truncate text-violet-100/90 font-bold">
+              <div className="flex items-center gap-2.5 text-xs bg-white/[0.02] border border-white/5 rounded-xl p-3 shadow-inner">
+                <Users className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+                <span className="truncate text-slate-300 font-bold">
                   {numVolunteers} Volunteer{numVolunteers !== 1 ? 's' : ''} Attending
                 </span>
               </div>
@@ -510,7 +507,7 @@ export default function FieldReportForm() {
               {/* Thumbnail Attachments */}
               {attachedMedia.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest block">Attached Assets ({attachedMedia.length})</span>
+                  <span className="text-[9px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest block">Attached Assets ({attachedMedia.length})</span>
                   <div className="flex flex-wrap gap-2">
                     {attachedMedia.slice(0, 5).map((item, i) => (
                       <div key={item.id} className="relative w-9 h-9 rounded-lg overflow-hidden border border-white/20 shadow-sm bg-black/20 flex items-center justify-center">
@@ -596,7 +593,7 @@ export default function FieldReportForm() {
         </div>
 
         {/* Right Side: Redesigned High-Fidelity Form */}
-        <div className="lg:col-span-7">
+        <div className="md:col-span-7 order-1 md:order-2">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {submitError && (
@@ -694,7 +691,7 @@ export default function FieldReportForm() {
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white dark:bg-slate-900/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all resize-none"
                 />
-                <p className="text-[9px] text-slate-450 dark:text-slate-550 leading-normal">
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-normal">
                   💡 Tips: Note down highlights, prayer items, and new member details.
                 </p>
               </div>
@@ -755,7 +752,7 @@ export default function FieldReportForm() {
               
               <div className="border-b border-slate-100 dark:border-white/5 pb-3 flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider bg-gradient-to-r from-violet-650 to-indigo-650 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-1.5">
+                  <h3 className="text-xs font-black uppercase tracking-wider bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-1.5">
                     <Paperclip className="w-4 h-4 text-violet-500" />
                     3. Media Attachments
                   </h3>
@@ -795,7 +792,7 @@ export default function FieldReportForm() {
                     <p className="text-xs font-extrabold text-slate-700 dark:text-slate-200">
                       Drag & drop images/videos here, or <span className="text-violet-600 dark:text-violet-400 group-hover:underline">browse files</span>
                     </p>
-                    <p className="text-[10px] text-slate-450 dark:text-slate-550 font-medium max-w-sm mx-auto">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium max-w-sm mx-auto">
                       Images (JPG, PNG, WEBP up to 10MB) & Videos (MP4, WEBM up to 100MB)
                     </p>
                   </div>
@@ -808,7 +805,7 @@ export default function FieldReportForm() {
                     e.stopPropagation(); // Avoid triggering file browse click
                     setShowCamera(true);
                   }}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-655 to-indigo-650 hover:brightness-110 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:brightness-110 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   Live Snapshot
@@ -835,7 +832,7 @@ export default function FieldReportForm() {
                             <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-slate-900 text-white space-y-2">
                               <Loader2 className="w-5 h-5 text-violet-400 animate-spin" />
                               <div className="min-w-0 w-full">
-                                <p className="text-[9px] font-bold truncate text-slate-350 px-1">{item.name}</p>
+                                <p className="text-[9px] font-bold truncate text-slate-300 px-1">{item.name}</p>
                                 <p className="text-[8px] text-slate-500 font-semibold uppercase">{formatBytes(item.size)}</p>
                               </div>
                               <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mt-1 px-1.5">
@@ -858,7 +855,7 @@ export default function FieldReportForm() {
                                       <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                                     </div>
                                   </div>
-                                  <span className="absolute bottom-2 left-2 text-[8px] font-black uppercase bg-violet-650/90 text-white px-2 py-0.5 rounded-lg tracking-wider border border-violet-500/20">
+                                  <span className="absolute bottom-2 left-2 text-[8px] font-black uppercase bg-violet-600/90 text-white px-2 py-0.5 rounded-lg tracking-wider border border-violet-500/20">
                                     Video
                                   </span>
                                 </div>
@@ -876,7 +873,7 @@ export default function FieldReportForm() {
                                       e.stopPropagation();
                                       removeMediaItem(item.id);
                                     }}
-                                    className="p-1.5 bg-rose-650 hover:bg-rose-550 rounded-lg text-white transition-colors active:scale-95 shadow-md"
+                                    className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors active:scale-95 shadow-md"
                                     title="Delete Attachment"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -898,7 +895,7 @@ export default function FieldReportForm() {
             <button
               type="submit"
               disabled={isSubmitting || attachedMedia.some(item => item.isUploading)}
-              className="w-full h-12 bg-gradient-to-r from-violet-650 via-indigo-650 to-purple-750 hover:brightness-110 hover:shadow-xl hover:shadow-indigo-500/10 active:scale-[0.98] disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-md mt-6 gap-2"
+              className="w-full h-12 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 hover:brightness-110 hover:shadow-xl hover:shadow-indigo-500/10 active:scale-[0.98] disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-md mt-6 gap-2"
             >
               {isSubmitting ? (
                 <>
