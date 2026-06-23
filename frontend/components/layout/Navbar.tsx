@@ -103,11 +103,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between gap-4">
 
             {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-3 group flex-shrink-0 min-w-0">
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0 min-w-0">
               {/* Logo circle */}
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+              <div className="relative w-9 h-9 sm:w-12 md:w-14 flex-shrink-0">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500 via-purple-500 to-violet-600 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-125" />
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-lg transition-all duration-300 bg-white flex items-center justify-center">
+                <div className="relative w-9 h-9 sm:w-12 md:w-14 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-lg transition-all duration-300 bg-white flex items-center justify-center">
                   <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function Navbar() {
                   suppressHydrationWarning
                   className={cn(
                     "font-black leading-tight text-gray-900 dark:text-white whitespace-nowrap",
-                    "text-base sm:text-lg",
+                    "text-xs sm:text-base md:text-lg",
                     language !== "en" ? "tracking-normal" : "tracking-tight"
                   )}
                 >
@@ -129,8 +129,8 @@ export default function Navbar() {
                   className={cn(
                     "leading-none whitespace-nowrap",
                     language !== "en"
-                      ? "text-sm font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
-                      : "text-[0.6rem] font-bold uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 to-violet-500 bg-clip-text text-transparent"
+                      ? "text-xs font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
+                      : "text-[0.55rem] sm:text-[0.6rem] font-bold uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 to-violet-500 bg-clip-text text-transparent"
                   )}
                 >
                   {t.nav.ministries}
