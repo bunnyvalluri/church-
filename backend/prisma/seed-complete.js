@@ -39,9 +39,7 @@ async function main() {
   const branches = [
     { name: 'Shapur Nagar' },
     { name: 'Subhash Nagar' },
-    { name: 'Bahadurpally' },
-    { name: 'Kukatpally' },
-    { name: 'Miyapur' }
+    { name: 'Bahadurpally' }
   ];
   for (const b of branches) {
     await prisma.branch.upsert({
