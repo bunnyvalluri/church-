@@ -879,8 +879,7 @@ export const translations = {
       uploadingSyncingText: "Uploading and Syncing data...",
       submitReportBtn: "Submit Field Report",
       queueReportBtn: "Queue Report in Offline Outbox",
-      branchText: "Branch",
-      volunteersPlaceholder: "e.g. John Doe, Sarah Smith (Press Enter or comma)"
+      branchText: "Branch"
     }
   },
   te: {
@@ -1763,8 +1762,7 @@ export const translations = {
       uploadingSyncingText: "డేటాను అప్‌లోడ్ మరియు సింక్ చేస్తున్నాము...",
       submitReportBtn: "నివేదికను సమర్పించండి",
       queueReportBtn: "ఆఫ్‌లైన్ అవుట్‌బాక్స్‌లో క్యూ చేయి",
-      branchText: "బ్రాంచ్",
-      volunteersPlaceholder: "ఉదా. రాము, సోము (ఎంటర్ లేదా కామా నొక్కండి)"
+      branchText: "బ్రాంచ్"
     }
   },
   hi: {
@@ -2647,8 +2645,7 @@ export const translations = {
       uploadingSyncingText: "डेटा अपलोड और सिंक किया जा रहा है...",
       submitReportBtn: "रिपोर्ट जमा करें",
       queueReportBtn: "ऑफ़लाइन आउटबॉक्स में कतारबद्ध करें",
-      branchText: "ब्रांच",
-      volunteersPlaceholder: "जैसे. राम, श्याम (एंटर या अल्पविराम दबाएं)"
+      branchText: "ब्रांच"
     }
   }
 };
