@@ -101,9 +101,9 @@ try {
 }
 
 const PORT = process.env.SOCKET_PORT || 3001;
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`==================================================`);
-  console.log(`🚀 KCM Companion Server running on http://localhost:${PORT}`);
+  console.log(`🚀 KCM Companion Server running on http://0.0.0.0:${PORT}`);
   console.log(`🔌 Socket.io connections are active`);
   console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
   console.log(`==================================================`);

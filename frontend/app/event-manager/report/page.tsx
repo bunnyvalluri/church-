@@ -62,7 +62,32 @@ export default function FieldReportForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
-  const [volunteerNames, setVolunteerNames] = useState("");
+  const [volunteers, setVolunteers] = useState<string[]>([]);
+  const [volunteerInput, setVolunteerInput] = useState("");
+
+  const addVolunteerTag = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    
+    // Split by commas just in case they pasted comma-separated names
+    const names = trimmed.split(",").map(n => n.trim()).filter(Boolean);
+    
+    setVolunteers(prev => {
+      // Avoid duplicates
+      const uniqueNames = names.filter(name => !prev.includes(name));
+      return [...prev, ...uniqueNames];
+    });
+    setVolunteerInput("");
+  };
+
+  const handleVolunteerKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "," || e.key === "Enter") {
+      e.preventDefault();
+      addVolunteerTag(volunteerInput);
+    } else if (e.key === "Backspace" && !volunteerInput && volunteers.length > 0) {
+      setVolunteers(prev => prev.slice(0, -1));
+    }
+  };
   
   // Media states
   const [attachedMedia, setAttachedMedia] = useState<AttachedMedia[]>([]);
@@ -280,10 +305,6 @@ export default function FieldReportForm() {
     setSubmitError(null);
 
     const branchName = branches.find((b) => b.id === selectedBranchId)?.name || "Branch";
-    const volunteersList = volunteerNames
-      .split(",")
-      .map((name) => name.trim())
-      .filter((name) => name.length > 0);
 
     const images = attachedMedia.filter(item => item.type === "IMAGE" && !item.isUploading).map(item => item.base64);
     const videos = attachedMedia.filter(item => item.type === "VIDEO" && !item.isUploading).map(item => item.base64);
@@ -297,7 +318,7 @@ export default function FieldReportForm() {
       offeringAmount: 0,
       reportDate: new Date(reportDate).toISOString(),
       gpsLocation: null,
-      volunteerNames: volunteersList,
+      volunteerNames: volunteers,
       images, // array of base64 strings
       videos, // array of base64 strings
     };
@@ -355,7 +376,7 @@ export default function FieldReportForm() {
 
   // Live draft tracking info
   const selectedBranchName = branches.find(b => b.id === selectedBranchId)?.name || "Select Branch";
-  const numVolunteers = volunteerNames.split(",").map(v => v.trim()).filter(Boolean).length;
+  const numVolunteers = volunteers.length;
   
   // Calculate completion percentage
   const completionScore = () => {
@@ -376,10 +397,19 @@ export default function FieldReportForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-16">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-16 relative overflow-hidden">
       
+      {/* Background Luminous Neon Blobs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-500/15 rounded-full blur-[130px] pointer-events-none -z-10 animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none -z-10 animate-float-delayed" />
+      <div className="absolute top-1/2 left-10 w-[300px] h-[300px] bg-pink-500/5 dark:bg-pink-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-white/[0.05] px-6 py-4 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between shadow-md">
+        
+        {/* Bottom Border Gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
+
         <div className="flex items-center gap-3">
           <Link
             href="/event-manager"
@@ -423,53 +453,63 @@ export default function FieldReportForm() {
       )}
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto w-full px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="max-w-7xl mx-auto w-full px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
         
         {/* Left Side: Real-time Draft Card & Checklist (Sticky) */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 h-fit">
           
           {/* Real-time Draft Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-800 text-white p-6 shadow-xl border border-violet-500/20 group">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-650 via-indigo-600 to-purple-800 text-white p-6 shadow-2xl border border-violet-500/20 group">
             
             {/* Ambient Background Glows */}
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-pink-500/20 blur-3xl group-hover:scale-125 transition-transform duration-700" />
-            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-blue-500/20 blur-2xl" />
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-pink-500/30 blur-3xl group-hover:scale-125 transition-transform duration-750" />
+            <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-blue-500/30 blur-2xl" />
 
             <div className="relative space-y-5">
               
               {/* Badge */}
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 border border-white/20 text-[9px] font-bold tracking-wider uppercase text-violet-100">
-                  <Sparkles className="w-3 h-3 text-pink-300 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 border border-white/20 text-[9px] font-black tracking-wider uppercase text-violet-100">
+                  <Sparkles className="w-3.5 h-3.5 text-pink-300 animate-pulse" />
                   Live Draft Preview
                 </span>
-                <span className="text-[10px] font-semibold text-white/60">
+                <span className="text-[10px] font-bold text-white/70">
                   Ready Score: {completionScore()}%
                 </span>
               </div>
 
+              {/* Ready Score Progress Bar */}
+              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${completionScore()}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+
               {/* Title & Branch */}
               <div className="space-y-1">
-                <h2 className="text-xl font-black tracking-tight leading-tight line-clamp-2">
+                <h2 className="text-2xl font-black tracking-tight leading-tight line-clamp-2">
                   {title.trim() || "Untitled Activity Report"}
                 </h2>
-                <p className="text-xs text-violet-100/70 font-semibold uppercase tracking-wider flex items-center gap-1">
-                  <Compass className="w-3.5 h-3.5" />
+                <p className="text-xs text-violet-150/90 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-pink-300" />
                   {selectedBranchName} Branch
                 </p>
               </div>
 
               {/* Volunteers Count */}
-              <div className="flex items-center gap-2 text-xs bg-white/5 border border-white/10 rounded-xl p-2.5">
-                <Users className="w-4 h-4 shrink-0 text-violet-200" />
-                <span className="truncate text-violet-100/90 font-medium">
+              <div className="flex items-center gap-2.5 text-xs bg-white/5 border border-white/10 rounded-xl p-3 shadow-inner">
+                <Users className="w-4.5 h-4.5 shrink-0 text-violet-200" />
+                <span className="truncate text-violet-100/90 font-bold">
                   {numVolunteers} Volunteer{numVolunteers !== 1 ? 's' : ''} Attending
                 </span>
               </div>
 
               {/* Thumbnail Attachments */}
               {attachedMedia.length > 0 && (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest block">Attached Assets ({attachedMedia.length})</span>
                   <div className="flex flex-wrap gap-2">
                     {attachedMedia.slice(0, 5).map((item, i) => (
@@ -496,7 +536,7 @@ export default function FieldReportForm() {
           </div>
 
           {/* Form Completion Checklist */}
-          <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+          <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-lg space-y-4 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
               <FileSpreadsheet className="w-4 h-4 text-violet-500" />
               Report Completion Checklist
@@ -567,10 +607,10 @@ export default function FieldReportForm() {
             )}
 
             {/* Panel 1: Core Identification */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-5">
+            <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-md space-y-5">
               <div className="border-b border-slate-100 dark:border-white/5 pb-3">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">1. Core Identification</h3>
-                <p className="text-[9px] text-slate-400 dark:text-slate-550 font-semibold uppercase tracking-widest mt-0.5">Where & when did this activity take place</p>
+                <h3 className="text-xs font-black uppercase tracking-wider bg-gradient-to-r from-violet-650 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">1. Core Identification</h3>
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-widest mt-0.5">Where & when did this activity take place</p>
               </div>
 
               {/* Branch Dropdown */}
@@ -587,7 +627,7 @@ export default function FieldReportForm() {
                       required
                       value={selectedBranchId}
                       onChange={(e) => setSelectedBranchId(e.target.value)}
-                      className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer"
+                      className="w-full h-11 pl-10 pr-10 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white dark:bg-slate-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer"
                     >
                       {branches.map((b) => (
                         <option key={b.id} value={b.id} className="dark:bg-slate-900 text-xs font-semibold">{b.name} Branch</option>
@@ -613,7 +653,7 @@ export default function FieldReportForm() {
                     placeholder="e.g. Sunday Service, Youth Fellowship"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white dark:bg-slate-900/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
                   />
                 </div>
               </div>
@@ -630,17 +670,17 @@ export default function FieldReportForm() {
                     required
                     value={reportDate}
                     onChange={(e) => setReportDate(e.target.value)}
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white dark:bg-slate-900/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
                   />
                 </div>
               </div>
             </div>
 
             {/* Panel 2: Outcomes & Volunteer Attendance */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-5">
+            <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-md space-y-5">
               <div className="border-b border-slate-100 dark:border-white/5 pb-3">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">2. Outcomes & Attendance</h3>
-                <p className="text-[9px] text-slate-400 dark:text-slate-555 font-semibold uppercase tracking-widest mt-0.5">Describe what happened and list helpers</p>
+                <h3 className="text-xs font-black uppercase tracking-wider bg-gradient-to-r from-violet-650 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">2. Outcomes & Attendance</h3>
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-widest mt-0.5">Describe what happened and list helpers</p>
               </div>
 
               {/* Daily Activity Description */}
@@ -652,52 +692,76 @@ export default function FieldReportForm() {
                   placeholder="Provide a report of the ministry outcome, prayer needs, and notable event actions..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all resize-none"
+                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white dark:bg-slate-900/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all resize-none"
                 />
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-normal">
+                <p className="text-[9px] text-slate-450 dark:text-slate-550 leading-normal">
                   💡 Tips: Note down highlights, prayer items, and new member details.
                 </p>
               </div>
 
-              {/* Volunteer Names */}
+              {/* Volunteer Names Tags Input */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Volunteers Attended (Comma-separated)</label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-550">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">Volunteers Attended</label>
+                <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:bg-slate-900/50 focus-within:ring-2 focus-within:ring-violet-500/20 focus-within:border-violet-500 dark:focus-within:border-violet-400 transition-all min-h-11 cursor-text">
+                  <div className="flex items-center text-slate-400 dark:text-slate-500 pl-1.5 mr-1.5 shrink-0">
                     <Users className="w-4 h-4" />
                   </div>
+                  
+                  {/* Render Tags */}
+                  <AnimatePresence>
+                    {volunteers.map((name) => (
+                      <motion.span
+                        key={name}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.15 }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-violet-500/10 to-indigo-500/10 border border-violet-500/20 dark:border-violet-400/20 text-xs font-bold text-violet-700 dark:text-violet-300"
+                      >
+                        {name}
+                        <button
+                          type="button"
+                          onClick={() => setVolunteers(prev => prev.filter(v => v !== name))}
+                          className="hover:bg-violet-500/20 dark:hover:bg-violet-400/30 rounded p-0.5 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </motion.span>
+                    ))}
+                  </AnimatePresence>
+
                   <input
                     type="text"
-                    placeholder="e.g. John Doe, Sarah Smith, Michael John"
-                    value={volunteerNames}
-                    onChange={(e) => setVolunteerNames(e.target.value)}
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
+                    placeholder={volunteers.length === 0 ? "e.g. John Doe, Sarah Smith (Press Enter or comma)" : ""}
+                    value={volunteerInput}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val.endsWith(",")) {
+                        addVolunteerTag(val.slice(0, -1));
+                      } else {
+                        setVolunteerInput(val);
+                      }
+                    }}
+                    onKeyDown={handleVolunteerKeyDown}
+                    onBlur={() => addVolunteerTag(volunteerInput)}
+                    className="flex-1 bg-transparent border-none text-xs font-semibold focus:outline-none focus:ring-0 dark:text-white min-w-[120px] py-1"
                   />
                 </div>
-                {volunteerNames.trim() && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {volunteerNames.split(",").map(v => v.trim()).filter(Boolean).map((name, i) => (
-                      <span key={i} className="text-[9px] font-bold bg-violet-500/10 border border-violet-500/10 px-2 py-0.5 rounded-lg text-violet-600 dark:text-violet-400">
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Panel 3: Redesigned Unified High-End Media Drag-and-Drop Uploader */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-sm space-y-6">
+            <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-6 shadow-md space-y-6">
               
               <div className="border-b border-slate-100 dark:border-white/5 pb-3 flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <h3 className="text-xs font-black uppercase tracking-wider bg-gradient-to-r from-violet-650 to-indigo-650 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-1.5">
                     <Paperclip className="w-4 h-4 text-violet-500" />
                     3. Media Attachments
                   </h3>
-                  <p className="text-[9px] text-slate-400 dark:text-slate-555 font-semibold uppercase tracking-widest mt-0.5">Drag and drop files to attach reports logs</p>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-widest mt-0.5">Drag and drop files to attach reports logs</p>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-white/5 rounded-lg border text-slate-550 border-slate-200/60 dark:border-white/10 dark:text-slate-400">
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-white/5 rounded-lg border text-slate-500 border-slate-200/60 dark:border-white/10 dark:text-slate-400">
                   {attachedMedia.length} files attached
                 </span>
               </div>
@@ -710,7 +774,7 @@ export default function FieldReportForm() {
                 onClick={() => fileInputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 group flex flex-col items-center justify-center min-h-[160px] ${
                   isDragging 
-                    ? "border-violet-500 bg-violet-500/5 dark:bg-violet-500/10 scale-[1.01]" 
+                    ? "border-violet-500 bg-violet-500/5 dark:bg-violet-500/10 scale-[1.01] shadow-lg shadow-violet-500/5" 
                     : "border-slate-200 hover:border-violet-500/50 dark:border-white/10 dark:hover:border-violet-500/35 hover:bg-slate-50/50 dark:hover:bg-white/[0.01]"
                 }`}
               >
@@ -724,14 +788,14 @@ export default function FieldReportForm() {
                 />
 
                 <div className="flex flex-col items-center justify-center space-y-3 pointer-events-none">
-                  <div className={`p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-400 group-hover:text-violet-500 transition-colors shadow-sm ${isDragging ? "animate-bounce" : ""}`}>
+                  <div className={`p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-400 group-hover:text-violet-500 transition-all duration-300 shadow-sm ${isDragging ? "animate-bounce" : ""}`}>
                     <UploadCloud className="w-8 h-8" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-xs font-extrabold text-slate-700 dark:text-slate-200">
                       Drag & drop images/videos here, or <span className="text-violet-600 dark:text-violet-400 group-hover:underline">browse files</span>
                     </p>
-                    <p className="text-[10px] text-slate-450 dark:text-slate-500 font-medium max-w-sm mx-auto">
+                    <p className="text-[10px] text-slate-450 dark:text-slate-550 font-medium max-w-sm mx-auto">
                       Images (JPG, PNG, WEBP up to 10MB) & Videos (MP4, WEBM up to 100MB)
                     </p>
                   </div>
@@ -744,7 +808,7 @@ export default function FieldReportForm() {
                     e.stopPropagation(); // Avoid triggering file browse click
                     setShowCamera(true);
                   }}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-655 to-indigo-650 hover:brightness-110 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   Live Snapshot
@@ -812,7 +876,7 @@ export default function FieldReportForm() {
                                       e.stopPropagation();
                                       removeMediaItem(item.id);
                                     }}
-                                    className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors active:scale-95 shadow-md"
+                                    className="p-1.5 bg-rose-650 hover:bg-rose-550 rounded-lg text-white transition-colors active:scale-95 shadow-md"
                                     title="Delete Attachment"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -834,7 +898,7 @@ export default function FieldReportForm() {
             <button
               type="submit"
               disabled={isSubmitting || attachedMedia.some(item => item.isUploading)}
-              className="w-full h-12 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 hover:from-violet-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-md mt-6 gap-2"
+              className="w-full h-12 bg-gradient-to-r from-violet-650 via-indigo-650 to-purple-750 hover:brightness-110 hover:shadow-xl hover:shadow-indigo-500/10 active:scale-[0.98] disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-md mt-6 gap-2"
             >
               {isSubmitting ? (
                 <>

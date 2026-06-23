@@ -74,6 +74,15 @@ function isPublicPath(pathname: string): boolean {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // ── HTTPS Enforcement in Production ──────────────────────────────────────
+  const isProd = process.env.NODE_ENV === 'production';
+  const proto = req.headers.get('x-forwarded-proto');
+  if (isProd && proto && proto !== 'https') {
+    const httpsUrl = req.nextUrl.clone();
+    httpsUrl.protocol = 'https:';
+    return NextResponse.redirect(httpsUrl, 301);
+  }
+
   // Always allow public paths and static assets
   if (isPublicPath(pathname) || pathname.startsWith('/_next/') || pathname.includes('.')) {
     return NextResponse.next();

@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import PaletteToggle from "@/components/PaletteToggle";
-import BranchSelector from "@/components/BranchSelector";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -164,7 +163,6 @@ export default function Navbar() {
 
             {/* ── Right Controls ── */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <BranchSelector />
               {/* Toggles — hidden on mobile to save space */}
               <div className="hidden md:flex items-center gap-1 bg-gray-100/70 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 p-1 rounded-xl backdrop-blur-md">
                 <LanguageToggle />
