@@ -117,7 +117,7 @@ export async function PUT(
     }
 
     // 2. Update report properties
-    await prisma.eventReport.update({
+    const updatedReport = await prisma.eventReport.update({
       where: { id: params.id },
       data: {
         branchId,

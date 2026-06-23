@@ -89,7 +89,7 @@ export default function UnifiedEventManagementPortal() {
   const { user, getIdToken, logout } = useAuth();
 
   // Parse greeting name professionally
-  const getGreetingName = (fullName?: string) => {
+  const getGreetingName = (fullName?: string | null) => {
     if (!fullName) return "User";
     const parts = fullName.split(" ");
     if (fullName.toLowerCase().startsWith("event manager") && parts.length > 2) {
@@ -366,7 +366,7 @@ export default function UnifiedEventManagementPortal() {
       const result = event.target?.result as string;
       
       if (isImage) {
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
           const maxWidth = 1024;
@@ -1641,7 +1641,7 @@ export default function UnifiedEventManagementPortal() {
                       input.onchange = (e: any) => {
                         const files = e.target.files;
                         if (files && files.length > 0) {
-                          Array.from(files).forEach(processEditFile);
+                          Array.from(files as FileList).forEach(processEditFile);
                         }
                       };
                       input.click();
