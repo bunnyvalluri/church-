@@ -125,20 +125,27 @@ export default function Contact() {
 
               {/* Location Selector Tabs */}
               <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-white/[0.03] rounded-2xl mb-8">
-                {(Object.keys(branches) as Array<keyof typeof branches>).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setSelectedBranch(key)}
-                    className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 ${
-                      selectedBranch === key
-                        ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-sm border border-slate-200/50 dark:border-white/[0.05]"
-                        : "text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {branches[key].name}
-                  </button>
-                ))}
+                {(Object.keys(branches) as Array<keyof typeof branches>).map((key) => {
+                  const activeColorMap: Record<string, string> = {
+                    shapur:  "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/30 border-0",
+                    subhash: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border-0",
+                    bahadur: "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30 border-0",
+                  };
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedBranch(key)}
+                      className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 ${
+                        selectedBranch === key
+                          ? activeColorMap[key] ?? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-sm"
+                          : "text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white"
+                      }`}
+                    >
+                      {branches[key].name}
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="space-y-6">
