@@ -5,7 +5,7 @@ const getResend = () => new Resend(process.env.RESEND_API_KEY || 're_dummy_key_b
 
 const CHURCH_NAME   = 'Kingdom of Christ Ministries';
 const CHURCH_EMAIL  = 'kingofchristministries23@gmail.com';
-const CHURCH_PHONE  = '+91 97040 90069 | +91 96409 43777 | +91 73964 33856';
+const CHURCH_PHONE  = '+91 97040 90069 | +91 73964 33856';
 const CHURCH_ADDR   = 'Jeedimetla, Hyderabad, Telangana 500055';
 const FROM_EMAIL    = 'KCM Ministries <onboarding@resend.dev>'; // Use your verified domain in prod
 const NOTIFY_EMAIL  = 'kingofchristministries23@gmail.com';     // Admin notification recipient

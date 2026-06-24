@@ -47,7 +47,7 @@ const EVENT_MANAGER_API_PREFIXES = ['/api/event-manager'];
 const FIELD_VOLUNTEER_API_PREFIXES = ['/api/field-volunteer'];
 
 // ── Paths that require at minimum a signed-in session ─────────────────────
-const AUTH_REQUIRED_PREFIXES = ['/member', '/pastor-portal', '/church-member'];
+const AUTH_REQUIRED_PREFIXES = ['/member', '/pastor-portal', '/church-member', '/memberships'];
 
 // ── Public paths that are always allowed ─────────────────────────────────
 const PUBLIC_PATHS = [

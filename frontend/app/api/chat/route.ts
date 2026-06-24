@@ -22,7 +22,7 @@ CHURCH DETAILS:
 - Name: Kingdom of Christ Ministries (KCM)
 - Address: 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055
 - Senior Pastor: Bishop Kurra Kristhu Raju
-- Contact: 97040 90069 (Senior Pastor) | 96409 43777 | 73964 33856
+- Contact: 97040 90069 (Senior Pastor) | 73964 33856
 
 SERVICE SCHEDULE:
 Sunday:

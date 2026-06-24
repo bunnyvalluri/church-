@@ -46,7 +46,8 @@ import {
   Filter,
   CheckCircle2,
   XCircle,
-  RefreshCw
+  RefreshCw,
+  Activity
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1923,9 +1924,18 @@ export default function PastorDashboard() {
           {/* TAB 3: MEMBER REQUESTS VIEW */}
           {activeNav === "Member Requests" && (
             <div className="admin-card p-6 space-y-6 animate-in fade-in duration-200">
-              <div>
-                <h2 className="admin-title text-base">Membership Applications</h2>
-                <p className="admin-subtitle mt-1">Review church registration, transfers, reinstatement, and baptism requests</p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="admin-title text-base">Membership Applications</h2>
+                  <p className="admin-subtitle mt-1">Review church registration, transfers, reinstatement, and baptism requests</p>
+                </div>
+                <Link
+                  href="/memberships/visits"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs shadow-md transition-all self-start sm:self-center"
+                >
+                  <Activity className="w-4 h-4" />
+                  Review Visit Requests
+                </Link>
               </div>
 
               <div className="admin-table-wrapper overflow-x-auto">

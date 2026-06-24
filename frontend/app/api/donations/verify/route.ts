@@ -147,7 +147,7 @@ async function sendDonationReceiptEmail(donation: {
               Kingdom of Christ Ministries • 15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, TS 500055
             </p>
             <p style="margin:4px 0 0;color:#6b7280;font-size:12px;">
-              📞 +91 97040 90069 &nbsp;|&nbsp; +91 96409 43777 &nbsp;|&nbsp; +91 73964 33856 &nbsp;|&nbsp; ✉ kingofchristministries23@gmail.com
+              📞 +91 97040 90069 &nbsp;|&nbsp; +91 73964 33856 &nbsp;|&nbsp; ✉ kingofchristministries23@gmail.com
             </p>
             <p style="margin:12px 0 0;color:#9ca3af;font-size:10px;">
               Questions? Reply to this email or contact us directly. This is an automated receipt.
