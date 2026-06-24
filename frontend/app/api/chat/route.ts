@@ -29,7 +29,6 @@ Sunday:
   • 5:45 AM  — Watch Tower (Early Morning Worship)
   • 8:30 AM  — Sunday Service
   • 10:00 AM — Senior Pastor Special Message
-  • 10:30 AM — Youth Service
 
 Weekly:
   • Wednesday  6:30 PM — Prayer Meeting
@@ -37,7 +36,8 @@ Weekly:
   • Saturday   6:30 PM — Special Meeting
 
 Monthly:
-  • 3rd Friday 4:00 PM — Healing Worship
+  • 4th Sunday 6:30 PM – 8:30 PM — Youth Service
+  • Every Thursday 6:30 PM – 8:30 PM — Healing Anointing with Oil
   • 1st Sunday           — Water Baptism Service
 
 GUIDELINES:
