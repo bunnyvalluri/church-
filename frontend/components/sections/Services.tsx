@@ -50,7 +50,7 @@ export default function Services() {
     },
     {
       icon: Heart,
-      title: isTelugu ? "హీలింగ్ అభిషేకం (ఆయిల్ తో)" : "Healing Anointing with Oil",
+      title: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : "Oil Anointing Prayer Service",
       time: isTelugu ? "ప్రతి గురువారం సా. 6:30 - 8:30" : "Every Thursday 6:30 PM – 8:30 PM",
       description: isTelugu ? "దేవుని స్వస్థత శక్తిని అనుభవించండి — ప్రతి గురువారం నూనెతో అభిషేకం మరియు ప్రత్యేక ప్రార్థనతో." : "Experience God's healing power every Thursday through anointing with oil and special intercessory prayer.",
       color: "from-pink-500 to-rose-500",

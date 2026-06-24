@@ -37,7 +37,7 @@ Weekly:
 
 Monthly:
   • 4th Sunday 6:30 PM – 8:30 PM — Youth Service
-  • Every Thursday 6:30 PM – 8:30 PM — Healing Anointing with Oil
+  • Every Thursday 6:30 PM – 8:30 PM — Oil Anointing Prayer Service
   • 1st Sunday           — Water Baptism Service
 
 GUIDELINES:
