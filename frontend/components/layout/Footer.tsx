@@ -36,6 +36,7 @@ export default function Footer() {
       { name: t.links.serve, href: "/get-involved/serve" },
       { name: t.links.give, href: "/login" },
       { name: t.links.member, href: "/membership" },
+      { name: t.links.memberVisits, href: "/member/visits" },
     ],
     connect: [
       { name: t.links.contact, href: "#contact" },

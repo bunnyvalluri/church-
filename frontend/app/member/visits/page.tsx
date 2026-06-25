@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { 
-  Calendar, Clock, User, Mail, Phone, Upload, Camera, X, Check, 
+  Calendar, Clock, User, Mail, Phone, Upload, Camera, X, Check, CheckCircle2,
   Loader2, AlertCircle, Sparkles, Shield, Bookmark, ArrowRight, Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -314,27 +314,12 @@ export default function MemberVisitsPage() {
                 </div>
               </div>
             </div>
-
             {/* Passport Photo Upload Zone */}
             <div className="space-y-2">
               <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 Passport Photo *
               </label>
-
-              <div
-                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-                onDragLeave={() => setIsDragOver(false)}
-                onDrop={handleDrop}
-                onClick={() => !photoPreview && fileInputRef.current?.click()}
-                className={`relative mx-auto flex flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all duration-300 cursor-pointer ${
-                  photoPreview
-                    ? "border-transparent cursor-default bg-transparent"
-                    : isDragOver
-                    ? "border-[#6366F1] bg-violet-500/5 scale-[1.01]"
-                    : "border-gray-200 dark:border-white/[0.08] hover:border-[#6366F1]/50 hover:bg-[#6366F1]/5"
-                }`}
-                style={{ width: 170, height: 210 }}
-              >
+              <div className="flex justify-center items-center">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -350,47 +335,82 @@ export default function MemberVisitsPage() {
                   {photoPreview ? (
                     <motion.div
                       key="preview"
-                      initial={{ opacity: 0, scale: 0.92 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="relative w-full h-full rounded-2xl overflow-hidden group shadow-lg"
+                      className="w-full h-[110px] flex items-center justify-start p-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white/40 dark:bg-white/[0.02] backdrop-blur-sm shadow-sm"
                     >
-                      <Image src={photoPreview} alt="Passport preview" fill unoptimized className="object-cover" />
-                      
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                        className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"
-                      >
-                        <Camera className="w-5.5 h-5.5 text-white" />
-                        <span className="text-white text-[10px] font-black uppercase">Change Photo</span>
-                      </button>
-                      <div className="absolute inset-0 ring-4 ring-[#6366F1]/30 rounded-2xl pointer-events-none" />
+                      {/* Left vertical passport thumbnail */}
+                      <div className="w-[66px] h-[84px] rounded-xl overflow-hidden relative shadow-sm border border-gray-200 dark:border-white/[0.08] shrink-0 mr-4">
+                        <Image src={photoPreview} alt="Passport preview" fill unoptimized className="object-cover" />
+                        <div className="absolute inset-0 ring-2 ring-indigo-500/20 rounded-xl pointer-events-none" />
+                      </div>
+
+                      {/* Right content details */}
+                      <div className="flex-1 flex flex-col justify-between h-full py-0.5 text-left">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-450">
+                            <CheckCircle2 className="w-4 h-4 shrink-0" />
+                            <span>Photo Attached Successfully</span>
+                          </div>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                            35mm × 45mm · Size verified for security check
+                          </p>
+                        </div>
+                        
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 dark:border-white/[0.1] hover:border-indigo-500/50 dark:hover:border-indigo-500/50 rounded-lg text-gray-600 dark:text-gray-300 text-[10px] font-bold transition-all w-fit hover:bg-indigo-500/[0.02] dark:hover:bg-indigo-500/[0.02] active:scale-95 shadow-sm"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>Change Photo</span>
+                        </button>
+                      </div>
                     </motion.div>
                   ) : (
-                    <motion.div
-                      key="empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex flex-col items-center gap-2 px-3 text-center select-none"
-                    >
-                      <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400">
-                        <Upload className="w-6 h-6 animate-pulse" />
+                    <div className="flex justify-center w-full">
+                      {/* File Upload zone */}
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                        onDragLeave={() => setIsDragOver(false)}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`group relative w-full h-[96px] flex items-center justify-start px-5 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer bg-white/40 dark:bg-white/[0.02] backdrop-blur-sm shadow-sm hover:shadow-md hover:shadow-indigo-500/5 hover:-translate-y-0.5 ${
+                          isDragOver
+                            ? "border-indigo-500 bg-indigo-500/5 scale-[1.01]"
+                            : "border-gray-200 dark:border-white/[0.08] hover:border-indigo-500/50 hover:bg-indigo-500/[0.02]"
+                        }`}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center text-left w-full select-none"
+                        >
+                          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 shadow-sm shrink-0 mr-4">
+                            <Upload className="w-5 h-5 animate-pulse" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-205 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                              Upload Photo
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                              Drag & drop your file here, or click to browse
+                            </p>
+                          </div>
+                        </motion.div>
                       </div>
-                      <div>
-                        <p className="text-[11px] font-black text-gray-700 dark:text-gray-300">Upload Photo</p>
-                        <p className="text-[9px] text-gray-400 dark:text-gray-505 mt-0.5">Drag & drop here</p>
-                      </div>
-                      <span className="text-[9px] font-black text-[#6366F1] uppercase tracking-wider mt-1.5">
-                        Passport Size
-                      </span>
-                    </motion.div>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
 
-              <p className="text-center text-[10px] text-gray-400 dark:text-gray-500 mt-2">
-                JPG · PNG · WebP · Max 5MB. Will be verified by security gateways.
-              </p>
+              {/* Passport guide label */}
+              <div className="flex items-center justify-center gap-1.5 px-3 py-1 bg-gray-50 dark:bg-white/[0.02] border border-gray-200/50 dark:border-white/[0.05] rounded-full w-fit mx-auto mt-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                  JPG · PNG · WebP · Max 5MB (Security Verified)
+                </span>
+              </div>
             </div>
 
             {/* Submit Button */}

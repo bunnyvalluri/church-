@@ -46,9 +46,14 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string; dot: string }>
 };
 
 function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const cat = CATEGORY_STYLES[event.category] || CATEGORY_STYLES.SPECIAL;
   const eventDate = new Date(event.date);
-  const isUpcoming = eventDate > new Date();
+  const isUpcoming = mounted && eventDate > new Date();
   const thumbnail = event.image || event.media?.[0]?.imageUrl;
 
   return (
@@ -79,7 +84,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
 
         {/* Date chip */}
         <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-xl">
-          <p className="text-[10px] font-black text-slate-800 dark:text-white">
+          <p className="text-[10px] font-black text-slate-800 dark:text-white" suppressHydrationWarning>
             {eventDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
           </p>
         </div>

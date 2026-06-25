@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Camera, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -61,6 +61,7 @@ export default function LoginPage() {
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoDone, setPhotoDone] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function LoginPage() {
 
   // Redirect already-authenticated users (skip photo step for returning sessions)
   useEffect(() => {
-    if (mounted && status === "authenticated" && user && !showPhotoStep) {
+    if (mounted && status === "authenticated" && user && !showPhotoStep && !isLoggingIn) {
       switch (user.role) {
         case "SUPER_ADMIN": router.replace("/portal-select"); break;
         case "ADMIN":       router.replace("/admin");          break;
@@ -79,7 +80,7 @@ export default function LoginPage() {
         default:            router.replace("/member");
       }
     }
-  }, [mounted, status, user, router, showPhotoStep]);
+  }, [mounted, status, user, router, showPhotoStep, isLoggingIn]);
 
   // ── Photo upload helpers ───────────────────────────────────────────────────
   const handleFileSelect = useCallback(async (file: File) => {
@@ -260,6 +261,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+    setIsLoggingIn(true);
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
       sendLoginEmail(
@@ -267,173 +269,30 @@ export default function LoginPage() {
         credential.user.displayName || email.split('@')[0],
         'email'
       );
-      // Show passport photo step only for MEMBER role (detected after DB sync via AuthProvider)
-      // We show the step immediately after sign-in; role check happens in the redirect guard above
-      setPendingUid(credential.user.uid);
-      setShowPhotoStep(true);
+      if (photoPreview) {
+        try {
+          await fetch("/api/member/profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: credential.user.uid, image: photoPreview }),
+          });
+          if (updateUser) {
+            updateUser({ image: photoPreview });
+          }
+        } catch (uploadErr) {
+          console.error("[AUTH] Photo upload error:", uploadErr);
+        }
+      }
     } catch (err: any) {
       setError(err.code || "sign-in-failed");
+      setIsLoggingIn(false);
     } finally {
       setIsLoading(false);
+      if (auth.currentUser) {
+        setTimeout(() => setIsLoggingIn(false), 500);
+      }
     }
   };
-
-  // ── Passport Photo Upload Modal ────────────────────────────────────────────
-  if (showPhotoStep) {
-    return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end p-4 relative overflow-hidden">
-        {/* Background decorations */}
-        <div className="absolute -top-40 -left-40 w-[28rem] h-[28rem] bg-[hsl(var(--primary))]/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-[28rem] h-[28rem] bg-gradient-end/20 rounded-full blur-3xl" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] select-none pointer-events-none">
-          <span className="text-white font-bold" style={{ fontSize: "35rem", lineHeight: 1 }}>✝</span>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 32 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 w-full max-w-md bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 overflow-hidden"
-        >
-          {/* Top accent bar */}
-          <div className="h-1 w-full bg-gradient-to-r from-gradient-start via-[hsl(var(--primary))] to-gradient-end" />
-
-          <div className="p-8">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gradient-start to-gradient-end flex items-center justify-center mx-auto mb-4 shadow-xl shadow-[hsl(var(--primary))]/30">
-                <Camera className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Upload Your Photo</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5 leading-relaxed">
-                Add a passport-size photo to personalise your member profile.
-              </p>
-            </div>
-
-            {/* Upload Zone */}
-            <div
-              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-              onDragLeave={() => setIsDragOver(false)}
-              onDrop={handleDrop}
-              onClick={() => !photoPreview && fileInputRef.current?.click()}
-              className={`relative mx-auto flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer ${
-                photoPreview
-                  ? "border-transparent cursor-default"
-                  : isDragOver
-                  ? "border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/5 scale-[1.02]"
-                  : "border-gray-200 dark:border-gray-700 hover:border-[hsl(var(--primary))]/60 hover:bg-[hsl(var(--primary))]/5"
-              }`}
-              style={{ width: 200, height: 240 }}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoInputChange}
-              />
-
-              <AnimatePresence mode="wait">
-                {photoDone ? (
-                  <motion.div
-                    key="done"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="flex flex-col items-center gap-3"
-                  >
-                    <CheckCircle2 className="w-16 h-16 text-green-500" />
-                    <span className="text-green-600 dark:text-green-400 font-bold text-sm">Saved! Redirecting…</span>
-                  </motion.div>
-                ) : photoPreview ? (
-                  <motion.div
-                    key="preview"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="relative w-full h-full rounded-xl overflow-hidden group"
-                  >
-                    <Image src={photoPreview} alt="Passport photo preview" fill unoptimized className="object-cover" />
-                    {/* Overlay: change photo */}
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                      className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"
-                    >
-                      <Camera className="w-6 h-6 text-white" />
-                      <span className="text-white text-xs font-semibold">Change Photo</span>
-                    </button>
-                    {/* Passport border overlay */}
-                    <div className="absolute inset-0 ring-4 ring-[hsl(var(--primary))]/40 rounded-xl pointer-events-none" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="empty"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex flex-col items-center gap-3 px-4 text-center select-none"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <User className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Drop photo here</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">or click to browse</p>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-600 font-medium uppercase tracking-wider">
-                      <Upload className="w-3 h-3" />
-                      Passport size recommended
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Passport guide label */}
-            <p className="text-center text-[11px] text-gray-400 dark:text-gray-500 mt-3 flex items-center justify-center gap-1.5">
-              <span className="w-3 h-3 rounded-sm border border-current inline-block" />
-              35mm × 45mm · White background · Face clearly visible
-            </p>
-
-            {/* Action Buttons */}
-            <div className="mt-8 space-y-3">
-              {photoPreview && !photoDone && (
-                <motion.button
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  type="button"
-                  onClick={savePhotoAndContinue}
-                  disabled={photoUploading}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold shadow-lg shadow-[hsl(var(--primary))]/25 hover:shadow-xl hover:shadow-[hsl(var(--primary))]/35 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {photoUploading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Saving photo…</>
-                  ) : (
-                    <><CheckCircle2 className="w-4 h-4" /> Continue to Member Portal <ArrowRight className="w-4 h-4" /></>
-                  )}
-                </motion.button>
-              )}
-
-              <button
-                type="button"
-                onClick={skipPhotoAndContinue}
-                disabled={photoUploading || photoDone}
-                className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-white/5 font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40"
-              >
-                <SkipForward className="w-4 h-4" />
-                {photoPreview ? "Skip & Continue without saving" : "Skip for now"}
-              </button>
-            </div>
-
-            {/* Footer note */}
-            <p className="text-center text-[11px] text-gray-400 dark:text-gray-600 mt-5">
-              You can always update your photo later in <span className="font-semibold text-[hsl(var(--primary))]">
-                My Profile
-              </span>.
-            </p>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   // ── Removed to prevent hydration mismatch
 
@@ -609,6 +468,104 @@ export default function LoginPage() {
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Passport Photo Upload Zone */}
+            <div className="space-y-2 mt-4">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Passport Photo (Optional)
+              </label>
+
+              {/* Upload Zone */}
+              <div className="flex justify-center items-center">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoInputChange}
+                />
+
+                <AnimatePresence mode="wait">
+                  {photoPreview ? (
+                    <motion.div
+                      key="preview"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="w-full h-[110px] flex items-center justify-start p-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white/40 dark:bg-white/[0.02] backdrop-blur-sm shadow-sm"
+                    >
+                      {/* Left vertical passport thumbnail */}
+                      <div className="w-[66px] h-[84px] rounded-xl overflow-hidden relative shadow-sm border border-gray-200 dark:border-white/[0.08] shrink-0 mr-4">
+                        <Image src={photoPreview} alt="Passport photo preview" fill unoptimized className="object-cover" />
+                        <div className="absolute inset-0 ring-2 ring-indigo-500/20 rounded-xl pointer-events-none" />
+                      </div>
+
+                      {/* Right content details */}
+                      <div className="flex-1 flex flex-col justify-between h-full py-0.5 text-left">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-450">
+                            <CheckCircle2 className="w-4 h-4 shrink-0" />
+                            <span>Photo Attached Successfully</span>
+                          </div>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                            35mm × 45mm · Size verified for security check
+                          </p>
+                        </div>
+                        
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 dark:border-white/[0.1] hover:border-indigo-500/50 dark:hover:border-indigo-500/50 rounded-lg text-gray-600 dark:text-gray-300 text-[10px] font-bold transition-all w-fit hover:bg-indigo-500/[0.02] dark:hover:bg-indigo-500/[0.02] active:scale-95 shadow-sm"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>Change Photo</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <div className="flex justify-center w-full">
+                      {/* File Upload zone */}
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                        onDragLeave={() => setIsDragOver(false)}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`group relative w-full h-[96px] flex items-center justify-start px-5 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer bg-white/40 dark:bg-white/[0.02] backdrop-blur-sm shadow-sm hover:shadow-md hover:shadow-indigo-500/5 hover:-translate-y-0.5 ${
+                          isDragOver
+                            ? "border-indigo-500 bg-indigo-500/5 scale-[1.01]"
+                            : "border-gray-200 dark:border-white/[0.08] hover:border-indigo-500/50 hover:bg-indigo-500/[0.02]"
+                        }`}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center text-left w-full select-none"
+                        >
+                          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 shadow-sm shrink-0 mr-4">
+                            <Upload className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                              Upload Passport Photo
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                              Drag & drop your file here, or click to browse
+                            </p>
+                          </div>
+                        </motion.div>
+                      </div>
+                    </div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Passport guide label */}
+              <div className="flex items-center justify-center gap-1.5 px-3 py-1 bg-gray-50 dark:bg-white/[0.02] border border-gray-200/50 dark:border-white/[0.05] rounded-full w-fit mx-auto mt-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                  35mm × 45mm · JPG/PNG · Face clearly visible
+                </span>
               </div>
             </div>
 

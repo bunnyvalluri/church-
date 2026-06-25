@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Calendar,
@@ -71,8 +71,12 @@ export default function EventCard({
   onUploadImages,
   onEdit,
 }: EventCardProps) {
+  const [mounted, setMounted] = useState(false);
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const status = statusConfig[event.status] || statusConfig.DRAFT;
   const StatusIcon = status.icon;
@@ -84,7 +88,7 @@ export default function EventCard({
     month: "short",
     year: "numeric",
   });
-  const isUpcoming = eventDate > new Date();
+  const isUpcoming = mounted && eventDate > new Date();
 
   const thumbnailUrl =
     event.image || event.media?.[0]?.imageUrl || null;
@@ -211,7 +215,7 @@ export default function EventCard({
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <Calendar className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-              <span className="font-semibold">{formattedDate}</span>
+              <span className="font-semibold" suppressHydrationWarning>{formattedDate}</span>
               {event.time && (
                 <>
                   <span className="text-slate-300 dark:text-slate-600">·</span>
