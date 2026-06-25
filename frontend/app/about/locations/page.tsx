@@ -3,7 +3,7 @@
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { MapPin, Clock, Phone, Navigation, ArrowLeft, ExternalLink, ShieldCheck } from "lucide-react";
+import { MapPin, Clock, Phone, Navigation, ArrowLeft, ExternalLink, ShieldCheck, Church, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -56,6 +56,9 @@ export default function LocationsPage() {
         mapIconColor: "text-indigo-600 dark:text-indigo-400",
         mapBtnHover: "hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20",
         isMain: false,
+        Icon: BookOpen,
+        iconBg: "from-indigo-500/20 to-blue-500/10 dark:from-indigo-500/15 dark:to-blue-500/5",
+        iconColor: "text-indigo-600 dark:text-indigo-400",
       },
       {
         id: "subhash",
@@ -102,6 +105,9 @@ export default function LocationsPage() {
         mapIconColor: "text-violet-600 dark:text-violet-400",
         mapBtnHover: "hover:bg-violet-50/50 dark:hover:bg-violet-950/20",
         isMain: true,
+        Icon: Church,
+        iconBg: "from-violet-500/20 to-rose-500/10 dark:from-violet-500/15 dark:to-rose-500/5",
+        iconColor: "text-violet-600 dark:text-violet-400",
       },
       {
         id: "bahadur",
@@ -143,6 +149,9 @@ export default function LocationsPage() {
         mapIconColor: "text-emerald-650 dark:text-emerald-400",
         mapBtnHover: "hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
         isMain: false,
+        Icon: Users,
+        iconBg: "from-emerald-500/20 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/5",
+        iconColor: "text-emerald-600 dark:text-emerald-400",
       },
     ];
   };
@@ -218,11 +227,16 @@ export default function LocationsPage() {
               <div className={`absolute top-0 inset-x-0 h-2 bg-gradient-to-r ${branch.gradient}`} />
 
               <div className="p-8 relative z-10">
+                {/* Visual Icon Header */}
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${branch.iconBg} flex items-center justify-center border border-slate-200/50 dark:border-white/10 shadow-sm mb-5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-md`}>
+                  <branch.Icon className={`w-6 h-6 ${branch.iconColor} transition-transform duration-300`} />
+                </div>
+
                 {/* Header */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
-                      <MapPin className={`w-5 h-5 ${branch.accentColor} transition-transform group-hover:scale-110 duration-350`} />
+                      <MapPin className={`w-4 h-4 ${branch.accentColor}`} />
                       <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500">
                         {isTelugu ? "బ్రాంచ్" : isHindi ? "Braanch" : "Branch"}
                       </span>
@@ -275,7 +289,7 @@ export default function LocationsPage() {
                   <h3 className="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-widest mb-2">
                     {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Address"}
                   </h3>
-                  <p className="text-slate-700 dark:text-slate-350 text-sm leading-relaxed">
+                  <p className="text-slate-700 dark:text-slate-355 text-sm leading-relaxed">
                     {branch.address}
                   </p>
                 </div>
