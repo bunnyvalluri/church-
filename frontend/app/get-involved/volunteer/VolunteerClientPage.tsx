@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Music, Users, Baby, Heart, Camera, Coffee, Wrench } from "lucide-react";
+import { ArrowRight, Music, Users, Baby, Heart, Camera, Coffee, Wrench, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function VolunteerClientPage() {
   const { language, t } = useLanguage();
@@ -96,11 +98,21 @@ export default function VolunteerClientPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <Navbar />
       {/* Hero */}
       <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-6">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back to Home
+              </Link>
+            </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm mb-6 animate-bounce-in">
               <Heart className="h-4 w-4 animate-pulse text-pink-300" />
               <span>
@@ -301,6 +313,7 @@ export default function VolunteerClientPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

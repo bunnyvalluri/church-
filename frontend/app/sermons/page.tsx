@@ -1,13 +1,26 @@
 import Sermons from "@/components/sections/Sermons";
 import Image from "next/image";
-import { PlayCircle, Mic2, FileText } from "lucide-react";
+import Link from "next/link";
+import { PlayCircle, Mic2, FileText, ChevronLeft } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function SermonsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <Navbar />
       {/* Page Header */}
       <div className="bg-gray-900 text-white py-16">
         <div className="container mx-auto px-4 text-center">
+          <div className="mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to Home
+            </Link>
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Sermon Library</h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
             Browse our collection of life-changing messages. Watch, listen, or read sermon notes.
@@ -55,6 +68,7 @@ export default function SermonsPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

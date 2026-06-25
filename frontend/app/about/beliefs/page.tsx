@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Book, Check, Heart, Cross } from "lucide-react";
+import { ArrowRight, Book, Check, Heart, Cross, ChevronLeft } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Our Beliefs | Kingdom of Christ Ministries",
@@ -42,11 +44,21 @@ export default function BeliefsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
+      <Navbar />
       {/* Hero */}
       <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-6">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back to Home
+              </Link>
+            </div>
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
               Our Beliefs
             </h1>
@@ -135,6 +147,7 @@ export default function BeliefsPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

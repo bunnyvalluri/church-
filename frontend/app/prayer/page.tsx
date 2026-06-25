@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Phone, Mail, Clock } from "lucide-react";
+import { Heart, Phone, Mail, Clock, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function PrayerPage() {
   const { t } = useLanguage();
@@ -10,11 +12,21 @@ export default function PrayerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20">
+      <Navbar />
       <section className="relative py-20 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm mb-6 animate-bounce-in">
+            <div className="mb-6">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back to Home
+              </Link>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm mb-6 animate-bounce-in font-sans">
               <Heart className="h-4 w-4" />
               <span>{pageT.heroSubtitle}</span>
             </div>
@@ -235,6 +247,7 @@ export default function PrayerPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

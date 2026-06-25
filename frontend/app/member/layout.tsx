@@ -34,8 +34,7 @@ const layoutTranslations = {
       prayers: { label: "Prayer Requests", desc: "Prayer wall" },
       sermons: { label: "Sermon Library", desc: "Watch & listen" },
       volunteer: { label: "Volunteer", desc: "Serve in ministry" },
-      give: { label: "Give & Tithe", desc: "Online offerings" },
-      visits: { label: "Plan a Visit", desc: "Schedule a church visit" }
+      give: { label: "Give & Tithe", desc: "Online offerings" }
     }
   },
   te: {
@@ -55,8 +54,7 @@ const layoutTranslations = {
       prayers: { label: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన గోడ" },
       sermons: { label: "ప్రసంగాల లైబ్రరీ", desc: "వీక్షించండి & వినండి" },
       volunteer: { label: "వాలంటీర్", desc: "పరిచర్యలో సేవ చేయండి" },
-      give: { label: "కానుకలు & దశమభాగాలు", desc: "ఆన్‌లైన్ కానుకలు" },
-      visits: { label: "సందర్శన నమోదు", desc: "ఆరాధన సందర్శనలు" }
+      give: { label: "కానుకలు & దశమభాగాలు", desc: "ఆన్‌లైన్ కానుకలు" }
     }
   },
   hi: {
@@ -76,8 +74,7 @@ const layoutTranslations = {
       prayers: { label: "प्रार्थना निवेदन", desc: "प्रार्थना वाल" },
       sermons: { label: "प्रवचन लाइब्रेरी", desc: "देखें और सुनें" },
       volunteer: { label: "स्वयंसेवक", desc: "मंत्रालय में सेवा" },
-      give: { label: "दान और प्रसाद", desc: "ऑनलाइन दान" },
-      visits: { label: "यात्रा की योजना", desc: "चर्च यात्रा कार्यक्रम" }
+      give: { label: "दान और प्रसाद", desc: "ऑनलाइन दान" }
     }
   }
 };
@@ -98,7 +95,6 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const translatedLinks = [
     { href: "/member/profile", label: lt.links.profile.label, icon: User, color: "from-purple-500 to-violet-600", bg: "bg-purple-50 dark:bg-purple-950/30", text: "text-purple-600 dark:text-purple-400", desc: lt.links.profile.desc },
     { href: "/member/events", label: lt.links.events.label, icon: Calendar, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-950/30", text: "text-indigo-600 dark:text-indigo-400", desc: lt.links.events.desc },
-    { href: "/member/visits", label: lt.links.visits?.label || "Plan a Visit", icon: Activity, color: "from-violet-500 to-purple-650", bg: "bg-violet-50 dark:bg-violet-955/20", text: "text-violet-650 dark:text-violet-400", desc: lt.links.visits?.desc || "Schedule a church visit" },
     { href: "/member/prayers", label: lt.links.prayers.label, icon: Heart, color: "from-rose-500 to-pink-600", bg: "bg-rose-50 dark:bg-rose-950/30", text: "text-rose-600 dark:text-rose-400", desc: lt.links.prayers.desc },
     { href: "/member/sermons", label: lt.links.sermons.label, icon: BookOpen, color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30", text: "text-blue-600 dark:text-blue-400", desc: lt.links.sermons.desc },
     { href: "/member/volunteer", label: lt.links.volunteer.label, icon: Briefcase, color: "from-amber-500 to-orange-500", bg: "bg-amber-50 dark:bg-amber-950/30", text: "text-amber-600 dark:text-amber-400", desc: lt.links.volunteer.desc },

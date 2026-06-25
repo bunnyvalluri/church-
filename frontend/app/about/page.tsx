@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Church, Users, Book, Target, Heart, Briefcase } from "lucide-react";
+import { ArrowRight, Church, Users, Book, Target, Heart, Briefcase, MapPin } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "About Us | Kingdom of Christ Ministries",
@@ -44,11 +46,20 @@ export default function AboutPage() {
       icon: Target,
       color: "green",
     },
+    {
+      title: "Locations",
+      description: "Find service times, maps, and directions for our three branches in Hyderabad",
+      href: "/about/locations",
+      icon: MapPin,
+      color: "purple",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      {/* Hero Section */}
+      <Navbar />
+      <div className="pt-20">
+        {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
@@ -184,6 +195,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </div>
+      <Footer />
     </div>
   );
 }
