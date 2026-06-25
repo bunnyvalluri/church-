@@ -60,7 +60,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center space-x-3 mb-6">
+            <a href="/" className="flex items-center space-x-3 mb-6">
               <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-purple-500/30 bg-white flex-shrink-0 flex items-center justify-center shadow-lg">
                 <Image 
                   src="/logo.png" 
@@ -77,7 +77,7 @@ export default function Footer() {
                   {t.nav.ministries}
                 </span>
               </div>
-            </Link>
+            </a>
             <p className="text-gray-400 mb-2">
               {mounted && language === 'te' ? "కాలము సంభవమైయున్నది, దేవునిరాజ్యము సమీపించియున్నది, మారుమనస్సు పొంది సువార్త నమ్ముడి. — మార్కు 1:15" : "“Time is fulfilled, and the Kingdom of God is at hand; repent and believe in the Gospel.” — Mark 1:15"}
             </p>

@@ -103,7 +103,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between gap-4">
 
             {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0 min-w-0">
+            <a href="/" className="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0 min-w-0">
               {/* Logo circle */}
               <div className="relative w-9 h-9 sm:w-12 md:w-14 flex-shrink-0">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500 via-purple-500 to-violet-600 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-125" />
@@ -136,7 +136,7 @@ export default function Navbar() {
                   {t.nav.ministries}
                 </span>
               </div>
-            </Link>
+            </a>
 
             {/* ── Desktop Nav Links (md+) ── */}
             <div className="hidden md:flex items-center gap-1 flex-1 justify-center">

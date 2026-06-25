@@ -58,13 +58,13 @@ export default function ServePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6">
-              <Link
+              <a
                 href="/"
                 className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Back to Home
-              </Link>
+              </a>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
               Serve with Us

@@ -261,13 +261,13 @@ export default function EventsPage() {
 
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <div className="mb-6">
-            <Link
+            <a
               href="/"
               className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to Home
-            </Link>
+            </a>
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-widest text-violet-300 mb-4">
             <Sparkles className="w-3 h-3" />

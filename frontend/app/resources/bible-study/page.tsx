@@ -35,13 +35,13 @@ export default function BibleStudyPage() {
       <div className="bg-blue-900 text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-6">
-            <Link
+            <a
               href="/"
               className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to Home
-            </Link>
+            </a>
           </div>
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-800 mb-6">
             <BookOpen className="w-8 h-8" />
