@@ -5,10 +5,16 @@ import Link from "next/link";
 import { Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname() || "/";
+  const isHomePage = pathname === "/";
+
+  const resolveHref = (href: string) =>
+    href.startsWith("/") ? href : isHomePage ? href : `/${href}`;
 
   useEffect(() => {
     setMounted(true);
@@ -112,7 +118,7 @@ export default function Footer() {
               {footerLinks.about.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
@@ -129,7 +135,7 @@ export default function Footer() {
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
@@ -146,7 +152,7 @@ export default function Footer() {
               {footerLinks.getInvolved.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
@@ -163,7 +169,7 @@ export default function Footer() {
               {footerLinks.connect.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="hover:text-[hsl(var(--primary))] transition-colors"
                   >
                     {link.name}
