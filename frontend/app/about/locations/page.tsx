@@ -36,17 +36,26 @@ export default function LocationsPage() {
           {
             day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
             time: "6:00 PM",
-            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "प्रार्थना सभा" : "Prayer Meeting",
+            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "ప్రार्थना सभा" : "Prayer Meeting",
           },
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
             time: "6:00 PM",
-            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "ఆరాధన సేవ" : "Worship Service",
           },
         ],
-        gradient: "from-blue-500/20 via-indigo-500/10 to-transparent",
-        accentColor: "text-blue-550 dark:text-blue-400",
-        btnColor: "bg-blue-600 hover:bg-blue-700 text-white",
+        gradient: "from-indigo-600 to-blue-500",
+        glowGradient: "from-indigo-500/10 via-blue-500/5 to-transparent",
+        accentColor: "text-indigo-600 dark:text-indigo-400",
+        hoverBorder: "hover:border-indigo-500/40 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.12)]",
+        hoverTitle: "group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
+        serviceBorder: "border-l-indigo-500/80 dark:border-l-indigo-400/80",
+        badgeBg: "bg-indigo-50 dark:bg-indigo-950/40",
+        badgeText: "text-indigo-700 dark:text-indigo-300",
+        btnColor: "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-600/20 hover:shadow-indigo-600/30",
+        mapIconColor: "text-indigo-600 dark:text-indigo-400",
+        mapBtnHover: "hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20",
+        isMain: false,
       },
       {
         id: "subhash",
@@ -81,9 +90,18 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        gradient: "from-purple-500/20 via-pink-500/10 to-transparent",
-        accentColor: "text-purple-650 dark:text-purple-400",
-        btnColor: "bg-purple-600 hover:bg-purple-700 text-white",
+        gradient: "from-violet-600 via-fuchsia-500 to-rose-500",
+        glowGradient: "from-violet-500/10 via-rose-500/5 to-transparent",
+        accentColor: "text-violet-600 dark:text-violet-400",
+        hoverBorder: "hover:border-violet-500/40 hover:shadow-[0_0_40px_-5px_rgba(167,139,250,0.12)]",
+        hoverTitle: "group-hover:text-violet-600 dark:group-hover:text-violet-400",
+        serviceBorder: "border-l-violet-500/80 dark:border-l-violet-400/80",
+        badgeBg: "bg-violet-50 dark:bg-violet-950/40",
+        badgeText: "text-violet-700 dark:text-violet-300",
+        btnColor: "bg-gradient-to-r from-violet-600 to-rose-500 hover:from-violet-500 hover:to-rose-450 text-white shadow-md shadow-violet-600/20 hover:shadow-violet-600/30",
+        mapIconColor: "text-violet-600 dark:text-violet-400",
+        mapBtnHover: "hover:bg-violet-50/50 dark:hover:bg-violet-950/20",
+        isMain: true,
       },
       {
         id: "bahadur",
@@ -113,9 +131,18 @@ export default function LocationsPage() {
             type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Prayer",
           },
         ],
-        gradient: "from-emerald-500/20 via-teal-500/10 to-transparent",
+        gradient: "from-emerald-600 to-teal-500",
+        glowGradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
         accentColor: "text-emerald-650 dark:text-emerald-400",
-        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white",
+        hoverBorder: "hover:border-emerald-500/40 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.12)]",
+        hoverTitle: "group-hover:text-emerald-650 dark:group-hover:text-emerald-400",
+        serviceBorder: "border-l-emerald-500/80 dark:border-l-emerald-400/80",
+        badgeBg: "bg-emerald-50 dark:bg-emerald-950/40",
+        badgeText: "text-emerald-700 dark:text-emerald-350",
+        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30",
+        mapIconColor: "text-emerald-650 dark:text-emerald-400",
+        mapBtnHover: "hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
+        isMain: false,
       },
     ];
   };
@@ -182,21 +209,31 @@ export default function LocationsPage() {
             <motion.article
               key={branch.id}
               variants={itemVariants}
-              className="group relative bg-white dark:bg-white/[0.02] backdrop-blur-xl rounded-[2rem] border border-slate-200/60 dark:border-white/[0.06] shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              className={`group relative bg-white dark:bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/[0.06] shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-550 overflow-hidden flex flex-col justify-between ${branch.hoverBorder}`}
             >
-              {/* Gradient Banner decoration */}
-              <div className={`absolute top-0 inset-x-0 h-4 bg-gradient-to-r ${branch.gradient}`} />
+              {/* Dynamic Radial Glow in background */}
+              <div className={`absolute -right-16 -top-16 w-56 h-56 rounded-full bg-gradient-to-br ${branch.glowGradient} blur-[65px] pointer-events-none group-hover:scale-125 transition-transform duration-700 opacity-60 group-hover:opacity-100`} />
 
-              <div className="p-8">
+              {/* Gradient Banner decoration */}
+              <div className={`absolute top-0 inset-x-0 h-2 bg-gradient-to-r ${branch.gradient}`} />
+
+              <div className="p-8 relative z-10">
                 {/* Header */}
                 <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className={`w-5 h-5 ${branch.accentColor}`} />
-                    <span className="text-xs uppercase font-extrabold tracking-widest text-slate-400">
-                      {isTelugu ? "బ్రాంచ్" : isHindi ? "ब्रांच" : "Branch"}
-                    </span>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <MapPin className={`w-5 h-5 ${branch.accentColor} transition-transform group-hover:scale-110 duration-350`} />
+                      <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500">
+                        {isTelugu ? "బ్రాంచ్" : isHindi ? "Braanch" : "Branch"}
+                      </span>
+                    </div>
+                    {branch.isMain && (
+                      <span className="bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full tracking-wider uppercase animate-pulse-slow">
+                        {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य अभयारण्य" : "Main Sanctuary"}
+                      </span>
+                    )}
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                  <h2 className={`text-2xl font-black text-slate-900 dark:text-white tracking-tight ${branch.hoverTitle} transition-colors duration-300`}>
                     {branch.name}
                   </h2>
                 </div>
@@ -207,25 +244,25 @@ export default function LocationsPage() {
 
                 {/* Service Times Block */}
                 <div className="mb-8">
-                  <h3 className="text-xs uppercase font-black text-slate-400 tracking-wider mb-3 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
+                  <h3 className="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-widest mb-4 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                    {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "ఆరాధన సమయాలు" : "Service Schedule"}
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-3.5">
                     {branch.services.map((srv, index) => (
                       <div
                         key={index}
-                        className="bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04] p-3 rounded-2xl flex flex-col justify-between"
+                        className={`bg-slate-50/50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/[0.03] p-4 rounded-2xl flex flex-col justify-between border-l-4 ${branch.serviceBorder} shadow-sm group-hover:shadow-md transition-all duration-300`}
                       >
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-bold text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2.5 py-0.5 rounded-full">
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className={`font-extrabold text-[10px] uppercase tracking-wider ${branch.badgeBg} ${branch.badgeText} px-2.5 py-0.5 rounded-full`}>
                             {srv.day}
                           </span>
                           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                             {srv.time}
                           </span>
                         </div>
-                        <span className="text-sm font-bold text-slate-800 dark:text-slate-300">
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                           {srv.type}
                         </span>
                       </div>
@@ -234,35 +271,35 @@ export default function LocationsPage() {
                 </div>
 
                 {/* Address Block */}
-                <div className="mb-6">
-                  <h3 className="text-xs uppercase font-black text-slate-400 tracking-wider mb-2">
+                <div className="mb-2">
+                  <h3 className="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-widest mb-2">
                     {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Address"}
                   </h3>
-                  <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                  <p className="text-slate-700 dark:text-slate-350 text-sm leading-relaxed">
                     {branch.address}
                   </p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="p-8 pt-0 border-t border-slate-100 dark:border-white/[0.04] mt-auto">
+              <div className="p-8 pt-0 border-t border-slate-100 dark:border-white/[0.04] mt-auto relative z-10">
                 <div className="grid grid-cols-2 gap-4 pt-6">
                   <a
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white text-xs font-bold transition-all hover:scale-102 active:scale-98"
+                    className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 ${branch.mapBtnHover} text-slate-800 dark:text-white text-xs font-bold transition-all hover:scale-102 active:scale-98 group/btn`}
                   >
-                    <Navigation className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <Navigation className={`w-3.5 h-3.5 ${branch.mapIconColor} transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5`} />
                     {isTelugu ? "రూట్ మ్యాప్" : isHindi ? "मार्ग नक्शा" : "Directions"}
                   </a>
 
                   <a
                     href={`tel:${branch.phone}`}
-                    className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl ${branch.btnColor} text-xs font-bold transition-all hover:scale-102 active:scale-98 shadow-sm`}
+                    className={`flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl ${branch.btnColor} text-xs font-bold transition-all hover:scale-102 active:scale-98`}
                   >
-                    <Phone className="w-3.5 h-3.5" />
-                    {isTelugu ? "కాల్ చేయండి" : isHindi ? "कॉल करें" : "Contact"}
+                    <Phone className="w-3.5 h-3.5 animate-pulse-slow" />
+                    {isTelugu ? "కాల్ చేయండి" : isHindi ? "కॉल करें" : "Contact"}
                   </a>
                 </div>
               </div>
