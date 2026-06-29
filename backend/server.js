@@ -101,6 +101,16 @@ try {
 }
 
 const PORT = process.env.SOCKET_PORT || 3001;
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[SERVER ERROR] Port ${PORT} is already in use. Please stop any existing backend processes.`);
+    process.exit(1);
+  } else {
+    console.error(`[SERVER ERROR] ${err.message}`);
+  }
+});
+
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`==================================================`);
   console.log(`🚀 KCM Companion Server running on http://0.0.0.0:${PORT}`);
@@ -108,3 +118,4 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
   console.log(`==================================================`);
 });
+
