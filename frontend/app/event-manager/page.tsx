@@ -841,9 +841,9 @@ export default function UnifiedEventManagementPortal() {
 
                 <button
                   onClick={() => setShowCreateService(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-indigo-500 hover:bg-indigo-650 rounded-xl text-xs font-black text-white transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 border border-white/10 shadow-indigo-500/10 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-3 bg-indigo-950 hover:bg-indigo-900 rounded-xl text-xs font-black text-white transition-all active:scale-95 shadow-lg hover:shadow-indigo-950/20 border border-indigo-850/40 shadow-inner cursor-pointer"
                 >
-                  <Calendar className="w-4 h-4 text-white/80" />
+                  <Calendar className="w-4 h-4 text-white/90" />
                   {t.eventManager?.createServicesBtn || "Create Services"}
                 </button>
               </div>
