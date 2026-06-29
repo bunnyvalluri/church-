@@ -1557,47 +1557,7 @@ export default function UnifiedEventManagementPortal() {
                   </div>
                 </div>
 
-                {/* Attendance & Offering (INR) Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  
-                  {/* Attendance Count */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.attendanceCountLabel || "Attendance Count"}</label>
-                    <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                        <Users className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={editAttendanceCount}
-                        onChange={(e) => setEditAttendanceCount(Number(e.target.value))}
-                        className="w-full h-10 pl-9 pr-3.5 rounded-xl bg-slate-55 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
-                      />
-                    </div>
-                  </div>
 
-                  {/* Offering Amount */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.offeringLabelFull || "Offering Collected (INR)"}</label>
-                    <div className="relative">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-xs">
-                        ₹
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={editOfferingAmount}
-                        onChange={(e) => setEditOfferingAmount(Number(e.target.value))}
-                        className="w-full h-10 pl-9 pr-3.5 rounded-xl bg-slate-55 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                </div>
 
                 {/* Description Textarea */}
                 <div className="space-y-1.5">
