@@ -833,9 +833,9 @@ export default function UnifiedEventManagementPortal() {
 
                 <Link
                   href="/event-manager/report?openCamera=true"
-                  className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 border border-white/15 rounded-xl text-xs font-black text-white transition-all active:scale-95"
+                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20"
                 >
-                  <Camera className="w-4 h-4 text-white/80" />
+                  <Camera className="w-4 h-4 !text-[#0f1021]" />
                   {t.eventManager?.quickCaptureBtn || "Quick Capture"}
                 </Link>
 
