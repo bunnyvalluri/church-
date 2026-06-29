@@ -942,18 +942,27 @@ export default function UnifiedEventManagementPortal() {
             </div>
           )}
 
-          {/* Filters and Search toolbar */}
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-4.5 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-violet-500 dark:text-violet-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.dbTitle || "Reports Database"}</span>
+          {/* Filters and Search toolbar (Executive Senior UI/UX Redesign) */}
+          <div className="bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 sm:px-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 shadow-sm">
+                <SlidersHorizontal className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                  {t.eventManager?.dbTitle || "Reports Database"}
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                    {reports.length} {reports.length === 1 ? "Report" : "Reports"}
+                  </span>
+                </h3>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
               {reports.length > 0 && (
                 <button
                   onClick={exportToCSV}
-                  className="h-10 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1.5 active:scale-95"
+                  className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-black transition-all shadow-sm flex items-center gap-2 active:scale-95 cursor-pointer"
                   title="Export reports data to CSV file"
                 >
                   <Download className="w-4 h-4" />
@@ -965,28 +974,28 @@ export default function UnifiedEventManagementPortal() {
                 <select
                   value={branchFilter}
                   onChange={(e) => setBranchFilter(e.target.value)}
-                  className="h-10 pl-3.5 pr-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-violet-500/30 dark:border-violet-500/20 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/50 flex-grow md:flex-initial cursor-pointer appearance-none"
+                  className="h-10 pl-3.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 shadow-sm flex-grow md:flex-initial cursor-pointer appearance-none transition-all"
                 >
                   <option value="all">{t.eventManager?.allBranchesOpt || "All Branches"}</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
+                <ChevronDown className="w-4 h-4 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
               </div>
 
               <div className="relative flex items-center flex-1 md:flex-initial">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="h-10 pl-3.5 pr-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-violet-500/30 dark:border-violet-500/20 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/50 flex-grow md:flex-initial cursor-pointer appearance-none"
+                  className="h-10 pl-3.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 shadow-sm flex-grow md:flex-initial cursor-pointer appearance-none transition-all"
                 >
                   <option value="all">{t.eventManager?.allStatusesOpt || "All Statuses"}</option>
                   <option value="PENDING">{t.eventManager?.pendingOpt || "Pending Approval"}</option>
                   <option value="APPROVED">{t.eventManager?.approvedOpt || "Approved"}</option>
                   <option value="REJECTED">{t.eventManager?.rejectedOpt || "Rejected"}</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
+                <ChevronDown className="w-4 h-4 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
               </div>
             </div>
           </div>
