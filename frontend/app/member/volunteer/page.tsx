@@ -272,7 +272,7 @@ export default function MemberVolunteer() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }} 
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4.5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-xs ${
+            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-xs ${
               toast.type === "success" 
                 ? "bg-emerald-500 text-white border-emerald-400/20 shadow-emerald-500/10" 
                 : "bg-rose-500 text-white border-rose-400/20 shadow-rose-500/10"
@@ -317,7 +317,7 @@ export default function MemberVolunteer() {
             </p>
           </div>
         </div>
-        <span className="flex items-center gap-2 text-xs font-black bg-white/20 dark:bg-white/[0.06] border border-white/30 dark:border-white/[0.1] px-4.5 py-2.5 rounded-full text-white shadow-sm shrink-0 uppercase tracking-wider">
+        <span className="flex items-center gap-2 text-xs font-black bg-white/20 dark:bg-white/[0.06] border border-white/30 dark:border-white/[0.1] px-5 py-2.5 rounded-full text-white shadow-sm shrink-0 uppercase tracking-wider">
           <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
           {vt.nowAccepting}
         </span>

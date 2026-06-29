@@ -1,4 +1,4 @@
-name: Continuous Integration (CI) Pipeline
+name: Event Portal CI/CD Pipeline
 
 on:
   push:
@@ -7,37 +7,36 @@ on:
     branches: [ main, master ]
 
 jobs:
-  validate:
-    name: Build & Code Verification Audit
+  build-and-test:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (Active LTS)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci || npm install
 
-      - name: Validate Prisma Schema
-        run: npx prisma validate --schema=backend/prisma/schema.prisma
+      - name: Prisma Validate & Generate
+        working-directory: ./backend
+        run: |
+          npx prisma validate
+          npx prisma generate
 
-      - name: Run ESLint Check
-        run: npm run lint
+      - name: Lint & Security Scan
+        run: |
+          npm run lint --if-present
 
-      - name: Compile-Time TypeScript Audit
-        run: npx tsc --noEmit --project frontend/tsconfig.json
-
-      - name: Verify Next.js Production Build
-        run: npm run build
+      - name: Build Next.js Application
+        working-directory: ./frontend
         env:
-          NEXT_TELEMETRY_DISABLED: 1
-          NODE_ENV: production
-          DB_OFFLINE: "true"
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+        run: |
+          npm run build

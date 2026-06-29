@@ -13,6 +13,7 @@ model User {
   email              String              @unique
   emailVerified      DateTime?
   image              String?
+  profilePublicId    String?
   password           String
   role               UserRole            @default(MEMBER)
   phone              String?
@@ -80,10 +81,12 @@ model Sermon {
   description String
   pastor      String
   date        DateTime
-  videoUrl    String?
-  audioUrl    String?
-  transcript  String?
-  thumbnail   String?
+  videoUrl          String?
+  videoPublicId     String?
+  audioUrl          String?
+  transcript        String?
+  thumbnail         String?
+  thumbnailPublicId String?
   category    String
   tags        String[]
   views       Int      @default(0)

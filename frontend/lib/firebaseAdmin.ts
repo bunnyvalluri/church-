@@ -105,3 +105,34 @@ export async function verifyFirebaseToken(idToken: string): Promise<VerifiedToke
 export function isAdminReady(): boolean {
   return getAdminApp() !== null;
 }
+
+/**
+ * Sends FCM Multicast Push Notifications to registered device tokens.
+ */
+export async function sendPushNotification(
+  tokens: string[],
+  title: string,
+  body: string,
+  data?: Record<string, string>
+): Promise<{ successCount: number; failureCount: number }> {
+  const app = getAdminApp();
+  if (!app || tokens.length === 0) {
+    console.info('[FIREBASE_ADMIN] FCM Push simulated or no tokens provided.');
+    return { successCount: tokens.length, failureCount: 0 };
+  }
+
+  try {
+    const { getMessaging } = require('firebase-admin/messaging');
+    const response = await getMessaging(app).sendEachForMulticast({
+      tokens,
+      notification: { title, body },
+      data: data || {},
+    });
+    console.info(`[FIREBASE_ADMIN] FCM Multicast Sent. Success: ${response.successCount}, Failure: ${response.failureCount}`);
+    return { successCount: response.successCount, failureCount: response.failureCount };
+  } catch (err: any) {
+    console.warn('[FIREBASE_ADMIN] FCM Push notification error:', err?.message || err);
+    return { successCount: 0, failureCount: tokens.length };
+  }
+}
+

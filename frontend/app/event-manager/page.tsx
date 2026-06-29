@@ -186,6 +186,7 @@ export default function UnifiedEventManagementPortal() {
 
   // Edit Modal Form States
   const [editBranchId, setEditBranchId] = useState("");
+  const [editCustomBranchName, setEditCustomBranchName] = useState("");
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editReportDate, setEditReportDate] = useState("");
@@ -203,6 +204,7 @@ export default function UnifiedEventManagementPortal() {
   const openEditModal = (report: DBReport) => {
     setEditingReport(report);
     setEditBranchId(report.branchId);
+    setEditCustomBranchName("");
     setEditTitle(report.title);
     setEditDescription(report.description);
     setEditReportDate(report.reportDate.split("T")[0]);
@@ -218,9 +220,35 @@ export default function UnifiedEventManagementPortal() {
   const handleUpdateReport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingReport || isSaving) return;
+    if (editBranchId === "other" && !editCustomBranchName.trim()) {
+      setSaveError("Please specify the new branch location / address.");
+      return;
+    }
 
     setIsSaving(true);
     setSaveError(null);
+
+    let finalBranchId = editBranchId;
+    if (editBranchId === "other") {
+      try {
+        const createRes = await fetch("/api/branches", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: editCustomBranchName.trim() }),
+        });
+        const createData = await createRes.json();
+        if (createRes.ok && createData.success && createData.branch) {
+          finalBranchId = createData.branch.id;
+          loadBranches(); // Reload branch list in dashboard
+        } else {
+          throw new Error(createData.error || "Failed to register new branch");
+        }
+      } catch (err: any) {
+        setSaveError(err.message || "Failed to create new branch location.");
+        setIsSaving(false);
+        return;
+      }
+    }
 
     const volunteersList = editVolunteerNames
       .split(",")
@@ -231,7 +259,7 @@ export default function UnifiedEventManagementPortal() {
     const newVideos = newAttachedMedia.filter(item => item.type === "VIDEO" && !item.isUploading).map(item => item.base64);
 
     const updatePayload = {
-      branchId: editBranchId,
+      branchId: finalBranchId,
       title: editTitle,
       description: editDescription,
       attendanceCount: editAttendanceCount,
@@ -1161,23 +1189,23 @@ export default function UnifiedEventManagementPortal() {
 
                         {/* Approvals Action Menu (Only visible for managers/admins and when pending) */}
                         {isManagerOrAdmin && report.status === "PENDING" && (
-                          <div className="flex items-center justify-end sm:justify-start gap-2 w-full sm:w-auto">
+                          <div className="flex items-center justify-end sm:justify-start gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
                             <button
                               onClick={() => handleStatusChange(report.id, "REJECTED")}
                               disabled={actionLoadingId === report.id}
-                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/10 transition-all disabled:opacity-50 active:scale-95"
+                              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-black hover:bg-rose-500/15 transition-all duration-200 disabled:opacity-50 active:scale-95 whitespace-nowrap shrink-0 shadow-sm min-w-[105px]"
                             >
-                              <X className="w-3.5 h-3.5" />
-                              {t.eventManager?.rejectBtn || "Reject"}
+                              <X className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.eventManager?.rejectBtn || "Reject"}</span>
                             </button>
 
                             <button
                               onClick={() => handleStatusChange(report.id, "APPROVED")}
                               disabled={actionLoadingId === report.id}
-                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold hover:from-emerald-500 hover:to-teal-500 shadow-md hover:shadow-emerald-500/10 transition-all disabled:opacity-50 active:scale-95"
+                              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white text-xs font-black hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-600/20 transition-all duration-200 disabled:opacity-50 active:scale-95 whitespace-nowrap shrink-0 min-w-[105px]"
                             >
-                              <Check className="w-3.5 h-3.5" />
-                              {t.eventManager?.approveBtn || "Approve"}
+                              <Check className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.eventManager?.approveBtn || "Approve"}</span>
                             </button>
                           </div>
                         )}
@@ -1458,7 +1486,7 @@ export default function UnifiedEventManagementPortal() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   
                   {/* Branch select */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">{t.eventManager?.branchLocationLabel || "Branch Location"}</label>
                     <div className="relative">
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -1473,9 +1501,23 @@ export default function UnifiedEventManagementPortal() {
                         {branches.map((b) => (
                           <option key={b.id} value={b.id} className="dark:bg-slate-900">{b.name} Branch</option>
                         ))}
+                        <option value="other" className="dark:bg-slate-900 font-bold text-violet-600 dark:text-violet-400">➕ Other / Add New Location...</option>
                       </select>
                       <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" />
                     </div>
+                    {editBranchId === "other" && (
+                      <div className="mt-2 p-3 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-200/80 dark:border-violet-800/40 rounded-xl space-y-1.5">
+                        <label className="text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">Enter New Branch Location / Address *</label>
+                        <input
+                          type="text"
+                          required
+                          value={editCustomBranchName}
+                          onChange={(e) => setEditCustomBranchName(e.target.value)}
+                          placeholder="e.g. Miyapur Branch, Hydernagar, Hyderabad"
+                          className="w-full h-9 px-3 rounded-lg bg-white dark:bg-slate-900 border border-violet-300 dark:border-violet-700 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Date picker */}

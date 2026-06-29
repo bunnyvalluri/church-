@@ -125,13 +125,14 @@ export async function POST(req: Request) {
       },
     });
 
-    // ── Emit Socket.io new-event to all connected clients ───────────────────
+    // ── Emit Socket.io event:uploaded & new-event to connected clients ─────
+    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     try {
-      await fetch("http://localhost:3001/api/trigger-event", {
+      await fetch(`${companionUrl}/api/trigger-event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "new-event",
+          type: "event:uploaded",
           payload: {
             id: event.id,
             title: event.title,
@@ -140,15 +141,34 @@ export async function POST(req: Request) {
             location: event.location,
             category: event.category,
             status: event.status,
-            branchName: event.branch?.name || null,
+            branchName: event.branch?.name || "General",
             createdBy: event.createdBy?.name || auth.name,
             mediaCount: event._count.media,
             image: event.image,
+            popupType: "new-event",
           },
         }),
       });
-    } catch {
-      // Socket server offline — silently skip
+    } catch (socketErr) {
+      console.warn("[API/EVENTS/POST] Socket server warning:", socketErr);
+    }
+
+    // ── Send FCM Push Notification ──────────────────────────────────────────
+    try {
+      const dtModel = (prisma as any).deviceToken;
+      const deviceRecords = dtModel ? await dtModel.findMany({ select: { token: true }, take: 500 }) : [];
+      const tokens = deviceRecords.map((d: any) => d.token);
+      if (tokens.length > 0) {
+        const { sendPushNotification } = await import("@/lib/firebaseAdmin");
+        await sendPushNotification(
+          tokens,
+          `New Event: ${event.title}`,
+          `Branch: ${event.branch?.name || "General"} — ${event.location}`,
+          { link: `/event-manager`, eventId: event.id }
+        );
+      }
+    } catch (pushErr) {
+      console.warn("[API/EVENTS/POST] Push notification warning:", pushErr);
     }
 
     return NextResponse.json({ success: true, event }, { status: 201 });

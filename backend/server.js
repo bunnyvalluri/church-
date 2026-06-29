@@ -52,13 +52,22 @@ app.post('/api/trigger-event', (req, res) => {
     return res.status(400).json({ error: "Event type and payload are required." });
   }
 
-  console.log(`[EVENT] Received trigger for: ${type}`);
+  console.log(`[EVENT] Received trigger for: ${type}`, payload);
   
-  // Broadcast to all connected clients
+  // Broadcast to all connected clients under primary channel and generic popup channel
   io.emit(type, payload);
+  io.emit('notification:popup', {
+    type: payload.popupType || 'new-event',
+    title: payload.title || 'New Event Uploaded',
+    description: payload.description || `Branch: ${payload.branchName || 'General'}`,
+    timestamp: new Date(),
+    icon: payload.icon || 'event',
+    link: payload.link || '/event-manager'
+  });
   
   return res.json({ success: true });
 });
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {

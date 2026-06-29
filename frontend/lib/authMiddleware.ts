@@ -305,14 +305,16 @@ export async function requireEventManagerOrDev(req: Request): Promise<Authentica
     if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER'].includes(devUser.role)) {
       return devUser;
     }
-    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-      return {
-        uid: 'dev_bypass_uid',
-        email: 'dev@kcm.local',
-        name: 'Dev Event Manager',
-        role: 'EVENT_MANAGER',
-      };
+    const user = await getAuthenticatedUser(req);
+    if (user && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER'].includes(user.role)) {
+      return user;
     }
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Event Manager',
+      role: 'EVENT_MANAGER',
+    };
   }
   return requireEventManager(req);
 }
@@ -323,14 +325,16 @@ export async function requireFieldVolunteerOrDev(req: Request): Promise<Authenti
     if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER', 'FIELD_VOLUNTEER'].includes(devUser.role)) {
       return devUser;
     }
-    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-      return {
-        uid: 'dev_bypass_uid',
-        email: 'dev@kcm.local',
-        name: 'Dev Field Volunteer',
-        role: 'FIELD_VOLUNTEER',
-      };
+    const user = await getAuthenticatedUser(req);
+    if (user && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER', 'FIELD_VOLUNTEER'].includes(user.role)) {
+      return user;
     }
+    return {
+      uid: 'dev_bypass_uid',
+      email: 'dev@kcm.local',
+      name: 'Dev Field Volunteer',
+      role: 'FIELD_VOLUNTEER',
+    };
   }
   return requireFieldVolunteer(req);
 }

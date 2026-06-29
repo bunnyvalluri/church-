@@ -12,14 +12,16 @@ export interface SecurityValidationResult {
   error?: string;
 }
 
-// Byte signature limits
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+// Byte signature limits - Phase 4 specs: Max 5MB images, 50MB videos
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 
 const ALLOWED_IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"];
-const ALLOWED_VIDEO_MIMES = ["video/mp4", "video/webm"];
+const ALLOWED_VIDEO_MIMES = ["video/mp4"];
 
-const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm"];
+const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".mp4"];
+const FORBIDDEN_EXTENSIONS = [".exe", ".svg", ".php", ".js", ".sh", ".bat", ".html"];
+
 
 /**
  * Checks a buffer's magic number bytes to verify the actual file type.
@@ -92,10 +94,10 @@ export function validateFileSecurity(
   const isVideo = declaredMimeType.startsWith("video/");
 
   if (isImage && size > MAX_IMAGE_SIZE) {
-    return { isValid: false, error: `Image exceeds maximum allowed size of 10MB. (Size: ${(size / 1024 / 1024).toFixed(2)}MB)` };
+    return { isValid: false, error: `Image exceeds maximum allowed size of 5MB. (Size: ${(size / 1024 / 1024).toFixed(2)}MB)` };
   }
   if (isVideo && size > MAX_VIDEO_SIZE) {
-    return { isValid: false, error: `Video exceeds maximum allowed size of 100MB. (Size: ${(size / 1024 / 1024).toFixed(2)}MB)` };
+    return { isValid: false, error: `Video exceeds maximum allowed size of 50MB. (Size: ${(size / 1024 / 1024).toFixed(2)}MB)` };
   }
   if (!isImage && !isVideo) {
     return { isValid: false, error: `Unsupported media classification: ${declaredMimeType}` };
@@ -107,9 +109,13 @@ export function validateFileSecurity(
     return { isValid: false, error: "File extension is missing." };
   }
   const ext = filename.slice(extIndex).toLowerCase();
-  if (!ALLOWED_EXTENSIONS.includes(ext)) {
-    return { isValid: false, error: `File extension "${ext}" is not permitted.` };
+  if (FORBIDDEN_EXTENSIONS.includes(ext)) {
+    return { isValid: false, error: `Security Violation: File extension "${ext}" is strictly forbidden.` };
   }
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    return { isValid: false, error: `File extension "${ext}" is not permitted. Allowed: jpg, jpeg, png, webp, mp4.` };
+  }
+
 
   // 3. Declared MIME Validation
   const allowedMimes = [...ALLOWED_IMAGE_MIMES, ...ALLOWED_VIDEO_MIMES];

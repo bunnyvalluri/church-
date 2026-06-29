@@ -13,6 +13,7 @@ model User {
   email              String              @unique
   emailVerified      DateTime?
   image              String?
+  profilePublicId    String?
   password           String
   role               UserRole            @default(MEMBER)
   phone              String?
@@ -27,6 +28,8 @@ model User {
   mediaReports       MediaReport[]
   eventsCreated      Event[]             @relation("EventCreator")
   eventMediaUploads  EventMedia[]        @relation("EventMediaUploader")
+  deviceTokens       DeviceToken[]
+  auditLogs          AuditLog[]
 }
 
 model Event {
@@ -80,10 +83,12 @@ model Sermon {
   description String
   pastor      String
   date        DateTime
-  videoUrl    String?
-  audioUrl    String?
-  transcript  String?
-  thumbnail   String?
+  videoUrl          String?
+  videoPublicId     String?
+  audioUrl          String?
+  transcript        String?
+  thumbnail         String?
+  thumbnailPublicId String?
   category    String
   tags        String[]
   views       Int      @default(0)
@@ -464,3 +469,33 @@ model MediaReport {
   uploadedBy    User        @relation(fields: [uploadedById], references: [id])
   createdAt     DateTime    @default(now())
 }
+
+model DeviceToken {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique
+  deviceType  String?  // web, android, ios
+  platform    String?  // browser, native
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // EVENT_CREATED, MEDIA_UPLOADED, SECURITY_ALERT, PUSH_SENT
+  details    String   @db.Text
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+}
+

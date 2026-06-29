@@ -143,7 +143,7 @@ export default function MembershipsVisitsPage() {
               initial={{ opacity: 0, y: -20, scale: 0.95 }} 
               animate={{ opacity: 1, y: 0, scale: 1 }} 
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4.5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-xs ${
+              className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-xs ${
                 toast.type === "success" 
                   ? "bg-emerald-500 text-white border-emerald-400/20 shadow-emerald-500/10" 
                   : "bg-rose-500 text-white border-rose-400/20 shadow-rose-500/10"

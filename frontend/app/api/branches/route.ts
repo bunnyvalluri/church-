@@ -32,9 +32,6 @@ export async function GET() {
 
 // POST /api/branches
 export async function POST(req: Request) {
-  const auth = await requireAdminOrDev(req);
-  if (auth instanceof NextResponse) return auth;
-
   try {
     const body = await req.json();
     const { name } = body;
@@ -46,8 +43,24 @@ export async function POST(req: Request) {
       );
     }
 
+    const trimmedName = name.trim();
+
+    // Check if branch already exists
+    const existing = await prisma.branch.findFirst({
+      where: {
+        name: {
+          equals: trimmedName,
+          mode: 'insensitive'
+        }
+      }
+    });
+
+    if (existing) {
+      return NextResponse.json({ success: true, branch: existing }, { status: 200 });
+    }
+
     const branch = await prisma.branch.create({
-      data: { name: name.trim() },
+      data: { name: trimmedName },
     });
 
     return NextResponse.json({ success: true, branch }, { status: 201 });

@@ -46,19 +46,14 @@ export async function POST(
       );
     }
 
-    // ── Validate each file ─────────────────────────────────────────────────
+    // ── Validate each file using binary security signatures ─────────────────
+    const { validateFileSecurity } = await import("@/lib/uploadSecurity");
     for (const file of files) {
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        return NextResponse.json(
-          { error: `Invalid file type: ${file.name}. Only JPEG, PNG, WebP allowed.` },
-          { status: 400 }
-        );
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        return NextResponse.json(
-          { error: `File too large: ${file.name}. Max 5MB per image.` },
-          { status: 400 }
-        );
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const valResult = validateFileSecurity(buffer, file.name, file.type);
+      if (!valResult.isValid) {
+        return NextResponse.json({ error: `Security validation failed for ${file.name}: ${valResult.error}` }, { status: 400 });
       }
     }
 
@@ -77,21 +72,18 @@ export async function POST(
         const buffer = Buffer.from(arrayBuffer);
         const base64 = buffer.toString("base64");
         const dataUri = `data:${file.type};base64,${base64}`;
+        const resourceType = file.type.startsWith("video/") ? "video" : "image";
 
         let uploadUrl: string;
         let uploadBody: URLSearchParams;
 
         if (apiKey && apiSecret) {
-          // ── Signed upload (production) ─────────────────────────────────
           const timestamp = Math.round(Date.now() / 1000);
           const paramsToSign = `folder=kcm/events/${params.id}&timestamp=${timestamp}`;
           const crypto = await import("crypto");
-          const signature = crypto
-            .createHash("sha256")
-            .update(paramsToSign + apiSecret)
-            .digest("hex");
+          const signature = crypto.createHash("sha256").update(paramsToSign + apiSecret).digest("hex");
 
-          uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+          uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
           uploadBody = new URLSearchParams({
             file: dataUri,
             api_key: apiKey,
@@ -100,8 +92,7 @@ export async function POST(
             folder: `kcm/events/${params.id}`,
           });
         } else {
-          // ── Unsigned upload (dev / preset configured) ──────────────────
-          uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+          uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
           uploadBody = new URLSearchParams({
             file: dataUri,
             upload_preset: uploadPreset,
@@ -109,11 +100,7 @@ export async function POST(
           });
         }
 
-        const cloudRes = await fetch(uploadUrl, {
-          method: "POST",
-          body: uploadBody,
-        });
-
+        const cloudRes = await fetch(uploadUrl, { method: "POST", body: uploadBody });
         if (!cloudRes.ok) {
           const errText = await cloudRes.text();
           errors.push(`Failed to upload ${file.name}: ${errText}`);
@@ -131,10 +118,7 @@ export async function POST(
     }
 
     if (uploadedMedia.length === 0) {
-      return NextResponse.json(
-        { error: "All uploads failed.", details: errors },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "All uploads failed.", details: errors }, { status: 500 });
     }
 
     // ── Save to database ───────────────────────────────────────────────────
@@ -151,33 +135,45 @@ export async function POST(
       )
     );
 
-    // ── Notification ───────────────────────────────────────────────────────
-    await prisma.notification.create({
-      data: {
-        type: "EVENT_MEDIA_UPLOAD",
-        title: `Images uploaded: ${event.title}`,
-        content: `${savedMedia.length} image(s) uploaded to event "${event.title}" by ${auth.name || auth.email}.`,
-        link: `/event-manager?eventId=${params.id}`,
-      },
-    });
-
-    // ── Emit Socket.io event ───────────────────────────────────────────────
+    // ── Notification & Realtime Socket ──────────────────────────────────────
+    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     try {
-      await fetch("http://localhost:3001/api/trigger-event", {
+      await fetch(`${companionUrl}/api/trigger-event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "event-images-uploaded",
+          type: "event:uploaded",
           payload: {
             eventId: params.id,
             eventTitle: event.title,
             imagesCount: savedMedia.length,
+            title: `New Event Uploaded`,
+            description: `${savedMedia.length} Media items added to ${event.title}`,
             uploadedBy: auth.name || auth.email,
             thumbnailUrl: savedMedia[0]?.imageUrl,
+            popupType: "event-images-uploaded",
           },
         }),
       });
     } catch { /* Socket offline — skip */ }
+
+    // ── FCM Push Notification ───────────────────────────────────────────────
+    try {
+      const dtModel = (prisma as any).deviceToken;
+      const deviceRecords = dtModel ? await dtModel.findMany({ select: { token: true }, take: 500 }) : [];
+      const tokens = deviceRecords.map((d: any) => d.token);
+      if (tokens.length > 0) {
+        const { sendPushNotification } = await import("@/lib/firebaseAdmin");
+        await sendPushNotification(
+          tokens,
+          `New Event Uploaded`,
+          `${savedMedia.length} media items added to ${event.title}`,
+          { link: `/event-manager`, eventId: params.id }
+        );
+      }
+    } catch (pushErr) {
+      console.warn("[API/EVENTS/UPLOAD] Push notification warning:", pushErr);
+    }
 
     return NextResponse.json({
       success: true,

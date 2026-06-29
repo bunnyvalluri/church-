@@ -458,7 +458,7 @@ export default function GiveForm() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }} 
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4.5 py-3.5 rounded-2xl shadow-2xl text-xs font-semibold border bg-[hsl(var(--primary))] text-white border-purple-400/30 max-w-sm"
+            className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-semibold border bg-[hsl(var(--primary))] text-white border-purple-400/30 max-w-sm"
           >
             <Bell className="w-4 h-4 text-purple-200 animate-bounce" />
             <div>{toast.msg}</div>

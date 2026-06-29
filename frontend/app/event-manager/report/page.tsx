@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -31,7 +31,20 @@ import {
   ChevronRight,
   Sparkles,
   Paperclip,
-  X
+  X,
+  Church,
+  ShieldCheck,
+  Layers,
+  Activity,
+  ClipboardCheck,
+  NotebookPen,
+  Send,
+  Sparkle,
+  Film,
+  Image as ImageIcon,
+  CheckCircle2,
+  Zap,
+  UserPlus
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,7 +64,74 @@ interface AttachedMedia {
   isUploading: boolean;
 }
 
-export default function FieldReportForm() {
+interface IconBadgeProps {
+  icon: React.ElementType;
+  variant?: "violet" | "emerald" | "indigo" | "amber" | "rose" | "cyan" | "purple" | "slate";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  glow?: boolean;
+  animate?: boolean;
+  className?: string;
+}
+
+function IconBadge({
+  icon: Icon,
+  variant = "violet",
+  size = "md",
+  glow = true,
+  animate = false,
+  className = "",
+}: IconBadgeProps) {
+  const sizeClasses = {
+    xs: "w-6 h-6 rounded-lg text-xs p-1",
+    sm: "w-8.5 h-8.5 rounded-xl text-sm p-1.5",
+    md: "w-10 h-10 rounded-2xl text-base p-2",
+    lg: "w-12 h-12 rounded-2xl text-lg p-2.5",
+    xl: "w-16 h-16 rounded-3xl text-2xl p-3.5",
+  };
+
+  const iconSizes = {
+    xs: "w-3.5 h-3.5",
+    sm: "w-4.5 h-4.5",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+    xl: "w-8 h-8",
+  };
+
+  const variantClasses = {
+    violet: "bg-gradient-to-tr from-violet-600 via-purple-600 to-indigo-600 text-white border border-violet-400/40 shadow-lg shadow-violet-600/30",
+    emerald: "bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white border border-emerald-400/40 shadow-lg shadow-emerald-600/30",
+    indigo: "bg-gradient-to-tr from-indigo-600 via-blue-600 to-violet-600 text-white border border-indigo-400/40 shadow-lg shadow-indigo-600/30",
+    cyan: "bg-gradient-to-tr from-cyan-600 via-teal-500 to-blue-600 text-white border border-cyan-400/40 shadow-lg shadow-cyan-600/30",
+    amber: "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-400/40 shadow-lg shadow-amber-600/30",
+    rose: "bg-gradient-to-tr from-rose-600 via-pink-600 to-rose-500 text-white border border-rose-400/40 shadow-lg shadow-rose-600/30",
+    purple: "bg-gradient-to-tr from-fuchsia-600 via-purple-600 to-violet-600 text-white border border-purple-400/40 shadow-lg shadow-purple-600/30",
+    slate: "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-white/15 shadow-sm",
+  };
+
+  const glowColors = {
+    violet: "bg-violet-500/30",
+    emerald: "bg-emerald-500/30",
+    indigo: "bg-indigo-500/30",
+    cyan: "bg-cyan-500/30",
+    amber: "bg-amber-500/30",
+    rose: "bg-rose-500/30",
+    purple: "bg-purple-500/30",
+    slate: "bg-slate-400/10",
+  };
+
+  return (
+    <div className={`relative inline-flex items-center justify-center shrink-0 ${className}`}>
+      {glow && variant !== "slate" && (
+        <div className={`absolute inset-0 rounded-2xl ${glowColors[variant]} blur-md pointer-events-none transform scale-110 -z-10`} />
+      )}
+      <div className={`flex items-center justify-center transition-all duration-300 ${sizeClasses[size]} ${variantClasses[variant]} ${animate ? "animate-pulse" : ""}`}>
+        <Icon className={`${iconSizes[size]} stroke-[2.2]`} />
+      </div>
+    </div>
+  );
+}
+
+function FieldReportFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, getIdToken } = useAuth();
@@ -62,6 +142,7 @@ export default function FieldReportForm() {
   // Form states
   const [branches, setBranches] = useState<Branch[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState("");
+  const [customBranchName, setCustomBranchName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [reportDate, setReportDate] = useState(new Date().toISOString().split("T")[0]);
@@ -149,7 +230,7 @@ export default function FieldReportForm() {
     fetchBranches();
 
     // Check if camera should open on load
-    if (searchParams.get("openCamera") === "true") {
+    if (searchParams?.get("openCamera") === "true") {
       setShowCamera(true);
     }
   }, [searchParams]);
@@ -307,17 +388,43 @@ export default function FieldReportForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedBranchId || !title || !description || isSubmitting) return;
+    if (selectedBranchId === "other" && !customBranchName.trim()) {
+      setSubmitError("Please specify the new branch location / address.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const branchName = branches.find((b) => b.id === selectedBranchId)?.name || "Branch";
+    let finalBranchId = selectedBranchId;
+    let branchName = branches.find((b) => b.id === selectedBranchId)?.name || "Branch";
+
+    if (selectedBranchId === "other") {
+      try {
+        const createRes = await fetch("/api/branches", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: customBranchName.trim() }),
+        });
+        const createData = await createRes.json();
+        if (createRes.ok && createData.success && createData.branch) {
+          finalBranchId = createData.branch.id;
+          branchName = createData.branch.name;
+        } else {
+          throw new Error(createData.error || "Failed to register new branch");
+        }
+      } catch (err: any) {
+        setSubmitError(err.message || "Failed to create new branch location.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     const images = attachedMedia.filter(item => item.type === "IMAGE" && !item.isUploading).map(item => item.base64);
     const videos = attachedMedia.filter(item => item.type === "VIDEO" && !item.isUploading).map(item => item.base64);
 
     const reportPayload = {
-      branchId: selectedBranchId,
+      branchId: finalBranchId,
       branchName,
       title,
       description,
@@ -420,18 +527,20 @@ export default function FieldReportForm() {
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/event-manager"
-            className="p-2.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-2xl border border-slate-200/60 dark:border-white/10 transition-all text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white shadow-sm active:scale-95"
+            className="p-2.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-2xl border border-slate-200/60 dark:border-white/10 transition-all text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white shadow-sm active:scale-95 group flex items-center justify-center"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           </Link>
-          <div>
-            <h1 className="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-              <FileSpreadsheet className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
-              {t.eventManager?.activityReportTitle || "Activity Report"}
-            </h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-0.5 hidden sm:block">
-              {t.eventManager?.submitBranchDataSub || "Submit branch data & field logs"}
-            </p>
+          <div className="flex items-center gap-3">
+            <IconBadge icon={FileSpreadsheet} variant="violet" size="md" />
+            <div>
+              <h1 className="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                {t.eventManager?.activityReportTitle || "Activity Report"}
+              </h1>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-0.5 hidden sm:block">
+                {t.eventManager?.submitBranchDataSub || "Submit branch data & field logs"}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -441,7 +550,7 @@ export default function FieldReportForm() {
               ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400" 
               : "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400"
           }`}>
-            <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "bg-amber-500 animate-ping"}`} />
+            <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.9)]" : "bg-amber-500 animate-ping"}`} />
             <span className="hidden sm:inline tracking-wide">{isOnline ? (t.eventManager?.online || "ONLINE") : (t.eventManager?.offline || "OFFLINE MODE")}</span>
           </div>
 
@@ -487,12 +596,13 @@ export default function FieldReportForm() {
               
               {/* Badge & Score Header */}
               <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/80 dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30 text-[10px] font-black tracking-wider uppercase shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300 animate-pulse" />
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/80 dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30 text-[10px] font-black tracking-wider uppercase shadow-sm">
+                  <IconBadge icon={Sparkles} variant="purple" size="xs" glow={false} animate />
                   {t.eventManager?.liveDraftPreview || "Live Draft Preview"}
                 </span>
                 
-                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30 px-3 py-1 rounded-full shadow-sm">
+                <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/80 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30 px-3 py-1 rounded-full shadow-sm">
+                  <IconBadge icon={Zap} variant="emerald" size="xs" glow={false} />
                   <span className="text-[10px] font-extrabold uppercase tracking-wider">
                     {t.eventManager?.readyScoreLabel || "Ready Score"}
                   </span>
@@ -520,8 +630,8 @@ export default function FieldReportForm() {
                   {title.trim() || t.eventManager?.untitledReport || "Untitled Activity Report"}
                 </h2>
                 <div className="flex items-center">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-xs font-extrabold text-slate-700 dark:text-slate-200 shadow-sm">
-                    <Compass className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-xs font-extrabold text-slate-700 dark:text-slate-200 shadow-sm">
+                    <IconBadge icon={Church} variant="indigo" size="xs" glow={false} />
                     {selectedBranchName} {t.eventManager?.branchText || "Branch"}
                   </span>
                 </div>
@@ -529,9 +639,7 @@ export default function FieldReportForm() {
 
               {/* Volunteers Count Card */}
               <div className="flex items-center gap-3.5 bg-slate-50/90 dark:bg-slate-800/50 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 shadow-sm hover:border-violet-500/30 transition-all">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-violet-600/20">
-                  <Users className="w-5 h-5" />
-                </div>
+                <IconBadge icon={Users} variant="violet" size="md" />
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-black text-slate-900 dark:text-white truncate">
                     {numVolunteers} {t.eventManager?.volunteersAttendingUnit || "Volunteers Attending"}
@@ -545,7 +653,8 @@ export default function FieldReportForm() {
               {/* Thumbnail Attachments */}
               {attachedMedia.length > 0 && (
                 <div className="space-y-2 pt-1">
-                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block">
+                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block flex items-center gap-1.5">
+                    <Paperclip className="w-3 h-3 text-violet-500" />
                     {t.eventManager?.attachedAssets || "Attached Assets"} ({attachedMedia.length})
                   </span>
                   <div className="flex flex-wrap gap-2.5">
@@ -576,8 +685,8 @@ export default function FieldReportForm() {
 
           {/* Form Completion Checklist */}
           <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 shadow-xl space-y-4 hover:shadow-2xl transition-all duration-300">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-              <CheckCircle className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2.5">
+              <IconBadge icon={ClipboardCheck} variant="violet" size="sm" />
               {t.eventManager?.checklistTitle || "Report Checklist"}
             </h3>
 
@@ -664,8 +773,8 @@ export default function FieldReportForm() {
             {/* Panel 1: Core Identification */}
             <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div className="border-b border-slate-100 dark:border-white/10 pb-4">
-                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
-                  <Compass className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
+                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2.5">
+                  <IconBadge icon={Church} variant="violet" size="sm" />
                   {t.eventManager?.formSection1 || "1. Core Identification"}
                 </h3>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">
@@ -681,23 +790,45 @@ export default function FieldReportForm() {
                 {isLoadingBranches ? (
                   <div className="h-12 bg-slate-100 dark:bg-white/5 animate-pulse rounded-2xl" />
                 ) : (
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
-                      <Compass className="w-4.5 h-4.5" />
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <IconBadge icon={Church} variant="slate" size="xs" glow={false} />
+                      </div>
+                      <select
+                        required
+                        value={selectedBranchId}
+                        onChange={(e) => setSelectedBranchId(e.target.value)}
+                        className="w-full h-12 pl-12 pr-10 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer shadow-sm"
+                      >
+                        {branches.map((b) => (
+                          <option key={b.id} value={b.id} className="dark:bg-slate-900 text-xs font-semibold">{b.name} {t.eventManager?.branchText || "Branch"}</option>
+                        ))}
+                        <option value="other" className="dark:bg-slate-900 text-xs font-bold text-violet-600 dark:text-violet-400">
+                          ➕ {(t.eventManager as any)?.otherBranchOpt || "Other / Add New Location..."}
+                        </option>
+
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none border-l border-slate-200 dark:border-white/10 pl-2.5">
+                        <ChevronRight className="w-4 h-4 text-slate-400 rotate-90" />
+                      </div>
                     </div>
-                    <select
-                      required
-                      value={selectedBranchId}
-                      onChange={(e) => setSelectedBranchId(e.target.value)}
-                      className="w-full h-12 pl-11 pr-10 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer shadow-sm"
-                    >
-                      {branches.map((b) => (
-                        <option key={b.id} value={b.id} className="dark:bg-slate-900 text-xs font-semibold">{b.name} {t.eventManager?.branchText || "Branch"}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none border-l border-slate-200 dark:border-white/10 pl-2.5">
-                      <ChevronRight className="w-4 h-4 text-slate-400 rotate-90" />
-                    </div>
+
+                    {selectedBranchId === "other" && (
+                      <div className="p-3.5 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-200/80 dark:border-violet-800/40 rounded-2xl space-y-2 animate-fadeIn">
+                        <label className="text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">
+                          Enter New Branch Location / Address *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={customBranchName}
+                          onChange={(e) => setCustomBranchName(e.target.value)}
+                          placeholder="e.g. Miyapur Branch, Hydernagar, Hyderabad"
+                          className="w-full h-11 px-4 rounded-xl bg-white dark:bg-slate-900 border border-violet-300 dark:border-violet-700 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/30 transition-all"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -708,8 +839,8 @@ export default function FieldReportForm() {
                   {t.eventManager?.activityNameLabel || "Event / Activity Name"}
                 </label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
-                    <FileText className="w-4.5 h-4.5" />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <IconBadge icon={FileText} variant="slate" size="xs" glow={false} />
                   </div>
                   <input
                     type="text"
@@ -717,7 +848,7 @@ export default function FieldReportForm() {
                     placeholder="e.g. Sunday Worship Service, Youth Fellowship"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all shadow-sm"
+                    className="w-full h-12 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -728,15 +859,15 @@ export default function FieldReportForm() {
                   {t.eventManager?.reportDateLabel || "Report Date"}
                 </label>
                 <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
-                    <CalendarIcon className="w-4.5 h-4.5" />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <IconBadge icon={CalendarIcon} variant="slate" size="xs" glow={false} />
                   </div>
                   <input
                     type="date"
                     required
                     value={reportDate}
                     onChange={(e) => setReportDate(e.target.value)}
-                    className="w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all shadow-sm"
+                    className="w-full h-12 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 dark:focus:border-violet-400 transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -745,8 +876,8 @@ export default function FieldReportForm() {
             {/* Panel 2: Outcomes & Volunteer Attendance */}
             <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div className="border-b border-slate-100 dark:border-white/10 pb-4">
-                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
-                  <Users className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
+                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2.5">
+                  <IconBadge icon={Activity} variant="indigo" size="sm" />
                   {t.eventManager?.formSection2 || "2. Outcomes & Attendance"}
                 </h3>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">
@@ -778,8 +909,8 @@ export default function FieldReportForm() {
                   {t.eventManager?.volunteersLabel || "Volunteers Attended"}
                 </label>
                 <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 dark:bg-slate-950/50 dark:border-white/10 focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500 dark:focus-within:border-violet-400 transition-all min-h-12 cursor-text shadow-sm">
-                  <div className="flex items-center text-slate-400 dark:text-slate-500 pl-1.5 mr-1 shrink-0">
-                    <Users className="w-4 h-4" />
+                  <div className="flex items-center text-slate-400 dark:text-slate-500 pl-0.5 mr-1 shrink-0">
+                    <IconBadge icon={UserPlus} variant="slate" size="xs" glow={false} />
                   </div>
                   
                   {/* Render Tags */}
@@ -797,7 +928,7 @@ export default function FieldReportForm() {
                         <button
                           type="button"
                           onClick={() => setVolunteers(prev => prev.filter(v => v !== name))}
-                          className="hover:bg-violet-500/20 dark:hover:bg-violet-400/30 rounded-lg p-0.5 transition-colors"
+                          className="hover:bg-rose-500/20 text-violet-600 dark:text-violet-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg p-0.5 transition-colors"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -830,8 +961,8 @@ export default function FieldReportForm() {
               
               <div className="border-b border-slate-100 dark:border-white/10 pb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
-                    <Paperclip className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
+                  <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2.5">
+                    <IconBadge icon={UploadCloud} variant="cyan" size="sm" />
                     {t.eventManager?.formSection3 || "3. Media Attachments"}
                   </h3>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">
@@ -888,12 +1019,15 @@ export default function FieldReportForm() {
                   className="hidden"
                 />
 
-                {/* Subtle Ambient Ring & Icon Container */}
-                <div className="relative mb-3 pointer-events-none">
-                  <div className={`w-16 h-16 rounded-3xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-violet-600/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${isDragging ? "animate-bounce" : ""}`}>
-                    <UploadCloud className="w-8 h-8 stroke-[2.2]" />
-                  </div>
-                  <div className="absolute inset-0 rounded-3xl bg-violet-500/20 blur-xl -z-10 group-hover:blur-2xl transition-all" />
+                {/* Executive Multi-Layer Glowing Icon Badge Container */}
+                <div className="relative mb-4 pointer-events-none">
+                  <IconBadge 
+                    icon={UploadCloud} 
+                    variant="violet" 
+                    size="xl" 
+                    glow={true} 
+                    className={`transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${isDragging ? "animate-bounce" : ""}`} 
+                  />
                 </div>
 
                 {/* Central Labels */}
@@ -925,7 +1059,7 @@ export default function FieldReportForm() {
                     }}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-extrabold transition-all active:scale-95 shadow-sm border border-slate-200/80 dark:border-white/10"
                   >
-                    <Paperclip className="w-3.5 h-3.5" />
+                    <IconBadge icon={Paperclip} variant="slate" size="xs" glow={false} />
                     <span>Choose Files</span>
                   </button>
 
@@ -937,7 +1071,7 @@ export default function FieldReportForm() {
                     }}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-violet-600/25 active:scale-95"
                   >
-                    <Camera className="w-3.5 h-3.5" />
+                    <IconBadge icon={Camera} variant="purple" size="xs" glow={false} />
                     <span>{t.eventManager?.liveSnapshotBtn || "Live Snapshot"}</span>
                   </button>
                 </div>
@@ -947,7 +1081,8 @@ export default function FieldReportForm() {
               {attachedMedia.length > 0 && (
                 <div className="space-y-4 pt-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">
+                    <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block flex items-center gap-1.5">
+                      <Layers className="w-3 h-3 text-violet-500" />
                       {t.eventManager?.uploadQueueTitle || "Upload Queue & Preview"}
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
@@ -1012,7 +1147,7 @@ export default function FieldReportForm() {
                                       e.stopPropagation();
                                       removeMediaItem(item.id);
                                     }}
-                                    className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors active:scale-95 shadow-md"
+                                    className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors active:scale-95 shadow-md flex items-center justify-center"
                                     title={t.eventManager?.deleteTitle || "Delete Attachment"}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -1037,7 +1172,7 @@ export default function FieldReportForm() {
             <button
               type="submit"
               disabled={isSubmitting || attachedMedia.some(item => item.isUploading)}
-              className="w-full h-14 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 active:scale-[0.99] disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-black text-sm transition-all shadow-xl shadow-indigo-500/20 mt-8 gap-2.5 cursor-pointer"
+              className="w-full h-14 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 active:scale-[0.99] disabled:opacity-50 disabled:scale-100 text-white rounded-2xl flex items-center justify-center font-black text-sm transition-all shadow-xl shadow-indigo-500/25 mt-8 gap-3 cursor-pointer group"
             >
               {isSubmitting ? (
                 <>
@@ -1046,10 +1181,12 @@ export default function FieldReportForm() {
                 </>
               ) : (
                 <>
-                  <CheckCircle className="w-5 h-5" />
-                  {isOnline 
-                    ? (t.eventManager?.submitReportBtn || "Submit Field Report") 
-                    : (t.eventManager?.queueReportBtn || "Queue Report in Offline Outbox")}
+                  <IconBadge icon={Send} variant="emerald" size="sm" glow={true} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <span>
+                    {isOnline 
+                      ? (t.eventManager?.submitReportBtn || "Submit Field Report") 
+                      : (t.eventManager?.queueReportBtn || "Queue Report in Offline Outbox")}
+                  </span>
                 </>
               )}
             </button>
@@ -1129,5 +1266,17 @@ export default function FieldReportForm() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function FieldReportForm() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+      </div>
+    }>
+      <FieldReportFormContent />
+    </Suspense>
   );
 }

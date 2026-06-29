@@ -5,6 +5,7 @@ import { AuthProvider } from "./AuthProvider";
 import { LanguageProvider } from "./LanguageProvider";
 import { ColorThemeProvider } from "./ColorThemeProvider";
 import { BranchProvider } from "./BranchProvider";
+import RealtimePopupProvider from "./RealtimePopupProvider";
 
 console.log("DEBUG PROVIDERS TYPES:");
 console.log("  ThemeProvider:", typeof ThemeProvider);
@@ -26,7 +27,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <LanguageProvider>
           <AuthProvider>
             <BranchProvider>
-              {children}
+              <RealtimePopupProvider>
+                {children}
+              </RealtimePopupProvider>
             </BranchProvider>
           </AuthProvider>
         </LanguageProvider>

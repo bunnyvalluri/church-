@@ -30,7 +30,14 @@ export const prisma = new Proxy(realPrisma, {
       }
       throw new Error('Database offline: Bypassed via DB_OFFLINE environment variable.');
     }
-    return Reflect.get(target, prop);
+    const val = Reflect.get(target, prop);
+    if (val === undefined && typeof prop === 'string' && !prop.startsWith('$')) {
+      // Re-instantiate if a new model was added during dev session
+      const fresh = new PrismaClient();
+      globalForPrisma.prisma = fresh;
+      return Reflect.get(fresh, prop);
+    }
+    return val;
   },
 }) as unknown as PrismaClient;
 

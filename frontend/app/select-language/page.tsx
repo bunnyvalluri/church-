@@ -65,7 +65,7 @@ export default function SelectLanguagePage() {
 
       {/* Header Info */}
       <header className="relative z-10 text-center max-w-2xl mx-auto pt-6">
-        <Link href="/" className="inline-flex items-center gap-2 mb-6 px-4.5 py-2 bg-white/5 border border-white/10 rounded-full text-purple-300 text-xs tracking-widest uppercase hover:bg-white/10 transition-all">
+        <Link href="/" className="inline-flex items-center gap-2 mb-6 px-5 py-2 bg-white/5 border border-white/10 rounded-full text-purple-300 text-xs tracking-widest uppercase hover:bg-white/10 transition-all">
           <Globe className="w-3.5 h-3.5 animate-spin" />
           <span>Kingdom of Christ</span>
         </Link>

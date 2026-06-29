@@ -12,10 +12,22 @@ import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls } from "@/compo
 export default function LocationsPage() {
   const { t, language } = useLanguage();
   const [selectedBranchId, setSelectedBranchId] = useState<string>("subhash");
+  const [dbBranches, setDbBranches] = useState<any[]>([]);
   const mapRef = useRef<any>(null);
 
   const isTelugu = language === "te";
   const isHindi = language === "hi";
+
+  useEffect(() => {
+    fetch("/api/branches")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.branches)) {
+          setDbBranches(data.branches);
+        }
+      })
+      .catch((err) => console.error("Failed to load DB branches:", err));
+  }, []);
 
   const handleBranchSelect = (branch: any) => {
     setSelectedBranchId(branch.id);
@@ -31,7 +43,7 @@ export default function LocationsPage() {
   };
 
   const getBranchData = () => {
-    return [
+    const defaultBranches = [
       {
         id: "shapur",
         name: isTelugu
@@ -90,11 +102,11 @@ export default function LocationsPage() {
         address: isTelugu
           ? "సుభాష్ నగర్, జీడిమెట్ల, LP 119, హైదరాబాద్, తెలంగాణ 500055"
           : isHindi
-          ? "सुभाष नगर, जीडीमेटला, एलपी 119, हैदराबाद, तेलंगाना 500055"
+          ? "सुभाष नगर, जीडीमेटला, हैदराबाद, तेलंगाना 500055"
           : "Subhash Nagar, Jeedimetla, LP 119, Hyderabad, Telangana 500055",
         phone: "+91 97040 90069",
         mapUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
-        coordinates: [78.4616, 17.5161] as [number, number],
+        coordinates: [78.4610, 17.5177] as [number, number],
         services: [
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
@@ -140,7 +152,7 @@ export default function LocationsPage() {
         address: isTelugu
           ? "బహదూర్‌పల్లి, హైదరాబాద్, తెలంగాణ 500043"
           : isHindi
-          ? "बहादुरपल्ली, हैदराबाद, तेलंगाना 500043"
+          ? "बहादुरपल्ली, హైదరాబాద్, తెలంగాణ 500043"
           : "Bahadurpally, Hyderabad, Telangana 500043",
         phone: "+91 97040 90069",
         mapUrl: "https://maps.google.com/?q=17.567689,78.443963",
@@ -174,6 +186,47 @@ export default function LocationsPage() {
         iconColor: "text-emerald-600 dark:text-emerald-400",
       },
     ];
+
+    // Dynamically append any custom branches created via forms
+    const extraBranches = dbBranches.filter(
+      (b) =>
+        !b.name.toLowerCase().includes("shapur") &&
+        !b.name.toLowerCase().includes("subhash") &&
+        !b.name.toLowerCase().includes("bahadur")
+    ).map((b, idx) => ({
+      id: b.id,
+      name: b.name.endsWith("Branch") ? b.name : `${b.name} Branch`,
+      title: `${b.name} Service & Fellowship`,
+      description: `Worship, community outreach, and prayer services at our ${b.name} location.`,
+      address: b.name,
+      phone: "+91 97040 90069",
+      mapUrl: `https://maps.google.com/?q=${encodeURIComponent(b.name)}`,
+      coordinates: [78.45 + (idx + 1) * 0.02, 17.51 + (idx + 1) * 0.02] as [number, number],
+      services: [
+        {
+          day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
+          time: "10:00 AM",
+          type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+        },
+      ],
+      gradient: "from-amber-600 to-orange-500",
+      glowGradient: "from-amber-500/10 via-orange-500/5 to-transparent",
+      accentColor: "text-amber-600 dark:text-amber-400",
+      hoverBorder: "hover:border-amber-500/40 hover:shadow-[0_0_40px_-5px_rgba(245,158,11,0.12)]",
+      hoverTitle: "group-hover:text-amber-600 dark:group-hover:text-amber-400",
+      serviceBorder: "border-l-amber-500/80 dark:border-l-amber-400/80",
+      badgeBg: "bg-amber-50 dark:bg-amber-950/40",
+      badgeText: "text-amber-700 dark:text-amber-300",
+      btnColor: "bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-500 text-white shadow-md shadow-amber-600/20",
+      mapIconColor: "text-amber-600 dark:text-amber-400",
+      mapBtnHover: "hover:bg-amber-50/50 dark:hover:bg-amber-950/20",
+      isMain: false,
+      Icon: MapIcon,
+      iconBg: "from-amber-500/20 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/5",
+      iconColor: "text-amber-600 dark:text-amber-400",
+    }));
+
+    return [...defaultBranches, ...extraBranches];
   };
 
   const branches = getBranchData();

@@ -43,3 +43,22 @@ try {
 
 export { auth, db, googleProvider, facebookProvider, twitterProvider };
 
+/**
+ * Requests Firebase Cloud Messaging token for browser push notifications.
+ */
+export async function requestFCMToken(): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    if (!app || !firebaseConfig.apiKey) return null;
+    const { getMessaging, getToken } = await import("firebase/messaging");
+    const messaging = getMessaging(app);
+    const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+    const token = await getToken(messaging, { vapidKey });
+    return token;
+  } catch (err) {
+    console.warn("[FCM] Cloud messaging token registration bypassed:", err);
+    return null;
+  }
+}
+
+
