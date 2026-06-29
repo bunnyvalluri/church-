@@ -36,18 +36,20 @@ model Event {
   id            String              @id @default(cuid())
   title         String
   description   String
-  date          DateTime
-  time          String
+  date          DateTime            @map("event_date")
+  time          String              @map("event_time")
   location      String
-  image         String?
+  image         String?             @map("image_url")
   category      EventCategory
   status        EventStatus         @default(DRAFT)
-  branchId      String?
+  isPublished   Boolean             @default(false) @map("is_published")
+  branchId      String?             @map("branch_id")
   branch        Branch?             @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  createdById   String?
+  createdById   String?             @map("created_by")
   createdBy     User?               @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt     DateTime            @default(now())
+  createdAt     DateTime            @default(now()) @map("created_at")
   updatedAt     DateTime            @updatedAt
+  videoUrl      String?             @map("video_url")
   registrations EventRegistration[]
   media         EventMedia[]
 }

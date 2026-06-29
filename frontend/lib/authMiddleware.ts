@@ -262,7 +262,7 @@ export async function requireEventManager(req: Request): Promise<AuthenticatedUs
       { status: 401 }
     );
   }
-  const allowedRoles = ['EVENT_MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+  const allowedRoles = ['EVENT_MANAGER', 'ADMIN', 'SUPER_ADMIN', 'PASTOR'];
   if (!allowedRoles.includes(user.role)) {
     return NextResponse.json(
       { error: 'Access denied. Event Manager privileges required.' },

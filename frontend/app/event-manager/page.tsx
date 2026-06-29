@@ -44,6 +44,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import CameraCapture from "@/components/CameraCapture";
+import EventForm from "@/components/EventForm";
 
 interface MediaItem {
   id: string;
@@ -200,6 +201,7 @@ export default function UnifiedEventManagementPortal() {
   const [isEditDragging, setIsEditDragging] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [showCreateService, setShowCreateService] = useState(false);
 
   const openEditModal = (report: DBReport) => {
     setEditingReport(report);
@@ -836,6 +838,14 @@ export default function UnifiedEventManagementPortal() {
                   <Camera className="w-4 h-4 text-white/80" />
                   {t.eventManager?.quickCaptureBtn || "Quick Capture"}
                 </Link>
+
+                <button
+                  onClick={() => setShowCreateService(true)}
+                  className="flex items-center gap-2 px-5 py-3 bg-indigo-500 hover:bg-indigo-650 rounded-xl text-xs font-black text-white transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 border border-white/10 shadow-indigo-500/10 cursor-pointer"
+                >
+                  <Calendar className="w-4 h-4 text-white/80" />
+                  {t.eventManager?.createServicesBtn || "Create Services"}
+                </button>
               </div>
             </div>
 
@@ -1785,6 +1795,73 @@ export default function UnifiedEventManagementPortal() {
               </form>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Create Service Modal */}
+      <AnimatePresence>
+        {showCreateService && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-2xl max-w-lg w-full relative space-y-4 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Banner Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
+              
+              <button 
+                onClick={() => setShowCreateService(false)} 
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-all border border-slate-200/50 dark:border-white/5 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-4">
+                <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-650 dark:text-indigo-400">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Create Worship Service / Event</h3>
+                  <p className="text-[10px] text-slate-455 dark:text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Schedule a new branch service or ministry activity</p>
+                </div>
+              </div>
+              
+              <div className="max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+                <EventForm
+                  branches={branches}
+                  onSubmit={async (data) => {
+                    try {
+                      const token = await getIdToken();
+                      const res = await fetch("/api/events", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                        body: JSON.stringify(data),
+                      });
+                      if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.error || "Failed to create service.");
+                      }
+                      setShowCreateService(false);
+                      setToastMessage({
+                        title: "✅ Service Created",
+                        desc: `Successfully scheduled service "${data.title}".`,
+                      });
+                      setTimeout(() => setToastMessage(null), 5000);
+                    } catch (err: any) {
+                      alert(err.message || "Failed to create service.");
+                    }
+                  }}
+                  onCancel={() => setShowCreateService(false)}
+                />
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

@@ -15,7 +15,8 @@ const CreateEventSchema = z.object({
   category: z.enum(["WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN", "SPECIAL"]),
   branchId: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]).default("PUBLISHED"),
-  image: z.string().url().optional().or(z.literal("")),
+  image: z.string().optional().or(z.literal("")),
+  videoUrl: z.string().optional().or(z.literal("")),
 });
 
 // ── GET /api/events ─────────────────────────────────────────────────────────────
@@ -75,7 +76,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { title, description, date, time, location, category, branchId, status, image } =
+    const { title, description, date, time, location, category, branchId, status, image, videoUrl } =
       parsed.data;
 
     // Ensure creator user exists in DB (especially for local dev bypass users)
@@ -103,7 +104,9 @@ export async function POST(req: Request) {
         location,
         category: category as any,
         status: status as any,
+        isPublished: status === "PUBLISHED",
         image: image || null,
+        videoUrl: videoUrl || null,
         branchId: branchId || null,
         createdById: auth.uid,
       },
@@ -135,8 +138,8 @@ export async function POST(req: Request) {
           type: "event:uploaded",
           payload: {
             id: event.id,
-            title: event.title,
-            description: event.description,
+            title: "New Event Published",
+            description: `Branch: ${event.branch?.name || "General"}\n${event.title} at ${event.time}`,
             date: event.date,
             location: event.location,
             category: event.category,
@@ -162,8 +165,8 @@ export async function POST(req: Request) {
         const { sendPushNotification } = await import("@/lib/firebaseAdmin");
         await sendPushNotification(
           tokens,
-          `New Event: ${event.title}`,
-          `Branch: ${event.branch?.name || "General"} — ${event.location}`,
+          `Kingdom of Christ Ministries`,
+          `New event available now.`,
           { link: `/event-manager`, eventId: event.id }
         );
       }
