@@ -128,7 +128,7 @@ async function main() {
     },
     {
       id: 'user_event_manager_009',
-      name: 'Event Manager Joseph',
+      name: 'Event Manager',
       email: 'eventmanager@kcm-church.com',
       password: 'event-handle-2026',
       role: 'EVENT_MANAGER',

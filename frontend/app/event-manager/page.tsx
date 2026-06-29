@@ -92,12 +92,14 @@ export default function UnifiedEventManagementPortal() {
 
   // Parse greeting name professionally
   const getGreetingName = (fullName?: string | null) => {
-    if (!fullName) return "User";
-    const parts = fullName.split(" ");
-    if (fullName.toLowerCase().startsWith("event manager") && parts.length > 2) {
+    if (!fullName) return "Event Manager";
+    const cleaned = fullName.replace(/Joseph/gi, "").trim();
+    if (!cleaned) return "Event Manager";
+    const parts = cleaned.split(" ");
+    if (cleaned.toLowerCase().startsWith("event manager") && parts.length > 2) {
       return parts.slice(2).join(" ");
     }
-    if (fullName.toLowerCase().startsWith("pastor") && parts.length > 1) {
+    if (cleaned.toLowerCase().startsWith("pastor") && parts.length > 1) {
       return parts.slice(1).join(" ");
     }
     return parts[0];
@@ -692,7 +694,7 @@ export default function UnifiedEventManagementPortal() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden md:block text-right">
-              <p className="text-xs font-black text-slate-900 dark:text-white leading-none">{user?.name || "User"}</p>
+              <p className="text-xs font-black text-slate-900 dark:text-white leading-none">{user?.name?.replace(/Joseph/gi, "").trim() || "Event Manager"}</p>
               <p className="text-[9px] text-slate-400 dark:text-slate-400 font-bold uppercase mt-0.5 tracking-wider">
                 {role === "SUPER_ADMIN" ? "Super Admin" : role === "ADMIN" ? "Admin" : role === "EVENT_MANAGER" ? "Event Manager" : "Volunteer"}
               </p>
@@ -718,11 +720,11 @@ export default function UnifiedEventManagementPortal() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-6 right-6 z-50 max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-2xl flex items-start gap-3.5"
           >
-            <div className="bg-violet-500/10 p-2.5 rounded-2xl text-violet-650 dark:text-violet-400 shrink-0">
+            <div className="bg-violet-500/10 p-2.5 rounded-2xl text-violet-600 dark:text-violet-400 shrink-0">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-violet-650 dark:text-violet-400">{toastMessage.title}</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">{toastMessage.title}</h4>
               <p className="text-xs font-medium leading-relaxed text-slate-500 dark:text-slate-400">{toastMessage.desc}</p>
             </div>
           </motion.div>
@@ -768,7 +770,7 @@ export default function UnifiedEventManagementPortal() {
           <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Welcome banner */}
-            <div className="sm:col-span-2 md:col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-violet-600 via-indigo-650 to-indigo-900 border border-white/10 flex flex-col justify-between group min-h-[220px]">
+            <div className="sm:col-span-2 md:col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-indigo-900 border border-white/10 flex flex-col justify-between group min-h-[220px]">
               
               {/* Luminous background blobs */}
               <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-yellow-300/10 blur-3xl group-hover:bg-yellow-300/20 transition-colors duration-700 pointer-events-none" />
@@ -1596,7 +1598,7 @@ export default function UnifiedEventManagementPortal() {
                                 <button
                                   type="button"
                                   onClick={() => setRemovedMediaIds(prev => prev.filter(id => id !== item.id))}
-                                  className="px-2 py-1 bg-violet-600 hover:bg-violet-550 rounded-lg text-white text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                                  className="px-2 py-1 bg-violet-600 hover:bg-violet-500 rounded-lg text-white text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer"
                                 >
                                   {t.eventManager?.undoRemoveText || "Undo Remove"}
                                 </button>
@@ -1664,8 +1666,8 @@ export default function UnifiedEventManagementPortal() {
                       <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-400 group-hover:text-violet-500 transition-colors shadow-sm">
                         <UploadCloud className="w-6 h-6" />
                       </div>
-                      <p className="text-[11px] font-extrabold text-slate-705 dark:text-slate-200">
-                        {t.eventManager?.dragDropText || "Drag new images/videos here, or"} <span className="text-violet-650 dark:text-violet-400 group-hover:underline">{t.eventManager?.browseFilesText || "browse files"}</span>
+                      <p className="text-[11px] font-extrabold text-slate-700 dark:text-slate-200">
+                        {t.eventManager?.dragDropText || "Drag new images/videos here, or"} <span className="text-violet-600 dark:text-violet-400 group-hover:underline">{t.eventManager?.browseFilesText || "browse files"}</span>
                       </p>
                     </div>
 
@@ -1754,7 +1756,7 @@ export default function UnifiedEventManagementPortal() {
                   <button
                     type="submit"
                     disabled={isSaving || newAttachedMedia.some(item => item.isUploading)}
-                    className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-650 text-white rounded-xl text-xs font-bold hover:from-violet-500 hover:to-indigo-500 shadow-md hover:shadow-violet-500/10 transition-all disabled:opacity-50 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:from-violet-500 hover:to-indigo-500 shadow-md hover:shadow-violet-500/10 transition-all disabled:opacity-50 active:scale-95 flex items-center gap-1.5 cursor-pointer"
                   >
                     {isSaving ? (
                       <>
