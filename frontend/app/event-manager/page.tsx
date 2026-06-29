@@ -784,7 +784,7 @@ export default function UnifiedEventManagementPortal() {
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
                   {t.eventManager?.welcomeConsole || "Operations Console"}
                 </span>
-                <h2 className="text-2xl md:text-3xl font-black mt-2 tracking-tight leading-tight bg-gradient-to-r from-white via-indigo-50 to-indigo-100 bg-clip-text text-transparent">
+                <h2 className="text-2xl md:text-3xl font-black mt-2 tracking-tight leading-tight text-white">
                   {t.eventManager?.welcomeTitle || "Welcome, Event Manager! 🙏"}
                 </h2>
                 <p className="text-xs text-white/90 leading-relaxed max-w-md font-medium mt-1">

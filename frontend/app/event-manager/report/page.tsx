@@ -660,7 +660,7 @@ export default function FieldReportForm() {
             {/* Panel 1: Core Identification */}
             <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div className="border-b border-slate-100 dark:border-white/10 pb-4">
-                <h3 className="text-sm font-black uppercase tracking-wider bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                   <Compass className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
                   {t.eventManager?.formSection1 || "1. Core Identification"}
                 </h3>
@@ -741,7 +741,7 @@ export default function FieldReportForm() {
             {/* Panel 2: Outcomes & Volunteer Attendance */}
             <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div className="border-b border-slate-100 dark:border-white/10 pb-4">
-                <h3 className="text-sm font-black uppercase tracking-wider bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+                <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                   <Users className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
                   {t.eventManager?.formSection2 || "2. Outcomes & Attendance"}
                 </h3>
@@ -826,7 +826,7 @@ export default function FieldReportForm() {
               
               <div className="border-b border-slate-100 dark:border-white/10 pb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                     <Paperclip className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
                     {t.eventManager?.formSection3 || "3. Media Attachments"}
                   </h3>
