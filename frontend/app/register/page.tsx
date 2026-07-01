@@ -23,7 +23,7 @@ const strengthColor = ["bg-gray-200", "bg-red-500", "bg-orange-400", "bg-yellow-
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { mounted, status, user } = useAuth();
+  const { mounted, status, user, updateUser } = useAuth();
   const { t, language } = useLanguage();
   const registerT = t.pages.register;
   const loginT = t.pages.login;
@@ -41,6 +41,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -48,7 +49,7 @@ export default function RegisterPage() {
 
   // Redirect if already logged in to their authorized page
   useEffect(() => {
-    if (mounted && status === "authenticated" && user) {
+    if (mounted && status === "authenticated" && user && !isRegistering) {
       if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
         router.replace("/admin");
       } else if (user.role === "PASTOR") {
@@ -57,7 +58,7 @@ export default function RegisterPage() {
         router.replace("/member");
       }
     }
-  }, [mounted, status, user, router]);
+  }, [mounted, status, user, router, isRegistering]);
 
   // Removed to prevent hydration mismatch
 
@@ -122,12 +123,48 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
+    setIsRegistering(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       if (userCredential.user) {
         await updateProfile(userCredential.user, { displayName: fullName });
       }
+
+      // Synchronously sync to the database to register the user immediately
+      const syncRes = await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: userCredential.user.uid,
+          email: formData.email,
+          name: fullName,
+          photoURL: null,
+          phoneNumber: formData.phone || null,
+        }),
+      });
+      const syncData = await syncRes.json();
+      const dbUser = syncData.success ? syncData.user : null;
+      const role = dbUser?.role || "MEMBER";
+
+      // Instantly set session cookies for middleware and client-side AuthProvider
+      if (typeof document !== "undefined") {
+        const maxAge = 60 * 60;
+        document.cookie = `__kcm_session_uid=${userCredential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+      }
+
+      // Update AuthProvider state
+      if (updateUser) {
+        updateUser({
+          uid: userCredential.user.uid,
+          email: formData.email,
+          name: fullName,
+          image: null,
+          role: role,
+        });
+      }
+
       // Fire-and-forget: welcome email to member + new member alert to admin
       fetch('/api/auth/send-email', {
         method: 'POST',
@@ -139,10 +176,14 @@ export default function RegisterPage() {
           phone: formData.phone || '',
         }),
       }).catch(() => {}); // Never block the user on email failure
+
+      // Redirect immediately to the member portal
+      router.replace("/member");
     } catch (err: any) {
+      console.error("[AUTH] Registration error:", err);
       setError(err.code || "registration-failed");
-    } finally {
       setIsLoading(false);
+      setIsRegistering(false);
     }
   };
 

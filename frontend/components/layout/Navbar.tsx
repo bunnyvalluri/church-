@@ -70,10 +70,22 @@ export default function Navbar() {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex items-center justify-between h-9">
-            <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-white transition-colors group">
-              <Phone className="w-3 h-3" />
-              <span className="font-medium">+91 97040 90069 (Senior Pastor)</span>
-            </a>
+            <div className="flex items-center gap-3">
+              <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+                <Phone className="w-3 h-3" />
+                <span className="font-medium">+91 97040 90069 (Senior Pastor)</span>
+              </a>
+              <span className="text-purple-400/50">|</span>
+              <a href="tel:+919640943777" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+                <Phone className="w-3 h-3" />
+                <span className="font-medium">+91 96409 43777</span>
+              </a>
+              <span className="text-purple-400/50">|</span>
+              <a href="tel:+917396433856" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+                <Phone className="w-3 h-3" />
+                <span className="font-medium">+91 73964 33856</span>
+              </a>
+            </div>
             <div className="flex items-center gap-2 text-purple-200/80">
               <ChevronRight className="w-3 h-3" />
               <span className="tracking-wide">Sunday Services: 5:45 AM | 8:30 AM | 10:30 AM</span>

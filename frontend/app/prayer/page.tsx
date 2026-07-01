@@ -153,9 +153,14 @@ export default function PrayerPage() {
                 </div>
                 <h3 className="text-base font-extrabold text-gray-955 dark:text-white tracking-tight leading-none mb-1">
                   <a href="tel:+919704090069" className="hover:text-[hsl(var(--primary))] transition-colors">
-                    +91 97040 90069
+                    +91 97040 90069 <span className="text-xs font-normal text-slate-400">(Senior Pastor)</span>
                   </a>
                 </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                  <a href="tel:+919640943777" className="hover:text-[hsl(var(--primary))] transition-colors">
+                    +91 96409 43777
+                  </a>
+                </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
                   <a href="tel:+917396433856" className="hover:text-[hsl(var(--primary))] transition-colors">
                     +91 73964 33856

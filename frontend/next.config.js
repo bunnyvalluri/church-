@@ -18,7 +18,7 @@ const nextConfig = {
 
   experimental: {
     serverComponentsExternalPackages: [
-      'prisma', '@prisma/client', 'firebase-admin', '@google-cloud/storage'
+      'prisma', '@prisma/client', 'firebase-admin', '@google-cloud/storage', 'cloudinary'
     ],
     serverActions: {
       allowedOrigins: [

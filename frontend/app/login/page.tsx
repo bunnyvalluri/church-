@@ -203,10 +203,11 @@ export default function LoginPage() {
   const handleSocialLogin = async (provider: any, name: string) => {
     setSocialLoading(name);
     setError("");
+    setIsLoggingIn(true);
     try {
       const credential = await signInWithPopup(auth, provider);
-      // Send login notification to admin (non-blocking)
       if (credential?.user) {
+        // Send login notification to admin (non-blocking)
         fetch('/api/auth/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -217,9 +218,54 @@ export default function LoginPage() {
             method: 'google',
           }),
         }).catch(() => {});
+
+        // Perform database sync immediately
+        const syncRes = await fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: credential.user.uid,
+            email: credential.user.email,
+            name: credential.user.displayName,
+            photoURL: credential.user.photoURL,
+            phoneNumber: credential.user.phoneNumber,
+          }),
+        });
+        const syncData = await syncRes.json();
+        const dbUser = syncData.success ? syncData.user : null;
+        const role = dbUser?.role || "MEMBER";
+
+        // Instantly set session cookies for middleware and client-side AuthProvider
+        if (typeof document !== "undefined") {
+          const maxAge = 60 * 60;
+          document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+          document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        }
+
+        // Update AuthProvider state
+        if (updateUser && dbUser) {
+          updateUser({
+            uid: credential.user.uid,
+            email: credential.user.email,
+            name: dbUser.name || credential.user.displayName || "Member",
+            image: dbUser.image || credential.user.photoURL || null,
+            role: role,
+          });
+        }
+
+        // Redirect immediately to the correct portal
+        switch (role) {
+          case "SUPER_ADMIN": router.replace("/portal-select"); break;
+          case "ADMIN":       router.replace("/admin");          break;
+          case "PASTOR":      router.replace("/pastor");         break;
+          case "EVENT_MANAGER":
+          case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
+          default:            router.replace("/member");
+        }
       }
     } catch (err: any) {
       console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
+      setIsLoggingIn(false);
       
       const fallbackErrors = [
         "auth/popup-blocked",
@@ -269,6 +315,30 @@ export default function LoginPage() {
         credential.user.displayName || email.split('@')[0],
         'email'
       );
+      
+      // Perform database sync immediately to get the user's role
+      const syncRes = await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: credential.user.uid,
+          email: credential.user.email,
+          name: credential.user.displayName,
+          photoURL: credential.user.photoURL,
+          phoneNumber: credential.user.phoneNumber,
+        }),
+      });
+      const syncData = await syncRes.json();
+      const dbUser = syncData.success ? syncData.user : null;
+      const role = dbUser?.role || "MEMBER";
+
+      // Instantly set session cookies for middleware and client-side AuthProvider
+      if (typeof document !== "undefined") {
+        const maxAge = 60 * 60;
+        document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+      }
+
       if (photoPreview) {
         try {
           await fetch("/api/member/profile", {
@@ -283,14 +353,32 @@ export default function LoginPage() {
           console.error("[AUTH] Photo upload error:", uploadErr);
         }
       }
-    } catch (err: any) {
-      setError(err.code || "sign-in-failed");
-      setIsLoggingIn(false);
-    } finally {
-      setIsLoading(false);
-      if (auth.currentUser) {
-        setTimeout(() => setIsLoggingIn(false), 500);
+
+      // Update AuthProvider state
+      if (updateUser && dbUser) {
+        updateUser({
+          uid: credential.user.uid,
+          email: credential.user.email,
+          name: dbUser.name || credential.user.displayName || "Member",
+          image: dbUser.image || credential.user.photoURL || null,
+          role: role,
+        });
       }
+
+      // Redirect immediately to the correct portal without waiting
+      switch (role) {
+        case "SUPER_ADMIN": router.replace("/portal-select"); break;
+        case "ADMIN":       router.replace("/admin");          break;
+        case "PASTOR":      router.replace("/pastor");         break;
+        case "EVENT_MANAGER":
+        case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
+        default:            router.replace("/member");
+      }
+    } catch (err: any) {
+      console.error("[AUTH] Login error:", err);
+      setError(err.code || "sign-in-failed");
+      setIsLoading(false);
+      setIsLoggingIn(false);
     }
   };
 

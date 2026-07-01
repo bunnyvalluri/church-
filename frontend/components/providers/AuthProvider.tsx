@@ -225,7 +225,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [pendingLogoutResolve, setPendingLogoutResolve] = useState<(() => void) | null>(null);
+
   const logout = async () => {
+    // Suspend execution until the user clicks OK on the custom confirmation modal
+    await new Promise<void>((resolve) => {
+      setPendingLogoutResolve(() => resolve);
+      setShowLogoutAlert(true);
+    });
+
     try {
       const { auth } = await import("@/lib/firebase");
       const { signOut } = await import("firebase/auth");
@@ -241,11 +250,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleConfirmLogoutAlert = () => {
+    setShowLogoutAlert(false);
+    if (pendingLogoutResolve) {
+      pendingLogoutResolve();
+      setPendingLogoutResolve(null);
+    }
+  };
+
   const status = loading ? "loading" : user ? "authenticated" : "unauthenticated";
 
   return (
     <AuthContext.Provider value={{ user, loading, mounted, status, logout, refreshUser, updateUser, getIdToken }}>
       {children}
+      {showLogoutAlert && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 transition-opacity duration-300"
+          style={{ backdropFilter: "blur(4px)" }}
+        >
+          <div className="bg-[#201a18] border border-[#362b28] rounded-[24px] w-full max-w-[340px] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)] text-left transform scale-100 transition-all duration-300">
+            <h3 className="text-white font-bold text-[15px] tracking-wide mb-1.5">
+              www.kcmchurch.in says
+            </h3>
+            <p className="text-stone-300 text-[13px] mb-6 leading-normal font-normal">
+              Logging out...
+            </p>
+            <div className="flex justify-end">
+              <button
+                onClick={handleConfirmLogoutAlert}
+                className="px-6 py-1.5 rounded-full bg-[#fca595] hover:bg-[#fdbeb2] text-black font-semibold text-[13px] border-[1.5px] border-black outline outline-[1.5px] outline-[#fca595] outline-offset-[1.5px] hover:outline-[#fdbeb2] active:scale-95 transition-all shadow-sm"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 }

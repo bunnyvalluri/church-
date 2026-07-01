@@ -183,13 +183,29 @@ export default function About() {
                     <p>Jeedimetla, Hyderabad</p>
                     <p>Telangana 500055</p>
                   </div>
-                  <a
-                    href="tel:+919704090069"
-                    className="inline-flex items-center gap-3 bg-white/15 hover:bg-white/25 px-6 py-4 rounded-2xl border border-white/25 transition-colors duration-300 cursor-pointer"
-                  >
-                    <Phone className="w-5 h-5 text-yellow-200" />
-                    <p className="text-lg md:text-xl font-bold tracking-wide text-white">+91 97040 90069</p>
-                  </a>
+                  <div className="flex flex-col gap-3 w-full sm:w-auto">
+                    <a
+                      href="tel:+919704090069"
+                      className="inline-flex items-center gap-3 bg-white/15 hover:bg-white/25 px-6 py-3.5 rounded-2xl border border-white/25 transition-colors duration-300 cursor-pointer w-full"
+                    >
+                      <Phone className="w-5 h-5 text-yellow-200" />
+                      <p className="text-base md:text-lg font-bold tracking-wide text-white">+91 97040 90069 (Senior Pastor)</p>
+                    </a>
+                    <a
+                      href="tel:+919640943777"
+                      className="inline-flex items-center gap-3 bg-white/15 hover:bg-white/25 px-6 py-3.5 rounded-2xl border border-white/25 transition-colors duration-300 cursor-pointer w-full"
+                    >
+                      <Phone className="w-5 h-5 text-yellow-200" />
+                      <p className="text-base md:text-lg font-bold tracking-wide text-white">+91 96409 43777</p>
+                    </a>
+                    <a
+                      href="tel:+917396433856"
+                      className="inline-flex items-center gap-3 bg-white/15 hover:bg-white/25 px-6 py-3.5 rounded-2xl border border-white/25 transition-colors duration-300 cursor-pointer w-full"
+                    >
+                      <Phone className="w-5 h-5 text-yellow-200" />
+                      <p className="text-base md:text-lg font-bold tracking-wide text-white">+91 73964 33856</p>
+                    </a>
+                  </div>
                 </div>
 
                 {/* Locations */}

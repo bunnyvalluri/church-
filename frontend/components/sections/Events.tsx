@@ -19,6 +19,30 @@ interface DynamicEvent {
   media?: { imageUrl: string }[];
 }
 
+const formatEventDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  
+  // Check if it's an ISO date string (starts with YYYY-MM-DD or similar)
+  const isIsoDate = /^\d{4}-\d{2}-\d{2}/.test(dateStr);
+  
+  if (!isIsoDate) {
+    return dateStr;
+  }
+  
+  const parsed = Date.parse(dateStr);
+  if (isNaN(parsed)) {
+    return dateStr;
+  }
+  
+  const dateObj = new Date(parsed);
+  return dateObj.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC"
+  });
+};
+
 export default function Events() {
   const { t } = useLanguage();
   const [events, setEvents] = useState<DynamicEvent[]>([]);
@@ -141,7 +165,7 @@ export default function Events() {
                     <div className="space-y-3 mb-8 font-medium text-sm">
                       <div className="flex items-center gap-3 text-slate-600 dark:text-white/70">
                         <Calendar className="h-4 w-4 text-primary shrink-0" />
-                        <span>{new Date(event.date).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}</span>
+                        <span>{formatEventDate(event.date)}</span>
                       </div>
                       <div className="flex items-center gap-3 text-slate-600 dark:text-white/70">
                         <Clock className="h-4 w-4 text-primary shrink-0" />

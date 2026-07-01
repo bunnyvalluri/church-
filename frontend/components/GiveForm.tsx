@@ -1240,7 +1240,7 @@ export default function GiveForm() {
                     {gt.helpEmail}: <a href="mailto:kingofchristministries23@gmail.com" className="hover:underline">kingofchristministries23@gmail.com</a>
                   </p>
                   <p className="text-[hsl(var(--primary))] dark:text-purple-400 font-semibold">
-                    {gt.helpPhone}: <a href="tel:+919704090069" className="hover:underline">+91 97040 90069</a> | <a href="tel:+917396433856" className="hover:underline">+91 73964 33856</a>
+                    {gt.helpPhone}: <a href="tel:+919704090069" className="hover:underline">+91 97040 90069</a> | <a href="tel:+919640943777" className="hover:underline">+91 96409 43777</a> | <a href="tel:+917396433856" className="hover:underline">+91 73964 33856</a>
                   </p>
                 </div>
               </div>

@@ -186,6 +186,12 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <Phone className="h-4 w-4 opacity-0" />
+                <a href="tel:+919640943777" className="hover:text-[hsl(var(--primary))] transition-colors block">
+                  +91 96409 43777
+                </a>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                <Phone className="h-4 w-4 opacity-0" />
                 <a href="tel:+917396433856" className="hover:text-[hsl(var(--primary))] transition-colors block">
                   +91 73964 33856
                 </a>
