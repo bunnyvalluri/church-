@@ -184,12 +184,17 @@ export default function Contact() {
                     <h4 className="font-semibold text-slate-900 dark:text-white mb-1">
                       {t.contact.phone}
                     </h4>
-                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
-                      +91 97040 90069 (Senior Pastor)
-                    </p>
-                    <p className="text-slate-605 dark:text-white/70 text-sm sm:text-base">
-                      +91 73964 33856
-                    </p>
+                    <div className="flex flex-col gap-1">
+                      <a href="tel:+919704090069" className="text-slate-600 dark:text-white/70 text-sm sm:text-base hover:text-[hsl(var(--primary))] transition-colors block">
+                        +91 97040 90069 (Senior Pastor)
+                      </a>
+                      <a href="tel:+919640943777" className="text-slate-600 dark:text-white/70 text-sm sm:text-base hover:text-[hsl(var(--primary))] transition-colors block">
+                        +91 96409 43777
+                      </a>
+                      <a href="tel:+917396433856" className="text-slate-600 dark:text-white/70 text-sm sm:text-base hover:text-[hsl(var(--primary))] transition-colors block">
+                        +91 73964 33856
+                      </a>
+                    </div>
                   </div>
                 </div>
 

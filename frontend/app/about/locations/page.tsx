@@ -375,13 +375,31 @@ export default function LocationsPage() {
                   </div>
 
                   {/* Address info */}
-                  <div className="mb-4">
-                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-550 tracking-widest mb-1">
+                  <div className="mb-3">
+                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-550 tracking-widest mb-0.5">
                       {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Address"}
                     </h3>
                     <p className="text-slate-700 dark:text-slate-350 text-xs leading-relaxed">
                       {branch.address}
                     </p>
+                  </div>
+
+                  {/* Phone info */}
+                  <div className="mb-4">
+                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-550 tracking-widest mb-0.5">
+                      {isTelugu ? "ఫోన్" : isHindi ? "फ़ोन" : "Phone"}
+                    </h3>
+                    <div className="flex flex-col gap-0.5 text-xs text-slate-750 dark:text-slate-300 font-semibold">
+                      <a href="tel:+919704090069" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
+                        +91 97040 90069 (Senior Pastor)
+                      </a>
+                      <a href="tel:+919640943777" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
+                        +91 96409 43777
+                      </a>
+                      <a href="tel:+917396433856" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
+                        +91 73964 33856
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -469,6 +487,18 @@ export default function LocationsPage() {
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
                         {branch.address}
                       </p>
+                      
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal flex flex-col gap-0.5 border-t border-slate-100 dark:border-white/[0.04] pt-2">
+                        <a href="tel:+919704090069" className="hover:text-purple-500 transition-colors">
+                          +91 97040 90069 (Senior Pastor)
+                        </a>
+                        <a href="tel:+919640943777" className="hover:text-purple-500 transition-colors">
+                          +91 96409 43777
+                        </a>
+                        <a href="tel:+917396433856" className="hover:text-purple-500 transition-colors">
+                          +91 73964 33856
+                        </a>
+                      </div>
                       
                       <div className="pt-2.5 border-t border-slate-100 dark:border-white/[0.04] flex flex-col gap-1.5">
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">
