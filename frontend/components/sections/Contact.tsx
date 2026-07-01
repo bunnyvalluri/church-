@@ -26,7 +26,8 @@ export default function Contact() {
         ? "किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज,\n15-201, विवेकानंद नगर, श्रीनिवास नगर,\nजीडीमेटला, हैदराबाद,\nतेलंगाना 500055"
         : "Kingdom of Christ Ministries,\n15-201, Vivekananda Nagar, Srinivas Nagar,\nJeedimetla, Hyderabad,\nTelangana 500055",
       mapsUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.5369!2d78.43506!3d17.52098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x2a6c6c6b6a6a6a6a!2sVivekananda+Nagar%2C+Jeedimetla%2C+Hyderabad%2C+Telangana+500055!5e0!3m2!1sen!2sin!4v1716000000000"
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.5369!2d78.43506!3d17.52098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91e2f02d5555%3A0x2a6c6c6b6a6a6a6a!2sVivekananda+Nagar%2C+Jeedimetla%2C+Hyderabad%2C+Telangana+500055!5e0!3m2!1sen!2sin!4v1716000000000",
+      isStreetView: false
     },
     subhash: {
       name: language === "te" ? "సుభాష్ నగర్" : language === "hi" ? "सुभाष नगर" : "Subhash Nagar",
@@ -36,7 +37,8 @@ export default function Contact() {
         ? "सुभाष नगर,\nजीडीमेटला, हैदराबाद,\nतेलंगाना 500055"
         : "Subhash Nagar,\nJeedimetla, Hyderabad,\nTelangana 500055",
       mapsUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
-      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922610976!6m8!1m7!1sPfdOpDBV-AUaCAX-pavx_g!2m2!1d17.51769104998973!2d78.46098218561453!3f42.5558951222148!4f33.27373317227213!5f0.4000000000000002"
+      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922610976!6m8!1m7!1sPfdOpDBV-AUaCAX-pavx_g!2m2!1d17.51769104998973!2d78.46098218561453!3f42.5558951222148!4f33.27373317227213!5f0.4000000000000002",
+      isStreetView: true
     },
     bahadur: {
       name: language === "te" ? "బహదూర్‌పల్లి" : language === "hi" ? "बहादुरपल्ली" : "Bahadurpally",
@@ -46,7 +48,8 @@ export default function Contact() {
         ? "बहादुरपल्ली,\nकुतुबुल्लापुर, हैदराबाद,\nतेलंगाना 500043"
         : "Bahadurpally,\nQuthbullapur, Hyderabad,\nTelangana 500043",
       mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
-      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922487353!6m8!1m7!1sB6MuJsAZw1kA_ZCw4b2pGw!2m2!1d17.56771525177928!2d78.44416184725885!3f298.8926008480041!4f-1.3244437518344796!5f0.7820865974627469"
+      embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922487353!6m8!1m7!1sB6MuJsAZw1kA_ZCw4b2pGw!2m2!1d17.56771525177928!2d78.44416184725885!3f298.8926008480041!4f-1.3244437518344796!5f0.7820865974627469",
+      isStreetView: true
     }
   };
 
@@ -247,7 +250,7 @@ export default function Contact() {
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
-                  className="dark:invert-[0.9] dark:hue-rotate-180"
+                  className={branches[selectedBranch].isStreetView ? "" : "dark:invert-[0.9] dark:hue-rotate-180"}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
