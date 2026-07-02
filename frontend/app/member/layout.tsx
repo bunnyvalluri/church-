@@ -151,8 +151,8 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       {/* Brand */}
       <div className="p-6 border-b border-gray-100 dark:border-white/5">
         <Link href="/member" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform">
-            <Star className="w-5 h-5 text-white" />
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-purple-300/40 group-hover:border-purple-400/70 shadow-lg group-hover:scale-105 transition-transform bg-white flex items-center justify-center">
+            <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
           </div>
           <div>
             <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight">{lt.portalName}</p>

@@ -375,8 +375,8 @@ export default function MemberDashboard() {
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-gradient-start to-gradient-end rounded-xl flex items-center justify-center shadow-md shadow-[hsl(var(--primary))/0.2] group-hover:scale-105 transition-transform">
-              <Star className="w-4 h-4 text-white" />
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-purple-300/40 group-hover:border-purple-400/70 shadow-md group-hover:scale-105 transition-transform bg-white flex items-center justify-center">
+              <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
             </div>
             <div>
               <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight leading-none">
