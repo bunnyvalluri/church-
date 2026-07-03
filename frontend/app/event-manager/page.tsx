@@ -38,7 +38,8 @@ import {
   UploadCloud,
   Paperclip,
   Compass,
-  Play
+  Play,
+  Home
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -204,6 +205,7 @@ export default function UnifiedEventManagementPortal() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showCreateService, setShowCreateService] = useState(false);
   const [showCreateSermon, setShowCreateSermon] = useState(false);
+  const [successEvent, setSuccessEvent] = useState<{ title: string; category: string; date: string; time: string; location: string } | null>(null);
 
   const openEditModal = (report: DBReport) => {
     setEditingReport(report);
@@ -1876,11 +1878,13 @@ export default function UnifiedEventManagementPortal() {
                         throw new Error(err.error || "Failed to create service.");
                       }
                       setShowCreateService(false);
-                      setToastMessage({
-                        title: "✅ Service Created",
-                        desc: `Successfully scheduled service "${data.title}".`,
+                      setSuccessEvent({
+                        title: data.title,
+                        category: data.category,
+                        date: data.date,
+                        time: data.time,
+                        location: data.location,
                       });
-                      setTimeout(() => setToastMessage(null), 5000);
                     } catch (err: any) {
                       alert(err.message || "Failed to create service.");
                     }
@@ -1944,6 +1948,72 @@ export default function UnifiedEventManagementPortal() {
                   setTimeout(() => setToastMessage(null), 5000);
                 }}
               />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Event Modal */}
+      <AnimatePresence>
+        {successEvent && (
+          <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-white/10 rounded-3xl p-8 shadow-2xl max-w-md w-full relative overflow-hidden text-center"
+            >
+              {/* Top Shimmer Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+              
+              {/* Glowing Success Pulsar */}
+              <div className="relative flex items-center justify-center w-20 h-20 mx-auto rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 mb-6">
+                <CheckCircle className="w-10 h-10 animate-pulse" />
+                <div className="absolute inset-0 rounded-full border-4 border-emerald-500/30 animate-ping opacity-75" />
+              </div>
+
+              {/* Title & Description */}
+              <h3 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
+                Event Scheduled!
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+                Your event <span className="font-bold text-slate-800 dark:text-slate-200">"{successEvent.title}"</span> has been created successfully and is now active on the church calendar.
+              </p>
+
+              {/* Mini Event Info Card */}
+              <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-white/5 rounded-2xl p-4 mb-8 text-left space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <Calendar className="w-3.5 h-3.5 text-violet-500" />
+                  <span>Date: {successEvent.date}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Time: {successEvent.time}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <MapPin className="w-3.5 h-3.5 text-pink-500" />
+                  <span className="truncate">Location: {successEvent.location}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => router.push("/")}
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-650 hover:from-violet-500 hover:to-indigo-550 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer text-sm"
+                >
+                  <Home className="w-4.5 h-4.5" />
+                  Go to Homepage
+                </button>
+                
+                <button
+                  onClick={() => setSuccessEvent(null)}
+                  className="w-full h-12 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-350 font-bold hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer text-sm"
+                >
+                  Stay on Dashboard
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
