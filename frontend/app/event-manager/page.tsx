@@ -759,14 +759,6 @@ export default function UnifiedEventManagementPortal() {
     };
   }).filter(b => b.count > 0);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-transparent text-slate-800 dark:text-slate-150 transition-colors duration-300 flex flex-col pb-16 relative">
       
@@ -798,18 +790,21 @@ export default function UnifiedEventManagementPortal() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3.5">
           {/* Connection status */}
-          <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
+          <div className={`hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
             isOnline 
               ? "bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400/50 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-400 shadow-sm" 
               : "bg-amber-100 dark:bg-amber-500/20 border-amber-400/50 dark:border-amber-500/40 text-amber-700 dark:text-amber-400 shadow-sm animate-pulse"
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-ping"}`} />
-            <span className="hidden sm:inline">{isOnline ? (t.eventManager?.online || "ONLINE") : (t.eventManager?.offline || "OFFLINE MODE")}</span>
+            <span>{isOnline ? (t.eventManager?.online || "ONLINE") : (t.eventManager?.offline || "OFFLINE MODE")}</span>
           </div>
 
-          <LanguageToggle />
+          {/* Desktop Language Toggle */}
+          <div className="hidden sm:block">
+            <LanguageToggle />
+          </div>
 
           {["SUPER_ADMIN", "ADMIN"].includes(role) && (
             <button 
@@ -824,20 +819,43 @@ export default function UnifiedEventManagementPortal() {
 
           <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden sm:block" />
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden md:block text-right">
-              <p className="text-xs font-black text-slate-900 dark:text-white leading-none">{user?.name?.replace(/Joseph/gi, "").trim() || "Event Manager"}</p>
-              <p className="text-[9px] text-slate-400 dark:text-slate-400 font-bold uppercase mt-0.5 tracking-wider">
-                {role === "SUPER_ADMIN" ? "Super Admin" : role === "ADMIN" ? "Admin" : role === "EVENT_MANAGER" ? "Event Manager" : "Volunteer"}
-              </p>
-            </div>
+          {/* User profile & logout container */}
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            {!mounted ? (
+              <div className="hidden md:block text-right animate-pulse space-y-1.5 min-w-[70px]">
+                <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-16 ml-auto" />
+                <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded w-10 ml-auto" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                {/* Mobile avatar / initials badge */}
+                {user && (
+                  <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-xl border border-slate-200/50 dark:border-white/5 max-[430px]:hidden">
+                    <div className="w-5.5 h-5.5 rounded-lg bg-violet-500/10 text-violet-650 dark:text-violet-400 flex items-center justify-center font-black text-xs uppercase shrink-0">
+                      {(user.name || "EM").substring(0, 1).toUpperCase()}
+                    </div>
+                    <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 max-w-[65px] truncate leading-none uppercase tracking-wide">
+                      {user.name?.replace(/Joseph/gi, "").trim().split(" ")[0]}
+                    </span>
+                  </div>
+                )}
+                {/* Desktop user text details */}
+                <div className="hidden md:block text-right">
+                  <p className="text-xs font-black text-slate-900 dark:text-white leading-none">{user?.name?.replace(/Joseph/gi, "").trim() || "Event Manager"}</p>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-400 font-bold uppercase mt-0.5 tracking-wider">
+                    {role === "SUPER_ADMIN" ? "Super Admin" : role === "ADMIN" ? "Admin" : role === "EVENT_MANAGER" ? "Event Manager" : "Volunteer"}
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 text-xs font-black transition-all border border-rose-500/15"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 text-xs font-black transition-all border border-rose-500/15 whitespace-nowrap shrink-0"
               title={t.eventManager?.signOut || "Sign Out"}
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t.eventManager?.signOut || "Sign Out"}</span>
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <span className="whitespace-nowrap">{t.eventManager?.signOut || "Sign Out"}</span>
             </button>
           </div>
         </div>
@@ -912,10 +930,15 @@ export default function UnifiedEventManagementPortal() {
                 <Camera className="w-40 h-40 text-white" />
               </div>
               <div className="space-y-2 relative z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest !text-slate-900 shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-                  {t.eventManager?.welcomeConsole || "Operations Console"}
-                </span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest !text-slate-900 shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
+                    {t.eventManager?.welcomeConsole || "Operations Console"}
+                  </span>
+                  <div className="sm:hidden shrink-0">
+                    <LanguageToggle />
+                  </div>
+                </div>
                 <h2 className="text-2xl md:text-3xl font-black mt-2 tracking-tight leading-tight text-white">
                   {t.eventManager?.welcomeTitle || "Welcome, Event Manager! 🙏"}
                 </h2>
@@ -947,7 +970,7 @@ export default function UnifiedEventManagementPortal() {
                   className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
                 >
                   <Play className="w-4 h-4 !text-[#0f1021]" />
-                  Create Sermons
+                  {t.eventManager?.createSermonsBtn || "Create Sermons"}
                 </button>
 
                 <button
@@ -956,7 +979,7 @@ export default function UnifiedEventManagementPortal() {
                   className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
                 >
                   <Settings className="w-4 h-4 !text-[#0f1021]" />
-                  Manage Sermons
+                  {t.eventManager?.manageSermonsBtn || "Manage Sermons"}
                 </button>
               </div>
             </div>
@@ -1034,62 +1057,70 @@ export default function UnifiedEventManagementPortal() {
           </AnimatePresence>
 
           {/* Colorful Summary counters for managers/admins */}
-          {isManagerOrAdmin && (
+          {!mounted ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {/* Total Reports */}
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-indigo-500/5 dark:from-violet-950/20 dark:to-indigo-950/5 border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-violet-500 transition-all duration-300"
-              >
-                <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-violet-500/10 blur-xl pointer-events-none" />
-                <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">{t.eventManager?.totalReports || "Total Reports"}</span>
-                  <div className="flex items-baseline gap-1.5">
-                    <p className="text-3xl font-black text-violet-700 dark:text-violet-300 tracking-tight">{stats.total}</p>
-                    <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{t.eventManager?.logsUnit || "logs"}</span>
-                  </div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-violet-500/20 dark:bg-violet-500/30 flex items-center justify-center text-slate-500 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                  <FileText className="w-5.5 h-5.5 text-violet-600 dark:text-violet-400" />
-                </div>
-              </motion.div>
-
-              {/* Pending Review */}
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/5 dark:from-amber-950/20 dark:to-orange-950/5 border border-amber-500/20 dark:border-amber-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-amber-500 transition-all duration-300"
-              >
-                <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-amber-500/10 blur-xl pointer-events-none" />
-                <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block">{t.eventManager?.pendingReview || "Pending Review"}</span>
-                  <div className="flex items-baseline gap-1.5">
-                    <p className="text-3xl font-black text-amber-600 dark:text-amber-300 tracking-tight">{stats.pending}</p>
-                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{t.eventManager?.needsActionUnit || "needs action"}</span>
-                  </div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-amber-500/20 dark:bg-amber-500/30 flex items-center justify-center text-amber-505 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                  <Clock className="w-5.5 h-5.5 text-amber-600 dark:text-amber-400" />
-                </div>
-              </motion.div>
-
-              {/* Total Attendance */}
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="relative overflow-hidden bg-gradient-to-br from-emerald-500/10 to-teal-500/5 dark:from-emerald-950/20 dark:to-teal-950/5 border border-emerald-500/20 dark:border-emerald-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-emerald-500 transition-all duration-300"
-              >
-                <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl pointer-events-none" />
-                <div className="space-y-1 relative z-10">
-                  <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
-                  <div className="flex items-baseline gap-1.5">
-                    <p className="text-3xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight">{stats.attendance}</p>
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{t.eventManager?.peopleUnit || "people"}</span>
-                  </div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 dark:bg-emerald-500/30 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                  <Users className="w-5.5 h-5.5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-              </motion.div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-28 bg-white/50 dark:bg-slate-900/20 border border-slate-200/50 dark:border-white/10 rounded-3xl animate-pulse" />
+              ))}
             </div>
+          ) : (
+            isManagerOrAdmin && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {/* Total Reports */}
+                <motion.div 
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-indigo-500/5 dark:from-violet-950/20 dark:to-indigo-950/5 border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-violet-500 transition-all duration-300"
+                >
+                  <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-violet-500/10 blur-xl pointer-events-none" />
+                  <div className="space-y-1 relative z-10">
+                    <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block">{t.eventManager?.totalReports || "Total Reports"}</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <p className="text-3xl font-black text-violet-700 dark:text-violet-300 tracking-tight">{stats.total}</p>
+                      <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{t.eventManager?.logsUnit || "logs"}</span>
+                    </div>
+                  </div>
+                  <div className="w-11 h-11 rounded-2xl bg-violet-500/20 dark:bg-violet-500/30 flex items-center justify-center text-slate-500 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                    <FileText className="w-5.5 h-5.5 text-violet-600 dark:text-violet-400" />
+                  </div>
+                </motion.div>
+
+                {/* Pending Review */}
+                <motion.div 
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/5 dark:from-amber-950/20 dark:to-orange-950/5 border border-amber-500/20 dark:border-amber-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-amber-500 transition-all duration-300"
+                >
+                  <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-amber-500/10 blur-xl pointer-events-none" />
+                  <div className="space-y-1 relative z-10">
+                    <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block">{t.eventManager?.pendingReview || "Pending Review"}</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <p className="text-3xl font-black text-amber-600 dark:text-amber-300 tracking-tight">{stats.pending}</p>
+                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{t.eventManager?.needsActionUnit || "needs action"}</span>
+                    </div>
+                  </div>
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500/20 dark:bg-amber-500/30 flex items-center justify-center text-amber-550 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                    <Clock className="w-5.5 h-5.5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                </motion.div>
+
+                {/* Total Attendance */}
+                <motion.div 
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-emerald-500/10 to-teal-500/5 dark:from-emerald-950/20 dark:to-teal-950/5 border border-emerald-500/20 dark:border-emerald-500/30 rounded-3xl p-5 shadow-lg flex justify-between items-center group border-l-4 border-l-emerald-500 transition-all duration-300"
+                >
+                  <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl pointer-events-none" />
+                  <div className="space-y-1 relative z-10">
+                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <p className="text-3xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight">{stats.attendance}</p>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{t.eventManager?.peopleUnit || "people"}</span>
+                    </div>
+                  </div>
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 dark:bg-emerald-500/30 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                    <Users className="w-5.5 h-5.5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                </motion.div>
+              </div>
+            )
           )}
 
           {/* Filters and Search toolbar (Executive Senior UI/UX Redesign) */}
