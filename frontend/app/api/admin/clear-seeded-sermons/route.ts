@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireEventManagerOrDev } from "@/lib/authMiddleware";
 
 export const dynamic = "force-dynamic";
 
@@ -9,18 +10,30 @@ export const dynamic = "force-dynamic";
  * One-time operation: Deletes all sermons with IDs matching the
  * seed pattern (sermon_001 through sermon_999) from the database.
  * 
- * Protected by INTERNAL_API_SECRET environment variable.
- * Call with: Authorization: Bearer <INTERNAL_API_SECRET>
+ * Protected by requireEventManagerOrDev (Firebase JWT) or INTERNAL_API_SECRET.
  */
 export async function POST(req: Request) {
-  // ── Security: Require internal API secret ──────────────────────────────────
+  // ── Authentication & Authorization ──────────────────────────────────────────
   const authHeader = req.headers.get("Authorization") || "";
   const providedSecret = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
   const validSecret = process.env.INTERNAL_API_SECRET;
 
-  // In development with no secret set, allow the call for convenience
   const isDev = process.env.NODE_ENV !== "production";
-  if (!isDev && (!validSecret || providedSecret !== validSecret)) {
+  
+  // 1. Try Firebase Auth middleware
+  let isUserAuth = false;
+  try {
+    const authResult = await requireEventManagerOrDev(req);
+    if (!(authResult instanceof NextResponse)) {
+      isUserAuth = true;
+    }
+  } catch (err) {
+    // Ignore error, fallback to dev bypass or API secret
+  }
+
+  // 2. Enforce access
+  const isSecretValid = validSecret && providedSecret === validSecret;
+  if (!isDev && !isUserAuth && !isSecretValid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -278,9 +278,13 @@ export default function UnifiedEventManagementPortal() {
     if (!confirm("This will permanently delete all 6 placeholder sermons seeded from the database. Only real sermons you create will remain. Proceed?")) return;
     setClearingSeeded(true);
     try {
+      const token = await getIdToken();
       const res = await fetch("/api/admin/clear-seeded-sermons", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       const data = await res.json();
       if (res.ok && data.success) {
