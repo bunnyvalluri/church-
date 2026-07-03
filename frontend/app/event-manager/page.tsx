@@ -93,6 +93,15 @@ export default function UnifiedEventManagementPortal() {
   const { user, getIdToken, logout } = useAuth();
   const { t } = useLanguage();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      console.error("[AUTH] Logout error:", e);
+    }
+    router.push("/");
+  };
+
   // Parse greeting name professionally
   const getGreetingName = (fullName?: string | null) => {
     if (!fullName) return "Event Manager";
@@ -741,7 +750,7 @@ export default function UnifiedEventManagementPortal() {
               </p>
             </div>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 text-xs font-black transition-all border border-rose-500/15"
               title={t.eventManager?.signOut || "Sign Out"}
             >
