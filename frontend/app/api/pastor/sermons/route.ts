@@ -218,9 +218,24 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Sermon ID is required' }, { status: 400 });
     }
 
-    await prisma.sermon.delete({
+    const deletedSermon = await prisma.sermon.delete({
       where: { id: sermonId },
     });
+
+    // Broadcast Socket.io companion update so landing page updates instantly
+    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+    try {
+      await fetch(`${companionUrl}/api/trigger-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "sermon:uploaded", // Auto-refreshes landing page list
+          payload: { id: deletedSermon.id, action: "deleted" },
+        }),
+      });
+    } catch (socketErr) {
+      console.warn("[API/PASTOR/SERMONS] Socket companion broadcast skipped/failed on delete:", socketErr);
+    }
 
     return NextResponse.json({ success: true, message: 'Sermon deleted successfully' });
   } catch (err: any) {
