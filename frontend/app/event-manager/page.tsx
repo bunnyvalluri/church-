@@ -675,12 +675,19 @@ export default function UnifiedEventManagementPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-800 dark:text-slate-150 transition-colors duration-300 flex flex-col pb-16 relative">
+    <div className="min-h-screen bg-transparent text-slate-800 dark:text-slate-150 transition-colors duration-300 flex flex-col pb-16 relative">
       
-      {/* Background Luminous Neon Blobs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-500/15 rounded-full blur-[130px] pointer-events-none -z-10 animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none -z-10 animate-float-delayed" />
-      <div className="absolute top-1/2 left-10 w-[300px] h-[300px] bg-pink-500/5 dark:bg-pink-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+      {/* Background Liquid Glass Effect */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-slate-50/50 dark:bg-slate-950 transition-colors duration-300">
+        {/* Blurry backing filter */}
+        <div className="absolute inset-0 bg-white/10 dark:bg-slate-950/20 backdrop-blur-[120px] z-10" />
+        
+        {/* Liquid Blobs */}
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-[40%] bg-gradient-to-tr from-violet-600/20 to-indigo-600/15 dark:from-violet-500/25 dark:to-indigo-500/20 blur-[60px] animate-liquid-one" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] rounded-[50%] bg-gradient-to-tr from-cyan-500/15 to-emerald-500/10 dark:from-cyan-400/20 dark:to-emerald-500/15 blur-[70px] animate-liquid-two" />
+        <div className="absolute top-[30%] right-[10%] w-[550px] h-[550px] rounded-[30%] bg-gradient-to-br from-pink-500/15 to-rose-500/10 dark:from-pink-500/20 dark:to-rose-500/15 blur-[60px] animate-liquid-three" />
+        <div className="absolute bottom-[20%] left-[-5%] w-[500px] h-[500px] rounded-[45%] bg-gradient-to-tr from-amber-500/10 to-orange-500/5 dark:from-amber-400/25 dark:to-orange-500/20 blur-[55px] animate-liquid-four" />
+      </div>
 
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-md">
@@ -1017,9 +1024,9 @@ export default function UnifiedEventManagementPortal() {
                   onChange={(e) => setBranchFilter(e.target.value)}
                   className="h-10 pl-3.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 shadow-sm flex-grow md:flex-initial cursor-pointer appearance-none transition-all"
                 >
-                  <option value="all">{t.eventManager?.allBranchesOpt || "All Branches"}</option>
+                  <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{t.eventManager?.allBranchesOpt || "All Branches"}</option>
                   {branches.map((b) => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
+                    <option key={b.id} value={b.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{b.name}</option>
                   ))}
                 </select>
                 <ChevronDown className="w-4 h-4 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
@@ -1031,10 +1038,10 @@ export default function UnifiedEventManagementPortal() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="h-10 pl-3.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 shadow-sm flex-grow md:flex-initial cursor-pointer appearance-none transition-all"
                 >
-                  <option value="all">{t.eventManager?.allStatusesOpt || "All Statuses"}</option>
-                  <option value="PENDING">{t.eventManager?.pendingOpt || "Pending Approval"}</option>
-                  <option value="APPROVED">{t.eventManager?.approvedOpt || "Approved"}</option>
-                  <option value="REJECTED">{t.eventManager?.rejectedOpt || "Rejected"}</option>
+                  <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{t.eventManager?.allStatusesOpt || "All Statuses"}</option>
+                  <option value="PENDING" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{t.eventManager?.pendingOpt || "Pending Approval"}</option>
+                  <option value="APPROVED" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{t.eventManager?.approvedOpt || "Approved"}</option>
+                  <option value="REJECTED" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{t.eventManager?.rejectedOpt || "Rejected"}</option>
                 </select>
                 <ChevronDown className="w-4 h-4 absolute right-3 pointer-events-none text-slate-400 dark:text-slate-500" />
               </div>
@@ -1530,9 +1537,9 @@ export default function UnifiedEventManagementPortal() {
                         className="w-full h-10 pl-9 pr-8 rounded-xl bg-slate-55 border border-slate-200 dark:bg-white/5 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-400 transition-all appearance-none cursor-pointer"
                       >
                         {branches.map((b) => (
-                          <option key={b.id} value={b.id} className="dark:bg-slate-900">{b.name} Branch</option>
+                          <option key={b.id} value={b.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{b.name} Branch</option>
                         ))}
-                        <option value="other" className="dark:bg-slate-900 font-bold text-violet-600 dark:text-violet-400">➕ Other / Add New Location...</option>
+                        <option value="other" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold text-violet-600 dark:text-violet-400">➕ Other / Add New Location...</option>
                       </select>
                       <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" />
                     </div>

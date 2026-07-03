@@ -190,7 +190,13 @@ export default function SermonInlineForm({ onClose, onSuccess }: SermonInlineFor
             disabled={isSubmitting}
           >
             {SERMON_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option
+                key={c}
+                value={c}
+                className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+              >
+                {c}
+              </option>
             ))}
           </select>
         </div>

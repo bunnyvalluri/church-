@@ -511,12 +511,19 @@ function FieldReportFormContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-16 relative overflow-hidden">
+    <div className="min-h-screen bg-transparent text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-16 relative overflow-hidden">
       
-      {/* Background Luminous Neon Blobs */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-violet-500/10 dark:bg-violet-500/20 rounded-full blur-[140px] pointer-events-none -z-10 animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-[160px] pointer-events-none -z-10 animate-float-delayed" />
-      <div className="absolute top-1/2 left-10 w-[350px] h-[350px] bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-[120px] pointer-events-none -z-10" />
+      {/* Background Liquid Glass Effect */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-slate-50/50 dark:bg-slate-950 transition-colors duration-300">
+        {/* Blurry backing filter */}
+        <div className="absolute inset-0 bg-white/10 dark:bg-slate-950/20 backdrop-blur-[120px] z-10" />
+        
+        {/* Liquid Blobs */}
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-[40%] bg-gradient-to-tr from-violet-600/20 to-indigo-600/15 dark:from-violet-500/25 dark:to-indigo-500/20 blur-[60px] animate-liquid-one" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] rounded-[50%] bg-gradient-to-tr from-cyan-500/15 to-emerald-500/10 dark:from-cyan-400/20 dark:to-emerald-500/15 blur-[70px] animate-liquid-two" />
+        <div className="absolute top-[30%] right-[10%] w-[550px] h-[550px] rounded-[30%] bg-gradient-to-br from-pink-500/15 to-rose-500/10 dark:from-pink-500/20 dark:to-rose-500/15 blur-[60px] animate-liquid-three" />
+        <div className="absolute bottom-[20%] left-[-5%] w-[500px] h-[500px] rounded-[45%] bg-gradient-to-tr from-amber-500/10 to-orange-500/5 dark:from-amber-400/25 dark:to-orange-500/20 blur-[55px] animate-liquid-four" />
+      </div>
 
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-sm border-b border-slate-200/50 dark:border-white/10">

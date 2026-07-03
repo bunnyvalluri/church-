@@ -850,4 +850,75 @@ button:hover .lucide,
 }
 .dark .admin-label {
   color: #94a3b8;
-}
+}
+
+/* ==========================================================================
+   🔮 LIQUID GLASS BACKGROUND STYLING (iOS/OS X STYLE)
+   ========================================================================== */
+
+/* Morphing liquid animations */
+@keyframes liquid-morph-one {
+  0%, 100% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+  33% {
+    border-radius: 70% 30% 52% 48% / 60% 40% 60% 40%;
+    transform: translate(80px, -60px) rotate(120deg) scale(1.15);
+  }
+  66% {
+    border-radius: 50% 50% 30% 70% / 40% 60% 40% 60%;
+    transform: translate(-60px, 80px) rotate(240deg) scale(0.85);
+  }
+}
+
+@keyframes liquid-morph-two {
+  0%, 100% {
+    border-radius: 50% 50% 30% 70% / 40% 60% 40% 60%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+  33% {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    transform: translate(-90px, 50px) rotate(-120deg) scale(1.1);
+  }
+  66% {
+    border-radius: 60% 40% 50% 50% / 50% 30% 70% 50%;
+    transform: translate(60px, -70px) rotate(-240deg) scale(0.9);
+  }
+}
+
+@keyframes liquid-morph-three {
+  0%, 100% {
+    border-radius: 60% 40% 50% 50% / 50% 30% 70% 50%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+  50% {
+    border-radius: 35% 65% 40% 60% / 60% 35% 65% 40%;
+    transform: translate(90px, -80px) rotate(180deg) scale(1.2);
+  }
+}
+
+@keyframes liquid-morph-four {
+  0%, 100% {
+    border-radius: 45% 55% 60% 40% / 50% 45% 55% 50%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+  50% {
+    border-radius: 55% 45% 40% 60% / 45% 55% 50% 55%;
+    transform: translate(-70px, 90px) rotate(-180deg) scale(1.15);
+  }
+}
+
+.animate-liquid-one {
+  animation: liquid-morph-one 22s infinite alternate ease-in-out;
+}
+.animate-liquid-two {
+  animation: liquid-morph-two 26s infinite alternate ease-in-out;
+}
+.animate-liquid-three {
+  animation: liquid-morph-three 24s infinite alternate ease-in-out;
+}
+.animate-liquid-four {
+  animation: liquid-morph-four 30s infinite alternate ease-in-out;
+}
+

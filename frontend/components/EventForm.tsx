@@ -234,7 +234,11 @@ export default function EventForm({
           </label>
           <select name="category" value={formData.category} onChange={handleChange} className={inputCls("category")}>
             {CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>
+              <option
+                key={c.value}
+                value={c.value}
+                className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+              >
                 {c.emoji} {c.label}
               </option>
             ))}
@@ -247,9 +251,15 @@ export default function EventForm({
               <Building2 className="w-3 h-3" /> Branch
             </label>
             <select name="branchId" value={formData.branchId || ""} onChange={handleChange} className={inputCls("branchId")}>
-              <option value="">All Branches</option>
+              <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">All Branches</option>
               {branches.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
+                <option
+                  key={b.id}
+                  value={b.id}
+                  className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+                >
+                  {b.name}
+                </option>
               ))}
             </select>
           </div>
