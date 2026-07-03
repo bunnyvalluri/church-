@@ -783,7 +783,7 @@ export default function UnifiedEventManagementPortal() {
       </div>
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/8 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-30 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-700 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm" style={{isolation: 'isolate', backgroundColor: 'white'}}>
         
         {/* Bottom Border Gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
