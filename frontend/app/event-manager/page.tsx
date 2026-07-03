@@ -249,12 +249,9 @@ export default function UnifiedEventManagementPortal() {
     if (!confirm("Are you sure you want to delete this sermon? This action cannot be undone.")) return;
     setDeletingSermonId(id);
     try {
-      const token = await getIdToken();
+      // Cookies are sent automatically — middleware validates __kcm_session_role cookie
       const res = await fetch(`/api/pastor/sermons?id=${id}`, {
         method: "DELETE",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -278,13 +275,10 @@ export default function UnifiedEventManagementPortal() {
     if (!confirm("This will permanently delete all 6 placeholder sermons seeded from the database. Only real sermons you create will remain. Proceed?")) return;
     setClearingSeeded(true);
     try {
-      const token = await getIdToken();
+      // Cookies are sent automatically — middleware validates __kcm_session_role cookie
       const res = await fetch("/api/pastor/clear-seeded-sermons", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
       if (res.ok && data.success) {
