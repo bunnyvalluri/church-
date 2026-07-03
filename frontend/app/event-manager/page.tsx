@@ -45,6 +45,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import CameraCapture from "@/components/CameraCapture";
 import EventForm from "@/components/EventForm";
+import SermonInlineForm from "@/components/SermonInlineForm";
 
 interface MediaItem {
   id: string;
@@ -202,6 +203,7 @@ export default function UnifiedEventManagementPortal() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showCreateService, setShowCreateService] = useState(false);
+  const [showCreateSermon, setShowCreateSermon] = useState(false);
 
   const openEditModal = (report: DBReport) => {
     setEditingReport(report);
@@ -810,7 +812,7 @@ export default function UnifiedEventManagementPortal() {
                 <Camera className="w-40 h-40 text-white" />
               </div>
               <div className="space-y-2 relative z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest text-indigo-50">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest text-indigo-950 shadow-sm">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
                   {t.eventManager?.welcomeConsole || "Operations Console"}
                 </span>
@@ -828,15 +830,7 @@ export default function UnifiedEventManagementPortal() {
                   className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all shadow-lg active:scale-95 hover:shadow-indigo-500/20"
                 >
                   <PlusCircle className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.createReportBtn || "Create Field Report"}
-                </Link>
-
-                <Link
-                  href="/event-manager/report?openCamera=true"
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20"
-                >
-                  <Camera className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.quickCaptureBtn || "Quick Capture"}
+                  {t.eventManager?.createReportBtn || "Create Events Report"}
                 </Link>
 
                 <button
@@ -845,6 +839,15 @@ export default function UnifiedEventManagementPortal() {
                 >
                   <Calendar className="w-4 h-4 !text-[#0f1021]" />
                   {t.eventManager?.createServicesBtn || "Create Services"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCreateSermon(true)}
+                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
+                >
+                  <Play className="w-4 h-4 !text-[#0f1021]" />
+                  Create Sermons
                 </button>
               </div>
             </div>
@@ -1054,17 +1057,35 @@ export default function UnifiedEventManagementPortal() {
               <div className="space-y-1 relative z-10">
                 <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">{t.eventManager?.noReportsTitle || "No Reports Found"}</p>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium max-w-xs mx-auto leading-relaxed">
-                  {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters. Submit a field report or check another branch."}
+                  {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters. Submit an events report or check another branch."}
                 </p>
               </div>
-              <div className="pt-2 relative z-10">
+              <div className="pt-2 relative z-10 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   href="/event-manager/report"
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20 active:scale-95"
                 >
                   <PlusCircle className="w-4 h-4" />
-                  {t.eventManager?.createFirstReportBtn || "Create First Report"}
+                  {t.eventManager?.createFirstReportBtn || "Create Events Report"}
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCreateService(true)}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                >
+                  <Calendar className="w-4 h-4" />
+                  {t.eventManager?.createServicesBtn || "Create Services"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCreateSermon(true)}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                >
+                  <Play className="w-4 h-4" />
+                  Create Sermons
+                </button>
               </div>
             </div>
           ) : (
@@ -1872,6 +1893,54 @@ export default function UnifiedEventManagementPortal() {
           onClose={() => setShowEditCamera(false)}
         />
       )}
+
+      {/* Create Sermon Modal */}
+      <AnimatePresence>
+        {showCreateSermon && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowCreateSermon(false)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-2xl max-w-lg w-full relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Banner Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500" />
+
+              <button
+                type="button"
+                onClick={() => setShowCreateSermon(false)}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
+                <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <Play className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Create Sermon</h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Upload a new sermon or message recording</p>
+                </div>
+              </div>
+
+              <SermonInlineForm
+                onClose={() => setShowCreateSermon(false)}
+                onSuccess={(title: string) => {
+                  setShowCreateSermon(false);
+                  setToastMessage({
+                    title: "✅ Sermon Created",
+                    desc: `Successfully created sermon "${title}".`,
+                  });
+                  setTimeout(() => setToastMessage(null), 5000);
+                }}
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

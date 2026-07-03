@@ -162,7 +162,7 @@ export default function Events() {
                     )}
 
                     {/* Event Details */}
-                    <div className="space-y-3 mb-8 font-medium text-sm">
+                    <div className="space-y-3 font-medium text-sm">
                       <div className="flex items-center gap-3 text-slate-600 dark:text-white/70">
                         <Calendar className="h-4 w-4 text-primary shrink-0" />
                         <span>{formatEventDate(event.date)}</span>
@@ -177,15 +177,6 @@ export default function Events() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Register Button */}
-                  <a
-                    href={`/events/${event.id || ""}`}
-                    className="w-full py-3 bg-gradient-to-r from-primary to-primary-gradient-end text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 text-sm"
-                  >
-                    {t.events.register}
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </a>
                 </div>
               </div>
             );

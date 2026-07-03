@@ -4,7 +4,6 @@ import "@/app/globals.css";
 import { Providers } from "@/components/providers/index";
 import dynamic from "next/dynamic";
 const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
-const DevToolbar = dynamic(() => import("@/components/dev/DevToolbar"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
 

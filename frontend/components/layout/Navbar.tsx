@@ -150,8 +150,8 @@ export default function Navbar() {
               </div>
             </a>
 
-            {/* ── Desktop Nav Links (md+) ── */}
-            <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
+            {/* ── Desktop Nav Links (lg+) ── */}
+            <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
               {navItems.map((item) => {
                 const isActive = activeSection === item.href.replace("#", "");
                 return (
@@ -180,27 +180,26 @@ export default function Navbar() {
               <div>
                 <BranchSelector />
               </div>
-              {/* Toggles — hidden on mobile to save space */}
-              <div className="hidden md:flex items-center gap-1 bg-gray-100/70 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 p-1 rounded-xl backdrop-blur-md">
-                <LanguageToggle />
-                <ThemeToggle />
-                <PaletteToggle />
+              
+              {/* Combined Settings/Preferences Dropdown (lg+) */}
+              <div className="hidden lg:block">
+                <PaletteToggle showPreferences={true} />
               </div>
 
-              {/* Member Login — desktop only */}
+              {/* Member Login — desktop only (xl+) */}
               <Link
                 href="/login"
-                className="hidden md:flex items-center relative px-4 py-2 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap"
+                className="hidden xl:flex items-center relative px-4 py-2 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 group-hover:from-violet-500 group-hover:to-purple-500 transition-all duration-300" />
                 <span className="relative z-10">Member Login</span>
               </Link>
 
-              {/* ── Hamburger (< md) ── */}
+              {/* ── Hamburger (< lg) ── */}
               <button
                 onClick={() => setMobileMenu(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
-                className="md:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all"
+                className="lg:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -209,7 +208,7 @@ export default function Navbar() {
 
           {/* ── Mobile Dropdown Menu ── */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in">
+            <div className="lg:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in">
 
               {/* Nav links */}
               <nav className="space-y-0.5">

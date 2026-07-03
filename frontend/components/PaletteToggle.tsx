@@ -2,10 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Palette, Check, Settings } from "lucide-react";
-import { useColorTheme, palettes, ColorTheme } from "@/components/providers/ColorThemeProvider";
-import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useColorTheme, ColorTheme } from "@/components/providers/ColorThemeProvider";
+import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
+import Link from "next/link";
 
-export default function PaletteToggle() {
+interface PaletteToggleProps {
+  showPreferences?: boolean;
+}
+
+export default function PaletteToggle({ showPreferences = false }: PaletteToggleProps) {
   const { theme, setTheme } = useColorTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -34,7 +40,7 @@ export default function PaletteToggle() {
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/5 backdrop-blur-md border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
+        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/5 backdrop-blur-md border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-250 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
         title="Settings"
         type="button"
       >
@@ -46,58 +52,97 @@ export default function PaletteToggle() {
         <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/95 dark:bg-gray-950/95 border border-gray-200/50 dark:border-white/10 shadow-2xl backdrop-blur-xl p-4 z-50 animate-scale-in">
           {/* Header */}
           <div className="flex items-center gap-2 pb-3 mb-3 border-b border-gray-100 dark:border-white/5">
-            <Palette className="w-4 h-4 text-[hsl(var(--primary))]" />
+            <Settings className="w-4 h-4 text-[hsl(var(--primary))] animate-spin-slow" />
             <div>
-              <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">SETTINGS</h4>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">Customize color scheme</p>
+              <h4 className="text-xs font-black text-gray-950 dark:text-white uppercase tracking-wider">Preferences</h4>
+              <p className="text-[10px] text-gray-550 dark:text-gray-400">Customize your experience</p>
             </div>
           </div>
 
-          {/* Theme Options */}
-          <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
-            {colorThemes.map((item) => {
-              const isActive = theme === item.code;
-              return (
-                <button
-                  key={item.code}
-                  onClick={() => {
-                    setTheme(item.code as ColorTheme);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between p-2.5 rounded-xl transition-all text-left ${
-                    isActive
-                      ? "bg-[hsl(var(--primary))/0.08] border border-[hsl(var(--primary))/0.2]"
-                      : "hover:bg-gray-100/50 dark:hover:bg-white/5 border border-transparent"
-                  }`}
-                  type="button"
-                >
-                  <div className="flex items-center gap-3">
-                    {/* Circle Color Preview */}
-                    <div 
-                      className="w-8 h-8 rounded-xl shadow-sm flex items-center justify-center flex-shrink-0"
-                      style={{ background: item.gradientStyle }}
-                    >
-                      <span className="text-white text-xs font-bold font-sans">✝</span>
-                    </div>
-                    <div>
-                      <span className={`block text-xs font-bold tracking-tight ${isActive ? "text-[hsl(var(--primary))]" : "text-gray-700 dark:text-gray-300"}`}>
-                        {item.label}
-                      </span>
-                      <span className="block text-[9px] text-gray-400 dark:text-gray-500 mt-0.5 leading-none">
-                        {item.desc}
-                      </span>
-                    </div>
-                  </div>
+          {/* Quick Preferences (Language & Appearance) */}
+          {showPreferences && (
+            <div className="space-y-3 pb-3.5 mb-3.5 border-b border-gray-100 dark:border-white/5">
+              {/* Language */}
+              <div className="space-y-1">
+                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-gray-555">
+                  Language
+                </span>
+                <div className="flex justify-start">
+                  <LanguageToggle />
+                </div>
+              </div>
 
-                  {/* Check Indicator */}
-                  {isActive && (
-                    <div className="w-5 h-5 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-white scale-100 animate-scale-in">
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
+              {/* Theme */}
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-gray-555">
+                  Appearance
+                </span>
+                <ThemeToggle />
+              </div>
+
+              {/* Member Login (visible below xl breakpoint in preferences menu) */}
+              <div className="xl:hidden pt-1.5">
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center w-full py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-bold text-xs shadow-md hover:shadow-purple-500/20 active:scale-95 transition-all"
+                >
+                  Member Login
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Color Themes */}
+          <div className="space-y-2">
+            <span className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-gray-555">
+              Color Theme
+            </span>
+            <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 scrollbar-thin">
+              {colorThemes.map((item) => {
+                const isActive = theme === item.code;
+                return (
+                  <button
+                    key={item.code}
+                    onClick={() => {
+                      setTheme(item.code as ColorTheme);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between p-2 rounded-xl transition-all text-left ${
+                      isActive
+                        ? "bg-[hsl(var(--primary))/0.08] border border-[hsl(var(--primary))/0.2]"
+                        : "hover:bg-gray-100/50 dark:hover:bg-white/5 border border-transparent"
+                    }`}
+                    type="button"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {/* Circle Color Preview */}
+                      <div 
+                        className="w-7 h-7 rounded-lg shadow-sm flex items-center justify-center flex-shrink-0"
+                        style={{ background: item.gradientStyle }}
+                      >
+                        <span className="text-white text-[10px] font-sans">✝</span>
+                      </div>
+                      <div>
+                        <span className={`block text-xs font-bold tracking-tight ${isActive ? "text-[hsl(var(--primary))]" : "text-gray-700 dark:text-gray-300"}`}>
+                          {item.label}
+                        </span>
+                        <span className="block text-[9px] text-gray-400 dark:text-gray-550 mt-0.5 leading-none">
+                          {item.desc}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </button>
-              );
-            })}
+
+                    {/* Check Indicator */}
+                    {isActive && (
+                      <div className="w-4 h-4 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-white scale-100 animate-scale-in">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

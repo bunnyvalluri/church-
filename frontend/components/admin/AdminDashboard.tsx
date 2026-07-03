@@ -791,17 +791,24 @@ export default function AdminDashboard() {
       {/* Backdrop overlay for mobile drawer */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-45 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* ────────────────── 1. LEFT SIDEBAR NAVIGATION ────────────────── */}
-      <aside className={`admin-sidebar w-64 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl shadow-2xl text-gray-600 dark:text-gray-300 flex flex-col shrink-0 border-r border-gray-200 dark:border-white/[0.05] fixed inset-y-0 left-0 z-40 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`admin-sidebar w-64 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl shadow-2xl text-gray-600 dark:text-gray-300 flex flex-col shrink-0 border-r border-gray-200 dark:border-white/[0.05] fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-200 dark:border-white/[0.05]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-500/30">
-              ✝
+            <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-700/50 shadow-sm bg-white flex-shrink-0">
+              <Image 
+                src="/logo.png" 
+                alt="KCM Logo" 
+                fill 
+                sizes="36px"
+                className="object-cover rounded-xl" 
+                priority 
+              />
             </div>
             <div className="flex flex-col min-w-0">
               <span className="font-extrabold text-gray-900 dark:text-white text-sm tracking-tight leading-tight">
@@ -1013,22 +1020,22 @@ export default function AdminDashboard() {
       <main className="flex-1 flex flex-col overflow-y-auto max-h-screen custom-scrollbar relative z-10 w-full min-w-0">
         
         {/* Top Header */}
-        <header className="admin-header h-16 sm:h-20 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-10">
+        <header className="admin-header h-auto pt-5 pb-3 sm:h-20 sm:py-0 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+              className="lg:hidden w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
               aria-label="Open sidebar menu"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-sm sm:text-base lg:text-xl font-black text-gray-900 dark:text-transparent dark:bg-gradient-to-r dark:from-white dark:via-indigo-100 dark:to-purple-100 dark:bg-clip-text bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-indigo-800 tracking-tight uppercase truncate max-w-[100px] sm:max-w-[200px] md:max-w-none">
+            <h1 className="text-sm sm:text-base lg:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-indigo-800 dark:text-white dark:bg-none tracking-tight uppercase truncate max-w-[100px] sm:max-w-[200px] md:max-w-none">
               {getHeaderTitle()}
             </h1>
           </div>
           
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-6">
+          <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-6">
             {/* Search Input */}
             <div className="relative w-40 sm:w-52 md:w-72 group hidden sm:block">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400/70 group-focus-within:text-indigo-500 transition-colors" />
@@ -1054,7 +1061,7 @@ export default function AdminDashboard() {
               <button 
                 type="button" 
                 aria-label="Notification alerts"
-                className="p-2 bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 relative"
+                className="w-9 h-9 flex items-center justify-center bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 relative"
               >
                 <Bell className="w-4.5 h-4.5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border border-white dark:border-[#080915]">
@@ -1067,7 +1074,7 @@ export default function AdminDashboard() {
             <button
               type="button"
               onClick={() => setActiveView("settings")}
-              className="md:hidden p-2 bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300"
+              className="md:hidden w-9 h-9 flex items-center justify-center bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300"
               aria-label="Settings"
             >
               <Settings className="w-4.5 h-4.5" />
@@ -1227,13 +1234,13 @@ export default function AdminDashboard() {
       </main>
       {/* ────────────────── 3. MOBILE BOTTOM NAVIGATION ────────────────── */}
       {/* Only visible on mobile/tablet (below lg breakpoint) */}
-      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-40 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-30 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
         {[
-          { id: "dashboard", label: "Home", icon: Layers },
-          { id: "members", label: "Members", icon: Users },
-          { id: "donations", label: "Finance", icon: DollarSign },
-          { id: "attendance-records", label: "Attend", icon: UserCheck },
-          { id: "sermons", label: "Content", icon: Play },
+          { id: "dashboard", label: "Home", icon: Layers, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50/50 dark:bg-indigo-950/40 border-indigo-200/50 dark:border-indigo-800/30" },
+          { id: "members", label: "Members", icon: Users, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50/50 dark:bg-emerald-950/40 border-emerald-200/50 dark:border-emerald-800/30" },
+          { id: "donations", label: "Finance", icon: DollarSign, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50/50 dark:bg-amber-955/40 border-amber-200/50 dark:border-amber-800/30" },
+          { id: "attendance-records", label: "Attend", icon: UserCheck, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-50/50 dark:bg-sky-950/40 border-sky-200/50 dark:border-sky-800/30" },
+          { id: "sermons", label: "Content", icon: Play, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50/50 dark:bg-pink-955/40 border-pink-200/50 dark:border-pink-800/30" },
         ].map((item) => {
           const isActive = item.id === activeView || 
             (item.id === "members" && ["members","member-groups","prayers","families"].includes(activeView)) ||
@@ -1247,12 +1254,12 @@ export default function AdminDashboard() {
               onClick={() => setActiveView(item.id as any)}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 border ${
                 isActive
-                  ? "text-[#6366F1] dark:text-[#818CF8] bg-white/45 dark:bg-white/[0.07] border-white/40 dark:border-white/[0.12] shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105"
+                  ? `${item.color} ${item.bg} shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105`
                   : "text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
-              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? "text-[#6366F1] dark:text-[#818CF8] scale-110" : ""}`} />
-              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? "text-[#6366F1] dark:text-[#818CF8]" : ""}`}>{item.label}</span>
+              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? `${item.color} scale-110` : ""}`} />
+              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? item.color : ""}`}>{item.label}</span>
             </button>
           );
         })}

@@ -128,7 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Has ZERO effect in production (env var never set there).
     const isDev = process.env.NODE_ENV !== "production";
     const envRole = isDev ? process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN : "";
-    const lsRole  = isDev && typeof window !== "undefined" && envRole !== "" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
+    const lsRole  = isDev && typeof window !== "undefined" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
     const devRole = lsRole || (envRole?.toUpperCase() ?? "");
     const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER", "EVENT_MANAGER", "FIELD_VOLUNTEER"];
     if (devRole && validRoles.includes(devRole)) {

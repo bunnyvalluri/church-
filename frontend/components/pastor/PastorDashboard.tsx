@@ -1179,7 +1179,7 @@ export default function PastorDashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-45 lg:hidden"
             />
             {/* Sidebar Container */}
             <motion.aside
@@ -1200,14 +1200,13 @@ export default function PastorDashboard() {
         {renderSidebarContent()}
       </aside>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-40 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-30 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
         {[
-          { name: "Dashboard", icon: Layers },
-          { name: "Sermons", icon: Play },
-          { name: "Member Requests", icon: Users },
-          { name: "Prayer Requests", icon: Heart },
-          { name: "Profile", icon: Settings }
+          { name: "Dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50/50 dark:bg-indigo-950/40 border-indigo-200/50 dark:border-indigo-800/30" },
+          { name: "Sermons", icon: Play, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50/50 dark:bg-pink-955/40 border-pink-200/50 dark:border-pink-800/30" },
+          { name: "Member Requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50/50 dark:bg-emerald-950/40 border-emerald-200/50 dark:border-emerald-800/30" },
+          { name: "Prayer Requests", icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50/50 dark:bg-rose-950/40 border-rose-200/50 dark:border-rose-800/30" },
+          { name: "Profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50/50 dark:bg-cyan-950/40 border-cyan-200/50 dark:border-cyan-800/30" }
         ].map(item => {
           const isActive = activeNav === item.name;
           return (
@@ -1217,12 +1216,12 @@ export default function PastorDashboard() {
               onClick={() => setActiveNav(item.name)}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 border ${
                 isActive
-                  ? "text-[#6366F1] dark:text-[#818CF8] bg-white/45 dark:bg-white/[0.07] border-white/40 dark:border-white/[0.12] shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105"
+                  ? `${item.color} ${item.bg} shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105`
                   : "text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
-              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? "text-[#6366F1] dark:text-[#818CF8] scale-110" : ""}`} />
-              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? "text-[#6366F1] dark:text-[#818CF8]" : ""}`}>{item.name.split(" ")[0]}</span>
+              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? `${item.color} scale-110` : ""}`} />
+              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? item.color : ""}`}>{item.name.split(" ")[0]}</span>
             </button>
           );
         })}
@@ -1230,12 +1229,12 @@ export default function PastorDashboard() {
 
       <main className="flex-1 flex flex-col overflow-y-auto max-h-screen custom-scrollbar bg-slate-50/40 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 transition-colors duration-300 relative z-10">
         {/* Main Top Header */}
-        <header className="h-20 bg-white/40 dark:bg-[#070814]/40 backdrop-blur-xl border-b border-slate-200/40 dark:border-white/[0.04] px-3 sm:px-8 flex items-center justify-between sticky top-0 z-20 transition-all duration-300">
+        <header className="h-auto pt-5 pb-3 sm:h-20 sm:py-0 bg-white/40 dark:bg-[#070814]/40 backdrop-blur-xl border-b border-slate-200/40 dark:border-white/[0.04] px-3 sm:px-8 flex items-center justify-between sticky top-0 z-20 transition-all duration-300">
           <div className="flex items-center min-w-0">
             <button
               type="button"
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all mr-3 shrink-0"
+              className="lg:hidden w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all mr-3 shrink-0"
               title="Open Sidebar"
             >
               <Menu className="w-5 h-5" />
@@ -1248,7 +1247,7 @@ export default function PastorDashboard() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 sm:gap-6 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
             {/* Search Input */}
             <div className="relative hidden md:block w-48 lg:w-64">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -1266,7 +1265,7 @@ export default function PastorDashboard() {
               <button 
                 type="button" 
                 onClick={() => setIsNotifDropdownOpen(!isNotifDropdownOpen)}
-                className="p-2 bg-gray-100/20 dark:bg-white/[0.02] border border-gray-150 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors relative"
+                className="w-9 h-9 flex items-center justify-center bg-gray-100/20 dark:bg-white/[0.02] border border-gray-150 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors relative"
                 title="Notifications"
               >
                 <Bell className="w-4.5 h-4.5" />
@@ -1284,7 +1283,7 @@ export default function PastorDashboard() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white/95 dark:bg-[#0E0F24]/95 backdrop-blur-xl border border-gray-200/80 dark:border-white/[0.08] rounded-2xl shadow-xl z-30 overflow-hidden"
+                    className="absolute -right-20 sm:right-0 mt-2.5 w-80 sm:w-96 bg-white/95 dark:bg-[#0E0F24]/95 backdrop-blur-xl border border-gray-200/80 dark:border-white/[0.08] rounded-2xl shadow-xl z-30 overflow-hidden"
                   >
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-white/[0.03] flex items-center justify-between bg-slate-50/50 dark:bg-[#0A0B16]/50">
@@ -1381,7 +1380,7 @@ export default function PastorDashboard() {
               <button 
                 type="button"
                 onClick={() => setIsNewDropdownOpen(!isNewDropdownOpen)}
-                className="py-2.5 px-4 sm:px-5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-full font-black text-xs flex items-center gap-1.5 shadow-lg shadow-indigo-650/15 active:scale-[0.96] transition-all border border-white/10 dark:border-white/[0.06] select-none"
+                className="w-9 h-9 sm:w-auto sm:h-auto sm:py-2.5 sm:px-5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5053E4] hover:to-[#7C3AED] text-white rounded-full font-black text-xs flex items-center justify-center sm:gap-1.5 shadow-lg shadow-indigo-650/15 active:scale-[0.96] transition-all border border-white/10 dark:border-white/[0.06] select-none"
               >
                 <Plus className={`w-4 h-4 transition-transform duration-300 ${isNewDropdownOpen ? "rotate-45" : ""}`} />
                 <span className="hidden sm:inline">New</span>
