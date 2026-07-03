@@ -173,7 +173,11 @@ export function middleware(req: NextRequest) {
         { status: 401 }
       );
     }
-    if (!isPastorRole && !(pathname.startsWith('/api/pastor/sermons') && isEventManagerRole)) {
+    // Sermon endpoints: also allow EVENT_MANAGER and FIELD_VOLUNTEER so they
+    // can create / manage sermons from the event-manager dashboard.
+    const isSermonEndpoint = pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/clear-seeded-sermons');
+    const canAccess = isPastorRole || (isSermonEndpoint && isVolunteerRole);
+    if (!canAccess) {
       return NextResponse.json(
         { error: 'Access denied. Pastor or Admin privileges required.' },
         { status: 403 }

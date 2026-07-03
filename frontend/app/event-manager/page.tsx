@@ -279,7 +279,7 @@ export default function UnifiedEventManagementPortal() {
     setClearingSeeded(true);
     try {
       const token = await getIdToken();
-      const res = await fetch("/api/admin/clear-seeded-sermons", {
+      const res = await fetch("/api/pastor/clear-seeded-sermons", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

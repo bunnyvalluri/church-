@@ -207,7 +207,7 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   // ── Auth Guard ─────────────────────────────────────────────────────────────
-  const auth = await requireAdminOrDev(req);
+  const auth = await requireEventManagerOrDev(req);
   if (auth instanceof NextResponse) return auth;
 
   try {
