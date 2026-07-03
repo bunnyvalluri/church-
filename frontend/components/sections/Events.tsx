@@ -187,7 +187,7 @@ export default function Events() {
         <div className="mt-16 text-center">
           <a
             href="/events"
-            className="inline-block px-8 py-4 bg-white dark:bg-white/[0.02] text-primary border border-primary/20 rounded-2xl font-semibold hover:bg-primary/5 dark:hover:bg-primary/10 dark:hover:border-primary/40 transition-all duration-300 hover:scale-105 backdrop-blur-md"
+            className="inline-block px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-2xl shadow-lg hover:bg-slate-800 dark:hover:bg-slate-100 hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
           >
             {t.events.viewAll}
           </a>
