@@ -185,85 +185,13 @@ async function main() {
   ok(`${pastors.length} Pastor profiles seeded`);
 
   // ──────────────────────────────────────────────
-  // 4. SERMONS
+  // 4. SERMONS — SEEDING DISABLED
+  // Static sermon seeding is disabled. Sermons are created dynamically
+  // through the event-manager portal at /event-manager (Create Sermons button).
+  // To delete existing seeded sermons from production, call:
+  //   POST /api/admin/clear-seeded-sermons  (with Authorization: Bearer <INTERNAL_API_SECRET>)
   // ──────────────────────────────────────────────
-  const sermons = [
-    {
-      id: 'sermon_001',
-      title: 'Walking in Faith — The Abraham Principle',
-      description: 'An exploration of Abraham\'s journey of faith and how we can apply the same unwavering trust in God to our modern challenges. This message unpacks Genesis 22 and the ultimate test of faith.',
-      pastor: 'Pastor Samuel Valluri',
-      date: new Date('2024-06-09T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example1',
-      category: 'Faith',
-      tags: ['faith', 'abraham', 'trust', 'genesis'],
-      views: 342,
-    },
-    {
-      id: 'sermon_002',
-      title: 'The Power of Prayer — Matthew 6:9-13',
-      description: 'A deep dive into the Lord\'s Prayer, teaching us not just the words but the posture of heart that transforms our prayer life and draws us closer to our Heavenly Father.',
-      pastor: 'Pastor Samuel Valluri',
-      date: new Date('2024-06-02T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example2',
-      category: 'Prayer',
-      tags: ['prayer', 'matthew', 'lords-prayer', 'worship'],
-      views: 287,
-    },
-    {
-      id: 'sermon_003',
-      title: 'Renewed Minds — Romans 12:2',
-      description: 'How the transformation of our minds through God\'s Word empowers us to discern His perfect will. A practical message on daily spiritual disciplines and renewing our thought life.',
-      pastor: 'Pastor David Raju',
-      date: new Date('2024-05-26T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example3',
-      category: 'Transformation',
-      tags: ['mind', 'transformation', 'romans', 'discipleship'],
-      views: 215,
-    },
-    {
-      id: 'sermon_004',
-      title: 'Grace Sufficient — 2 Corinthians 12:9',
-      description: 'Paul\'s thorn in the flesh teaches us that God\'s grace is enough in every season of weakness, failure, and suffering. A message of hope for those walking through dark valleys.',
-      pastor: 'Pastor Samuel Valluri',
-      date: new Date('2024-05-19T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example4',
-      category: 'Grace',
-      tags: ['grace', 'paul', 'corinthians', 'hope', 'suffering'],
-      views: 401,
-    },
-    {
-      id: 'sermon_005',
-      title: 'The Great Commission — Go and Make Disciples',
-      description: 'Unpacking Matthew 28:18-20, this sermon challenges every believer to step into their role as ambassadors of Christ — in their families, workplaces, and communities.',
-      pastor: 'Pastor David Raju',
-      date: new Date('2024-05-12T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example5',
-      category: 'Evangelism',
-      tags: ['evangelism', 'missions', 'matthew', 'discipleship', 'outreach'],
-      views: 178,
-    },
-    {
-      id: 'sermon_006',
-      title: 'Fruit of the Spirit — Galatians 5:22-23',
-      description: 'A series exploring the nine fruits of the Spirit: love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control — and how they manifest in a Spirit-filled life.',
-      pastor: 'Pastor Samuel Valluri',
-      date: new Date('2024-05-05T10:00:00Z'),
-      videoUrl: 'https://youtube.com/watch?v=example6',
-      category: 'Holy Spirit',
-      tags: ['holy-spirit', 'galatians', 'character', 'fruit'],
-      views: 325,
-    },
-  ];
-
-  for (const sermon of sermons) {
-    await prisma.sermon.upsert({
-      where: { id: sermon.id },
-      update: { views: sermon.views },
-      create: sermon,
-    });
-  }
-  ok(`${sermons.length} Sermons seeded`);
+  ok(`0 Sermons seeded (sermon seeding is disabled — use the portal to create real sermons)`);
 
   // ──────────────────────────────────────────────
   // 5. EVENTS
