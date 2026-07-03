@@ -149,9 +149,13 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mt-24 max-w-5xl mx-auto"
+          className="mt-24 max-w-5xl mx-auto relative group"
         >
-          <div className="relative bg-gradient-to-br from-white via-white to-violet-50/40 dark:from-[#0d0e1b] dark:to-[#161830] border border-slate-200/60 dark:border-white/[0.06] shadow-xl shadow-slate-100/50 dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] text-slate-800 dark:text-white rounded-[2.5rem] p-10 sm:p-12 md:p-16 overflow-hidden">
+          {/* Glowing background blobs for glassmorphism refraction */}
+          <div className="absolute -top-12 -right-12 w-96 h-96 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/10 dark:from-violet-500/10 dark:to-purple-500/5 blur-3xl pointer-events-none -z-10 group-hover:scale-105 transition-transform duration-700" />
+          <div className="absolute -bottom-12 -left-12 w-96 h-96 rounded-full bg-gradient-to-br from-cyan-500/15 to-blue-500/10 dark:from-cyan-500/5 dark:to-blue-500/5 blur-3xl pointer-events-none -z-10 group-hover:scale-105 transition-transform duration-700" />
+
+          <div className="relative bg-white/40 dark:bg-[#090a15]/40 backdrop-blur-xl border border-white/60 dark:border-white/[0.08] shadow-[0_8px_32px_0_rgba(31,38,135,0.06)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-slate-800 dark:text-white rounded-[2.5rem] p-10 sm:p-12 md:p-16 overflow-hidden">
             {/* Simple dot pattern */}
             <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.03]" style={{
               backgroundImage: `radial-gradient(circle, currentColor 1.2px, transparent 1.2px)`,
@@ -171,7 +175,7 @@ export default function About() {
                 </div>
                 <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">Led By</p>
                 <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
-                <p className="text-xl md:text-3xl font-black tracking-wide bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-amber-300 dark:via-yellow-300 dark:to-amber-200 bg-clip-text text-transparent">{t.about.pastorName}</p>
+                <p className="text-xl md:text-3xl font-black tracking-wide bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-amber-300 dark:via-yellow-300 dark:to-amber-250 bg-clip-text text-transparent">{t.about.pastorName}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
@@ -189,21 +193,21 @@ export default function About() {
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     <a
                       href="tel:+919704090069"
-                      className="inline-flex items-center gap-3 bg-white hover:bg-slate-50 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] hover:border-violet-300/40 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
+                      className="inline-flex items-center gap-3 bg-white/40 hover:bg-white/60 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-white/60 dark:border-white/[0.06] hover:border-violet-300/45 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
                     >
                       <Phone className="w-5 h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform" />
                       <p className="text-base md:text-lg font-bold tracking-wide text-slate-800 dark:text-white/90 hover:text-violet-750 dark:hover:text-amber-250 transition-colors">+91 97040 90069 (Senior Pastor)</p>
                     </a>
                     <a
                       href="tel:+919640943777"
-                      className="inline-flex items-center gap-3 bg-white hover:bg-slate-50 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] hover:border-violet-300/40 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
+                      className="inline-flex items-center gap-3 bg-white/40 hover:bg-white/60 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-white/60 dark:border-white/[0.06] hover:border-violet-300/45 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
                     >
                       <Phone className="w-5 h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform" />
                       <p className="text-base md:text-lg font-bold tracking-wide text-slate-800 dark:text-white/90 hover:text-violet-750 dark:hover:text-amber-250 transition-colors">+91 96409 43777</p>
                     </a>
                     <a
                       href="tel:+917396433856"
-                      className="inline-flex items-center gap-3 bg-white hover:bg-slate-50 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] hover:border-violet-300/40 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
+                      className="inline-flex items-center gap-3 bg-white/40 hover:bg-white/60 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-white/60 dark:border-white/[0.06] hover:border-violet-300/45 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
                     >
                       <Phone className="w-5 h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform" />
                       <p className="text-base md:text-lg font-bold tracking-wide text-slate-800 dark:text-white/90 hover:text-violet-750 dark:hover:text-amber-250 transition-colors">+91 73964 33856</p>
@@ -218,25 +222,25 @@ export default function About() {
                     {locations.map((loc) => {
                       const branchStyles = {
                         shapur: {
-                          card: "bg-gradient-to-br from-blue-50/90 to-cyan-50/50 hover:from-blue-100 hover:to-cyan-100/70 dark:from-blue-950/40 dark:to-cyan-950/20 border-blue-100 hover:border-blue-300 dark:border-blue-900/40 dark:hover:border-blue-700/50 hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 border-l-4 border-l-blue-600 dark:border-l-blue-400",
+                          card: "bg-blue-500/5 hover:bg-blue-500/10 dark:bg-blue-500/[0.02] dark:hover:bg-blue-500/5 border-blue-500/15 hover:border-blue-500/35 dark:border-blue-500/10 dark:hover:border-blue-500/25 hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 border-l-4 border-l-blue-500/80 dark:border-l-blue-400/80 backdrop-blur-md",
                           title: "text-blue-900 dark:text-blue-200 group-hover/loc:text-blue-700 dark:group-hover/loc:text-blue-100",
                           icon: "text-blue-600 dark:text-blue-400",
                           time: "text-blue-800 dark:text-blue-300",
-                          badge: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border border-blue-200/50 dark:border-blue-800/30",
+                          badge: "bg-blue-500/10 dark:bg-blue-500/20 text-blue-900 dark:text-blue-200 border border-blue-500/20 dark:border-blue-500/30",
                         },
                         subhash: {
-                          card: "bg-gradient-to-br from-rose-50/90 to-fuchsia-50/50 hover:from-rose-100 hover:to-fuchsia-100/70 dark:from-rose-950/40 dark:to-fuchsia-950/20 border-rose-100 hover:border-rose-300 dark:border-rose-900/40 dark:hover:border-rose-700/50 hover:shadow-rose-500/5 dark:hover:shadow-rose-500/10 border-l-4 border-l-rose-600 dark:border-l-rose-400",
+                          card: "bg-rose-500/5 hover:bg-rose-500/10 dark:bg-rose-500/[0.02] dark:hover:bg-rose-500/5 border-rose-500/15 hover:border-rose-500/35 dark:border-rose-500/10 dark:hover:border-rose-500/25 hover:shadow-rose-500/5 dark:hover:shadow-rose-500/10 border-l-4 border-l-rose-500/80 dark:border-l-rose-400/80 backdrop-blur-md",
                           title: "text-rose-900 dark:text-rose-200 group-hover/loc:text-rose-700 dark:group-hover/loc:text-rose-100",
                           icon: "text-rose-600 dark:text-rose-400",
                           time: "text-rose-800 dark:text-rose-300",
-                          badge: "bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-200 border border-rose-200/50 dark:border-rose-800/30",
+                          badge: "bg-rose-500/10 dark:bg-rose-500/20 text-rose-900 dark:text-rose-200 border border-rose-500/20 dark:border-rose-500/30",
                         },
                         bahadur: {
-                          card: "bg-gradient-to-br from-emerald-50/90 to-teal-50/50 hover:from-emerald-100 hover:to-teal-100/70 dark:from-emerald-950/30 dark:to-teal-950/20 border-emerald-100 hover:border-emerald-300 dark:border-emerald-900/40 dark:hover:border-emerald-700/50 hover:shadow-emerald-500/5 dark:hover:shadow-emerald-500/10 border-l-4 border-l-emerald-600 dark:border-l-emerald-400",
+                          card: "bg-emerald-500/5 hover:bg-emerald-500/10 dark:bg-emerald-500/[0.02] dark:hover:bg-emerald-500/5 border-emerald-500/15 hover:border-emerald-500/35 dark:border-emerald-500/10 dark:hover:border-emerald-500/25 hover:shadow-emerald-500/5 dark:hover:shadow-emerald-500/10 border-l-4 border-l-emerald-500/80 dark:border-l-emerald-400/80 backdrop-blur-md",
                           title: "text-emerald-900 dark:text-emerald-200 group-hover/loc:text-emerald-700 dark:group-hover/loc:text-emerald-100",
                           icon: "text-emerald-600 dark:text-emerald-400",
                           time: "text-emerald-800 dark:text-emerald-300",
-                          badge: "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 border border-emerald-200/50 dark:border-emerald-800/30",
+                          badge: "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-200 border border-emerald-500/20 dark:border-emerald-500/30",
                         },
                       };
                       const style = branchStyles[loc.key];
