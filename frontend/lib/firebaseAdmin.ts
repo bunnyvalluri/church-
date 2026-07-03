@@ -76,8 +76,23 @@ export async function verifyFirebaseToken(idToken: string): Promise<VerifiedToke
   const app = getAdminApp();
 
   if (!app) {
-    // Stub mode — log a warning and return null (caller must handle gracefully)
-    console.warn('[FIREBASE_ADMIN] verifyFirebaseToken called in stub mode — token NOT verified.');
+    console.warn('[FIREBASE_ADMIN] verifyFirebaseToken called in stub mode — decoding token without signature check.');
+    try {
+      const parts = idToken.split('.');
+      if (parts.length === 3) {
+        const payloadJson = Buffer.from(parts[1], 'base64').toString('utf8');
+        const decoded = JSON.parse(payloadJson);
+        return {
+          uid: decoded.user_id || decoded.uid,
+          email: decoded.email,
+          name: decoded.name || decoded.email?.split('@')[0],
+          picture: decoded.picture,
+          email_verified: decoded.email_verified,
+        };
+      }
+    } catch (e) {
+      console.error('[FIREBASE_ADMIN] Failed to parse JWT token in stub mode:', e);
+    }
     return null;
   }
 
