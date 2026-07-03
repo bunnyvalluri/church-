@@ -8,81 +8,7 @@ import { getLatestSermons } from "@/app/actions/sermons";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { motion } from "framer-motion";
 
-// 1. Fallback data in case the database is completely empty (for new setups)
-const fallbackSermons = [
-  {
-    id: "static-1",
-    title: "The Power of Faith",
-    pastor: "Pastor John David",
-    date: "Jan 21, 2026",
-    views: "1.2K",
-    thumbnail: "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80",
-    duration: "45:30",
-    category: "Faith",
-    videoId: "M57yrL-0tSs",
-    videoUrl: "https://youtube.com/watch?v=M57yrL-0tSs",
-  },
-  {
-    id: "static-2",
-    title: "Walking in Love",
-    pastor: "Pastor Sarah Johnson",
-    date: "Jan 14, 2026",
-    views: "980",
-    thumbnail: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80",
-    duration: "38:15",
-    category: "Love",
-    videoId: "wz0z7-6-m1Q",
-    videoUrl: "https://youtube.com/watch?v=wz0z7-6-m1Q",
-  },
-  {
-    id: "static-3",
-    title: "Hope in Difficult Times",
-    pastor: "Pastor John David",
-    date: "Jan 7, 2026",
-    views: "1.5K",
-    thumbnail: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80",
-    duration: "42:00",
-    category: "Hope",
-    videoId: "F7U5d9W8Z8k",
-    videoUrl: "https://youtube.com/watch?v=F7U5d9W8Z8k",
-  },
-  {
-    id: "static-4",
-    title: "The Grace of God",
-    pastor: "Pastor Michael Brown",
-    date: "Dec 31, 2025",
-    views: "2.1K",
-    thumbnail: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80",
-    duration: "50:20",
-    category: "Grace",
-    videoId: "K-C2O7bEopg",
-    videoUrl: "https://youtube.com/watch?v=K-C2O7bEopg",
-  },
-  {
-    id: "static-5",
-    title: "Living with Purpose",
-    pastor: "Pastor Sarah Johnson",
-    date: "Dec 24, 2025",
-    views: "1.8K",
-    thumbnail: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=800&q=80",
-    duration: "44:45",
-    category: "Purpose",
-    videoId: "J_M37s4w1oA",
-    videoUrl: "https://youtube.com/watch?v=J_M37s4w1oA",
-  },
-  {
-    id: "static-6",
-    title: "The Joy of Salvation",
-    pastor: "Pastor John David",
-    date: "Dec 17, 2025",
-    views: "1.3K",
-    thumbnail: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80",
-    duration: "39:30",
-    category: "Salvation",
-    videoId: "T4b-I5D-ksw",
-    videoUrl: "https://youtube.com/watch?v=T4b-I5D-ksw",
-  },
-];
+const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 
 export default function Sermons() {
   const { t } = useLanguage();
@@ -90,7 +16,7 @@ export default function Sermons() {
   const [selectedSermonId, setSelectedSermonId] = useState<string | null>(null);
 
   // 2. State to hold our dynamic database sermons
-  const [sermons, setSermons] = useState<any[]>(fallbackSermons);
+  const [sermons, setSermons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Standalone fetch function for database sermons
@@ -101,7 +27,7 @@ export default function Sermons() {
       // If the database has actual sermons, format them and use them!
       if (dbSermons && dbSermons.length > 0) {
         const formattedSermons = dbSermons.map((s) => {
-          let videoId = s.videoUrl || fallbackSermons[0].videoId;
+          let videoId = s.videoUrl || "";
           if (s.videoUrl && s.videoUrl.includes('v=')) {
             videoId = s.videoUrl.split('v=')[1].split('&')[0];
           } else if (s.videoUrl && s.videoUrl.includes('youtu.be/')) {
@@ -114,7 +40,7 @@ export default function Sermons() {
             pastor: s.pastor,
             date: new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             views: s.views >= 1000 ? (s.views / 1000).toFixed(1) + 'K' : s.views.toString(),
-            thumbnail: s.thumbnail || fallbackSermons[0].thumbnail, 
+            thumbnail: s.thumbnail || DEFAULT_THUMBNAIL, 
             duration: "45:00", 
             category: s.category,
             videoId,
@@ -124,10 +50,11 @@ export default function Sermons() {
         
         setSermons(formattedSermons);
       } else {
-        setSermons(fallbackSermons);
+        setSermons([]);
       }
     } catch (error) {
-      console.error("Failed to load dynamic sermons, defaulting to fallback UI.", error);
+      console.error("Failed to load dynamic sermons.", error);
+      setSermons([]);
     } finally {
       setIsLoading(false);
     }
@@ -229,6 +156,18 @@ export default function Sermons() {
                   </div>
                 </div>
               ))
+            : sermons.length === 0
+            ? (
+                <div className="col-span-full text-center py-16 px-6 bg-slate-50 dark:bg-white/[0.01] rounded-3xl border border-dashed border-slate-200 dark:border-white/[0.05] shadow-[inset_0_4px_12px_rgba(0,0,0,0.01)]">
+                  <div className="w-16 h-16 bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))] rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                    <Play className="w-8 h-8 ml-1" fill="currentColor" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">No Sermons Available</h3>
+                  <p className="text-slate-500 dark:text-white/50 text-sm max-w-sm mx-auto leading-relaxed">
+                    Stay tuned! We are updating our sermon library with powerful, life-changing messages. Check back soon.
+                  </p>
+                </div>
+              )
             : sermons.map((sermon, index) => (
                 <motion.div
                   key={sermon.id || index}

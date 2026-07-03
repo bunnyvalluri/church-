@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Bell, Calendar, MapPin, Upload } from "lucide-react";
+import { X, Bell, Calendar, MapPin, Upload, Play } from "lucide-react";
 
 export interface NotificationData {
   id: string;
-  type: "new-event" | "event-images-uploaded" | "status" | "custom";
+  type: "new-event" | "event-images-uploaded" | "status" | "custom" | "sermon-uploaded";
   title: string;
   description: string;
   timestamp: Date;
-  icon?: "event" | "upload" | "bell";
+  icon?: "event" | "upload" | "bell" | "play";
   link?: string;
 }
 
@@ -38,6 +38,7 @@ export default function NotificationPopup({ notification, onDismiss }: Notificat
     event: <Calendar className="w-5 h-5" />,
     upload: <Upload className="w-5 h-5" />,
     bell: <Bell className="w-5 h-5" />,
+    play: <Play className="w-5 h-5" />,
   };
 
   const colors = {
@@ -58,6 +59,12 @@ export default function NotificationPopup({ notification, onDismiss }: Notificat
       ring: "ring-amber-500/30",
       badge: "bg-amber-500/10 text-amber-300 border-amber-500/20",
       label: "STATUS UPDATE",
+    },
+    "sermon-uploaded": {
+      bg: "from-fuchsia-600 to-purple-650",
+      ring: "ring-fuchsia-500/30",
+      badge: "bg-fuchsia-500/10 text-fuchsia-300 border-fuchsia-500/20",
+      label: "NEW SERMON",
     },
     custom: {
       bg: "from-blue-600 to-cyan-600",

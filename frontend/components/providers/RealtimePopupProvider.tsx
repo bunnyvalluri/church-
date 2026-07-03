@@ -24,13 +24,16 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
     // 2. Listen for generic socket popups and event upload notifications
     socket.on("notification:popup", (data: any) => {
       console.log("[SOCKET] Received popup notification:", data);
+      const allowedTypes = ["new-event", "event-images-uploaded", "status", "custom", "sermon-uploaded"];
+      const allowedIcons = ["event", "upload", "bell", "play"];
+
       setActiveNotification({
         id: String(Date.now()),
-        type: data.type || "new-event",
+        type: (allowedTypes.includes(data.type) ? data.type : "custom") as any,
         title: data.title || "New Event Uploaded",
         description: data.description || "Fresh activity reported in portal.",
         timestamp: new Date(data.timestamp || Date.now()),
-        icon: data.icon || "event",
+        icon: (allowedIcons.includes(data.icon) ? data.icon : "bell") as any,
         link: data.link || "/event-manager",
       });
     });
