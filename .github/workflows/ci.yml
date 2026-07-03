@@ -9,6 +9,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+      DB_OFFLINE: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
       - name: Checkout Repository
