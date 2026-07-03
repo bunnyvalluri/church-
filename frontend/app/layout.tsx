@@ -7,6 +7,12 @@ const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
 
+console.log("DEBUG LAYOUT IMPORTS:");
+console.log("  Providers:", typeof Providers);
+console.log("  AIChat:", typeof AIChat);
+console.log("  SmoothScroll:", typeof SmoothScroll);
+console.log("  BackToTop:", typeof BackToTop);
+
 const inter  = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -26,16 +32,12 @@ export const metadata: Metadata = {
   description: "Welcome to Kingdom of Christ Ministries - A place of worship, prayer, and community in Jeedimetla, Hyderabad. Join us for services, events, and spiritual growth.",
   keywords: ["church", "ministry", "worship", "prayer", "Hyderabad", "Jeedimetla", "Kingdom of Christ"],
   authors: [{ name: "Kingdom of Christ Ministries" }],
-  metadataBase: new URL("https://church-eight-hazel.vercel.app"),
   icons: {
     icon: [
-      { url: "/logo.png", type: "image/png", sizes: "512x512" },
-      { url: "/logo.png", type: "image/png", sizes: "192x192" },
-      { url: "/logo.png", type: "image/png", sizes: "32x32" },
-      { url: "/logo.png", type: "image/png", sizes: "16x16" },
+      { url: "/logo.png", type: "image/png" },
     ],
     apple: [
-      { url: "/logo.png", type: "image/png", sizes: "180x180" },
+      { url: "/logo.png", type: "image/png" },
     ],
     shortcut: "/logo.png",
   },
@@ -44,29 +46,7 @@ export const metadata: Metadata = {
     description: "A place of worship and community in Hyderabad",
     type: "website",
     locale: "en_IN",
-    siteName: "Kingdom of Christ Ministries",
-    images: [{ url: "/logo.png", width: 512, height: 512, alt: "Kingdom of Christ Ministries Logo" }],
   },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Kingdom of Christ Ministries",
-    description: "A place of worship, prayer, and community in Hyderabad.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
-};
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8f8ff" },
-    { media: "(prefers-color-scheme: dark)",  color: "#090a1a" },
-  ],
 };
 
 export default function RootLayout({
@@ -78,10 +58,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
         {/* Network performance optimizations: preconnect to high-priority origins */}
-        <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossOrigin="anonymous" />
-
+        
         {/* DNS prefetching as a fallback for secondary domains */}
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />

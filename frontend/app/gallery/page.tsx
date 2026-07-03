@@ -1,16 +1,13 @@
 "use client";
 
-import { memo, useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Video, Play, X, Maximize2, ArrowLeft, Loader2, ChevronDown } from "lucide-react";
+import { Camera, Video, Play, X, Maximize2, ArrowLeft, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useBranch } from "@/components/providers/BranchProvider";
-
-// ── Constants ──────────────────────────────────────────────────────────────────
-const PAGE_SIZE = 12; // items per "Load More" batch
 
 interface GalleryItem {
   id: string;
@@ -23,106 +20,17 @@ interface GalleryItem {
   createdAt: string;
 }
 
-// ── Cloudinary URL optimizer ───────────────────────────────────────────────────
-function optimizeCloudinaryUrl(url: string, width = 600): string {
-  if (!url || !url.includes("res.cloudinary.com")) return url;
-  // Insert f_auto,q_auto,w_{width} transformation
-  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
-}
-
-// ── Card variants OUTSIDE component ───────────────────────────────────────────
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.25 } },
-  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
-};
-
-// ── Individual gallery card (memoized) ────────────────────────────────────────
-interface GalleryCardProps {
-  item: GalleryItem;
-  onOpen: (item: GalleryItem) => void;
-}
-const GalleryCard = memo(function GalleryCard({ item, onOpen }: GalleryCardProps) {
-  const optimizedUrl = useMemo(() => optimizeCloudinaryUrl(item.url, 600), [item.url]);
-
-  return (
-    <motion.div
-      layout
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      className="group relative bg-white dark:bg-white/[0.02] rounded-3xl overflow-hidden border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-xl dark:hover:shadow-primary/5 transition-shadow duration-300 flex flex-col justify-between"
-    >
-      {/* Media Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
-        <Image
-          src={optimizedUrl}
-          alt={item.title}
-          fill
-          loading="lazy"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          unoptimized={item.url.includes("res.cloudinary.com")} // Cloudinary handles its own optimization
-        />
-
-        {/* Glass Hover Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <button
-            onClick={() => onOpen(item)}
-            className="w-12 h-12 rounded-2xl bg-white text-gray-900 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform"
-            title={item.type === "video" ? "Watch Video" : "View Image"}
-          >
-            {item.type === "video" ? (
-              <Play className="w-6 h-6 text-purple-600 fill-current ml-0.5" />
-            ) : (
-              <Maximize2 className="w-5 h-5 text-purple-600" />
-            )}
-          </button>
-        </div>
-
-        {/* Type Badge */}
-        <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-wider flex items-center gap-1.5">
-          {item.type === "video" ? (
-            <><Video className="w-3 h-3" />VIDEO</>
-          ) : (
-            <><Camera className="w-3 h-3" />PHOTO</>
-          )}
-        </div>
-
-        {/* Category Badge */}
-        <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-purple-600 rounded-full text-white text-[10px] font-bold tracking-wider">
-          {item.category.toUpperCase()}
-        </div>
-      </div>
-
-      {/* Info Text Area */}
-      <div className="p-6 md:p-8">
-        <h3 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white mb-2 leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-          {item.title}
-        </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
-          {item.description}
-        </p>
-      </div>
-    </motion.div>
-  );
-});
-
-// ── Main Gallery Page ──────────────────────────────────────────────────────────
-function GalleryPage() {
+export default function GalleryPage() {
   const { selectedBranchId } = useBranch();
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // ── Fetch gallery items ──
+  // Fetch gallery items depending on selected branch
   useEffect(() => {
     const fetchGallery = async () => {
       setIsLoading(true);
-      setVisibleCount(PAGE_SIZE); // reset pagination on branch change
       try {
         const url =
           selectedBranchId === "all"
@@ -144,40 +52,15 @@ function GalleryPage() {
     fetchGallery();
   }, [selectedBranchId]);
 
-  // ── Reset pagination when filter changes ──
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [filter]);
+  // Derive categories dynamically from the loaded items
+  const categories = [
+    "All",
+    ...Array.from(new Set(galleryItems.map((item) => item.category))),
+  ];
 
-  // ── Derived values (memoized) ──
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(galleryItems.map((item) => item.category)))],
-    [galleryItems]
+  const filteredItems = galleryItems.filter(
+    (item) => filter === "All" || item.category === filter
   );
-
-  const filteredItems = useMemo(
-    () => galleryItems.filter((item) => filter === "All" || item.category === filter),
-    [galleryItems, filter]
-  );
-
-  const visibleItems = useMemo(
-    () => filteredItems.slice(0, visibleCount),
-    [filteredItems, visibleCount]
-  );
-
-  const hasMore = visibleCount < filteredItems.length;
-
-  const handleLoadMore = useCallback(() => {
-    setVisibleCount((prev) => prev + PAGE_SIZE);
-  }, []);
-
-  const handleOpenLightbox = useCallback((item: GalleryItem) => {
-    setLightboxItem(item);
-  }, []);
-
-  const handleCloseLightbox = useCallback(() => {
-    setLightboxItem(null);
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] transition-colors duration-300">
@@ -185,9 +68,9 @@ function GalleryPage() {
 
       {/* Hero Header Section */}
       <section className="relative py-24 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 overflow-hidden mt-20">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" aria-hidden="true" />
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none" aria-hidden="true" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-500/20 blur-[100px] pointer-events-none" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-500/20 blur-[100px] pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10 text-center">
           <Link
@@ -201,8 +84,7 @@ function GalleryPage() {
             Church Gallery
           </h1>
           <p className="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed">
-            Capturing the vibrant moments, fellowship, service, and moves of God at Kingdom of Christ
-            Ministries.
+            Capturing the vibrant moments, fellowship, service, and moves of God at Kingdom of Christ Ministries.
           </p>
         </div>
       </section>
@@ -216,10 +98,10 @@ function GalleryPage() {
           </div>
         ) : (
           <>
-            {/* Category Filters */}
+            {/* Category Filters - Glassmorphic Horizontal Scroll */}
             {galleryItems.length > 0 && (
               <div className="flex justify-center mb-12">
-                <div className="flex gap-2 p-1.5 bg-white/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-2xl shadow-sm backdrop-blur-md overflow-x-auto max-w-full">
+                <div className="flex gap-2 p-1.5 bg-white/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-2xl shadow-sm backdrop-blur-md overflow-x-auto max-w-full scrollbar-none">
                   {categories.map((cat) => (
                     <button
                       key={cat}
@@ -237,42 +119,84 @@ function GalleryPage() {
               </div>
             )}
 
-            {/* Gallery Grid — AnimatePresence only on cards, not the grid wrapper */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Gallery Grid */}
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+            >
               <AnimatePresence mode="popLayout">
-                {visibleItems.map((item) => (
-                  <GalleryCard key={item.id} item={item} onOpen={handleOpenLightbox} />
+                {filteredItems.map((item) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    key={item.id}
+                    className="group relative bg-white dark:bg-white/[0.02] rounded-3xl overflow-hidden border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-2xl dark:hover:shadow-primary/5 transition-all duration-300 flex flex-col justify-between"
+                  >
+                    {/* Media Container */}
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
+                      <img
+                        src={item.url}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {/* Glass Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                        <button
+                          onClick={() => setLightboxItem(item)}
+                          className="w-12 h-12 rounded-2xl bg-white text-gray-900 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform"
+                          title={item.type === "video" ? "Watch Video" : "View Image"}
+                        >
+                          {item.type === "video" ? (
+                            <Play className="w-6 h-6 text-purple-600 fill-current ml-0.5" />
+                          ) : (
+                            <Maximize2 className="w-5 h-5 text-purple-600" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Type Badge */}
+                      <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-wider flex items-center gap-1.5">
+                        {item.type === "video" ? (
+                          <>
+                            <Video className="w-3 h-3" />
+                            VIDEO
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="w-3 h-3" />
+                            PHOTO
+                          </>
+                        )}
+                      </div>
+
+                      {/* Category Badge */}
+                      <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-purple-600 rounded-full text-white text-[10px] font-bold tracking-wider">
+                        {item.category.toUpperCase()}
+                      </div>
+                    </div>
+
+                    {/* Info Text Area */}
+                    <div className="p-6 md:p-8">
+                      <h3 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white mb-2 leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
+                        {item.description}
+                      </p>
+                    </div>
+                  </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Empty State */}
             {filteredItems.length === 0 && (
               <div className="text-center py-20 bg-white/40 dark:bg-white/[0.01] border border-dashed border-gray-300 dark:border-white/10 rounded-3xl backdrop-blur-md">
-                <p className="text-gray-500 dark:text-gray-400 font-medium">
-                  No items found in this category.
-                </p>
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No items found in this category.</p>
               </div>
-            )}
-
-            {/* Load More Button */}
-            {hasMore && (
-              <div className="flex justify-center mt-12">
-                <button
-                  onClick={handleLoadMore}
-                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-all hover:scale-105 active:scale-95 shadow-sm"
-                >
-                  <ChevronDown className="w-4 h-4" />
-                  Load More ({filteredItems.length - visibleCount} remaining)
-                </button>
-              </div>
-            )}
-
-            {/* Results count */}
-            {filteredItems.length > 0 && (
-              <p className="text-center text-xs text-gray-400 mt-6">
-                Showing {Math.min(visibleCount, filteredItems.length)} of {filteredItems.length} items
-              </p>
             )}
           </>
         )}
@@ -287,7 +211,7 @@ function GalleryPage() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
           >
-            <div className="absolute inset-0" onClick={handleCloseLightbox} />
+            <div className="absolute inset-0" onClick={() => setLightboxItem(null)} />
 
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -301,9 +225,8 @@ function GalleryPage() {
                   {lightboxItem.category} • {lightboxItem.type}
                 </span>
                 <button
-                  onClick={handleCloseLightbox}
+                  onClick={() => setLightboxItem(null)}
                   className="p-1 rounded-xl hover:bg-white/10 text-white transition-colors"
-                  aria-label="Close lightbox"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -312,16 +235,12 @@ function GalleryPage() {
               {/* Media Display */}
               <div className="relative w-full aspect-video bg-black flex items-center justify-center">
                 {lightboxItem.type === "video" ? (
-                  lightboxItem.url.includes("youtube.com") ||
-                  lightboxItem.url.includes("youtu.be") ? (
+                  lightboxItem.url.includes("youtube.com") || lightboxItem.url.includes("youtu.be") ? (
                     <iframe
                       src={
                         lightboxItem.url.includes("embed")
                           ? lightboxItem.url
-                          : `https://www.youtube.com/embed/${
-                              lightboxItem.videoId ||
-                              lightboxItem.url.split("v=")[1]
-                            }`
+                          : `https://www.youtube.com/embed/${lightboxItem.videoId || lightboxItem.url.split("v=")[1]}`
                       }
                       title="Church Video Player"
                       className="absolute inset-0 w-full h-full border-none"
@@ -338,7 +257,7 @@ function GalleryPage() {
                   )
                 ) : (
                   <Image
-                    src={optimizeCloudinaryUrl(lightboxItem.url, 1200)}
+                    src={lightboxItem.url}
                     alt={lightboxItem.title}
                     fill
                     className="object-contain"
@@ -365,5 +284,3 @@ function GalleryPage() {
     </div>
   );
 }
-
-export default memo(GalleryPage);

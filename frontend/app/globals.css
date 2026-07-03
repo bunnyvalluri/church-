@@ -101,8 +101,6 @@
   .cv-auto {
     content-visibility: auto;
     contain-intrinsic-size: 0 600px; /* estimated height prevents layout shift */
-    /* contain: layout style paint — isolates this subtree from the rest of the page */
-    contain: layout style;
   }
 }
 
@@ -147,10 +145,10 @@
   background: hsl(var(--primary) / 0.8);
 }
 
-/* Smooth scroll — CSS scroll-behavior on html conflicts with Framer springs.
-   We use JS scrollIntoView({ behavior: 'smooth' }) for anchor clicks instead.
-   Keeping this OFF prevents double-smooth jank on pages using Framer scroll. */
-/* html { scroll-behavior: smooth; } — intentionally disabled */
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
 
 /* Animation delays */
 .animate-delay-100 {
@@ -352,9 +350,10 @@ a, button, input, textarea, select, [role="button"] {
               opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Smooth image scaling — opacity only, NO filter transition (filter causes GPU repaint per frame) */
+/* Smooth image scaling */
 img {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.4s ease;
 }
 
 /* Animated underline for nav links */
@@ -448,8 +447,7 @@ main {
   height: 40rem;
   border-radius: 9999px;
   background: radial-gradient(circle, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary-gradient-end) / 0.15) 60%, transparent 100%);
-  filter: blur(60px); /* reduced from 80px — saves GPU composite cost */
-  contain: paint; /* isolates paint to this element */
+  filter: blur(80px);
 }
 
 .hero-orb-2 {
@@ -462,8 +460,7 @@ main {
   height: 35rem;
   border-radius: 9999px;
   background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.08) 60%, transparent 100%);
-  filter: blur(60px); /* reduced from 80px */
-  contain: paint;
+  filter: blur(80px);
 }
 
 /* ── CSS-only card hover (replaces Framer whileHover — no JS overhead) ── */
@@ -522,27 +519,6 @@ main {
 .animate-bounce-in {
   animation: bounce-in 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
 }
-
-/* ── Scroll dot (replaces Framer Motion spring bounce in Hero) ── */
-@keyframes scroll-dot {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50%       { transform: translateY(10px); opacity: 0.4; }
-}
-.animate-scroll-dot {
-  animation: scroll-dot 1.8s ease-in-out infinite;
-  will-change: transform;
-}
-
-/* ── Sermon badge live indicator (CSS-only, replaces animate-pulse per badge) ──
-   Uses opacity instead of transform+scale to avoid creating GPU layers per element */
-@keyframes badge-live {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.65; }
-}
-.sermon-badge-live {
-  animation: badge-live 2.5s ease-in-out infinite;
-}
-
 
 /* ==========================================================================
    🌐 REGIONAL SCRIPT TYPOGRAPHY FIXES (TELUGU & HINDI)
@@ -753,7 +729,7 @@ button:hover .lucide,
   background-color: rgba(9, 10, 26, 0.65); /* Elegant dark-navy overlay */
   backdrop-filter: blur(12px); /* Premium blur effect */
   -webkit-backdrop-filter: blur(12px);
-  will-change: opacity; /* backdrop-filter is not a compositable property — use opacity */
+  will-change: backdrop-filter;
 }
 
 /* Modal Content Card */
