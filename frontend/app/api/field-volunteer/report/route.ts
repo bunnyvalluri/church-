@@ -66,18 +66,8 @@ export async function POST(req: Request) {
     });
 
     const { validateFileSecurity } = await import("@/lib/uploadSecurity");
+    const { uploadBufferToCloudinary } = await import("@/lib/cloudinary");
     const uploadedMedia = [];
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    const mimeExtensions: Record<string, string> = {
-      "image/jpeg": ".jpg",
-      "image/jpg": ".jpg",
-      "image/png": ".png",
-      "image/webp": ".webp",
-      "video/mp4": ".mp4",
-      "video/webm": ".webm"
-    };
 
     // Helper to process a base64 media attachment
     const processAttachment = async (base64Str: string, isVideo: boolean, index: number) => {
@@ -88,10 +78,7 @@ export async function POST(req: Request) {
 
       const mimeType = matches[1];
       const buffer = Buffer.from(matches[2], "base64");
-      const ext = mimeExtensions[mimeType] || (isVideo ? ".mp4" : ".jpg");
-      const filename = `report-${report.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}${ext}`;
-      const relativeUrl = `/uploads/${filename}`;
-      const absolutePath = path.join(uploadDir, filename);
+      const filename = `report-${report.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}`;
 
       // Perform security check (virus/mime validation)
       const securityCheck = validateFileSecurity(buffer, filename, mimeType);
@@ -99,15 +86,19 @@ export async function POST(req: Request) {
         throw new Error(`Security validation failed: ${securityCheck.error}`);
       }
 
-      // Write to filesystem
-      await fs.writeFile(absolutePath, buffer);
+      // Upload directly to Cloudinary
+      const cloudinaryResult = await uploadBufferToCloudinary(
+        buffer,
+        "volunteer",
+        isVideo ? "video" : "image"
+      );
 
-      // Save in MediaReport DB table
+      // Save in MediaReport DB table (using the Cloudinary secure_url!)
       const mediaRecord = await prisma.mediaReport.create({
         data: {
           eventReportId: report.id,
           type: isVideo ? "VIDEO" : "IMAGE",
-          url: relativeUrl,
+          url: cloudinaryResult.secure_url,
           uploadedById: auth.uid,
         },
       });

@@ -111,8 +111,7 @@ export async function uploadBufferToCloudinary(
   return new Promise((resolve, reject) => {
     // If Cloudinary keys are default mock values and not real credentials, generate mock response for seamless dev
     if (
-      process.env.NODE_ENV !== "production" &&
-      (process.env.CLOUDINARY_CLOUD_NAME === "demo" || !process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY === "1234567890")
+      process.env.CLOUDINARY_CLOUD_NAME === "demo" || !process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY === "1234567890"
     ) {
       const randomId = Math.random().toString(36).substring(2, 9);
       const mockPublicId = `${folder}/dev_mock_${randomId}`;
