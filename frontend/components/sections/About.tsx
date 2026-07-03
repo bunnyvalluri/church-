@@ -175,7 +175,7 @@ export default function About() {
                 </div>
                 <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">Led By</p>
                 <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
-                <p className="text-xl md:text-3xl font-black tracking-wide bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-amber-300 dark:via-yellow-300 dark:to-amber-250 bg-clip-text text-transparent">{t.about.pastorName}</p>
+                <p className="text-xl md:text-3xl font-black tracking-wide text-violet-600 dark:text-amber-300">{t.about.pastorName}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
