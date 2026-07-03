@@ -783,7 +783,7 @@ export default function UnifiedEventManagementPortal() {
       </div>
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-md">
+      <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/8 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm">
         
         {/* Bottom Border Gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
@@ -802,8 +802,8 @@ export default function UnifiedEventManagementPortal() {
           {/* Connection status */}
           <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${
             isOnline 
-              ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-sm shadow-emerald-500/5" 
-              : "bg-amber-500/15 border-amber-500/30 text-amber-600 dark:text-amber-400 shadow-sm shadow-amber-500/5 animate-pulse"
+              ? "bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400/50 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-400 shadow-sm" 
+              : "bg-amber-100 dark:bg-amber-500/20 border-amber-400/50 dark:border-amber-500/40 text-amber-700 dark:text-amber-400 shadow-sm animate-pulse"
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-ping"}`} />
             <span className="hidden sm:inline">{isOnline ? (t.eventManager?.online || "ONLINE") : (t.eventManager?.offline || "OFFLINE MODE")}</span>
