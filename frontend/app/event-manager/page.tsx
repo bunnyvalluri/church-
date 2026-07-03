@@ -912,7 +912,7 @@ export default function UnifiedEventManagementPortal() {
                 <Camera className="w-40 h-40 text-white" />
               </div>
               <div className="space-y-2 relative z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest text-indigo-950 shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest !text-slate-900 shadow-sm">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
                   {t.eventManager?.welcomeConsole || "Operations Console"}
                 </span>
