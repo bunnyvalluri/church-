@@ -173,7 +173,7 @@ export function middleware(req: NextRequest) {
         { status: 401 }
       );
     }
-    if (!isPastorRole) {
+    if (!isPastorRole && !(pathname.startsWith('/api/pastor/sermons') && isEventManagerRole)) {
       return NextResponse.json(
         { error: 'Access denied. Pastor or Admin privileges required.' },
         { status: 403 }
