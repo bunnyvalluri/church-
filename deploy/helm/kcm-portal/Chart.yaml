@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kcm-portal
+description: A Helm chart for Kingdom of Christ Ministries Kubernetes Deployment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

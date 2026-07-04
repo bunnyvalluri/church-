@@ -2,8 +2,7 @@
  * backend/server.js
  * ─────────────────────────────────────────────────────────────────────────────
  * Real-time companion Socket.io and background worker server.
- * Listens on port 3001. Handles client WebSocket subscriptions and receives
- * webhook events from Next.js server-side API routes to broadcast.
+ * Supports split execution via PROCESS_TYPE env var for Kubernetes.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -27,89 +26,135 @@ app.use((req, res, next) => {
 
 const server = http.createServer(app);
 
-// Initialize Socket.io
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+const PROCESS_TYPE = process.env.PROCESS_TYPE || 'all';
+const PORT = process.env.SOCKET_PORT || (PROCESS_TYPE === 'api' ? 3001 : 3001);
 
-// Real-time connections listener
-io.on('connection', (socket) => {
-  console.log(`[SOCKET] Client connected: ${socket.id}`);
-  
-  socket.on('disconnect', () => {
-    console.log(`[SOCKET] Client disconnected: ${socket.id}`);
-  });
-});
+let io;
+let redisEmitter;
 
-// Endpoint for Next.js API routes to trigger real-time socket events
-app.post('/api/trigger-event', (req, res) => {
-  const { type, payload } = req.body;
-  
-  if (!type || !payload) {
-    return res.status(400).json({ error: "Event type and payload are required." });
-  }
-
-  console.log(`[EVENT] Received trigger for: ${type}`, payload);
-  
-  // Broadcast to all connected clients under primary channel and generic popup channel
-  io.emit(type, payload);
-  io.emit('notification:popup', {
-    type: payload.popupType || 'new-event',
-    title: payload.title || 'New Event Uploaded',
-    description: payload.description || `Branch: ${payload.branchName || 'General'}`,
-    timestamp: new Date(),
-    icon: payload.icon || 'event',
-    link: payload.link || '/event-manager'
-  });
-  
-  return res.json({ success: true });
-});
-
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  return res.json({ status: "OK", time: new Date() });
-});
-
-// Resilient queue processor loader (BullMQ fallback)
-let queueInitialized = false;
-try {
-  const { Queue, Worker } = require('bullmq');
-  const Redis = require('ioredis');
-
+if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api') {
+  // If Redis is configured, we set up either the Redis Adapter (for sockets) or Emitter (for api)
   const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-  const connection = new Redis(redisUrl, {
-    maxRetriesPerRequest: null,
-    enableReadyCheck: false
-  });
+  
+  if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') {
+    io = new Server(server, {
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      }
+    });
 
-  connection.on('error', (err) => {
-    console.warn('[QUEUE] Redis connection skipped (running queue in-memory fallback).');
-  });
+    try {
+      const { createClient } = require('redis');
+      const { createAdapter } = require('@socket.io/redis-adapter');
+      
+      const pubClient = createClient({ url: redisUrl });
+      const subClient = pubClient.duplicate();
+      
+      Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+        io.adapter(createAdapter(pubClient, subClient));
+        console.log('[SOCKET] Redis Adapter initialized.');
+      }).catch(err => console.warn('[SOCKET] Redis Adapter connection skipped:', err.message));
+    } catch (e) {
+      console.warn('[SOCKET] Redis module not found. Running in-memory mode.');
+    }
 
-  connection.on('connect', () => {
-    console.log('[QUEUE] Connected to Redis. Initializing BullMQ...');
-    const mediaQueue = new Queue('media-uploads', { connection });
-    
-    // Background worker for image validation, virus check, optimization
-    new Worker('media-uploads', async (job) => {
-      console.log(`[WORKER] Processing media job: ${job.id} (reportId: ${job.data.reportId})`);
-      // Simulate virus scanning and file optimization
-      await new Promise(r => setTimeout(r, 2000));
-      console.log(`[WORKER] Successfully optimized upload media for report ${job.data.reportId}`);
-    }, { connection });
-
-    queueInitialized = true;
-  });
-
-} catch (err) {
-  console.log('[QUEUE] BullMQ dependencies not configured. Bypassing worker setup.');
+    io.on('connection', (socket) => {
+      console.log(`[SOCKET] Client connected: ${socket.id}`);
+      socket.on('disconnect', () => {
+        console.log(`[SOCKET] Client disconnected: ${socket.id}`);
+      });
+    });
+  }
+  
+  if (PROCESS_TYPE === 'api') {
+    try {
+      const { createClient } = require('redis');
+      const { Emitter } = require('@socket.io/redis-emitter');
+      const redisClient = createClient({ url: redisUrl });
+      
+      redisClient.connect().then(() => {
+        redisEmitter = new Emitter(redisClient);
+        console.log('[API] Redis Emitter initialized.');
+      }).catch(err => console.warn('[API] Redis Emitter connection skipped:', err.message));
+    } catch(e) {
+      console.warn('[API] Redis Emitter module not found. API webhooks won\'t reach sockets in split mode.');
+    }
+  }
 }
 
-const PORT = process.env.SOCKET_PORT || 3001;
+if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
+  app.post('/api/trigger-event', (req, res) => {
+    const { type, payload } = req.body;
+    
+    if (!type || !payload) {
+      return res.status(400).json({ error: "Event type and payload are required." });
+    }
+
+    console.log(`[EVENT] Received trigger for: ${type}`, payload);
+    
+    const notification = {
+      type: payload.popupType || 'new-event',
+      title: payload.title || 'New Event Uploaded',
+      description: payload.description || `Branch: ${payload.branchName || 'General'}`,
+      timestamp: new Date(),
+      icon: payload.icon || 'event',
+      link: payload.link || '/event-manager'
+    };
+
+    // Emit using emitter if running as pure API, else local io instance
+    const emitter = (PROCESS_TYPE === 'api' && redisEmitter) ? redisEmitter : io;
+    
+    if (emitter) {
+      emitter.emit(type, payload);
+      emitter.emit('notification:popup', notification);
+    } else {
+      console.warn('[API] No socket emitter configured. Event not broadcasted.');
+    }
+    
+    return res.json({ success: true });
+  });
+
+  app.get('/health', (req, res) => {
+    return res.json({ status: "OK", time: new Date(), type: PROCESS_TYPE });
+  });
+}
+
+let queueInitialized = false;
+if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
+  try {
+    const { Queue, Worker } = require('bullmq');
+    const Redis = require('ioredis');
+
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    const connection = new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false
+    });
+
+    connection.on('error', (err) => {
+      console.warn('[QUEUE] Redis connection skipped (running queue in-memory fallback).');
+    });
+
+    connection.on('connect', () => {
+      console.log('[QUEUE] Connected to Redis. Initializing BullMQ...');
+      
+      // Initialize Queue only to prevent errors, Worker processes jobs
+      const mediaQueue = new Queue('media-uploads', { connection });
+      
+      new Worker('media-uploads', async (job) => {
+        console.log(`[WORKER] Processing media job: ${job.id} (reportId: ${job.data.reportId})`);
+        await new Promise(r => setTimeout(r, 2000));
+        console.log(`[WORKER] Successfully optimized upload media for report ${job.data.reportId}`);
+      }, { connection });
+
+      queueInitialized = true;
+    });
+
+  } catch (err) {
+    console.log('[QUEUE] BullMQ dependencies not configured. Bypassing worker setup.');
+  }
+}
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
@@ -120,11 +165,23 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`==================================================`);
-  console.log(`🚀 KCM Companion Server running on http://0.0.0.0:${PORT}`);
-  console.log(`🔌 Socket.io connections are active`);
-  console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
-  console.log(`==================================================`);
-});
-
+// Workers don't necessarily need to listen to a port, but listening gives a health check endpoint if we use Express.
+// Actually, in pure worker mode, we might not want to start HTTP unless we need health probes.
+// For Kubernetes, an HTTP health check is very useful.
+if (PROCESS_TYPE !== 'worker') {
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`==================================================`);
+    console.log(`🚀 KCM Companion Server (${PROCESS_TYPE}) running on http://0.0.0.0:${PORT}`);
+    if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') console.log(`🔌 Socket.io connections are active`);
+    if (PROCESS_TYPE === 'all') console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
+    console.log(`==================================================`);
+  });
+} else {
+  // Pure worker mode - we still listen for k8s probes if we want, but let's just use it
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`==================================================`);
+    console.log(`📡 BullMQ Worker running and listening for probes on port ${PORT}`);
+    app.get('/health', (req, res) => res.json({ status: 'OK', type: 'worker' }));
+    console.log(`==================================================`);
+  });
+}

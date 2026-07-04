@@ -1,0 +1,39 @@
+{{- if .Values.cron.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-cron
+  labels:
+    app: kcm-portal
+    component: cron
+spec:
+  schedule: "{{ .Values.cron.schedule }}"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: kcm-portal
+            component: cron
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            fsGroup: 1001
+          containers:
+            - name: cron
+              image: "{{ .Values.cron.image.repository }}:{{ .Values.cron.image.tag }}"
+              imagePullPolicy: {{ .Values.cron.image.pullPolicy }}
+              command: ["node", "cron.js"]
+              env:
+                - name: PROCESS_TYPE
+                  value: "cron"
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-config
+                - secretRef:
+                    name: {{ .Release.Name }}-secrets
+{{- end }}

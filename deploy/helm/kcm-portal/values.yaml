@@ -1,0 +1,122 @@
+# Default values for kcm-portal.
+
+global:
+  domain: kcmchurch.local
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/kcm-portal/frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+
+api:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/kcm-portal/backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+socket:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/kcm-portal/backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+worker:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/kcm-portal/backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+cron:
+  enabled: true
+  schedule: "0 2 * * *" # Every day at 2 AM
+  image:
+    repository: ghcr.io/kcm-portal/backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.kcmchurch.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          backend: api
+        - path: /socket.io
+          pathType: Prefix
+          backend: socket
+    - host: kcmchurch.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: frontend
+  tls:
+    - secretName: kcmchurch-tls
+      hosts:
+        - kcmchurch.local
+        - api.kcmchurch.local
+
+env:
+  # Secrets should be injected via ExternalSecrets or sealed secrets in production
+  # Here we provide non-sensitive defaults
+  NODE_ENV: production

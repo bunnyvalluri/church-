@@ -1,0 +1,32 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-frontend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: frontend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-api-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-socket-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: socket

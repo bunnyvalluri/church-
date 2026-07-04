@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kcm-portal-frontend
+  labels:
+    release: prometheus # assuming prometheus kube-prometheus-stack release name
+spec:
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: frontend
+  endpoints:
+  - port: http
+    path: /api/metrics # assuming metrics endpoint exists
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kcm-portal-api
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: api
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
