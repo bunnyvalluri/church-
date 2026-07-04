@@ -4,3 +4,4 @@ metadata:
   name: {{ .Release.Name }}-config
 data:
   NODE_ENV: {{ .Values.env.NODE_ENV | quote }}
+  REDIS_URL: "redis://{{ .Release.Name }}-redis:6379"

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels:
+    app: kcm-portal
+    component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kcm-portal
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: kcm-portal
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: "redis:7-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - redis-cli
+              - ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
