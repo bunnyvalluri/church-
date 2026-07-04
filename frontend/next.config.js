@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // -- Docker --
+  output: 'standalone',
+  
   // -- Performance --
   compress: true,
   poweredByHeader: false,
