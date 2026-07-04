@@ -28,18 +28,27 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-// Import Admin workspace components
-import DashboardOverview from "@/components/admin/DashboardOverview";
-import MemberManagement from "@/components/admin/MemberManagement";
-import MemberGroups from "@/components/admin/MemberGroups";
-import PrayerRequests from "@/components/admin/PrayerRequests";
-import FamilyManagement from "@/components/admin/FamilyManagement";
-import FinanceManagement from "@/components/admin/FinanceManagement";
-import AttendanceManagement from "@/components/admin/AttendanceManagement";
-import ContentManagement from "@/components/admin/ContentManagement";
-import SettingsManagement from "@/components/admin/SettingsManagement";
-import AdminControlBar from "@/components/admin/AdminControlBar";
-import NgoManagement from "@/components/admin/NgoManagement";
+import dynamic from "next/dynamic";
+
+// ── Lazy-loaded admin panels (each loads only when first visited) ──────────────
+const ViewLoader = () => (
+  <div className="min-h-[360px] flex flex-col items-center justify-center space-y-3">
+    <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Loading…</p>
+  </div>
+);
+
+const DashboardOverview    = dynamic(() => import("@/components/admin/DashboardOverview"),    { loading: ViewLoader, ssr: false });
+const MemberManagement     = dynamic(() => import("@/components/admin/MemberManagement"),     { loading: ViewLoader, ssr: false });
+const MemberGroups         = dynamic(() => import("@/components/admin/MemberGroups"),         { loading: ViewLoader, ssr: false });
+const PrayerRequests       = dynamic(() => import("@/components/admin/PrayerRequests"),       { loading: ViewLoader, ssr: false });
+const FamilyManagement     = dynamic(() => import("@/components/admin/FamilyManagement"),     { loading: ViewLoader, ssr: false });
+const FinanceManagement    = dynamic(() => import("@/components/admin/FinanceManagement"),    { loading: ViewLoader, ssr: false });
+const AttendanceManagement = dynamic(() => import("@/components/admin/AttendanceManagement"), { loading: ViewLoader, ssr: false });
+const ContentManagement    = dynamic(() => import("@/components/admin/ContentManagement"),    { loading: ViewLoader, ssr: false });
+const SettingsManagement   = dynamic(() => import("@/components/admin/SettingsManagement"),   { loading: ViewLoader, ssr: false });
+const AdminControlBar      = dynamic(() => import("@/components/admin/AdminControlBar"),      { loading: ViewLoader, ssr: false });
+const NgoManagement        = dynamic(() => import("@/components/admin/NgoManagement"),        { loading: ViewLoader, ssr: false });
 import { adminTranslations } from "@/components/admin/adminTranslations";
 import ThemeToggle from "@/components/ThemeToggle";
 
