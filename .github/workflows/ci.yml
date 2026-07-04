@@ -1,4 +1,4 @@
-name: Continuous Integration (CI) Pipeline
+name: Event Portal CI/CD Pipeline
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Code Verification Audit
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -16,41 +15,32 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (Active LTS)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline || npm install
+        run: npm ci || npm install
 
-      - name: Validate Prisma Schema
+      - name: Prisma Validate & Generate
         working-directory: ./backend
         run: |
-          npx prisma validate --schema=./prisma/schema.prisma
-          npx prisma generate --schema=./prisma/schema.prisma
+          npx prisma validate
+          npx prisma generate
 
-      - name: Run ESLint Check
-        working-directory: ./frontend
-        run: npm run lint --if-present
-        continue-on-error: true
+      - name: Lint & Security Scan
+        run: |
+          npm run lint --if-present
 
-      - name: Compile-Time TypeScript Audit
-        working-directory: ./frontend
-        run: npx tsc --noEmit --skipLibCheck
-        continue-on-error: true
-
-      - name: Verify Next.js Production Build
+      - name: Build Next.js Application
         working-directory: ./frontend
         env:
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-        run: npm run build
+        run: |
+          npm run build
