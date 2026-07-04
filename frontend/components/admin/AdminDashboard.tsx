@@ -1084,7 +1084,15 @@ export default function AdminDashboard() {
             <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
               <Calendar className="w-4.5 h-4.5 text-indigo-500 dark:text-indigo-400" />
               <span>
-                {language === "te" ? "మే 12 – మే 18, 2024" : language === "hi" ? "मई 12 – मई 18, 2024" : "May 12 – May 18, 2024"}
+                {(() => {
+                  const now = new Date();
+                  const locale = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US";
+                  return new Intl.DateTimeFormat(locale, {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  }).format(now);
+                })()}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 ml-1" />
             </div>
