@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -30,11 +30,11 @@ import Image from "next/image";
 
 import dynamic from "next/dynamic";
 
-// ── Lazy-loaded admin panels (each loads only when first visited) ──────────────
+// ΓöÇΓöÇ Lazy-loaded admin panels (each loads only when first visited) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 const ViewLoader = () => (
   <div className="min-h-[360px] flex flex-col items-center justify-center space-y-3">
     <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Loading…</p>
+    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">LoadingΓÇª</p>
   </div>
 );
 
@@ -333,9 +333,9 @@ export default function AdminDashboard() {
         );
         showToast(
           language === "te"
-            ? `వినియోగదారు పాత్ర ${newRole}కు నవీకరించబడింది!`
+            ? `α░╡α░┐α░¿α░┐α░»α▒ïα░ùα░ªα░╛α░░α▒ü α░¬α░╛α░ñα▒ìα░░ ${newRole}α░òα▒ü α░¿α░╡α▒Çα░òα░░α░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐!`
             : language === "hi"
-            ? `उपयोगकर्ता भूमिका ${newRole} में अपडेट की गई!`
+            ? `αñëαñ¬αñ»αÑïαñùαñòαñ░αÑìαññαñ╛ αñ¡αÑéαñ«αñ┐αñòαñ╛ ${newRole} αñ«αÑçαñé αñàαñ¬αñíαÑçαñƒ αñòαÑÇ αñùαñê!`
             : `User role updated to ${newRole}!`,
           "success"
         );
@@ -345,9 +345,9 @@ export default function AdminDashboard() {
     } catch (err: any) {
       showToast(
         language === "te"
-          ? "పాత్రను సవరించడంలో విఫలమైంది."
+          ? "α░¬α░╛α░ñα▒ìα░░α░¿α▒ü α░╕α░╡α░░α░┐α░éα░Üα░íα░éα░▓α▒ï α░╡α░┐α░½α░▓α░«α▒êα░éα░ªα░┐."
           : language === "hi"
-          ? "भूमिका को संशोधित करने में विफल।"
+          ? "αñ¡αÑéαñ«αñ┐αñòαñ╛ αñòαÑï αñ╕αñéαñ╢αÑïαñºαñ┐αññ αñòαñ░αñ¿αÑç αñ«αÑçαñé αñ╡αñ┐αñ½αñ▓αÑñ"
           : err.message || "Failed to modify role.",
         "error"
       );
@@ -371,9 +371,9 @@ export default function AdminDashboard() {
         setUsersDb(prev => [data.user, ...prev]);
         showToast(
           language === "te"
-            ? "విశ్వాసి రిజిస్ట్రీలో విజయవంతంగా నమోదు చేయబడ్డారు!"
+            ? "α░╡α░┐α░╢α▒ìα░╡α░╛α░╕α░┐ α░░α░┐α░£α░┐α░╕α▒ìα░ƒα▒ìα░░α▒Çα░▓α▒ï α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░¿α░«α▒ïα░ªα▒ü α░Üα▒çα░»α░¼α░íα▒ìα░íα░╛α░░α▒ü!"
             : language === "hi"
-            ? "विश्वासी को रजिस्ट्री में सफलतापूर्वक पंजीकृत किया गया!"
+            ? "αñ╡αñ┐αñ╢αÑìαñ╡αñ╛αñ╕αÑÇ αñòαÑï αñ░αñ£αñ┐αñ╕αÑìαñƒαÑìαñ░αÑÇ αñ«αÑçαñé αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñ¬αñéαñ£αÑÇαñòαÑâαññ αñòαñ┐αñ»αñ╛ αñùαñ»αñ╛!"
             : "Believer registered in registry successfully!",
           "success"
         );
@@ -383,9 +383,9 @@ export default function AdminDashboard() {
     } catch (err: any) {
       showToast(
         language === "te"
-          ? "సభ్యుడిని నమోదు చేయడంలో విఫలమైంది."
+          ? "α░╕α░¡α▒ìα░»α▒üα░íα░┐α░¿α░┐ α░¿α░«α▒ïα░ªα▒ü α░Üα▒çα░»α░íα░éα░▓α▒ï α░╡α░┐α░½α░▓α░«α▒êα░éα░ªα░┐."
           : language === "hi"
-          ? "सदस्य को पंजीकृत करने में विफल।"
+          ? "αñ╕αñªαñ╕αÑìαñ» αñòαÑï αñ¬αñéαñ£αÑÇαñòαÑâαññ αñòαñ░αñ¿αÑç αñ«αÑçαñé αñ╡αñ┐αñ½αñ▓αÑñ"
           : err.message || "Failed to register member.",
         "error"
       );
@@ -414,9 +414,9 @@ export default function AdminDashboard() {
         setUsersDb(prev => prev.filter(u => u.id !== id));
         showToast(
           language === "te"
-            ? "విశ్వాసి రిజిస్ట్రీ నుండి తొలగించబడ్డారు."
+            ? "α░╡α░┐α░╢α▒ìα░╡α░╛α░╕α░┐ α░░α░┐α░£α░┐α░╕α▒ìα░ƒα▒ìα░░α▒Ç α░¿α▒üα░éα░íα░┐ α░ñα▒èα░▓α░ùα░┐α░éα░Üα░¼α░íα▒ìα░íα░╛α░░α▒ü."
             : language === "hi"
-            ? "विश्वासी को रजिस्ट्री से हटा दिया गया।"
+            ? "αñ╡αñ┐αñ╢αÑìαñ╡αñ╛αñ╕αÑÇ αñòαÑï αñ░αñ£αñ┐αñ╕αÑìαñƒαÑìαñ░αÑÇ αñ╕αÑç αñ╣αñƒαñ╛ αñªαñ┐αñ»αñ╛ αñùαñ»αñ╛αÑñ"
             : "Believer removed from registry.",
           "success"
         );
@@ -440,9 +440,9 @@ export default function AdminDashboard() {
         setSermonsDb(prev => [data.sermon, ...prev]);
         showToast(
           language === "te"
-            ? "కొత్త ప్రసంగం విజయవంతంగా ప్రచురించబడింది!"
+            ? "α░òα▒èα░ñα▒ìα░ñ α░¬α▒ìα░░α░╕α░éα░ùα░é α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░¬α▒ìα░░α░Üα▒üα░░α░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐!"
             : language === "hi"
-            ? "नया उपदेश सफलतापूर्वक प्रकाशित हुआ!"
+            ? "αñ¿αñ»αñ╛ αñëαñ¬αñªαÑçαñ╢ αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñ¬αÑìαñ░αñòαñ╛αñ╢αñ┐αññ αñ╣αÑüαñå!"
             : "New sermon published successfully!",
           "success"
         );
@@ -452,9 +452,9 @@ export default function AdminDashboard() {
     } catch (e: any) {
       showToast(
         language === "te"
-          ? "ప్రసంగం ప్రత్యామ్నాయ మోడ్‌లో అప్‌లోడ్ చేయబడింది."
+          ? "α░¬α▒ìα░░α░╕α░éα░ùα░é α░¬α▒ìα░░α░ñα▒ìα░»α░╛α░«α▒ìα░¿α░╛α░» α░«α▒ïα░íα▒ìΓÇîα░▓α▒ï α░àα░¬α▒ìΓÇîα░▓α▒ïα░íα▒ì α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐."
           : language === "hi"
-          ? "उपदेश फ़ॉलबैक मोड में अपलोड किया गया।"
+          ? "αñëαñ¬αñªαÑçαñ╢ αñ½αñ╝αÑëαñ▓αñ¼αÑêαñò αñ«αÑïαñí αñ«αÑçαñé αñàαñ¬αñ▓αÑïαñí αñòαñ┐αñ»αñ╛ αñùαñ»αñ╛αÑñ"
           : "Sermon uploaded in fallback mode.",
         "success"
       );
@@ -474,9 +474,9 @@ export default function AdminDashboard() {
         setSermonsDb(prev => prev.filter(s => s.id !== id));
         showToast(
           language === "te"
-            ? "ప్రసంగ ఆర్కైవ్ తొలగించబడింది."
+            ? "α░¬α▒ìα░░α░╕α░éα░ù α░åα░░α▒ìα░òα▒êα░╡α▒ì α░ñα▒èα░▓α░ùα░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐."
             : language === "hi"
-            ? "उपदेश संग्रह हटा दिया गया।"
+            ? "αñëαñ¬αñªαÑçαñ╢ αñ╕αñéαñùαÑìαñ░αñ╣ αñ╣αñƒαñ╛ αñªαñ┐αñ»αñ╛ αñùαñ»αñ╛αÑñ"
             : "Sermon archive deleted.",
           "success"
         );
@@ -500,9 +500,9 @@ export default function AdminDashboard() {
         setEventsDb(prev => [data.event, ...prev]);
         showToast(
           language === "te"
-            ? "కార్యక్రమం విజయవంతంగా షెడ్యూల్ చేయబడింది!"
+            ? "α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░«α░é α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░╖α▒åα░íα▒ìα░»α▒éα░▓α▒ì α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐!"
             : language === "hi"
-            ? "कार्यक्रम सफलतापूर्वक निर्धारित किया गया!"
+            ? "αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ« αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñ¿αñ┐αñ░αÑìαñºαñ╛αñ░αñ┐αññ αñòαñ┐αñ»αñ╛ αñùαñ»αñ╛!"
             : "Church event scheduled successfully!",
           "success"
         );
@@ -512,9 +512,9 @@ export default function AdminDashboard() {
     } catch (e) {
       showToast(
         language === "te"
-          ? "కార్యక్రమం ప్రత్యామ్నాయ మోడ్‌లో షెడ్యూల్ చేయబడింది."
+          ? "α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░«α░é α░¬α▒ìα░░α░ñα▒ìα░»α░╛α░«α▒ìα░¿α░╛α░» α░«α▒ïα░íα▒ìΓÇîα░▓α▒ï α░╖α▒åα░íα▒ìα░»α▒éα░▓α▒ì α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐."
           : language === "hi"
-          ? "कार्यक्रम फ़ॉलबैक मोड में निर्धारित किया गया।"
+          ? "αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ« αñ½αñ╝αÑëαñ▓αñ¼αÑêαñò αñ«αÑïαñí αñ«αÑçαñé αñ¿αñ┐αñ░αÑìαñºαñ╛αñ░αñ┐αññ αñòαñ┐αñ»αñ╛ αñùαñ»αñ╛αÑñ"
           : "Event scheduled in fallback mode.",
         "success"
       );
@@ -534,9 +534,9 @@ export default function AdminDashboard() {
         setEventsDb(prev => prev.filter(e => e.id !== id));
         showToast(
           language === "te"
-            ? "కార్యక్రమం షెడ్యూలింగ్ క్యాలెండర్ నుండి తొలగించబడింది."
+            ? "α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░«α░é α░╖α▒åα░íα▒ìα░»α▒éα░▓α░┐α░éα░ùα▒ì α░òα▒ìα░»α░╛α░▓α▒åα░éα░íα░░α▒ì α░¿α▒üα░éα░íα░┐ α░ñα▒èα░▓α░ùα░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐."
             : language === "hi"
-            ? "कार्यक्रम को शेड्यूलिंग कैलेंडर से हटा दिया गया।"
+            ? "αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ« αñòαÑï αñ╢αÑçαñíαÑìαñ»αÑéαñ▓αñ┐αñéαñù αñòαÑêαñ▓αÑçαñéαñíαñ░ αñ╕αÑç αñ╣αñƒαñ╛ αñªαñ┐αñ»αñ╛ αñùαñ»αñ╛αÑñ"
             : "Event removed from scheduling calendar.",
           "success"
         );
@@ -560,9 +560,9 @@ export default function AdminDashboard() {
         setAnnouncementsDb(prev => [data.announcement, ...prev]);
         showToast(
           language === "te"
-            ? "సాధారణ ప్రకటన ప్రసారం చేయబడింది!"
+            ? "α░╕α░╛α░ºα░╛α░░α░ú α░¬α▒ìα░░α░òα░ƒα░¿ α░¬α▒ìα░░α░╕α░╛α░░α░é α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐!"
             : language === "hi"
-            ? "सामान्य घोषणा प्रसारित की गई!"
+            ? "αñ╕αñ╛αñ«αñ╛αñ¿αÑìαñ» αñÿαÑïαñ╖αñúαñ╛ αñ¬αÑìαñ░αñ╕αñ╛αñ░αñ┐αññ αñòαÑÇ αñùαñê!"
             : "General announcement broadcasted!",
           "success"
         );
@@ -572,9 +572,9 @@ export default function AdminDashboard() {
     } catch (e) {
       showToast(
         language === "te"
-          ? "ప్రకటన ప్రత్యామ్నాయ మోడ్‌లో ప్రసారం చేయబడింది."
+          ? "α░¬α▒ìα░░α░òα░ƒα░¿ α░¬α▒ìα░░α░ñα▒ìα░»α░╛α░«α▒ìα░¿α░╛α░» α░«α▒ïα░íα▒ìΓÇîα░▓α▒ï α░¬α▒ìα░░α░╕α░╛α░░α░é α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐."
           : language === "hi"
-          ? "घोषणा फ़ॉलबैक मोड में प्रसारित की गई।"
+          ? "αñÿαÑïαñ╖αñúαñ╛ αñ½αñ╝αÑëαñ▓αñ¼αÑêαñò αñ«αÑïαñí αñ«αÑçαñé αñ¬αÑìαñ░αñ╕αñ╛αñ░αñ┐αññ αñòαÑÇ αñùαñêαÑñ"
           : "Announcement broadcasted in fallback mode.",
         "success"
       );
@@ -594,9 +594,9 @@ export default function AdminDashboard() {
         setAnnouncementsDb(prev => prev.filter(a => a.id !== id));
         showToast(
           language === "te"
-            ? "ప్రకటన తొలగించబడింది."
+            ? "α░¬α▒ìα░░α░òα░ƒα░¿ α░ñα▒èα░▓α░ùα░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐."
             : language === "hi"
-            ? "घोषणा हटा दी गई।"
+            ? "αñÿαÑïαñ╖αñúαñ╛ αñ╣αñƒαñ╛ αñªαÑÇ αñùαñêαÑñ"
             : "Announcement deleted.",
           "success"
         );
@@ -612,9 +612,9 @@ export default function AdminDashboard() {
   const handleSaveConfig = async (config: any) => {
     showToast(
       language === "te"
-        ? "ప్లాట్‌ఫాం కాన్ఫిగరేషన్‌లు విజయవంతంగా సేవ్ చేయబడ్డాయి!"
+        ? "α░¬α▒ìα░▓α░╛α░ƒα▒ìΓÇîα░½α░╛α░é α░òα░╛α░¿α▒ìα░½α░┐α░ùα░░α▒çα░╖α░¿α▒ìΓÇîα░▓α▒ü α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░╕α▒çα░╡α▒ì α░Üα▒çα░»α░¼α░íα▒ìα░íα░╛α░»α░┐!"
         : language === "hi"
-        ? "प्लेटफ़ॉर्म कॉन्फ़िगरेशन सफलतापूर्वक सहेजे गए!"
+        ? "αñ¬αÑìαñ▓αÑçαñƒαñ½αñ╝αÑëαñ░αÑìαñ« αñòαÑëαñ¿αÑìαñ½αñ╝αñ┐αñùαñ░αÑçαñ╢αñ¿ αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñ╕αñ╣αÑçαñ£αÑç αñùαñÅ!"
         : "Platform configurations saved successfully!",
       "success"
     );
@@ -635,9 +635,9 @@ export default function AdminDashboard() {
         setAttendanceRecordsDb(prev => [data.record, ...prev]);
         showToast(
           language === "te"
-            ? "హాజరు రికార్డు విజయవంతంగా జోడించబడింది!"
+            ? "α░╣α░╛α░£α░░α▒ü α░░α░┐α░òα░╛α░░α▒ìα░íα▒ü α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░£α▒ïα░íα░┐α░éα░Üα░¼α░íα░┐α░éα░ªα░┐!"
             : language === "hi"
-            ? "उपस्थिति रिकॉर्ड सफलतापूर्वक जोड़ा गया!"
+            ? "αñëαñ¬αñ╕αÑìαñÑαñ┐αññαñ┐ αñ░αñ┐αñòαÑëαñ░αÑìαñí αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñ£αÑïαñíαñ╝αñ╛ αñùαñ»αñ╛!"
             : "Attendance record added successfully!",
           "success"
         );
@@ -710,9 +710,9 @@ export default function AdminDashboard() {
         setDonationsDb(prev => [data.donation, ...prev]);
         showToast(
           language === "te"
-            ? "మ్యాన్యువల్ కానుక లావాదేవీ విజయవంతంగా నమోదు చేయబడింది!"
+            ? "α░«α▒ìα░»α░╛α░¿α▒ìα░»α▒üα░╡α░▓α▒ì α░òα░╛α░¿α▒üα░ò α░▓α░╛α░╡α░╛α░ªα▒çα░╡α▒Ç α░╡α░┐α░£α░»α░╡α░éα░ñα░éα░ùα░╛ α░¿α░«α▒ïα░ªα▒ü α░Üα▒çα░»α░¼α░íα░┐α░éα░ªα░┐!"
             : language === "hi"
-            ? "मैनुअल योगदान लेनदेन सफलतापूर्वक दर्ज किया गया!"
+            ? "αñ«αÑêαñ¿αÑüαñàαñ▓ αñ»αÑïαñùαñªαñ╛αñ¿ αñ▓αÑçαñ¿αñªαÑçαñ¿ αñ╕αñ½αñ▓αññαñ╛αñ¬αÑéαñ░αÑìαñ╡αñò αñªαñ░αÑìαñ£ αñòαñ┐αñ»αñ╛ αñùαñ»αñ╛!"
             : "Manual contribution transaction logged successfully!",
           "success"
         );
@@ -784,7 +784,7 @@ export default function AdminDashboard() {
         <div className="text-center space-y-3">
           <Loader2 className="w-10 h-10 animate-spin text-[#6366F1] mx-auto" />
           <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
-            {language === "te" ? "అడ్మిన్ కనెక్షన్‌ను భద్రపరుస్తోంది..." : language === "hi" ? "एडमिन कनेक्शन सुरक्षित किया जा रहा है..." : "Securing Admin Connection..."}
+            {language === "te" ? "α░àα░íα▒ìα░«α░┐α░¿α▒ì α░òα░¿α▒åα░òα▒ìα░╖α░¿α▒ìΓÇîα░¿α▒ü α░¡α░ªα▒ìα░░α░¬α░░α▒üα░╕α▒ìα░ñα▒ïα░éα░ªα░┐..." : language === "hi" ? "αñÅαñíαñ«αñ┐αñ¿ αñòαñ¿αÑçαñòαÑìαñ╢αñ¿ αñ╕αÑüαñ░αñòαÑìαñ╖αñ┐αññ αñòαñ┐αñ»αñ╛ αñ£αñ╛ αñ░αñ╣αñ╛ αñ╣αÑê..." : "Securing Admin Connection..."}
           </p>
         </div>
       </div>
@@ -805,7 +805,7 @@ export default function AdminDashboard() {
         />
       )}
 
-      {/* ────────────────── 1. LEFT SIDEBAR NAVIGATION ────────────────── */}
+      {/* ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1. LEFT SIDEBAR NAVIGATION ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
       <aside className={`admin-sidebar w-64 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl shadow-2xl text-gray-600 dark:text-gray-300 flex flex-col shrink-0 border-r border-gray-200 dark:border-white/[0.05] fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-200 dark:border-white/[0.05]">
           <div className="flex items-center gap-3">
@@ -821,10 +821,10 @@ export default function AdminDashboard() {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="font-extrabold text-gray-900 dark:text-white text-sm tracking-tight leading-tight">
-                {language === "te" ? "కింగ్డమ్ ఆఫ్ క్రైస్ట్" : language === "hi" ? "किंगडम ऑफ क्राइस्ट" : "Kingdom of Christ"}
+                {language === "te" ? "α░òα░┐α░éα░ùα▒ìα░íα░«α▒ì α░åα░½α▒ì α░òα▒ìα░░α▒êα░╕α▒ìα░ƒα▒ì" : language === "hi" ? "αñòαñ┐αñéαñùαñíαñ« αñæαñ½ αñòαÑìαñ░αñ╛αñçαñ╕αÑìαñƒ" : "Kingdom of Christ"}
               </span>
               <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-black tracking-wider uppercase">
-                {language === "te" ? "మినిస్ట్రీస్" : language === "hi" ? "मिनिस्ट्रीज" : "Ministries"}
+                {language === "te" ? "α░«α░┐α░¿α░┐α░╕α▒ìα░ƒα▒ìα░░α▒Çα░╕α▒ì" : language === "hi" ? "αñ«αñ┐αñ¿αñ┐αñ╕αÑìαñƒαÑìαñ░αÑÇαñ£" : "Ministries"}
               </span>
             </div>
           </div>
@@ -849,21 +849,21 @@ export default function AdminDashboard() {
               className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide transition-all ${getActiveItemStyle("dashboard")}`}
             >
               <Layers className="w-4.5 h-4.5" />
-              {language === "te" ? "డాష్‌బోర్డ్" : language === "hi" ? "डैशबोर्ड" : "Dashboard"}
+              {language === "te" ? "α░íα░╛α░╖α▒ìΓÇîα░¼α▒ïα░░α▒ìα░íα▒ì" : language === "hi" ? "αñíαÑêαñ╢αñ¼αÑïαñ░αÑìαñí" : "Dashboard"}
             </button>
           </div>
 
           {/* MEMBERS SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
-              {language === "te" ? "సభ్యులు" : language === "hi" ? "सदस्य" : "MEMBERS"}
+              {language === "te" ? "α░╕α░¡α▒ìα░»α▒üα░▓α▒ü" : language === "hi" ? "αñ╕αñªαñ╕αÑìαñ»" : "MEMBERS"}
             </h4>
             <div className="space-y-1">
               {[
-                { id: "members", label: language === "te" ? "సభ్యులు" : language === "hi" ? "सदस्य" : "Members", icon: Users },
-                { id: "member-groups", label: language === "te" ? "సమూహాలు" : language === "hi" ? "समूह" : "Member Groups", icon: Users },
-                { id: "prayers", label: language === "te" ? "ప్రార్థనలు" : language === "hi" ? "प्रार्थनाएं" : "Prayer Requests", icon: Megaphone },
-                { id: "families", label: language === "te" ? "కుటుంబాలు" : language === "hi" ? "परिवार" : "Family Management", icon: Layers }
+                { id: "members", label: language === "te" ? "α░╕α░¡α▒ìα░»α▒üα░▓α▒ü" : language === "hi" ? "αñ╕αñªαñ╕αÑìαñ»" : "Members", icon: Users },
+                { id: "member-groups", label: language === "te" ? "α░╕α░«α▒éα░╣α░╛α░▓α▒ü" : language === "hi" ? "αñ╕αñ«αÑéαñ╣" : "Member Groups", icon: Users },
+                { id: "prayers", label: language === "te" ? "α░¬α▒ìα░░α░╛α░░α▒ìα░Ñα░¿α░▓α▒ü" : language === "hi" ? "αñ¬αÑìαñ░αñ╛αñ░αÑìαñÑαñ¿αñ╛αñÅαñé" : "Prayer Requests", icon: Megaphone },
+                { id: "families", label: language === "te" ? "α░òα▒üα░ƒα▒üα░éα░¼α░╛α░▓α▒ü" : language === "hi" ? "αñ¬αñ░αñ┐αñ╡αñ╛αñ░" : "Family Management", icon: Layers }
               ].map((item) => (
                 <button
                   type="button"
@@ -881,14 +881,14 @@ export default function AdminDashboard() {
           {/* FINANCE SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
-              {language === "te" ? "ఆర్థికం" : language === "hi" ? "वित्त" : "FINANCE"}
+              {language === "te" ? "α░åα░░α▒ìα░Ñα░┐α░òα░é" : language === "hi" ? "αñ╡αñ┐αññαÑìαññ" : "FINANCE"}
             </h4>
             <div className="space-y-1">
               {[
-                { id: "donations", label: language === "te" ? "కానుకలు" : language === "hi" ? "दान" : "Donations", icon: DollarSign },
-                { id: "pledges", label: language === "te" ? "ప్రతిజ్ఞలు" : language === "hi" ? "प्रतिज्ञा" : "Pledges", icon: Heart },
-                { id: "transactions", label: language === "te" ? "లావాదేవీలు" : language === "hi" ? "लेनदेन" : "Transactions", icon: CreditCard },
-                { id: "accounts", label: language === "te" ? "ఖాతాలు" : language === "hi" ? "खाते" : "Accounts", icon: Layers }
+                { id: "donations", label: language === "te" ? "α░òα░╛α░¿α▒üα░òα░▓α▒ü" : language === "hi" ? "αñªαñ╛αñ¿" : "Donations", icon: DollarSign },
+                { id: "pledges", label: language === "te" ? "α░¬α▒ìα░░α░ñα░┐α░£α▒ìα░₧α░▓α▒ü" : language === "hi" ? "αñ¬αÑìαñ░αññαñ┐αñ£αÑìαñ₧αñ╛" : "Pledges", icon: Heart },
+                { id: "transactions", label: language === "te" ? "α░▓α░╛α░╡α░╛α░ªα▒çα░╡α▒Çα░▓α▒ü" : language === "hi" ? "αñ▓αÑçαñ¿αñªαÑçαñ¿" : "Transactions", icon: CreditCard },
+                { id: "accounts", label: language === "te" ? "α░ûα░╛α░ñα░╛α░▓α▒ü" : language === "hi" ? "αñûαñ╛αññαÑç" : "Accounts", icon: Layers }
               ].map((item) => (
                 <button
                   type="button"
@@ -906,13 +906,13 @@ export default function AdminDashboard() {
           {/* ATTENDANCE SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
-              {language === "te" ? "హాజరు" : language === "hi" ? "उपस्थिति" : "ATTENDANCE"}
+              {language === "te" ? "α░╣α░╛α░£α░░α▒ü" : language === "hi" ? "αñëαñ¬αñ╕αÑìαñÑαñ┐αññαñ┐" : "ATTENDANCE"}
             </h4>
             <div className="space-y-1">
               {[
-                { id: "attendance-records", label: language === "te" ? "హాజరు రికార్డులు" : language === "hi" ? "उपस्थिति रिकॉर्ड" : "Attendance Records", icon: UserCheck },
-                { id: "event-attendance", label: language === "te" ? "కార్యక్రమ హాజరు" : language === "hi" ? "कार्यक्रम उपस्थिति" : "Event Attendance", icon: Calendar },
-                { id: "reports", label: language === "te" ? "నివేదికలు" : language === "hi" ? "रिपोर्ट" : "Reports", icon: Layers }
+                { id: "attendance-records", label: language === "te" ? "α░╣α░╛α░£α░░α▒ü α░░α░┐α░òα░╛α░░α▒ìα░íα▒üα░▓α▒ü" : language === "hi" ? "αñëαñ¬αñ╕αÑìαñÑαñ┐αññαñ┐ αñ░αñ┐αñòαÑëαñ░αÑìαñí" : "Attendance Records", icon: UserCheck },
+                { id: "event-attendance", label: language === "te" ? "α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░« α░╣α░╛α░£α░░α▒ü" : language === "hi" ? "αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ« αñëαñ¬αñ╕αÑìαñÑαñ┐αññαñ┐" : "Event Attendance", icon: Calendar },
+                { id: "reports", label: language === "te" ? "α░¿α░┐α░╡α▒çα░ªα░┐α░òα░▓α▒ü" : language === "hi" ? "αñ░αñ┐αñ¬αÑïαñ░αÑìαñƒ" : "Reports", icon: Layers }
               ].map((item) => (
                 <button
                   type="button"
@@ -930,15 +930,15 @@ export default function AdminDashboard() {
           {/* CONTENT SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
-              {language === "te" ? "కంటెంట్" : language === "hi" ? "सामग्री" : "CONTENT"}
+              {language === "te" ? "α░òα░éα░ƒα▒åα░éα░ƒα▒ì" : language === "hi" ? "αñ╕αñ╛αñ«αñùαÑìαñ░αÑÇ" : "CONTENT"}
             </h4>
             <div className="space-y-1">
               {[
-                { id: "sermons", label: language === "te" ? "ప్రసంగాలు" : language === "hi" ? "उपदेश" : "Sermons", icon: Play },
-                { id: "events", label: language === "te" ? "కార్యక్రమాలు" : language === "hi" ? "कार्यक्रम" : "Events", icon: Calendar },
-                { id: "announcements", label: language === "te" ? "ప్రకటనలు" : language === "hi" ? "घोषणाएं" : "Announcements", icon: Megaphone },
-                { id: "media-library", label: language === "te" ? "మీడియా లైబ్రరీ" : language === "hi" ? "मीडिया लाइब्रेरी" : "Media Library", icon: ImageIcon },
-                { id: "pages", label: language === "te" ? "పేజీలు" : language === "hi" ? "पृष्ठ" : "Pages", icon: FileText }
+                { id: "sermons", label: language === "te" ? "α░¬α▒ìα░░α░╕α░éα░ùα░╛α░▓α▒ü" : language === "hi" ? "αñëαñ¬αñªαÑçαñ╢" : "Sermons", icon: Play },
+                { id: "events", label: language === "te" ? "α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░«α░╛α░▓α▒ü" : language === "hi" ? "αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ«" : "Events", icon: Calendar },
+                { id: "announcements", label: language === "te" ? "α░¬α▒ìα░░α░òα░ƒα░¿α░▓α▒ü" : language === "hi" ? "αñÿαÑïαñ╖αñúαñ╛αñÅαñé" : "Announcements", icon: Megaphone },
+                { id: "media-library", label: language === "te" ? "α░«α▒Çα░íα░┐α░»α░╛ α░▓α▒êα░¼α▒ìα░░α░░α▒Ç" : language === "hi" ? "αñ«αÑÇαñíαñ┐αñ»αñ╛ αñ▓αñ╛αñçαñ¼αÑìαñ░αÑçαñ░αÑÇ" : "Media Library", icon: ImageIcon },
+                { id: "pages", label: language === "te" ? "α░¬α▒çα░£α▒Çα░▓α▒ü" : language === "hi" ? "αñ¬αÑâαñ╖αÑìαñá" : "Pages", icon: FileText }
               ].map((item) => (
                 <button
                   type="button"
@@ -960,9 +960,9 @@ export default function AdminDashboard() {
             </h4>
             <div className="space-y-1">
               {[
-                { id: "ngo-projects", label: language === "te" ? "NGO ప్రాజెక్ట్‌లు" : language === "hi" ? "एनजीओ परियोजनाएं" : "NGO Projects", icon: Heart },
-                { id: "ngo-media", label: language === "te" ? "NGO మీడియా" : language === "hi" ? "एनजीओ मीडिया" : "NGO Media", icon: ImageIcon },
-                { id: "ngo-volunteers", label: language === "te" ? "NGO స్వచ్ఛంద సేవకులు" : language === "hi" ? "एनजीओ स्वयंसेवक" : "NGO Volunteers", icon: Users }
+                { id: "ngo-projects", label: language === "te" ? "NGO α░¬α▒ìα░░α░╛α░£α▒åα░òα▒ìα░ƒα▒ìΓÇîα░▓α▒ü" : language === "hi" ? "αñÅαñ¿αñ£αÑÇαñô αñ¬αñ░αñ┐αñ»αÑïαñ£αñ¿αñ╛αñÅαñé" : "NGO Projects", icon: Heart },
+                { id: "ngo-media", label: language === "te" ? "NGO α░«α▒Çα░íα░┐α░»α░╛" : language === "hi" ? "αñÅαñ¿αñ£αÑÇαñô αñ«αÑÇαñíαñ┐αñ»αñ╛" : "NGO Media", icon: ImageIcon },
+                { id: "ngo-volunteers", label: language === "te" ? "NGO α░╕α▒ìα░╡α░Üα▒ìα░¢α░éα░ª α░╕α▒çα░╡α░òα▒üα░▓α▒ü" : language === "hi" ? "αñÅαñ¿αñ£αÑÇαñô αñ╕αÑìαñ╡αñ»αñéαñ╕αÑçαñ╡αñò" : "NGO Volunteers", icon: Users }
               ].map((item) => (
                 <button
                   type="button"
@@ -980,12 +980,12 @@ export default function AdminDashboard() {
           {/* SETTINGS SECTION */}
           <div className="space-y-2">
             <h4 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase px-4">
-              {language === "te" ? "సెట్టింగులు" : language === "hi" ? "सेटिंग्स" : "SETTINGS"}
+              {language === "te" ? "α░╕α▒åα░ƒα▒ìα░ƒα░┐α░éα░ùα▒üα░▓α▒ü" : language === "hi" ? "αñ╕αÑçαñƒαñ┐αñéαñùαÑìαñ╕" : "SETTINGS"}
             </h4>
             <div className="space-y-1">
               {[
-                { id: "settings", label: language === "te" ? "సెట్టింగులు" : language === "hi" ? "सेटिंग्स" : "Settings", icon: Settings },
-                { id: "users-roles", label: language === "te" ? "వినియోగదారులు & పాత్రలు" : language === "hi" ? "उपयोगकर्ता और भूमिकाएं" : "Users & Roles", icon: Shield }
+                { id: "settings", label: language === "te" ? "α░╕α▒åα░ƒα▒ìα░ƒα░┐α░éα░ùα▒üα░▓α▒ü" : language === "hi" ? "αñ╕αÑçαñƒαñ┐αñéαñùαÑìαñ╕" : "Settings", icon: Settings },
+                { id: "users-roles", label: language === "te" ? "α░╡α░┐α░¿α░┐α░»α▒ïα░ùα░ªα░╛α░░α▒üα░▓α▒ü & α░¬α░╛α░ñα▒ìα░░α░▓α▒ü" : language === "hi" ? "αñëαñ¬αñ»αÑïαñùαñòαñ░αÑìαññαñ╛ αñöαñ░ αñ¡αÑéαñ«αñ┐αñòαñ╛αñÅαñé" : "Users & Roles", icon: Shield }
               ].map((item) => (
                 <button
                   type="button"
@@ -1050,7 +1050,7 @@ export default function AdminDashboard() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400/70 group-focus-within:text-indigo-500 transition-colors" />
               <input 
                 type="text" 
-                placeholder={language === "te" ? "వెతకండి..." : language === "hi" ? "खोजें..." : "Search resources..."}
+                placeholder={language === "te" ? "α░╡α▒åα░ñα░òα░éα░íα░┐..." : language === "hi" ? "αñûαÑïαñ£αÑçαñé..." : "Search resources..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 text-xs bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300"
@@ -1079,7 +1079,7 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            {/* Mobile Settings Icon — shows on small screens where AdminControlBar is hidden */}
+            {/* Mobile Settings Icon ΓÇö shows on small screens where AdminControlBar is hidden */}
             <button
               type="button"
               onClick={() => setActiveView("settings")}
@@ -1115,7 +1115,7 @@ export default function AdminDashboard() {
           {successMsg && (
             <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs rounded-xl flex items-center gap-2 shadow-sm animate-in slide-in-from-top duration-200">
               <span className="font-bold">
-                {language === "te" ? "✓ విజయం:" : language === "hi" ? "✓ सफलता:" : "✓ Success:"}
+                {language === "te" ? "Γ£ô α░╡α░┐α░£α░»α░é:" : language === "hi" ? "Γ£ô αñ╕αñ½αñ▓αññαñ╛:" : "Γ£ô Success:"}
               </span>{" "}
               {successMsg}
             </div>
@@ -1125,7 +1125,7 @@ export default function AdminDashboard() {
           {errorMsg && (
             <div className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs rounded-xl flex items-center gap-2 shadow-sm animate-in slide-in-from-top duration-200">
               <span className="font-bold">
-                {language === "te" ? "✕ హెచ్చరిక:" : language === "hi" ? "✕ चेतावनी:" : "✕ Warning:"}
+                {language === "te" ? "Γ£ò α░╣α▒åα░Üα▒ìα░Üα░░α░┐α░ò:" : language === "hi" ? "Γ£ò αñÜαÑçαññαñ╛αñ╡αñ¿αÑÇ:" : "Γ£ò Warning:"}
               </span>{" "}
               {errorMsg}
             </div>
@@ -1136,7 +1136,7 @@ export default function AdminDashboard() {
             <div className="min-h-[360px] flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-10 h-10 animate-spin text-[#6366F1]" />
               <p className="text-xs text-gray-450 font-bold uppercase">
-                {language === "te" ? "చర్చి రిపోజిటరీలను సమకాలీకరిస్తోంది..." : language === "hi" ? "चर्च रिपॉजिटरी को सिंक किया जा रहा है..." : "Syncing church repositories..."}
+                {language === "te" ? "α░Üα░░α▒ìα░Üα░┐ α░░α░┐α░¬α▒ïα░£α░┐α░ƒα░░α▒Çα░▓α░¿α▒ü α░╕α░«α░òα░╛α░▓α▒Çα░òα░░α░┐α░╕α▒ìα░ñα▒ïα░éα░ªα░┐..." : language === "hi" ? "αñÜαñ░αÑìαñÜ αñ░αñ┐αñ¬αÑëαñ£αñ┐αñƒαñ░αÑÇ αñòαÑï αñ╕αñ┐αñéαñò αñòαñ┐αñ»αñ╛ αñ£αñ╛ αñ░αñ╣αñ╛ αñ╣αÑê..." : "Syncing church repositories..."}
               </p>
             </div>
           ) : (
@@ -1249,7 +1249,7 @@ export default function AdminDashboard() {
 
         </div>
       </main>
-      {/* ────────────────── 3. MOBILE BOTTOM NAVIGATION ────────────────── */}
+      {/* ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 3. MOBILE BOTTOM NAVIGATION ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
       {/* Only visible on mobile/tablet (below lg breakpoint) */}
       <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-30 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
         {[
@@ -1282,7 +1282,7 @@ export default function AdminDashboard() {
         })}
       </nav>
 
-      {/* ─── Modal: Add Member ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Member ΓöÇΓöÇΓöÇ */}
       {isAddMemberOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
@@ -1292,7 +1292,7 @@ export default function AdminDashboard() {
                 onClick={() => setIsAddMemberOpen(false)} 
                 className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg transition-all"
               >
-                ✕
+                Γ£ò
               </button>
             </div>
             
@@ -1346,13 +1346,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ─── Modal: Add Sermon ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Sermon ΓöÇΓöÇΓöÇ */}
       {isAddSermonOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.content.uploadSermonTitle}</h3>
-              <button onClick={() => setIsAddSermonOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button onClick={() => setIsAddSermonOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">Γ£ò</button>
             </div>
             
             <form onSubmit={submitAddSermon} className="p-6 space-y-4">
@@ -1388,10 +1388,10 @@ export default function AdminDashboard() {
                     onChange={(e) => setNewSermon({ ...newSermon, category: e.target.value })}
                     className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
                   >
-                    <option value="Faith" className="dark:bg-[#121324]">{language === "te" ? "విశ్వాసం" : language === "hi" ? "विश्वास" : "Faith"}</option>
-                    <option value="Inspiration" className="dark:bg-[#121324]">{language === "te" ? "ప్రేరణ" : language === "hi" ? "प्रेरणा" : "Inspiration"}</option>
-                    <option value="Prayer" className="dark:bg-[#121324]">{language === "te" ? "ప్రార్థన" : language === "hi" ? "प्रार्थना" : "Prayer"}</option>
-                    <option value="Purpose" className="dark:bg-[#121324]">{language === "te" ? "ఉద్దేశ్యం" : language === "hi" ? "उद्देश्य" : "Purpose"}</option>
+                    <option value="Faith" className="dark:bg-[#121324]">{language === "te" ? "α░╡α░┐α░╢α▒ìα░╡α░╛α░╕α░é" : language === "hi" ? "αñ╡αñ┐αñ╢αÑìαñ╡αñ╛αñ╕" : "Faith"}</option>
+                    <option value="Inspiration" className="dark:bg-[#121324]">{language === "te" ? "α░¬α▒ìα░░α▒çα░░α░ú" : language === "hi" ? "αñ¬αÑìαñ░αÑçαñ░αñúαñ╛" : "Inspiration"}</option>
+                    <option value="Prayer" className="dark:bg-[#121324]">{language === "te" ? "α░¬α▒ìα░░α░╛α░░α▒ìα░Ñα░¿" : language === "hi" ? "αñ¬αÑìαñ░αñ╛αñ░αÑìαñÑαñ¿αñ╛" : "Prayer"}</option>
+                    <option value="Purpose" className="dark:bg-[#121324]">{language === "te" ? "α░ëα░ªα▒ìα░ªα▒çα░╢α▒ìα░»α░é" : language === "hi" ? "αñëαñªαÑìαñªαÑçαñ╢αÑìαñ»" : "Purpose"}</option>
                   </select>
                   <ChevronDown className="absolute right-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none" />
                 </div>
@@ -1405,13 +1405,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ─── Modal: Add Donation ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Donation ΓöÇΓöÇΓöÇ */}
       {isAddDonationOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.finance.logManualTitle}</h3>
-              <button onClick={() => setIsAddDonationOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button onClick={() => setIsAddDonationOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">Γ£ò</button>
             </div>
             
             <form onSubmit={submitAddDonation} className="p-6 space-y-4">
@@ -1481,13 +1481,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ─── Modal: Add Event ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Event ΓöÇΓöÇΓöÇ */}
       {isAddEventOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.content.scheduleEventTitle}</h3>
-              <button onClick={() => setIsAddEventOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button onClick={() => setIsAddEventOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">Γ£ò</button>
             </div>
             
             <form onSubmit={submitAddEvent} className="p-6 space-y-4">
@@ -1540,11 +1540,11 @@ export default function AdminDashboard() {
                     onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
                     className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-350 dark:hover:border-white/[0.15] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
                   >
-                    <option value="WORSHIP" className="dark:bg-[#121324]">{language === "te" ? "ఆరాధన సేవ" : language === "hi" ? "आराधना सेवा" : "Worship Service"}</option>
-                    <option value="PRAYER" className="dark:bg-[#121324]">{language === "te" ? "ప్రార్థన కూడిక" : language === "hi" ? "प्रार्थना सभा" : "Prayer Vigil"}</option>
-                    <option value="YOUTH" className="dark:bg-[#121324]">{language === "te" ? "యువజన కూడిక" : language === "hi" ? "युवा गतिविधि" : "Youth Activity"}</option>
-                    <option value="CHILDREN" className="dark:bg-[#121324]">{language === "te" ? "సండే స్కూల్" : language === "hi" ? "संडे स्कूल" : "Sunday School"}</option>
-                    <option value="SPECIAL" className="dark:bg-[#121324]">{language === "te" ? "ప్రత్యేక కార్యక్రమం" : language === "hi" ? "विशेष कार्यक्रम" : "Special Event"}</option>
+                    <option value="WORSHIP" className="dark:bg-[#121324]">{language === "te" ? "α░åα░░α░╛α░ºα░¿ α░╕α▒çα░╡" : language === "hi" ? "αñåαñ░αñ╛αñºαñ¿αñ╛ αñ╕αÑçαñ╡αñ╛" : "Worship Service"}</option>
+                    <option value="PRAYER" className="dark:bg-[#121324]">{language === "te" ? "α░¬α▒ìα░░α░╛α░░α▒ìα░Ñα░¿ α░òα▒éα░íα░┐α░ò" : language === "hi" ? "αñ¬αÑìαñ░αñ╛αñ░αÑìαñÑαñ¿αñ╛ αñ╕αñ¡αñ╛" : "Prayer Vigil"}</option>
+                    <option value="YOUTH" className="dark:bg-[#121324]">{language === "te" ? "α░»α▒üα░╡α░£α░¿ α░òα▒éα░íα░┐α░ò" : language === "hi" ? "αñ»αÑüαñ╡αñ╛ αñùαññαñ┐αñ╡αñ┐αñºαñ┐" : "Youth Activity"}</option>
+                    <option value="CHILDREN" className="dark:bg-[#121324]">{language === "te" ? "α░╕α░éα░íα▒ç α░╕α▒ìα░òα▒éα░▓α▒ì" : language === "hi" ? "αñ╕αñéαñíαÑç αñ╕αÑìαñòαÑéαñ▓" : "Sunday School"}</option>
+                    <option value="SPECIAL" className="dark:bg-[#121324]">{language === "te" ? "α░¬α▒ìα░░α░ñα▒ìα░»α▒çα░ò α░òα░╛α░░α▒ìα░»α░òα▒ìα░░α░«α░é" : language === "hi" ? "αñ╡αñ┐αñ╢αÑçαñ╖ αñòαñ╛αñ░αÑìαñ»αñòαÑìαñ░αñ«" : "Special Event"}</option>
                   </select>
                   <ChevronDown className="absolute right-3.5 w-4.5 h-4.5 text-slate-400 pointer-events-none" />
                 </div>
@@ -1558,13 +1558,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ─── Modal: Add Announcement ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Announcement ΓöÇΓöÇΓöÇ */}
       {isAddAnnouncementOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.content.broadcastAnnouncementTitle}</h3>
-              <button onClick={() => setIsAddAnnouncementOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button onClick={() => setIsAddAnnouncementOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">Γ£ò</button>
             </div>
             
             <form onSubmit={submitAddAnnouncement} className="p-6 space-y-4">
@@ -1610,13 +1610,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ─── Modal: Add Attendance ─── */}
+      {/* ΓöÇΓöÇΓöÇ Modal: Add Attendance ΓöÇΓöÇΓöÇ */}
       {isAddAttendanceOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-slate-800 dark:text-slate-100">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.attendance.recordServiceAttendance}</h3>
-              <button onClick={() => setIsAddAttendanceOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">✕</button>
+              <button onClick={() => setIsAddAttendanceOpen(false)} className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-lg">Γ£ò</button>
             </div>
             
             <form onSubmit={submitAddAttendance} className="p-6 space-y-4">
