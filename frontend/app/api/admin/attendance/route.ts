@@ -73,3 +73,30 @@ export async function POST(req: Request) {
     );
   }
 }
+
+// ─── DELETE: Remove a single or all attendance records ────────────────────────
+export async function DELETE(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (id) {
+      // Single record delete
+      await prisma.attendanceRecord.delete({ where: { id } });
+      return NextResponse.json({ success: true, message: 'Attendance record deleted successfully' });
+    } else {
+      // Bulk delete all records
+      const result = await prisma.attendanceRecord.deleteMany({});
+      return NextResponse.json({ success: true, message: `Deleted ${result.count} attendance records` });
+    }
+  } catch (err: any) {
+    console.error('[ADMIN/ATTENDANCE/DELETE] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Database error occurred while deleting attendance record' },
+      { status: 500 }
+    );
+  }
+}
