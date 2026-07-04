@@ -217,6 +217,7 @@ export default function UnifiedEventManagementPortal() {
   const [showCreateSermon, setShowCreateSermon] = useState(false);
   const [showManageSermons, setShowManageSermons] = useState(false);
   const [showManageServices, setShowManageServices] = useState(false);
+  const [showManageEvents, setShowManageEvents] = useState(false);
   const [successEvent, setSuccessEvent] = useState<{ title: string; category: string; date: string; time: string; location: string } | null>(null);
 
   // Manage Sermons list states and handlers
@@ -229,6 +230,11 @@ export default function UnifiedEventManagementPortal() {
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
   const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
+
+  // Manage Events list states and handlers
+  const [eventsReportList, setEventsReportList] = useState<any[]>([]);
+  const [loadingEventsReport, setLoadingEventsReport] = useState(false);
+  const [deletingEventsReportId, setDeletingEventsReportId] = useState<string | null>(null);
 
   const fetchAllSermons = async () => {
     setLoadingSermons(true);
@@ -351,6 +357,65 @@ export default function UnifiedEventManagementPortal() {
       alert(err.message || "Failed to delete service");
     } finally {
       setDeletingServiceId(null);
+    }
+  };
+
+  const fetchAllEventsReports = async () => {
+    setLoadingEventsReport(true);
+    try {
+      const token = await getIdToken();
+      const res = await fetch("/api/event-manager/reports?branchId=all&status=all", {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setEventsReportList(data.reports || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch reports list:", err);
+    } finally {
+      setLoadingEventsReport(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showManageEvents) {
+      fetchAllEventsReports();
+    }
+  }, [showManageEvents]);
+
+  const handleDeleteReportFromModal = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this event report? This action cannot be undone.")) return;
+    setDeletingEventsReportId(id);
+    try {
+      const token = await getIdToken();
+      const response = await fetch(`/api/event-manager/reports/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setToastMessage({
+          title: "🗑️ Report Deleted",
+          desc: "The field report has been successfully deleted.",
+        });
+        setTimeout(() => setToastMessage(null), 5000);
+        fetchAllEventsReports();
+        setReports(prev => prev.filter(r => r.id !== id));
+      } else {
+        alert(result.error || "Failed to delete report.");
+      }
+    } catch (err) {
+      console.error("[PORTAL] Delete report error:", err);
+      alert("A network error occurred while deleting the report.");
+    } finally {
+      setDeletingEventsReportId(null);
     }
   };
 
@@ -1013,6 +1078,15 @@ export default function UnifiedEventManagementPortal() {
                 </Link>
 
                 <button
+                  type="button"
+                  onClick={() => setShowManageEvents(true)}
+                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 !text-[#0f1021]" />
+                  {t.eventManager?.manageEventsBtn || "Manage Events"}
+                </button>
+
+                <button
                   onClick={() => setShowCreateService(true)}
                   className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
                 >
@@ -1273,6 +1347,15 @@ export default function UnifiedEventManagementPortal() {
                   <PlusCircle className="w-4 h-4" />
                   {t.eventManager?.createFirstReportBtn || "Create Events Report"}
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setShowManageEvents(true)}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4" />
+                  {t.eventManager?.manageEventsBtn || "Manage Events"}
+                </button>
 
                 <button
                   type="button"
@@ -2352,6 +2435,108 @@ export default function UnifiedEventManagementPortal() {
                 <button
                   type="button"
                   onClick={() => setShowManageServices(false)}
+                  className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+ 
+      {/* Manage Events Modal */}
+      <AnimatePresence>
+        {showManageEvents && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageEvents(false)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-2xl max-w-2xl w-full relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Banner Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
+ 
+              <button
+                type="button"
+                onClick={() => setShowManageEvents(false)}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+ 
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
+                <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-650 dark:text-indigo-400">
+                  <Settings className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Events</h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Delete or update submitted event reports</p>
+                </div>
+              </div>
+ 
+              {/* Events Report List */}
+              <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
+                {loadingEventsReport ? (
+                  <div className="py-12 text-center text-slate-500">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-500" />
+                    <p className="text-xs font-bold">Loading reports database...</p>
+                  </div>
+                ) : eventsReportList.length === 0 ? (
+                  <div className="py-12 text-center text-slate-500 border border-dashed border-slate-200 dark:border-white/5 rounded-2xl">
+                    <FileText className="w-8 h-8 mx-auto mb-2 text-slate-350" />
+                    <p className="text-xs font-bold">No event reports found in database.</p>
+                  </div>
+                ) : (
+                  eventsReportList.map((report) => (
+                    <div
+                      key={report.id}
+                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-150 dark:border-white/5 rounded-2xl hover:border-indigo-500/20 dark:hover:border-indigo-500/30 transition-all"
+                    >
+                      <div className="min-w-0 flex-1 pr-4">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {report.title}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
+                          <span className={`px-1.5 py-0.5 text-[8px] font-black rounded border ${
+                            report.status === "APPROVED" 
+                              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+                              : report.status === "REJECTED" 
+                              ? "bg-red-500/10 border-red-500/20 text-red-650 dark:text-red-400" 
+                              : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
+                          }`}>
+                            {report.status}
+                          </span>
+                          <span>•</span>
+                          <span>{report.branch?.name || "General"}</span>
+                          <span>•</span>
+                          <span>{new Date(report.reportDate).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+ 
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteReportFromModal(report.id)}
+                        disabled={deletingEventsReportId === report.id}
+                        className="p-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-650 dark:text-red-400 rounded-xl transition-all disabled:opacity-50 cursor-pointer animate-[scale-in_0.2s_ease-out]"
+                      >
+                        {deletingEventsReportId === report.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+ 
+              <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setShowManageEvents(false)}
                   className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer"
                 >
                   Close
