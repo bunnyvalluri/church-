@@ -242,6 +242,7 @@ export default function AdminDashboard() {
   const [pledgesDb, setPledgesDb] = useState<any[]>([]);
   const [transactionsDb, setTransactionsDb] = useState<any[]>([]);
   const [accountsDb, setAccountsDb] = useState<any[]>([]);
+  const [notificationsDb, setNotificationsDb] = useState<any[]>([]);
 
   // Loading states
   const [loading, setLoading] = useState(true);
@@ -309,6 +310,11 @@ export default function AdminDashboard() {
       const accRes = await fetch("/api/admin/accounts", { headers });
       const accData = await accRes.json();
       setAccountsDb(accData.accounts || []);
+
+      // 10. Fetch Notifications (for real-time unread badge count)
+      const notifRes = await fetch("/api/admin/notifications", { headers });
+      const notifData = await notifRes.json();
+      setNotificationsDb(notifData.notifications || []);
 
     } catch (err) {
       console.error("Error loading admin workspace resources:", err);
@@ -1082,9 +1088,11 @@ export default function AdminDashboard() {
                 className="w-9 h-9 flex items-center justify-center bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 relative"
               >
                 <Bell className="w-4.5 h-4.5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border border-white dark:border-[#080915]">
-                  5
-                </span>
+                {notificationsDb.filter(n => !n.isRead).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border border-white dark:border-[#080915]">
+                    {Math.min(notificationsDb.filter(n => !n.isRead).length, 99)}
+                  </span>
+                )}
               </button>
             </div>
 

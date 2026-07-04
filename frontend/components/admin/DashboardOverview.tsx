@@ -76,8 +76,10 @@ export default function DashboardOverview({
   const totalDonations = completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
   // Dynamic Attendance Calculations
-  const latestAttendance = attendanceRecords[0]?.headcount || 0;
-  const latestNewVisitors = attendanceRecords[0]?.newVisitors || 0;
+  // Sum all headcounts for the "total attendance" KPI (represents all recorded services)
+  const totalHeadcount = attendanceRecords.reduce((sum, r) => sum + (r.headcount || 0), 0);
+  const latestAttendance = totalHeadcount;
+  const latestNewVisitors = attendanceRecords.reduce((sum, r) => sum + (r.newVisitors || 0), 0);
   const avgAttendance = attendanceRecords.length > 0
     ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
     : 0;
@@ -89,8 +91,10 @@ export default function DashboardOverview({
     ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
     : "-";
 
-  const latestReturningVisitors = attendanceRecords[0]
-    ? Math.max(0, attendanceRecords[0].headcount - attendanceRecords[0].newVisitors)
+  const latestReturningVisitors = latestNewVisitors > 0
+    ? Math.max(0, totalHeadcount - latestNewVisitors)
+    : attendanceRecords[0]
+    ? Math.max(0, attendanceRecords[0].headcount - (attendanceRecords[0].newVisitors || 0))
     : 0;
 
   const newUsersCount = users.filter(u => {
@@ -462,13 +466,15 @@ export default function DashboardOverview({
                 const chartRecords = [...attendanceRecords].slice(0, 7).reverse();
                 
                 // If we have records, map them to the bar chart
+                // Use the max headcount from actual records for auto-scaling
+                const maxHeadcount = Math.max(...chartRecords.map(r => r.headcount || 0), 1);
                 const barData = chartRecords.map((rec) => {
                   const dateObj = new Date(rec.date);
                   const dayLabel = dateObj.toLocaleDateString(
                     language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US",
                     { weekday: 'short' }
                   );
-                  const heightPercent = Math.min(100, Math.round((rec.headcount / 500) * 100));
+                  const heightPercent = Math.min(100, Math.round((rec.headcount / maxHeadcount) * 100));
                   return {
                     day: dayLabel,
                     val: rec.headcount,
@@ -595,12 +601,12 @@ export default function DashboardOverview({
                   {filteredSermons.slice(0, 4).map((sermon) => (
                     <tr key={sermon.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
                       <td className="py-4 px-6 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md border border-white/10">
-                          SR
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md border border-white/10">
+                          {(sermon.title || "SR").substring(0, 2).toUpperCase()}
                         </div>
                         <span className="font-extrabold text-slate-900 dark:text-white truncate max-w-[200px]">{sermon.title}</span>
                       </td>
-                      <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{sermon.pastor || sermon.speaker || "Pastor John"}</td>
+                      <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{sermon.pastor || sermon.speaker || (language === "te" ? "ప్రసంగకర్త" : language === "hi" ? "प्रचारक" : "Speaker")}</td>
                       <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{new Date(sermon.date).toLocaleDateString("en-IN")}</td>
                       <td className="py-4 px-6">
                         <span className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.04] text-slate-750 dark:text-gray-300 border border-slate-200 dark:border-white/[0.06] rounded-lg text-[10px] font-bold">{sermon.category}</span>
