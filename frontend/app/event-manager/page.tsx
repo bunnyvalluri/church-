@@ -1041,16 +1041,16 @@ export default function UnifiedEventManagementPortal() {
           <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Welcome banner */}
-            <div className="sm:col-span-2 md:col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-indigo-900 border border-white/10 flex flex-col justify-between group min-h-[220px]">
+            <div className="sm:col-span-2 md:col-span-1 lg:col-span-2 relative overflow-hidden rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-indigo-900 border border-white/10 flex flex-col justify-between group min-h-[200px]">
               
               {/* Luminous background blobs */}
               <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-yellow-300/10 blur-3xl group-hover:bg-yellow-300/20 transition-colors duration-700 pointer-events-none" />
               <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-cyan-400/10 blur-2xl pointer-events-none" />
               
               <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 pointer-events-none">
-                <Camera className="w-40 h-40 text-white" />
+                <Building2 className="w-40 h-40 text-white" />
               </div>
-              <div className="space-y-2 relative z-10">
+              <div className="space-y-2 relative z-10 my-auto">
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-white/10 text-[9px] font-black uppercase tracking-widest !text-slate-900 shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
@@ -1060,76 +1060,22 @@ export default function UnifiedEventManagementPortal() {
                     <LanguageToggle />
                   </div>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black mt-2 tracking-tight leading-tight text-white">
+                <h2 className="text-2xl md:text-3xl font-black mt-3 tracking-tight leading-tight text-white">
                   {t.eventManager?.welcomeTitle || "Welcome, Event Manager! 🙏"}
                 </h2>
-                <p className="text-xs text-white/90 leading-relaxed max-w-md font-medium mt-1">
+                <p className="text-xs text-white/80 leading-relaxed max-w-lg font-medium mt-1">
                   {t.eventManager?.welcomeDesc || "Submit real-time reports of branch service attendance, tithes, prayers, and media captures. Offline data automatically syncs once connection is restored."}
                 </p>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-3 mt-6 relative z-10">
-                <Link
-                  href="/event-manager/report"
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all shadow-lg active:scale-95 hover:shadow-indigo-500/20"
-                >
-                  <PlusCircle className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.createReportBtn || "Create Events Report"}
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setShowManageEvents(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
-                >
-                  <Settings className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.manageEventsBtn || "Manage Events"}
-                </button>
-
-                <button
-                  onClick={() => setShowCreateService(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
-                >
-                  <Calendar className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.createServicesBtn || "Create Services"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowManageServices(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
-                >
-                  <Settings className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.manageServicesBtn || "Manage Services"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowCreateSermon(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
-                >
-                  <Play className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.createSermonsBtn || "Create Sermons"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowManageSermons(true)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
-                >
-                  <Settings className="w-4 h-4 !text-[#0f1021]" />
-                  {t.eventManager?.manageSermonsBtn || "Manage Sermons"}
-                </button>
               </div>
             </div>
 
             {/* Offline outbox display */}
-            <div className="relative overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-slate-900/60 dark:to-slate-950/70 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-violet-500/40 dark:hover:border-violet-500/50 transition-all duration-300">
+            <div className="relative overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-slate-900/60 dark:to-slate-950/70 backdrop-blur-xl border border-slate-200/50 dark:border-white/10 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl hover:border-violet-500/40 dark:hover:border-violet-500/50 transition-all duration-300">
               <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 rounded-full bg-violet-500/10 blur-xl pointer-events-none" />
               <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-white/5 pb-3 relative z-10">
                 <div>
                   <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.outboxTitle || "Offline Outbox"}</h3>
-                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">{t.eventManager?.outboxSubtitle || "Queue status"}</p>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-550 font-bold">{t.eventManager?.outboxSubtitle || "Queue status"}</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                   queuedReports.length > 0
@@ -1145,7 +1091,7 @@ export default function UnifiedEventManagementPortal() {
                   <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-2 shadow-inner shadow-emerald-500/5">
                     <CheckCircle className="w-6 h-6 text-emerald-500" />
                   </div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.eventManager?.outboxInSync || "All data in sync"}</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-350">{t.eventManager?.outboxInSync || "All data in sync"}</p>
                   <p className="text-[9px] text-slate-450 dark:text-slate-500 mt-0.5 font-medium">{t.eventManager?.outboxInSyncSub || "Ready for offline usage"}</p>
                 </div>
               ) : (
@@ -1155,7 +1101,7 @@ export default function UnifiedEventManagementPortal() {
                       key={report.id}
                       className="bg-slate-50 dark:bg-white/[0.02] border border-slate-200/40 dark:border-white/[0.04] p-2.5 rounded-xl flex items-center justify-between gap-3 text-[10px] hover:border-amber-500/30 transition-colors"
                     >
-                      <span className="font-bold text-slate-700 dark:text-slate-300 truncate flex-1">{report.title}</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-350 truncate flex-1">{report.title}</span>
                       <span className="text-[8px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider bg-amber-500/10 px-1.5 py-0.5 border border-amber-500/25 rounded">Queued</span>
                     </div>
                   ))}
@@ -1172,11 +1118,117 @@ export default function UnifiedEventManagementPortal() {
                   {t.eventManager?.syncNowBtn || "Sync Outbox Now"}
                 </button>
               ) : (
-                <div className="h-10 flex items-center justify-center text-[10px] text-slate-405 dark:text-slate-500 border border-dashed border-slate-200 dark:border-white/10 rounded-xl font-bold bg-slate-50/50 dark:bg-white/[0.01] relative z-10">
+                <div className="h-10 flex items-center justify-center text-[10px] text-slate-405 dark:text-slate-505 border border-dashed border-slate-200 dark:border-white/10 rounded-xl font-bold bg-slate-50/50 dark:bg-white/[0.01] relative z-10">
                   {isOnline ? (t.eventManager?.outboxDone || "Outbox in sync") : (t.eventManager?.outboxNeedsConn || "Sync requires connection")}
                 </div>
               )}
             </div>
+
+          </div>
+
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            
+            {/* Action Card 1: Reports */}
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-violet-500"
+            >
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-2xl bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center text-violet-650 dark:text-violet-400 shadow-sm border border-violet-500/20 shrink-0">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Event Reports</h4>
+                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5 leading-normal">Submit branch logs, attendance & daily tithes</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-5">
+                <Link
+                  href="/event-manager/report"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-violet-500/10 text-center"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  Create
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowManageEvents(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                >
+                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  Manage
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Action Card 2: Services */}
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-indigo-500/20 dark:border-indigo-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-indigo-500"
+            >
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-650 dark:text-indigo-400 shadow-sm border border-indigo-500/20 shrink-0">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Worship Services</h4>
+                  <p className="text-[10px] text-slate-455 dark:text-slate-500 font-semibold mt-0.5 leading-normal">Schedule new services or branch activities</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-5">
+                <button
+                  onClick={() => setShowCreateService(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-indigo-500/10 cursor-pointer"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  Schedule
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                >
+                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  Manage
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Action Card 3: Sermons */}
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-fuchsia-500/20 dark:border-fuchsia-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-fuchsia-500"
+            >
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-2xl bg-fuchsia-500/10 dark:bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-600 dark:text-fuchsia-400 shadow-sm border border-fuchsia-500/20 shrink-0">
+                  <Play className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Sermon Library</h4>
+                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5 leading-normal">Upload messages or record new sermons</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-5">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateSermon(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-fuchsia-500/10 cursor-pointer"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  Upload
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowManageSermons(true)}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                >
+                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  Manage
+                </button>
+              </div>
+            </motion.div>
+            
 
           </div>
 
@@ -1355,33 +1407,6 @@ export default function UnifiedEventManagementPortal() {
                 >
                   <Settings className="w-4 h-4" />
                   {t.eventManager?.manageEventsBtn || "Manage Events"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowCreateService(true)}
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-                >
-                  <Calendar className="w-4 h-4" />
-                  {t.eventManager?.createServicesBtn || "Create Services"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowManageServices(true)}
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-                >
-                  <Settings className="w-4 h-4" />
-                  {t.eventManager?.manageServicesBtn || "Manage Services"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowCreateSermon(true)}
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-                >
-                  <Play className="w-4 h-4" />
-                  Create Sermons
                 </button>
               </div>
             </div>
