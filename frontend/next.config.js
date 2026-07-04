@@ -28,8 +28,11 @@ const nextConfig = {
         'localhost:3003',
         'localhost:3004',
         'localhost:3005',
+        // Production domains
+        'kcmchurch.vercel.app',
         'church-valluri-rahuls-projects.vercel.app',
         'church-eight-hazel.vercel.app',
+        'church-git-main-valluri-rahuls-projects.vercel.app',
       ],
     },
   },
