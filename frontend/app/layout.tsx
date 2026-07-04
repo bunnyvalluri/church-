@@ -66,6 +66,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
         <link rel="dns-prefetch" href="https://apis.google.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
+        {/* Suppress Vercel toolbar on all pages */}
+        <style>{`vercel-toolbar,#vercel-toolbar,.__vercel-toolbar,[data-vercel-toolbar]{display:none!important}`}</style>
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary`}>
         {/* Dynamic Premium Ambient Mesh Background (GPU hardware-accelerated, zero scrolling paint overhead) */}

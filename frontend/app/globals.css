@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Hide Vercel toolbar on all pages ───────────────────────────────────────── */
+vercel-toolbar,
+#vercel-toolbar,
+.__vercel-toolbar,
+[data-vercel-toolbar],
+.__next-scroll-detector { display: none !important; visibility: hidden !important; }
+
 @layer base {
   :root {
     /* Premium Light Mode Palette */
