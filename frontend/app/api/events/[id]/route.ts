@@ -119,12 +119,12 @@ export async function PATCH(
 }
 
 // ── DELETE /api/events/[id] ─────────────────────────────────────────────────────
-// Admin only — deletes event and cascades media
+// Admin or Event Manager — deletes event and cascades media
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = await requireAdminOrDev(req);
+  const auth = await requireEventManagerOrDev(req);
   if (auth instanceof NextResponse) return auth;
 
   try {

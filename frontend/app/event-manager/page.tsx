@@ -216,6 +216,7 @@ export default function UnifiedEventManagementPortal() {
   const [showCreateService, setShowCreateService] = useState(false);
   const [showCreateSermon, setShowCreateSermon] = useState(false);
   const [showManageSermons, setShowManageSermons] = useState(false);
+  const [showManageServices, setShowManageServices] = useState(false);
   const [successEvent, setSuccessEvent] = useState<{ title: string; category: string; date: string; time: string; location: string } | null>(null);
 
   // Manage Sermons list states and handlers
@@ -223,6 +224,11 @@ export default function UnifiedEventManagementPortal() {
   const [loadingSermons, setLoadingSermons] = useState(false);
   const [deletingSermonId, setDeletingSermonId] = useState<string | null>(null);
   const [clearingSeeded, setClearingSeeded] = useState(false);
+
+  // Manage Services list states and handlers
+  const [servicesList, setServicesList] = useState<any[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+  const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
 
   const fetchAllSermons = async () => {
     setLoadingSermons(true);
@@ -295,6 +301,56 @@ export default function UnifiedEventManagementPortal() {
       alert(err.message || "Failed to clear seeded sermons");
     } finally {
       setClearingSeeded(false);
+    }
+  };
+
+  const fetchAllServices = async () => {
+    setLoadingServices(true);
+    try {
+      const res = await fetch("/api/events?status=ALL&limit=100");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setServicesList(data.events || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch services list:", err);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showManageServices) {
+      fetchAllServices();
+    }
+  }, [showManageServices]);
+
+  const handleDeleteService = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this service? This action cannot be undone.")) return;
+    setDeletingServiceId(id);
+    try {
+      const token = await getIdToken();
+      const res = await fetch(`/api/events/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setToastMessage({
+          title: "✅ Service Deleted",
+          desc: `Successfully deleted service/event from database.`,
+        });
+        setTimeout(() => setToastMessage(null), 5000);
+        fetchAllServices();
+      } else {
+        throw new Error(data.error || "Failed to delete service");
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to delete service");
+    } finally {
+      setDeletingServiceId(null);
     }
   };
 
@@ -775,7 +831,7 @@ export default function UnifiedEventManagementPortal() {
       </div>
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-700 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm" style={{isolation: 'isolate', backgroundColor: 'white'}}>
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-250/80 dark:border-slate-800/80 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm" style={{ isolation: 'isolate' }}>
         
         {/* Bottom Border Gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
@@ -962,6 +1018,15 @@ export default function UnifiedEventManagementPortal() {
                 >
                   <Calendar className="w-4 h-4 !text-[#0f1021]" />
                   {t.eventManager?.createServicesBtn || "Create Services"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(true)}
+                  className="flex items-center gap-2 px-5 py-3 bg-white !text-[#0f1021] hover:bg-slate-50 rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/20 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 !text-[#0f1021]" />
+                  {t.eventManager?.manageServicesBtn || "Manage Services"}
                 </button>
 
                 <button
@@ -1216,6 +1281,15 @@ export default function UnifiedEventManagementPortal() {
                 >
                   <Calendar className="w-4 h-4" />
                   {t.eventManager?.createServicesBtn || "Create Services"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(true)}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4" />
+                  {t.eventManager?.manageServicesBtn || "Manage Services"}
                 </button>
 
                 <button
@@ -2184,6 +2258,100 @@ export default function UnifiedEventManagementPortal() {
                 <button
                   type="button"
                   onClick={() => setShowManageSermons(false)}
+                  className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Manage Services Modal */}
+      <AnimatePresence>
+        {showManageServices && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageServices(false)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-2xl max-w-2xl w-full relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Banner Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
+
+              <button
+                type="button"
+                onClick={() => setShowManageServices(false)}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
+                <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-650 dark:text-indigo-400">
+                  <Settings className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Services</h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5 tracking-wider">Delete or update scheduled services</p>
+                </div>
+              </div>
+
+              {/* Services List */}
+              <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
+                {loadingServices ? (
+                  <div className="py-12 text-center text-slate-500">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-500" />
+                    <p className="text-xs font-bold">Loading services database...</p>
+                  </div>
+                ) : servicesList.length === 0 ? (
+                  <div className="py-12 text-center text-slate-500 border border-dashed border-slate-200 dark:border-white/5 rounded-2xl">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-350" />
+                    <p className="text-xs font-bold">No services found in database.</p>
+                  </div>
+                ) : (
+                  servicesList.map((service) => (
+                    <div
+                      key={service.id}
+                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-150 dark:border-white/5 rounded-2xl hover:border-indigo-500/20 dark:hover:border-indigo-500/30 transition-all"
+                    >
+                      <div className="min-w-0 flex-1 pr-4">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          {service.title}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
+                          <span>{service.category}</span>
+                          <span>•</span>
+                          <span>{service.branch?.name || "General"}</span>
+                          <span>•</span>
+                          <span>{new Date(service.date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteService(service.id)}
+                        disabled={deletingServiceId === service.id}
+                        className="p-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-650 dark:text-red-400 rounded-xl transition-all disabled:opacity-50 cursor-pointer animate-[scale-in_0.2s_ease-out]"
+                      >
+                        {deletingServiceId === service.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(false)}
                   className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all border border-slate-200 dark:border-white/10 cursor-pointer"
                 >
                   Close
