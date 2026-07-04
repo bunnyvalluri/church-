@@ -769,7 +769,7 @@ async function main() {
     },
     {
       id: 'att_002',
-      date: new Date('2024-05-12T00:00:00.000Z'),
+      date: new Date('2024-05-05T00:00:00.000Z'),
       serviceType: 'Sunday Afternoon Prayer',
       location: 'Bahadurpally Location',
       headcount: 180,

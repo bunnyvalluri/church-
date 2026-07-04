@@ -75,22 +75,46 @@ export default function DashboardOverview({
   const totalMembers = users.length;
   const totalDonations = completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  // Dynamic Attendance Calculations
-  const latestAttendance = attendanceRecords[0]?.headcount || 0;
-  const latestNewVisitors = attendanceRecords[0]?.newVisitors || 0;
-  const avgAttendance = attendanceRecords.length > 0
-    ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
+  // Group attendance records by date (YYYY-MM-DD) to aggregate multiple services on the same day
+  const groupedRecordsMap = new Map<string, { date: Date; headcount: number; newVisitors: number; notes: string[] }>();
+  
+  attendanceRecords.forEach(rec => {
+    const dateStr = new Date(rec.date).toISOString().split('T')[0];
+    if (groupedRecordsMap.has(dateStr)) {
+      const existing = groupedRecordsMap.get(dateStr)!;
+      existing.headcount += rec.headcount;
+      existing.newVisitors += rec.newVisitors;
+      if (rec.notes) existing.notes.push(rec.notes);
+    } else {
+      groupedRecordsMap.set(dateStr, {
+        date: new Date(rec.date),
+        headcount: rec.headcount,
+        newVisitors: rec.newVisitors,
+        notes: rec.notes ? [rec.notes] : []
+      });
+    }
+  });
+
+  const uniqueDateRecords = Array.from(groupedRecordsMap.values()).sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  // Dynamic Attendance Calculations (using aggregated unique date records)
+  const latestAttendance = uniqueDateRecords[0]?.headcount || 0;
+  const latestNewVisitors = uniqueDateRecords[0]?.newVisitors || 0;
+  const avgAttendance = uniqueDateRecords.length > 0
+    ? Math.round(uniqueDateRecords.reduce((sum, r) => sum + r.headcount, 0) / uniqueDateRecords.length)
     : 0;
 
-  const maxRecord = attendanceRecords.length > 0
-    ? attendanceRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, attendanceRecords[0])
+  const maxRecord = uniqueDateRecords.length > 0
+    ? uniqueDateRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, uniqueDateRecords[0])
     : null;
   const highestDayName = maxRecord
     ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
     : "-";
 
-  const latestReturningVisitors = attendanceRecords[0]
-    ? Math.max(0, attendanceRecords[0].headcount - attendanceRecords[0].newVisitors)
+  const latestReturningVisitors = uniqueDateRecords[0]
+    ? Math.max(0, uniqueDateRecords[0].headcount - uniqueDateRecords[0].newVisitors)
     : 0;
 
   const newUsersCount = users.filter(u => {
@@ -143,9 +167,9 @@ export default function DashboardOverview({
     donPercentChange = 100;
   }
 
-  // Weekly Attendance percentage change (latest week vs previous week)
-  const latestAtt = attendanceRecords[0]?.headcount || 0;
-  const prevAtt = attendanceRecords[1]?.headcount || 0;
+  // Weekly Attendance percentage change (latest week vs previous week) using unique date records
+  const latestAtt = uniqueDateRecords[0]?.headcount || 0;
+  const prevAtt = uniqueDateRecords[1]?.headcount || 0;
   let attPercentChange = 0;
   if (prevAtt > 0) {
     attPercentChange = Math.round(((latestAtt - prevAtt) / prevAtt) * 100);
@@ -458,8 +482,11 @@ export default function DashboardOverview({
               </div>
 
               {(() => {
-                // Get latest 7 records (in chronological order for graph)
-                const chartRecords = [...attendanceRecords].slice(0, 7).reverse();
+                // Get latest 7 unique day records (in chronological order for graph)
+                const chartRecords = [...uniqueDateRecords].slice(0, 7).reverse();
+                
+                // Dynamically find maximum headcount for auto-scaling chart height
+                const maxChartVal = Math.max(...chartRecords.map(r => r.headcount), 500);
                 
                 // If we have records, map them to the bar chart
                 const barData = chartRecords.map((rec) => {
@@ -468,7 +495,7 @@ export default function DashboardOverview({
                     language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US",
                     { weekday: 'short' }
                   );
-                  const heightPercent = Math.min(100, Math.round((rec.headcount / 500) * 100));
+                  const heightPercent = Math.min(100, Math.round((rec.headcount / maxChartVal) * 100));
                   return {
                     day: dayLabel,
                     val: rec.headcount,
