@@ -13,8 +13,8 @@ RUN npm install
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependency footprint and source tree
-COPY --from=deps /app/node_modules ./node_modules
+# Copy entire dependency footprint
+COPY --from=deps /app ./
 COPY . .
 
 # Generate Prisma Client if prisma schema exists

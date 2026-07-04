@@ -19,8 +19,8 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependency footprint and source tree
-COPY --from=deps /app/node_modules ./node_modules
+# Copy entire dependency footprint (including workspace symlinks)
+COPY --from=deps /app ./
 COPY . .
 
 # Generate Prisma Client (using workspace scripts)
@@ -29,6 +29,7 @@ RUN npm run db:generate -w frontend || true
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
+ENV DATABASE_URL "postgresql://dummy:dummy@localhost:5432/dummy"
 
 # Build the Next.js frontend
 RUN npm run build -w frontend
