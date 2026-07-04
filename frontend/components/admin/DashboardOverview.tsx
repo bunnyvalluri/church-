@@ -18,12 +18,16 @@ import {
   Megaphone,
   FileText,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  RefreshCw
 } from "lucide-react";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { adminTranslations } from "@/components/admin/adminTranslations";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useDonationChart, useAttendanceChart } from "@/hooks/useDashboardCharts";
+import { KPICardSkeleton, MemberListSkeleton, ChartSkeleton, StatRowSkeleton } from "@/components/admin/skeletons/DashboardSkeleton";
 
 interface DashboardOverviewProps {
   onNavigate: (view: string) => void;
@@ -69,136 +73,156 @@ export default function DashboardOverview({
   const { language } = useLanguage();
   const t = adminTranslations[language || "en"].dashboard;
   const [activeContentTab, setActiveContentTab] = useState<"Sermons" | "Events" | "Announcements">("Sermons");
-  
-  const completedDonations = donations.filter(d => d.status === "COMPLETED");
 
-  const totalMembers = users.length;
-  const totalDonations = completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+  // ── SWR-powered real data ────────────────────────────────────────────────────
+  const { stats, isLoading: statsLoading, error: statsError, mutate: reloadStats } = useDashboardStats();
+  const { chartData: donationChartData, isLoading: chartLoading } = useDonationChart('monthly');
+  const { chartData: attendanceChartResult, isLoading: attChartLoading } = useAttendanceChart('weekly');
 
-  // Dynamic Attendance Calculations
-  // Sum all headcounts for the "total attendance" KPI (represents all recorded services)
-  const totalHeadcount = attendanceRecords.reduce((sum, r) => sum + (r.headcount || 0), 0);
-  const latestAttendance = totalHeadcount;
-  const latestNewVisitors = attendanceRecords.reduce((sum, r) => sum + (r.newVisitors || 0), 0);
-  const avgAttendance = attendanceRecords.length > 0
-    ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
-    : 0;
-
-  const maxRecord = attendanceRecords.length > 0
-    ? attendanceRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, attendanceRecords[0])
-    : null;
-  const highestDayName = maxRecord
-    ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
-    : "-";
-
-  const latestReturningVisitors = latestNewVisitors > 0
-    ? Math.max(0, totalHeadcount - latestNewVisitors)
-    : attendanceRecords[0]
-    ? Math.max(0, attendanceRecords[0].headcount - (attendanceRecords[0].newVisitors || 0))
-    : 0;
-
-  const newUsersCount = users.filter(u => {
+  // ── Derived KPI values (prefer SWR, fall back to props) ────────────────────
+  const totalMembers = stats?.members.total ?? users.length;
+  const newUsersCount = stats?.members.thisWeek ?? users.filter(u => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     return new Date(u.createdAt) > oneWeekAgo;
   }).length;
+  const memberGrowthPct = stats?.members.growthPct ?? 0;
 
-  // Weekly growth / change calculations
+  const completedDonations = donations.filter(d => d.status === "COMPLETED");
+  const totalDonations = stats?.donations.total ?? completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
+  // Derive weekly/monthly change percentages using the donations prop array
   const now = Date.now();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
   const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
   const sixtyDaysAgo = now - 60 * 24 * 60 * 60 * 1000;
 
-  // Donation percentage change this week vs previous week (for KPI card 2)
-  const thisWeekDonations = completedDonations
+  const thisWeekDonVal = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= sevenDaysAgo)
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const prevWeekDonations = completedDonations
+  const prevWeekDonVal = completedDonations
     .filter(d => {
       const time = new Date(d.createdAt).getTime();
       return time >= fourteenDaysAgo && time < sevenDaysAgo;
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  let donWeeklyPercentChange = 0;
-  if (prevWeekDonations > 0) {
-    donWeeklyPercentChange = Math.round(((thisWeekDonations - prevWeekDonations) / prevWeekDonations) * 100);
-  } else if (thisWeekDonations > 0) {
-    donWeeklyPercentChange = 100;
-  }
+  const donWeeklyPercentChange = prevWeekDonVal > 0 
+    ? Math.round(((thisWeekDonVal - prevWeekDonVal) / prevWeekDonVal) * 100) 
+    : thisWeekDonVal > 0 ? 100 : 0;
 
-  // Donation Overview monthly percentage change (for Donation Overview panel)
-  const currentMonthDonations = completedDonations
+  const currentMonthDonVal = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= thirtyDaysAgo)
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const previousMonthDonations = completedDonations
+  const previousMonthDonVal = completedDonations
     .filter(d => {
       const time = new Date(d.createdAt).getTime();
       return time >= sixtyDaysAgo && time < thirtyDaysAgo;
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  let donPercentChange = 0;
-  if (previousMonthDonations > 0) {
-    donPercentChange = Math.round(((currentMonthDonations - previousMonthDonations) / previousMonthDonations) * 100);
-  } else if (currentMonthDonations > 0) {
-    donPercentChange = 100;
-  }
+  const donPercentChange = previousMonthDonVal > 0 
+    ? Math.round(((currentMonthDonVal - previousMonthDonVal) / previousMonthDonVal) * 100) 
+    : currentMonthDonVal > 0 ? 100 : 0;
 
-  // Weekly Attendance percentage change (latest week vs previous week)
-  const latestAtt = attendanceRecords[0]?.headcount || 0;
-  const prevAtt = attendanceRecords[1]?.headcount || 0;
-  let attPercentChange = 0;
-  if (prevAtt > 0) {
-    attPercentChange = Math.round(((latestAtt - prevAtt) / prevAtt) * 100);
-  } else if (latestAtt > 0) {
-    attPercentChange = 100;
-  }
+  const latestAttendance = stats?.attendance.latestHeadcount ?? attendanceRecords[0]?.headcount ?? 0;
+  const totalHeadcount = stats?.attendance.total ?? attendanceRecords.reduce((sum, r) => sum + (r.headcount || 0), 0);
+  const latestNewVisitors = stats?.attendance.totalNewVisitors ?? attendanceRecords.reduce((sum, r) => sum + (r.newVisitors || 0), 0);
+  const avgAttendance = stats?.attendance.avgPerRecord ?? (attendanceRecords.length > 0
+    ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
+    : 0);
+  const attPercentChange = stats ? (() => {
+    // compute week-over-week from attendance records
+    const latest = attendanceRecords[0]?.headcount || 0;
+    const prev = attendanceRecords[1]?.headcount || 0;
+    return prev > 0 ? Math.round(((latest - prev) / prev) * 100) : latest > 0 ? 100 : 0;
+  })() : 0;
 
-  // Donation Chart SVG Coordinates Calculation
-  const sortedDonations = [...completedDonations].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-  const chartDonations = sortedDonations.slice(-10);
-  const N = chartDonations.length;
+  const totalEvents = stats?.events.upcoming ?? events.length;
 
-  let linePath = "M 0 90 L 300 90"; 
+  // ── Highest day label ─────────────────────────────────────────────────────
+  const maxRecord = attendanceRecords.length > 0
+    ? attendanceRecords.reduce((max, r) => r.headcount > max.headcount ? r : max, attendanceRecords[0])
+    : null;
+  const highestDayName = maxRecord
+    ? new Date(maxRecord.date).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { weekday: 'long' })
+    : "-";
+  const latestReturningVisitors = latestNewVisitors > 0
+    ? Math.max(0, totalHeadcount - latestNewVisitors)
+    : attendanceRecords[0]
+    ? Math.max(0, attendanceRecords[0].headcount - (attendanceRecords[0].newVisitors || 0))
+    : 0;
+
+  // ── Donation chart: prefer SWR data ───────────────────────────────────────
+  const useSWRChart = donationChartData.length > 0;
+
+  let linePath = "M 0 90 L 300 90";
   let areaPath = "M 0 90 L 300 90 L 300 100 L 0 100 Z";
   let lastX = 300;
   let lastY = 90;
+  let startLabel = "";
+  let midLabel = "";
+  let endLabel = "";
 
-  if (N > 0) {
-    const maxAmount = Math.max(...chartDonations.map(d => Number(d.amount) || 0), 100);
-    const points = chartDonations.map((d, idx) => {
-      const x = N > 1 ? (idx / (N - 1)) * 300 : 150;
-      const val = Number(d.amount) || 0;
-      const y = 90 - (val / maxAmount) * 75; 
-      return { x, y };
-    });
-
-    lastX = points[points.length - 1].x;
-    lastY = points[points.length - 1].y;
-
-    if (N === 1) {
-      linePath = `M 0 ${points[0].y} L 300 ${points[0].y}`;
-      areaPath = `M 0 ${points[0].y} L 300 ${points[0].y} L 300 100 L 0 100 Z`;
-    } else {
-      linePath = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
-      areaPath = linePath + ` L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
+  if (useSWRChart) {
+    // Use SWR monthly chart data
+    const pts = donationChartData;
+    const N = pts.length;
+    if (N > 0) {
+      const maxAmt = Math.max(...pts.map(p => p.amount), 100);
+      const svgPts = pts.map((p, i) => ({
+        x: N > 1 ? (i / (N - 1)) * 300 : 150,
+        y: 90 - (p.amount / maxAmt) * 75,
+      }));
+      lastX = svgPts[N - 1].x;
+      lastY = svgPts[N - 1].y;
+      if (N === 1) {
+        linePath = `M 0 ${svgPts[0].y} L 300 ${svgPts[0].y}`;
+        areaPath = `M 0 ${svgPts[0].y} L 300 ${svgPts[0].y} L 300 100 L 0 100 Z`;
+      } else {
+        linePath = `M ${svgPts[0].x} ${svgPts[0].y} ` + svgPts.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
+        areaPath = linePath + ` L ${svgPts[N - 1].x} 100 L ${svgPts[0].x} 100 Z`;
+      }
+      startLabel = pts[0].label;
+      midLabel = N > 2 ? pts[Math.floor(N / 2)].label : "";
+      endLabel = pts[N - 1].label;
+    }
+  } else {
+    // Fallback: derive from props donations array
+    const sortedDonations = [...completedDonations].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    const chartDonations = sortedDonations.slice(-10);
+    const N = chartDonations.length;
+    if (N > 0) {
+      const maxAmount = Math.max(...chartDonations.map(d => Number(d.amount) || 0), 100);
+      const points = chartDonations.map((d, idx) => {
+        const x = N > 1 ? (idx / (N - 1)) * 300 : 150;
+        const val = Number(d.amount) || 0;
+        const y = 90 - (val / maxAmount) * 75;
+        return { x, y };
+      });
+      lastX = points[points.length - 1].x;
+      lastY = points[points.length - 1].y;
+      if (N === 1) {
+        linePath = `M 0 ${points[0].y} L 300 ${points[0].y}`;
+        areaPath = `M 0 ${points[0].y} L 300 ${points[0].y} L 300 100 L 0 100 Z`;
+      } else {
+        linePath = `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ");
+        areaPath = linePath + ` L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
+      }
+      const loc = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US";
+      startLabel = new Date(chartDonations[0].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
+      endLabel = new Date(chartDonations[N - 1].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" });
+      midLabel = N > 2 ? new Date(chartDonations[Math.floor(N / 2)].createdAt).toLocaleDateString(loc, { month: "short", day: "numeric" }) : "";
     }
   }
 
-  const startLabel = N > 0 
-    ? new Date(chartDonations[0].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
-    : "";
-  const endLabel = N > 0 
-    ? new Date(chartDonations[N - 1].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
-    : "";
-  const midLabel = N > 2 
-    ? new Date(chartDonations[Math.floor(N / 2)].createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US", { month: "short", day: "numeric" })
-    : "";
+  // ── Attendance chart: prefer SWR recent[] data ─────────────────────────────
+  const swrAttRecords = attendanceChartResult?.recent ?? [];
+  const displayAttRecords = swrAttRecords.length > 0 ? swrAttRecords : attendanceRecords;
 
 
   // Filter lists based on global search term
@@ -230,9 +254,22 @@ export default function DashboardOverview({
       
       {/* ─── KPI Metric Cards Grid ─── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
-        
+
+        {/* Loading skeletons */}
+        {statsLoading && Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)}
+
+        {/* Error state */}
+        {statsError && !statsLoading && (
+          <div className="col-span-5 flex items-center gap-3 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-xs text-rose-600 dark:text-rose-400">
+            <span className="font-bold">⚠ Failed to load stats.</span>
+            <button onClick={() => reloadStats()} className="underline hover:no-underline flex items-center gap-1">
+              <RefreshCw className="w-3 h-3" /> Retry
+            </button>
+          </div>
+        )}
+
         {/* Card 1: Members */}
-        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.totalMembers}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalMembers.toLocaleString()}</h3>
@@ -244,7 +281,7 @@ export default function DashboardOverview({
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
             <Users className="w-5 h-5" />
           </div>
-        </div>
+        </div>}
 
         {/* Card 2: Donations */}
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-amber-300/60 dark:hover:border-amber-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("donations")}>
@@ -285,10 +322,10 @@ export default function DashboardOverview({
         </div>
 
         {/* Card 4: Events */}
-        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-pink-300/60 dark:hover:border-pink-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("events")}>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-pink-300/60 dark:hover:border-pink-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("events")}>
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.activeEvents}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{events.length}</h3>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalEvents}</h3>
             <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 border border-slate-150 dark:border-white/[0.08] uppercase tracking-wider">
               <span>{t.upcomingEvents}</span>
             </div>
@@ -296,10 +333,10 @@ export default function DashboardOverview({
           <div className="w-12 h-12 rounded-2xl bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 text-pink-600 dark:text-pink-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
             <Calendar className="w-5 h-5" />
           </div>
-        </div>
+        </div>}
 
         {/* Card 5: New Members */}
-        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-teal-300/60 dark:hover:border-teal-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-teal-300/60 dark:hover:border-teal-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.newMembers}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{newUsersCount}</h3>
@@ -311,7 +348,7 @@ export default function DashboardOverview({
           <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
             <UserPlus className="w-5 h-5" />
           </div>
-        </div>
+        </div>}
       </section>
       {/* ─── Middle Section Grid ─── */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -327,7 +364,10 @@ export default function DashboardOverview({
           </div>
           
           <div className="p-6 py-4 space-y-4 flex-1">
-            {filteredUsers.slice(0, 5).map(member => (
+            {/* Show skeleton while loading */}
+            {statsLoading && <MemberListSkeleton rows={5} />}
+            {/* Prefer recentMembers from stats (most accurate), fall back to prop */}
+            {!statsLoading && (stats?.recentMembers ?? filteredUsers).slice(0, 5).map(member => (
               <div key={member.id} className="flex items-center justify-between gap-3 border-b border-slate-50 dark:border-white/[0.02] pb-3 last:border-0 last:pb-0">
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className={`w-9 h-9 rounded-2xl bg-gradient-to-tr ${getAvatarGradient(member.name || "Believer", member.role)} text-white flex items-center justify-center font-bold text-sm shrink-0 uppercase shadow-md border border-white/10 hover:scale-105 transition-transform`}>
@@ -354,7 +394,7 @@ export default function DashboardOverview({
                 </div>
               </div>
             ))}
-            {filteredUsers.length === 0 && (
+            {!statsLoading && (stats?.recentMembers ?? filteredUsers).length === 0 && (
               <p className="text-center text-xs text-slate-400 dark:text-gray-500 py-6">{t.noMatchingMembers}</p>
             )}
           </div>
@@ -461,9 +501,12 @@ export default function DashboardOverview({
                 <div className="w-full border-t border-slate-100 dark:border-white/[0.03]" />
               </div>
 
-              {(() => {
-                // Get latest 7 records (in chronological order for graph)
-                const chartRecords = [...attendanceRecords].slice(0, 7).reverse();
+              {/* Attendance chart skeleton */}
+              {attChartLoading && <ChartSkeleton height={96} />}
+
+              {!attChartLoading && (() => {
+                // Use SWR data if available, else fallback to prop
+                const chartRecords = [...displayAttRecords].slice(0, 7).reverse();
                 
                 // If we have records, map them to the bar chart
                 // Use the max headcount from actual records for auto-scaling
@@ -495,7 +538,7 @@ export default function DashboardOverview({
                 
                 const displayBars = barData.length > 0 ? barData : defaultBars;
 
-                return displayBars.map((bar, idx) => (
+                return displayBars.map((bar: { day: string; val: number; style: { height: string } }, idx: number) => (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group relative z-10">
                     {/* Tooltip on hover */}
                     <div className="absolute -top-7 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[9px] font-black px-2 py-0.5 rounded shadow-md pointer-events-none transition-all duration-200 z-20 whitespace-nowrap">

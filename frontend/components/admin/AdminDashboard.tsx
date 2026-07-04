@@ -40,8 +40,11 @@ import ContentManagement from "@/components/admin/ContentManagement";
 import SettingsManagement from "@/components/admin/SettingsManagement";
 import AdminControlBar from "@/components/admin/AdminControlBar";
 import NgoManagement from "@/components/admin/NgoManagement";
+import NotificationCenter from "@/components/admin/NotificationCenter";
+import GlobalSearch from "@/components/admin/GlobalSearch";
 import { adminTranslations } from "@/components/admin/adminTranslations";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useNotifications } from "@/hooks/useNotifications";
 
 type ActiveViewType = 
   | "dashboard"
@@ -227,6 +230,10 @@ export default function AdminDashboard() {
   const [activeView, setActiveView] = useState<ActiveViewType>("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+
+  // SWR-powered notification badge
+  const { unreadCount: notifUnreadCount } = useNotifications();
   
   useEffect(() => {
     setIsSidebarOpen(false);
@@ -311,10 +318,7 @@ export default function AdminDashboard() {
       const accData = await accRes.json();
       setAccountsDb(accData.accounts || []);
 
-      // 10. Fetch Notifications (for real-time unread badge count)
-      const notifRes = await fetch("/api/admin/notifications", { headers });
-      const notifData = await notifRes.json();
-      setNotificationsDb(notifData.notifications || []);
+      // 10. Notifications now handled by useNotifications SWR hook — skip manual fetch
 
     } catch (err) {
       console.error("Error loading admin workspace resources:", err);
@@ -1060,16 +1064,9 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-6">
-            {/* Search Input */}
-            <div className="relative w-40 sm:w-52 md:w-72 group hidden sm:block">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400/70 group-focus-within:text-indigo-500 transition-colors" />
-              <input 
-                type="text" 
-                placeholder={language === "te" ? "వెతకండి..." : language === "hi" ? "खोजें..." : "Search resources..."}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300"
-              />
+            {/* Search Input — replaced with live GlobalSearch */}
+            <div className="hidden sm:block">
+              <GlobalSearch onNavigate={(v) => setActiveView(v as any)} />
             </div>
 
             {/* Combined Language, Theme, & Color Customizer Control Bar */}
@@ -1080,17 +1077,18 @@ export default function AdminDashboard() {
             {/* Theme Toggle Switch */}
             <ThemeToggle />
 
-            {/* Notification Bell */}
+            {/* Notification Bell — opens NotificationCenter slide-in */}
             <div className="relative">
               <button 
                 type="button" 
                 aria-label="Notification alerts"
+                onClick={() => setIsNotifOpen(true)}
                 className="w-9 h-9 flex items-center justify-center bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 relative"
               >
                 <Bell className="w-4.5 h-4.5" />
-                {notificationsDb.filter(n => !n.isRead).length > 0 && (
+                {notifUnreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border border-white dark:border-[#080915]">
-                    {Math.min(notificationsDb.filter(n => !n.isRead).length, 99)}
+                    {Math.min(notifUnreadCount, 99)}
                   </span>
                 )}
               </button>
@@ -1258,6 +1256,9 @@ export default function AdminDashboard() {
 
         </div>
       </main>
+
+      {/* ─── Notification Center slide-in panel ─── */}
+      <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
       {/* ────────────────── 3. MOBILE BOTTOM NAVIGATION ────────────────── */}
       {/* Only visible on mobile/tablet (below lg breakpoint) */}
       <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-30 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">

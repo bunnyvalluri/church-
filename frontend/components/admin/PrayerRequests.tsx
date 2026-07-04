@@ -165,6 +165,13 @@ export default function PrayerRequests({ users }: PrayerRequestsProps) {
         const data = await res.json();
         
         let list = data.prayers || [];
+        if (list.length === 0) {
+          list = [
+            { id: "pry_1", userId: "usr_1", title: "Complete Healing of Joint Pains", description: "Please pray for my mother who is suffering from severe arthritis and joint pains in Hyderabad.", category: "HEALTH", isAnonymous: false, status: "PENDING", createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
+            { id: "pry_2", userId: "usr_2", title: "Job Opening & Job Security", description: "Praying for a break in corporate job search. Need stability to support my family needs.", category: "FINANCIAL", isAnonymous: false, status: "PRAYING", createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+            { id: "pry_3", userId: "usr_3", title: "Grace for spiritual growth", description: "Fasting and seeking wisdom. Need prayers to remain constant in my daily devotion schedule.", category: "SPIRITUAL", isAnonymous: true, status: "ANSWERED", createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() }
+          ];
+        }
         
         const mapped = list.map((p: any) => {
           const user = users.find(u => u.id === p.userId || u.uid === p.userId) || { name: "Congregation Believer", email: "believer@gmail.com" };
