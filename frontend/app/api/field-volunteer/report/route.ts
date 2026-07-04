@@ -130,6 +130,8 @@ export async function POST(req: Request) {
       }
     }
 
+    // ── NOTIFICATION PIPELINE ──────────────────────────────────────────────────
+
     // 4. Create standard DB Notification item
     const notifContent = `Branch: ${branchName}. Attendance: ${attendanceCount}. ${uploadedMedia.length} attachments added.`;
     await prisma.notification.create({
@@ -141,25 +143,67 @@ export async function POST(req: Request) {
       },
     });
 
-    // 5. Fire webhook to trigger Socket.io notification
+    // 5. Socket.io — emit report-submitted (triggers website popup + landing page refresh)
+    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     try {
-      await fetch("http://localhost:3001/api/trigger-event", {
+      // Emit report-submitted for landing page auto-refresh
+      await fetch(`${companionUrl}/api/trigger-event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "new_event_report",
+          type: "report-submitted",
           payload: {
             id: report.id,
-            branchName,
             title,
+            branchName,
             attendanceCount,
-            imagesCount: uploadedMedia.length,
+            offeringAmount,
+            mediaCount: uploadedMedia.length,
+            submittedBy: auth.name || "Field Volunteer",
+            timestamp: new Date(),
           },
         }),
       });
-    } catch (wsErr) {
-      // Quietly log and bypass if Socket.io server is not booted yet
-      console.log("[API/REPORT] Real-time socket trigger bypassed (Express helper offline).");
+
+      // Emit notification:popup for live website header popup
+      await fetch(`${companionUrl}/api/trigger-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "notification:popup",
+          payload: {
+            title: "📋 New Event Report Submitted",
+            description: `"${title}" from ${branchName} • ${attendanceCount} attended`,
+            popupType: "report-submitted",
+            link: `/event-manager`,
+            icon: "upload",
+            timestamp: new Date(),
+          },
+        }),
+      });
+    } catch (socketErr) {
+      console.warn("[API/REPORT] Socket companion broadcast skipped:", socketErr);
+    }
+
+    // 6. FCM Push Notification to all registered device tokens
+    try {
+      const { sendPushNotification } = await import("@/lib/firebaseAdmin");
+      const deviceTokenModel = (prisma as any).deviceToken;
+      const deviceRecords = deviceTokenModel
+        ? await deviceTokenModel.findMany({ select: { token: true }, take: 500 })
+        : [];
+      const tokens = deviceRecords.map((d: any) => d.token);
+
+      if (tokens.length > 0) {
+        await sendPushNotification(
+          tokens,
+          "📋 New Event Report",
+          `"${title}" submitted from ${branchName} — ${attendanceCount} people attended`,
+          { link: "/event-manager", reportId: report.id, branchName: branchName || "" }
+        );
+      }
+    } catch (pushErr) {
+      console.warn("[API/REPORT] FCM Push notification skipped:", pushErr);
     }
 
     return NextResponse.json({ 

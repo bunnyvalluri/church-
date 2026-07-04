@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Bell, Calendar, MapPin, Upload, Play } from "lucide-react";
+import { X, Bell, Calendar, MapPin, Upload, Play, ClipboardList, HeartHandshake, Radio } from "lucide-react";
 
 export interface NotificationData {
   id: string;
-  type: "new-event" | "event-images-uploaded" | "status" | "custom" | "sermon-uploaded";
+  type: "new-event" | "event-images-uploaded" | "status" | "custom" | "sermon-uploaded" | "report-submitted" | "service-created";
   title: string;
   description: string;
   timestamp: Date;
-  icon?: "event" | "upload" | "bell" | "play";
+  icon?: "event" | "upload" | "bell" | "play" | "report" | "service";
   link?: string;
 }
 
@@ -39,6 +39,8 @@ export default function NotificationPopup({ notification, onDismiss }: Notificat
     upload: <Upload className="w-5 h-5" />,
     bell: <Bell className="w-5 h-5" />,
     play: <Play className="w-5 h-5" />,
+    report: <ClipboardList className="w-5 h-5" />,
+    service: <HeartHandshake className="w-5 h-5" />,
   };
 
   const colors = {
@@ -65,6 +67,18 @@ export default function NotificationPopup({ notification, onDismiss }: Notificat
       ring: "ring-fuchsia-500/30",
       badge: "bg-fuchsia-500/10 text-fuchsia-300 border-fuchsia-500/20",
       label: "NEW SERMON",
+    },
+    "report-submitted": {
+      bg: "from-emerald-500 to-green-600",
+      ring: "ring-emerald-500/30",
+      badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+      label: "REPORT SUBMITTED",
+    },
+    "service-created": {
+      bg: "from-indigo-500 to-cyan-600",
+      ring: "ring-indigo-500/30",
+      badge: "bg-indigo-500/10 text-indigo-300 border-indigo-500/20",
+      label: "SERVICE SCHEDULED",
     },
     custom: {
       bg: "from-blue-600 to-cyan-600",

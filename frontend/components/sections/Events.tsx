@@ -80,6 +80,12 @@ export default function Events() {
       fetchEvents();
     });
 
+    // service-created → auto-refresh landing page Events section
+    socket.on("service-created", (data: any) => {
+      console.log("[LANDING/EVENTS] Auto-refreshing events due to new service:", data?.title);
+      fetchEvents();
+    });
+
     return () => {
       socket.disconnect();
     };

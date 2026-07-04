@@ -128,9 +128,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // ── Emit Socket.io event:uploaded & new-event to connected clients ─────
+    // ── Emit Socket.io event:uploaded & service-created to connected clients ─────
     const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     try {
+      // Emit event:uploaded (existing — triggers RealtimePopupProvider)
       await fetch(`${companionUrl}/api/trigger-event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -138,7 +139,7 @@ export async function POST(req: Request) {
           type: "event:uploaded",
           payload: {
             id: event.id,
-            title: "New Event Published",
+            title: "🗓️ New Worship Service Scheduled",
             description: `Branch: ${event.branch?.name || "General"}\n${event.title} at ${event.time}`,
             date: event.date,
             location: event.location,
@@ -148,7 +149,41 @@ export async function POST(req: Request) {
             createdBy: event.createdBy?.name || auth.name,
             mediaCount: event._count.media,
             image: event.image,
-            popupType: "new-event",
+            popupType: "service-created",
+          },
+        }),
+      });
+
+      // Emit service-created for landing page Events section auto-refresh
+      await fetch(`${companionUrl}/api/trigger-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "service-created",
+          payload: {
+            id: event.id,
+            title: event.title,
+            category: event.category,
+            location: event.location,
+            date: event.date,
+            branchName: event.branch?.name || "General",
+          },
+        }),
+      });
+
+      // Emit notification:popup for website header popup
+      await fetch(`${companionUrl}/api/trigger-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "notification:popup",
+          payload: {
+            title: "🗓️ New Service Scheduled",
+            description: `"${event.title}" at ${event.location} — ${new Date(event.date).toLocaleDateString("en-IN")}`,
+            popupType: "service-created",
+            link: `/events/${event.id}`,
+            icon: "event",
+            timestamp: new Date(),
           },
         }),
       });

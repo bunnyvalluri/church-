@@ -24,12 +24,20 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
     // 2. Listen for generic socket popups and event upload notifications
     socket.on("notification:popup", (data: any) => {
       console.log("[SOCKET] Received popup notification:", data);
-      const allowedTypes = ["new-event", "event-images-uploaded", "status", "custom", "sermon-uploaded"];
-      const allowedIcons = ["event", "upload", "bell", "play"];
+      const allowedTypes = [
+        "new-event",
+        "event-images-uploaded",
+        "status",
+        "custom",
+        "sermon-uploaded",
+        "report-submitted",
+        "service-created",
+      ];
+      const allowedIcons = ["event", "upload", "bell", "play", "report", "service"];
 
       setActiveNotification({
         id: String(Date.now()),
-        type: (allowedTypes.includes(data.type) ? data.type : "custom") as any,
+        type: (allowedTypes.includes(data.popupType || data.type) ? (data.popupType || data.type) : "custom") as any,
         title: data.title || "New Event Uploaded",
         description: data.description || "Fresh activity reported in portal.",
         timestamp: new Date(data.timestamp || Date.now()),
@@ -38,16 +46,45 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
       });
     });
 
+    // event:uploaded → website popup (existing sermon/event flow)
     socket.on("event:uploaded", (data: any) => {
       console.log("[SOCKET] Received event:uploaded event:", data);
       setActiveNotification({
         id: String(Date.now()),
-        type: data.popupType || "event-images-uploaded",
-        title: data.title || "New Event Uploaded",
+        type: (data.popupType as any) || "service-created",
+        title: data.title || "New Service Scheduled",
         description: data.description || `Branch: ${data.branchName || "General"}`,
         timestamp: new Date(),
-        icon: "upload",
+        icon: "service",
+        link: data.link || "/event-manager",
+      });
+    });
+
+    // report-submitted → website popup (new — Event Report flow)
+    socket.on("report-submitted", (data: any) => {
+      console.log("[SOCKET] Received report-submitted event:", data);
+      setActiveNotification({
+        id: String(Date.now()),
+        type: "report-submitted",
+        title: "📋 New Event Report",
+        description: `"${data.title}" from ${data.branchName} • ${data.attendanceCount} attended`,
+        timestamp: new Date(data.timestamp || Date.now()),
+        icon: "report",
         link: "/event-manager",
+      });
+    });
+
+    // service-created → website popup (new — Worship Service flow)
+    socket.on("service-created", (data: any) => {
+      console.log("[SOCKET] Received service-created event:", data);
+      setActiveNotification({
+        id: String(Date.now()),
+        type: "service-created",
+        title: "🗓️ New Service Scheduled",
+        description: `"${data.title}" at ${data.location || data.branchName}`,
+        timestamp: new Date(data.timestamp || Date.now()),
+        icon: "service",
+        link: "/events",
       });
     });
 
