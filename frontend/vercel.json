@@ -2,7 +2,7 @@
   "version": 2,
   "cleanUrls": true,
   "framework": "nextjs",
-5  "headers": [
+  "headers": [
     {
       "source": "/(.*)",
       "headers": [
