@@ -4,8 +4,12 @@
  * Single aggregation endpoint that returns ALL admin dashboard KPIs in one
  * optimised set of DB queries — avoids 10 separate waterfall fetches.
  *
+ * Query parameters:
+ *   - startDate: Date string (ISO or YYYY-MM-DD)
+ *   - endDate: Date string (ISO or YYYY-MM-DD)
+ *
  * Returns:
- *   members  — total, today, thisWeek, thisMonth, lastMonth, growthPct
+ *   members  — total, today, thisWeek (this period), lastMonth (prev period), growthPct
  *   donations — total, today, thisWeek, thisMonth, thisYear, avg, byCategory, byMethod
  *   attendance — total, byServiceType, avgPerRecord, latestHeadcount
  *   events    — total, upcoming, ongoing, completed, cancelled, draft
@@ -23,28 +27,31 @@ export async function GET(req: Request) {
   if (auth instanceof NextResponse) return auth;
 
   try {
+    const { searchParams } = new URL(req.url);
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfThisWeek = new Date(startOfToday);
-    startOfThisWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
-    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
-    const startOfThisYear = new Date(now.getFullYear(), 0, 1);
+    const hasRange = !!(startDateParam && endDateParam);
+    
+    // Default to last 7 days if no range provided
+    const start = hasRange ? new Date(startDateParam) : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+    const end = hasRange ? new Date(new Date(endDateParam).setHours(23, 59, 59, 999)) : now;
+
+    // Previous period for comparison
+    const rangeMs = end.getTime() - start.getTime();
+    const prevStart = new Date(start.getTime() - rangeMs);
+    const prevEnd = new Date(start.getTime() - 1);
 
     // ── Run all DB queries in parallel ─────────────────────────────────────────
     const [
       totalMembers,
-      todayMembers,
-      thisWeekMembers,
-      thisMonthMembers,
-      lastMonthMembers,
+      newMembersThisPeriod,
+      newMembersPrevPeriod,
       allDonations,
-      todayDonations,
-      thisWeekDonations,
-      thisMonthDonations,
-      thisYearDonations,
+      prevDonationsAgg,
       allAttendance,
+      prevAttendanceAgg,
       eventCounts,
       prayerUnread,
       pendingDonationsCount,
@@ -54,68 +61,60 @@ export async function GET(req: Request) {
       recentMembers,
       sermonTotal,
     ] = await Promise.all([
-      // Members
-      prisma.user.count(),
-      prisma.user.count({ where: { createdAt: { gte: startOfToday } } }),
-      prisma.user.count({ where: { createdAt: { gte: startOfThisWeek } } }),
-      prisma.user.count({ where: { createdAt: { gte: startOfThisMonth } } }),
-      prisma.user.count({ where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } }),
+      // Members cumulative up to end of period
+      prisma.user.count({ where: { createdAt: { lte: end } } }),
+      // New members in this period
+      prisma.user.count({ where: { createdAt: { gte: start, lte: end } } }),
+      // New members in previous period
+      prisma.user.count({ where: { createdAt: { gte: prevStart, lte: prevEnd } } }),
 
-      // All completed donations (for aggregations)
+      // Completed donations in this period
       prisma.donation.findMany({
-        where: { status: 'COMPLETED' },
+        where: { status: 'COMPLETED', createdAt: { gte: start, lte: end } },
         select: { amount: true, purpose: true, paymentMethod: true, createdAt: true },
       }),
-      // Today's completed donations
+      // Completed donations in previous period (for comparison)
       prisma.donation.aggregate({
-        where: { status: 'COMPLETED', createdAt: { gte: startOfToday } },
-        _sum: { amount: true },
-      }),
-      // This week
-      prisma.donation.aggregate({
-        where: { status: 'COMPLETED', createdAt: { gte: startOfThisWeek } },
-        _sum: { amount: true },
-      }),
-      // This month
-      prisma.donation.aggregate({
-        where: { status: 'COMPLETED', createdAt: { gte: startOfThisMonth } },
-        _sum: { amount: true },
-      }),
-      // This year
-      prisma.donation.aggregate({
-        where: { status: 'COMPLETED', createdAt: { gte: startOfThisYear } },
+        where: { status: 'COMPLETED', createdAt: { gte: prevStart, lte: prevEnd } },
         _sum: { amount: true },
       }),
 
-      // All attendance records
+      // Attendance records in this period
       prisma.attendanceRecord.findMany({
+        where: { date: { gte: start, lte: end } },
         orderBy: { date: 'desc' },
         select: { serviceType: true, headcount: true, newVisitors: true, date: true },
       }),
+      // Attendance in previous period (for comparison)
+      prisma.attendanceRecord.aggregate({
+        where: { date: { gte: prevStart, lte: prevEnd } },
+        _sum: { headcount: true },
+      }),
 
-      // Event counts by status
+      // Event counts by status (overall)
       prisma.event.groupBy({
         by: ['status'],
         _count: { _all: true },
       }),
 
-      // Prayer requests unread (PENDING)
+      // Prayer requests unread (PENDING) (overall)
       prisma.prayerRequest.count({ where: { status: 'PENDING' } }),
 
-      // Pending donations count
+      // Pending donations count (overall)
       prisma.donation.count({ where: { status: 'PENDING' } }),
 
-      // Media uploads (Gallery + NgoMedia combined)
+      // Media uploads (overall)
       prisma.gallery.count(),
 
-      // Church volunteers
+      // Church volunteers (overall)
       prisma.volunteer.count(),
 
-      // NGO volunteers
+      // NGO volunteers (overall)
       prisma.ngoVolunteer.count(),
 
-      // Recent 10 members
+      // Recent 10 members created in this period (or overall if period has few)
       prisma.user.findMany({
+        where: hasRange ? { createdAt: { gte: start, lte: end } } : undefined,
         orderBy: { createdAt: 'desc' },
         take: 10,
         select: {
@@ -130,21 +129,48 @@ export async function GET(req: Request) {
         },
       }),
 
-      // Sermon total
+      // Sermon total (overall)
       prisma.sermon.count(),
     ]);
 
+    // If custom range yielded fewer than 5 members, fill with overall recent members
+    let displayRecentMembers = recentMembers;
+    if (hasRange && recentMembers.length < 5) {
+      displayRecentMembers = await prisma.user.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          image: true,
+          createdAt: true,
+          emailVerified: true,
+        },
+      });
+    }
+
     // ── Member growth % ────────────────────────────────────────────────────────
     const memberGrowthPct =
-      lastMonthMembers > 0
-        ? Math.round(((thisMonthMembers - lastMonthMembers) / lastMonthMembers) * 100)
-        : thisMonthMembers > 0
+      newMembersPrevPeriod > 0
+        ? Math.round(((newMembersThisPeriod - newMembersPrevPeriod) / newMembersPrevPeriod) * 100)
+        : newMembersThisPeriod > 0
         ? 100
         : 0;
 
     // ── Donation aggregations ──────────────────────────────────────────────────
     const totalDonationAmount = allDonations.reduce((s, d) => s + d.amount, 0);
     const avgDonation = allDonations.length > 0 ? totalDonationAmount / allDonations.length : 0;
+    const prevDonationAmount = prevDonationsAgg._sum.amount ?? 0;
+
+    const donationGrowthPct =
+      prevDonationAmount > 0
+        ? Math.round(((totalDonationAmount - prevDonationAmount) / prevDonationAmount) * 100)
+        : totalDonationAmount > 0
+        ? 100
+        : 0;
 
     // Group by purpose/category
     const byCategory: Record<string, number> = {};
@@ -160,6 +186,24 @@ export async function GET(req: Request) {
     const avgPerRecord =
       allAttendance.length > 0 ? Math.round(totalHeadcount / allAttendance.length) : 0;
 
+    // If no attendance records in this period, fetch the single latest overall record for latestHeadcount
+    let latestHeadcount = allAttendance[0]?.headcount ?? 0;
+    if (allAttendance.length === 0) {
+      const lastOverallRecord = await prisma.attendanceRecord.findFirst({
+        orderBy: { date: 'desc' },
+        select: { headcount: true },
+      });
+      latestHeadcount = lastOverallRecord?.headcount ?? 0;
+    }
+
+    const prevAttendanceAmount = prevAttendanceAgg._sum.headcount ?? 0;
+    const attendanceGrowthPct =
+      prevAttendanceAmount > 0
+        ? Math.round(((totalHeadcount - prevAttendanceAmount) / prevAttendanceAmount) * 100)
+        : totalHeadcount > 0
+        ? 100
+        : 0;
+
     // Group by service type
     const byServiceType: Record<string, number> = {};
     for (const r of allAttendance) {
@@ -168,7 +212,6 @@ export async function GET(req: Request) {
     }
 
     // ── Event counts by status ──────────────────────────────────────────────────
-    const now2 = new Date();
     const eventStatusMap: Record<string, number> = {
       DRAFT: 0,
       PUBLISHED: 0,
@@ -179,47 +222,48 @@ export async function GET(req: Request) {
       eventStatusMap[g.status] = g._count._all;
     }
 
-    // Upcoming = PUBLISHED events with date >= now
+    // Upcoming events: date >= start of range
     const upcomingCount = await prisma.event.count({
-      where: { status: 'PUBLISHED', date: { gte: now2 } },
+      where: { status: 'PUBLISHED', date: { gte: start } },
     });
     const pastCount = await prisma.event.count({
-      where: { status: 'PUBLISHED', date: { lt: now2 } },
+      where: { status: 'PUBLISHED', date: { lt: start } },
     });
 
-    // ── Build response ──────────────────────────────────────────────────────────
     return NextResponse.json({
       success: true,
       stats: {
         members: {
           total: totalMembers,
-          today: todayMembers,
-          thisWeek: thisWeekMembers,
-          thisMonth: thisMonthMembers,
-          lastMonth: lastMonthMembers,
+          today: newMembersThisPeriod, // Map new members count to "today/thisWeek" properties
+          thisWeek: newMembersThisPeriod,
+          thisMonth: newMembersThisPeriod,
+          lastMonth: newMembersPrevPeriod,
           growthPct: memberGrowthPct,
         },
         donations: {
           total: totalDonationAmount,
-          today: todayDonations._sum.amount ?? 0,
-          thisWeek: thisWeekDonations._sum.amount ?? 0,
-          thisMonth: thisMonthDonations._sum.amount ?? 0,
-          thisYear: thisYearDonations._sum.amount ?? 0,
+          today: totalDonationAmount,
+          thisWeek: totalDonationAmount,
+          thisMonth: totalDonationAmount,
+          thisYear: totalDonationAmount,
           count: allDonations.length,
           avg: avgDonation,
           byCategory,
           byMethod,
+          growthPct: donationGrowthPct, // Return computed growth rate
         },
         attendance: {
           total: totalHeadcount,
           totalNewVisitors,
           avgPerRecord,
           recordCount: allAttendance.length,
-          latestHeadcount: allAttendance[0]?.headcount ?? 0,
+          latestHeadcount,
           byServiceType,
+          growthPct: attendanceGrowthPct, // Return computed growth rate
         },
         events: {
-          total: totalMembers > 0 ? eventStatusMap.DRAFT + eventStatusMap.PUBLISHED + eventStatusMap.COMPLETED + eventStatusMap.CANCELLED : 0,
+          total: eventStatusMap.DRAFT + eventStatusMap.PUBLISHED + eventStatusMap.COMPLETED + eventStatusMap.CANCELLED,
           draft: eventStatusMap.DRAFT,
           published: eventStatusMap.PUBLISHED,
           completed: eventStatusMap.COMPLETED,
@@ -238,7 +282,7 @@ export async function GET(req: Request) {
           mediaTotal,
           volunteers: volunteersTotal + ngoVolunteersTotal,
         },
-        recentMembers,
+        recentMembers: displayRecentMembers,
       },
     });
   } catch (err: any) {

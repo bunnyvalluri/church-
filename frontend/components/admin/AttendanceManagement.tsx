@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserCheck, Calendar, BarChart2, Plus, Users, Printer, TrendingUp, Sparkles, Filter, X } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -92,14 +92,27 @@ export default function AttendanceManagement({
   // Event check-ins
   const [selectedEventId, setSelectedEventId] = useState(events[0]?.id || "evt_worship_sun");
   
-  // Seed some checkins
-  const [eventCheckins, setEventCheckins] = useState<Record<string, string[]>>({
-    "evt_worship_sun": ["usr_1", "usr_2", "usr_3"],
-    "evt_youth_camp": ["usr_1", "usr_5"],
-    "evt_all_night_prayer": ["usr_2"]
-  });
+  // Fetch check-ins from the database
+  const [eventCheckins, setEventCheckins] = useState<Record<string, string[]>>({});
 
-  const handleToggleCheckin = (eventId: string, userId: string) => {
+  const fetchCheckins = async () => {
+    try {
+      const res = await fetch('/api/admin/attendance/event-checkins');
+      const data = await res.json();
+      if (data.success) {
+        setEventCheckins(data.checkins || {});
+      }
+    } catch (err) {
+      console.error("Error fetching checkins:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCheckins();
+  }, []);
+
+  const handleToggleCheckin = async (eventId: string, userId: string) => {
+    // Optimistically toggle status locally first
     setEventCheckins(prev => {
       const current = prev[eventId] || [];
       const updated = current.includes(userId)
@@ -107,6 +120,25 @@ export default function AttendanceManagement({
         : [...current, userId];
       return { ...prev, [eventId]: updated };
     });
+
+    try {
+      const res = await fetch('/api/admin/attendance/event-checkins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, userId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEventCheckins(prev => ({
+          ...prev,
+          [eventId]: data.checkedInUserIds
+        }));
+      }
+    } catch (err) {
+      console.error("Error toggling checkin:", err);
+      // Revert checkin on failure
+      fetchCheckins();
+    }
   };
 
   const currentEvent = events.find(e => e.id === selectedEventId) || events[0] || { title: "Worship Program", id: "evt_worship_sun" };

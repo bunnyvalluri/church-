@@ -38,6 +38,8 @@ interface DashboardOverviewProps {
   events: any[];
   announcements: any[];
   attendanceRecords?: any[];
+  startDate?: string;
+  endDate?: string;
   onAddMember: (member: any) => void;
   onDeleteMember: (id: string | number) => void;
   onAddSermon: (sermon: any) => void;
@@ -59,6 +61,8 @@ export default function DashboardOverview({
   events,
   announcements,
   attendanceRecords = [],
+  startDate,
+  endDate,
   onAddMember,
   onDeleteMember,
   onAddSermon,
@@ -75,9 +79,9 @@ export default function DashboardOverview({
   const [activeContentTab, setActiveContentTab] = useState<"Sermons" | "Events" | "Announcements">("Sermons");
 
   // ── SWR-powered real data ────────────────────────────────────────────────────
-  const { stats, isLoading: statsLoading, error: statsError, mutate: reloadStats } = useDashboardStats();
-  const { chartData: donationChartData, isLoading: chartLoading } = useDonationChart('monthly');
-  const { chartData: attendanceChartResult, isLoading: attChartLoading } = useAttendanceChart('weekly');
+  const { stats, isLoading: statsLoading, error: statsError, mutate: reloadStats } = useDashboardStats(startDate, endDate);
+  const { chartData: donationChartData, isLoading: chartLoading } = useDonationChart('monthly', startDate, endDate);
+  const { chartData: attendanceChartResult, isLoading: attChartLoading } = useAttendanceChart('weekly', startDate, endDate);
 
   // ── Derived KPI values (prefer SWR, fall back to props) ────────────────────
   const totalMembers = stats?.members.total ?? users.length;
@@ -87,7 +91,18 @@ export default function DashboardOverview({
   }).length;
   const memberGrowthPct = stats?.members.growthPct ?? 0;
 
-  const completedDonations = donations.filter(d => d.status === "COMPLETED");
+  // Filter completed donations based on date range
+  const completedDonations = donations.filter(d => {
+    if (d.status !== "COMPLETED") return false;
+    if (startDate && endDate) {
+      const time = new Date(d.createdAt).getTime();
+      const startMs = new Date(startDate).getTime();
+      const endMs = new Date(endDate).setHours(23, 59, 59, 999);
+      return time >= startMs && time <= endMs;
+    }
+    return true;
+  });
+
   const totalDonations = stats?.donations.total ?? completedDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
   // Derive weekly/monthly change percentages using the donations prop array
@@ -108,9 +123,9 @@ export default function DashboardOverview({
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const donWeeklyPercentChange = prevWeekDonVal > 0 
+  const donWeeklyPercentChange = stats?.donations.growthPct ?? (prevWeekDonVal > 0 
     ? Math.round(((thisWeekDonVal - prevWeekDonVal) / prevWeekDonVal) * 100) 
-    : thisWeekDonVal > 0 ? 100 : 0;
+    : thisWeekDonVal > 0 ? 100 : 0);
 
   const currentMonthDonVal = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= thirtyDaysAgo)
@@ -123,24 +138,36 @@ export default function DashboardOverview({
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const donPercentChange = previousMonthDonVal > 0 
+  const donPercentChange = stats?.donations.growthPct ?? (previousMonthDonVal > 0 
     ? Math.round(((currentMonthDonVal - previousMonthDonVal) / previousMonthDonVal) * 100) 
-    : currentMonthDonVal > 0 ? 100 : 0;
+    : currentMonthDonVal > 0 ? 100 : 0);
 
+  // Attendance Metrics
   const latestAttendance = stats?.attendance.latestHeadcount ?? attendanceRecords[0]?.headcount ?? 0;
   const totalHeadcount = stats?.attendance.total ?? attendanceRecords.reduce((sum, r) => sum + (r.headcount || 0), 0);
   const latestNewVisitors = stats?.attendance.totalNewVisitors ?? attendanceRecords.reduce((sum, r) => sum + (r.newVisitors || 0), 0);
   const avgAttendance = stats?.attendance.avgPerRecord ?? (attendanceRecords.length > 0
     ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
     : 0);
-  const attPercentChange = stats ? (() => {
+
+  const attPercentChange = stats?.attendance.growthPct ?? (() => {
     // compute week-over-week from attendance records
     const latest = attendanceRecords[0]?.headcount || 0;
     const prev = attendanceRecords[1]?.headcount || 0;
     return prev > 0 ? Math.round(((latest - prev) / prev) * 100) : latest > 0 ? 100 : 0;
-  })() : 0;
+  })();
 
-  const totalEvents = stats?.events.upcoming ?? events.length;
+  const displayEvents = events.filter(e => {
+    if (startDate && endDate) {
+      const time = new Date(e.date).getTime();
+      const startMs = new Date(startDate).getTime();
+      const endMs = new Date(endDate).getTime();
+      return time >= startMs && time <= endMs;
+    }
+    return true;
+  });
+
+  const totalEvents = stats?.events.upcoming ?? displayEvents.length;
 
   // ── Highest day label ─────────────────────────────────────────────────────
   const maxRecord = attendanceRecords.length > 0
@@ -696,7 +723,7 @@ export default function DashboardOverview({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
-                  {events.slice(0, 4).map((evt) => (
+                  {displayEvents.slice(0, 4).map((evt) => (
                     <tr key={evt.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
                       <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{evt.title}</td>
                       <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{evt.location}</td>
@@ -709,7 +736,7 @@ export default function DashboardOverview({
                       </td>
                     </tr>
                   ))}
-                  {events.length === 0 && (
+                  {displayEvents.length === 0 && (
                     <tr>
                       <td colSpan={5} className="py-4 px-6">
                         <div className="flex flex-col items-center justify-center py-16 text-center">

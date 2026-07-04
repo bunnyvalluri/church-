@@ -30,6 +30,7 @@ export interface DashboardStats {
     avg: number;
     byCategory: Record<string, number>;
     byMethod: Record<string, number>;
+    growthPct?: number;
   };
   attendance: {
     total: number;
@@ -38,6 +39,7 @@ export interface DashboardStats {
     recordCount: number;
     latestHeadcount: number;
     byServiceType: Record<string, number>;
+    growthPct?: number;
   };
   events: {
     total: number;
@@ -87,12 +89,17 @@ const createFetcher = (getToken: () => Promise<string | null>) =>
   };
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
-export function useDashboardStats() {
+export function useDashboardStats(startDate?: string, endDate?: string) {
   const { getIdToken } = useAuth();
   const fetcher = createFetcher(getIdToken);
 
+  const queryParams = new URLSearchParams();
+  if (startDate) queryParams.set('startDate', startDate);
+  if (endDate) queryParams.set('endDate', endDate);
+  const key = `/api/dashboard/stats${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+
   const { data, error, isLoading, mutate } = useSWR<DashboardStats>(
-    '/api/dashboard/stats',
+    key,
     fetcher,
     {
       refreshInterval: 30_000,       // Auto-refresh every 30 s

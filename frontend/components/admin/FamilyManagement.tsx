@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Home, Users, Plus, X, Search, Check, Shield, Phone, MapPin, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { adminTranslations } from "@/components/admin/adminTranslations";
@@ -42,10 +42,27 @@ export default function FamilyManagement({ users }: FamilyManagementProps) {
     return addr;
   };
 
-  const [families, setFamilies] = useState<Family[]>([
-    { id: "fam_1", familyName: "Wilson Household", headOfHouseholdId: "usr_1", members: ["usr_1", "usr_2"], contactPhone: "+91 96409 43777", address: "15-201, Vivekananda Nagar, Jeedimetla, Hyderabad" },
-    { id: "fam_2", familyName: "Martinez Family", headOfHouseholdId: "usr_5", members: ["usr_5"], contactPhone: "+91 98480 98765", address: "Subhash Nagar, Hyderabad" }
-  ]);
+  const [families, setFamilies] = useState<Family[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFamilies = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/families');
+      const data = await res.json();
+      if (data.success) {
+        setFamilies(data.families);
+      }
+    } catch (err) {
+      console.error("Error fetching families:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFamilies();
+  }, []);
 
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -54,56 +71,97 @@ export default function FamilyManagement({ users }: FamilyManagementProps) {
   
   const [newFamily, setNewFamily] = useState({ familyName: "", headId: "", contactPhone: "", address: "" });
 
-  const handleCreateFamily = (e: React.FormEvent) => {
+  const handleCreateFamily = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFamily.familyName || !newFamily.headId) return;
-    const created: Family = {
-      id: `fam_${Date.now()}`,
-      familyName: newFamily.familyName,
-      headOfHouseholdId: newFamily.headId,
-      members: [newFamily.headId],
-      contactPhone: newFamily.contactPhone || "+91 96409 43777",
-      address: newFamily.address || "Hyderabad"
-    };
-    setFamilies([...families, created]);
-    setNewFamily({ familyName: "", headId: "", contactPhone: "", address: "" });
-    setIsCreateOpen(false);
-  };
 
-  const handleAddMemberToFamily = (userId: string) => {
-    if (!selectedFamily) return;
-    
-    setFamilies(prev => prev.map(f => {
-      if (f.id === selectedFamily.id) {
-        const alreadyExists = f.members.includes(userId);
-        const updatedMembers = alreadyExists 
-          ? f.members.filter(id => id !== userId) 
-          : [...f.members, userId];
-        
-        const updatedFamily = { ...f, members: updatedMembers };
-        setSelectedFamily(updatedFamily);
-        return updatedFamily;
+    try {
+      const res = await fetch('/api/admin/families', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          familyName: newFamily.familyName,
+          headOfHouseholdId: newFamily.headId,
+          contactPhone: newFamily.contactPhone || "+91 96409 43777",
+          address: newFamily.address || "Hyderabad",
+          members: [newFamily.headId]
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFamilies(prev => [data.family, ...prev]);
       }
-      return f;
-    }));
+    } catch (err) {
+      console.error("Error creating family:", err);
+    } finally {
+      setNewFamily({ familyName: "", headId: "", contactPhone: "", address: "" });
+      setIsCreateOpen(false);
+    }
   };
 
-  const handleSetHead = (userId: string) => {
+  const handleAddMemberToFamily = async (userId: string) => {
     if (!selectedFamily) return;
-    setFamilies(prev => prev.map(f => {
-      if (f.id === selectedFamily.id) {
-        const updated = { ...f, headOfHouseholdId: userId };
-        setSelectedFamily(updated);
-        return updated;
+
+    const alreadyExists = selectedFamily.members.includes(userId);
+    const updatedMembers = alreadyExists 
+      ? selectedFamily.members.filter(id => id !== userId) 
+      : [...selectedFamily.members, userId];
+
+    try {
+      const res = await fetch('/api/admin/families', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedFamily.id,
+          members: updatedMembers
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFamilies(prev => prev.map(f => f.id === selectedFamily.id ? data.family : f));
+        setSelectedFamily(data.family);
       }
-      return f;
-    }));
+    } catch (err) {
+      console.error("Error toggling family member:", err);
+    }
   };
 
-  const handleRemoveFamily = (familyId: string) => {
-    setFamilies(families.filter(f => f.id !== familyId));
-    if (selectedFamily?.id === familyId) {
-      setSelectedFamily(null);
+  const handleSetHead = async (userId: string) => {
+    if (!selectedFamily) return;
+
+    try {
+      const res = await fetch('/api/admin/families', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedFamily.id,
+          headOfHouseholdId: userId
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFamilies(prev => prev.map(f => f.id === selectedFamily.id ? data.family : f));
+        setSelectedFamily(data.family);
+      }
+    } catch (err) {
+      console.error("Error setting head of family:", err);
+    }
+  };
+
+  const handleRemoveFamily = async (familyId: string) => {
+    try {
+      const res = await fetch(`/api/admin/families?id=${familyId}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFamilies(families.filter(f => f.id !== familyId));
+        if (selectedFamily?.id === familyId) {
+          setSelectedFamily(null);
+        }
+      }
+    } catch (err) {
+      console.error("Error removing family:", err);
     }
   };
 

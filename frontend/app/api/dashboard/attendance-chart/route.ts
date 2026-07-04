@@ -2,7 +2,10 @@
  * GET /api/dashboard/attendance-chart
  * ─────────────────────────────────────────────────────────────────────────────
  * Returns attendance data by service type and date for chart rendering.
- * Query: ?period=weekly|monthly|yearly  (default: weekly)
+ * Query:
+ *   - period: weekly|monthly|yearly (default: weekly)
+ *   - startDate: Date string
+ *   - endDate: Date string
  */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -16,27 +19,37 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const period = searchParams.get('period') || 'weekly';
+  const startDateParam = searchParams.get('startDate');
+  const endDateParam = searchParams.get('endDate');
+
+  const hasRange = !!(startDateParam && endDateParam);
 
   try {
     const now = new Date();
     let startDate: Date;
+    let endDate: Date = now;
 
-    switch (period) {
-      case 'monthly':
-        startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-        break;
-      case 'yearly':
-        startDate = new Date(now.getFullYear() - 4, 0, 1);
-        break;
-      case 'weekly':
-      default:
-        startDate = new Date(now);
-        startDate.setDate(now.getDate() - 83); // ~12 weeks
-        break;
+    if (hasRange) {
+      startDate = new Date(startDateParam!);
+      endDate = new Date(new Date(endDateParam!).setHours(23, 59, 59, 999));
+    } else {
+      switch (period) {
+        case 'monthly':
+          startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+          break;
+        case 'yearly':
+          startDate = new Date(now.getFullYear() - 4, 0, 1);
+          break;
+        case 'weekly':
+        default:
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 83); // ~12 weeks
+          break;
+      }
     }
 
     const records = await prisma.attendanceRecord.findMany({
-      where: { date: { gte: startDate } },
+      where: { date: { gte: startDate, lte: endDate } },
       orderBy: { date: 'asc' },
       select: { date: true, serviceType: true, headcount: true, newVisitors: true },
     });
@@ -44,12 +57,23 @@ export async function GET(req: Request) {
     // Get all unique service types
     const serviceTypes = [...new Set(records.map((r) => r.serviceType))];
 
-    // Build time-bucketed data for the primary bar chart (latest 7 records)
+    // Build time-bucketed data for the primary bar chart (latest 7 records within range)
     const last7 = await prisma.attendanceRecord.findMany({
+      where: { date: { gte: startDate, lte: endDate } },
       orderBy: { date: 'desc' },
       take: 7,
       select: { date: true, serviceType: true, headcount: true, newVisitors: true },
     });
+
+    // If there are no records in range, fallback to overall latest 7 records (so the chart isn't blank)
+    let displayRecent = last7;
+    if (last7.length === 0) {
+      displayRecent = await prisma.attendanceRecord.findMany({
+        orderBy: { date: 'desc' },
+        take: 7,
+        select: { date: true, serviceType: true, headcount: true, newVisitors: true },
+      });
+    }
 
     // Aggregate by service type (total headcount per service type)
     const byServiceType: Record<string, number> = {};
@@ -60,18 +84,19 @@ export async function GET(req: Request) {
       byServiceTypeNewVisitors[key] = (byServiceTypeNewVisitors[key] ?? 0) + r.newVisitors;
     }
 
-    // Comparison: this month vs last month
-    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    // Comparison: this period vs previous period of same length
+    const rangeMs = endDate.getTime() - startDate.getTime();
+    const prevStart = new Date(startDate.getTime() - rangeMs);
+    const prevEnd = new Date(startDate.getTime() - 1);
 
-    const thisMonthAtt = records.filter((r) => new Date(r.date) >= startOfThisMonth);
-    const lastMonthAtt = records.filter(
-      (r) => new Date(r.date) >= startOfLastMonth && new Date(r.date) <= endOfLastMonth
-    );
+    const thisPeriodAtt = records; // Since they are filtered to range [startDate, endDate]
+    const prevPeriodAtt = await prisma.attendanceRecord.findMany({
+      where: { date: { gte: prevStart, lte: prevEnd } },
+      select: { headcount: true },
+    });
 
-    const thisMonthTotal = thisMonthAtt.reduce((s, r) => s + r.headcount, 0);
-    const lastMonthTotal = lastMonthAtt.reduce((s, r) => s + r.headcount, 0);
+    const thisPeriodTotal = thisPeriodAtt.reduce((s, r) => s + r.headcount, 0);
+    const prevPeriodTotal = prevPeriodAtt.reduce((s, r) => s + r.headcount, 0);
 
     return NextResponse.json({
       success: true,
@@ -79,14 +104,14 @@ export async function GET(req: Request) {
       serviceTypes,
       byServiceType,
       byServiceTypeNewVisitors,
-      recent: last7.reverse(),
+      recent: displayRecent.reverse(),
       comparison: {
-        thisMonth: thisMonthTotal,
-        lastMonth: lastMonthTotal,
+        thisMonth: thisPeriodTotal,
+        lastMonth: prevPeriodTotal,
         changePct:
-          lastMonthTotal > 0
-            ? Math.round(((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100)
-            : thisMonthTotal > 0
+          prevPeriodTotal > 0
+            ? Math.round(((thisPeriodTotal - prevPeriodTotal) / prevPeriodTotal) * 100)
+            : thisPeriodTotal > 0
             ? 100
             : 0,
       },

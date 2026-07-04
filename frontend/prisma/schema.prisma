@@ -469,3 +469,15 @@ model MediaReport {
   uploadedBy    User        @relation(fields: [uploadedById], references: [id])
   createdAt     DateTime    @default(now())
 }
+
+model Family {
+  id                String   @id @default(cuid())
+  familyName        String
+  headOfHouseholdId String
+  members           String[] // List of member User IDs
+  contactPhone      String
+  address           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+

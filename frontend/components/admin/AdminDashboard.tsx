@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -24,7 +24,8 @@ import {
   FileText,
   Image as ImageIcon,
   Menu,
-  X
+  X,
+  Check
 } from "lucide-react";
 import Image from "next/image";
 
@@ -88,22 +89,95 @@ export default function AdminDashboard() {
 
   const t = adminTranslations[language || "en"];
 
+  // Interactive date range selector states
+  const [dateRangeType, setDateRangeType] = useState<'weekly' | 'monthly' | 'last30' | 'last90' | 'allTime'>('weekly');
+  const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
+  const dateMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close date menu dropdown on clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dateMenuRef.current && !dateMenuRef.current.contains(event.target as Node)) {
+        setIsDateMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const getComputedDateRange = useCallback(() => {
+    const today = new Date();
+    let start = new Date();
+    let end = new Date();
+
+    switch (dateRangeType) {
+      case 'weekly': {
+        const currentDay = today.getDay();
+        start = new Date(today);
+        start.setDate(today.getDate() - currentDay);
+        end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        break;
+      }
+      case 'monthly': {
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        break;
+      }
+      case 'last30': {
+        start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+        break;
+      }
+      case 'last90': {
+        start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 89);
+        break;
+      }
+      case 'allTime': {
+        start = new Date('2020-01-01'); // Far enough past
+        break;
+      }
+    }
+
+    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+    return {
+      startDate: formatDate(start),
+      endDate: formatDate(end),
+    };
+  }, [dateRangeType]);
+
+  const { startDate: activeStartDate, endDate: activeEndDate } = getComputedDateRange();
+
   const getWeeklyDateRange = () => {
     const today = new Date();
-    const currentDay = today.getDay();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    
-    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    const year = today.getFullYear();
-    
     const locale = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-US";
-    const startStr = startOfWeek.toLocaleDateString(locale, options);
-    const endStr = endOfWeek.toLocaleDateString(locale, options);
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
     
-    return `${startStr} – ${endStr}, ${year}`;
+    if (dateRangeType === 'weekly') {
+      const currentDay = today.getDay();
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - currentDay);
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return `${startOfWeek.toLocaleDateString(locale, options)} – ${endOfWeek.toLocaleDateString(locale, options)}, ${today.getFullYear()}`;
+    }
+    
+    if (dateRangeType === 'monthly') {
+      return today.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+    }
+    
+    if (dateRangeType === 'last30') {
+      const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+      return `${start.toLocaleDateString(locale, options)} – ${today.toLocaleDateString(locale, options)}`;
+    }
+    
+    if (dateRangeType === 'last90') {
+      const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 89);
+      return `${start.toLocaleDateString(locale, options)} – ${today.toLocaleDateString(locale, options)}`;
+    }
+    
+    return language === 'te' ? 'మొత్తం సమయం' : language === 'hi' ? 'कुल समय' : 'All Time';
   };
 
   // Modals visibility states
@@ -1104,13 +1178,50 @@ export default function AdminDashboard() {
               <Settings className="w-4.5 h-4.5" />
             </button>
 
-            {/* Date Selector */}
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
-              <Calendar className="w-4.5 h-4.5 text-indigo-500 dark:text-indigo-400" />
-              <span suppressHydrationWarning>
-                {getWeeklyDateRange()}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 ml-1" />
+            {/* Interactive Date Selector Dropdown */}
+            <div className="relative" ref={dateMenuRef}>
+              <div 
+                onClick={() => setIsDateMenuOpen(!isDateMenuOpen)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#16172D]/60 border border-gray-200 dark:border-white/[0.08] rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/[0.15] transition-all duration-300 cursor-pointer select-none"
+              >
+                <Calendar className="w-4.5 h-4.5 text-indigo-500 dark:text-indigo-400" />
+                <span suppressHydrationWarning>
+                  {getWeeklyDateRange()}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-450 dark:text-gray-500 ml-1" />
+              </div>
+
+              {isDateMenuOpen && (
+                <div className="absolute right-0 mt-2.5 w-48 bg-[#0E0F1E]/95 dark:bg-[#0c0d1b]/98 backdrop-blur-xl border border-white/[0.08] shadow-2xl rounded-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {[
+                    { id: 'weekly', label: language === 'te' ? 'ఈ వారం' : language === 'hi' ? 'इस सप्ताह' : 'This Week' },
+                    { id: 'monthly', label: language === 'te' ? 'ఈ నెల' : language === 'hi' ? 'इस महीने' : 'This Month' },
+                    { id: 'last30', label: language === 'te' ? 'గత 30 రోజులు' : language === 'hi' ? 'पिछले 30 दिन' : 'Last 30 Days' },
+                    { id: 'last90', label: language === 'te' ? 'గత 90 రోజులు' : language === 'hi' ? 'पिछले 90 दिन' : 'Last 90 Days' },
+                    { id: 'allTime', label: language === 'te' ? 'మొత్తం సమయం' : language === 'hi' ? 'कुल समय' : 'All Time' }
+                  ].map((option) => {
+                    const isSelected = dateRangeType === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => {
+                          setDateRangeType(option.id as any);
+                          setIsDateMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-between mt-1 first:mt-0 ${
+                          isSelected
+                            ? "bg-gradient-to-r from-gradient-start to-gradient-end text-white shadow-sm shadow-[#6366F1]/20"
+                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{option.label}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[3px]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -1158,6 +1269,8 @@ export default function AdminDashboard() {
                   events={eventsDb}
                   announcements={announcementsDb}
                   attendanceRecords={attendanceRecordsDb}
+                  startDate={activeStartDate}
+                  endDate={activeEndDate}
                   onAddMember={handleAddMember}
                   onDeleteMember={handleDeleteMember}
                   onAddSermon={handleAddSermon}

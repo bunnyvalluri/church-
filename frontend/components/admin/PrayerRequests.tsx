@@ -165,13 +165,6 @@ export default function PrayerRequests({ users }: PrayerRequestsProps) {
         const data = await res.json();
         
         let list = data.prayers || [];
-        if (list.length === 0) {
-          list = [
-            { id: "pry_1", userId: "usr_1", title: "Complete Healing of Joint Pains", description: "Please pray for my mother who is suffering from severe arthritis and joint pains in Hyderabad.", category: "HEALTH", isAnonymous: false, status: "PENDING", createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
-            { id: "pry_2", userId: "usr_2", title: "Job Opening & Job Security", description: "Praying for a break in corporate job search. Need stability to support my family needs.", category: "FINANCIAL", isAnonymous: false, status: "PRAYING", createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-            { id: "pry_3", userId: "usr_3", title: "Grace for spiritual growth", description: "Fasting and seeking wisdom. Need prayers to remain constant in my daily devotion schedule.", category: "SPIRITUAL", isAnonymous: true, status: "ANSWERED", createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() }
-          ];
-        }
         
         const mapped = list.map((p: any) => {
           const user = users.find(u => u.id === p.userId || u.uid === p.userId) || { name: "Congregation Believer", email: "believer@gmail.com" };
@@ -305,7 +298,15 @@ export default function PrayerRequests({ users }: PrayerRequestsProps) {
               );
             })}
             {!loading && filteredPrayers.length === 0 && (
-              <p className="text-center text-xs text-slate-400 dark:text-gray-500 py-8 font-semibold">{t.noRequests}</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center w-full">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-3.5 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+                  <Heart className="w-5 h-5 animate-pulse text-rose-500" />
+                </div>
+                <h4 className="text-xs font-extrabold text-slate-900 dark:text-white">{t.noRequests || "No requests found"}</h4>
+                <p className="text-[10px] text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
+                  {language === "te" ? "ప్రస్తుతం ఎలాంటి ప్రార్థన అభ్యర్థనలు లేవు." : language === "hi" ? "वर्तमान में कोई प्रार्थना अनुरोध नहीं हैं。" : "No prayer requests are currently logged in the system."}
+                </p>
+              </div>
             )}
           </div>
         </div>

@@ -50,12 +50,18 @@ const createFetcher =
   };
 
 // ── Donation Chart Hook ───────────────────────────────────────────────────────
-export function useDonationChart(period: ChartPeriod = 'monthly') {
+export function useDonationChart(period: ChartPeriod = 'monthly', startDate?: string, endDate?: string) {
   const { getIdToken } = useAuth();
   const fetcher = createFetcher(getIdToken);
 
+  const queryParams = new URLSearchParams();
+  queryParams.set('period', period);
+  if (startDate) queryParams.set('startDate', startDate);
+  if (endDate) queryParams.set('endDate', endDate);
+  const key = `/api/dashboard/donations-chart?${queryParams.toString()}`;
+
   const { data, error, isLoading } = useSWR<{ chartData: DonationChartPoint[]; period: string }>(
-    `/api/dashboard/donations-chart?period=${period}`,
+    key,
     fetcher,
     { refreshInterval: 60_000, dedupingInterval: 30_000 }
   );
@@ -69,12 +75,18 @@ export function useDonationChart(period: ChartPeriod = 'monthly') {
 }
 
 // ── Attendance Chart Hook ─────────────────────────────────────────────────────
-export function useAttendanceChart(period: 'weekly' | 'monthly' | 'yearly' = 'weekly') {
+export function useAttendanceChart(period: 'weekly' | 'monthly' | 'yearly' = 'weekly', startDate?: string, endDate?: string) {
   const { getIdToken } = useAuth();
   const fetcher = createFetcher(getIdToken);
 
+  const queryParams = new URLSearchParams();
+  queryParams.set('period', period);
+  if (startDate) queryParams.set('startDate', startDate);
+  if (endDate) queryParams.set('endDate', endDate);
+  const key = `/api/dashboard/attendance-chart?${queryParams.toString()}`;
+
   const { data, error, isLoading } = useSWR<AttendanceChartData>(
-    `/api/dashboard/attendance-chart?period=${period}`,
+    key,
     (url) => fetcher(url).then((d) => d),
     { refreshInterval: 60_000, dedupingInterval: 30_000 }
   );

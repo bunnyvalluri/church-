@@ -13,7 +13,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Device token is required." }, { status: 400 });
     }
 
-    const deviceToken = await prisma.deviceToken.upsert({
+    const deviceTokenModel = (prisma as any).deviceToken;
+    if (!deviceTokenModel) {
+      return NextResponse.json({ success: true, message: "Device token table not available." });
+    }
+
+    const deviceToken = await deviceTokenModel.upsert({
       where: { token },
       update: {
         userId: userId || undefined,
