@@ -40,7 +40,26 @@ import {
   Compass,
   Play,
   Home,
-  Settings
+  Settings,
+  ClipboardList,
+  BookOpen,
+  Radio,
+  BarChart3,
+  Layers,
+  Zap,
+  HeartHandshake,
+  ScrollText,
+  Mic2,
+  ListChecks,
+  LayoutDashboard,
+  Shield,
+  Eye,
+  CloudUpload,
+  BadgeCheck,
+  TrendingUp,
+  WalletCards,
+  Video,
+  Star
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -1129,47 +1148,59 @@ export default function UnifiedEventManagementPortal() {
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             
-            {/* Action Card 1: Reports */}
+            {/* Action Card 1: Event Reports */}
             <motion.div 
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-violet-500"
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:shadow-violet-500/10 transition-all duration-300 border-t-4 border-t-violet-500"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-2xl bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center text-violet-650 dark:text-violet-400 shadow-sm border border-violet-500/20 shrink-0">
-                  <FileText className="w-5 h-5" />
+                <div className="relative w-11 h-11">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                    <ClipboardList className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                    <Zap className="w-2 h-2 text-white" />
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Event Reports</h4>
-                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5 leading-normal">Submit branch logs, attendance & daily tithes</p>
+                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-0.5 leading-normal">Submit branch logs, attendance &amp; daily tithes</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-5">
                 <Link
                   href="/event-manager/report"
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-violet-500/10 text-center"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-violet-500/20 text-center"
                 >
-                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  <ScrollText className="w-3.5 h-3.5 text-white" />
                   Create
                 </Link>
                 <button
                   type="button"
                   onClick={() => setShowManageEvents(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-violet-50 dark:bg-violet-500/10 hover:bg-violet-100 dark:hover:bg-violet-500/20 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
                 >
-                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  <ListChecks className="w-3.5 h-3.5" />
                   Manage
                 </button>
               </div>
             </motion.div>
 
-            {/* Action Card 2: Services */}
+            {/* Action Card 2: Worship Services */}
             <motion.div 
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-indigo-500/20 dark:border-indigo-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-indigo-500"
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-indigo-500/20 dark:border-indigo-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 border-t-4 border-t-indigo-500"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-650 dark:text-indigo-400 shadow-sm border border-indigo-500/20 shrink-0">
-                  <Calendar className="w-5 h-5" />
+                <div className="relative w-11 h-11">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <HeartHandshake className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                    <Star className="w-2 h-2 text-white" />
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Worship Services</h4>
@@ -1179,30 +1210,36 @@ export default function UnifiedEventManagementPortal() {
               <div className="grid grid-cols-2 gap-2 mt-5">
                 <button
                   onClick={() => setShowCreateService(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-indigo-500/10 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-indigo-500/20 cursor-pointer"
                 >
-                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  <Radio className="w-3.5 h-3.5 text-white" />
                   Schedule
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowManageServices(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
                 >
-                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  <Layers className="w-3.5 h-3.5" />
                   Manage
                 </button>
               </div>
             </motion.div>
 
-            {/* Action Card 3: Sermons */}
+            {/* Action Card 3: Sermon Library */}
             <motion.div 
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-fuchsia-500/20 dark:border-fuchsia-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-t-4 border-t-fuchsia-500"
+              whileHover={{ y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-fuchsia-500/20 dark:border-fuchsia-500/30 rounded-3xl p-5 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:shadow-fuchsia-500/10 transition-all duration-300 border-t-4 border-t-fuchsia-500"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-2xl bg-fuchsia-500/10 dark:bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-600 dark:text-fuchsia-400 shadow-sm border border-fuchsia-500/20 shrink-0">
-                  <Play className="w-5 h-5" />
+                <div className="relative w-11 h-11">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
+                    <Mic2 className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                    <Video className="w-2 h-2 text-white" />
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Sermon Library</h4>
@@ -1213,23 +1250,22 @@ export default function UnifiedEventManagementPortal() {
                 <button
                   type="button"
                   onClick={() => setShowCreateSermon(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-fuchsia-500/10 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-fuchsia-500/20 cursor-pointer"
                 >
-                  <PlusCircle className="w-3.5 h-3.5 text-white" />
+                  <CloudUpload className="w-3.5 h-3.5 text-white" />
                   Upload
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowManageSermons(true)}
-                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-fuchsia-50 dark:bg-fuchsia-500/10 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95 cursor-pointer"
                 >
-                  <Settings className="w-3.5 h-3.5 text-slate-500" />
+                  <BookOpen className="w-3.5 h-3.5" />
                   Manage
                 </button>
               </div>
             </motion.div>
             
-
           </div>
 
           {/* Sync notification banner */}
@@ -1270,8 +1306,8 @@ export default function UnifiedEventManagementPortal() {
                       <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{t.eventManager?.logsUnit || "logs"}</span>
                     </div>
                   </div>
-                  <div className="w-11 h-11 rounded-2xl bg-violet-500/20 dark:bg-violet-500/30 flex items-center justify-center text-slate-500 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                    <FileText className="w-5.5 h-5.5 text-violet-600 dark:text-violet-400" />
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative z-10 shadow-md shadow-violet-500/20">
+                    <BarChart3 className="w-5 h-5 text-white" />
                   </div>
                 </motion.div>
 
@@ -1288,8 +1324,8 @@ export default function UnifiedEventManagementPortal() {
                       <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{t.eventManager?.needsActionUnit || "needs action"}</span>
                     </div>
                   </div>
-                  <div className="w-11 h-11 rounded-2xl bg-amber-500/20 dark:bg-amber-500/30 flex items-center justify-center text-amber-550 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                    <Clock className="w-5.5 h-5.5 text-amber-600 dark:text-amber-400" />
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative z-10 shadow-md shadow-amber-500/20">
+                    <WalletCards className="w-5 h-5 text-white" />
                   </div>
                 </motion.div>
 
@@ -1306,19 +1342,19 @@ export default function UnifiedEventManagementPortal() {
                       <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{t.eventManager?.peopleUnit || "people"}</span>
                     </div>
                   </div>
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 dark:bg-emerald-500/30 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                    <Users className="w-5.5 h-5.5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 relative z-10 shadow-md shadow-emerald-500/20">
+                    <TrendingUp className="w-5 h-5 text-white" />
                   </div>
                 </motion.div>
               </div>
             )
           )}
 
-          {/* Filters and Search toolbar (Executive Senior UI/UX Redesign) */}
+          {/* Filters and Search toolbar */}
           <div className="bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 sm:px-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
             <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 shadow-sm">
-                <SlidersHorizontal className="w-4.5 h-4.5" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-md shadow-violet-500/20">
+                <LayoutDashboard className="w-4.5 h-4.5 text-white" />
               </div>
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -1334,7 +1370,7 @@ export default function UnifiedEventManagementPortal() {
               {reports.length > 0 && (
                 <button
                   onClick={exportToCSV}
-                  className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-black transition-all shadow-sm flex items-center gap-2 active:scale-95 cursor-pointer"
+                  className="h-10 px-4 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 dark:from-violet-600 dark:to-indigo-600 dark:hover:from-violet-500 dark:hover:to-indigo-500 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 active:scale-95 cursor-pointer"
                   title="Export reports data to CSV file"
                 >
                   <Download className="w-4 h-4" />
@@ -1634,7 +1670,9 @@ export default function UnifiedEventManagementPortal() {
           {branchStats.length > 0 && (
             <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg transition-all duration-300">
               <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
-                <Building2 className="w-4 h-4 text-violet-500 dark:text-violet-400" />
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-500/20">
+                  <TrendingUp className="w-4 h-4 text-white" />
+                </div>
                 <div>
                   <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.branchShareTitle || "Branch Share"}</h3>
                   <p className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold">{t.eventManager?.branchShareDesc || "Offering & Log contribution"}</p>
@@ -1684,7 +1722,9 @@ export default function UnifiedEventManagementPortal() {
           {/* Color-Coded Activity Feed */}
           <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-violet-500/20 dark:border-violet-500/30 rounded-3xl p-5 shadow-lg">
             <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3">
-              <Activity className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-pulse" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/20">
+                <Radio className="w-4 h-4 text-white animate-pulse" />
+              </div>
               <div>
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.liveUpdatesTitle || "Live Updates"}</h3>
                 <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">{t.eventManager?.liveUpdatesDesc || "Real-time companion feed"}</p>
