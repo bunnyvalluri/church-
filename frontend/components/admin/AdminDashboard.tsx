@@ -29,18 +29,21 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-// Import Admin workspace components
-import DashboardOverview from "@/components/admin/DashboardOverview";
-import MemberManagement from "@/components/admin/MemberManagement";
-import MemberGroups from "@/components/admin/MemberGroups";
-import PrayerRequests from "@/components/admin/PrayerRequests";
-import FamilyManagement from "@/components/admin/FamilyManagement";
-import FinanceManagement from "@/components/admin/FinanceManagement";
-import AttendanceManagement from "@/components/admin/AttendanceManagement";
-import ContentManagement from "@/components/admin/ContentManagement";
-import SettingsManagement from "@/components/admin/SettingsManagement";
+import dynamic from 'next/dynamic';
+
+// Dynamically import Admin workspace components for code splitting
+const DashboardOverview = dynamic(() => import('@/components/admin/DashboardOverview'), { ssr: false });
+const MemberManagement = dynamic(() => import('@/components/admin/MemberManagement'), { ssr: false });
+const MemberGroups = dynamic(() => import('@/components/admin/MemberGroups'), { ssr: false });
+const PrayerRequests = dynamic(() => import('@/components/admin/PrayerRequests'), { ssr: false });
+const FamilyManagement = dynamic(() => import('@/components/admin/FamilyManagement'), { ssr: false });
+const FinanceManagement = dynamic(() => import('@/components/admin/FinanceManagement'), { ssr: false });
+const AttendanceManagement = dynamic(() => import('@/components/admin/AttendanceManagement'), { ssr: false });
+const ContentManagement = dynamic(() => import('@/components/admin/ContentManagement'), { ssr: false });
+const SettingsManagement = dynamic(() => import('@/components/admin/SettingsManagement'), { ssr: false });
+const NgoManagement = dynamic(() => import('@/components/admin/NgoManagement'), { ssr: false });
+
 import AdminControlBar from "@/components/admin/AdminControlBar";
-import NgoManagement from "@/components/admin/NgoManagement";
 import NotificationCenter from "@/components/admin/NotificationCenter";
 import GlobalSearch from "@/components/admin/GlobalSearch";
 import { adminTranslations } from "@/components/admin/adminTranslations";

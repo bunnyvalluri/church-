@@ -9,6 +9,8 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 app.use(express.json());
@@ -127,12 +129,21 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
     const Redis = require('ioredis');
 
     const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-    const connection = new Redis(redisUrl, {
+    
+    // Upstash (rediss://) requires TLS configuration for ioredis
+    const connectionOptions = {
       maxRetriesPerRequest: null,
-      enableReadyCheck: false
-    });
+      enableReadyCheck: false,
+    };
+    
+    if (redisUrl.startsWith('rediss://')) {
+      connectionOptions.tls = { rejectUnauthorized: false };
+    }
+
+    const connection = new Redis(redisUrl, connectionOptions);
 
     connection.on('error', (err) => {
+      console.warn(`[QUEUE] Redis connection failed: ${err.message}`);
       console.warn('[QUEUE] Redis connection skipped (running queue in-memory fallback).');
     });
 

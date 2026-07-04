@@ -46,7 +46,6 @@
     "razorpay": "^2.9.6",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "react-icons": "^5.0.0",
     "react-markdown": "^10.1.0",
     "resend": "^6.12.4",
     "sanitize-html": "^2.17.3",

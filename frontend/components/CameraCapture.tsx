@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Camera, RefreshCw, X, Check, Aperture, AlertTriangle, MonitorPlay } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,7 +9,7 @@ interface CameraCaptureProps {
   onClose: () => void;
 }
 
-export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
+const CameraCapture = React.memo(function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
@@ -301,4 +301,6 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
       
     </div>
   );
-}
+});
+
+export default CameraCapture;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { z } from "zod";
 import {
   Calendar,
@@ -50,7 +50,7 @@ const CATEGORIES = [
   { value: "SPECIAL", label: "Special", emoji: "✨" },
 ] as const;
 
-export default function EventForm({
+const EventForm = React.memo(function EventForm({
   initialData,
   branches = [],
   onSubmit,
@@ -73,7 +73,7 @@ export default function EventForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  const validate = (): boolean => {
+  const validate = useCallback((): boolean => {
     const result = EventFormSchema.safeParse(formData);
     if (!result.success) {
       const errs: Record<string, string> = {};
@@ -85,9 +85,9 @@ export default function EventForm({
     }
     setErrors({});
     return true;
-  };
+  }, [formData]);
 
-  const handleChange = (
+  const handleChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
@@ -95,9 +95,9 @@ export default function EventForm({
     if (errors[name]) {
       setErrors((prev) => { const n = { ...prev }; delete n[name]; return n; });
     }
-  };
+  }, [errors]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -118,7 +118,7 @@ export default function EventForm({
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData, isEditMode, onSubmit, validate]);
 
   const inputCls = (field: string) =>
     `w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border text-sm font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all ${
@@ -356,4 +356,6 @@ export default function EventForm({
       </div>
     </form>
   );
-}
+});
+
+export default EventForm;

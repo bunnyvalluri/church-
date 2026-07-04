@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Upload, X, ImageIcon, CheckCircle2, AlertCircle, Loader2, Film } from "lucide-react";
 
 interface UploadFile {
@@ -28,7 +28,7 @@ const TYPE_LABELS: Record<string, string> = {
   "image/webp": "WebP",
 };
 
-export default function UploadSection({
+const UploadSection = React.memo(function UploadSection({
   eventId,
   onUploadComplete,
   onClose,
@@ -329,7 +329,8 @@ export default function UploadSection({
       )}
     </div>
   );
-}
+});
 
 // Export the upload trigger function for parent to wire with getIdToken
 export { type UploadFile };
+export default UploadSection;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Calendar,
@@ -63,7 +63,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   COMPLETED: { label: "Completed", color: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20", icon: CheckCircle2 },
 };
 
-export default function EventCard({
+const EventCard = React.memo(function EventCard({
   event,
   isAdmin = false,
   onDelete,
@@ -125,10 +125,12 @@ export default function EventCard({
         {/* Thumbnail strip */}
         <div className="relative h-44 bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 overflow-hidden">
           {thumbnailUrl ? (
-            <img
+            <Image
               src={thumbnailUrl}
               alt={event.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center opacity-20">
@@ -246,10 +248,12 @@ export default function EventCard({
                     onClick={() => setExpandedImage(m.imageUrl)}
                     className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group/img border border-slate-200/50 dark:border-white/5"
                   >
-                    <img
+                    <Image
                       src={m.imageUrl}
                       alt={m.caption || "Event photo"}
-                      className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-300"
+                      fill
+                      className="object-cover group-hover/img:scale-110 transition-transform duration-300"
+                      sizes="(max-width: 768px) 25vw, 10vw"
                     />
                     {idx === 3 && (event._count?.media || 0) > 4 && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -283,4 +287,6 @@ export default function EventCard({
       </div>
     </>
   );
-}
+});
+
+export default EventCard;

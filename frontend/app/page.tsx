@@ -1,15 +1,18 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import Hero from "@/components/sections/Hero";
-import About from "@/components/sections/About";
-import Services from "@/components/sections/Services";
-import Events from "@/components/sections/Events";
-import Sermons from "@/components/sections/Sermons";
-import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import ScrollReveal from "@/components/ui/ScrollReveal";
-import NgoShowcase from "@/components/sections/NgoShowcase";
+
+// Lazy load below-the-fold components
+const About = dynamic(() => import('@/components/sections/About'));
+const Services = dynamic(() => import('@/components/sections/Services'));
+const Events = dynamic(() => import('@/components/sections/Events'));
+const Sermons = dynamic(() => import('@/components/sections/Sermons'));
+const Contact = dynamic(() => import('@/components/sections/Contact'));
+const ScrollReveal = dynamic(() => import('@/components/ui/ScrollReveal'));
+const NgoShowcase = dynamic(() => import('@/components/sections/NgoShowcase'));
 
 export default function Home() {
   return (
