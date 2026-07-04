@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend-api
+      - backend-socket
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      # Anonymous volume for node_modules to avoid host OS mismatch
+      - /app/node_modules
+    environment:
+      - HOST=0.0.0.0
+      - NEXT_PUBLIC_API_URL=http://localhost/api
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost
+    command: sh -c "npm install && npm run dev -w frontend"
+    # Port is not exposed to host directly since Nginx proxies it, 
+    # but useful for direct debugging if needed.
+    expose:
+      - "3000"
+
+  backend-api:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - PROCESS_TYPE=api
+      - DATABASE_URL=${DATABASE_URL:-}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+      - REDIS_URL=redis://redis:6379
+      - SOCKET_PORT=3001
+    command: sh -c "npm install && npx prisma generate -w backend && npm start -w backend"
+    expose:
+      - "3001"
+    depends_on:
+      - redis
+
+  backend-socket:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - PROCESS_TYPE=socket
+      - DATABASE_URL=${DATABASE_URL:-}
+      - REDIS_URL=redis://redis:6379
+      - SOCKET_PORT=3001
+    command: sh -c "npm install && node backend/socket.js"
+    expose:
+      - "3001"
+    depends_on:
+      - redis
+
+  worker:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - PROCESS_TYPE=worker
+      - DATABASE_URL=${DATABASE_URL:-}
+      - REDIS_URL=redis://redis:6379
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+    command: sh -c "npm install && node backend/worker.js"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
