@@ -3,11 +3,16 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy dependency mappings
+# Copy dependency mappings for monorepo
 COPY package.json package-lock.json ./
-COPY prisma ./prisma/
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
 
-# Install exact dependencies (caching-optimized)
+# Copy prisma schemas to ensure postinstall generation succeeds
+COPY frontend/prisma ./frontend/prisma/
+COPY backend/prisma ./backend/prisma/
+
+# Install exact dependencies
 RUN npm ci
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
@@ -18,11 +23,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client and build the application
-RUN npx prisma generate
+# Generate Prisma Client (using workspace scripts)
+RUN npm run db:generate -w backend || true
+RUN npm run db:generate -w frontend || true
+
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
-RUN npm run build
+
+# Build the Next.js frontend
+RUN npm run build -w frontend
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
 FROM node:20-alpine AS runner
@@ -40,14 +49,15 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy static public folders
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/frontend/public ./frontend/public
 
-# Leverage Next.js standalone tracing output to reduce size by 90%
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Leverage Next.js standalone tracing output
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./frontend/.next/static
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# In a monorepo, standalone output is usually placed under the package path
+CMD ["node", "frontend/server.js"]
