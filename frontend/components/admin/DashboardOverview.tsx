@@ -557,7 +557,7 @@ export default function DashboardOverview({
             {/* Metrics List */}
             <div className="space-y-3">
               {[
-                { label: t.totalAttendance, val: latestAttendance.toLocaleString() },
+                { label: t.totalAttendance, val: totalHeadcount.toLocaleString() },
                 { label: t.averageDaily, val: avgAttendance.toLocaleString() },
                 { label: t.highestDay, val: highestDayName, highlight: true },
                 { label: t.newVisitors, val: latestNewVisitors.toLocaleString() },
