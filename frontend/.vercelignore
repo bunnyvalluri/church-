@@ -4,3 +4,8 @@ out
 build
 .vercel
 *.tsbuildinfo
+public/KCM_NGO_SERVICES
+**/*.mp4
+**/*.avi
+**/*.mov
+**/*.wmv
