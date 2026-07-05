@@ -99,7 +99,7 @@ export default function NgoOverviewPage() {
             {/* Banner Image Card */}
             <div className="relative group rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/10 aspect-[4/3] bg-slate-950 shadow-2xl shadow-purple-500/5">
               <img
-                src="/kcm_society_ngo.png"
+                src="/kcm_society_ngo.jpg"
                 alt="KCM Society NGO - Bishop Kristhuraju Kurra"
                 className="w-full h-full object-contain bg-slate-950 dark:bg-slate-950 transition-transform duration-500 group-hover:scale-[1.02]"
               />
