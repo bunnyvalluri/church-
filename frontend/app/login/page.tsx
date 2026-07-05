@@ -66,6 +66,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     setIsClient(true);
+    // Redirect 127.0.0.1 to localhost to prevent Firebase auth/unauthorized-domain error
+    if (typeof window !== "undefined" && window.location.hostname === "127.0.0.1") {
+      const newUrl = window.location.href.replace("127.0.0.1", "localhost");
+      window.location.replace(newUrl);
+    }
   }, []);
 
   // Redirect already-authenticated users (skip photo step for returning sessions)
@@ -141,6 +146,7 @@ export default function LoginPage() {
       "auth/cancelled-popup-request": loginT.errors.popupClosed,
       "auth/popup-closed-by-user": loginT.errors.popupClosed,
       "auth/network-request-failed": loginT.errors.networkFailed,
+      "auth/unauthorized-domain": loginT.errors.unauthorizedDomain || "This domain is not authorized. Please add this domain to the Authorized Domains list in Firebase Console.",
       "social-redirect-failed": loginT.errors.socialFailed,
       "social-generic-failed": loginT.errors.socialFailed,
       "sign-in-failed": loginT.errors.genericFailed,
@@ -189,6 +195,8 @@ export default function LoginPage() {
           console.error("[AUTH] Redirect sign-in error:", err);
           if (err.code === "auth/operation-not-allowed") {
             setError("auth/operation-not-allowed");
+          } else if (err.code === "auth/unauthorized-domain") {
+            setError("auth/unauthorized-domain");
           } else {
             setError("social-redirect-failed");
           }

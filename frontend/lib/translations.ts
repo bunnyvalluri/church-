@@ -530,6 +530,7 @@ export const translations = {
           networkFailed: "Network connection failed. Please check your internet.",
           socialFailed: "Social sign-in failed. Please try again.",
           genericFailed: "Sign-in failed. Please check your connection.",
+          unauthorizedDomain: "This domain is not authorized for Google Sign-In. Please add 'kcmchurch.vercel.app' (or your current domain) to the Authorized Domains list in Firebase Console.",
         }
       },
       register: {
@@ -1418,6 +1419,7 @@ export const translations = {
           networkFailed: "నెట్‌వర్క్ కనెక్షన్ విఫలమైంది. దయచేసి మీ ఇంటర్నెట్ తనిఖీ చేయండి.",
           socialFailed: "సోషల్ లాగిన్ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           genericFailed: "లాగిన్ విఫలమైంది. దయచేసి మీ కనెక్షన్ తనిఖీ చేయండి.",
+          unauthorizedDomain: "గూగుల్ లాగిన్ కోసం ఈ డొమైన్ అనుమతించబడలేదు. దయచేసి దీన్ని మీ Firebase కన్సోల్‌లో జోడించండి.",
         }
       },
       register: {
@@ -2306,6 +2308,7 @@ export const translations = {
           networkFailed: "नेटवर्क कनेक्शन विफल रहा। कृपया अपना इंटरनेट जांचें।",
           socialFailed: "सोशल लॉगिन विफल रहा। कृपया पुनः प्रयास करें।",
           genericFailed: "लॉगिन विफल रहा। कृपया अपना कनेक्शन जांचें।",
+          unauthorizedDomain: "इस डोमेन को Google लॉगिन के लिए अधिकृत नहीं किया गया है। कृपया इसे अपने Firebase कंसोल में जोड़ें।",
         }
       },
       register: {

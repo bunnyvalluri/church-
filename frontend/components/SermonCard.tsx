@@ -85,4 +85,6 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
   );
 });
 
+SermonCard.displayName = 'SermonCard';
+
 export default SermonCard;

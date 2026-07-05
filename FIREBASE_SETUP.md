@@ -26,8 +26,16 @@ NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
 3.  Go to the **Sign-in method** tab.
 4.  Enable **Email/Password**.
 5.  Enable **Google**.
-    - For Google, you usually don't need extra setup for localhost.
-    - For production (`verified.app`), add your domain to "Authorized domains" in Firebase settings.
+    - For Google, you usually don't need extra setup for `localhost` (though using `127.0.0.1` is not authorized by default).
+    - For production and deployed previews (e.g., `kcmchurch.vercel.app`), you **must** add the domain to **"Authorized domains"** in Firebase settings.
+
+    ### How to add Authorized Domains to Firebase:
+    1. In the [Firebase Console](https://console.firebase.google.com/), select your project.
+    2. Go to **Build** -> **Authentication**.
+    3. Click on the **Settings** tab.
+    4. Choose **Authorized domains** on the left panel.
+    5. Click **"Add domain"** and enter `kcmchurch.vercel.app` (and any other domain/IP or preview URL you use to access the site).
+    6. Click **Add** to save.
 6.  Enable **Facebook**.
     - You will need a developer account on the [Facebook Developers Portal](https://developers.facebook.com/).
     - Create a new App, select the "Use cases" or "Facebook Login", and configure the App ID and App Secret.
