@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
@@ -210,8 +211,14 @@ export default function RegisterPage() {
 
         <div className="relative z-10 text-white">
           <div className="flex items-center gap-4 mb-10">
-            <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-2xl">✝</span>
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-white/20 backdrop-blur-sm shadow-md">
+              <Image
+                src="/logo.png"
+                alt="Kingdom of Christ Ministries Logo"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold">{loginT.churchName}</h1>
@@ -274,8 +281,14 @@ export default function RegisterPage() {
         <div className="w-full max-w-lg mt-16 lg:mt-0 pb-10 lg:pb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
-            <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))/0.08] dark:bg-[hsl(var(--primary))/0.15] border border-[hsl(var(--primary))/0.15] dark:border-[hsl(var(--primary))/0.3] flex items-center justify-center mb-3 shadow-sm">
-              <span className="text-2xl text-[hsl(var(--primary))]">✝</span>
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-850 mb-3 shadow-sm bg-white dark:bg-gray-900">
+              <Image
+                src="/logo.png"
+                alt="Kingdom of Christ Ministries Logo"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
