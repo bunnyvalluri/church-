@@ -114,19 +114,19 @@ export default function Hero() {
           <motion.h1
             suppressHydrationWarning
             variants={itemVariants}
-            className="font-black text-foreground mb-6 leading-[1.05] drop-shadow-sm font-heading tracking-tight"
-            style={{ fontSize: "clamp(2.5rem, 6.5vw, 5.25rem)" }}
+            className="font-black text-foreground mb-4 leading-[1.1] drop-shadow-sm font-outfit tracking-tighter"
+            style={{ fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
           >
-            <span suppressHydrationWarning className="font-bold text-slate-500 dark:text-gray-400 text-lg md:text-xl tracking-[0.2em] font-sans mb-2 block uppercase">
+            <span suppressHydrationWarning>
               {mounted ? t.hero.welcome : "Welcome to"}{" "}
             </span>
-            <span suppressHydrationWarning className="block mt-2 bg-gradient-to-r from-primary via-pink-500 to-gradient-end bg-clip-text text-transparent pb-1.5 bg-[length:200%_auto] animate-shimmer">
+            <span suppressHydrationWarning className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer">
               {mounted ? t.hero.churchName : "Kingdom of Christ"}
             </span>
             <span
               suppressHydrationWarning
-              className="block font-black mt-2 pb-1 leading-normal uppercase tracking-[0.3em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent opacity-90"
-              style={{ fontSize: "clamp(1rem, 3vw, 1.75rem)" }}
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
+              style={{ fontSize: "clamp(1.1rem, 3.5vw, 2.25rem)" }}
             >
               {mounted ? t.hero.ministries : "Ministries"}
             </span>
