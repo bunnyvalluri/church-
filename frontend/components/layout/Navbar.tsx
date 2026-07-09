@@ -14,6 +14,72 @@ import BranchSelector from "@/components/BranchSelector";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 
+const navStyles: Record<string, {
+  activeText: string;
+  activeBg: string;
+  activeBorder: string;
+  hoverText: string;
+  hoverBg: string;
+  mobileActiveBorder: string;
+}> = {
+  "#home": {
+    activeText: "text-violet-600 dark:text-violet-400",
+    activeBg: "bg-violet-50/80 dark:bg-violet-500/10",
+    activeBorder: "border-violet-200/60 dark:border-violet-500/20",
+    hoverText: "hover:text-violet-600 dark:hover:text-violet-400",
+    hoverBg: "hover:bg-violet-50/50 dark:hover:bg-violet-500/5",
+    mobileActiveBorder: "border-l-violet-500",
+  },
+  "#about": {
+    activeText: "text-blue-600 dark:text-blue-400",
+    activeBg: "bg-blue-50/80 dark:bg-blue-500/10",
+    activeBorder: "border-blue-200/60 dark:border-blue-500/20",
+    hoverText: "hover:text-blue-600 dark:hover:text-blue-400",
+    hoverBg: "hover:bg-blue-50/50 dark:hover:bg-blue-500/5",
+    mobileActiveBorder: "border-l-blue-500",
+  },
+  "/ngo": {
+    activeText: "text-emerald-600 dark:text-emerald-400",
+    activeBg: "bg-emerald-50/80 dark:bg-emerald-500/10",
+    activeBorder: "border-emerald-200/60 dark:border-emerald-500/20",
+    hoverText: "hover:text-emerald-600 dark:hover:text-emerald-400",
+    hoverBg: "hover:bg-emerald-50/50 dark:hover:bg-emerald-500/5",
+    mobileActiveBorder: "border-l-emerald-500",
+  },
+  "#services": {
+    activeText: "text-rose-600 dark:text-rose-400",
+    activeBg: "bg-rose-50/80 dark:bg-rose-500/10",
+    activeBorder: "border-rose-200/60 dark:border-rose-500/20",
+    hoverText: "hover:text-rose-600 dark:hover:text-rose-400",
+    hoverBg: "hover:bg-rose-50/50 dark:hover:bg-rose-500/5",
+    mobileActiveBorder: "border-l-rose-500",
+  },
+  "#events": {
+    activeText: "text-amber-600 dark:text-amber-400",
+    activeBg: "bg-amber-50/80 dark:bg-amber-500/10",
+    activeBorder: "border-amber-200/60 dark:border-amber-500/20",
+    hoverText: "hover:text-amber-600 dark:hover:text-amber-400",
+    hoverBg: "hover:bg-amber-50/50 dark:hover:bg-amber-500/5",
+    mobileActiveBorder: "border-l-amber-500",
+  },
+  "#sermons": {
+    activeText: "text-red-600 dark:text-red-400",
+    activeBg: "bg-red-50/80 dark:bg-red-500/10",
+    activeBorder: "border-red-200/60 dark:border-red-500/20",
+    hoverText: "hover:text-red-600 dark:hover:text-red-400",
+    hoverBg: "hover:bg-red-50/50 dark:hover:bg-red-500/5",
+    mobileActiveBorder: "border-l-red-500",
+  },
+  "/gallery": {
+    activeText: "text-sky-600 dark:text-sky-400",
+    activeBg: "bg-sky-50/80 dark:bg-sky-500/10",
+    activeBorder: "border-sky-200/60 dark:border-sky-500/20",
+    hoverText: "hover:text-sky-600 dark:hover:text-sky-400",
+    hoverBg: "hover:bg-sky-50/50 dark:hover:bg-sky-500/5",
+    mobileActiveBorder: "border-l-sky-500",
+  },
+};
+
 export default function Navbar() {
   const { t, language } = useLanguage();
   const { user } = useAuth();
@@ -153,20 +219,24 @@ export default function Navbar() {
             {/* ── Desktop Nav Links (lg+) ── */}
             <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
               {navItems.map((item) => {
-                const isActive = activeSection === item.href.replace("#", "");
+                const isActive = item.href.startsWith("/")
+                  ? pathname === item.href
+                  : activeSection === item.href.replace("#", "");
+                const styles = navStyles[item.href] || navStyles["#home"];
+
                 return (
                   <Link
                     key={item.href}
                     href={resolveHref(item.href)}
                     className={cn(
-                      "relative px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 whitespace-nowrap",
+                      "relative px-3.5 py-1.5 text-sm font-semibold rounded-xl transition-all duration-300 whitespace-nowrap",
                       isActive
-                        ? "text-purple-700 dark:text-purple-400"
-                        : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5"
+                        ? styles.activeText
+                        : cn("text-gray-600 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5", styles.hoverText, styles.hoverBg)
                     )}
                   >
                     {isActive && (
-                      <span className="absolute inset-0 rounded-lg bg-purple-50 dark:bg-purple-500/10 border border-purple-200/50 dark:border-purple-500/20" />
+                      <span className={cn("absolute inset-0 rounded-xl border backdrop-blur-md shadow-sm transition-all duration-300 animate-scale-in", styles.activeBg, styles.activeBorder)} />
                     )}
                     <span className="relative z-10">{item.name}</span>
                   </Link>
@@ -211,19 +281,23 @@ export default function Navbar() {
             <div className="lg:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in">
 
               {/* Nav links */}
-              <nav className="space-y-0.5">
+              <nav className="space-y-1">
                 {navItems.map((item) => {
-                  const isActive = activeSection === item.href.replace("#", "");
+                  const isActive = item.href.startsWith("/")
+                    ? pathname === item.href
+                    : activeSection === item.href.replace("#", "");
+                  const styles = navStyles[item.href] || navStyles["#home"];
+
                   return (
                     <Link
                       key={item.href}
                       href={resolveHref(item.href)}
                       onClick={() => setMobileMenu(false)}
                       className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all border-l-[3px]",
                         isActive
-                          ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-l-[3px] border-purple-500"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5"
+                          ? cn(styles.activeBg, styles.activeText, styles.mobileActiveBorder)
+                          : cn("text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5 border-l-transparent", styles.hoverBg, styles.hoverText)
                       )}
                     >
                       {item.name}
