@@ -1,13 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdminOrDev } from "@/lib/authMiddleware";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/branches
 export async function GET() {
   try {
-    const dbBranches = await prisma.branch.findMany();
+    let dbBranches = await prisma.branch.findMany();
+    
+    // Auto-seed if database is empty to ensure branches are never missing
+    if (dbBranches.length === 0) {
+      const defaultBranches = [
+        { name: "Shapur Nagar" },
+        { name: "Subhash Nagar" },
+        { name: "Bahadurpally" }
+      ];
+      
+      await prisma.$transaction(
+        defaultBranches.map(b => 
+          prisma.branch.upsert({
+            where: { name: b.name },
+            update: {},
+            create: b
+          })
+        )
+      );
+      
+      dbBranches = await prisma.branch.findMany();
+    }
     
     // Sort customly: Shapur Nagar, Subhash Nagar, Bahadurpally
     const getIndex = (name: string) => {
