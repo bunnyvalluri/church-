@@ -99,7 +99,7 @@ export default function Hero() {
         >
           {/* Live pulsing tag badge */}
           <motion.div variants={itemVariants} className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-2.5 px-4.5 py-2 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
+            <div className="inline-flex items-center gap-2.5 px-5 md:px-6 py-2 md:py-2.5 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
