@@ -77,28 +77,10 @@ const GalleryCard = React.memo(function GalleryCard({
   onDelete: (item: GalleryItem) => void;
   priority: boolean;
 }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: "300px" }
-    );
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-    return () => observer.disconnect();
-  }, []);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div
-      ref={cardRef}
       onClick={onClick}
       className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/5 bg-slate-50 dark:bg-slate-900 cursor-pointer shadow-sm hover:border-purple-500/40 transition-all duration-500 hover:shadow-purple-500/10 hover:shadow-2xl aspect-[3/2] w-full"
       role="button"
@@ -128,20 +110,22 @@ const GalleryCard = React.memo(function GalleryCard({
 
       {/* Image container */}
       <div className="relative overflow-hidden w-full h-full bg-slate-100 dark:bg-slate-950">
-        {isVisible ? (
-          <Image
-            src={encodeSrc(item.thumbnailUrl)}
-            alt={item.title}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            priority={priority}
-            placeholder="blur"
-            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
-            className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-          />
-        ) : (
-          <div className="w-full h-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse z-10" />
         )}
+        <Image
+          src={encodeSrc(item.thumbnailUrl)}
+          alt={item.title}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          priority={priority}
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
+          className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
+            isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}
+          onLoad={() => setIsLoaded(true)}
+        />
 
         {/* Premium Hover Overlay */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
@@ -1002,6 +986,7 @@ export default function NgoGalleryPage() {
                         <img
                           src={encodeSrc(item.thumbnailUrl)}
                           alt=""
+                          loading="lazy"
                           className="w-full h-full object-cover"
                         />
                       </button>

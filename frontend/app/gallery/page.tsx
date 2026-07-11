@@ -20,6 +20,38 @@ interface GalleryItem {
   createdAt: string;
 }
 
+// Encode a URL path so parentheses and spaces are safe for browsers
+function encodeSrc(src: string): string {
+  if (!src) return "";
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+function GalleryGridImage({ src, title }: { src: string; title: string }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div className="relative w-full h-full">
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800/50 animate-pulse z-10" />
+      )}
+      <Image
+        src={encodeSrc(src)}
+        alt={title}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        loading="lazy"
+        className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
+          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+        onLoad={() => setIsLoaded(true)}
+      />
+    </div>
+  );
+}
+
 export default function GalleryPage() {
   const { selectedBranchId } = useBranch();
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -137,10 +169,9 @@ export default function GalleryPage() {
                   >
                     {/* Media Container */}
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
-                      <img
+                      <GalleryGridImage
                         src={item.url}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        title={item.title}
                       />
                       {/* Glass Hover Overlay */}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">
