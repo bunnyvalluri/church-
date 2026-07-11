@@ -18,7 +18,7 @@ export interface DashboardStats {
     thisWeek: number;
     thisMonth: number;
     lastMonth: number;
-    growthPct: number;
+    growthPct: number | null;
   };
   donations: {
     total: number;
@@ -30,7 +30,7 @@ export interface DashboardStats {
     avg: number;
     byCategory: Record<string, number>;
     byMethod: Record<string, number>;
-    growthPct?: number;
+    growthPct?: number | null;
   };
   attendance: {
     total: number;
@@ -39,7 +39,7 @@ export interface DashboardStats {
     recordCount: number;
     latestHeadcount: number;
     byServiceType: Record<string, number>;
-    growthPct?: number;
+    growthPct?: number | null;
   };
   events: {
     total: number;

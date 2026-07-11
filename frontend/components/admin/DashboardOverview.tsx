@@ -123,9 +123,12 @@ export default function DashboardOverview({
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const donWeeklyPercentChange = stats?.donations.growthPct ?? (prevWeekDonVal > 0 
-    ? Math.round(((thisWeekDonVal - prevWeekDonVal) / prevWeekDonVal) * 100) 
-    : thisWeekDonVal > 0 ? 100 : 0);
+  // null = no previous period to compare; render 'New' badge instead of fake +100%
+  const donWeeklyPercentChange: number | null = stats?.donations.growthPct !== undefined
+    ? (stats.donations.growthPct ?? null)
+    : prevWeekDonVal > 0
+    ? Math.round(((thisWeekDonVal - prevWeekDonVal) / prevWeekDonVal) * 100)
+    : thisWeekDonVal > 0 ? null : 0;
 
   const currentMonthDonVal = completedDonations
     .filter(d => new Date(d.createdAt).getTime() >= thirtyDaysAgo)
@@ -138,9 +141,11 @@ export default function DashboardOverview({
     })
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  const donPercentChange = stats?.donations.growthPct ?? (previousMonthDonVal > 0 
-    ? Math.round(((currentMonthDonVal - previousMonthDonVal) / previousMonthDonVal) * 100) 
-    : currentMonthDonVal > 0 ? 100 : 0);
+  const donPercentChange: number | null = stats?.donations.growthPct !== undefined
+    ? (stats.donations.growthPct ?? null)
+    : previousMonthDonVal > 0
+    ? Math.round(((currentMonthDonVal - previousMonthDonVal) / previousMonthDonVal) * 100)
+    : currentMonthDonVal > 0 ? null : 0;
 
   // Attendance Metrics
   const latestAttendance = stats?.attendance.latestHeadcount ?? attendanceRecords[0]?.headcount ?? 0;
@@ -150,12 +155,14 @@ export default function DashboardOverview({
     ? Math.round(attendanceRecords.reduce((sum, r) => sum + r.headcount, 0) / attendanceRecords.length)
     : 0);
 
-  const attPercentChange = stats?.attendance.growthPct ?? (() => {
-    // compute week-over-week from attendance records
-    const latest = attendanceRecords[0]?.headcount || 0;
-    const prev = attendanceRecords[1]?.headcount || 0;
-    return prev > 0 ? Math.round(((latest - prev) / prev) * 100) : latest > 0 ? 100 : 0;
-  })();
+  // null = no previous period to compare; render 'New' badge instead of fake +100%
+  const attPercentChange: number | null = stats?.attendance.growthPct !== undefined
+    ? (stats.attendance.growthPct ?? null)
+    : (() => {
+        const latest = attendanceRecords[0]?.headcount || 0;
+        const prev = attendanceRecords[1]?.headcount || 0;
+        return prev > 0 ? Math.round(((latest - prev) / prev) * 100) : latest > 0 ? null : 0;
+      })();
 
   const displayEvents = events.filter(e => {
     if (startDate && endDate) {
@@ -315,14 +322,21 @@ export default function DashboardOverview({
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.totalDonations}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{formatCurrency(totalDonations)}</h3>
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              donWeeklyPercentChange >= 0 
-                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20" 
-                : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-450 border-rose-100 dark:border-rose-500/20"
-            }`}>
-              {donWeeklyPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
-              <span>{donWeeklyPercentChange >= 0 ? `+${donWeeklyPercentChange}` : donWeeklyPercentChange}% {t.thisWeek}</span>
-            </div>
+            {donWeeklyPercentChange === null ? (
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
+                <Sparkles className="w-3 h-3" />
+                <span>New</span>
+              </div>
+            ) : (
+              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                donWeeklyPercentChange >= 0
+                  ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
+                  : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
+              }`}>
+                {donWeeklyPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
+                <span>{donWeeklyPercentChange >= 0 ? `+${donWeeklyPercentChange}` : donWeeklyPercentChange}% {t.thisWeek}</span>
+              </div>
+            )}
           </div>
           <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
             <DollarSign className="w-5 h-5" />
@@ -334,14 +348,21 @@ export default function DashboardOverview({
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.attendanceWeek}</span>
             <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString()}</h3>
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              attPercentChange >= 0 
-                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20" 
-                : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-455 border-rose-100 dark:border-rose-500/20"
-            }`}>
-              {attPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
-              <span>{attPercentChange >= 0 ? `+${attPercentChange}` : attPercentChange}% {t.thisWeek}</span>
-            </div>
+            {attPercentChange === null ? (
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
+                <Sparkles className="w-3 h-3" />
+                <span>New</span>
+              </div>
+            ) : (
+              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                attPercentChange >= 0
+                  ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
+                  : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
+              }`}>
+                {attPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
+                <span>{attPercentChange >= 0 ? `+${attPercentChange}` : attPercentChange}% {t.thisWeek}</span>
+              </div>
+            )}
           </div>
           <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
             <UserCheck className="w-5 h-5" />
@@ -448,10 +469,17 @@ export default function DashboardOverview({
           
           <div className="p-6 py-4 flex-1 flex flex-col justify-between">
             <div className="flex items-baseline gap-2 mb-3">
-              <span className={`text-[10px] font-bold inline-flex items-center ${donPercentChange >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
-                <TrendingUp className="w-3 h-3 mr-0.5" />
-                {donPercentChange >= 0 ? `▲ +${donPercentChange}` : `▼ ${donPercentChange}`}% {t.fromLastMonth}
-              </span>
+              {donPercentChange === null ? (
+                <span className="text-[10px] font-bold inline-flex items-center text-blue-500">
+                  <Sparkles className="w-3 h-3 mr-0.5" />
+                  New this month
+                </span>
+              ) : (
+                <span className={`text-[10px] font-bold inline-flex items-center ${donPercentChange >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                  <TrendingUp className="w-3 h-3 mr-0.5" />
+                  {donPercentChange >= 0 ? `▲ +${donPercentChange}` : `▼ ${donPercentChange}`}% {t.fromLastMonth}
+                </span>
+              )}
             </div>
             
             {/* SVG Line Chart with Gridlines & Glowing path */}

@@ -153,11 +153,12 @@ export async function GET(req: Request) {
     }
 
     // ── Member growth % ────────────────────────────────────────────────────────
-    const memberGrowthPct =
+    // null means "no previous-period baseline" — the frontend will render a 'New' badge instead of a fake +100%
+    const memberGrowthPct: number | null =
       newMembersPrevPeriod > 0
         ? Math.round(((newMembersThisPeriod - newMembersPrevPeriod) / newMembersPrevPeriod) * 100)
         : newMembersThisPeriod > 0
-        ? 100
+        ? null  // first data ever — no basis for percentage
         : 0;
 
     // ── Donation aggregations ──────────────────────────────────────────────────
@@ -165,11 +166,12 @@ export async function GET(req: Request) {
     const avgDonation = allDonations.length > 0 ? totalDonationAmount / allDonations.length : 0;
     const prevDonationAmount = prevDonationsAgg._sum.amount ?? 0;
 
-    const donationGrowthPct =
+    // null means "no previous-period baseline" — the frontend will render a 'New' badge instead of a fake +100%
+    const donationGrowthPct: number | null =
       prevDonationAmount > 0
         ? Math.round(((totalDonationAmount - prevDonationAmount) / prevDonationAmount) * 100)
         : totalDonationAmount > 0
-        ? 100
+        ? null  // first donations ever — no basis for percentage
         : 0;
 
     // Group by purpose/category
@@ -197,11 +199,12 @@ export async function GET(req: Request) {
     }
 
     const prevAttendanceAmount = prevAttendanceAgg._sum.headcount ?? 0;
-    const attendanceGrowthPct =
+    // null means "no previous-period baseline" — the frontend will render a 'New' badge instead of a fake +100%
+    const attendanceGrowthPct: number | null =
       prevAttendanceAmount > 0
         ? Math.round(((totalHeadcount - prevAttendanceAmount) / prevAttendanceAmount) * 100)
         : totalHeadcount > 0
-        ? 100
+        ? null  // first attendance ever — no basis for percentage
         : 0;
 
     // Group by service type
