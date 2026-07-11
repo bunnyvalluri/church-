@@ -535,8 +535,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   };
 
   /**
-   * Android Intent URL — launches the system UPI chooser (all installed UPI apps).
-   * Falls back to upi:// scheme on iOS / desktop.
+   * "Open in UPI App" — Android Intent URL with no package specified.
+   * This triggers the Android system chooser listing ALL installed UPI apps.
+   * On iOS/desktop it falls back to upi:// scheme.
    */
   const handleOpenUpiApp = () => {
     if (!upiUri) {
@@ -546,32 +547,23 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
 
-    // Android Intent URL — empty package= triggers the system chooser
-    const intentUrl = `intent://pay?${params}#Intent;scheme=upi;package=;end`;
+    // Intent URL without package — OS shows all UPI apps (chooser dialog)
+    window.location.href = `intent://pay?${params}#Intent;scheme=upi;end`;
 
-    // Try Android Intent first; if not handled (desktop / iOS), fall back to upi://
-    const anchor = document.createElement("a");
-    anchor.href = intentUrl;
-    anchor.style.display = "none";
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-
-    // Fallback after 1.5s if page is still visible (no UPI app handled the intent)
+    // iOS / desktop fallback: if page still visible after 1.5s, try upi:// scheme
     setTimeout(() => {
       if (!document.hidden) {
-        window.open(`upi://pay?${params}`, "_blank", "noopener");
+        window.location.href = `upi://pay?${params}`;
       }
     }, 1500);
   };
 
   /**
-   * Launch a specific UPI app.
-   * Strategy: navigate via app-specific UPI scheme first (most reliable on Android Chrome),
-   * then fall back to Intent URL if the page is still visible after 1.8s.
-   * If neither works (app not installed), open Play Store after 3s.
+   * Open a SPECIFIC UPI app directly using Android Intent URL with package= set.
+   * Chrome OS routes the intent directly to the installed app.
+   * If the app is not installed, Play Store opens after 2.5s.
    */
-  const handleOpenSpecificApp = (pkg: string, scheme: string) => {
+  const handleOpenSpecificApp = (pkg: string) => {
     if (!upiUri) {
       setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
       return;
@@ -579,29 +571,21 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
 
-    // Step 1: Try app-native UPI scheme — most reliable way to open a specific app
-    window.location.href = `${scheme}?${params}`;
+    // Single Intent URL with package — opens the exact app directly on Android Chrome
+    window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
 
-    // Step 2: If still on page after 1.8s (app not installed / scheme not handled),
-    //         try Android Intent URL as fallback
-    const intentTimer = setTimeout(() => {
-      if (!document.hidden) {
-        window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
-      }
-    }, 1800);
-
-    // Step 3: If still on page after 3.5s (neither worked), open Play Store
+    // If still on page after 2.5s (app not installed), open Play Store
     setTimeout(() => {
       if (!document.hidden) {
-        clearTimeout(intentTimer);
         window.open(
           `https://play.google.com/store/apps/details?id=${pkg}`,
           "_blank",
           "noopener"
         );
       }
-    }, 3500);
+    }, 2500);
   };
+
 
   // Legacy — kept for backward compatibility
   const openPaymentApp = (appUrl: string, storeFallback: string) => {
@@ -1250,7 +1234,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             key={app.name}
                                             type="button"
                                             title={`Pay with ${app.name}`}
-                                            onClick={() => handleOpenSpecificApp(app.pkg, app.scheme)}
+                                            onClick={() => handleOpenSpecificApp(app.pkg)}
                                             className="flex flex-col items-center justify-center gap-1 py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
                                           >
                                             <img
