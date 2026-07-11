@@ -312,11 +312,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   // 5. Connect Socket.IO for real-time success listener
   const connectSocket = useCallback((sid: string) => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "";
+
+    // Skip socket in production if no socket server is configured
+    // (polling fallback every 5s will still detect payment completion)
+    const isProduction = process.env.NODE_ENV === "production";
+    const isLocalhost = socketUrl.includes("localhost") || socketUrl.includes("127.0.0.1");
+    if (!socketUrl || (isProduction && (isLocalhost || !socketUrl))) {
+      console.info("[Socket] No socket server configured for production — using polling only.");
+      return () => {};
+    }
+
     const socket = io(socketUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 5,
+      timeout: 8000,
     });
 
     socketRef.current = socket;
@@ -334,10 +345,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       }
     });
 
+    socket.on("connect_error", (err: any) => {
+      console.warn("[Socket] Connection failed, using polling fallback:", err.message);
+      socket.disconnect();
+    });
+
     return () => {
       socket.disconnect();
     };
   }, [user, referenceNumber]);
+
 
   // Cleanup connections
   useEffect(() => {
