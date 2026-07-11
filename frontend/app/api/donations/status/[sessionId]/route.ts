@@ -36,6 +36,8 @@ export async function GET(req: Request, { params }: { params: { sessionId: strin
     return NextResponse.json({
       success: true,
       status: session.status,
+      sessionId: session.id,
+      referenceNumber: session.referenceNumber,
       donationId: completedDonation ? completedDonation.id : null,
       expiresAt: session.expiresAt,
     });

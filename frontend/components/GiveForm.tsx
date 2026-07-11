@@ -132,6 +132,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Payment flow state
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'PENDING' | 'COMPLETED' | 'FAILED' | null>(null);
+  const [pollTimeoutReached, setPollTimeoutReached] = useState(false);
+
   // History sync
   const [history, setHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -142,6 +147,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [mounted, setMounted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const socketRef = useRef<any>(null);
 
   // Prevent SSR mismatch
@@ -422,12 +428,23 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   // Manual payment verification query fallback
   const handleVerifyPayment = async () => {
+    if (verificationLoading) return;
     setVerificationLoading(true);
     setErrorMessage("");
+    setPollTimeoutReached(false);
 
-    try {
+    // Clear any existing poll
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    if (pollTimeoutRef.current) clearTimeout(pollTimeoutRef.current);
+
+    const idempotencyKey = `verify-${sessionId}-${Date.now()}`;
+
+    const doVerify = async (): Promise<{ status: string; donationId?: string }> => {
       const token = getIdToken ? await getIdToken() : null;
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "X-Idempotency-Key": idempotencyKey,
+      };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const res = await fetch("/api/payments/verify", {
@@ -435,35 +452,158 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         headers,
         body: JSON.stringify({ sessionId }),
       });
-
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Manual verification query returned unpaid.");
+
+      if (res.status === 202 || data.status === "PENDING") {
+        return { status: "PENDING" };
+      }
+      if (res.ok && data.success) {
+        return { status: "COMPLETED", donationId: data.donationId };
+      }
+      throw new Error(data.error || "Verification failed.");
+    };
+
+    try {
+      const result = await doVerify();
+
+      if (result.status === "COMPLETED") {
+        setVerificationLoading(false);
+        setVerificationStatus("COMPLETED");
+        setPaymentSuccess(true);
+        setTimeout(() => {
+          window.location.href = `/give/receipt/${result.donationId}`;
+        }, 2600);
+        return;
       }
 
-      window.location.href = `/give/receipt/${data.donation.id}`;
-    } catch (err: any) {
-      console.error("Manual verification error:", err);
-      setErrorMessage(err.message || "We could not verify your transfer immediately. Please double check that you completed the transaction in your app, wait a few seconds and try again.");
-    } finally {
+      // PENDING — begin polling every 4 seconds
+      setVerificationStatus("PENDING");
       setVerificationLoading(false);
+
+      // 60-second hard timeout
+      pollTimeoutRef.current = setTimeout(() => {
+        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+        setVerificationStatus(null);
+        setPollTimeoutReached(true);
+      }, 60_000);
+
+      pollIntervalRef.current = setInterval(async () => {
+        try {
+          const pollRes = await fetch(`/api/donations/status/${sessionId}`);
+          const pollData = await pollRes.json();
+
+          if (pollData.status === "COMPLETED") {
+            clearInterval(pollIntervalRef.current!);
+            clearTimeout(pollTimeoutRef.current!);
+            setVerificationStatus("COMPLETED");
+            setPaymentSuccess(true);
+            setTimeout(() => {
+              window.location.href = `/give/receipt/${pollData.donationId}`;
+            }, 2600);
+          } else if (pollData.status === "EXPIRED" || pollData.status === "FAILED") {
+            clearInterval(pollIntervalRef.current!);
+            clearTimeout(pollTimeoutRef.current!);
+            setVerificationStatus("FAILED");
+            setErrorMessage("Session expired or payment failed. Please generate a new QR.");
+          }
+        } catch {
+          // Transient network error — keep polling
+        }
+      }, 4_000);
+    } catch (err: any) {
+      console.error("Verify payment error:", err);
+      setVerificationLoading(false);
+      setErrorMessage(err.message || "Verification failed. Please wait a few seconds and try again.");
     }
   };
 
+  /**
+   * Android Intent URL — launches the system UPI chooser (all installed UPI apps).
+   * Falls back to upi:// scheme on iOS / desktop.
+   */
+  const handleOpenUpiApp = () => {
+    if (!upiUri) {
+      setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
+      return;
+    }
+
+    const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+
+    // Android Intent URL — empty package= triggers the system chooser
+    const intentUrl = `intent://pay?${params}#Intent;scheme=upi;package=;end`;
+
+    // Try Android Intent first; if not handled (desktop / iOS), fall back to upi://
+    const anchor = document.createElement("a");
+    anchor.href = intentUrl;
+    anchor.style.display = "none";
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    // Fallback after 1.5s if page is still visible (no UPI app handled the intent)
+    setTimeout(() => {
+      if (!document.hidden) {
+        window.open(`upi://pay?${params}`, "_blank", "noopener");
+      }
+    }, 1500);
+  };
+
+  /**
+   * Launch a specific UPI app by its Android package ID.
+   * Uses Intent URL with the package set, so only that specific app launches.
+   */
+  const handleOpenSpecificApp = (pkg: string) => {
+    if (!upiUri) {
+      setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
+      return;
+    }
+
+    const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+    const intentUrl = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
+
+    const anchor = document.createElement("a");
+    anchor.href = intentUrl;
+    anchor.style.display = "none";
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    // If the specific app isn't installed, open its Play Store page after 2s
+    setTimeout(() => {
+      if (!document.hidden) {
+        window.open(
+          `https://play.google.com/store/apps/details?id=${pkg}`,
+          "_blank",
+          "noopener"
+        );
+      }
+    }, 2000);
+  };
+
+  // Legacy — kept for backward compatibility
+  const openPaymentApp = (appUrl: string, storeFallback: string) => {
+    window.location.href = appUrl;
+    setTimeout(() => {
+      if (!document.hidden) window.location.href = storeFallback;
+    }, 1800);
+  };
+
   const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).catch(() => {
+      // Fallback for older browsers
+      const el = document.createElement("textarea");
+      el.value = text;
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    });
     setCopiedLabel(label);
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  const openPaymentApp = (appUrl: string, storeFallback: string) => {
-    window.location.href = appUrl;
-    setTimeout(() => {
-      if (!document.hidden) {
-        window.location.href = storeFallback;
-      }
-    }, 1800);
-  };
 
   const activePurposeObj = purposes.find((p) => p.code === selectedPurpose);
   const getLanguagePurposeName = (p: PurposeItem) => {
@@ -902,164 +1042,305 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -16 }}
                           transition={{ duration: 0.25 }}
-                          className="flex flex-col items-center space-y-6"
+                          className="flex flex-col items-center space-y-5"
                         >
-                          {/* Countdown Timer */}
-                          <div className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold border transition-all ${
-                            isExpired
-                              ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/40"
-                              : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/30"
-                          }`}>
-                            <Clock className="w-4 h-4" />
-                            <span>{language === 'te' ? 'QR గడువు ముగిసే సమయం:' : language === 'hi' ? 'QR समाप्त होने में:' : 'QR Expires in:'}</span>
-                            <span className="font-mono font-extrabold text-sm tracking-widest">{timeLeft}</span>
-                          </div>
-
-                          {/* QR Container */}
-                          <div className="w-full max-w-sm">
-                            <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-3xl border-2 border-gray-100 dark:border-gray-700 shadow-[0_4px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] flex flex-col items-center">
-                              
-                              {/* Dynamic QR badge */}
-                              <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md">
-                                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                                {language === 'te' ? 'డైనమిక్ QR' : language === 'hi' ? 'डायनेमिक QR' : 'Dynamic QR'}
-                              </div>
-
-                              {/* QR Code Image */}
-                              <div className="w-52 h-52 bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center mt-2">
-                                {qrCodeData ? (
-                                  <img
-                                    src={qrCodeData}
-                                    alt="Dynamic UPI QR Code"
-                                    className="w-full h-full object-contain p-2"
-                                  />
-                                ) : (
-                                  <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-                                )}
-                              </div>
-
-                              {/* Church Name */}
-                              <p className="mt-3 text-xs font-bold text-gray-600 dark:text-gray-400 text-center">{churchName}</p>
-
-                              {/* UPI ID Row */}
-                              <div className="mt-3 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-2xl flex items-center justify-between gap-3">
-                                <div className="min-w-0">
-                                  <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-widest">
-                                    {t.pages.give.upiIdLabel}
-                                  </span>
-                                  <span className="text-gray-800 dark:text-gray-200 font-bold font-mono text-xs select-all truncate block">
-                                    {upiId}
-                                  </span>
+                          {/* ── SUCCESS ANIMATION ─────────────────── */}
+                          <AnimatePresence>
+                            {paymentSuccess && (
+                              <motion.div
+                                key="success-overlay"
+                                initial={{ opacity: 0, scale: 0.7 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.1 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                                className="w-full max-w-sm flex flex-col items-center gap-4 py-6"
+                              >
+                                <div className="relative">
+                                  <motion.div
+                                    className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-2xl shadow-emerald-500/40"
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                                  >
+                                    <CheckCircle2 className="w-12 h-12 text-white" />
+                                  </motion.div>
+                                  {/* Burst rings */}
+                                  {[1, 2, 3].map((i) => (
+                                    <motion.div
+                                      key={i}
+                                      className="absolute inset-0 rounded-full border-2 border-emerald-400"
+                                      initial={{ scale: 1, opacity: 0.6 }}
+                                      animate={{ scale: 2.5 + i * 0.5, opacity: 0 }}
+                                      transition={{ duration: 1.2, delay: i * 0.15, ease: "easeOut" }}
+                                    />
+                                  ))}
                                 </div>
-                                <button 
-                                  type="button"
-                                  onClick={() => copyToClipboard(upiId, "UPI ID")}
-                                  className="p-2 bg-gray-50 dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl text-gray-500 hover:text-purple-600 transition-all border border-gray-200 dark:border-gray-700 flex-shrink-0"
-                                >
-                                  {copiedLabel === "UPI ID" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                                </button>
+                                <div className="text-center space-y-1">
+                                  <p className="text-xl font-extrabold text-gray-900 dark:text-white">
+                                    {language === 'te' ? '🎉 దాతృత్వం ధృవీకరించబడింది!' : language === 'hi' ? '🎉 दान सत्यापित हो गया!' : '🎉 Donation Verified!'}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {language === 'te' ? 'రశీదుకు మళ్ళించబడుతోంది...' : language === 'hi' ? 'रसीद पर पुनर्निर्देशित किया जा रहा है...' : 'Redirecting to your receipt...'}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  {language === 'te' ? 'దయచేసి వేచి ఉండండి...' : language === 'hi' ? 'कृपया प्रतीक्षा करें...' : 'Please wait...'}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {/* ── MAIN CONTENT (hidden after success) ───────── */}
+                          {!paymentSuccess && (
+                            <>
+                              {/* Countdown Timer */}
+                              <div className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold border transition-all ${
+                                isExpired
+                                  ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/40"
+                                  : parseInt(timeLeft.split(':')[0]) === 0 && parseInt(timeLeft.split(':')[1]) < 60
+                                    ? "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/30 animate-pulse"
+                                    : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/30"
+                              }`}>
+                                <Clock className="w-4 h-4" />
+                                <span>{language === 'te' ? 'QR గడువు ముగిసే సమయం:' : language === 'hi' ? 'QR समाप्त होने में:' : 'QR Expires in:'}</span>
+                                <span className="font-mono font-extrabold text-sm tracking-widest">{timeLeft}</span>
                               </div>
-                            </div>
-                          </div>
 
-                          {/* Payment App Quick-Launch */}
-                          <div className="w-full max-w-sm">
-                            <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center mb-3">
-                              {language === 'te' ? '— మీ ఇష్టమైన యాప్‌లో తెరవండి —' : language === 'hi' ? '— पसंदीदा ऐप में खोलें —' : '— Pay directly with your favourite app —'}
-                            </p>
-                            <div className="grid grid-cols-5 gap-2 mb-4">
-                              {[
-                                { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user" },
-                                { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app" },
-                                { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm" },
-                                { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp" },
-                                { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", invert: true },
-                              ].map((app) => (
-                                <button
-                                  key={app.name}
-                                  type="button"
-                                  title={`Open in ${app.name}`}
-                                  onClick={() => openPaymentApp(app.url, app.store)}
-                                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
-                                >
-                                  <img
-                                    src={app.logo}
-                                    className="w-8 h-8 object-contain rounded-lg group-hover:scale-105 transition-transform"
-                                    alt={app.name}
-                                    style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
-                                  />
-                                  <span className="text-[9px] font-bold tracking-tight" style={{ color: app.color }}>{app.name}</span>
-                                </button>
-                              ))}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2.5">
-                              <button
-                                type="button"
-                                onClick={() => openPaymentApp(upiUri, upiUri)}
-                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-purple-200 dark:border-purple-800/40 bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95"
-                              >
-                                <Smartphone className="w-4 h-4" />
-                                {language === 'te' ? 'UPI యాప్ తెరవండి' : language === 'hi' ? 'यूपीआई ऐप खोलें' : 'Open in UPI App'}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => copyToClipboard(upiUri, "URI")}
-                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
-                              >
-                                {copiedLabel === "URI" ? (
-                                  <><Check className="w-4 h-4 text-emerald-500" /> {language === 'te' ? 'కాపీ అయింది' : language === 'hi' ? 'कॉपी हुआ' : 'Copied!'}</>
-                                ) : (
-                                  <><Copy className="w-4 h-4" /> {language === 'te' ? 'లింక్ కాపీ' : language === 'hi' ? 'लिंक कॉपी' : 'Copy Link'}</>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Real-time verification notice */}
-                          <div className="w-full max-w-sm p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-blue-100 dark:border-blue-800/30">
-                            <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                                <Activity className="w-4 h-4 text-white" />
-                              </div>
-                              <div>
-                                <p className="font-bold text-sm text-gray-800 dark:text-gray-200">
-                                  {language === 'te' ? 'నిజ-సమయ ధృవీకరణ సక్రియంగా ఉంది' : language === 'hi' ? 'वास्तविक समय सत्यापन सक्रिय' : 'Real-time verification active'}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
-                                  {language === 'te' ? 'చెల్లింపు పూర్తయిన తర్వాత స్వయంచాలకంగా ధృవీకరించబడుతుంది. అది వెంటనే జరగకపోతే, దిగువ బటన్ క్లిక్ చేయండి.' : language === 'hi' ? 'भुगतान पूरा होने के बाद स्वचालित रूप से सत्यापित किया जाएगा।' : "Once payment is completed, our server auto-verifies in real-time. If it doesn't redirect, click the button below."}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Action buttons */}
-                          <div className="flex gap-3 w-full max-w-sm">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-                                if (socketRef.current) socketRef.current.disconnect();
-                                setStep(1);
-                              }}
-                              className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm"
-                            >
-                              <ArrowLeft className="w-4 h-4" />
-                              {t.pages.give.backBtn}
-                            </button>
-                            <button
-                              type="button"
-                              disabled={verificationLoading || isExpired}
-                              onClick={handleVerifyPayment}
-                              className="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm"
-                            >
-                              {verificationLoading ? (
-                                <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
+                              {/* QR Expired — regenerate prompt */}
+                              {isExpired ? (
+                                <div className="w-full max-w-sm flex flex-col items-center gap-4 py-4">
+                                  <div className="w-20 h-20 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800/40 flex items-center justify-center">
+                                    <ShieldAlert className="w-9 h-9 text-red-500" />
+                                  </div>
+                                  <div className="text-center space-y-1">
+                                    <p className="font-bold text-gray-800 dark:text-gray-200">
+                                      {language === 'te' ? 'QR కోడ్ గడువు ముగిసింది' : language === 'hi' ? 'QR कोड समाप्त हो गया' : 'QR Code Expired'}
+                                    </p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                      {language === 'te' ? 'కొత్త QR కోడ్ రూపొందించడానికి దిగువ క్లిక్ చేయండి.' : language === 'hi' ? 'नया QR कोड जनरेट करने के लिए नीचे क्लिक करें।' : 'Generate a new QR code to proceed with your donation.'}
+                                    </p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+                                      if (socketRef.current) socketRef.current.disconnect();
+                                      setQrCodeData("");
+                                      setUpiUri("");
+                                      setSessionId("");
+                                      setReferenceNumber("");
+                                      setExpiresAt(null);
+                                      setTimeLeft("");
+                                      setErrorMessage("");
+                                      setPollTimeoutReached(false);
+                                      setVerificationStatus(null);
+                                      setStep(1);
+                                    }}
+                                    className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-purple-600/25 transition-all active:scale-[0.99]"
+                                  >
+                                    <RefreshCw className="w-4 h-4" />
+                                    {language === 'te' ? 'కొత్త QR రూపొందించండి' : language === 'hi' ? 'नया QR जनरेट करें' : 'Generate New QR'}
+                                  </button>
+                                </div>
                               ) : (
-                                <><CheckCircle2 className="h-4 w-4" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
+                                <>
+                                  {/* QR Container */}
+                                  <div className="w-full max-w-sm">
+                                    <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-3xl border-2 border-gray-100 dark:border-gray-700 shadow-[0_4px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] flex flex-col items-center">
+                                      {/* Dynamic QR badge */}
+                                      <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md">
+                                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                                        {language === 'te' ? 'డైనమిక్ QR' : language === 'hi' ? 'डायनेमिक QR' : 'Dynamic QR'}
+                                      </div>
+
+                                      {/* QR Code Image */}
+                                      <div className="w-52 h-52 bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center mt-2">
+                                        {qrCodeData ? (
+                                          <img
+                                            src={qrCodeData}
+                                            alt="Dynamic UPI QR Code"
+                                            className="w-full h-full object-contain p-2"
+                                          />
+                                        ) : (
+                                          <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+                                        )}
+                                      </div>
+
+                                      {/* Church Name */}
+                                      <p className="mt-3 text-xs font-bold text-gray-600 dark:text-gray-400 text-center">{churchName}</p>
+
+                                      {/* UPI ID Row */}
+                                      <div className="mt-3 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-2xl flex items-center justify-between gap-3">
+                                        <div className="min-w-0">
+                                          <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-widest">
+                                            {t.pages.give.upiIdLabel}
+                                          </span>
+                                          <span className="text-gray-800 dark:text-gray-200 font-bold font-mono text-xs select-all truncate block">
+                                            {upiId}
+                                          </span>
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={() => copyToClipboard(upiId, "UPI ID")}
+                                          className="p-2 bg-gray-50 dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl text-gray-500 hover:text-purple-600 transition-all border border-gray-200 dark:border-gray-700 flex-shrink-0"
+                                        >
+                                          {copiedLabel === "UPI ID" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Payment App Quick-Launch */}
+                                  <div className="w-full max-w-sm space-y-3">
+                                    {/* Open in UPI App — Android Intent chooser */}
+                                    <button
+                                      type="button"
+                                      onClick={handleOpenUpiApp}
+                                      className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white font-bold text-sm hover:shadow-xl hover:shadow-purple-600/30 transition-all active:scale-[0.99] relative overflow-hidden group"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      <Smartphone className="w-5 h-5 relative z-10" />
+                                      <span className="relative z-10">
+                                        {language === 'te' ? 'UPI యాప్‌లో తెరవండి' : language === 'hi' ? 'UPI ऐप में खोलें' : 'Open in UPI App'}
+                                      </span>
+                                      <ExternalLink className="w-4 h-4 relative z-10 opacity-70" />
+                                    </button>
+
+                                    {/* Per-app buttons */}
+                                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center">
+                                      {language === 'te' ? '— లేదా నేరుగా తెరవండి —' : language === 'hi' ? '— या सीधे खोलें —' : '— Or open directly in —'}
+                                    </p>
+                                    <div className="grid grid-cols-6 gap-1.5">
+                                      {[
+                                        { name: "GPay",       pkg: "com.google.android.apps.nbu.paisa.user",  logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",    color: "#4285F4" },
+                                        { name: "PhonePe",    pkg: "com.phonepe.app",                         logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",                 color: "#5f259f" },
+                                        { name: "Paytm",      pkg: "net.one97.paytm",                         logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg",   color: "#00BAF2" },
+                                        { name: "BHIM",       pkg: "in.org.npci.upiapp",                      logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                    color: "#FF6B00" },
+                                        { name: "FamApp",     pkg: "com.fampay.in",                           logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                       color: "#b8860b", invert: true },
+                                        { name: "SuperMoney", pkg: "com.supermoney.app",                      logo: "https://play-lh.googleusercontent.com/oVyvz6bXIYzh7g9ZkKP_jn7bRfJlBDjENGiVZHqXFKfMVNJZ7HlD3z-7wCrGu-DHEA=s48", color: "#FF4500" },
+                                      ].map((app) => (
+                                        <button
+                                          key={app.name}
+                                          type="button"
+                                          title={`Pay with ${app.name}`}
+                                          onClick={() => handleOpenSpecificApp(app.pkg)}
+                                          className="flex flex-col items-center justify-center gap-1 py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
+                                        >
+                                          <img
+                                            src={app.logo}
+                                            className="w-7 h-7 object-contain rounded-md"
+                                            alt={app.name}
+                                            style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
+                                          />
+                                          <span className="text-[8px] font-bold tracking-tight leading-tight text-center" style={{ color: app.color }}>{app.name}</span>
+                                        </button>
+                                      ))}
+                                    </div>
+
+                                    {/* Copy Payment Link */}
+                                    <button
+                                      type="button"
+                                      onClick={() => copyToClipboard(upiUri, "LINK")}
+                                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 font-semibold text-sm transition-all active:scale-95"
+                                    >
+                                      {copiedLabel === "LINK" ? (
+                                        <><Check className="w-4 h-4 text-emerald-500" /> {language === 'te' ? 'లింక్ కాపీ అయింది!' : language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Payment link copied!'}</>
+                                      ) : (
+                                        <><Copy className="w-4 h-4" /> {language === 'te' ? 'చెల్లింపు లింక్ కాపీ' : language === 'hi' ? 'भुगतान लिंक कॉपी' : 'Copy Payment Link'}</>
+                                      )}
+                                    </button>
+                                  </div>
+
+                                  {/* Real-time verification status */}
+                                  {verificationStatus === 'PENDING' && (
+                                    <motion.div
+                                      initial={{ opacity: 0, y: 8 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="w-full max-w-sm p-4 bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/40 flex items-start gap-3"
+                                    >
+                                      <Loader2 className="w-5 h-5 text-amber-600 animate-spin flex-shrink-0 mt-0.5" />
+                                      <div>
+                                        <p className="font-bold text-sm text-amber-800 dark:text-amber-300">
+                                          {language === 'te' ? 'చెల్లింపు నిరీక్షిస్తోంది...' : language === 'hi' ? 'भुगतान प्रतीक्षित है...' : 'Payment pending...'}
+                                        </p>
+                                        <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                                          {language === 'te' ? 'స్వయంచాలకంగా తనిఖీ చేస్తోంది. దయచేసి వేచి ఉండండి.' : language === 'hi' ? 'स्वचालित रूप से जांच रहा है। कृपया प्रतीक्षा करें।' : 'Auto-checking every few seconds. Please wait.'}
+                                        </p>
+                                      </div>
+                                    </motion.div>
+                                  )}
+
+                                  {pollTimeoutReached && (
+                                    <motion.div
+                                      initial={{ opacity: 0, y: 8 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="w-full max-w-sm p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-800/40 flex items-start gap-3"
+                                    >
+                                      <ShieldAlert className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                                      <div>
+                                        <p className="font-bold text-sm text-orange-800 dark:text-orange-300">
+                                          {language === 'te' ? 'ధృవీకరణ సమయం ముగిసింది' : language === 'hi' ? 'सत्यापन टाइमआउट' : 'Verification timeout'}
+                                        </p>
+                                        <p className="text-xs text-orange-700 dark:text-orange-400 mt-0.5">
+                                          {language === 'te' ? 'చెల్లింపు పూర్తయినట్లయితే, మళ్ళీ ప్రయత్నించండి.' : language === 'hi' ? 'यदि भुगतान पूरा हो गया है, तो दोबारा प्रयास करें।' : "If you completed the payment, tap Verify Now again."}
+                                        </p>
+                                      </div>
+                                    </motion.div>
+                                  )}
+
+                                  {/* Real-time notice */}
+                                  {!verificationStatus && !pollTimeoutReached && (
+                                    <div className="w-full max-w-sm p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-blue-100 dark:border-blue-800/30">
+                                      <div className="flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                          <Activity className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                          <p className="font-bold text-sm text-gray-800 dark:text-gray-200">
+                                            {language === 'te' ? 'నిజ-సమయ ధృవీకరణ సక్రియంగా ఉంది' : language === 'hi' ? 'वास्तविक समय सत्यापन सक्रिय' : 'Real-time verification active'}
+                                          </p>
+                                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
+                                            {language === 'te' ? 'చెల్లింపు పూర్తయిన తర్వాత స్వయంచాలకంగా ధృవీకరించబడుతుంది.' : language === 'hi' ? 'भुगतान पूरा होने के बाद स्वचालित रूप से सत्यापित किया जाएगा।' : "Once payment is completed, our server auto-verifies in real-time. If it doesn't redirect, tap the button below."}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Action buttons */}
+                                  <div className="flex gap-3 w-full max-w-sm">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+                                        if (socketRef.current) socketRef.current.disconnect();
+                                        setVerificationStatus(null);
+                                        setPollTimeoutReached(false);
+                                        setStep(1);
+                                      }}
+                                      className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm"
+                                    >
+                                      <ArrowLeft className="w-4 h-4" />
+                                      {t.pages.give.backBtn}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={verificationLoading || isExpired}
+                                      onClick={handleVerifyPayment}
+                                      className="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm"
+                                    >
+                                      {verificationLoading ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
+                                      ) : (
+                                        <><CheckCircle2 className="h-4 w-4" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
+                                      )}
+                                    </button>
+                                  </div>
+                                </>
                               )}
-                            </button>
-                          </div>
+                            </>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
