@@ -167,7 +167,7 @@ export default function NgoVolunteersPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5 text-left">
               {/* Row 1: Name & Email */}
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     {ngoT.volunteersPage.fullName}
@@ -178,7 +178,7 @@ export default function NgoVolunteersPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={ngoT.volunteersPage.fullName}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
                   />
                 </div>
 
@@ -192,13 +192,13 @@ export default function NgoVolunteersPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={ngoT.volunteersPage.email}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
                   />
                 </div>
               </div>
 
               {/* Row 2: Phone & Project */}
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     {ngoT.volunteersPage.phone}
@@ -208,7 +208,7 @@ export default function NgoVolunteersPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder={ngoT.volunteersPage.phone}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
                   />
                 </div>
 
@@ -220,7 +220,7 @@ export default function NgoVolunteersPage() {
                     <select
                       value={projectId}
                       onChange={(e) => setProjectId(e.target.value)}
-                      className="w-full py-3 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 appearance-none transition-colors"
+                      className="w-full py-3 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 appearance-none transition-colors text-sm"
                     >
                       <option value="">{ngoT.volunteersPage.initiativePlaceholder}</option>
                       {projects.map((proj) => (
@@ -244,7 +244,7 @@ export default function NgoVolunteersPage() {
                   value={skills}
                   onChange={(e) => setSkills(e.target.value)}
                   placeholder={ngoT.volunteersPage.skillsPlaceholder}
-                  className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
                 />
               </div>
 
