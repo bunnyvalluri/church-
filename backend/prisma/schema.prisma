@@ -191,13 +191,20 @@ model Pastor {
 }
 
 model Gallery {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  imageUrl    String
-  category    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  imageUrl     String   @map("image_url")
+  thumbnailUrl String?  @map("thumbnail_url")
+  category     String
+  branchId     String?  @map("branch_id")
+  branch       Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([createdAt])
+  @@index([category])
+  @@index([branchId])
 }
 
 model ContactMessage {
@@ -449,6 +456,7 @@ model Branch {
   events           Event[]
   donationSessions DonationSession[]
   donations        Donation[]
+  galleryItems     Gallery[]
 
   @@map("branches")
 }
