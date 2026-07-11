@@ -243,7 +243,7 @@ export default function UnifiedEventManagementPortal() {
   const fetchAllSermons = async () => {
     setLoadingSermons(true);
     try {
-      const res = await fetch("/api/pastor/sermons");
+      const res = await fetch(`/api/pastor/sermons?t=${Date.now()}`);
       const data = await res.json();
       if (res.ok && data.success) setSermonsList(data.sermons || []);
     } catch (err) {

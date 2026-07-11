@@ -5,6 +5,9 @@ import { uploadBufferToCloudinary } from '@/lib/cloudinary';
 import { validateFileSecurity } from '@/lib/uploadSecurity';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
 
+export const dynamic = 'force-dynamic';
+
+
 
 export async function GET(req: Request) {
   try {

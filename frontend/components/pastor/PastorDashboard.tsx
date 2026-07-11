@@ -495,7 +495,7 @@ export default function PastorDashboard() {
       }
 
       // 2. Fetch Sermons
-      const srmRes = await fetch("/api/pastor/sermons");
+      const srmRes = await fetch(`/api/pastor/sermons?t=${Date.now()}`);
       const srmData = await srmRes.json();
       const sermonList = srmData.sermons || [];
       setSermons(sermonList);

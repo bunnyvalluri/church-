@@ -361,7 +361,7 @@ export default function AdminDashboard() {
       setDonationsDb(donData.donations || []);
 
       // 3. Fetch Sermons
-      const srmRes = await fetch("/api/pastor/sermons", { headers });
+      const srmRes = await fetch(`/api/pastor/sermons?t=${Date.now()}`, { headers });
       const srmData = await srmRes.json();
       setSermonsDb(srmData.sermons || []);
 
