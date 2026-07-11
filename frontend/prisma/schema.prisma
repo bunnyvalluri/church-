@@ -481,3 +481,31 @@ model Family {
   updatedAt         DateTime @updatedAt
 }
 
+// ── Church Platform Feedback ─────────────────────────────────────────────────
+model ChurchFeedback {
+  id          String           @id @default(cuid())
+  userId      String?          // nullable for anonymous
+  userName    String?          // cached display name
+  rating      Int              // 1-5 stars
+  category    FeedbackCategory
+  comment     String?          @db.Text
+  isAnonymous Boolean          @default(false)
+  emoji       String?          // optional reaction emoji
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([category])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+enum FeedbackCategory {
+  WORSHIP
+  SERMONS
+  EVENTS
+  COMMUNITY
+  FACILITIES
+  ONLINE_PLATFORM
+  LEADERSHIP
+  OVERALL
+}

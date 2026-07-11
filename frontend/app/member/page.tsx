@@ -21,266 +21,225 @@ import {
   Gift,
   RefreshCw,
   Wifi,
-  TrendingUp,
-  CheckCircle2,
   Activity,
   ChevronRight,
   ChevronDown,
-  Star,
+  Play,
+  Shield,
+  Sun,
+  Moon,
+  Sunset,
+  Zap,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import PaletteToggle from "@/components/PaletteToggle";
 import { motion, AnimatePresence } from "framer-motion";
+import ChurchFeedbackWidget from "@/components/ChurchFeedbackWidget";
 
-const memberTranslations = {
-  en: {
-    portalName: "KCM Portal",
-    roleName: "Believer Member",
-    welcome: "Welcome,",
-    signOut: "Sign Out",
-    portalDashboard: "Member Fellowship Space",
-    hello: "Welcome Home,",
-    description: "We are so glad to have you in our spiritual family. Access your events, review sermons, submit prayers, and volunteer in active ministries.",
-    registeredEvents: "Registered Events",
-    prayerRequests: "Prayer Requests",
-    directoryTitle: "Believer Services Directory",
-    latestAnnouncements: "Latest Announcements",
-    noAnnouncements: "No active church announcements currently.",
-    urgent: "Urgent",
-    loadingFeeds: "Loading member portal feeds...",
-    loadingPortal: "Securing Member Fellowship Space...",
-    scriptureTitle: "Scripture of the Day",
-    scriptureText: '"The Lord is my shepherd; I shall not want."',
-    scriptureRef: "— Psalm 23:1",
-    liveIndicator: "Live",
-    liveSync: "Live sync active · Last updated",
-    statsSermons: "Sermons Available",
-    statsAnnouncements: "Announcements",
-    quickActions: "Quick Actions",
-    yourActivity: "Your Activity",
-    actEvents: "Events Registered",
-    actPrayers: "Prayers Submitted",
-    actAnswered: "Prayers Answered",
-    actionSubmitPrayer: "Submit a Prayer",
-    actionRegisterEvent: "Register for Event",
-    actionGiveOnline: "Give Online",
-    badges: {
-      update: "Update",
-      browse: "Browse",
-      submit: "Submit",
-      watch: "Watch",
-      apply: "Apply",
-      giveNow: "Give Now",
-      rsvps: "RSVPs",
-      requests: "Requests",
-      sermons: "Sermons"
-    },
-    services: {
-      profile: { title: "My Profile", desc: "Update phone numbers, profile images, and address." },
-      events: { title: "Church Events", desc: "Browse upcoming schedules and secure seats." },
-      prayers: { title: "Prayer Requests", desc: "Submit, edit, and keep track of prayer lines." },
-      sermons: { title: "Sermon Library", desc: "Watch recent bible sessions and pastorships." },
-      volunteer: { title: "Volunteer Sign Up", desc: "Serve in active church programs and ministries." },
-      giving: { title: "Giving & Receipts", desc: "Make offerings, tithe, and download statements." },
-    },
-  },
-  te: {
-    portalName: "కింగ్డమ్ ఆఫ్ క్రైస్ట్ పోర్టల్",
-    roleName: "సభ్యుడు",
-    welcome: "స్వాగతం,",
-    signOut: "లాగ్ అవుట్",
-    portalDashboard: "సభ్యుల పోర్టల్ డాష్‌బోర్డ్",
-    hello: "హలో,",
-    description: "మా ఆత్మీయ కమ్యూనిటీలో మిమ్మల్ని కలిగి ఉన్నందుకు మేము చాలా సంతోషిస్తున్నాము. మీ ఈవెంట్‌లను యాక్సెస్ చేయండి, ప్రసంగాలను సమీక్షించండి, ప్రార్థనలను సమీక్షించండి మరియు పరిచర్యలలో వాలంటీర్‌గా ఉండండి.",
-    registeredEvents: "నమోదైన కార్యక్రమాలు",
-    prayerRequests: "ప్రార్థన విన్నపాలు",
-    directoryTitle: "సభ్యుల సేవల డైరెక్టరీ",
-    latestAnnouncements: "తాజా ప్రకటనలు",
-    noAnnouncements: "ప్రస్తుతం చర్చి ప్రకటనలు ఏవీ లేవు.",
-    urgent: "అత్యవసరం",
-    loadingFeeds: "ఫీడ్‌లను లోడ్ చేస్తోంది...",
-    loadingPortal: "సభ్యుల పోర్టల్ లోడ్ అవుతోంది...",
-    scriptureTitle: "నేటి దైవ వాక్యం",
-    scriptureText: '"యెహోవా నా కాపరి, నాకు లేమి కలుగదు."',
-    scriptureRef: "— కీర్తనలు 23:1",
-    liveIndicator: "లైవ్",
-    liveSync: "ఆటో-సమకాలీకరణ సక్రియంగా ఉంది",
-    statsSermons: "అందుబాటులో ఉన్న ప్రసంగాలు",
-    statsAnnouncements: "ప్రకటనలు",
-    quickActions: "త్వరిత చర్యలు",
-    yourActivity: "మీ కార్యాచరణ",
-    actEvents: "నమోదైన ఈవెంట్‌లు",
-    actPrayers: "సమర్పించిన ప్రార్థనలు",
-    actAnswered: "జవాబు ఇవ్వబడిన ప్రార్థనలు",
-    actionSubmitPrayer: "ప్రార్థనను సమర్పించండి",
-    actionRegisterEvent: "ఈవెంట్ కోసం నమోదు చేసుకోండి",
-    actionGiveOnline: "ఆన్‌లైన్ కానుక ఇవ్వండి",
-    badges: {
-      update: "నవీకరించు",
-      browse: "బ్రౌజ్ చేయి",
-      submit: "సమర్పించు",
-      watch: "వీక్షించు",
-      apply: "దరఖాస్తు",
-      giveNow: "ఇప్పుడే ఇవ్వండి",
-      rsvps: "నమోదులు",
-      requests: "విన్నపాలు",
-      sermons: "ప్రసంగాలు"
-    },
-    services: {
-      profile: { title: "నా ప్రొఫైల్", desc: "ఫోన్ నంబర్లు, ప్రొఫైల్ చిత్రాలు మరియు చిరునామాను నవీకరించండి." },
-      events: { title: "చర్చి కార్యక్రమాలు", desc: "రాబోయే షెడ్యూల్‌లను బ్రౌజ్ చేయండి మరియు సీట్లను బుక్ చేసుకోండి." },
-      prayers: { title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన విన్నపాలను సమర్పించండి మరియు ట్రాక్ చేయండి." },
-      sermons: { title: "ప్రసంగాల లైబ్రరీ", desc: "ఇటీవలి బైబిల్ సందేశాలు మరియు ప్రసంగాలు వీక్షించండి." },
-      volunteer: { title: "వాలంటీర్ నమోదు", desc: "సక్రియ చర్చి కార్యక్రమాలు మరియు పరిచర్యలలో సేవ చేయండి." },
-      giving: { title: "కానుకలు & రసీదులు", desc: "దశమభాగాలు, కానుకలు ఇవ్వండి మరియు రసీదులు డౌన్‌లోడ్ చేసుకోండి." },
-    },
-  },
-  hi: {
-    portalName: "केसीएम पोर्टल",
-    roleName: "सदस्य",
-    welcome: "स्वागत है,",
-    signOut: "साइन आउट",
-    portalDashboard: "सदस्य पोर्टल डैशबोर्ड",
-    hello: "नमस्ते,",
-    description: "हमें अपने आध्यात्मिक परिवार में पाकर बहुत खुशी हुई है। अपने कार्यक्रमों तक पहुंचें, प्रवचनों की समीक्षा करें, प्रार्थनाएं जमा करें, और सक्रिय मंत्रालयों में स्वयंसेवा करें।",
-    registeredEvents: "पंजीकृत कार्यक्रम",
-    prayerRequests: "प्रार्थना निवेदन",
-    directoryTitle: "सदस्य सेवा निर्देशिका",
-    latestAnnouncements: "नवीनतम घोषणाएं",
-    noAnnouncements: "वर्तमान में कोई सक्रिय घोषणा नहीं है।",
-    urgent: "अति आवश्यक",
-    loadingFeeds: "फ़ीड लोड हो रहा है...",
-    loadingPortal: "सदस्य पोर्टल लोड हो रहा है...",
-    scriptureTitle: "आज का पवित्र वचन",
-    scriptureText: '"यहोवा मेरा चरवाहा है, मुझे कोई घटी न होगी।"',
-    scriptureRef: "— भजन संहिता 23:1",
-    liveIndicator: "लाइव",
-    liveSync: "लाइव सिंक सक्रिय · अंतिम बार अपडेट किया गया",
-    statsSermons: "उपलब्ध प्रवचन",
-    statsAnnouncements: "घोषणाएं",
-    quickActions: "त्वरित कार्रवाई",
-    yourActivity: "आपकी गतिविधि",
-    actEvents: "पंजीकृत कार्यक्रम",
-    actPrayers: "प्रार्थनाएं प्रस्तुत की गईं",
-    actAnswered: "प्रार्थनाओं का उत्तर दिया गया",
-    actionSubmitPrayer: "प्रार्थना जमा करें",
-    actionRegisterEvent: "कार्यक्रम के लिए पंजीकरण करें",
-    actionGiveOnline: "ऑनलाइन दान दें",
-    badges: {
-      update: "अपडेट करें",
-      browse: "देखें",
-      submit: "प्रस्तुत करें",
-      watch: "देखें",
-      apply: "आवेदन करें",
-      giveNow: "अभी दान दें",
-      rsvps: "आरएसवीपी",
-      requests: "अनुरोध",
-      sermons: "प्रवचन"
-    },
-    services: {
-      profile: { title: "मेरी प्रोफाइल", desc: "फ़ोन नंबर, प्रोफ़ाइल चित्र और पता अपडेट करें।" },
-      events: { title: "चर्च कार्यक्रम", desc: "आगामी कार्यक्रम देखें और सीटें सुरक्षित करें।" },
-      prayers: { title: "प्रार्थना निवेदन", desc: "प्रार्थना निवेदन जमा करें, संपादित करें और ट्रैक करें।" },
-      sermons: { title: "प्रवचन लाइब्रेरी", desc: "हाल के बाइबिल सत्र और संदेश देखें।" },
-      volunteer: { title: "स्वयंसेवक पंजीकरण", desc: "सक्रिय चर्च कार्यक्रमों और मंत्रालयों में सेवा करें।" },
-      giving: { title: "दान और रसीदें", desc: "दान, प्रसाद दें और रसीदें डाउनलोड करें।" },
-    },
-  },
-};
-
-const SCRIPTURES = {
-  en: [
-    { text: '"The Lord is my shepherd; I shall not want."', ref: "— Psalm 23:1" },
-    { text: '"I can do all things through Christ who strengthens me."', ref: "— Philippians 4:13" },
-    { text: '"For God so loved the world that He gave His only Son."', ref: "— John 3:16" },
-    { text: '"Trust in the Lord with all your heart."', ref: "— Proverbs 3:5" },
-    { text: '"Be still, and know that I am God."', ref: "— Psalm 46:10" },
-  ],
-  te: [
-    { text: '"యెహోవా నా కాపరి, నాకు లేమి కలుగదు."', ref: "— కీర్తనలు 23:1" },
-    { text: '"నన్ను బలపరచువానియందే నేను సమస్తమును చేయగలను."', ref: "— ఫిలిప్పీయులకు 4:13" },
-    { text: '"దేవుడు లోకమును ఎంతో ప్రేమించెను, ఆయన తన అద్వితీయ కుమారునిగా పుట్టిన వానిని ఇచ్చెను."', ref: "— యోహాను 3:16" },
-    { text: '"నీ పూర్ణహృదయముతో యెహోవాయందు నమ్మకముంచుము."', ref: "— సామెతలు 3:5" },
-    { text: '"ఊరకుండుడి, నేనే దేవుడనని తెలిసికొనుడి."', ref: "— కీర్తనలు 46:10" },
-  ],
-  hi: [
-    { text: '"यहोवा मेरा चरवाहा है, मुझे कोई घटी न होगी।"', ref: "— भजन संहिता 23:1" },
-    { text: '"जो मुझे सामर्थ्य देता है उसमें मैं सब कुछ कर सकता हूँ।"', ref: "— फिलिप्पियों 4:13" },
-    { text: '"क्योंकि परमेश्वर ने जगत से ऐसा प्रेम रखा कि उसने अपना एकलौता पुत्र दे दिया।"', ref: "— यूहन्ना 3:16" },
-    { text: '"तू अपनी समझ का सहारा न लेना, वरन सम्पूर्ण मन से यहोवा पर भरोसा रखना।"', ref: "— नीतिवचन 3:5" },
-    { text: '"शांत हो जाओ, और जानलें कि मैं ही परमेश्वर हूँ।"', ref: "— भजन संहिता 46:10" },
-  ]
-};
-
-const MOCK_ANNOUNCEMENTS = {
-  en: [
-    { id: "1", title: "Sunday Worship Reschedule", content: "Our main worship service will start at 9:00 AM instead of 10:00 AM this Sunday only.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
-    { id: "2", title: "Youth Spiritual Fellowship", content: "Weekly youth meetups every Friday night at Bahadurpally. Join us for fellowship & study.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
-  ],
-  te: [
-    { id: "1", title: "ఆరాధన సమయం మార్పు", content: "ఈ ఆదివారం మాత్రమే మన ఆరాధన కూడిక ఉదయం 10:00 గంటలకు బదులుగా 9:00 గంటలకు ప్రారంభమవుతుంది.", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
-    { id: "2", title: "యూత్ ఆత్మీయ కూడిక", content: "ప్రతి శుక్రవారం రాత్రి బహదూర్‌పల్లి చర్చిలో యవనస్థుల కూడిక ఉంటుంది. మీరందరూ ఆహ్వానితులే.", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
-  ],
-  hi: [
-    { id: "1", title: "रविवार आराधना समय में बदलाव", content: "हमारी मुख्य आराधना सेवा इस रविवार को सुबह 10:00 बजे के बजाय केवल 9:00 बजे शुरू होगी।", priority: "HIGH", createdAt: "2026-05-26T00:00:00.000Z" },
-    { id: "2", title: "युवा आध्यात्मिक संगति", content: "बहादुरपल्ली में हर शुक्रवार रात साप्ताहिक युवा संगति होगी। संगति और अध्ययन के लिए हमारे साथ जुड़ें।", priority: "NORMAL", createdAt: "2026-05-25T00:00:00.000Z" },
-  ]
-};
-
+/* ────────────────────────── Types ────────────────────────── */
 interface DashboardStats {
   prayers: number;
   prayersAnswered: number;
   events: number;
   sermons: number;
-  announcements: any[];
+  announcements: Announcement[];
 }
 
+interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  priority: string;
+  createdAt: string;
+}
+
+/* ────────────────────────── Constants ────────────────────── */
+const SCRIPTURES = [
+  { text: "For God so loved the world that He gave His only Son.", ref: "John 3:16" },
+  { text: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+  { text: "The Lord is my shepherd; I shall not want.", ref: "Psalm 23:1" },
+  { text: "Trust in the Lord with all your heart.", ref: "Proverbs 3:5" },
+  { text: "Be still, and know that I am God.", ref: "Psalm 46:10" },
+  { text: "Come to me, all who are weary, and I will give you rest.", ref: "Matthew 11:28" },
+  { text: "The Lord will fight for you; you need only to be still.", ref: "Exodus 14:14" },
+];
+
+const MOCK_ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: "1",
+    title: "Prayer Chain — Join Today",
+    content: "Our 24/7 prayer chain needs volunteers. Sign up to cover a 30-minute prayer slot each week.",
+    priority: "HIGH",
+    createdAt: "2026-06-28T00:00:00.000Z",
+  },
+  {
+    id: "2",
+    title: "Tithe & Offerings — Online Payment Available",
+    content: "You can now give your tithes and offerings online. Visit the Donate section and choose your preferred method.",
+    priority: "NORMAL",
+    createdAt: "2026-06-28T00:00:00.000Z",
+  },
+  {
+    id: "3",
+    title: "New Small Group — Kompally Area",
+    content: "We are launching a new small group for members in Kompally and Medchal areas. Meeting every Tuesday at 7:00 PM.",
+    priority: "NORMAL",
+    createdAt: "2026-06-26T00:00:00.000Z",
+  },
+  {
+    id: "4",
+    title: "Youth Camp Registration Open",
+    content: "Registration is now open for the Youth Summer Camp 2024 (July 5-7). Cost: ₹500 per person includes accommodation, meals, and all activities.",
+    priority: "URGENT",
+    createdAt: "2026-06-25T00:00:00.000Z",
+  },
+  {
+    id: "5",
+    title: "Church Anniversary — August 10, 2024",
+    content: "We are celebrating 16 years of God's faithfulness! Join us on August 10th for a special anniversary service, testimonies, and fellowship lunch.",
+    priority: "HIGH",
+    createdAt: "2026-06-25T00:00:00.000Z",
+  },
+];
+
+/* ────────────────────────── Helpers ─────────────────────── */
+function getGreeting(): { text: string; icon: React.ElementType } {
+  const hour = new Date().getHours();
+  if (hour < 12) return { text: "Good Morning", icon: Sun };
+  if (hour < 17) return { text: "Good Afternoon", icon: Sunset };
+  return { text: "Good Evening", icon: Moon };
+}
+
+/* ────────────────────────── Service Cards Data ──────────── */
+const SERVICE_CARDS = [
+  {
+    title: "My Profile",
+    desc: "Update your details & photo",
+    href: "/member/profile",
+    icon: User,
+    gradient: "from-violet-500 to-purple-700",
+    glow: "shadow-purple-500/25",
+    badge: "Update",
+    badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
+  },
+  {
+    title: "Church Events",
+    desc: "Browse & RSVP for services",
+    href: "/member/events",
+    icon: Calendar,
+    gradient: "from-blue-500 to-indigo-700",
+    glow: "shadow-blue-500/25",
+    badge: "Browse",
+    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
+  },
+  {
+    title: "Prayer Requests",
+    desc: "Submit & track your prayers",
+    href: "/member/prayers",
+    icon: Heart,
+    gradient: "from-rose-500 to-pink-700",
+    glow: "shadow-rose-500/25",
+    badge: "Submit",
+    badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
+  },
+  {
+    title: "Sermon Library",
+    desc: "Watch & listen to messages",
+    href: "/member/sermons",
+    icon: Play,
+    gradient: "from-indigo-500 to-blue-700",
+    glow: "shadow-indigo-500/25",
+    badge: "Watch",
+    badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300",
+  },
+  {
+    title: "Volunteer",
+    desc: "Serve in active ministries",
+    href: "/member/volunteer",
+    icon: Briefcase,
+    gradient: "from-amber-500 to-orange-600",
+    glow: "shadow-amber-500/25",
+    badge: "Apply",
+    badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+  },
+  {
+    title: "Giving & Tithe",
+    desc: "Offerings & download receipts",
+    href: "/member/give",
+    icon: Gift,
+    gradient: "from-emerald-500 to-green-700",
+    glow: "shadow-emerald-500/25",
+    badge: "Give Now",
+    badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN COMPONENT
+═══════════════════════════════════════════════════════════ */
 export default function MemberDashboard() {
   const { user, status, mounted, logout } = useAuth();
   const { language } = useLanguage();
   const router = useRouter();
 
-  const mt = memberTranslations[language as keyof typeof memberTranslations] || memberTranslations.en;
-
-  const [stats, setStats] = useState<DashboardStats>({ prayers: 0, prayersAnswered: 0, events: 0, sermons: 0, announcements: [] });
+  const [stats, setStats] = useState<DashboardStats>({
+    prayers: 0,
+    prayersAnswered: 0,
+    events: 0,
+    sermons: 0,
+    announcements: [],
+  });
   const [loadingFeeds, setLoadingFeeds] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "info" | "error" } | null>(null);
   const [scriptureIndex, setScriptureIndex] = useState(0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevAnnouncementCount = useRef(0);
 
-  // Auth redirect — always runs (all hooks must be before any return)
+  const { text: greetingText, icon: GreetingIcon } = getGreeting();
+
+  /* ── Auth redirect ─────────────────────────────────────── */
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
-  // Click outside to close profile dropdown
+  /* ── Online / offline ─────────────────────────────────── */
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+    const onOnline = () => setIsOnline(true);
+    const onOffline = () => setIsOnline(false);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => { window.removeEventListener("online", onOnline); window.removeEventListener("offline", onOffline); };
+  }, []);
+
+  /* ── Click-outside close profile dropdown ─────────────── */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node))
         setIsProfileOpen(false);
-      }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Set random scripture ONLY on client (avoid SSR/hydration mismatch)
+  /* ── Random scripture (client-only to avoid hydration mismatch) */
   useEffect(() => {
-    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.en.length));
+    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.length));
   }, []);
 
+  /* ── Toast ─────────────────────────────────────────────── */
   const showToast = (msg: string, type: "success" | "info" | "error" = "info") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4000);
   };
 
+  /* ── Data fetch ─────────────────────────────────────────── */
   const loadFeeds = useCallback(async (silent = false) => {
     if (!user?.uid) return;
     if (!silent) setIsRefreshing(true);
@@ -296,7 +255,7 @@ export default function MemberDashboard() {
       let prayersCount = 0;
       let prayersAnswered = 0;
       let sermonsCount = 0;
-      let announcements: any[] = [];
+      let announcements: Announcement[] = [];
 
       if (eventsRes.status === "fulfilled" && eventsRes.value.ok) {
         const d = await eventsRes.value.json();
@@ -306,7 +265,7 @@ export default function MemberDashboard() {
         const d = await prayersRes.value.json();
         if (d.success) {
           prayersCount = d.prayers?.length || 0;
-          prayersAnswered = d.prayers?.filter((p: any) => p.status === "ANSWERED").length || 0;
+          prayersAnswered = d.prayers?.filter((p: { status: string }) => p.status === "ANSWERED").length || 0;
         }
       }
       if (sermonsRes.status === "fulfilled" && sermonsRes.value.ok) {
@@ -321,18 +280,20 @@ export default function MemberDashboard() {
         }
         prevAnnouncementCount.current = announcements.length;
       } else {
-        announcements = MOCK_ANNOUNCEMENTS[language as keyof typeof MOCK_ANNOUNCEMENTS] || MOCK_ANNOUNCEMENTS.en;
+        announcements = MOCK_ANNOUNCEMENTS;
       }
 
       setStats({ prayers: prayersCount, prayersAnswered, events: eventsCount, sermons: sermonsCount, announcements });
       setLastSynced(new Date());
     } catch (err) {
       if (!silent) console.error("Dashboard feeds error:", err);
+      // Fallback to mock data
+      setStats(prev => ({ ...prev, announcements: MOCK_ANNOUNCEMENTS }));
     } finally {
       setLoadingFeeds(false);
       setIsRefreshing(false);
     }
-  }, [user?.uid, language]);
+  }, [user?.uid]);
 
   useEffect(() => {
     if (status === "authenticated" && user?.uid) {
@@ -342,27 +303,30 @@ export default function MemberDashboard() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [user, status, loadFeeds]);
 
-  const activeScriptures = SCRIPTURES[language as keyof typeof SCRIPTURES] || SCRIPTURES.en;
-  const scripture = activeScriptures[scriptureIndex];
+  const scripture = SCRIPTURES[scriptureIndex];
 
-  // 🔒 SECURITY: Return null after ALL hooks
-  if (!mounted || status === "loading" || status === "unauthenticated") {
-    return null;
-  }
+  /* ── Security guard — after ALL hooks ─────────────────── */
+  if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
+  const firstName = user?.name?.split(" ")[0] || "Believer";
+
+  /* ═════════════════════════════════════════════════════════
+     RENDER
+  ═════════════════════════════════════════════════════════ */
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
-      {/* Toast Notification */}
+    <div className="min-h-screen w-full overflow-x-hidden bg-gray-50 dark:bg-[#0a0a12] text-gray-900 dark:text-gray-100">
+
+      {/* ── Toast ─────────────────────────────────────────── */}
       <AnimatePresence>
         {toast && (
           <motion.div
             initial={{ opacity: 0, y: -60, x: 60 }}
             animate={{ opacity: 1, y: 0, x: 0 }}
-            exit={{ opacity: 0, y: -40, x: 40 }}
-            className={`fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-semibold flex items-center gap-2.5 max-w-sm backdrop-blur-xl border ${
-              toast.type === "success" ? "bg-green-500/90 text-white border-green-400/30" :
-              toast.type === "error" ? "bg-red-500/90 text-white border-red-400/30" :
-              "bg-purple-600/90 text-white border-purple-400/30"
+            exit={{ opacity: 0, y: -40 }}
+            className={`fixed top-6 right-6 z-[100] px-5 py-3 rounded-2xl shadow-2xl text-sm font-semibold flex items-center gap-2.5 max-w-xs backdrop-blur-xl border ${
+              toast.type === "success" ? "bg-emerald-500/90 text-white border-emerald-400/30"
+              : toast.type === "error"   ? "bg-red-500/90 text-white border-red-400/30"
+              :                            "bg-violet-600/90 text-white border-violet-400/30"
             }`}
           >
             <Bell className="w-4 h-4 flex-shrink-0" />
@@ -371,171 +335,146 @@ export default function MemberDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Sticky Header */}
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-purple-300/40 group-hover:border-purple-400/70 shadow-md group-hover:scale-105 transition-transform bg-white flex items-center justify-center">
-              <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
+      {/* ══════════════════════════════════════════════════
+          HEADER
+      ══════════════════════════════════════════════════ */}
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0a0a12]/80 backdrop-blur-xl border-b border-gray-200/60 dark:border-white/5 shadow-sm">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-violet-300/40 group-hover:border-violet-500/60 shadow-lg transition-all bg-white flex items-center justify-center">
+              <Image src="/logo.png" alt="KCM" fill className="object-contain p-0.5" priority />
             </div>
-            <div>
-              <h1 className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight leading-none">
-                {mt.portalName}
-              </h1>
-              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest hidden md:inline">{mt.roleName}</span>
+            <div className="hidden sm:block">
+              <p className="text-sm font-black bg-gradient-to-r from-violet-600 to-purple-500 bg-clip-text text-transparent leading-none">
+                KCM Portal
+              </p>
+              <p className="text-[9px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">
+                Believer Member
+              </p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3">
-            {/* Live indicator */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold flex-shrink-0 animate-fade-in">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              Live
+          {/* Right Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+
+            {/* Online badge */}
+            <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+              isOnline
+                ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
+              {isOnline ? "Live" : "Offline"}
             </div>
 
-            {/* Unified Toggles Capsule */}
-            <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-150 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
+            {/* Toggles capsule */}
+            <div className="hidden md:flex items-center gap-1.5 bg-gray-100/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl backdrop-blur-md">
               <LanguageToggle />
               <ThemeToggle />
               <PaletteToggle />
             </div>
 
-            {/* Refresh Button (Desktop only) */}
+            {/* Refresh */}
             <button
               onClick={() => loadFeeds(false)}
               disabled={isRefreshing}
-              className="hidden lg:inline-flex p-2 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 hover:bg-[hsl(var(--primary))/0.08] text-gray-400 hover:text-[hsl(var(--primary))] transition-all flex-shrink-0"
-              title="Refresh dashboard"
+              className="hidden lg:flex w-9 h-9 items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-violet-400/50 text-gray-400 hover:text-violet-600 transition-all"
+              title="Refresh"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
             </button>
 
-            {/* Profile Dropdown Container (Always visible & collapse-responsive) */}
+            {/* Profile dropdown */}
             <div className="relative flex-shrink-0" ref={profileMenuRef}>
-              <div
-                role="button"
-                tabIndex={0}
+              <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setIsProfileOpen(!isProfileOpen);
-                  }
-                }}
-                className="flex items-center gap-1.5 p-1 rounded-2xl bg-gray-50/50 dark:bg-gray-800/40 border border-gray-150 dark:border-white/5 hover:border-[hsl(var(--primary))/0.2] hover:bg-white dark:hover:bg-gray-800/80 transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))/0.2] cursor-pointer"
-                aria-label="Toggle profile menu"
+                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-gray-100/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-violet-400/50 transition-all"
+                aria-label="Profile menu"
               >
-                <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[hsl(var(--primary))] dark:border-purple-900/30 shadow-sm flex-shrink-0">
-                  {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
+                <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-violet-500/50 shadow-sm flex-shrink-0">
+                  {user?.image && typeof user.image === "string" && user.image.length > 0 ? (
                     <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
-                      <User className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
+                    <div className="w-full h-full bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center">
+                      <User className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                     </div>
                   )}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900" />
                 </div>
-                <span className="text-xs sm:text-sm font-semibold hidden xl:inline text-gray-700 dark:text-gray-300 max-w-[90px] truncate pr-1">
-                  {mt.welcome} <span className="text-[hsl(var(--primary))]">{user?.name?.split(" ")[0] || "Member"}</span>
+                <span className="hidden lg:block text-xs font-semibold text-gray-700 dark:text-gray-300 max-w-[80px] truncate">
+                  {firstName}
                 </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 mr-1 ${isProfileOpen ? "rotate-180" : ""}`} />
-              </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
+              </button>
 
               <AnimatePresence>
                 {isProfileOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute right-0 mt-3 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-2xl p-5 space-y-4 z-50 origin-top-right"
+                    exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/10 rounded-2xl shadow-2xl p-4 space-y-4 z-50"
                   >
-                    {/* User Profile Card */}
+                    {/* User info */}
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
-                        {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
-                          <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-violet-200/40 flex-shrink-0">
+                        {user?.image && typeof user.image === "string" && user.image.length > 0 ? (
+                          <Image src={user.image} alt={user.name || "Member"} width={48} height={48} unoptimized className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
-                            <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <div className="w-full h-full bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
+                            <User className="w-6 h-6 text-violet-600" />
                           </div>
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-extrabold text-sm text-gray-950 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate leading-none mt-0.5">{user?.email}</p>
-                        <span className="inline-block text-[9px] font-black uppercase tracking-wider text-[hsl(var(--primary))] mt-1 px-2 py-0.5 bg-[hsl(var(--primary))/0.08] rounded-full border border-[hsl(var(--primary))/0.1]">
-                          {mt.roleName}
+                        <p className="font-extrabold text-sm text-gray-900 dark:text-white truncate">{user?.name || "Member"}</p>
+                        <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
+                        <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 px-2 py-0.5 bg-violet-50 dark:bg-violet-950/30 rounded-full border border-violet-100 dark:border-violet-900/30">
+                          <Shield className="w-2.5 h-2.5" /> Verified Member
                         </span>
                       </div>
                     </div>
+                    <div className="h-px bg-gray-100 dark:bg-white/5" />
 
-                    <div className="h-[1px] bg-gray-100 dark:bg-gray-800" />
-
-                    {/* Regional Dropdown Utilities */}
-                    <div className="space-y-4">
-                      {/* Mobile Preferences (Visible on screens < md) */}
-                      <div className="md:hidden space-y-3">
-                        <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">⚙️ Preferences</span>
-                        <div className="flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-white/5 border border-gray-150 dark:border-white/5 rounded-2xl">
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
-                            <div className="scale-[0.9] origin-left">
-                              <LanguageToggle />
-                            </div>
-                          </div>
-                          <div className="h-[1px] bg-gray-200/50 dark:bg-gray-800/50" />
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Appearance</span>
-                            <div className="flex gap-2 items-center">
-                              <ThemeToggle />
-                              <PaletteToggle />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Tablet Language Selection (Visible on screens md to lg) */}
-                      <div className="hidden md:block lg:hidden space-y-1.5">
-                        <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🌐 Choose Language</span>
-                        <div className="scale-[0.98] origin-left">
-                          <LanguageToggle />
-                        </div>
-                      </div>
-
-                      {/* Manual Sync (Visible on screens < lg) */}
-                      <div className="lg:hidden flex items-center justify-between">
-                        <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🔄 Sync Dashboard</span>
-                        <button
-                          onClick={() => { loadFeeds(false); setIsProfileOpen(false); }}
-                          disabled={isRefreshing}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-[hsl(var(--primary))/0.08] text-gray-500 dark:text-gray-400 hover:text-[hsl(var(--primary))] transition-all text-xs font-semibold"
-                        >
-                          <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
-                          Refresh
-                        </button>
+                    {/* Mobile toggles */}
+                    <div className="md:hidden space-y-2">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Preferences</p>
+                      <div className="flex flex-wrap gap-2 p-2 bg-gray-50 dark:bg-white/5 rounded-xl">
+                        <LanguageToggle />
+                        <ThemeToggle />
+                        <PaletteToggle />
                       </div>
                     </div>
 
-                    <div className="lg:hidden h-[1px] bg-gray-100 dark:bg-gray-800" />
+                    {/* Nav links */}
+                    <div className="space-y-1">
+                      <Link href="/member/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                        <User className="w-4 h-4 text-violet-500" /> My Profile
+                      </Link>
+                      <Link href="/member/prayers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                        <Heart className="w-4 h-4 text-rose-500" /> Prayer Requests
+                      </Link>
+                    </div>
+                    <div className="h-px bg-gray-100 dark:bg-white/5" />
 
-                    {/* Sign Out Button */}
                     <button
                       onClick={logout}
-                      className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-sm font-bold transition-all"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
-                      {mt.signOut}
+                      <LogOut className="w-3.5 h-3.5" /> Sign Out
                     </button>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Logout Button (Direct in Header) */}
+            {/* Direct logout */}
             <button
               onClick={logout}
-              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
+              className="flex w-9 h-9 items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 transition-all flex-shrink-0"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -544,299 +483,394 @@ export default function MemberDashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT: Main Dashboard Content */}
-          <div className="lg:col-span-8 space-y-7">
+      {/* ══════════════════════════════════════════════════
+          MAIN CONTENT
+      ══════════════════════════════════════════════════ */}
+      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        <div className="grid xl:grid-cols-12 gap-6 lg:gap-8 items-start">
 
-            {/* Welcome Hero */}
+          {/* ══════════════ LEFT / MAIN COL ══════════════ */}
+          <div className="xl:col-span-8 space-y-6">
+
+            {/* ── Hero Welcome Card ───────────────────── */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-700 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl shadow-purple-500/20"
+              transition={{ duration: 0.4 }}
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
             >
-              <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl -translate-y-20 translate-x-20" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/15 rounded-full blur-2xl translate-y-20 -translate-x-12" />
-              <div className="relative">
-                <span className="text-xs uppercase font-extrabold tracking-widest text-purple-200 block mb-3">{mt.portalDashboard}</span>
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-3">
-                  {mt.hello} {user?.name?.split(" ")[0] || "Believer"}! 🙏
-                </h2>
-                <p className="text-purple-100 max-w-lg leading-relaxed text-sm">{mt.description}</p>
-                {lastSynced && (
-                  <div className="mt-4 flex items-center gap-2 text-purple-300 text-xs font-semibold">
-                    <Wifi className="w-3.5 h-3.5" />
-                    Live sync active · Last updated {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+              {/* Decorative blobs */}
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute -top-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-20 -left-10 w-56 h-56 bg-indigo-400/20 rounded-full blur-2xl" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl" />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+                <div className="space-y-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <GreetingIcon className="w-4 h-4 text-yellow-300" />
+                    <span className="text-xs font-bold text-violet-200 uppercase tracking-widest">
+                      {greetingText}
+                    </span>
                   </div>
-                )}
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                    Welcome back, <br />
+                    <span className="text-yellow-300">{firstName}! 🙏</span>
+                  </h2>
+                  <p className="text-violet-100/80 text-sm leading-relaxed max-w-md">
+                    So glad to have you in our spiritual family. Explore your events, submit prayers, and stay connected.
+                  </p>
+
+                  {lastSynced && (
+                    <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-violet-300 bg-white/10 border border-white/10 px-3 py-1 rounded-full">
+                      <Wifi className="w-3 h-3" />
+                      Live · Last synced {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Quick greeting stats */}
+                <div className="flex sm:flex-col gap-3 sm:gap-2 flex-shrink-0">
+                  {[
+                    { label: "Events", value: stats.events, icon: Calendar },
+                    { label: "Prayers", value: stats.prayers, icon: Heart },
+                  ].map(({ label, value, icon: Icon }) => (
+                    <div key={label} className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-2xl px-4 py-2.5">
+                      <Icon className="w-4 h-4 text-violet-200 flex-shrink-0" />
+                      <div>
+                        <p className="text-lg font-black leading-none">
+                          {loadingFeeds ? <span className="inline-block w-5 h-4 bg-white/20 rounded animate-pulse" /> : value}
+                        </p>
+                        <p className="text-[10px] text-violet-200 font-semibold">{label}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
 
-            {/* Scripture of the Day */}
+            {/* ── Scripture of the Day ─────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="relative p-6 bg-white/70 dark:bg-gray-900/40 backdrop-blur-xl border border-amber-100 dark:border-amber-900/20 rounded-3xl shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between overflow-hidden"
+              transition={{ delay: 0.08 }}
+              className="group relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-200/60 dark:border-amber-800/20 rounded-2xl p-5 md:p-6 overflow-hidden"
             >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-2xl text-amber-500 flex-shrink-0 shadow-sm">
-                  <Flame className="w-6 h-6" />
+              <div className="absolute right-4 top-4 text-amber-300/20 dark:text-amber-700/20">
+                <BookOpen className="w-20 h-20" />
+              </div>
+              <div className="relative flex items-start gap-4">
+                <div className="p-2.5 bg-amber-100 dark:bg-amber-950/40 rounded-xl flex-shrink-0">
+                  <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-600 dark:text-amber-400 block mb-1">{mt.scriptureTitle}</span>
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 italic leading-relaxed">{scripture.text}</p>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-600 dark:text-amber-400 block mb-2">
+                    Scripture of the Day
+                  </span>
+                  <p className="text-sm font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">
+                    &ldquo;{scripture.text}&rdquo;
+                  </p>
+                  <span className="inline-block mt-2 text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30 px-3 py-1 rounded-full border border-violet-100 dark:border-violet-900/30">
+                    — {scripture.ref}
+                  </span>
                 </div>
               </div>
-              <span className="text-xs font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap bg-purple-50 dark:bg-purple-950/30 px-3 py-1.5 rounded-full border border-purple-100 dark:border-purple-900/30 flex-shrink-0">
-                {scripture.ref}
-              </span>
             </motion.div>
 
-            {/* Live Stats Grid */}
+            {/* ── Stats Grid ──────────────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+              transition={{ delay: 0.14 }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
             >
               {[
-                { label: mt.registeredEvents, value: stats.events, icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", trend: mt.badges.rsvps, href: "/member/events" },
-                { label: mt.prayerRequests, value: stats.prayers, icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/20", trend: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${mt.badges.requests}` : mt.badges.requests, href: "/member/prayers" },
-                { label: mt.statsSermons, value: stats.sermons, icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/20", trend: mt.badges.sermons, href: "/member/sermons" },
-                { label: mt.statsAnnouncements, value: stats.announcements.length, icon: Bell, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", trend: stats.announcements.some(a => a.priority === "HIGH" || a.priority === "URGENT") ? `⚠️ ${mt.urgent}` : mt.badges.update, href: "#announcements-section" },
-              ].map(({ label, value, icon: Icon, color, bg, trend, href }, idx) => (
+                {
+                  label: "Registered Events",
+                  value: stats.events,
+                  icon: Calendar,
+                  iconColor: "text-violet-600 dark:text-violet-400",
+                  iconBg: "bg-violet-50 dark:bg-violet-950/30",
+                  accent: "border-violet-200 dark:border-violet-900/20",
+                  badge: stats.events > 0 ? `${stats.events} RSVPs` : "Register",
+                  href: "/member/events",
+                },
+                {
+                  label: "Prayer Requests",
+                  value: stats.prayers,
+                  icon: Heart,
+                  iconColor: "text-rose-600 dark:text-rose-400",
+                  iconBg: "bg-rose-50 dark:bg-rose-950/30",
+                  accent: "border-rose-200 dark:border-rose-900/20",
+                  badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} Answered` : "Submit",
+                  href: "/member/prayers",
+                },
+                {
+                  label: "Sermons",
+                  value: stats.sermons,
+                  icon: BookOpen,
+                  iconColor: "text-indigo-600 dark:text-indigo-400",
+                  iconBg: "bg-indigo-50 dark:bg-indigo-950/30",
+                  accent: "border-indigo-200 dark:border-indigo-900/20",
+                  badge: "Watch",
+                  href: "/member/sermons",
+                },
+                {
+                  label: "Announcements",
+                  value: stats.announcements.length,
+                  icon: Bell,
+                  iconColor: "text-amber-600 dark:text-amber-400",
+                  iconBg: "bg-amber-50 dark:bg-amber-950/30",
+                  accent: "border-amber-200 dark:border-amber-900/20",
+                  badge: stats.announcements.some(a => a.priority === "URGENT") ? "⚠️ Urgent" : "View",
+                  href: "#announcements",
+                },
+              ].map(({ label, value, icon: Icon, iconColor, iconBg, accent, badge, href }, i) => (
                 <Link
-                  key={idx}
+                  key={i}
                   href={href}
-                  className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md p-4 md:p-5 lg:p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-md hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-950/40 hover:scale-[1.03] transition-all duration-300 relative overflow-hidden group block cursor-pointer"
+                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
                 >
-                  <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-5 h-5 ${color}`} />
+                  <div className="absolute top-3 right-3 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                  <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-5 h-5 ${iconColor}`} />
                   </div>
-                  <span className="text-gray-400 dark:text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider block leading-tight">{label}</span>
+                  <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider block leading-tight">{label}</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={value}
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`text-2xl md:text-3xl lg:text-4xl font-black ${color} block mt-1.5 tracking-tight`}
+                      className={`text-3xl md:text-4xl font-black ${iconColor} block mt-1.5 tracking-tight`}
                     >
-                      {loadingFeeds ? (
-                        <span className="inline-block w-8 h-7 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      ) : value}
+                      {loadingFeeds ? <span className="inline-block w-9 h-8 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
                     </motion.span>
                   </AnimatePresence>
-                  {trend && <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold mt-0.5 block">{trend}</span>}
-                  {/* Pulse dot for live */}
-                  <div className="absolute top-3 right-3 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-1 block">{badge}</span>
                 </Link>
               ))}
             </motion.div>
- 
-            {/* Services Navigation Grid */}
-            <motion.div
+
+            {/* ── Services Navigation Grid ─────────────── */}
+            <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="space-y-4"
+              transition={{ delay: 0.2 }}
             >
-              <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-purple-500" />
-                {mt.directoryTitle}
-              </h3>
- 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  {
-                    title: mt.services.profile.title,
-                    desc: mt.services.profile.desc,
-                    href: "/member/profile",
-                    icon: User,
-                    gradient: "from-purple-500 to-violet-600",
-                    badge: "Update",
-                  },
-                  {
-                    title: mt.services.events.title,
-                    desc: mt.services.events.desc,
-                    href: "/member/events",
-                    icon: Calendar,
-                    gradient: "from-indigo-500 to-blue-600",
-                    badge: stats.events > 0 ? `${stats.events} RSVPs` : "Browse",
-                  },
-                  {
-                    title: mt.services.prayers.title,
-                    desc: mt.services.prayers.desc,
-                    href: "/member/prayers",
-                    icon: Heart,
-                    gradient: "from-rose-500 to-pink-600",
-                    badge: stats.prayers > 0 ? `${stats.prayers} Requests` : "Submit",
-                  },
-                  {
-                    title: mt.services.sermons.title,
-                    desc: mt.services.sermons.desc,
-                    href: "/member/sermons",
-                    icon: BookOpen,
-                    gradient: "from-blue-500 to-indigo-600",
-                    badge: stats.sermons > 0 ? `${stats.sermons} Sermons` : "Watch",
-                  },
-                  {
-                    title: mt.services.volunteer.title,
-                    desc: mt.services.volunteer.desc,
-                    href: "/member/volunteer",
-                    icon: Briefcase,
-                    gradient: "from-amber-500 to-orange-500",
-                    badge: "Apply",
-                  },
-                  {
-                    title: mt.services.giving.title,
-                    desc: mt.services.giving.desc,
-                    href: "/member/give",
-                    icon: Gift,
-                    gradient: "from-green-500 to-emerald-600",
-                    badge: "Give Now",
-                  },
-                ].map((link, idx) => (
-                  <Link
-                    key={idx}
-                    href={link.href}
-                    className="group bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-gray-100 dark:border-white/5 shadow-md p-4 md:p-6 lg:p-8 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-900/40 hover:scale-[1.01] transition-all duration-300 flex items-center gap-4"
-                  >
-                    <div className={`w-12 h-12 bg-gradient-to-br ${link.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <link.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors text-sm md:text-base lg:text-lg">
-                        {link.title}
-                      </h4>
-                      <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 leading-relaxed truncate">{link.desc}</p>
-                    </div>
-                    <div className="flex-shrink-0 flex flex-col items-end gap-1">
-                      <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded-full border border-purple-100 dark:border-purple-900/30">
-                        {link.badge}
-                      </span>
-                      <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                  </Link>
-                ))}
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-4 h-4 text-violet-500" />
+                <h3 className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                  Believer Services Directory
+                </h3>
               </div>
-            </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                {SERVICE_CARDS.map((card, i) => {
+                  const Icon = card.icon;
+                  return (
+                    <motion.div
+                      key={card.href}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.22 + i * 0.04 }}
+                    >
+                      <Link
+                        href={card.href}
+                        className={`group flex items-center gap-4 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-5 hover:shadow-xl ${card.glow} hover:border-gray-300 dark:hover:border-white/20 hover:scale-[1.015] transition-all duration-300`}
+                      >
+                        <div className={`w-12 h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <Icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm md:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">
+                            {card.title}
+                          </h4>
+                          <p className="text-[11px] md:text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed truncate">
+                            {card.desc}
+                          </p>
+                        </div>
+                        <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
+                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
+                            {card.badge}
+                          </span>
+                          <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.section>
+
           </div>
 
-          {/* RIGHT: Announcements Sidebar */}
-          <motion.div
-            id="announcements-section"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-4 space-y-4 scroll-mt-20"
-          >
-            {/* Announcements Card */}
-            <div className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl p-6 space-y-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-black text-gray-900 dark:text-white flex items-center gap-2">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-950/30 rounded-xl flex items-center justify-center">
-                    <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          {/* ══════════════ RIGHT / SIDEBAR ══════════════ */}
+          <div className="xl:col-span-4 space-y-5">
+
+            {/* ── Announcements Feed ───────────────────── */}
+            <motion.div
+              id="announcements"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+              className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-white/5 rounded-2xl shadow-lg overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-violet-50 dark:bg-violet-950/30 rounded-xl flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                   </div>
-                  {mt.latestAnnouncements}
-                </h3>
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-600 dark:text-green-400">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                  <h3 className="text-sm font-black text-gray-900 dark:text-white">Latest Announcements</h3>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                   Live
                 </div>
               </div>
 
-              {loadingFeeds ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-20 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-2xl" />
-                  ))}
-                </div>
-              ) : stats.announcements.length === 0 ? (
-                <div className="text-center py-10">
-                  <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-xs text-gray-400">{mt.noAnnouncements}</p>
-                </div>
-              ) : (
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1 scrollbar-thin">
-                  {stats.announcements.map((anc: any) => {
+              {/* Feed */}
+              <div className="divide-y divide-gray-50 dark:divide-white/5 max-h-[400px] overflow-y-auto scrollbar-thin">
+                {loadingFeeds ? (
+                  <div className="space-y-3 p-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
+                    ))}
+                  </div>
+                ) : stats.announcements.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                    <p className="text-xs text-gray-400">No announcements currently.</p>
+                  </div>
+                ) : (
+                  stats.announcements.map((anc) => {
                     const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
                     return (
                       <div
                         key={anc.id}
-                        className={`p-4 rounded-2xl border text-sm leading-relaxed transition-all hover:scale-[1.01] ${
-                          isUrgent
-                            ? "bg-red-50 dark:bg-red-950/10 border-red-200 dark:border-red-900/30"
-                            : "bg-white/40 dark:bg-gray-800/20 border-gray-100 dark:border-white/5"
+                        className={`px-5 py-4 hover:bg-gray-50 dark:hover:bg-white/3 transition-colors ${
+                          isUrgent ? "border-l-2 border-red-400" : ""
                         }`}
                       >
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <span className="font-bold text-gray-900 dark:text-white text-sm leading-tight">{anc.title}</span>
+                        <div className="flex items-start justify-between gap-2 mb-1.5">
+                          <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight flex-1">
+                            {anc.priority === "URGENT" && <span className="text-amber-500">⚡ </span>}
+                            {anc.priority === "HIGH" && <span className="text-violet-500">🔔 </span>}
+                            {anc.title}
+                          </span>
                           {isUrgent && (
-                            <span className="bg-red-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full flex-shrink-0 tracking-widest animate-pulse">
-                              {mt.urgent}
+                            <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${
+                              anc.priority === "URGENT"
+                                ? "bg-red-500 text-white animate-pulse"
+                                : "bg-amber-500 text-white"
+                            }`}>
+                              {anc.priority === "URGENT" ? "Urgent" : "Hot"}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-2">{anc.content}</p>
-                        <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 flex items-center gap-1.5 uppercase tracking-wide">
-                          <Clock className="w-3 h-3 text-purple-500" />
-                          {new Date(anc.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                        </span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
+                          {anc.content}
+                        </p>
+                        <div className="flex items-center gap-1 mt-2">
+                          <Clock className="w-3 h-3 text-violet-400" />
+                          <span className="text-[9px] text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wide">
+                            {new Date(anc.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                          </span>
+                        </div>
                       </div>
                     );
-                  })}
+                  })
+                )}
+              </div>
+            </motion.div>
+
+            {/* ── Quick Actions ────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.32 }}
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 text-white shadow-xl shadow-violet-500/20"
+            >
+              <div className="absolute -top-8 -right-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-4">
+                  <Zap className="w-4 h-4 text-yellow-300" />
+                  <h4 className="text-sm font-black">Quick Actions</h4>
                 </div>
-              )}
-            </div>
-
-            {/* Quick Actions Card */}
-            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl shadow-purple-500/20">
-              <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-xl" />
-              <h4 className="font-black mb-4 text-sm relative">⚡ {mt.quickActions}</h4>
-              <div className="space-y-2.5 relative">
-                {[
-                  { label: mt.actionSubmitPrayer, href: "/member/prayers", icon: Heart },
-                  { label: mt.actionRegisterEvent, href: "/member/events", icon: Calendar },
-                  { label: mt.actionGiveOnline, href: "/member/give", icon: Gift },
-                ].map(({ label, href, icon: Icon }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group border border-white/10 hover:border-white/30"
-                  >
-                    <Icon className="w-4 h-4 text-purple-200" />
-                    <span className="text-sm font-semibold">{label}</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-auto text-purple-300 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                ))}
+                <div className="space-y-2">
+                  {[
+                    { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
+                    { label: "Register for Event", href: "/member/events", icon: Calendar },
+                    { label: "Give Online", href: "/member/give", icon: Gift },
+                  ].map(({ label, href, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      className="group flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-xl border border-white/10 hover:border-white/25 transition-all"
+                    >
+                      <Icon className="w-4 h-4 text-violet-200 flex-shrink-0" />
+                      <span className="text-sm font-semibold flex-1">{label}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-violet-300 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Activity Status */}
-            <div className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-md rounded-2xl border border-gray-100 dark:border-white/5 shadow-md p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-green-500" />
-                  {mt.yourActivity}
-                </span>
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            {/* ── Your Activity ────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.38 }}
+              className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-white/5 rounded-2xl p-5 shadow-sm"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-500" />
+                  <h4 className="text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Your Activity</h4>
+                </div>
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {[
-                  { label: mt.actEvents, value: stats.events, color: "bg-purple-500" },
-                  { label: mt.actPrayers, value: stats.prayers, color: "bg-rose-500" },
-                  { label: mt.actAnswered, value: stats.prayersAnswered, color: "bg-green-500" },
-                ].map(({ label, value, color }) => (
-                  <div key={label} className="flex items-center gap-2.5">
-                    <div className={`w-2 h-2 ${color} rounded-full`} />
-                    <span className="text-xs text-gray-600 dark:text-gray-400 flex-1">{label}</span>
-                    <span className="text-xs font-bold text-gray-900 dark:text-white">{loadingFeeds ? "..." : value}</span>
+                  { label: "Events Registered", value: stats.events, color: "bg-violet-500", bar: "bg-violet-100 dark:bg-violet-900/40" },
+                  { label: "Prayers Submitted", value: stats.prayers, color: "bg-rose-500", bar: "bg-rose-100 dark:bg-rose-900/40" },
+                  { label: "Prayers Answered", value: stats.prayersAnswered, color: "bg-emerald-500", bar: "bg-emerald-100 dark:bg-emerald-900/40" },
+                  { label: "Sermons Watched", value: stats.sermons, color: "bg-indigo-500", bar: "bg-indigo-100 dark:bg-indigo-900/40" },
+                ].map(({ label, value, color, bar }) => (
+                  <div key={label} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{label}</span>
+                      <span className="text-xs font-bold text-gray-900 dark:text-white">
+                        {loadingFeeds ? "..." : value}
+                      </span>
+                    </div>
+                    <div className={`h-1.5 rounded-full ${bar} overflow-hidden`}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, (value / Math.max(stats.events + stats.prayers + stats.sermons + 1, 1)) * 400)}%` }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className={`h-full rounded-full ${color}`}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* ── Church Platform Feedback ─────────────── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.42 }}
+            >
+              <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
+            </motion.div>
+
+
+          </div>
         </div>
       </main>
     </div>
