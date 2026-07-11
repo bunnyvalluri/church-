@@ -524,7 +524,7 @@ export default function MemberDashboard() {
                   </p>
 
                   {lastSynced && (
-                    <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-violet-300 bg-white/10 border border-white/10 px-3 py-1 rounded-full">
+                    <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">
                       <Wifi className="w-3 h-3" />
                       Live · Last synced {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                     </div>
@@ -537,13 +537,13 @@ export default function MemberDashboard() {
                     { label: "Events", value: stats.events, icon: Calendar },
                     { label: "Prayers", value: stats.prayers, icon: Heart },
                   ].map(({ label, value, icon: Icon }) => (
-                    <div key={label} className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-2xl px-4 py-2.5">
-                      <Icon className="w-4 h-4 text-violet-200 flex-shrink-0" />
+                    <div key={label} className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-2xl px-4 py-2.5">
+                      <Icon className="w-4 h-4 text-white flex-shrink-0" />
                       <div>
-                        <p className="text-lg font-black leading-none">
+                        <p className="text-lg font-black leading-none text-white">
                           {loadingFeeds ? <span className="inline-block w-5 h-4 bg-white/20 rounded animate-pulse" /> : value}
                         </p>
-                        <p className="text-[10px] text-violet-200 font-semibold">{label}</p>
+                        <p className="text-[10px] text-white/80 font-semibold">{label}</p>
                       </div>
                     </div>
                   ))}
