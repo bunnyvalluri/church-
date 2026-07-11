@@ -1065,10 +1065,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             disabled={actionLoading || !isFormValid}
                             onClick={handleGeneratePaymentSession}
                             title={!isFormValid ? "Please fill in all required fields" : undefined}
-                            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all duration-300 relative overflow-hidden group ${
+                            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all duration-300 relative overflow-hidden group bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white ${
                               isFormValid && !actionLoading
-                                ? "bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white hover:shadow-2xl hover:shadow-purple-600/30 active:scale-[0.99] cursor-pointer"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                ? "hover:shadow-2xl hover:shadow-purple-600/30 active:scale-[0.99] cursor-pointer opacity-100"
+                                : "opacity-50 cursor-not-allowed"
                             }`}
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
