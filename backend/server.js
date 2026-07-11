@@ -63,6 +63,14 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
 
     io.on('connection', (socket) => {
       console.log(`[SOCKET] Client connected: ${socket.id}`);
+      
+      socket.on('join', (room) => {
+        if (room && typeof room === 'string') {
+          socket.join(room);
+          console.log(`[SOCKET] Client ${socket.id} joined room: ${room}`);
+        }
+      });
+
       socket.on('disconnect', () => {
         console.log(`[SOCKET] Client disconnected: ${socket.id}`);
       });
@@ -87,13 +95,13 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
 
 if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
   app.post('/api/trigger-event', (req, res) => {
-    const { type, payload } = req.body;
+    const { type, payload, room } = req.body;
     
     if (!type || !payload) {
       return res.status(400).json({ error: "Event type and payload are required." });
     }
 
-    console.log(`[EVENT] Received trigger for: ${type}`, payload);
+    console.log(`[EVENT] Received trigger for: ${type} ${room ? `in room ${room}` : '(global)'}`, payload);
     
     const notification = {
       type: payload.popupType || 'new-event',
@@ -108,8 +116,13 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
     const emitter = (PROCESS_TYPE === 'api' && redisEmitter) ? redisEmitter : io;
     
     if (emitter) {
-      emitter.emit(type, payload);
-      emitter.emit('notification:popup', notification);
+      if (room) {
+        emitter.to(room).emit(type, payload);
+        emitter.to(room).emit('notification:popup', notification);
+      } else {
+        emitter.emit(type, payload);
+        emitter.emit('notification:popup', notification);
+      }
     } else {
       console.warn('[API] No socket emitter configured. Event not broadcasted.');
     }

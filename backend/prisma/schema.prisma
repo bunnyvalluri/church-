@@ -28,8 +28,13 @@ model User {
   mediaReports       MediaReport[]
   eventsCreated      Event[]             @relation("EventCreator")
   eventMediaUploads  EventMedia[]        @relation("EventMediaUploader")
-  deviceTokens       DeviceToken[]
+  donationSessions   DonationSession[]
+  receipts           Receipt[]
+  notificationLogs   NotificationLog[]
   auditLogs          AuditLog[]
+  deviceTokens       DeviceToken[]
+
+  @@map("members")
 }
 
 model Event {
@@ -115,11 +120,17 @@ model PrayerRequest {
 }
 
 model Donation {
-  id                String          @id @default(cuid())
+  id                String           @id @default(cuid())
   userId            String?
   amount            Float
-  currency          String          @default("INR")
-  purpose           DonationPurpose
+  currency          String           @default("INR")
+  purpose           String
+  purposeId         String?          @map("purpose_id")
+  purposeRelation   DonationPurpose? @relation(fields: [purposeId], references: [id])
+  branchId          String?          @map("branch_id")
+  branch            Branch?          @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  sessionId         String?          @map("session_id")
+  session           DonationSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   paymentMethod     String
   stripeId          String?
   razorpayOrderId   String?
@@ -128,10 +139,13 @@ model Donation {
   donorName         String?
   donorEmail        String?
   donorPhone        String?
-  status            DonationStatus  @default(PENDING)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  user              User?           @relation(fields: [userId], references: [id])
+  status            DonationStatus   @default(PENDING)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  user              User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  receipt           Receipt?
+
+  @@map("donations")
 }
 
 model Announcement {
@@ -198,13 +212,16 @@ model ContactMessage {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  type      String
-  title     String
-  content   String
-  isRead    Boolean  @default(false)
-  link      String?
-  createdAt DateTime @default(now())
+  id               String            @id @default(cuid())
+  type             String
+  title            String
+  content          String
+  isRead           Boolean           @default(false)
+  link             String?
+  createdAt        DateTime          @default(now())
+  notificationLogs NotificationLog[]
+
+  @@map("notifications")
 }
 
 model ChurchSettings {
@@ -308,21 +325,12 @@ enum PrayerStatus {
   ANSWERED
 }
 
-enum DonationPurpose {
-  GENERAL
-  BUILDING
-  MISSIONS
-  YOUTH
-  CHARITY
-  TITHE
-  OFFERING
-  OTHER
-}
-
 enum DonationStatus {
   PENDING
+  PROCESSING
   COMPLETED
   FAILED
+  EXPIRED
   REFUNDED
 }
 
@@ -434,11 +442,15 @@ model NgoVolunteer {
 }
 
 model Branch {
-  id           String        @id @default(cuid())
-  name         String        @unique // e.g. "Shapur Nagar", "Subhash Nagar", "Bahadurpally"
-  createdAt    DateTime      @default(now())
-  eventReports EventReport[]
-  events       Event[]
+  id               String            @id @default(cuid())
+  name             String            @unique // e.g. "Shapur Nagar", "Subhash Nagar", "Bahadurpally"
+  createdAt        DateTime          @default(now())
+  eventReports     EventReport[]
+  events           Event[]
+  donationSessions DonationSession[]
+  donations        Donation[]
+
+  @@map("branches")
 }
 
 model EventReport {
@@ -472,32 +484,178 @@ model MediaReport {
   createdAt     DateTime    @default(now())
 }
 
-model DeviceToken {
-  id          String   @id @default(cuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token       String   @unique
-  deviceType  String?  // web, android, ios
-  platform    String?  // browser, native
-  lastUsedAt  DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Family {
+  id                String   @id @default(cuid())
+  familyName        String
+  headOfHouseholdId String
+  members           String[] // List of member User IDs
+  contactPhone      String
+  address           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
 
-  @@index([userId])
-  @@index([token])
+// ── Church Platform Feedback ─────────────────────────────────────────────────
+model ChurchFeedback {
+  id          String           @id @default(cuid())
+  userId      String?          // nullable for anonymous
+  userName    String?          // cached display name
+  rating      Int              // 1-5 stars
+  category    FeedbackCategory
+  comment     String?          @db.Text
+  isAnonymous Boolean          @default(false)
+  emoji       String?          // optional reaction emoji
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([category])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+enum FeedbackCategory {
+  WORSHIP
+  SERMONS
+  EVENTS
+  COMMUNITY
+  FACILITIES
+  ONLINE_PLATFORM
+  LEADERSHIP
+  OVERALL
+}
+
+model DonationPurpose {
+  id               String            @id @default(cuid())
+  code             String            @unique
+  nameEn           String            @map("name_en")
+  nameTe           String            @map("name_te")
+  nameHi           String            @map("name_hi")
+  descEn           String            @map("desc_en")
+  descTe           String?           @map("desc_te")
+  descHi           String?           @map("desc_hi")
+  sortOrder        Int               @default(0) @map("sort_order")
+  isActive         Boolean           @default(true) @map("is_active")
+  isArchived       Boolean           @default(false) @map("is_archived")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  donationSessions DonationSession[]
+  donations        Donation[]
+
+  @@map("donation_purposes")
+}
+
+model DonationSession {
+  id                  String               @id @default(cuid())
+  memberId            String?              @map("member_id")
+  member              User?                @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  branchId            String?              @map("branch_id")
+  branch              Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  purposeId           String               @map("purpose_id")
+  purpose             DonationPurpose      @relation(fields: [purposeId], references: [id])
+  amount              Float
+  currency            String               @default("INR")
+  referenceNumber     String               @unique @map("reference_number")
+  status              DonationStatus       @default(PENDING)
+  expiresAt           DateTime             @map("expires_at")
+  ipAddress           String?              @map("ip_address")
+  device              String?
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  paymentTransactions PaymentTransaction[]
+  donations           Donation[]
+
+  @@map("donation_sessions")
+}
+
+model PaymentTransaction {
+  id        String          @id @default(cuid())
+  sessionId String          @map("session_id")
+  session   DonationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  utr       String?         @unique
+  amount    Float
+  currency  String          @default("INR")
+  status    String
+  gateway   String          @default("UPI_QR")
+  payload   Json?
+  signature String?
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@map("payment_transactions")
+}
+
+model Receipt {
+  id               String   @id @default(cuid())
+  receiptNumber    String   @unique @map("receipt_number")
+  donationId       String   @unique @map("donation_id")
+  donation         Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  memberId         String?  @map("member_id")
+  member           User?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  referenceNumber  String?  @map("reference_number")
+  amount           Float
+  currency         String   @default("INR")
+  issuedAt         DateTime @default(now()) @map("issued_at")
+  pdfUrl           String?  @map("pdf_url")
+  verificationCode String   @unique @map("verification_code")
+  qrCode           String?  @map("qr_code")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("receipts")
+}
+
+model PaymentWebhook {
+  id           String    @id @default(cuid())
+  payload      Json
+  signature    String?
+  ipAddress    String?   @map("ip_address")
+  status       String    @default("PENDING")
+  errorMessage String?   @map("error_message")
+  processedAt  DateTime? @map("processed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("payment_webhooks")
+}
+
+model NotificationLog {
+  id             String        @id @default(cuid())
+  notificationId String?       @map("notification_id")
+  notification   Notification? @relation(fields: [notificationId], references: [id], onDelete: SetNull)
+  recipientId    String?       @map("recipient_id")
+  recipient      User?         @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  recipientRole  UserRole?     @map("recipient_role")
+  channel        String
+  status         String
+  errorMessage   String?       @map("error_message")
+  sentAt         DateTime      @default(now()) @map("sent_at")
+
+  @@map("notification_logs")
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action     String   // EVENT_CREATED, MEDIA_UPLOADED, SECURITY_ALERT, PUSH_SENT
-  details    String   @db.Text
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String   @db.Text
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([action])
+  @@map("audit_logs")
 }
 
+model DeviceToken {
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id")
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  deviceType String?  @map("device_type")
+  platform   String?
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("device_tokens")
+}

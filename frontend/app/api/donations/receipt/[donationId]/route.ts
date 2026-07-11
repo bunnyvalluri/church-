@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: Request,
   { params }: { params: { donationId: string } }
@@ -19,8 +21,12 @@ export async function GET(
           select: {
             name: true,
             email: true,
+            phone: true,
           },
         },
+        purposeRelation: true,
+        branch: true,
+        receipt: true,
       },
     });
 
@@ -37,4 +43,3 @@ export async function GET(
     );
   }
 }
-

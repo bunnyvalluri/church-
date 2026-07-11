@@ -58,20 +58,67 @@ async function resolveRole(uid: string, email: string): Promise<AuthenticatedUse
  * Does NOT send a response — the caller must handle the null case.
  */
 export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedUser | null> {
-  const token = extractToken(req);
-  if (!token) return null;
+  let authenticatedUser: AuthenticatedUser | null = null;
 
-  const decoded = await verifyFirebaseToken(token);
-  if (!decoded) return null;
+  // 1. Check Dev Bypass
+  if (process.env.NODE_ENV !== 'production') {
+    const devUser = getDevBypassUser();
+    if (devUser) {
+      authenticatedUser = devUser;
+    }
+  }
 
-  const role = await resolveRole(decoded.uid, decoded.email ?? '');
+  // 2. Fallback to token extraction if no dev bypass is active
+  if (!authenticatedUser) {
+    const token = extractToken(req);
+    if (token) {
+      const decoded = await verifyFirebaseToken(token);
+      if (decoded) {
+        const role = await resolveRole(decoded.uid, decoded.email ?? '');
+        authenticatedUser = {
+          uid: decoded.uid,
+          email: decoded.email ?? '',
+          name: decoded.name ?? (decoded.email ? decoded.email.split('@')[0] : 'Member'),
+          role,
+        };
+      }
+    }
+  }
 
-  return {
-    uid: decoded.uid,
-    email: decoded.email ?? '',
-    name: decoded.name,
-    role,
-  };
+  // 3. Self-healing DB synchronization
+  if (authenticatedUser) {
+    const { uid, email, name, role } = authenticatedUser;
+    try {
+      let userInDb = await prisma.user.findUnique({ where: { id: uid } });
+      if (!userInDb && email) {
+        userInDb = await prisma.user.findUnique({ where: { email } });
+        if (userInDb) {
+          // Align user ID with Firebase UID if email matches
+          userInDb = await prisma.user.update({
+            where: { email },
+            data: { id: uid }
+          });
+        }
+      }
+
+      if (!userInDb) {
+        await prisma.user.create({
+          data: {
+            id: uid,
+            email,
+            name: name || 'Member',
+            password: 'firebase-authenticated-sync',
+            role,
+          }
+        });
+        console.info(`[AUTH_MIDDLEWARE] Dynamic sync: Created user record for ${email} (${uid}) in database.`);
+      }
+    } catch (dbErr) {
+      console.warn('[AUTH_MIDDLEWARE] Failed to dynamically sync user to database:', dbErr);
+    }
+  }
+
+  return authenticatedUser;
 }
 
 // ── Public: Require any valid Firebase auth ────────────────────────────────────
@@ -191,9 +238,9 @@ export function getDevBypassUser(): AuthenticatedUser | null {
   if (!role) return null;
 
   return {
-    uid: 'dev_bypass_uid',
-    email: 'dev@kcm.local',
-    name: 'Dev User',
+    uid: 'dev-auto-login-uid',
+    email: 'bishop.kraju@kcmchurch.org',
+    name: 'Bishop Kurra Kristhu Raju',
     role,
   };
 }

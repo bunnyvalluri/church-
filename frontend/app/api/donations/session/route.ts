@@ -1,0 +1,151 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/authMiddleware';
+import { DonationSessionSchema, sanitizeInput } from '@/lib/security';
+import { writeAuditLog } from '@/lib/auditLogger';
+import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
+
+export const dynamic = 'force-dynamic';
+
+function generateReferenceNumber() {
+  const timestamp = Date.now().toString(36);
+  const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `REF-${timestamp.toUpperCase()}-${randomStr}`;
+}
+
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+  const userAgent = req.headers.get('user-agent') || 'Unknown Device';
+
+  // Rate Limiting: Max 25 donation sessions per 15 minutes per IP
+  const rateLimitOpts = { windowMs: 15 * 60 * 1000, maxRequests: 25 };
+  if (isRateLimited(ip, rateLimitOpts)) {
+    await writeAuditLog({
+      action: 'SECURITY_RATE_LIMIT',
+      details: `Rate limit hit for donation session creation by IP: ${ip}`,
+      ipAddress: ip,
+      userAgent,
+    });
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: rateLimitHeaders(ip, rateLimitOpts) }
+    );
+  }
+
+  try {
+    const authUser = await getAuthenticatedUser(req);
+    const body = await req.json();
+
+    // Input Sanitization
+    if (body.donorName) body.donorName = sanitizeInput(body.donorName);
+    if (body.donorEmail) body.donorEmail = sanitizeInput(body.donorEmail);
+    if (body.donorPhone) body.donorPhone = sanitizeInput(body.donorPhone);
+
+    // Zod Schema Validation
+    const validation = DonationSessionSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { amount, purposeCode, branchId } = validation.data;
+
+    // 1. Fetch dynamic donation purpose
+    const purpose = await prisma.donationPurpose.findFirst({
+      where: { code: purposeCode, isActive: true, isArchived: false },
+    });
+
+    if (!purpose) {
+      return NextResponse.json({ error: 'Selected donation purpose is invalid or inactive.' }, { status: 400 });
+    }
+
+    // 2. Fetch branch if specified
+    if (branchId) {
+      const branch = await prisma.branch.findUnique({ where: { id: branchId } });
+      if (!branch) {
+        return NextResponse.json({ error: 'Selected branch is invalid.' }, { status: 400 });
+      }
+    }
+
+    // 3. Create a unique reference number and expiration timestamp (15 minutes from now)
+    const referenceNumber = generateReferenceNumber();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins expiry
+
+    // 4. Create the session in the database
+    const session = await prisma.donationSession.create({
+      data: {
+        memberId: authUser?.uid || null,
+        branchId: branchId || null,
+        purposeId: purpose.id,
+        amount,
+        currency: 'INR',
+        referenceNumber,
+        status: 'PENDING',
+        expiresAt,
+        ipAddress: ip,
+        device: userAgent.substring(0, 255),
+      },
+      include: {
+        purpose: true,
+        branch: true,
+      },
+    });
+
+    // Write Audit Log
+    await writeAuditLog({
+      userId: authUser?.uid || null,
+      action: 'DONATION_SESSION_CREATED',
+      details: `Initialized donation session ${session.id} for ₹${amount} (${purpose.code}) with Ref: ${referenceNumber}`,
+      ipAddress: ip,
+      userAgent,
+    });
+
+    // Dispatch socket notification about pending session creation
+    try {
+      const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+      await fetch(`${companionUrl}/api/trigger-event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'donation.created',
+          payload: {
+            sessionId: session.id,
+            amount: session.amount,
+            purpose: purpose.nameEn,
+            referenceNumber,
+            status: 'PENDING',
+            createdAt: session.createdAt,
+          },
+          room: 'admin:dashboard',
+        }),
+      });
+    } catch (socketErr) {
+      console.warn('[SESSION_API] Realtime event trigger bypassed:', socketErr);
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        session: {
+          id: session.id,
+          referenceNumber: session.referenceNumber,
+          amount: session.amount,
+          currency: session.currency,
+          expiresAt: session.expiresAt,
+          purpose: session.purpose.nameEn,
+        },
+      },
+      {
+        headers: rateLimitHeaders(ip, rateLimitOpts),
+      }
+    );
+  } catch (err: any) {
+    console.error('[API/DONATIONS/SESSION] Error:', err);
+    return NextResponse.json(
+      { error: err.message || 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
