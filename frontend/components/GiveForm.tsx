@@ -223,6 +223,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [actionLoading, setActionLoading] = useState(false);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; amount?: string; purpose?: string; branch?: string }>({});
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // History sync
   const [history, setHistory] = useState<any[]>([]);
@@ -435,22 +437,45 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   const getFinalAmount = () => customAmount ? customAmount : amount;
 
-  const validateDetails = () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Compute whether all required fields are valid
+  const isFormValid = (() => {
     const finalAmt = getFinalAmount();
-    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) {
-      setErrorMessage("Please enter a valid donation amount.");
-      return false;
-    }
-    if (!donorName.trim()) {
-      setErrorMessage("Please enter your name.");
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!donorEmail || !emailRegex.test(donorEmail)) {
-      setErrorMessage("Please enter a valid email address.");
+    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) return false;
+    if (!donorName.trim()) return false;
+    if (!donorEmail || !emailRegex.test(donorEmail)) return false;
+    if (!selectedPurpose) return false;
+    if (!selectedBranch) return false;
+    return true;
+  })();
+
+  const markAllTouched = () => {
+    setTouchedFields(new Set(["name", "email", "amount", "purpose", "branch"]));
+  };
+
+  const getFieldErrors = () => {
+    const errors: { name?: string; email?: string; amount?: string; purpose?: string; branch?: string } = {};
+    const finalAmt = getFinalAmount();
+    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) errors.amount = "Please enter a valid donation amount.";
+    if (!donorName.trim()) errors.name = "Full name is required.";
+    if (!donorEmail || !emailRegex.test(donorEmail)) errors.email = "Please enter a valid email address.";
+    if (!selectedPurpose) errors.purpose = "Please select a purpose.";
+    if (!selectedBranch) errors.branch = "Please select a church branch.";
+    return errors;
+  };
+
+  const validateDetails = () => {
+    markAllTouched();
+    const errors = getFieldErrors();
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const firstError = errors.amount || errors.purpose || errors.branch || errors.name || errors.email || "";
+      setErrorMessage(firstError);
       return false;
     }
     setErrorMessage("");
+    setFieldErrors({});
     return true;
   };
 
@@ -918,8 +943,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <div className="relative">
                               <select
                                 value={selectedBranch}
-                                onChange={(e) => setSelectedBranch(e.target.value)}
-                                className="w-full py-3.5 pl-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-sm"
+                                onChange={(e) => { setSelectedBranch(e.target.value); setTouchedFields(prev => new Set([...prev, "branch"])); setFieldErrors(prev => ({ ...prev, branch: undefined })); }}
+                                className={`w-full py-3.5 pl-4 pr-10 rounded-2xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:outline-none font-semibold appearance-none transition-all text-sm ${
+                                  touchedFields.has("branch") && fieldErrors.branch
+                                    ? "border-red-400 dark:border-red-500 focus:ring-red-400/25 focus:border-red-400"
+                                    : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/25 focus:border-purple-500"
+                                }`}
                               >
                                 {branches.map((b) => (
                                   <option key={b.id} value={b.id}>⛪ {b.name}</option>
@@ -927,6 +956,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               </select>
                               <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 rotate-90 w-4 h-4 text-gray-400 pointer-events-none" />
                             </div>
+                            {touchedFields.has("branch") && fieldErrors.branch && (
+                              <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                                <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
+                                {fieldErrors.branch}
+                              </p>
+                            )}
                           </div>
 
                           {/* ── DONOR INFO ───────────────────── */}
@@ -949,11 +984,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="text"
                                     placeholder={t.pages.give.fullNamePlaceholder}
                                     value={donorName}
-                                    onChange={(e) => setDonorName(e.target.value)}
-                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                    onChange={(e) => { setDonorName(e.target.value); if (touchedFields.has("name")) setFieldErrors(prev => ({ ...prev, name: e.target.value.trim() ? undefined : "Full name is required." })); }}
+                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "name"])); setFieldErrors(prev => ({ ...prev, name: donorName.trim() ? undefined : "Full name is required." })); }}
+                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
+                                      touchedFields.has("name") && fieldErrors.name
+                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
+                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
+                                    }`}
                                   />
-                                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                  <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("name") && fieldErrors.name ? "text-red-400" : "text-gray-400"}`} />
                                 </div>
+                                {touchedFields.has("name") && fieldErrors.name && (
+                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
+                                    {fieldErrors.name}
+                                  </p>
+                                )}
                               </div>
 
                               <div>
@@ -965,11 +1011,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="email"
                                     placeholder={t.pages.give.emailPlaceholder}
                                     value={donorEmail}
-                                    onChange={(e) => setDonorEmail(e.target.value)}
-                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                    onChange={(e) => { setDonorEmail(e.target.value); if (touchedFields.has("email")) setFieldErrors(prev => ({ ...prev, email: emailRegex.test(e.target.value) ? undefined : "Please enter a valid email address." })); }}
+                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "email"])); setFieldErrors(prev => ({ ...prev, email: donorEmail && emailRegex.test(donorEmail) ? undefined : "Please enter a valid email address." })); }}
+                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
+                                      touchedFields.has("email") && fieldErrors.email
+                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
+                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
+                                    }`}
                                   />
-                                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("email") && fieldErrors.email ? "text-red-400" : "text-gray-400"}`} />
                                 </div>
+                                {touchedFields.has("email") && fieldErrors.email && (
+                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
+                                    {fieldErrors.email}
+                                  </p>
+                                )}
                               </div>
 
                               <div>
@@ -993,9 +1050,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                           {/* ── SUBMIT BUTTON ────────────────── */}
                           <button
                             type="button"
-                            disabled={actionLoading}
+                            disabled={actionLoading || !isFormValid}
                             onClick={handleGeneratePaymentSession}
-                            className="w-full py-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-60 relative overflow-hidden group"
+                            title={!isFormValid ? "Please fill in all required fields" : undefined}
+                            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all duration-300 relative overflow-hidden group ${
+                              isFormValid && !actionLoading
+                                ? "bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white hover:shadow-2xl hover:shadow-purple-600/30 active:scale-[0.99] cursor-pointer"
+                                : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                            }`}
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <span className="relative z-10 flex items-center gap-2.5">
