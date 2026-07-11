@@ -1378,15 +1378,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   </p>
                   <div className="grid grid-cols-3 gap-3">
                     {branches.map((b) => (
-                      <button
+                      <div
                         key={b.id}
-                        type="button"
-                        onClick={() => { window.location.href = "/#contact"; }}
-                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.04] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-2 cursor-pointer w-full group"
+                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm flex flex-col items-center justify-center gap-2 w-full"
                       >
-                        <span className="text-2xl group-hover:scale-110 transition-transform">⛪</span>
+                        <span className="text-2xl">⛪</span>
                         <span className="text-[11px] font-bold truncate max-w-full text-gray-800 dark:text-white">{b.name.split(" ")[0]}</span>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
