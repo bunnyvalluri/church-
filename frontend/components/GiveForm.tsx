@@ -535,9 +535,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   };
 
   /**
-   * "Open in UPI App" — Android Intent URL with no package specified.
-   * This triggers the Android system chooser listing ALL installed UPI apps.
-   * On iOS/desktop it falls back to upi:// scheme.
+   * "Open in UPI App" — Android Chrome Intent URL (all UPI apps chooser).
+   * S.browser_fallback_url is required by Chrome on HTTPS for intent:// to work.
    */
   const handleOpenUpiApp = () => {
     if (!upiUri) {
@@ -546,22 +545,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+    const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
 
-    // Intent URL without package — OS shows all UPI apps (chooser dialog)
-    window.location.href = `intent://pay?${params}#Intent;scheme=upi;end`;
-
-    // iOS / desktop fallback: if page still visible after 1.5s, try upi:// scheme
-    setTimeout(() => {
-      if (!document.hidden) {
-        window.location.href = `upi://pay?${params}`;
-      }
-    }, 1500);
+    // Intent URL: no package → OS shows UPI app chooser
+    // S.browser_fallback_url → Chrome navigates here if no UPI app handles it
+    window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
   };
 
   /**
-   * Open a SPECIFIC UPI app directly using Android Intent URL with package= set.
-   * Chrome OS routes the intent directly to the installed app.
-   * If the app is not installed, Play Store opens after 2.5s.
+   * Open a SPECIFIC UPI app using Android Intent URL.
+   * S.browser_fallback_url tells Chrome to open Play Store if the app is not installed.
+   * This works on both HTTP and HTTPS (Vercel) pages.
    */
   const handleOpenSpecificApp = (pkg: string) => {
     if (!upiUri) {
@@ -570,21 +564,15 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+    const playStoreUrl = encodeURIComponent(
+      `https://play.google.com/store/apps/details?id=${pkg}`
+    );
 
-    // Single Intent URL with package — opens the exact app directly on Android Chrome
-    window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
-
-    // If still on page after 2.5s (app not installed), open Play Store
-    setTimeout(() => {
-      if (!document.hidden) {
-        window.open(
-          `https://play.google.com/store/apps/details?id=${pkg}`,
-          "_blank",
-          "noopener"
-        );
-      }
-    }, 2500);
+    // Chrome resolves this intent and opens the specific app directly.
+    // If not installed, Chrome follows S.browser_fallback_url → Play Store.
+    window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
   };
+
 
 
   // Legacy — kept for backward compatibility
