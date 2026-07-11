@@ -62,33 +62,81 @@ interface GiveFormProps {
   initialBranches?: BranchItem[];
 }
 
-// Purpose icon map
-const purposeIconMap: Record<string, React.ReactNode> = {
-  TITHE: <IndianRupee className="w-5 h-5" />,
-  OFFERING: <Gift className="w-5 h-5" />,
-  BUILDING_FUND: <Building className="w-5 h-5" />,
-  MISSIONS: <Globe className="w-5 h-5" />,
-  BENEVOLENCE: <Heart className="w-5 h-5" />,
-  SPECIAL: <Star className="w-5 h-5" />,
+// Purpose styling config
+const purposeCardStyles: Record<string, {
+  icon: React.ReactNode;
+  gradient: string;
+  // Selected Styles
+  selectedBg: string;
+  selectedBorder: string;
+  selectedShadow: string;
+  selectedCheck: string;
+  // Unselected Hover Styles
+  unselectedBorderHover: string;
+  unselectedBgHover: string;
+}> = {
+  TITHE: {
+    icon: <IndianRupee className="w-5 h-5" />,
+    gradient: "from-violet-500 to-purple-600",
+    selectedBg: "bg-violet-50/90 dark:bg-violet-950/25",
+    selectedBorder: "border-violet-300 dark:border-violet-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(139,92,246,0.12)] dark:shadow-[0_0_25px_rgba(139,92,246,0.22)]",
+    selectedCheck: "text-violet-600 dark:text-violet-400",
+    unselectedBorderHover: "hover:border-violet-300 dark:hover:border-violet-800/60",
+    unselectedBgHover: "hover:bg-violet-50/20 dark:hover:bg-violet-950/5",
+  },
+  OFFERING: {
+    icon: <Gift className="w-5 h-5" />,
+    gradient: "from-rose-500 to-pink-600",
+    selectedBg: "bg-rose-50/90 dark:bg-rose-950/25",
+    selectedBorder: "border-rose-300 dark:border-rose-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(244,63,94,0.12)] dark:shadow-[0_0_25px_rgba(244,63,94,0.22)]",
+    selectedCheck: "text-rose-600 dark:text-rose-400",
+    unselectedBorderHover: "hover:border-rose-300 dark:hover:border-rose-800/60",
+    unselectedBgHover: "hover:bg-rose-50/20 dark:hover:bg-rose-950/5",
+  },
+  BUILDING: {
+    icon: <Building className="w-5 h-5" />,
+    gradient: "from-amber-500 to-orange-600",
+    selectedBg: "bg-amber-50/90 dark:bg-amber-950/25",
+    selectedBorder: "border-amber-300 dark:border-amber-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(245,158,11,0.12)] dark:shadow-[0_0_25px_rgba(245,158,11,0.22)]",
+    selectedCheck: "text-amber-600 dark:text-amber-400",
+    unselectedBorderHover: "hover:border-amber-300 dark:hover:border-amber-800/60",
+    unselectedBgHover: "hover:bg-amber-50/20 dark:hover:bg-amber-950/5",
+  },
+  MISSIONS: {
+    icon: <Globe className="w-5 h-5" />,
+    gradient: "from-blue-500 to-cyan-600",
+    selectedBg: "bg-blue-50/90 dark:bg-blue-950/25",
+    selectedBorder: "border-blue-300 dark:border-blue-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(59,130,246,0.12)] dark:shadow-[0_0_25px_rgba(59,130,246,0.22)]",
+    selectedCheck: "text-blue-600 dark:text-blue-400",
+    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-800/60",
+    unselectedBgHover: "hover:bg-blue-50/20 dark:hover:bg-blue-950/5",
+  },
+  CHARITY: {
+    icon: <Heart className="w-5 h-5" />,
+    gradient: "from-emerald-500 to-teal-600",
+    selectedBg: "bg-emerald-50/90 dark:bg-emerald-950/25",
+    selectedBorder: "border-emerald-300 dark:border-emerald-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(16,185,129,0.12)] dark:shadow-[0_0_25px_rgba(16,185,129,0.22)]",
+    selectedCheck: "text-emerald-600 dark:text-emerald-400",
+    unselectedBorderHover: "hover:border-emerald-300 dark:hover:border-emerald-800/60",
+    unselectedBgHover: "hover:bg-emerald-50/20 dark:hover:bg-emerald-950/5",
+  },
+  SPECIAL: {
+    icon: <Star className="w-5 h-5" />,
+    gradient: "from-fuchsia-500 to-violet-600",
+    selectedBg: "bg-fuchsia-50/90 dark:bg-fuchsia-950/25",
+    selectedBorder: "border-fuchsia-300 dark:border-fuchsia-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(217,70,239,0.12)] dark:shadow-[0_0_25px_rgba(217,70,239,0.22)]",
+    selectedCheck: "text-fuchsia-600 dark:text-fuchsia-400",
+    unselectedBorderHover: "hover:border-fuchsia-300 dark:hover:border-fuchsia-800/60",
+    unselectedBgHover: "hover:bg-fuchsia-50/20 dark:hover:bg-fuchsia-950/5",
+  },
 };
 
-const purposeColorMap: Record<string, string> = {
-  TITHE: "from-violet-500 to-purple-600",
-  OFFERING: "from-rose-500 to-pink-600",
-  BUILDING_FUND: "from-amber-500 to-orange-600",
-  MISSIONS: "from-blue-500 to-cyan-600",
-  BENEVOLENCE: "from-emerald-500 to-teal-600",
-  SPECIAL: "from-fuchsia-500 to-violet-600",
-};
-
-const purposeBgMap: Record<string, string> = {
-  TITHE: "bg-violet-50 dark:bg-violet-950/20 border-violet-200 dark:border-violet-800/40",
-  OFFERING: "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/40",
-  BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40",
-  MISSIONS: "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/40",
-  BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40",
-  SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/20 border-fuchsia-200 dark:border-fuchsia-800/40",
-};
 
 const presetStyles: Record<string, {
   selectedBg: string;
@@ -812,9 +860,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <div className="grid sm:grid-cols-2 gap-2.5">
                               {purposes.map((p) => {
                                 const isSelected = selectedPurpose === p.code;
-                                const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
-                                const bgStyle = purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800/40";
-                                const icon = purposeIconMap[p.code] || <IndianRupee className="w-5 h-5" />;
+                                const style = purposeCardStyles[p.code] || {
+                                  icon: <IndianRupee className="w-5 h-5" />,
+                                  gradient: "from-purple-500 to-indigo-600",
+                                  selectedBg: "bg-purple-50 dark:bg-purple-950/20",
+                                  selectedBorder: "border-purple-200 dark:border-purple-800/40",
+                                  selectedShadow: "shadow-[0_0_20px_rgba(147,51,234,0.12)] dark:shadow-[0_0_25px_rgba(147,51,234,0.22)]",
+                                  selectedCheck: "text-purple-600 dark:text-purple-400",
+                                  unselectedBorderHover: "hover:border-purple-300 dark:hover:border-purple-800/60",
+                                  unselectedBgHover: "hover:bg-purple-50/20 dark:hover:bg-purple-950/5",
+                                };
                                 return (
                                   <button
                                     key={p.id}
@@ -822,12 +877,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     onClick={() => setSelectedPurpose(p.code)}
                                     className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-3 w-full group overflow-hidden ${
                                       isSelected
-                                        ? `${bgStyle} shadow-md scale-[1.01]`
-                                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 hover:border-gray-300 dark:hover:border-gray-600"
+                                        ? `${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.01]`
+                                        : `border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 ${style.unselectedBorderHover} ${style.unselectedBgHover}`
                                     }`}
                                   >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
-                                      {icon}
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${style.gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
+                                      {style.icon}
                                     </div>
                                     <div className="min-w-0">
                                       <span className={`block font-bold text-sm transition-colors ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
@@ -838,7 +893,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       </span>
                                     </div>
                                     {isSelected && (
-                                      <CheckCircle2 className="w-4 h-4 text-purple-600 flex-shrink-0 ml-auto mt-0.5" />
+                                      <CheckCircle2 className={`w-4 h-4 ${style.selectedCheck} flex-shrink-0 ml-auto mt-0.5`} />
                                     )}
                                   </button>
                                 );
