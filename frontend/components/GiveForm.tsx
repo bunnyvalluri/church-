@@ -223,8 +223,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [actionLoading, setActionLoading] = useState(false);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; amount?: string; purpose?: string; branch?: string }>({});
-  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // History sync
   const [history, setHistory] = useState<any[]>([]);
@@ -310,6 +308,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
           if (data.success && data.user) {
             setDonorName(data.user.name || "");
             setDonorEmail(data.user.email || "");
+            setDonorPhone(data.user.phone || "");
           }
         }
       } catch (err) {
@@ -436,47 +435,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   const getFinalAmount = () => customAmount ? customAmount : amount;
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Compute whether all required fields are valid
-  const isFormValid = (() => {
-    const finalAmt = getFinalAmount();
-    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) return false;
-    if (!donorName.trim()) return false;
-    if (!donorEmail || !emailRegex.test(donorEmail)) return false;
-    if (!donorPhone.trim() || donorPhone.trim().length < 10) return false;
-    if (!selectedPurpose) return false;
-    if (!selectedBranch) return false;
-    return true;
-  })();
-
-  const markAllTouched = () => {
-    setTouchedFields(new Set(["name", "email", "phone", "amount", "purpose", "branch"]));
-  };
-
-  const getFieldErrors = () => {
-    const errors: { name?: string; email?: string; phone?: string; amount?: string; purpose?: string; branch?: string } = {};
-    const finalAmt = getFinalAmount();
-    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) errors.amount = "Please enter a valid donation amount.";
-    if (!donorName.trim()) errors.name = "Full name is required.";
-    if (!donorEmail || !emailRegex.test(donorEmail)) errors.email = "Please enter a valid email address.";
-    if (!donorPhone.trim() || donorPhone.trim().length < 10) errors.phone = "Please enter a valid 10-digit mobile number.";
-    if (!selectedPurpose) errors.purpose = "Please select a purpose.";
-    if (!selectedBranch) errors.branch = "Please select a church branch.";
-    return errors;
-  };
-
   const validateDetails = () => {
-    markAllTouched();
-    const errors = getFieldErrors();
-    setFieldErrors(errors);
-    if (Object.keys(errors).length > 0) {
-      const firstError = errors.amount || errors.purpose || errors.branch || errors.name || errors.email || errors.phone || "";
-      setErrorMessage(firstError);
+    const finalAmt = getFinalAmount();
+    if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) {
+      setErrorMessage("Please enter a valid donation amount.");
+      return false;
+    }
+    if (!donorName.trim()) {
+      setErrorMessage("Please enter your name.");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!donorEmail || !emailRegex.test(donorEmail)) {
+      setErrorMessage("Please enter a valid email address.");
       return false;
     }
     setErrorMessage("");
-    setFieldErrors({});
     return true;
   };
 
@@ -514,29 +488,21 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       setReferenceNumber(sessionData.session.referenceNumber);
       setExpiresAt(new Date(sessionData.session.expiresAt));
 
-      // Use pre-generated QR code if available to avoid sequential API call
-      if (sessionData.session.qrCode) {
-        setQrCodeData(sessionData.session.qrCode);
-        setUpiUri(sessionData.session.upiUri);
-        setUpiId(sessionData.session.upiId);
-        setChurchName(sessionData.session.churchName);
-      } else {
-        const qrRes = await fetch("/api/donations/generate-qr", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ sessionId: sid }),
-        });
+      const qrRes = await fetch("/api/donations/generate-qr", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ sessionId: sid }),
+      });
 
-        const qrData = await qrRes.json();
-        if (!qrRes.ok || !qrData.success) {
-          throw new Error(qrData.error || "Failed to generate dynamic QR code.");
-        }
-
-        setQrCodeData(qrData.qrCode);
-        setUpiUri(qrData.upiUri);
-        setUpiId(qrData.upiId);
-        setChurchName(qrData.churchName);
+      const qrData = await qrRes.json();
+      if (!qrRes.ok || !qrData.success) {
+        throw new Error(qrData.error || "Failed to generate dynamic QR code.");
       }
+
+      setQrCodeData(qrData.qrCode);
+      setUpiUri(qrData.upiUri);
+      setUpiId(qrData.upiId);
+      setChurchName(qrData.churchName);
 
       setStep(2);
 
@@ -586,28 +552,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  const openPaymentApp = (appUrl: string, storeFallback: string, appPackage?: string) => {
-    if (!upiUri) return;
-    const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
-    const isMobile = typeof navigator !== "undefined" && /android|iphone|ipad|ipod/i.test(navigator.userAgent);
-    const upiParams = upiUri.split("?")[1] || "";
-
-    if (isAndroid) {
-      // Android Intent URL — triggers native app chooser or opens app directly if package is provided
-      const intentPkg = appPackage ? `;package=${appPackage}` : "";
-      const intentUrl = `intent://pay?${upiParams}#Intent;scheme=upi${intentPkg};end`;
-      window.location.href = intentUrl;
-    } else if (isMobile) {
-      // iOS / Mobile custom URL scheme fallback
-      window.location.href = appUrl;
-      setTimeout(() => {
-        if (!document.hidden) {
-          window.location.href = storeFallback;
-        }
-      }, 2000);
-    } else {
-      showToast("📱 Please scan the QR code above using your mobile UPI app.", "success");
-    }
+  const openPaymentApp = (appUrl: string, storeFallback: string) => {
+    window.location.href = appUrl;
+    setTimeout(() => {
+      if (!document.hidden) {
+        window.location.href = storeFallback;
+      }
+    }, 1800);
   };
 
   const activePurposeObj = purposes.find((p) => p.code === selectedPurpose);
@@ -959,12 +910,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <div className="relative">
                               <select
                                 value={selectedBranch}
-                                onChange={(e) => { setSelectedBranch(e.target.value); setTouchedFields(prev => new Set([...prev, "branch"])); setFieldErrors(prev => ({ ...prev, branch: undefined })); }}
-                                className={`w-full py-3.5 pl-4 pr-10 rounded-2xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:outline-none font-semibold appearance-none transition-all text-sm ${
-                                  touchedFields.has("branch") && fieldErrors.branch
-                                    ? "border-red-400 dark:border-red-500 focus:ring-red-400/25 focus:border-red-400"
-                                    : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/25 focus:border-purple-500"
-                                }`}
+                                onChange={(e) => setSelectedBranch(e.target.value)}
+                                className="w-full py-3.5 pl-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-sm"
                               >
                                 {branches.map((b) => (
                                   <option key={b.id} value={b.id}>⛪ {b.name}</option>
@@ -972,12 +919,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               </select>
                               <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 rotate-90 w-4 h-4 text-gray-400 pointer-events-none" />
                             </div>
-                            {touchedFields.has("branch") && fieldErrors.branch && (
-                              <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                                <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
-                                {fieldErrors.branch}
-                              </p>
-                            )}
                           </div>
 
                           {/* ── DONOR INFO ───────────────────── */}
@@ -1000,22 +941,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="text"
                                     placeholder={t.pages.give.fullNamePlaceholder}
                                     value={donorName}
-                                    onChange={(e) => { setDonorName(e.target.value); if (touchedFields.has("name")) setFieldErrors(prev => ({ ...prev, name: e.target.value.trim() ? undefined : "Full name is required." })); }}
-                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "name"])); setFieldErrors(prev => ({ ...prev, name: donorName.trim() ? undefined : "Full name is required." })); }}
-                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
-                                      touchedFields.has("name") && fieldErrors.name
-                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
-                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
-                                    }`}
+                                    onChange={(e) => setDonorName(e.target.value)}
+                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
                                   />
-                                  <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("name") && fieldErrors.name ? "text-red-400" : "text-gray-400"}`} />
+                                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 </div>
-                                {touchedFields.has("name") && fieldErrors.name && (
-                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
-                                    {fieldErrors.name}
-                                  </p>
-                                )}
                               </div>
 
                               <div>
@@ -1027,22 +957,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="email"
                                     placeholder={t.pages.give.emailPlaceholder}
                                     value={donorEmail}
-                                    onChange={(e) => { setDonorEmail(e.target.value); if (touchedFields.has("email")) setFieldErrors(prev => ({ ...prev, email: emailRegex.test(e.target.value) ? undefined : "Please enter a valid email address." })); }}
-                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "email"])); setFieldErrors(prev => ({ ...prev, email: donorEmail && emailRegex.test(donorEmail) ? undefined : "Please enter a valid email address." })); }}
-                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
-                                      touchedFields.has("email") && fieldErrors.email
-                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
-                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
-                                    }`}
+                                    onChange={(e) => setDonorEmail(e.target.value)}
+                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
                                   />
-                                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("email") && fieldErrors.email ? "text-red-400" : "text-gray-400"}`} />
+                                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 </div>
-                                {touchedFields.has("email") && fieldErrors.email && (
-                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
-                                    {fieldErrors.email}
-                                  </p>
-                                )}
                               </div>
 
                               <div>
@@ -1054,22 +973,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="tel"
                                     placeholder={t.pages.give.phonePlaceholder}
                                     value={donorPhone}
-                                    onChange={(e) => { setDonorPhone(e.target.value); if (touchedFields.has("phone")) setFieldErrors(prev => ({ ...prev, phone: e.target.value.trim().length >= 10 ? undefined : "Please enter a valid 10-digit mobile number." })); }}
-                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "phone"])); setFieldErrors(prev => ({ ...prev, phone: donorPhone.trim().length >= 10 ? undefined : "Please enter a valid 10-digit mobile number." })); }}
-                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
-                                      touchedFields.has("phone") && fieldErrors.phone
-                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
-                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
-                                    }`}
+                                    onChange={(e) => setDonorPhone(e.target.value)}
+                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
                                   />
-                                  <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("phone") && fieldErrors.phone ? "text-red-400" : "text-gray-400"}`} />
+                                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 </div>
-                                {touchedFields.has("phone") && fieldErrors.phone && (
-                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
-                                    {fieldErrors.phone}
-                                  </p>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -1077,14 +985,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                           {/* ── SUBMIT BUTTON ────────────────── */}
                           <button
                             type="button"
-                            disabled={actionLoading || !isFormValid}
+                            disabled={actionLoading}
                             onClick={handleGeneratePaymentSession}
-                            title={!isFormValid ? "Please fill in all required fields" : undefined}
-                            className={`w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all duration-300 relative overflow-hidden group bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white ${
-                              isFormValid && !actionLoading
-                                ? "hover:shadow-2xl hover:shadow-purple-600/30 active:scale-[0.99] cursor-pointer opacity-100"
-                                : "opacity-50 cursor-not-allowed"
-                            }`}
+                            className="w-full py-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-60 relative overflow-hidden group"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <span className="relative z-10 flex items-center gap-2.5">
@@ -1176,46 +1079,46 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center mb-3">
                               {language === 'te' ? '— మీ ఇష్టమైన యాప్‌లో తెరవండి —' : language === 'hi' ? '— पसंदीदा ऐप में खोलें —' : '— Pay directly with your favourite app —'}
                             </p>
-                            <div className="grid grid-cols-5 gap-2 mb-4">
-                              {[
-                                { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user", package: "com.google.android.apps.nbu.paisa.user" },
-                                { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app", package: "com.phonepe.app" },
-                                { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm", package: "net.one97.paytm" },
-                                { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp", package: "in.org.npci.upiapp" },
-                                { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", package: "com.fampay.in", invert: true },
-                              ].map((app) => (
-                                <button
-                                  key={app.name}
-                                  type="button"
-                                  title={`Open in ${app.name}`}
-                                  onClick={() => openPaymentApp(app.url, app.store, app.package)}
-                                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
-                                >
-                                  <img
-                                    src={app.logo}
-                                    className="w-8 h-8 object-contain rounded-lg group-hover:scale-105 transition-transform"
-                                    alt={app.name}
-                                    style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
-                                  />
-                                  <span className="text-[9px] font-bold tracking-tight" style={{ color: app.color }}>{app.name}</span>
-                                </button>
-                              ))}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2.5">
-                              <button
-                                type="button"
-                                onClick={() => openPaymentApp(upiUri || "", upiUri || "")}
-                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-purple-200 dark:border-purple-800/40 bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95"
-                              >
-                                <Smartphone className="w-4 h-4" />
-                                {language === 'te' ? 'UPI యాప్ తెరవండి' : language === 'hi' ? 'यूपीआई ऐप खोलें' : 'Open in UPI App'}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => copyToClipboard(upiUri || "", "URI")}
-                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
-                              >
+                              <div className="grid grid-cols-5 gap-2 mb-4">
+                               {[
+                                 { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user" },
+                                 { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app" },
+                                 { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm" },
+                                 { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp" },
+                                 { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", invert: true },
+                               ].map((app) => (
+                                 <button
+                                   key={app.name}
+                                   type="button"
+                                   title={`Open in ${app.name}`}
+                                   onClick={() => openPaymentApp(app.url, app.store)}
+                                   className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
+                                 >
+                                   <img
+                                     src={app.logo}
+                                     className="w-8 h-8 object-contain rounded-lg group-hover:scale-105 transition-transform"
+                                     alt={app.name}
+                                     style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
+                                   />
+                                   <span className="text-[9px] font-bold tracking-tight" style={{ color: app.color }}>{app.name}</span>
+                                 </button>
+                               ))}
+                             </div>
+ 
+                             <div className="grid grid-cols-2 gap-2.5">
+                               <button
+                                 type="button"
+                                 onClick={() => openPaymentApp(upiUri || "", upiUri || "")}
+                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-purple-200 dark:border-purple-800/40 bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95"
+                               >
+                                 <Smartphone className="w-4 h-4" />
+                                 {language === 'te' ? 'UPI యాప్ తెరవండి' : language === 'hi' ? 'यूपीआई ऐप खोलें' : 'Open in UPI App'}
+                               </button>
+                               <button
+                                 type="button"
+                                 onClick={() => copyToClipboard(upiUri || "", "URI")}
+                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
+                               >
                                 {copiedLabel === "URI" ? (
                                   <><Check className="w-4 h-4 text-emerald-500" /> {language === 'te' ? 'కాపీ అయింది' : language === 'hi' ? 'कॉपी हुआ' : 'Copied!'}</>
                                 ) : (
