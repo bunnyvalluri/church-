@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  CreditCard, 
   Building, 
   Smartphone, 
   Heart, 
@@ -24,35 +23,18 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldAlert,
-  Calendar,
   ExternalLink,
   Activity,
-  Server,
-  Bell,
   RefreshCw,
   Receipt,
-  QrCode
+  QrCode,
+  ArrowLeft,
+  CheckCircle
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Load Razorpay script dynamically outside the component
-const loadRazorpayScript = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as any).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
 
 const getPurposeIcon = (pId: string) => {
   switch (pId) {
@@ -67,32 +49,37 @@ const getPurposeIcon = (pId: string) => {
 
 export default function GiveForm() {
   const { language, t } = useLanguage();
-  const { user } = useAuth();
+  const { user, getIdToken } = useAuth();
   const pathname = usePathname() || "";
   const isPortalRoute = pathname.startsWith("/member");
   const gt = t.pages.give;
   const pageT = gt;
 
-  // Payment mode selector: "GATEWAY" (Razorpay) or "UPI" (Google Pay Scanner)
-  const [paymentMode, setPaymentMode] = useState<"GATEWAY" | "UPI">("GATEWAY");
-
-  // Form states (shared between modes)
-  const [step, setStep] = useState(1); // Gateway steps: 1 (Amount/Purpose), 2 (Donor Details)
-  const [upiStep, setUpiStep] = useState(1); // UPI steps: 1 (Scan & Pay), 2 (Submit Details)
+  // Donation Wizard Steps: 
+  // 1 = Enter Details (Amount, Purpose, Donor Info)
+  // 2 = Scan & Pay (Displays UPI QR Code, Deep links, "I've Paid")
+  const [step, setStep] = useState(1);
   
+  // Input fields
   const [amount, setAmount] = useState<string>("1000");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [purpose, setPurpose] = useState<string>("TITHE");
   const [donorName, setDonorName] = useState<string>("");
   const [donorEmail, setDonorEmail] = useState<string>("");
   const [donorPhone, setDonorPhone] = useState<string>("");
-  const [upiTransactionRef, setUpiTransactionRef] = useState<string>("");
 
-  // Payment backend execution states
-  const [loading, setLoading] = useState(false);
-  const [showSimulatedModal, setShowSimulatedModal] = useState(false);
-  const [pendingDonationId, setPendingDonationId] = useState("");
-  const [pendingOrderId, setPendingOrderId] = useState("");
+  // API generated session state
+  const [donationId, setDonationId] = useState<string>("");
+  const [qrCodeData, setQrCodeData] = useState<string>("");
+  const [upiUri, setUpiUri] = useState<string>("");
+  const [upiId, setUpiId] = useState<string>("kcm.kristhraj2004-1@okicici");
+  const [churchName, setChurchName] = useState<string>("Kingdom of Christ Ministries");
+
+  // Execution states
+  const [initLoading, setInitLoading] = useState(true);
+  const [initError, setInitError] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [verificationLoading, setVerificationLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   // Live Updates states
@@ -107,7 +94,7 @@ export default function GiveForm() {
   const historyInterval = useRef<NodeJS.Timeout | null>(null);
   const prevHistoryCount = useRef<number>(0);
 
-  // Prevent SSR/client hydration mismatch from user-dependent rendering
+  // Prevent SSR/client hydration mismatch
   useEffect(() => { setMounted(true); }, []);
 
   const showToast = (msg: string) => {
@@ -122,6 +109,47 @@ export default function GiveForm() {
       setDonorEmail(user.email || "");
     }
   }, [user]);
+
+  // 1. Initialize Donation Session on page load
+  const initializeSession = useCallback(async () => {
+    setInitLoading(true);
+    setInitError(false);
+    setErrorMessage("");
+
+    try {
+      const token = getIdToken ? await getIdToken() : null;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch("/api/donations/session/init", {
+        method: "POST",
+        headers,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Session initialization failed.");
+      }
+
+      setDonationId(data.donationId);
+    } catch (err: any) {
+      console.error("Failed to initialize donation session:", err);
+      setInitError(true);
+      setErrorMessage(err.message || "Unable to establish secure connection for payments. Please refresh and try again.");
+    } finally {
+      setInitLoading(false);
+    }
+  }, [getIdToken]);
+
+  useEffect(() => {
+    if (mounted) {
+      initializeSession();
+    }
+  }, [mounted, initializeSession]);
 
   // Load giving history for authenticated member
   const loadHistory = useCallback(async (silent = false) => {
@@ -179,23 +207,16 @@ export default function GiveForm() {
     };
   }, [user, loadHistory, pingGateway]);
 
-  // loadRazorpayScript is moved to module scope (above)
-
   const getFinalAmount = () => {
     return customAmount ? customAmount : amount;
   };
 
-  const validateStep1 = () => {
+  const validateDetails = () => {
     const finalAmt = getFinalAmount();
     if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) {
       setErrorMessage(gt.errors.validAmount);
       return false;
     }
-    setErrorMessage("");
-    return true;
-  };
-
-  const validateStep2 = () => {
     if (!donorName.trim()) {
       setErrorMessage(gt.errors.enterName);
       return false;
@@ -209,231 +230,85 @@ export default function GiveForm() {
     return true;
   };
 
-  const handleNextStep = () => {
-    if (paymentMode === "GATEWAY") {
-      if (step === 1 && validateStep1()) {
-        setStep(2);
-      } else if (step === 2 && validateStep2()) {
-        handleInitiatePayment();
-      }
-    } else {
-      if (upiStep === 1 && validateStep1()) {
-        setUpiStep(2);
-      } else if (upiStep === 2 && validateStep2()) {
-        handleRegisterUPI();
-      }
-    }
-  };
-
-  const handleInitiatePayment = async () => {
-    setLoading(true);
+  // 2. Submit details to update session and generate dynamic UPI QR code
+  const handleGenerateQrCode = async () => {
+    if (!validateDetails()) return;
+    setActionLoading(true);
     setErrorMessage("");
 
     try {
-      const finalAmt = getFinalAmount();
-      const res = await fetch("/api/donations/create-order", {
+      const token = getIdToken ? await getIdToken() : null;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch("/api/donations/session/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
-          amount: Number(finalAmt),
+          donationId,
+          amount: Number(getFinalAmount()),
           purpose,
           donorName,
           donorEmail,
           donorPhone,
-          userId: user?.uid || null,
-          paymentMode: "RAZORPAY",
         }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Initialization failed");
+        throw new Error(data.error || "Failed to generate dynamic payment details.");
       }
 
-      setPendingDonationId(data.donationId);
-      setPendingOrderId(data.orderId);
+      setQrCodeData(data.qrCode);
+      setUpiUri(data.upiUri);
+      setUpiId(data.upiId);
+      setChurchName(data.churchName);
 
-      // If mock keys are active, open the simulated credit card interface
-      if (data.isMock) {
-        setShowSimulatedModal(true);
-        setLoading(false);
-      } else {
-        // Try real Razorpay checkout
-        const isScriptLoaded = await loadRazorpayScript();
-        if (!isScriptLoaded) {
-          throw new Error("Razorpay payment gateway failed to load. Please check your internet connection.");
-        }
-
-        const options = {
-          key: data.keyId,
-          amount: data.amount,
-          currency: data.currency,
-          name: "Kingdom of Christ Ministries",
-          description: `Donation for ${purpose.replace('_', ' ')}`,
-          order_id: data.orderId,
-          prefill: {
-            name: donorName,
-            email: donorEmail,
-            contact: donorPhone,
-          },
-          theme: {
-            color: "#8B5CF6", // purple matching the church theme
-          },
-          handler: async function (response: any) {
-            setLoading(true);
-            try {
-              const verifyRes = await fetch("/api/donations/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature,
-                  donationId: data.donationId,
-                  amount: Number(finalAmt),
-                  purpose,
-                  donorName,
-                  donorEmail,
-                  donorPhone,
-                  userId: user?.uid || null,
-                }),
-              });
-              const verifyData = await verifyRes.json();
-              if (verifyRes.ok && verifyData.success) {
-                window.location.href = `/give/receipt/${data.donationId}`;
-              } else {
-                throw new Error(verifyData.error || "Verification failed");
-              }
-            } catch (err: any) {
-              setErrorMessage(err.message || "Payment verification failed. Please contact support.");
-              setLoading(false);
-            }
-          },
-          modal: {
-            ondismiss: function () {
-              setLoading(false);
-              console.log("Payment canceled");
-            },
-          },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-      }
+      setStep(2);
     } catch (err: any) {
-      setErrorMessage(err.message || "An unexpected error occurred. Please try again.");
-      setLoading(false);
+      console.error("Error generating dynamic QR:", err);
+      setErrorMessage(err.message || "Failed to set up payment. Please check your network connection and try again.");
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  // Submit manual UPI details for backend record auditing
-  const handleRegisterUPI = async () => {
-    setLoading(true);
+  // 3. Confirm payment server-side
+  const handleVerifyPayment = async () => {
+    setVerificationLoading(true);
     setErrorMessage("");
 
-    if (!validateStep1() || !validateStep2()) {
-      setLoading(false);
-      return;
-    }
-
-    if (!upiTransactionRef.trim()) {
-      setErrorMessage(gt.errors.enterUtr);
-      setLoading(false);
-      return;
-    }
-
-    if (upiTransactionRef.trim().length < 8) {
-      setErrorMessage(gt.errors.validUtr);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const finalAmt = getFinalAmount();
-      
-      // Step 1: Create a pending order
-      const res = await fetch("/api/donations/create-order", {
+      const token = getIdToken ? await getIdToken() : null;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch("/api/donations/session/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: Number(finalAmt),
-          purpose,
-          donorName,
-          donorEmail,
-          donorPhone,
-          userId: user?.uid || null,
-          paymentMode: "UPI",
-        }),
+        headers,
+        body: JSON.stringify({ donationId }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "UPI registration initialization failed.");
+        throw new Error(data.error || "Server-side payment verification failed.");
       }
 
-      // Step 2: Verify the payment using the entered UTR number directly (bypasses signature check in mock/manual fallback)
-      const verifyRes = await fetch("/api/donations/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpayOrderId: data.orderId,
-          razorpayPaymentId: upiTransactionRef.trim(), // Stores UPI UTR as Payment ID
-          razorpaySignature: "", // falsy signature signals simulated/manual check
-          donationId: data.donationId,
-          amount: Number(finalAmt),
-          purpose,
-          donorName,
-          donorEmail,
-          donorPhone,
-          userId: user?.uid || null,
-        }),
-      });
-
-      const verifyData = await verifyRes.json();
-      if (verifyRes.ok && verifyData.success) {
-        window.location.href = `/give/receipt/${data.donationId}`;
-      } else {
-        throw new Error(verifyData.error || "Simulated UPI Verification failed.");
-      }
+      // Redirect to the receipt page
+      window.location.href = `/give/receipt/${donationId}`;
     } catch (err: any) {
-      setErrorMessage(err.message || gt.errors.recordUpiFailed);
-      setLoading(false);
-    }
-  };
-
-  const handleSimulatePaymentSuccess = async () => {
-    setLoading(true);
-    setShowSimulatedModal(false);
-    const finalAmt = getFinalAmount();
-
-    try {
-      const mockPayId = `pay_mock_${Math.random().toString(36).substring(2, 10)}`;
-      const verifyRes = await fetch("/api/donations/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpayOrderId: pendingOrderId,
-          razorpayPaymentId: mockPayId,
-          razorpaySignature: "", // simulated
-          donationId: pendingDonationId,
-          amount: Number(finalAmt),
-          purpose,
-          donorName,
-          donorEmail,
-          donorPhone,
-          userId: user?.uid || null,
-        }),
-      });
-
-      const verifyData = await verifyRes.json();
-      if (verifyRes.ok && verifyData.success) {
-        window.location.href = `/give/receipt/${pendingDonationId}`;
-      } else {
-        throw new Error(verifyData.error || "Simulation verification failed");
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || gt.errors.paymentFailed);
-      setLoading(false);
+      console.error("Verification error:", err);
+      setErrorMessage(err.message || "We could not automatically verify your transfer right now. Please wait a few seconds and try again, or contact our support team.");
+    } finally {
+      setVerificationLoading(false);
     }
   };
 
@@ -443,13 +318,11 @@ export default function GiveForm() {
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  // getPurposeIcon is moved to module scope (above)
-
   const formattedPingTime = pingTime !== null ? `${pingTime}ms` : "checking...";
 
   if (!mounted) return null;
 
-  const innerContent = (
+  return (
     <>
       {/* Toast Alert */}
       <AnimatePresence>
@@ -460,12 +333,13 @@ export default function GiveForm() {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-semibold border bg-[hsl(var(--primary))] text-white border-purple-400/30 max-w-sm"
           >
-            <Bell className="w-4 h-4 text-purple-200 animate-bounce" />
+            <Activity className="w-4 h-4 text-purple-200 animate-bounce" />
             <div>{toast.msg}</div>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Hero Header */}
       <section className="relative py-24 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
@@ -479,7 +353,7 @@ export default function GiveForm() {
             >
               <Heart className="h-4 w-4 text-pink-300 animate-pulse" />
               <span className="font-medium tracking-wide">
-                {language === 'en' ? 'Generous Giving' : language === 'te' ? 'దాతృత్వము' : 'उदार दान'}
+                {language === 'en' ? 'Generous Giving' : language === 'te' ? 'దాతృత్వము' : 'ఉदार दान'}
               </span>
             </motion.div>
             <motion.h1 
@@ -502,78 +376,43 @@ export default function GiveForm() {
         </div>
       </section>
 
-      {/* Main Interactive Segment (Matches 2-column layout width of previous version) */}
+      {/* Main Interactive Grid */}
       <section className="py-20 -mt-10 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 max-w-6xl mx-auto items-start">
             
-            {/* Left Column: Giving Form */}
+            {/* Left Column: Instant UPI payment card */}
             <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-8 border border-gray-100 dark:border-gray-700/50">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+              
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-[hsl(var(--primary))]" />
-                    {gt.formTitle}
+                    <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-[hsl(var(--primary))]" />
+                    Instant UPI Giving
                   </h2>
                   <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
-                    {gt.formSubtitle}
+                    Secure real-time bank transfers using dynamic QR codes
                   </p>
                 </div>
-                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 bg-gray-55/65 dark:bg-gray-900/60 sm:bg-transparent sm:dark:bg-transparent p-2 sm:p-0 rounded-xl w-full sm:w-auto">
+                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 w-full sm:w-auto">
                   <div className="flex items-center gap-1.5 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 px-2.5 py-1 rounded-full text-[hsl(var(--primary))] text-[10px] sm:text-xs font-semibold">
                     <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     {language === 'en' ? 'Secure' : language === 'te' ? 'భద్రమైనది' : 'सुरक्षित'}
                   </div>
-                  <span className="text-[9px] sm:text-[10px] font-mono text-gray-400 dark:text-gray-500">Ping: {formattedPingTime}</span>
+                  <span className="text-[9px] sm:text-[10px] font-mono text-gray-400 dark:text-gray-500">
+                    Ping: {formattedPingTime}
+                  </span>
                 </div>
               </div>
 
-              {/* Payment Mode Selector Tabs */}
-              <div className="grid grid-cols-2 gap-2 bg-gray-50 dark:bg-gray-900 p-1.5 rounded-2xl border border-gray-200 dark:border-gray-750 mb-8">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaymentMode("GATEWAY");
-                  }}
-                  className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-                    paymentMode === "GATEWAY"
-                      ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-md border border-gray-100 dark:border-gray-700"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>{gt.cardTab}</span>
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaymentMode("UPI");
-                  }}
-                  className={`py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-                    paymentMode === "UPI"
-                      ? "bg-white dark:bg-gray-800 text-[hsl(var(--primary))] shadow-md border border-gray-100 dark:border-gray-700"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span>{gt.qrTab}</span>
-                </button>
+              {/* Progress Indicator */}
+              <div className="flex items-center gap-2 mb-8">
+                <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step >= 1 ? 'bg-[hsl(var(--primary))]' : 'bg-gray-200'}`} />
+                <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step >= 2 ? 'bg-[hsl(var(--primary))]' : 'bg-gray-200'}`} />
               </div>
 
-              {/* Steps Indicator */}
-              {paymentMode === "GATEWAY" ? (
-                <div className="flex items-center gap-2 mb-8">
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: step >= 1 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: step >= 2 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 mb-8">
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: upiStep >= 1 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
-                  <div className={`h-2 flex-1 rounded-full transition-all duration-300`} style={{ backgroundColor: upiStep >= 2 ? 'hsl(var(--primary))' : '#E5E7EB' }} />
-                </div>
-              )}
-
+              {/* Error messages */}
               {errorMessage && (
                 <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 text-sm rounded-lg flex items-start gap-2">
                   <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -581,124 +420,124 @@ export default function GiveForm() {
                 </div>
               )}
 
-              <AnimatePresence mode="wait">
-                {paymentMode === "GATEWAY" ? (
-                  // GATEWAY WIZARD
-                  <div key="gateway-wizard">
-                    {step === 1 ? (
-                      <motion.div
-                        key="gateway-step-1"
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 20, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-6"
-                      >
-                        {/* Amount Selection */}
-                        <div>
-                          <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            {gt.presetsTitle}
-                          </label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {["500", "1000", "2500", "5000", "10000"].map((preset) => (
-                              <button
-                                key={preset}
-                                type="button"
-                                onClick={() => {
-                                  setAmount(preset);
-                                  setCustomAmount("");
-                                }}
-                                className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
-                                  preset === "10000" ? "col-span-2 sm:col-span-1" : ""
-                                } ${
-                                  amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
-                                    : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                }`}
-                              >
-                                ₹{preset}
-                              </button>
-                            ))}
-                            <div className="relative col-span-2 sm:col-span-1">
-                              <input
-                                type="number"
-                                placeholder={gt.customPlaceholder}
-                                value={customAmount}
-                                onChange={(e) => {
-                                  setCustomAmount(e.target.value);
-                                  setAmount("");
-                                }}
-                                className={`w-full py-3.5 px-3 sm:px-4 pl-6 sm:pl-8 rounded-xl border font-bold text-sm sm:text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
-                                  customAmount 
-                                    ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
-                                    : "border-gray-200 dark:border-gray-700"
-                                }`}
-                              />
-                              <span className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm sm:text-lg">₹</span>
-                            </div>
+              {/* Initial Session Loading state */}
+              {initLoading ? (
+                <div className="py-16 flex flex-col items-center justify-center space-y-4">
+                  <Loader2 className="w-10 h-10 text-[hsl(var(--primary))] animate-spin" />
+                  <p className="text-gray-500 dark:text-gray-400 text-sm font-semibold">Establishing secure donation session...</p>
+                </div>
+              ) : initError ? (
+                <div className="py-12 text-center space-y-4">
+                  <ShieldAlert className="w-12 h-12 text-red-500 mx-auto" />
+                  <p className="text-gray-600 dark:text-gray-400 text-sm max-w-sm mx-auto">
+                    {errorMessage || "Connection error. We couldn't establish a payment session."}
+                  </p>
+                  <button
+                    onClick={initializeSession}
+                    className="px-6 py-2.5 bg-[hsl(var(--primary))] text-white font-bold rounded-xl shadow-md hover:shadow-lg active:scale-98 transition-all"
+                  >
+                    Retry Connection
+                  </button>
+                </div>
+              ) : (
+                <AnimatePresence mode="wait">
+                  {step === 1 ? (
+                    // STEP 1: Enter Details
+                    <motion.div
+                      key="step-1"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-6"
+                    >
+                      {/* Amount presets */}
+                      <div>
+                        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
+                          {gt.presetsTitle}
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {["500", "1000", "2500", "5000", "10000"].map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => {
+                                setAmount(preset);
+                                setCustomAmount("");
+                              }}
+                              className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
+                                preset === "10000" ? "col-span-2 sm:col-span-1" : ""
+                              } ${
+                                amount === preset && !customAmount
+                                  ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
+                                  : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              }`}
+                            >
+                              ₹{preset}
+                            </button>
+                          ))}
+                          <div className="relative col-span-2 sm:col-span-1">
+                            <input
+                              type="number"
+                              placeholder={gt.customPlaceholder}
+                              value={customAmount}
+                              onChange={(e) => {
+                                setCustomAmount(e.target.value);
+                                setAmount("");
+                              }}
+                              className={`w-full py-3.5 px-3 sm:px-4 pl-6 sm:pl-8 rounded-xl border font-bold text-sm sm:text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
+                                customAmount 
+                                  ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
+                                  : "border-gray-200 dark:border-gray-700"
+                              }`}
+                            />
+                            <span className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm sm:text-lg">₹</span>
                           </div>
                         </div>
+                      </div>
 
-                        {/* Purpose Selection */}
-                        <div>
-                          <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            {gt.purposeLabel}
-                          </label>
-                          <div className="grid md:grid-cols-2 gap-3">
-                            {Object.entries(gt.purposes).map(([id, item]) => (
-                              <button
-                                key={id}
-                                type="button"
-                                onClick={() => setPurpose(id)}
-                                className={`p-4 rounded-xl border text-left cursor-pointer select-none transition-all flex flex-col justify-between w-full ${
-                                  purpose === id
-                                    ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
-                                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
-                                }`}
-                              >
-                                <div>
-                                  <span className="block font-bold text-gray-900 dark:text-white text-base">
-                                    {item.name}
-                                  </span>
-                                  <span className="block text-gray-500 dark:text-gray-400 text-xs mt-1">
-                                    {item.desc}
-                                  </span>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
+                      {/* Purpose selector */}
+                      <div>
+                        <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
+                          {gt.purposeLabel}
+                        </label>
+                        <div className="grid md:grid-cols-2 gap-3">
+                          {Object.entries(gt.purposes).map(([id, item]) => (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => setPurpose(id)}
+                              className={`p-4 rounded-xl border text-left cursor-pointer select-none transition-all flex items-start gap-3 w-full ${
+                                purpose === id
+                                  ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
+                                  : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
+                              }`}
+                            >
+                              <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-900 mt-0.5">
+                                {getPurposeIcon(id)}
+                              </div>
+                              <div>
+                                <span className="block font-bold text-gray-900 dark:text-white text-sm sm:text-base">
+                                  {item.name}
+                                </span>
+                                <span className="block text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+                                  {item.desc}
+                                </span>
+                              </div>
+                            </button>
+                          ))}
                         </div>
+                      </div>
 
-                        <button
-                          type="button"
-                          onClick={handleNextStep}
-                          className="w-full py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
-                        >
-                          {gt.continueBtn}
-                          <ArrowRight className="h-5 w-5" />
-                        </button>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="gateway-step-2"
-                        initial={{ x: 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -20, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-6"
-                      >
-                        <div>
-                          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">
-                            {gt.contactTitle}
-                          </h3>
-                          <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            {gt.contactSubtitle}
-                          </p>
-                        </div>
+                      {/* Donor Contact info */}
+                      <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <h3 className="font-bold text-gray-900 dark:text-white text-base">
+                          {gt.contactTitle}
+                        </h3>
 
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="sm:col-span-2">
+                            <label className="block text-xs font-semibold text-gray-650 dark:text-gray-405 mb-1">
                               {gt.fullNameLabel}
                             </label>
                             <div className="relative">
@@ -709,12 +548,12 @@ export default function GiveForm() {
                                 onChange={(e) => setDonorName(e.target.value)}
                                 className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-450 w-4.5 h-4.5" />
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-650 dark:text-gray-450 mb-1">
                               {gt.emailLabel}
                             </label>
                             <div className="relative">
@@ -725,12 +564,12 @@ export default function GiveForm() {
                                 onChange={(e) => setDonorEmail(e.target.value)}
                                 className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
-                              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-450 w-4.5 h-4.5" />
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-650 dark:text-gray-450 mb-1">
                               {gt.phoneLabel}
                             </label>
                             <div className="relative">
@@ -741,369 +580,163 @@ export default function GiveForm() {
                                 onChange={(e) => setDonorPhone(e.target.value)}
                                 className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
                               />
-                              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-450 w-4.5 h-4.5" />
                             </div>
                           </div>
                         </div>
+                      </div>
 
-                        <div className="flex gap-4">
-                          <button
+                      {/* Action Button */}
+                      <button
+                        type="button"
+                        disabled={actionLoading}
+                        onClick={handleGenerateQrCode}
+                        className="w-full py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
+                      >
+                        {actionLoading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Generating QR Code...
+                          </>
+                        ) : (
+                          <>
+                            Generate Dynamic UPI QR Code
+                            <ArrowRight className="h-5 w-5" />
+                          </>
+                        )}
+                      </button>
+                    </motion.div>
+                  ) : (
+                    // STEP 2: Scan & Pay
+                    <motion.div
+                      key="step-2"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex flex-col items-center space-y-6 text-center"
+                    >
+                      {/* Dynamic QR Container */}
+                      <div className="bg-gray-50 dark:bg-gray-900/60 p-6 rounded-3xl border border-gray-200 dark:border-gray-700/60 shadow-inner flex flex-col items-center max-w-sm w-full mx-auto relative">
+                        <div className="absolute top-3 left-3 flex items-center gap-1 bg-green-150 dark:bg-green-950/20 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                          <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                          Dynamic QR
+                        </div>
+
+                        {/* Renders base64 image returned from API */}
+                        <div className="relative w-64 h-64 bg-white rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-gray-100/50 mt-4">
+                          {qrCodeData ? (
+                            <img
+                              src={qrCodeData}
+                              alt="Dynamic UPI QR Code"
+                              className="w-full h-full object-contain p-2"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                              <Loader2 className="w-8 h-8 text-[hsl(var(--primary))] animate-spin" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* UPI Address copying block */}
+                        <div className="mt-5 w-full bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-750 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold">
+                          <div className="text-left font-mono">
+                            <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-wider">Payee UPI ID</span>
+                            <span className="text-gray-800 dark:text-gray-200 font-bold select-all">{upiId}</span>
+                          </div>
+                          <button 
                             type="button"
-                            onClick={() => setStep(1)}
-                            className="flex-1 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all"
+                            onClick={() => copyToClipboard(upiId, "UPI ID")}
+                            className="p-2 bg-gray-55 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-500 hover:text-[hsl(var(--primary))] transition-all border border-gray-200 dark:border-gray-700"
                           >
-                            {gt.backBtn}
+                            {copiedLabel === "UPI ID" ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
+                        </div>
+                      </div>
+
+                      {/* Launch apps in mobile */}
+                      <div className="w-full max-w-sm">
+                        <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
+                          — or launch directly in your UPI App —
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          {/* Deep link app launcher wrapper */}
+                          <a
+                            href={upiUri}
+                            className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl border-2 border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95 shadow-sm"
+                          >
+                            <Smartphone className="w-4 h-4" />
+                            Open in UPI App
+                          </a>
+
                           <button
                             type="button"
-                            disabled={loading}
-                            onClick={handleNextStep}
-                            className="flex-[2] py-4 bg-gradient-to-r from-[hsl(var(--primary-gradient-start))] to-[hsl(var(--primary-gradient-end))] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
+                            onClick={() => copyToClipboard(upiUri, "URI")}
+                            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
                           >
-                            {loading ? (
+                            {copiedLabel === "URI" ? (
                               <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                {gt.initializing}
+                                <Check className="w-4 h-4 text-green-500" />
+                                Copied Link
                               </>
                             ) : (
                               <>
-                                {gt.paySecurely} (₹{Number(getFinalAmount()).toLocaleString("en-IN")})
-                                <ArrowRight className="h-5 w-5" />
+                                <Copy className="w-4 h-4" />
+                                Copy Payment Link
                               </>
                             )}
                           </button>
                         </div>
-                      </motion.div>
-                    )}
-                  </div>
-                ) : (
-                  // UPI QR CODE WIZARD
-                  <div key="upi-wizard">
-                    {upiStep === 1 ? (
-                      <motion.div
-                        key="upi-step-1"
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 20, opacity: 0 }}
-                        className="flex flex-col items-center space-y-6 text-center"
-                      >
-                        {/* QR Code container */}
-                        <div className="bg-gray-55 dark:bg-gray-900/50 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-inner flex flex-col items-center max-w-sm w-full mx-auto">
-                          <div className="relative w-56 h-80 bg-white rounded-2xl overflow-hidden shadow-md flex items-center justify-center border border-gray-100">
-                            <Image
-                              src="/upi_qr.png"
-                              alt="UPI Google Pay Scanner"
-                              fill unoptimized
-                              className="object-contain p-2"
-                            />
-                          </div>
+                        <p className="text-[10px] text-gray-450 dark:text-gray-500 mt-2">
+                          UPI apps auto-fill payee name, purpose reference, and exact amount ₹{Number(getFinalAmount()).toLocaleString('en-IN')}.
+                        </p>
+                      </div>
 
-                          {/* UPI Copy block */}
-                          <div className="mt-5 w-full bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-750 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold">
-                            <div className="text-left font-mono">
-                              <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-wider">{gt.upiIdLabel}</span>
-                              <span className="text-gray-800 dark:text-gray-200 font-bold select-all">kcm.kristhraj2004-1@okicici</span>
-                            </div>
-                            <button 
-                              type="button"
-                              onClick={() => copyToClipboard("kcm.kristhraj2004-1@okicici", "UPI ID")}
-                              className="p-2 bg-gray-55 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-500 hover:text-[hsl(var(--primary))] transition-all border border-gray-200 dark:border-gray-700"
-                            >
-                              <Copy className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
+                      <div className="space-y-1.5 max-w-md pt-2">
+                        <p className="font-bold text-sm text-gray-800 dark:text-gray-200">After payment, verify to receive receipt</p>
+                        <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
+                          Please complete the payment in your mobile app, then click the verification button below to register your donation and generate your official tax-exemption receipt.
+                        </p>
+                      </div>
 
-                        {/* UPI Deep Link Buttons */}
-                        <div className="w-full max-w-sm">
-                          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 text-center">
-                            {language === 'en' ? '— or open directly in your UPI app —' : language === 'te' ? '— లేదా మీ UPI యాప్‌లో తెరవండి —' : '— या अपने UPI ऐप में सीधे खोलें —'}
-                          </p>
-                          <div className="grid grid-cols-2 gap-3">
-                            {/* Google Pay */}
-                            <a
-                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#1a73e8]/30 bg-[#e8f0fe] dark:bg-[#1a73e8]/10 hover:bg-[#d2e3fc] dark:hover:bg-[#1a73e8]/20 text-[#1a73e8] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
-                            >
-                              <svg viewBox="0 0 48 48" className="w-5 h-5" fill="none">
-                                <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" fill="#FFC107"/>
-                                <path d="M6.3 14.7l7.4 5.4C15.5 16.1 19.4 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 16.3 2 9.7 7.4 6.3 14.7z" fill="#FF3D00"/>
-                                <path d="M24 46c5.5 0 10.5-1.9 14.3-5l-6.6-5.6C29.7 36.8 26.9 38 24 38c-6.1 0-10.7-4.1-11.8-9.6l-7.4 5.7C8 40.5 15.5 46 24 46z" fill="#4CAF50"/>
-                                <path d="M44.5 20H24v8.5h11.8c-1 3-3.6 5.4-6.8 6.9l6.6 5.6C40.2 37.8 45 31.5 45 24c0-1.3-.2-2.7-.5-4z" fill="#1976D2"/>
-                              </svg>
-                              Google Pay
-                            </a>
-
-                            {/* PhonePe */}
-                            <a
-                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#6739B7]/30 bg-[#f3eeff] dark:bg-[#6739B7]/10 hover:bg-[#e8d9ff] dark:hover:bg-[#6739B7]/20 text-[#6739B7] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
-                            >
-                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
-                                <circle cx="32" cy="32" r="32" fill="#5F259F"/>
-                                <path d="M44 22h-6l-12 18h6l3-4.5h3V42h6V22zm-6 9h-3l3-4.5V31z" fill="white"/>
-                              </svg>
-                              PhonePe
-                            </a>
-
-                            {/* Paytm */}
-                            <a
-                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-[#00BAF2]/30 bg-[#e6f8fe] dark:bg-[#00BAF2]/10 hover:bg-[#ccf1fc] dark:hover:bg-[#00BAF2]/20 text-[#007bb5] font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
-                            >
-                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
-                                <rect width="64" height="64" rx="12" fill="#00BAF2"/>
-                                <text x="10" y="44" fontSize="28" fontWeight="bold" fill="white" fontFamily="Arial">P</text>
-                              </svg>
-                              Paytm
-                            </a>
-
-                            {/* BHIM / Any UPI */}
-                            <a
-                              href={`upi://pay?pa=kcm.kristhraj2004-1@okicici&pn=KCM+Kristhraj&am=${getFinalAmount() || ''}&cu=INR&tn=Donation+to+Kingdom+of+Christ+Ministries`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-300/50 bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md"
-                            >
-                              <svg viewBox="0 0 64 64" className="w-5 h-5" fill="none">
-                                <circle cx="32" cy="32" r="32" fill="#138808"/>
-                                <text x="8" y="44" fontSize="20" fontWeight="900" fill="white" fontFamily="Arial">BHIM</text>
-                              </svg>
-                              BHIM UPI
-                            </a>
-                          </div>
-
-                          <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-3 leading-relaxed">
-                            {language === 'en'
-                              ? 'Tap to open in your UPI app. On desktop, scan the QR above.'
-                              : language === 'te'
-                              ? 'మీ UPI యాప్ తెరవడానికి నొక్కండి. డెస్క్‌టాప్‌లో పైన QR స్కాన్ చేయండి.'
-                              : 'अपने UPI ऐप में खोलने के लिए टैप करें। डेस्कटॉप पर ऊपर QR स्कैन करें।'
-                            }
-                          </p>
-                        </div>
-
-                        <div className="space-y-2 max-w-md">
-                          <p className="font-bold text-gray-800 dark:text-gray-200">{gt.scanTitle}</p>
-                          <p className="text-xs text-gray-500 leading-relaxed max-w-xs mx-auto">
-                            {gt.scanDesc}
-                          </p>
-                        </div>
-
-                        {copiedLabel === "UPI ID" && (
-                          <div className="w-full max-w-sm py-2 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl">
-                            {gt.copiedToast}
-                          </div>
-                        )}
-
+                      {/* Action buttons */}
+                      <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
                         <button
                           type="button"
-                          onClick={() => setUpiStep(2)}
-                          className="w-full py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99]"
+                          onClick={() => setStep(1)}
+                          className="py-4 px-6 bg-gray-105 hover:bg-gray-150 dark:bg-gray-700 dark:hover:bg-gray-650 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98"
                         >
-                          {gt.scannedPaidBtn}
-                          <ArrowRight className="h-5 w-5" />
+                          <ArrowLeft className="w-4 h-4" />
+                          {gt.backBtn}
                         </button>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="upi-step-2"
-                        initial={{ x: 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -20, opacity: 0 }}
-                        className="space-y-5"
-                      >
-                        {/* Amount presets & inputs */}
-                        <div>
-                          <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            {gt.presetsTitleUpi}
-                          </label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {["500", "1000", "2500", "5000", "10000"].map((preset) => (
-                              <button
-                                key={preset}
-                                type="button"
-                                onClick={() => {
-                                  setAmount(preset);
-                                  setCustomAmount("");
-                                }}
-                                className={`py-3.5 px-4 rounded-xl border text-center font-bold text-lg transition-all ${
-                                  preset === "10000" ? "col-span-2 sm:col-span-1" : ""
-                                } ${
-                                  amount === preset && !customAmount
-                                    ? "bg-gradient-to-r from-gradient-start to-gradient-end border-transparent text-white shadow-lg shadow-[hsl(var(--primary))]/20"
-                                    : "bg-gray-55 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                }`}
-                              >
-                                ₹{preset}
-                              </button>
-                            ))}
-                            <div className="relative col-span-2 sm:col-span-1">
-                              <input
-                                type="number"
-                                placeholder={gt.customPlaceholder}
-                                value={customAmount}
-                                onChange={(e) => {
-                                  setCustomAmount(e.target.value);
-                                  setAmount("");
-                                }}
-                                className={`w-full py-3.5 px-3 sm:px-4 pl-6 sm:pl-8 rounded-xl border font-bold text-sm sm:text-lg bg-gray-55 dark:bg-gray-700/50 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all ${
-                                  customAmount 
-                                    ? "border-[hsl(var(--primary))] ring-2 ring-[hsl(var(--primary))]/20" 
-                                    : "border-gray-200 dark:border-gray-700"
-                                }`}
-                              />
-                              <span className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm sm:text-lg">₹</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Purpose Selection */}
-                        <div>
-                          <label className="block text-gray-700 dark:text-gray-300 font-bold mb-3">
-                            {gt.purposeLabel}
-                          </label>
-                          <div className="grid md:grid-cols-2 gap-3">
-                            {Object.entries(gt.purposes).map(([id, item]) => (
-                              <button
-                                key={id}
-                                type="button"
-                                onClick={() => setPurpose(id)}
-                                className={`p-4 rounded-xl border text-left cursor-pointer select-none transition-all flex flex-col justify-between w-full ${
-                                  purpose === id
-                                    ? "border-[hsl(var(--primary))] bg-[hsl(var(--accent))]/50 dark:bg-[hsl(var(--accent))]/20 ring-2 ring-[hsl(var(--primary))]/25"
-                                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-650"
-                                }`}
-                              >
-                                <div>
-                                  <span className="block font-bold text-gray-900 dark:text-white text-base">
-                                    {item.name}
-                                  </span>
-                                  <span className="block text-gray-500 dark:text-gray-400 text-xs mt-1">
-                                    {item.desc}
-                                  </span>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Contact Information */}
-                        <div className="space-y-4 pt-4 border-t border-gray-150 dark:border-gray-700">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                              {gt.fullNameLabel}
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="text"
-                                placeholder={gt.fullNamePlaceholder}
-                                value={donorName}
-                                onChange={(e) => setDonorName(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-semibold"
-                              />
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            </div>
-                          </div>
-
-                          <div className="grid sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                {gt.emailLabel}
-                              </label>
-                              <div className="relative">
-                                <input
-                                  type="email"
-                                  placeholder={gt.emailPlaceholder}
-                                  value={donorEmail}
-                                  onChange={(e) => setDonorEmail(e.target.value)}
-                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-semibold"
-                                />
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                              </div>
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                {gt.phoneLabel}
-                              </label>
-                              <div className="relative">
-                                <input
-                                  type="tel"
-                                  placeholder={gt.phonePlaceholder}
-                                  value={donorPhone}
-                                  onChange={(e) => setDonorPhone(e.target.value)}
-                                  className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none"
-                                />
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* UPI Transaction Ref */}
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                              {gt.utrLabel}
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="text"
-                                maxLength={16}
-                                placeholder={gt.utrPlaceholder}
-                                value={upiTransactionRef}
-                                onChange={(e) => setUpiTransactionRef(e.target.value)}
-                                className="w-full py-3 px-4 pl-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-800 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:outline-none font-mono font-bold text-[hsl(var(--primary))] tracking-wider"
-                              />
-                              <Receipt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            </div>
-                            <p className="text-[10px] text-gray-400 mt-1">
-                              {gt.utrDesc}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-4">
-                          <button
-                            type="button"
-                            onClick={() => setUpiStep(1)}
-                            className="flex-1 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all"
-                          >
-                            {gt.backToQrBtn}
-                          </button>
-                          
-                          <button
-                            type="button"
-                            disabled={loading}
-                            onClick={handleNextStep}
-                            className="flex-[2] py-4 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-[hsl(var(--primary))]/10 active:scale-[0.99] disabled:opacity-50"
-                          >
-                            {loading ? (
-                              <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                Registering...
-                              </>
-                            ) : (
-                              <>
-                                Submit UPI Record & Get Receipt
-                                <ArrowRight className="h-5 w-5" />
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </div>
-                )}
-              </AnimatePresence>
+                        
+                        <button
+                          type="button"
+                          disabled={verificationLoading}
+                          onClick={handleVerifyPayment}
+                          className="flex-1 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl transition-all shadow-green-500/10 active:scale-[0.99] disabled:opacity-75"
+                        >
+                          {verificationLoading ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Verifying Payment...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="h-5 w-5" />
+                              I've Paid — Verify Now
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
 
-            {/* Right Column: Dynamic summary & Why Give context */}
+            {/* Right Column: Gift Summary & Live History */}
             <div className="lg:col-span-5 space-y-6">
               
               {/* Payment Summary Box */}
@@ -1111,21 +744,22 @@ export default function GiveForm() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full filter blur-xl transform translate-x-10 -translate-y-10" />
                 
                 <h3 className="font-bold text-lg uppercase tracking-wider text-purple-200 mb-6 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-purple-300" />
+                  <Receipt className="w-5 h-5 text-purple-300" />
                   {gt.summaryTitle}
                 </h3>
 
                 <div className="space-y-4">
                   <div className="flex justify-between border-b border-white/10 pb-4">
                     <span className="text-purple-200">{gt.summaryType}</span>
-                    <span className="font-bold bg-white/10 px-3 py-1 rounded-full text-xs tracking-wider">
+                    <span className="font-bold bg-white/10 px-3 py-1 rounded-full text-xs tracking-wider uppercase">
                       {purpose.replace('_', ' ')}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-white/10 pb-4">
                     <span className="text-purple-200">{gt.summaryMethod}</span>
-                    <span className="font-semibold">
-                      {paymentMode === "UPI" ? gt.summaryMethodUpi : gt.summaryMethodReal}
+                    <span className="font-semibold flex items-center gap-1.5 text-purple-100">
+                      <QrCode className="w-4 h-4 text-purple-300" />
+                      Dynamic UPI QR
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-white/10 pb-4">
@@ -1179,7 +813,7 @@ export default function GiveForm() {
                            key={item.id}
                            className="p-3 bg-gray-55/50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700/50 rounded-xl flex items-center justify-between text-xs hover:border-[hsl(var(--primary))]/35 transition-all"
                         >
-                          <div className="space-y-0.5">
+                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1.5">
                               <span className="font-bold text-gray-800 dark:text-gray-200 uppercase text-[10px]">
                                 {item.purpose}
@@ -1210,7 +844,7 @@ export default function GiveForm() {
                   )}
 
                   {lastHistorySynced && (
-                    <div className="text-[9px] text-gray-450 dark:text-gray-500 flex items-center justify-between">
+                    <div className="text-[9px] text-gray-450 dark:text-gray-500 flex items-center justify-between font-mono">
                       <span>{gt.syncActive}</span>
                       <span>{gt.updatedAt} {lastHistorySynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
                     </div>
@@ -1220,22 +854,22 @@ export default function GiveForm() {
 
               {/* Church statement card */}
               <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700/50">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2 text-sm sm:text-base">
                   <Check className="h-5 w-5 text-green-500 bg-green-50 dark:bg-green-900/30 rounded-full p-1" />
                   {gt.malachiTitle}
                 </h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed italic">
+                <p className="text-gray-650 dark:text-gray-400 text-xs sm:text-sm leading-relaxed italic">
                   {gt.malachiDesc}
                 </p>
               </div>
 
               {/* Help & Support Card */}
               <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700/50">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">{gt.helpTitle}</h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                <h4 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-2">{gt.helpTitle}</h4>
+                <p className="text-gray-650 dark:text-gray-400 text-xs sm:text-sm mb-3">
                   {gt.helpDesc}
                 </p>
-                <div className="space-y-1.5 text-sm">
+                <div className="space-y-1.5 text-xs sm:text-sm">
                   <p className="text-[hsl(var(--primary))] dark:text-purple-400 font-semibold">
                     {gt.helpEmail}: <a href="mailto:kingofchristministries23@gmail.com" className="hover:underline">kingofchristministries23@gmail.com</a>
                   </p>
@@ -1249,23 +883,23 @@ export default function GiveForm() {
         </div>
       </section>
 
-      {/* Why We Give (Full width bottom section matching previous layout) */}
+      {/* Why We Give */}
       <section className="py-16 border-t border-gray-150 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               {gt.whyHeading}
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+            <p className="text-xl text-gray-750 dark:text-gray-300 leading-relaxed mb-8">
               {gt.whySubtitle}
             </p>
             <div className="grid md:grid-cols-2 gap-6 text-left">
               {gt.whyItems.map((item, index) => (
-                <div key={index} className="flex items-start gap-3 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
+                <div key={index} className="flex items-start gap-3 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-55 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300">
                   <div className="w-6 h-6 bg-[hsl(var(--primary))] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Check className="h-4 w-4 text-white" />
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300 font-medium">{item}</p>
+                  <p className="text-gray-700 dark:text-gray-300 font-medium text-sm sm:text-base">{item}</p>
                 </div>
               ))}
             </div>
@@ -1290,22 +924,22 @@ export default function GiveForm() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                     Bank Transfer / NEFT / IMPS
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  <p className="text-gray-655 dark:text-gray-400 mb-6">
                     Direct bank transfer to our official church account. Perfect for larger tithings.
                   </p>
                 </div>
-                <div className="text-left bg-gray-55 dark:bg-gray-900/50 rounded-2xl p-5 space-y-2.5 text-sm border border-gray-100 dark:border-gray-800">
+                <div className="text-left bg-gray-55 dark:bg-gray-900/50 rounded-2xl p-5 space-y-2.5 text-xs sm:text-sm border border-gray-100 dark:border-gray-800">
                   <p className="text-gray-700 dark:text-gray-300 flex justify-between">
                     <span className="font-semibold">Account Name:</span>
                     <span>Kingdom of Christ Ministries</span>
                   </p>
                   <p className="text-gray-700 dark:text-gray-300 flex justify-between border-t border-gray-200 dark:border-gray-800 pt-2">
                     <span className="font-semibold">Account Number:</span>
-                    <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">12041203940129</span>
+                    <span className="font-mono text-purple-650 dark:text-purple-400 font-bold">12041203940129</span>
                   </p>
                   <p className="text-gray-700 dark:text-gray-300 flex justify-between border-t border-gray-200 dark:border-gray-800 pt-2">
                     <span className="font-semibold">IFSC Code:</span>
-                    <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">UTIB0001092</span>
+                    <span className="font-mono text-purple-650 dark:text-purple-400 font-bold">UTIB0001092</span>
                   </p>
                   <p className="text-gray-700 dark:text-gray-300 flex justify-between border-t border-gray-200 dark:border-gray-800 pt-2">
                     <span className="font-semibold">Bank Location:</span>
@@ -1323,11 +957,11 @@ export default function GiveForm() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                     In-Person Envelope Giving
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  <p className="text-gray-655 dark:text-gray-400 mb-6">
                     Place cash or checks in the offering envelope during any regular worship service at our locations.
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-center text-xs sm:text-sm font-bold">
+                <div className="grid grid-cols-3 gap-3 text-center text-xs font-bold">
                   <button 
                     type="button"
                     onClick={() => {
@@ -1367,69 +1001,6 @@ export default function GiveForm() {
           </div>
         </div>
       </section>
-
-      {/* Simulated Credit Card payment modal overlay */}
-      <AnimatePresence>
-        {showSimulatedModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden"
-            >
-              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-purple-500 to-indigo-600" />
-              
-              <div className="w-16 h-16 bg-purple-50 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600 dark:text-purple-400">
-                <Sparkles className="w-8 h-8" />
-              </div>
-
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Simulated Payment Gateway
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed">
-                You are currently in **Test Mode** (no live keys detected). Click below to authorize the mock payment securely.
-              </p>
-
-              <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900 rounded-2xl p-5 mb-8 text-left space-y-2">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-semibold">Donor:</span> {donorName}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-semibold">Purpose:</span> {purpose}
-                </p>
-                <p className="text-lg font-bold text-purple-700 dark:text-purple-300 border-t border-purple-100 dark:border-purple-900 pt-2 flex justify-between">
-                  <span>Amount due:</span>
-                  <span>₹{getFinalAmount()}</span>
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <button
-                  type="button"
-                  onClick={handleSimulatePaymentSuccess}
-                  className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  <Check className="w-5 h-5" />
-                  Simulate Payment Success
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSimulatedModal(false);
-                    setLoading(false);
-                  }}
-                  className="w-full py-3.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold transition-all active:scale-[0.98]"
-                >
-                  Cancel Order
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </>
   );
-
-  return innerContent;
 }
