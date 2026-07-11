@@ -444,21 +444,23 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) return false;
     if (!donorName.trim()) return false;
     if (!donorEmail || !emailRegex.test(donorEmail)) return false;
+    if (!donorPhone.trim() || donorPhone.trim().length < 10) return false;
     if (!selectedPurpose) return false;
     if (!selectedBranch) return false;
     return true;
   })();
 
   const markAllTouched = () => {
-    setTouchedFields(new Set(["name", "email", "amount", "purpose", "branch"]));
+    setTouchedFields(new Set(["name", "email", "phone", "amount", "purpose", "branch"]));
   };
 
   const getFieldErrors = () => {
-    const errors: { name?: string; email?: string; amount?: string; purpose?: string; branch?: string } = {};
+    const errors: { name?: string; email?: string; phone?: string; amount?: string; purpose?: string; branch?: string } = {};
     const finalAmt = getFinalAmount();
     if (!finalAmt || isNaN(Number(finalAmt)) || Number(finalAmt) <= 0) errors.amount = "Please enter a valid donation amount.";
     if (!donorName.trim()) errors.name = "Full name is required.";
     if (!donorEmail || !emailRegex.test(donorEmail)) errors.email = "Please enter a valid email address.";
+    if (!donorPhone.trim() || donorPhone.trim().length < 10) errors.phone = "Please enter a valid 10-digit mobile number.";
     if (!selectedPurpose) errors.purpose = "Please select a purpose.";
     if (!selectedBranch) errors.branch = "Please select a church branch.";
     return errors;
@@ -469,7 +471,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     const errors = getFieldErrors();
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) {
-      const firstError = errors.amount || errors.purpose || errors.branch || errors.name || errors.email || "";
+      const firstError = errors.amount || errors.purpose || errors.branch || errors.name || errors.email || errors.phone || "";
       setErrorMessage(firstError);
       return false;
     }
@@ -1037,11 +1039,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     type="tel"
                                     placeholder={t.pages.give.phonePlaceholder}
                                     value={donorPhone}
-                                    onChange={(e) => setDonorPhone(e.target.value)}
-                                    className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                    onChange={(e) => { setDonorPhone(e.target.value); if (touchedFields.has("phone")) setFieldErrors(prev => ({ ...prev, phone: e.target.value.trim().length >= 10 ? undefined : "Please enter a valid 10-digit mobile number." })); }}
+                                    onBlur={() => { setTouchedFields(prev => new Set([...prev, "phone"])); setFieldErrors(prev => ({ ...prev, phone: donorPhone.trim().length >= 10 ? undefined : "Please enter a valid 10-digit mobile number." })); }}
+                                    className={`w-full py-3 px-4 pl-11 rounded-xl border-2 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:outline-none transition-all text-sm ${
+                                      touchedFields.has("phone") && fieldErrors.phone
+                                        ? "border-red-400 dark:border-red-500 focus:ring-red-400/20 focus:border-red-400"
+                                        : "border-gray-200 dark:border-gray-700 focus:ring-purple-600/20 focus:border-purple-500"
+                                    }`}
                                   />
-                                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                  <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${touchedFields.has("phone") && fieldErrors.phone ? "text-red-400" : "text-gray-400"}`} />
                                 </div>
+                                {touchedFields.has("phone") && fieldErrors.phone && (
+                                  <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                                    <span className="w-3.5 h-3.5 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold flex-shrink-0">!</span>
+                                    {fieldErrors.phone}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </div>

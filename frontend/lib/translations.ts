@@ -201,7 +201,7 @@ export const translations = {
         fullNamePlaceholder: "Enter your full name",
         emailLabel: "Email Address *",
         emailPlaceholder: "example@email.com",
-        phoneLabel: "Phone Number (Optional)",
+        phoneLabel: "Phone Number *",
         phonePlaceholder: "10-digit mobile number",
         backBtn: "Back",
         backToQrBtn: "Back to QR",
