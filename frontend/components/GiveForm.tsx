@@ -1081,35 +1081,35 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   
                   <div className="relative p-6 sm:p-8">
                     <div className="flex items-center gap-2 mb-6">
-                      <Receipt className="w-5 h-5 text-purple-300" />
-                      <h3 className="font-bold text-base uppercase tracking-widest text-purple-200">
+                      <Receipt className="w-5 h-5 text-purple-200" />
+                      <h3 className="font-bold text-base uppercase tracking-widest text-white">
                         {t.pages.give.summaryTitle}
                       </h3>
                     </div>
 
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between py-3 border-b border-white/10">
-                        <span className="text-purple-300 text-sm">{t.pages.give.summaryType}</span>
-                        <span className="font-bold text-xs bg-white/15 px-3 py-1.5 rounded-full uppercase tracking-wider text-white">
+                      <div className="flex items-center justify-between py-3 border-b border-white/15">
+                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryType}</span>
+                        <span className="font-bold text-xs bg-white/20 px-3 py-1.5 rounded-full uppercase tracking-wider text-white">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between py-3 border-b border-white/10">
-                        <span className="text-purple-300 text-sm">{t.pages.give.summaryMethod}</span>
-                        <span className="font-semibold flex items-center gap-1.5 text-purple-100 text-sm">
-                          <QrCode className="w-4 h-4 text-purple-300" />
+                      <div className="flex items-center justify-between py-3 border-b border-white/15">
+                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryMethod}</span>
+                        <span className="font-semibold flex items-center gap-1.5 text-white text-sm">
+                          <QrCode className="w-4 h-4 text-purple-200" />
                           {language === 'te' ? 'డైనమిక్ UPI QR' : language === 'hi' ? 'डायनेमिक यूपीआई' : 'Dynamic UPI QR'}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between py-3 border-b border-white/10">
-                        <span className="text-purple-300 text-sm">{t.pages.give.summaryTax}</span>
-                        <span className="font-bold text-emerald-400 flex items-center gap-1">
+                      <div className="flex items-center justify-between py-3 border-b border-white/15">
+                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryTax}</span>
+                        <span className="font-bold text-emerald-300 flex items-center gap-1">
                           <CheckCircle className="w-3.5 h-3.5" />
                           {t.pages.give.summaryTaxValue}
                         </span>
                       </div>
                       <div className="flex items-center justify-between pt-3">
-                        <span className="text-xl font-semibold text-purple-200">{t.pages.give.summaryTotal}</span>
+                        <span className="text-xl font-semibold text-white/80">{t.pages.give.summaryTotal}</span>
                         <div className="text-right">
                           <AnimatePresence mode="wait">
                             <motion.span
@@ -1382,10 +1382,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                         key={b.id}
                         type="button"
                         onClick={() => { window.location.href = "/#contact"; }}
-                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-400 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.04] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-2 cursor-pointer w-full group"
+                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.04] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-2 cursor-pointer w-full group"
                       >
                         <span className="text-2xl group-hover:scale-110 transition-transform">⛪</span>
-                        <span className="text-[11px] font-bold truncate max-w-full">{b.name.split(" ")[0]}</span>
+                        <span className="text-[11px] font-bold truncate max-w-full text-gray-800 dark:text-white">{b.name.split(" ")[0]}</span>
                       </button>
                     ))}
                   </div>
