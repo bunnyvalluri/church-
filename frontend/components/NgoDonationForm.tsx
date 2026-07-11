@@ -39,6 +39,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -567,25 +568,14 @@ export default function NgoDonationForm({
       startStatusPolling(sid);
 
       // Fire NGO-specific Socket.IO event for admin dashboard (Non-blocking)
-      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-      fetch(`${socketUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "ngo.donation.created",
-          payload: {
-            sessionId: sid,
-            campaignId: selectedCampaign || null,
-            amount: Number(getFinalAmount()),
-            purpose: selectedPurpose,
-            referenceNumber: sessionData.session.referenceNumber,
-            status: "PROCESSING",
-          },
-          room: "admin:dashboard",
-        }),
-      }).catch(() => {
-        // Non-critical: admin dashboard event is best-effort
-      });
+      safeTriggerCompanionEvent("ngo.donation.created", {
+        sessionId: sid,
+        campaignId: selectedCampaign || null,
+        amount: Number(getFinalAmount()),
+        purpose: selectedPurpose,
+        referenceNumber: sessionData.session.referenceNumber,
+        status: "PROCESSING",
+      }, "admin:dashboard");
     } catch (err: any) {
       console.error("[NgoDonationForm] Session generation failed:", err);
       setErrorMessage(err.message || "Failed to connect with payment gateway. Please try again.");

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import QRCode from 'qrcode';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 // Helper to send email receipt via Resend
 async function sendReceiptEmail(email: string, receiptData: any) {
@@ -219,7 +220,6 @@ export async function completeDonationSession(
 
   // 8. Emit Socket.IO event updates
   try {
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
     const socketPayload = {
       type: 'donation.success',
       payload: {
@@ -240,25 +240,18 @@ export async function completeDonationSession(
     };
 
     // Emit to member room
-    await fetch(`${companionUrl}/api/trigger-event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...socketPayload,
-        room: `member:${session.memberId || 'guest'}`,
-      }),
-    });
+    await safeTriggerCompanionEvent(
+      socketPayload.type,
+      socketPayload.payload,
+      `member:${session.memberId || 'guest'}`
+    );
 
     // Broadcast dashboard updates to admin
-    await fetch(`${companionUrl}/api/trigger-event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'dashboard.updated',
-        payload: { refresh: true, message: `New donation of ₹${session.amount} received.` },
-        room: 'admin:dashboard',
-      }),
-    });
+    await safeTriggerCompanionEvent(
+      'dashboard.updated',
+      { refresh: true, message: `New donation of ₹${session.amount} received.` },
+      'admin:dashboard'
+    );
   } catch (socketErr) {
     console.warn('[PAYMENT_SERVICE] Socket emit skipped:', socketErr);
   }

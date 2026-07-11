@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from '@/lib/authMiddleware';
 import QRCode from 'qrcode';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -106,22 +107,11 @@ export async function POST(req: Request) {
       });
 
       // Notify Socket
-      try {
-        const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-        await fetch(`${companionUrl}/api/trigger-event`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'donation.processing',
-            payload: {
-              sessionId: session.id,
-              referenceNumber: session.referenceNumber,
-              status: 'PROCESSING',
-            },
-            room: 'admin:dashboard',
-          }),
-        });
-      } catch {}
+      await safeTriggerCompanionEvent('donation.processing', {
+        sessionId: session.id,
+        referenceNumber: session.referenceNumber,
+        status: 'PROCESSING',
+      }, 'admin:dashboard');
     }
 
     return NextResponse.json(

@@ -5,6 +5,7 @@ import { DonationSessionSchema, sanitizeInput } from '@/lib/security';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
 import QRCode from 'qrcode';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,25 +126,14 @@ export async function POST(req: Request) {
     });
 
     // Dispatch socket notification about pending session creation (Non-blocking)
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    fetch(`${companionUrl}/api/trigger-event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'donation.created',
-        payload: {
-          sessionId: session.id,
-          amount: session.amount,
-          purpose: purpose.nameEn,
-          referenceNumber,
-          status: 'PROCESSING',
-          createdAt: session.createdAt,
-        },
-        room: 'admin:dashboard',
-      }),
-    }).catch((socketErr) => {
-      console.warn('[SESSION_API] Realtime event trigger bypassed:', socketErr);
-    });
+    safeTriggerCompanionEvent('donation.created', {
+      sessionId: session.id,
+      amount: session.amount,
+      purpose: purpose.nameEn,
+      referenceNumber,
+      status: 'PROCESSING',
+      createdAt: session.createdAt,
+    }, 'admin:dashboard');
 
     return NextResponse.json(
       {
