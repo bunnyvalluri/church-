@@ -62,124 +62,32 @@ interface GiveFormProps {
   initialBranches?: BranchItem[];
 }
 
-// Purpose styling config
-const purposeCardStyles: Record<string, {
-  icon: React.ReactNode;
-  gradient: string;
-  // Selected Styles
-  selectedBg: string;
-  selectedBorder: string;
-  selectedShadow: string;
-  selectedCheck: string;
-  // Unselected Hover Styles
-  unselectedBorderHover: string;
-  unselectedBgHover: string;
-}> = {
-  TITHE: {
-    icon: <IndianRupee className="w-5 h-5" />,
-    gradient: "from-violet-500 to-purple-600",
-    selectedBg: "bg-violet-50/90 dark:bg-violet-950/25",
-    selectedBorder: "border-violet-300 dark:border-violet-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(139,92,246,0.12)] dark:shadow-[0_0_25px_rgba(139,92,246,0.22)]",
-    selectedCheck: "text-violet-600 dark:text-violet-400",
-    unselectedBorderHover: "hover:border-violet-300 dark:hover:border-violet-800/60",
-    unselectedBgHover: "hover:bg-violet-50/20 dark:hover:bg-violet-950/5",
-  },
-  OFFERING: {
-    icon: <Gift className="w-5 h-5" />,
-    gradient: "from-rose-500 to-pink-600",
-    selectedBg: "bg-rose-50/90 dark:bg-rose-950/25",
-    selectedBorder: "border-rose-300 dark:border-rose-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(244,63,94,0.12)] dark:shadow-[0_0_25px_rgba(244,63,94,0.22)]",
-    selectedCheck: "text-rose-600 dark:text-rose-400",
-    unselectedBorderHover: "hover:border-rose-300 dark:hover:border-rose-800/60",
-    unselectedBgHover: "hover:bg-rose-50/20 dark:hover:bg-rose-950/5",
-  },
-  BUILDING: {
-    icon: <Building className="w-5 h-5" />,
-    gradient: "from-amber-500 to-orange-600",
-    selectedBg: "bg-amber-50/90 dark:bg-amber-950/25",
-    selectedBorder: "border-amber-300 dark:border-amber-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(245,158,11,0.12)] dark:shadow-[0_0_25px_rgba(245,158,11,0.22)]",
-    selectedCheck: "text-amber-600 dark:text-amber-400",
-    unselectedBorderHover: "hover:border-amber-300 dark:hover:border-amber-800/60",
-    unselectedBgHover: "hover:bg-amber-50/20 dark:hover:bg-amber-950/5",
-  },
-  MISSIONS: {
-    icon: <Globe className="w-5 h-5" />,
-    gradient: "from-blue-500 to-cyan-600",
-    selectedBg: "bg-blue-50/90 dark:bg-blue-950/25",
-    selectedBorder: "border-blue-300 dark:border-blue-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(59,130,246,0.12)] dark:shadow-[0_0_25px_rgba(59,130,246,0.22)]",
-    selectedCheck: "text-blue-600 dark:text-blue-400",
-    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-800/60",
-    unselectedBgHover: "hover:bg-blue-50/20 dark:hover:bg-blue-950/5",
-  },
-  CHARITY: {
-    icon: <Heart className="w-5 h-5" />,
-    gradient: "from-emerald-500 to-teal-600",
-    selectedBg: "bg-emerald-50/90 dark:bg-emerald-950/25",
-    selectedBorder: "border-emerald-300 dark:border-emerald-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(16,185,129,0.12)] dark:shadow-[0_0_25px_rgba(16,185,129,0.22)]",
-    selectedCheck: "text-emerald-600 dark:text-emerald-400",
-    unselectedBorderHover: "hover:border-emerald-300 dark:hover:border-emerald-800/60",
-    unselectedBgHover: "hover:bg-emerald-50/20 dark:hover:bg-emerald-950/5",
-  },
-  SPECIAL: {
-    icon: <Star className="w-5 h-5" />,
-    gradient: "from-fuchsia-500 to-violet-600",
-    selectedBg: "bg-fuchsia-50/90 dark:bg-fuchsia-950/25",
-    selectedBorder: "border-fuchsia-300 dark:border-fuchsia-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(217,70,239,0.12)] dark:shadow-[0_0_25px_rgba(217,70,239,0.22)]",
-    selectedCheck: "text-fuchsia-600 dark:text-fuchsia-400",
-    unselectedBorderHover: "hover:border-fuchsia-300 dark:hover:border-fuchsia-800/60",
-    unselectedBgHover: "hover:bg-fuchsia-50/20 dark:hover:bg-fuchsia-950/5",
-  },
+// Purpose icon map
+const purposeIconMap: Record<string, React.ReactNode> = {
+  TITHE: <IndianRupee className="w-5 h-5" />,
+  OFFERING: <Gift className="w-5 h-5" />,
+  BUILDING_FUND: <Building className="w-5 h-5" />,
+  MISSIONS: <Globe className="w-5 h-5" />,
+  BENEVOLENCE: <Heart className="w-5 h-5" />,
+  SPECIAL: <Star className="w-5 h-5" />,
 };
 
+const purposeColorMap: Record<string, string> = {
+  TITHE: "from-violet-500 to-purple-600",
+  OFFERING: "from-rose-500 to-pink-600",
+  BUILDING_FUND: "from-amber-500 to-orange-600",
+  MISSIONS: "from-blue-500 to-cyan-600",
+  BENEVOLENCE: "from-emerald-500 to-teal-600",
+  SPECIAL: "from-fuchsia-500 to-violet-600",
+};
 
-const presetStyles: Record<string, {
-  selectedBg: string;
-  selectedBorder: string;
-  selectedShadow: string;
-  unselectedBorderHover: string;
-  unselectedBgHover: string;
-}> = {
-  "500": {
-    selectedBg: "from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700",
-    selectedBorder: "border-blue-500 dark:border-blue-600",
-    selectedShadow: "shadow-blue-500/25 dark:shadow-blue-600/30",
-    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-700",
-    unselectedBgHover: "hover:bg-blue-50/50 dark:hover:bg-blue-950/10",
-  },
-  "1000": {
-    selectedBg: "from-violet-500 to-purple-600 dark:from-violet-600 dark:to-purple-700",
-    selectedBorder: "border-violet-500 dark:border-violet-600",
-    selectedShadow: "shadow-violet-500/25 dark:shadow-violet-600/30",
-    unselectedBorderHover: "hover:border-violet-300 dark:hover:border-violet-700",
-    unselectedBgHover: "hover:bg-violet-50/50 dark:hover:bg-violet-950/10",
-  },
-  "2500": {
-    selectedBg: "from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700",
-    selectedBorder: "border-emerald-500 dark:border-emerald-600",
-    selectedShadow: "shadow-emerald-500/25 dark:shadow-emerald-600/30",
-    unselectedBorderHover: "hover:border-emerald-300 dark:hover:border-emerald-700",
-    unselectedBgHover: "hover:bg-emerald-50/50 dark:hover:bg-emerald-950/10",
-  },
-  "5000": {
-    selectedBg: "from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-700",
-    selectedBorder: "border-amber-500 dark:border-amber-600",
-    selectedShadow: "shadow-amber-500/25 dark:shadow-amber-600/30",
-    unselectedBorderHover: "hover:border-amber-300 dark:hover:border-amber-700",
-    unselectedBgHover: "hover:bg-amber-50/50 dark:hover:bg-amber-950/10",
-  },
-  "10000": {
-    selectedBg: "from-rose-500 to-pink-600 dark:from-rose-600 dark:to-pink-700",
-    selectedBorder: "border-rose-500 dark:border-rose-600",
-    selectedShadow: "shadow-rose-500/25 dark:shadow-rose-600/30",
-    unselectedBorderHover: "hover:border-rose-300 dark:hover:border-rose-700",
-    unselectedBgHover: "hover:bg-rose-50/50 dark:hover:bg-rose-950/10",
-  },
+const purposeBgMap: Record<string, string> = {
+  TITHE: "bg-violet-50 dark:bg-violet-950/20 border-violet-200 dark:border-violet-800/40",
+  OFFERING: "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/40",
+  BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40",
+  MISSIONS: "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/40",
+  BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40",
+  SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/20 border-fuchsia-200 dark:border-fuchsia-800/40",
 };
 
 export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
@@ -488,21 +396,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       setReferenceNumber(sessionData.session.referenceNumber);
       setExpiresAt(new Date(sessionData.session.expiresAt));
 
-      const qrRes = await fetch("/api/donations/generate-qr", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ sessionId: sid }),
-      });
-
-      const qrData = await qrRes.json();
-      if (!qrRes.ok || !qrData.success) {
-        throw new Error(qrData.error || "Failed to generate dynamic QR code.");
+      // The session API already generates and returns the QR code — use it directly.
+      // No need for a second /api/donations/generate-qr call (which was failing 403
+      // because the session was already PROCESSING by the time it arrived).
+      if (!sessionData.session.qrCode || !sessionData.session.upiUri) {
+        throw new Error("Payment session did not return QR data. Please try again.");
       }
 
-      setQrCodeData(qrData.qrCode);
-      setUpiUri(qrData.upiUri);
-      setUpiId(qrData.upiId);
-      setChurchName(qrData.churchName);
+      setQrCodeData(sessionData.session.qrCode);
+      setUpiUri(sessionData.session.upiUri);
+      setUpiId(sessionData.session.upiId || "kcm.kristhraj2004-1@okicici");
+      setChurchName(sessionData.session.churchName || "Kingdom of Christ Ministries");
 
       setStep(2);
 
@@ -784,7 +688,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   {/* Form Body */}
                   <div className="px-6 sm:px-8 pt-6 pb-8">
                     <AnimatePresence mode="wait">
-                      {step === 1 ? (
+                      {step === 1 && (
                         <motion.div
                           key="step-1"
                           initial={{ opacity: 0, x: -16 }}
@@ -800,39 +704,29 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               {t.pages.give.presetsTitle}
                             </label>
                             <div className="grid grid-cols-3 gap-2.5">
-                              {["500", "1000", "2500", "5000", "10000"].map((preset) => {
-                                const style = presetStyles[preset] || {
-                                  selectedBg: "from-purple-600 to-indigo-600",
-                                  selectedBorder: "border-purple-600",
-                                  selectedShadow: "shadow-purple-600/25",
-                                  unselectedBorderHover: "hover:border-purple-300 dark:hover:border-purple-700",
-                                  unselectedBgHover: "hover:bg-purple-50 dark:hover:bg-purple-950/20",
-                                };
-                                const isSelected = amount === preset && !customAmount;
-                                return (
-                                  <button
-                                    key={preset}
-                                    type="button"
-                                    onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-3.5 px-2 rounded-2xl border-2 text-center font-bold text-base transition-all duration-200 overflow-hidden group ${
-                                      preset === "10000" ? "col-span-1" : ""
-                                    } ${
-                                      isSelected
-                                        ? `${style.selectedBorder} text-white shadow-lg ${style.selectedShadow} scale-[1.02]`
-                                        : `border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 ${style.unselectedBorderHover} ${style.unselectedBgHover}`
-                                    }`}
-                                  >
-                                    {isSelected && (
-                                      <motion.div
-                                        layoutId="amount-selector"
-                                        className={`absolute inset-0 bg-gradient-to-br ${style.selectedBg} rounded-xl`}
-                                        transition={{ duration: 0.2 }}
-                                      />
-                                    )}
-                                    <span className="relative z-10">₹{Number(preset).toLocaleString('en-IN')}</span>
-                                  </button>
-                                );
-                              })}
+                              {["500", "1000", "2500", "5000", "10000"].map((preset) => (
+                                <button
+                                  key={preset}
+                                  type="button"
+                                  onClick={() => { setAmount(preset); setCustomAmount(""); }}
+                                  className={`relative py-3.5 px-2 rounded-2xl border-2 text-center font-bold text-base transition-all duration-200 overflow-hidden group ${
+                                    preset === "10000" ? "col-span-1" : ""
+                                  } ${
+                                    amount === preset && !customAmount
+                                      ? "border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-[1.02]"
+                                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/20"
+                                  }`}
+                                >
+                                  {amount === preset && !customAmount && (
+                                    <motion.div
+                                      layoutId="amount-selector"
+                                      className="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl"
+                                      transition={{ duration: 0.2 }}
+                                    />
+                                  )}
+                                  <span className="relative z-10">₹{Number(preset).toLocaleString('en-IN')}</span>
+                                </button>
+                              ))}
                               {/* Custom amount */}
                               <div className="relative col-span-1">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-sm z-10">₹</span>
@@ -843,8 +737,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                   onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
                                   className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 font-bold text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
                                     customAmount
-                                      ? "border-fuchsia-500 ring-2 ring-fuchsia-500/25 bg-fuchsia-50/10 dark:bg-fuchsia-950/10 dark:border-fuchsia-400 dark:ring-fuchsia-400/20"
-                                      : "border-gray-200 dark:border-gray-700 hover:border-fuchsia-300 dark:hover:border-fuchsia-700 focus:border-fuchsia-400 dark:focus:border-fuchsia-600"
+                                      ? "border-purple-600 ring-2 ring-purple-600/20"
+                                      : "border-gray-200 dark:border-gray-700 focus:border-purple-400 dark:focus:border-purple-600"
                                   }`}
                                 />
                               </div>
@@ -860,16 +754,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <div className="grid sm:grid-cols-2 gap-2.5">
                               {purposes.map((p) => {
                                 const isSelected = selectedPurpose === p.code;
-                                const style = purposeCardStyles[p.code] || {
-                                  icon: <IndianRupee className="w-5 h-5" />,
-                                  gradient: "from-purple-500 to-indigo-600",
-                                  selectedBg: "bg-purple-50 dark:bg-purple-950/20",
-                                  selectedBorder: "border-purple-200 dark:border-purple-800/40",
-                                  selectedShadow: "shadow-[0_0_20px_rgba(147,51,234,0.12)] dark:shadow-[0_0_25px_rgba(147,51,234,0.22)]",
-                                  selectedCheck: "text-purple-600 dark:text-purple-400",
-                                  unselectedBorderHover: "hover:border-purple-300 dark:hover:border-purple-800/60",
-                                  unselectedBgHover: "hover:bg-purple-50/20 dark:hover:bg-purple-950/5",
-                                };
+                                const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
+                                const bgStyle = purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800/40";
+                                const icon = purposeIconMap[p.code] || <IndianRupee className="w-5 h-5" />;
                                 return (
                                   <button
                                     key={p.id}
@@ -877,12 +764,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     onClick={() => setSelectedPurpose(p.code)}
                                     className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-3 w-full group overflow-hidden ${
                                       isSelected
-                                        ? `${style.selectedBg} ${style.selectedBorder} ${style.selectedShadow} scale-[1.01]`
-                                        : `border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 ${style.unselectedBorderHover} ${style.unselectedBgHover}`
+                                        ? `${bgStyle} shadow-md scale-[1.01]`
+                                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 hover:border-gray-300 dark:hover:border-gray-600"
                                     }`}
                                   >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${style.gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
-                                      {style.icon}
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
+                                      {icon}
                                     </div>
                                     <div className="min-w-0">
                                       <span className={`block font-bold text-sm transition-colors ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
@@ -893,7 +780,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       </span>
                                     </div>
                                     {isSelected && (
-                                      <CheckCircle2 className={`w-4 h-4 ${style.selectedCheck} flex-shrink-0 ml-auto mt-0.5`} />
+                                      <CheckCircle2 className="w-4 h-4 text-purple-600 flex-shrink-0 ml-auto mt-0.5" />
                                     )}
                                   </button>
                                 );
@@ -1006,7 +893,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             </span>
                           </button>
                         </motion.div>
-                      ) : (
+                      )}
+                      {step === 2 && (
                         /* ── STEP 2: SCAN & PAY ────────────── */
                         <motion.div
                           key="step-2"
@@ -1079,46 +967,46 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center mb-3">
                               {language === 'te' ? '— మీ ఇష్టమైన యాప్‌లో తెరవండి —' : language === 'hi' ? '— पसंदीदा ऐप में खोलें —' : '— Pay directly with your favourite app —'}
                             </p>
-                              <div className="grid grid-cols-5 gap-2 mb-4">
-                               {[
-                                 { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user" },
-                                 { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app" },
-                                 { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm" },
-                                 { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp" },
-                                 { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", invert: true },
-                               ].map((app) => (
-                                 <button
-                                   key={app.name}
-                                   type="button"
-                                   title={`Open in ${app.name}`}
-                                   onClick={() => openPaymentApp(app.url, app.store)}
-                                   className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
-                                 >
-                                   <img
-                                     src={app.logo}
-                                     className="w-8 h-8 object-contain rounded-lg group-hover:scale-105 transition-transform"
-                                     alt={app.name}
-                                     style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
-                                   />
-                                   <span className="text-[9px] font-bold tracking-tight" style={{ color: app.color }}>{app.name}</span>
-                                 </button>
-                               ))}
-                             </div>
- 
-                             <div className="grid grid-cols-2 gap-2.5">
-                               <button
-                                 type="button"
-                                 onClick={() => openPaymentApp(upiUri || "", upiUri || "")}
-                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-purple-200 dark:border-purple-800/40 bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95"
-                               >
-                                 <Smartphone className="w-4 h-4" />
-                                 {language === 'te' ? 'UPI యాప్ తెరవండి' : language === 'hi' ? 'यूपीआई ऐप खोलें' : 'Open in UPI App'}
-                               </button>
-                               <button
-                                 type="button"
-                                 onClick={() => copyToClipboard(upiUri || "", "URI")}
-                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
-                               >
+                            <div className="grid grid-cols-5 gap-2 mb-4">
+                              {[
+                                { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user" },
+                                { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app" },
+                                { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm" },
+                                { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp" },
+                                { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${upiUri.split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", invert: true },
+                              ].map((app) => (
+                                <button
+                                  key={app.name}
+                                  type="button"
+                                  title={`Open in ${app.name}`}
+                                  onClick={() => openPaymentApp(app.url, app.store)}
+                                  className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
+                                >
+                                  <img
+                                    src={app.logo}
+                                    className="w-8 h-8 object-contain rounded-lg group-hover:scale-105 transition-transform"
+                                    alt={app.name}
+                                    style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
+                                  />
+                                  <span className="text-[9px] font-bold tracking-tight" style={{ color: app.color }}>{app.name}</span>
+                                </button>
+                              ))}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2.5">
+                              <button
+                                type="button"
+                                onClick={() => openPaymentApp(upiUri, upiUri)}
+                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-purple-200 dark:border-purple-800/40 bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95"
+                              >
+                                <Smartphone className="w-4 h-4" />
+                                {language === 'te' ? 'UPI యాప్ తెరవండి' : language === 'hi' ? 'यूपीआई ऐप खोलें' : 'Open in UPI App'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => copyToClipboard(upiUri, "URI")}
+                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
+                              >
                                 {copiedLabel === "URI" ? (
                                   <><Check className="w-4 h-4 text-emerald-500" /> {language === 'te' ? 'కాపీ అయింది' : language === 'hi' ? 'कॉपी हुआ' : 'Copied!'}</>
                                 ) : (
