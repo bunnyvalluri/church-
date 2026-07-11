@@ -318,6 +318,26 @@ export default function GiveForm() {
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
+  // Build the query-string portion of the UPI URI (pa, pn, am, cu, tn, tr)
+  const getUpiParams = () => (upiUri.includes("?") ? upiUri.split("?")[1] : "");
+
+  /**
+   * Opens a UPI payment app via its custom URL scheme.
+   * On mobile the OS will switch directly to the installed app.
+   * If the app is not installed, the user lands on the Play/App-Store fallback
+   * after a short delay.
+   */
+  const openPaymentApp = (appUrl: string, storeFallback: string) => {
+    // window.location.href triggers the deep link immediately
+    window.location.href = appUrl;
+    // If the deep link didn't open (app not installed), redirect to store
+    setTimeout(() => {
+      if (!document.hidden) {
+        window.location.href = storeFallback;
+      }
+    }, 1800);
+  };
+
   const formattedPingTime = pingTime !== null ? `${pingTime}ms` : "checking...";
 
   if (!mounted) return null;
@@ -657,18 +677,127 @@ export default function GiveForm() {
                       {/* Launch apps in mobile */}
                       <div className="w-full max-w-sm">
                         <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
-                          — or launch directly in your UPI App —
+                          — Pay directly with your favourite app —
                         </p>
-                        
+
+                        {/* Payment App Quick-Launch Grid */}
+                        <div className="grid grid-cols-5 gap-2 mb-3">
+
+                          {/* ── Google Pay ── */}
+                          <button
+                            type="button"
+                            title="Open in Google Pay"
+                            onClick={() =>
+                              openPaymentApp(
+                                `tez://upi/pay?${getUpiParams()}`,
+                                "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user"
+                              )
+                            }
+                            className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-[#4285F4]/25 bg-[#4285F4]/6 hover:bg-[#4285F4]/15 active:scale-90 transition-all shadow-sm group cursor-pointer"
+                          >
+                            {/* Google Pay wordmark "G" in four colours */}
+                            <svg viewBox="0 0 24 24" className="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="12" fill="white"/>
+                              <path d="M17.64 12.2c0-.38-.03-.74-.09-1.09H12v2.07h3.17c-.14.74-.54 1.37-1.15 1.79v1.49h1.86c1.09-1 1.76-2.47 1.76-4.26z" fill="#4285F4"/>
+                              <path d="M12 18c1.59 0 2.92-.53 3.89-1.43l-1.86-1.49c-.53.36-1.21.57-2.03.57-1.56 0-2.88-1.06-3.35-2.48H6.73v1.53A5.999 5.999 0 0012 18z" fill="#34A853"/>
+                              <path d="M8.65 13.17A3.59 3.59 0 018.46 12c0-.41.07-.81.19-1.17V9.3H6.73A6.003 6.003 0 006 12c0 .97.23 1.88.73 2.7l1.92-1.53z" fill="#FBBC05"/>
+                              <path d="M12 8.35c.88 0 1.67.3 2.29.9l1.71-1.72C14.92 6.53 13.59 6 12 6a5.999 5.999 0 00-5.27 3.3l1.92 1.53c.47-1.42 1.79-2.48 3.35-2.48z" fill="#EA4335"/>
+                            </svg>
+                            <span className="text-[9px] font-bold text-[#4285F4] tracking-tight">GPay</span>
+                          </button>
+
+                          {/* ── PhonePe ── */}
+                          <button
+                            type="button"
+                            title="Open in PhonePe"
+                            onClick={() =>
+                              openPaymentApp(
+                                `phonepe://pay?${getUpiParams()}`,
+                                "https://play.google.com/store/apps/details?id=com.phonepe.app"
+                              )
+                            }
+                            className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-[#5f259f]/25 bg-[#5f259f]/6 hover:bg-[#5f259f]/15 active:scale-90 transition-all shadow-sm group cursor-pointer"
+                          >
+                            <svg viewBox="0 0 24 24" className="w-7 h-7 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="12" fill="#5f259f"/>
+                              <text x="12" y="16.5" textAnchor="middle" fontSize="13" fontWeight="bold" fill="white" fontFamily="Arial">₱</text>
+                            </svg>
+                            <span className="text-[9px] font-bold text-[#5f259f] tracking-tight">PhonePe</span>
+                          </button>
+
+                          {/* ── Paytm ── */}
+                          <button
+                            type="button"
+                            title="Open in Paytm"
+                            onClick={() =>
+                              openPaymentApp(
+                                `paytmmp://upi/pay?${getUpiParams()}`,
+                                "https://play.google.com/store/apps/details?id=net.one97.paytm"
+                              )
+                            }
+                            className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-[#00BAF2]/25 bg-[#00BAF2]/6 hover:bg-[#00BAF2]/15 active:scale-90 transition-all shadow-sm group cursor-pointer"
+                          >
+                            <svg viewBox="0 0 24 24" className="w-7 h-7 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="12" fill="#00BAF2"/>
+                              <text x="12" y="16" textAnchor="middle" fontSize="10" fontWeight="900" fill="white" fontFamily="Arial">PAY</text>
+                            </svg>
+                            <span className="text-[9px] font-bold text-[#00BAF2] tracking-tight">Paytm</span>
+                          </button>
+
+                          {/* ── SuperMoney ── */}
+                          <button
+                            type="button"
+                            title="Open in SuperMoney"
+                            onClick={() =>
+                              openPaymentApp(
+                                `supermoney://upi/pay?${getUpiParams()}`,
+                                "https://play.google.com/store/apps/details?id=in.supermoney.android"
+                              )
+                            }
+                            className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-[#FF6B00]/25 bg-[#FF6B00]/6 hover:bg-[#FF6B00]/15 active:scale-90 transition-all shadow-sm group cursor-pointer"
+                          >
+                            <svg viewBox="0 0 24 24" className="w-7 h-7 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="12" fill="#FF6B00"/>
+                              <text x="12" y="16.5" textAnchor="middle" fontSize="14" fontWeight="bold" fill="white" fontFamily="Arial">$</text>
+                            </svg>
+                            <span className="text-[9px] font-bold text-[#FF6B00] tracking-tight leading-tight text-center">Super<br/>Money</span>
+                          </button>
+
+                          {/* ── FamPay ── */}
+                          <button
+                            type="button"
+                            title="Open in FamPay"
+                            onClick={() =>
+                              openPaymentApp(
+                                `fampay://upi/pay?${getUpiParams()}`,
+                                "https://play.google.com/store/apps/details?id=com.fampay.in"
+                              )
+                            }
+                            className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-[#FFCB47]/35 bg-[#FFCB47]/10 hover:bg-[#FFCB47]/25 active:scale-90 transition-all shadow-sm group cursor-pointer"
+                          >
+                            <svg viewBox="0 0 24 24" className="w-7 h-7 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="12" cy="12" r="12" fill="#FFCB47"/>
+                              <text x="12" y="16" textAnchor="middle" fontSize="10" fontWeight="900" fill="#333" fontFamily="Arial">FAM</text>
+                            </svg>
+                            <span className="text-[9px] font-bold text-[#b8860b] tracking-tight">FamPay</span>
+                          </button>
+
+                        </div>
+
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mb-3">
+                          Tap to open your app — pre-filled with payment details
+                        </p>
+
                         <div className="grid grid-cols-2 gap-3">
-                          {/* Deep link app launcher wrapper */}
-                          <a
-                            href={upiUri}
-                            className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl border-2 border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95 shadow-sm"
+                          {/* Generic UPI deep-link */}
+                          <button
+                            type="button"
+                            onClick={() => openPaymentApp(upiUri, upiUri)}
+                            className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl border-2 border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold text-sm transition-all active:scale-95 shadow-sm cursor-pointer"
                           >
                             <Smartphone className="w-4 h-4" />
                             Open in UPI App
-                          </a>
+                          </button>
 
                           <button
                             type="button"
