@@ -626,47 +626,48 @@ export default function NgoDonationForm({
   if (!mounted) return null;
 
   // ── UPI App quick-launch configs ─────────────────────────────────────────────
+  const upiParams = (upiUri || "").split("?")[1] || "";
   const upiApps = [
     {
       name: "GPay",
       color: "#4285F4",
       logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",
-      url: `tez://upi/pay?${upiUri.split("?")[1] || ""}`,
+      url: `tez://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user",
     },
     {
       name: "PhonePe",
       color: "#5f259f",
       logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",
-      url: `phonepe://pay?${upiUri.split("?")[1] || ""}`,
+      url: `phonepe://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.phonepe.app",
     },
     {
       name: "Paytm",
       color: "#00BAF2",
       logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg",
-      url: `paytmmp://upi/pay?${upiUri.split("?")[1] || ""}`,
+      url: `paytmmp://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=net.one97.paytm",
     },
     {
       name: "BHIM",
       color: "#FF6B00",
       logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",
-      url: `upi://pay?${upiUri.split("?")[1] || ""}`,
+      url: `upi://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp",
     },
     {
       name: "SuperMoney",
       color: "#1A73E8",
       logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/googlepay.svg",
-      url: `upi://pay?${upiUri.split("?")[1] || ""}`,
+      url: `upi://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=money.super.app",
     },
     {
       name: "Fam",
       color: "#b8860b",
       logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",
-      url: `fampay://upi/pay?${upiUri.split("?")[1] || ""}`,
+      url: `fampay://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.fampay.in",
       invert: true,
     },
@@ -1239,7 +1240,7 @@ export default function NgoDonationForm({
                             <div className="grid grid-cols-2 gap-2.5">
                               <button
                                 type="button"
-                                onClick={() => openPaymentApp(upiUri, upiUri)}
+                                onClick={() => openPaymentApp(upiUri || "", upiUri || "")}
                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-bold text-sm transition-all active:scale-95"
                               >
                                 <Smartphone className="w-4 h-4" />
@@ -1247,7 +1248,7 @@ export default function NgoDonationForm({
                               </button>
                               <button
                                 type="button"
-                                onClick={() => copyToClipboard(upiUri, "URI")}
+                                onClick={() => copyToClipboard(upiUri || "", "URI")}
                                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all active:scale-95"
                               >
                                 {copiedLabel === "URI" ? (
