@@ -488,11 +488,28 @@ export default function NgoDonationForm({
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  const openPaymentApp = (appUrl: string, storeFallback: string) => {
-    window.location.href = appUrl;
-    setTimeout(() => {
-      if (!document.hidden) window.location.href = storeFallback;
-    }, 1800);
+  const openPaymentApp = (appUrl: string, storeFallback: string, appPackage?: string) => {
+    if (!upiUri) return;
+    const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+    const isMobile = typeof navigator !== "undefined" && /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+    const upiParams = upiUri.split("?")[1] || "";
+
+    if (isAndroid) {
+      // Android Intent URL — triggers native app chooser or opens app directly if package is provided
+      const intentPkg = appPackage ? `;package=${appPackage}` : "";
+      const intentUrl = `intent://pay?${upiParams}#Intent;scheme=upi${intentPkg};end`;
+      window.location.href = intentUrl;
+    } else if (isMobile) {
+      // iOS / Mobile custom URL scheme fallback
+      window.location.href = appUrl;
+      setTimeout(() => {
+        if (!document.hidden) {
+          window.location.href = storeFallback;
+        }
+      }, 2000);
+    } else {
+      showToast("📱 Please scan the QR code above using your mobile UPI app.", "success");
+    }
   };
 
   // ── Generate payment session + QR (identical to GiveForm) ───────────────────
@@ -634,6 +651,7 @@ export default function NgoDonationForm({
       logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",
       url: `tez://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user",
+      package: "com.google.android.apps.nbu.paisa.user",
     },
     {
       name: "PhonePe",
@@ -641,6 +659,7 @@ export default function NgoDonationForm({
       logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",
       url: `phonepe://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.phonepe.app",
+      package: "com.phonepe.app",
     },
     {
       name: "Paytm",
@@ -648,6 +667,7 @@ export default function NgoDonationForm({
       logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg",
       url: `paytmmp://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=net.one97.paytm",
+      package: "net.one97.paytm",
     },
     {
       name: "BHIM",
@@ -655,6 +675,7 @@ export default function NgoDonationForm({
       logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",
       url: `upi://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp",
+      package: "in.org.npci.upiapp",
     },
     {
       name: "SuperMoney",
@@ -662,6 +683,7 @@ export default function NgoDonationForm({
       logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/googlepay.svg",
       url: `upi://pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=money.super.app",
+      package: "money.super.app",
     },
     {
       name: "Fam",
@@ -669,6 +691,7 @@ export default function NgoDonationForm({
       logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",
       url: `fampay://upi/pay?${upiParams}`,
       store: "https://play.google.com/store/apps/details?id=com.fampay.in",
+      package: "com.fampay.in",
       invert: true,
     },
   ];
@@ -1223,7 +1246,7 @@ export default function NgoDonationForm({
                                   key={app.name}
                                   type="button"
                                   title={`Open in ${app.name}`}
-                                  onClick={() => openPaymentApp(app.url, app.store)}
+                                  onClick={() => openPaymentApp(app.url, app.store, app.package)}
                                   className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
                                 >
                                   <img

@@ -586,13 +586,28 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  const openPaymentApp = (appUrl: string, storeFallback: string) => {
-    window.location.href = appUrl;
-    setTimeout(() => {
-      if (!document.hidden) {
-        window.location.href = storeFallback;
-      }
-    }, 1800);
+  const openPaymentApp = (appUrl: string, storeFallback: string, appPackage?: string) => {
+    if (!upiUri) return;
+    const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+    const isMobile = typeof navigator !== "undefined" && /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+    const upiParams = upiUri.split("?")[1] || "";
+
+    if (isAndroid) {
+      // Android Intent URL — triggers native app chooser or opens app directly if package is provided
+      const intentPkg = appPackage ? `;package=${appPackage}` : "";
+      const intentUrl = `intent://pay?${upiParams}#Intent;scheme=upi${intentPkg};end`;
+      window.location.href = intentUrl;
+    } else if (isMobile) {
+      // iOS / Mobile custom URL scheme fallback
+      window.location.href = appUrl;
+      setTimeout(() => {
+        if (!document.hidden) {
+          window.location.href = storeFallback;
+        }
+      }, 2000);
+    } else {
+      showToast("📱 Please scan the QR code above using your mobile UPI app.", "success");
+    }
   };
 
   const activePurposeObj = purposes.find((p) => p.code === selectedPurpose);
@@ -1163,17 +1178,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             </p>
                             <div className="grid grid-cols-5 gap-2 mb-4">
                               {[
-                                { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user" },
-                                { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app" },
-                                { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm" },
-                                { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp" },
-                                { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", invert: true },
+                                { name: "GPay", color: "#4285F4", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg", url: `tez://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user", package: "com.google.android.apps.nbu.paisa.user" },
+                                { name: "PhonePe", color: "#5f259f", logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg", url: `phonepe://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.phonepe.app", package: "com.phonepe.app" },
+                                { name: "Paytm", color: "#00BAF2", logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", url: `paytmmp://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=net.one97.paytm", package: "net.one97.paytm" },
+                                { name: "BHIM", color: "#FF6B00", logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg", url: `upi://pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=in.org.npci.upiapp", package: "in.org.npci.upiapp" },
+                                { name: "Fam", color: "#b8860b", logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg", url: `fampay://upi/pay?${(upiUri || "").split("?")[1] || ""}`, store: "https://play.google.com/store/apps/details?id=com.fampay.in", package: "com.fampay.in", invert: true },
                               ].map((app) => (
                                 <button
                                   key={app.name}
                                   type="button"
                                   title={`Open in ${app.name}`}
-                                  onClick={() => openPaymentApp(app.url, app.store)}
+                                  onClick={() => openPaymentApp(app.url, app.store, app.package)}
                                   className="flex flex-col items-center justify-center gap-1.5 py-3 px-1 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all group cursor-pointer"
                                 >
                                   <img
