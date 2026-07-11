@@ -571,7 +571,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl text-purple-200/80 max-w-xl mx-auto leading-relaxed"
+              className="text-lg sm:text-xl text-white max-w-xl mx-auto leading-relaxed"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -588,7 +588,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 { icon: <Zap className="w-3.5 h-3.5" />, label: "Instant UPI" },
                 { icon: <Receipt className="w-3.5 h-3.5" />, label: "80G Tax Exempt" },
               ].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/8 backdrop-blur-sm border border-white/12 rounded-full text-white/70 text-xs font-medium">
+                <div key={badge.label} className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs font-medium">
                   {badge.icon}
                   {badge.label}
                 </div>
@@ -1089,27 +1089,27 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryType}</span>
+                        <span className="text-white text-sm font-medium">{t.pages.give.summaryType}</span>
                         <span className="font-bold text-xs bg-white/20 px-3 py-1.5 rounded-full uppercase tracking-wider text-white">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryMethod}</span>
+                        <span className="text-white text-sm font-medium">{t.pages.give.summaryMethod}</span>
                         <span className="font-semibold flex items-center gap-1.5 text-white text-sm">
                           <QrCode className="w-4 h-4 text-purple-200" />
                           {language === 'te' ? 'డైనమిక్ UPI QR' : language === 'hi' ? 'डायनेमिक यूपीआई' : 'Dynamic UPI QR'}
                         </span>
                       </div>
                       <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white/70 text-sm font-medium">{t.pages.give.summaryTax}</span>
+                        <span className="text-white text-sm font-medium">{t.pages.give.summaryTax}</span>
                         <span className="font-bold text-emerald-300 flex items-center gap-1">
                           <CheckCircle className="w-3.5 h-3.5" />
                           {t.pages.give.summaryTaxValue}
                         </span>
                       </div>
                       <div className="flex items-center justify-between pt-3">
-                        <span className="text-xl font-semibold text-white/80">{t.pages.give.summaryTotal}</span>
+                        <span className="text-xl font-semibold text-white">{t.pages.give.summaryTotal}</span>
                         <div className="text-right">
                           <AnimatePresence mode="wait">
                             <motion.span
