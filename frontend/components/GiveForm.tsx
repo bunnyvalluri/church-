@@ -90,6 +90,50 @@ const purposeBgMap: Record<string, string> = {
   SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/20 border-fuchsia-200 dark:border-fuchsia-800/40",
 };
 
+const presetStyles: Record<string, {
+  selectedBg: string;
+  selectedBorder: string;
+  selectedShadow: string;
+  unselectedBorderHover: string;
+  unselectedBgHover: string;
+}> = {
+  "500": {
+    selectedBg: "from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700",
+    selectedBorder: "border-blue-500 dark:border-blue-600",
+    selectedShadow: "shadow-blue-500/25 dark:shadow-blue-600/30",
+    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-700",
+    unselectedBgHover: "hover:bg-blue-50/50 dark:hover:bg-blue-950/10",
+  },
+  "1000": {
+    selectedBg: "from-violet-500 to-purple-600 dark:from-violet-600 dark:to-purple-700",
+    selectedBorder: "border-violet-500 dark:border-violet-600",
+    selectedShadow: "shadow-violet-500/25 dark:shadow-violet-600/30",
+    unselectedBorderHover: "hover:border-violet-300 dark:hover:border-violet-700",
+    unselectedBgHover: "hover:bg-violet-50/50 dark:hover:bg-violet-950/10",
+  },
+  "2500": {
+    selectedBg: "from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700",
+    selectedBorder: "border-emerald-500 dark:border-emerald-600",
+    selectedShadow: "shadow-emerald-500/25 dark:shadow-emerald-600/30",
+    unselectedBorderHover: "hover:border-emerald-300 dark:hover:border-emerald-700",
+    unselectedBgHover: "hover:bg-emerald-50/50 dark:hover:bg-emerald-950/10",
+  },
+  "5000": {
+    selectedBg: "from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-700",
+    selectedBorder: "border-amber-500 dark:border-amber-600",
+    selectedShadow: "shadow-amber-500/25 dark:shadow-amber-600/30",
+    unselectedBorderHover: "hover:border-amber-300 dark:hover:border-amber-700",
+    unselectedBgHover: "hover:bg-amber-50/50 dark:hover:bg-amber-950/10",
+  },
+  "10000": {
+    selectedBg: "from-rose-500 to-pink-600 dark:from-rose-600 dark:to-pink-700",
+    selectedBorder: "border-rose-500 dark:border-rose-600",
+    selectedShadow: "shadow-rose-500/25 dark:shadow-rose-600/30",
+    unselectedBorderHover: "hover:border-rose-300 dark:hover:border-rose-700",
+    unselectedBgHover: "hover:bg-rose-50/50 dark:hover:bg-rose-950/10",
+  },
+};
+
 export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
   const { language, t } = useLanguage();
   const { user, getIdToken } = useAuth();
@@ -708,29 +752,39 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               {t.pages.give.presetsTitle}
                             </label>
                             <div className="grid grid-cols-3 gap-2.5">
-                              {["500", "1000", "2500", "5000", "10000"].map((preset) => (
-                                <button
-                                  key={preset}
-                                  type="button"
-                                  onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                  className={`relative py-3.5 px-2 rounded-2xl border-2 text-center font-bold text-base transition-all duration-200 overflow-hidden group ${
-                                    preset === "10000" ? "col-span-1" : ""
-                                  } ${
-                                    amount === preset && !customAmount
-                                      ? "border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-[1.02]"
-                                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/20"
-                                  }`}
-                                >
-                                  {amount === preset && !customAmount && (
-                                    <motion.div
-                                      layoutId="amount-selector"
-                                      className="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl"
-                                      transition={{ duration: 0.2 }}
-                                    />
-                                  )}
-                                  <span className="relative z-10">₹{Number(preset).toLocaleString('en-IN')}</span>
-                                </button>
-                              ))}
+                              {["500", "1000", "2500", "5000", "10000"].map((preset) => {
+                                const style = presetStyles[preset] || {
+                                  selectedBg: "from-purple-600 to-indigo-600",
+                                  selectedBorder: "border-purple-600",
+                                  selectedShadow: "shadow-purple-600/25",
+                                  unselectedBorderHover: "hover:border-purple-300 dark:hover:border-purple-700",
+                                  unselectedBgHover: "hover:bg-purple-50 dark:hover:bg-purple-950/20",
+                                };
+                                const isSelected = amount === preset && !customAmount;
+                                return (
+                                  <button
+                                    key={preset}
+                                    type="button"
+                                    onClick={() => { setAmount(preset); setCustomAmount(""); }}
+                                    className={`relative py-3.5 px-2 rounded-2xl border-2 text-center font-bold text-base transition-all duration-200 overflow-hidden group ${
+                                      preset === "10000" ? "col-span-1" : ""
+                                    } ${
+                                      isSelected
+                                        ? `${style.selectedBorder} text-white shadow-lg ${style.selectedShadow} scale-[1.02]`
+                                        : `border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 ${style.unselectedBorderHover} ${style.unselectedBgHover}`
+                                    }`}
+                                  >
+                                    {isSelected && (
+                                      <motion.div
+                                        layoutId="amount-selector"
+                                        className={`absolute inset-0 bg-gradient-to-br ${style.selectedBg} rounded-xl`}
+                                        transition={{ duration: 0.2 }}
+                                      />
+                                    )}
+                                    <span className="relative z-10">₹{Number(preset).toLocaleString('en-IN')}</span>
+                                  </button>
+                                );
+                              })}
                               {/* Custom amount */}
                               <div className="relative col-span-1">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-sm z-10">₹</span>
@@ -741,8 +795,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                   onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
                                   className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 font-bold text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
                                     customAmount
-                                      ? "border-purple-600 ring-2 ring-purple-600/20"
-                                      : "border-gray-200 dark:border-gray-700 focus:border-purple-400 dark:focus:border-purple-600"
+                                      ? "border-fuchsia-500 ring-2 ring-fuchsia-500/25 bg-fuchsia-50/10 dark:bg-fuchsia-950/10 dark:border-fuchsia-400 dark:ring-fuchsia-400/20"
+                                      : "border-gray-200 dark:border-gray-700 hover:border-fuchsia-300 dark:hover:border-fuchsia-700 focus:border-fuchsia-400 dark:focus:border-fuchsia-600"
                                   }`}
                                 />
                               </div>
