@@ -40,7 +40,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/5 backdrop-blur-md border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-250 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
+        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/5 backdrop-blur-md border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
         title="Settings"
         type="button"
       >

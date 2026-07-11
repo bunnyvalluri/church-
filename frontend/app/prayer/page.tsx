@@ -77,32 +77,32 @@ export default function PrayerPage() {
               </h2>
               <form className="space-y-6">
                 <div>
-                  <label className="block text-gray-750 dark:text-gray-300 font-bold mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
                     {pageT.name}
                   </label>
                   <input
                     type="text"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-250 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold"
                     placeholder={pageT.name}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-750 dark:text-gray-300 font-bold mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
                     {pageT.email}
                   </label>
                   <input
                     type="email"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-250 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold"
                     placeholder="your@email.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-755 dark:text-gray-300 font-bold mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
                     {pageT.category}
                   </label>
-                  <select className="w-full px-4 py-3 rounded-xl border border-gray-250 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold">
+                  <select className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all font-semibold">
                     <option>{pageT.categoryPlaceholder}</option>
                     <option>{pageT.healing}</option>
                     <option>{pageT.family}</option>
@@ -114,12 +114,12 @@ export default function PrayerPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-755 dark:text-gray-300 font-bold mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-2">
                     {pageT.request}
                   </label>
                   <textarea
                     rows={6}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-250 dark:border-gray-700 bg-gray-55 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all"
                     placeholder={pageT.request}
                   ></textarea>
                 </div>
@@ -130,7 +130,7 @@ export default function PrayerPage() {
                     id="anonymous"
                     className="mt-1 w-5 h-5 text-[hsl(var(--primary))] rounded focus:ring-[hsl(var(--primary))]"
                   />
-                  <label htmlFor="anonymous" className="text-gray-750 dark:text-gray-300 font-semibold select-none">
+                  <label htmlFor="anonymous" className="text-gray-700 dark:text-gray-300 font-semibold select-none">
                     {pageT.anonymous}
                   </label>
                 </div>
