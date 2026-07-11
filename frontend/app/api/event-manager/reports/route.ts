@@ -100,14 +100,36 @@ export async function PUT(req: Request) {
           });
 
           // Copy to Gallery for live website integration
-          await prisma.gallery.create({
+          const galleryItem = await prisma.gallery.create({
             data: {
               title: updatedReport.title,
               description: updatedReport.description,
               imageUrl: item.url,
+              thumbnailUrl: item.url,
               category: item.type === "VIDEO" ? "Outreach" : "Events",
+              branchId: updatedReport.branchId,
             }
           });
+
+          // Trigger Socket.io real-time update for gallery
+          try {
+            await fetch("http://localhost:3001/api/trigger-event", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                type: "gallery.image.created",
+                payload: {
+                  id: galleryItem.id,
+                  imageUrl: galleryItem.imageUrl,
+                  thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
+                  title: galleryItem.title,
+                  category: galleryItem.category,
+                  createdAt: galleryItem.createdAt,
+                  branchId: galleryItem.branchId,
+                },
+              }),
+            });
+          } catch {}
         }
 
         // 3. Trigger Socket.io real-time update for live website updates

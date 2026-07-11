@@ -9,6 +9,7 @@ import { Heart, Image as ImageIcon, Video, Users, Gift, Info } from "lucide-reac
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 export default function NgoLayout({
   children,
@@ -135,7 +136,9 @@ export default function NgoLayout({
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full filter blur-3xl pointer-events-none" />
         
-        <div className="relative z-10">{children}</div>
+        <QueryProvider>
+          <div className="relative z-10">{children}</div>
+        </QueryProvider>
       </main>
 
       {/* Global Footer */}

@@ -85,32 +85,90 @@ const purposeCardStyles: Record<string, {
   unselectedBorderHover: string;
   unselectedBgHover: string;
 }> = {
+  // Tithe — teal/cyan
+  TITHE: {
+    icon: <Heart className="w-5 h-5" />,
+    gradient: "from-teal-500 to-cyan-600",
+    selectedBg: "bg-teal-50/90 dark:bg-teal-950/25",
+    selectedBorder: "border-teal-300 dark:border-teal-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(20,184,166,0.15)] dark:shadow-[0_0_25px_rgba(20,184,166,0.25)]",
+    selectedCheck: "text-teal-600 dark:text-teal-400",
+    unselectedBorderHover: "hover:border-teal-300 dark:hover:border-teal-800/60",
+    unselectedBgHover: "hover:bg-teal-50/20 dark:hover:bg-teal-950/5",
+  },
+  // Online Offering — green/emerald
+  ONLINE_OFFERING: {
+    icon: <Globe className="w-5 h-5" />,
+    gradient: "from-green-500 to-emerald-600",
+    selectedBg: "bg-green-50/90 dark:bg-green-950/25",
+    selectedBorder: "border-green-300 dark:border-green-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_0_25px_rgba(34,197,94,0.25)]",
+    selectedCheck: "text-green-600 dark:text-green-400",
+    unselectedBorderHover: "hover:border-green-300 dark:hover:border-green-800/60",
+    unselectedBgHover: "hover:bg-green-50/20 dark:hover:bg-green-950/5",
+  },
+  // Building Fund — amber/orange
+  BUILDING_FUND: {
+    icon: <Building className="w-5 h-5" />,
+    gradient: "from-amber-500 to-orange-600",
+    selectedBg: "bg-amber-50/90 dark:bg-amber-950/25",
+    selectedBorder: "border-amber-300 dark:border-amber-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(245,158,11,0.15)] dark:shadow-[0_0_25px_rgba(245,158,11,0.25)]",
+    selectedCheck: "text-amber-600 dark:text-amber-400",
+    unselectedBorderHover: "hover:border-amber-300 dark:hover:border-amber-800/60",
+    unselectedBgHover: "hover:bg-amber-50/20 dark:hover:bg-amber-950/5",
+  },
+  // Missions — blue/indigo
+  MISSIONS: {
+    icon: <Globe className="w-5 h-5" />,
+    gradient: "from-blue-500 to-indigo-600",
+    selectedBg: "bg-blue-50/90 dark:bg-blue-950/25",
+    selectedBorder: "border-blue-300 dark:border-blue-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(59,130,246,0.15)] dark:shadow-[0_0_25px_rgba(59,130,246,0.25)]",
+    selectedCheck: "text-blue-600 dark:text-blue-400",
+    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-800/60",
+    unselectedBgHover: "hover:bg-blue-50/20 dark:hover:bg-blue-950/5",
+  },
+  // Benevolence — rose/pink
+  BENEVOLENCE: {
+    icon: <Heart className="w-5 h-5" />,
+    gradient: "from-rose-500 to-pink-600",
+    selectedBg: "bg-rose-50/90 dark:bg-rose-950/25",
+    selectedBorder: "border-rose-300 dark:border-rose-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(244,63,94,0.15)] dark:shadow-[0_0_25px_rgba(244,63,94,0.25)]",
+    selectedCheck: "text-rose-600 dark:text-rose-400",
+    unselectedBorderHover: "hover:border-rose-300 dark:hover:border-rose-800/60",
+    unselectedBgHover: "hover:bg-rose-50/20 dark:hover:bg-rose-950/5",
+  },
+  // Special Offering — purple/violet
+  SPECIAL_OFFERING: {
+    icon: <Star className="w-5 h-5" />,
+    gradient: "from-violet-500 to-purple-600",
+    selectedBg: "bg-violet-50/90 dark:bg-violet-950/25",
+    selectedBorder: "border-violet-300 dark:border-violet-700/60",
+    selectedShadow: "shadow-[0_0_20px_rgba(139,92,246,0.15)] dark:shadow-[0_0_25px_rgba(139,92,246,0.25)]",
+    selectedCheck: "text-violet-600 dark:text-violet-400",
+    unselectedBorderHover: "hover:border-violet-300 dark:hover:border-violet-800/60",
+    unselectedBgHover: "hover:bg-violet-50/20 dark:hover:bg-violet-950/5",
+  },
+  // Charity (generic) — emerald
   CHARITY: {
     icon: <Heart className="w-5 h-5" />,
     gradient: "from-emerald-500 to-teal-600",
     selectedBg: "bg-emerald-50/90 dark:bg-emerald-950/25",
     selectedBorder: "border-emerald-300 dark:border-emerald-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(16,185,129,0.12)] dark:shadow-[0_0_25px_rgba(16,185,129,0.22)]",
+    selectedShadow: "shadow-[0_0_20px_rgba(16,185,129,0.15)] dark:shadow-[0_0_25px_rgba(16,185,129,0.25)]",
     selectedCheck: "text-emerald-600 dark:text-emerald-400",
     unselectedBorderHover: "hover:border-emerald-300 dark:hover:border-emerald-800/60",
     unselectedBgHover: "hover:bg-emerald-50/20 dark:hover:bg-emerald-950/5",
   },
-  MISSIONS: {
-    icon: <Globe className="w-5 h-5" />,
-    gradient: "from-blue-500 to-cyan-600",
-    selectedBg: "bg-blue-50/90 dark:bg-blue-950/25",
-    selectedBorder: "border-blue-300 dark:border-blue-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(59,130,246,0.12)] dark:shadow-[0_0_25px_rgba(59,130,246,0.22)]",
-    selectedCheck: "text-blue-600 dark:text-blue-400",
-    unselectedBorderHover: "hover:border-blue-300 dark:hover:border-blue-800/60",
-    unselectedBgHover: "hover:bg-blue-50/20 dark:hover:bg-blue-950/5",
-  },
+  // Special — fuchsia/magenta
   SPECIAL: {
-    icon: <Star className="w-5 h-5" />,
-    gradient: "from-fuchsia-500 to-violet-600",
+    icon: <Sparkles className="w-5 h-5" />,
+    gradient: "from-fuchsia-500 to-pink-600",
     selectedBg: "bg-fuchsia-50/90 dark:bg-fuchsia-950/25",
     selectedBorder: "border-fuchsia-300 dark:border-fuchsia-700/60",
-    selectedShadow: "shadow-[0_0_20px_rgba(217,70,239,0.12)] dark:shadow-[0_0_25px_rgba(217,70,239,0.22)]",
+    selectedShadow: "shadow-[0_0_20px_rgba(217,70,239,0.15)] dark:shadow-[0_0_25px_rgba(217,70,239,0.25)]",
     selectedCheck: "text-fuchsia-600 dark:text-fuchsia-400",
     unselectedBorderHover: "hover:border-fuchsia-300 dark:hover:border-fuchsia-800/60",
     unselectedBgHover: "hover:bg-fuchsia-50/20 dark:hover:bg-fuchsia-950/5",

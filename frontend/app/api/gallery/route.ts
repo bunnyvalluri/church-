@@ -1,31 +1,72 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/gallery
-// Public route to fetch all items in the Gallery table
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const cursor = searchParams.get("cursor");
+    const limitParam = searchParams.get("limit");
+    const category = searchParams.get("category");
+    const branchId = searchParams.get("branch");
+
+    const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam))) : 20;
+
+    const where: any = {};
+    if (category && category !== "ALL") {
+      where.category = category;
+    }
+    if (branchId) {
+      where.branchId = branchId;
+    }
+
     const items = await prisma.gallery.findMany({
+      take: limit + 1,
+      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+      where,
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        imageUrl: true,
+        thumbnailUrl: true,
+        title: true,
+        category: true,
+        createdAt: true,
+        branchId: true,
+      },
     });
 
-    const galleryItems = items.map((item) => {
-      const ext = item.imageUrl.split(".").pop()?.toLowerCase() || "";
-      const type = ["mp4", "webm"].includes(ext) ? "video" : "image";
+    const hasMore = items.length > limit;
+    const paginatedItems = hasMore ? items.slice(0, limit) : items;
+    const nextCursor = hasMore && paginatedItems.length > 0 ? paginatedItems[paginatedItems.length - 1].id : null;
+
+    const images = paginatedItems.map((item) => {
+      let thumb = item.thumbnailUrl || item.imageUrl;
+      let full = item.imageUrl;
+
+      if (thumb.includes("cloudinary.com")) {
+        thumb = thumb.replace("/upload/", "/upload/w_400,c_scale,f_auto,q_auto/");
+        full = full.replace("/upload/", "/upload/f_auto,q_auto/");
+      }
+
       return {
         id: item.id,
+        imageUrl: full,
+        thumbnailUrl: thumb,
         title: item.title,
-        description: item.description || "Church Activity Media",
-        url: item.imageUrl,
         category: item.category,
-        type,
         createdAt: item.createdAt,
+        branchId: item.branchId,
       };
     });
 
-    return NextResponse.json({ success: true, galleryItems });
+    return NextResponse.json({
+      success: true,
+      images,
+      nextCursor,
+      hasMore,
+    });
   } catch (err: any) {
     console.error("[API/GALLERY/GET] Error:", err);
     return NextResponse.json(

@@ -66,14 +66,36 @@ export async function POST(req: Request) {
         }
       });
 
-      await prisma.gallery.create({
+      const galleryItem = await prisma.gallery.create({
         data: {
           title: report.title,
           description: report.description,
           imageUrl: media.url,
+          thumbnailUrl: media.url,
           category: media.type === "VIDEO" ? "Outreach" : "Events",
+          branchId: event.branchId,
         }
       });
+
+      // Trigger Socket.io real-time update for gallery
+      try {
+        await fetch("http://localhost:3001/api/trigger-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "gallery.image.created",
+            payload: {
+              id: galleryItem.id,
+              imageUrl: galleryItem.imageUrl,
+              thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
+              title: galleryItem.title,
+              category: galleryItem.category,
+              createdAt: galleryItem.createdAt,
+              branchId: galleryItem.branchId,
+            },
+          }),
+        });
+      } catch {}
     }
 
     // Trigger Socket.io real-time update
