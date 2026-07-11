@@ -245,7 +245,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 p-4 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/10 rounded-xl border border-violet-100 dark:border-violet-900/20"
+            className="flex items-center gap-4 p-4 bg-gradient-to-br from-[hsl(var(--accent)_/_0.4)] to-[hsl(var(--accent)_/_0.2)] dark:from-[hsl(var(--accent)_/_0.15)] dark:to-[hsl(var(--accent)_/_0.05)] rounded-xl border border-[hsl(var(--primary)_/_0.15)] dark:border-[hsl(var(--primary)_/_0.25)]"
           >
             {/* Big score */}
             <div className="text-center flex-shrink-0">

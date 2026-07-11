@@ -155,6 +155,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     // ────────────────────────────────────────────────────────────────────────
 
+    // ── COOKIE-BASED FAST AUTHENTICATION STATE ───────────────────────────────
+    // Before full Firebase verification completes, check for presence cookies
+    // to instantly render the authenticated shell and avoid blank-screen flashing.
+    if (typeof document !== "undefined") {
+      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
+      const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
+      if (uidMatch && uidMatch[1] && roleMatch && roleMatch[1]) {
+        const role = roleMatch[1].toUpperCase();
+        const validRolesList = ["MEMBER", "PASTOR", "ADMIN", "SUPER_ADMIN", "EVENT_MANAGER", "FIELD_VOLUNTEER", "NGO_ADMIN"];
+        if (validRolesList.includes(role)) {
+          const initialUser: AuthUser = {
+            uid: uidMatch[1],
+            email: null,
+            name: "Member",
+            image: null,
+            role: role as any,
+          };
+          setUser(initialUser);
+          setLoading(false);
+          console.info(`[AUTH] Instant render from presence cookie -> role: ${initialUser.role}`);
+        }
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     let unsubscribe: (() => void) | undefined;
 
     const initAuth = async () => {

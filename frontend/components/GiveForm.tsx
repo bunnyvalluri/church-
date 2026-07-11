@@ -50,7 +50,12 @@ interface BranchItem {
   name: string;
 }
 
-export default function GiveForm() {
+interface GiveFormProps {
+  initialPurposes?: PurposeItem[];
+  initialBranches?: BranchItem[];
+}
+
+export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
   const { language, t } = useLanguage();
   const { user, getIdToken } = useAuth();
   const pathname = usePathname() || "";
@@ -60,15 +65,19 @@ export default function GiveForm() {
   const [step, setStep] = useState(1);
   
   // Dynamic Lists loaded from DB
-  const [purposes, setPurposes] = useState<PurposeItem[]>([]);
-  const [branches, setBranches] = useState<BranchItem[]>([]);
-  const [loadingLists, setLoadingLists] = useState(true);
+  const [purposes, setPurposes] = useState<PurposeItem[]>(initialPurposes);
+  const [branches, setBranches] = useState<BranchItem[]>(initialBranches);
+  const [loadingLists, setLoadingLists] = useState(initialPurposes.length === 0 || initialBranches.length === 0);
 
   // Form Inputs
   const [amount, setAmount] = useState<string>("1000");
   const [customAmount, setCustomAmount] = useState<string>("");
-  const [selectedPurpose, setSelectedPurpose] = useState<string>("TITHE");
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
+  const [selectedPurpose, setSelectedPurpose] = useState<string>(
+    initialPurposes.length > 0 ? initialPurposes[0].code : "TITHE"
+  );
+  const [selectedBranch, setSelectedBranch] = useState<string>(
+    initialBranches.length > 0 ? initialBranches[0].id : ""
+  );
   const [donorName, setDonorName] = useState<string>("");
   const [donorEmail, setDonorEmail] = useState<string>("");
   const [donorPhone, setDonorPhone] = useState<string>("");
@@ -112,6 +121,12 @@ export default function GiveForm() {
   useEffect(() => {
     if (!mounted) return;
 
+    // Skip client-side fetch if initial lists are already populated via SSR
+    if (initialPurposes.length > 0 && initialBranches.length > 0) {
+      setLoadingLists(false);
+      return;
+    }
+
     async function loadFormMetadata() {
       try {
         const [purposesRes, branchesRes] = await Promise.all([
@@ -146,11 +161,15 @@ export default function GiveForm() {
     }
 
     loadFormMetadata();
-  }, [mounted]);
+  }, [mounted, initialPurposes, initialBranches]);
 
   // 2. Fetch Logged-in User Profile to Prefill Form
   useEffect(() => {
     if (!mounted || !user) return;
+
+    // Prefill immediately from current auth context to avoid layout shifting
+    setDonorName((prev) => prev || user.name || "");
+    setDonorEmail((prev) => prev || user.email || "");
 
     const currentUserId = user.uid;
     const currentUserName = user.name || "";
@@ -235,7 +254,13 @@ export default function GiveForm() {
 
     pollIntervalRef.current = setInterval(async () => {
       try {
-        const res = await fetch(`/api/donations/status/${sid}`);
+        const token = getIdToken ? await getIdToken() : null;
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(`/api/donations/status/${sid}`, {
+          headers
+        });
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.status === "COMPLETED") {
@@ -248,7 +273,7 @@ export default function GiveForm() {
         console.warn("Status polling error:", err);
       }
     }, 5000);
-  }, []);
+  }, [getIdToken]);
 
   // 5. Connect Socket.IO for real-time success listener
   const connectSocket = useCallback((sid: string) => {
@@ -383,9 +408,13 @@ export default function GiveForm() {
     setErrorMessage("");
 
     try {
+      const token = getIdToken ? await getIdToken() : null;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const res = await fetch("/api/payments/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ sessionId }),
       });
 
@@ -450,18 +479,19 @@ export default function GiveForm() {
       </AnimatePresence>
 
       {/* Hero Header */}
-      <section className="relative py-24 bg-gradient-to-br from-slate-900 via-purple-900/15 to-slate-950 overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end overflow-hidden border-b border-gray-250 dark:border-gray-800/40">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--primary))]/20 rounded-full filter blur-3xl opacity-20 transform translate-x-20 -translate-y-20 animate-pulse pointer-events-none" />
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm mb-6 shadow-sm"
             >
-              <Heart className="h-4 w-4 text-pink-300 animate-pulse" />
+              <Heart className="h-4 w-4 text-pink-350 animate-pulse" />
               <span className="font-medium tracking-wide">
                 {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
               </span>
@@ -470,7 +500,7 @@ export default function GiveForm() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-heading"
             >
               {t.pages.give.title}
             </motion.h1>
@@ -478,7 +508,7 @@ export default function GiveForm() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl text-slate-200 max-w-2xl mx-auto leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed font-medium"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -977,7 +1007,7 @@ export default function GiveForm() {
 
                 {/* Members Live History sync section */}
                 {mounted && user && (
-                  <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700/50 rounded-3xl p-6 shadow-lg space-y-4">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700/50 rounded-3xl p-6 shadow-lg space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1.5">
@@ -1108,7 +1138,7 @@ export default function GiveForm() {
       </section>
 
       {/* Ways to Give */}
-      <section className="py-16 bg-gradient-to-br from-purple-50/50 to-indigo-50/50 dark:from-purple-900/10 dark:to-indigo-900/10">
+      <section className="py-16 bg-gradient-to-br from-[hsl(var(--accent)_/_0.4)] to-[hsl(var(--accent)_/_0.2)] dark:from-[hsl(var(--accent)_/_0.05)] dark:to-[hsl(var(--accent)_/_0.02)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
@@ -1118,8 +1148,8 @@ export default function GiveForm() {
               {/* Bank Transfer Card */}
               <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 dark:border-gray-700/30 flex flex-col justify-between">
                 <div>
-                  <div className="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mb-6">
-                    <Building className="h-7 w-7 text-indigo-650 dark:text-indigo-400" />
+                  <div className="w-14 h-14 bg-[hsl(var(--primary)_/_0.1)] dark:bg-[hsl(var(--primary)_/_0.15)] rounded-2xl flex items-center justify-center mb-6">
+                    <Building className="h-7 w-7 text-[hsl(var(--primary))] dark:text-indigo-400" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                     {language === 'te' ? 'బ్యాంక్ బదిలీ / NEFT / IMPS' : language === 'hi' ? 'बैंक ट्रांसफर / NEFT / IMPS' : 'Bank Transfer / NEFT / IMPS'}
@@ -1169,7 +1199,7 @@ export default function GiveForm() {
                       onClick={() => {
                         window.location.href = "/#contact";
                       }}
-                      className="bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/10 text-purple-700 dark:text-purple-400 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full"
+                      className="bg-gradient-to-br from-[hsl(var(--accent)_/_0.6)] to-[hsl(var(--accent)_/_0.2)] dark:from-[hsl(var(--accent)_/_0.15)] dark:to-[hsl(var(--accent)_/_0.05)] text-[hsl(var(--primary))] p-3.5 rounded-2xl border border-[hsl(var(--primary)_/_0.15)] dark:border-[hsl(var(--primary)_/_0.25)] shadow-sm hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full"
                     >
                       <span className="text-xl">⛪</span>
                       <span className="truncate max-w-full">{b.name.split(" ")[0]}</span>

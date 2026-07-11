@@ -60,28 +60,29 @@ async function resolveRole(uid: string, email: string): Promise<AuthenticatedUse
 export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedUser | null> {
   let authenticatedUser: AuthenticatedUser | null = null;
 
-  // 1. Check Dev Bypass
-  if (process.env.NODE_ENV !== 'production') {
-    const devUser = getDevBypassUser();
-    if (devUser) {
-      authenticatedUser = devUser;
+  // 1. Always try the real Bearer token first (highest priority).
+  //    This ensures that real Firebase users are correctly identified even in dev mode.
+  const token = extractToken(req);
+  if (token) {
+    const decoded = await verifyFirebaseToken(token);
+    if (decoded) {
+      const role = await resolveRole(decoded.uid, decoded.email ?? '');
+      authenticatedUser = {
+        uid: decoded.uid,
+        email: decoded.email ?? '',
+        name: decoded.name ?? (decoded.email ? decoded.email.split('@')[0] : 'Member'),
+        role,
+      };
     }
   }
 
-  // 2. Fallback to token extraction if no dev bypass is active
-  if (!authenticatedUser) {
-    const token = extractToken(req);
-    if (token) {
-      const decoded = await verifyFirebaseToken(token);
-      if (decoded) {
-        const role = await resolveRole(decoded.uid, decoded.email ?? '');
-        authenticatedUser = {
-          uid: decoded.uid,
-          email: decoded.email ?? '',
-          name: decoded.name ?? (decoded.email ? decoded.email.split('@')[0] : 'Member'),
-          role,
-        };
-      }
+  // 2. Dev bypass fallback — only used when no real token is in the request.
+  //    This prevents UID mismatch errors where the dev mock UID differs from the
+  //    real Firebase UID stored in session records.
+  if (!authenticatedUser && process.env.NODE_ENV !== 'production') {
+    const devUser = getDevBypassUser();
+    if (devUser) {
+      authenticatedUser = devUser;
     }
   }
 
