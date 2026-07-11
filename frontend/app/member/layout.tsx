@@ -125,6 +125,17 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   // Close sidebar on route change
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
+  // Close sidebar on Escape key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   // Click outside to close profile dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -468,7 +479,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6">
+        <main className="flex-1 p-3 min-[376px]:p-4 sm:p-5 md:p-6 lg:p-8">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 8 }}
