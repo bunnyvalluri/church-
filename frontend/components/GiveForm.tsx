@@ -310,7 +310,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
           if (data.success && data.user) {
             setDonorName(data.user.name || "");
             setDonorEmail(data.user.email || "");
-            setDonorPhone(data.user.phone || "");
           }
         }
       } catch (err) {
