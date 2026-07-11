@@ -196,7 +196,7 @@ export default function NgoDonationForm({
   initialBranches = [],
   initialCampaigns = [],
 }: NgoDonationFormProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { user, getIdToken } = useAuth();
 
   // ── Step state ───────────────────────────────────────────────────────────────
@@ -534,22 +534,30 @@ export default function NgoDonationForm({
       setReferenceNumber(sessionData.session.referenceNumber);
       setExpiresAt(new Date(sessionData.session.expiresAt));
 
-      // Generate dynamic QR (same API as GiveForm)
-      const qrRes = await fetch("/api/donations/generate-qr", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ sessionId: sid }),
-      });
+      // Use pre-generated QR code if available to avoid sequential API call
+      if (sessionData.session.qrCode) {
+        setQrCodeData(sessionData.session.qrCode);
+        setUpiUri(sessionData.session.upiUri);
+        setUpiId(sessionData.session.upiId);
+        setChurchName(sessionData.session.churchName);
+      } else {
+        // Generate dynamic QR (same API as GiveForm)
+        const qrRes = await fetch("/api/donations/generate-qr", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ sessionId: sid }),
+        });
 
-      const qrData = await qrRes.json();
-      if (!qrRes.ok || !qrData.success) {
-        throw new Error(qrData.error || "Failed to generate dynamic QR code.");
+        const qrData = await qrRes.json();
+        if (!qrRes.ok || !qrData.success) {
+          throw new Error(qrData.error || "Failed to generate dynamic QR code.");
+        }
+
+        setQrCodeData(qrData.qrCode);
+        setUpiUri(qrData.upiUri);
+        setUpiId(qrData.upiId);
+        setChurchName(qrData.churchName);
       }
-
-      setQrCodeData(qrData.qrCode);
-      setUpiUri(qrData.upiUri);
-      setUpiId(qrData.upiId);
-      setChurchName(qrData.churchName);
 
       // Advance to Step 2
       setStep(2);
@@ -558,28 +566,26 @@ export default function NgoDonationForm({
       connectSocket(sid);
       startStatusPolling(sid);
 
-      // Fire NGO-specific Socket.IO event for admin dashboard
-      try {
-        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-        await fetch(`${socketUrl}/api/trigger-event`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "ngo.donation.created",
-            payload: {
-              sessionId: sid,
-              campaignId: selectedCampaign || null,
-              amount: Number(getFinalAmount()),
-              purpose: selectedPurpose,
-              referenceNumber: sessionData.session.referenceNumber,
-              status: "PENDING",
-            },
-            room: "admin:dashboard",
-          }),
-        });
-      } catch {
+      // Fire NGO-specific Socket.IO event for admin dashboard (Non-blocking)
+      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+      fetch(`${socketUrl}/api/trigger-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "ngo.donation.created",
+          payload: {
+            sessionId: sid,
+            campaignId: selectedCampaign || null,
+            amount: Number(getFinalAmount()),
+            purpose: selectedPurpose,
+            referenceNumber: sessionData.session.referenceNumber,
+            status: "PROCESSING",
+          },
+          room: "admin:dashboard",
+        }),
+      }).catch(() => {
         // Non-critical: admin dashboard event is best-effort
-      }
+      });
     } catch (err: any) {
       console.error("[NgoDonationForm] Session generation failed:", err);
       setErrorMessage(err.message || "Failed to connect with payment gateway. Please try again.");
@@ -1112,12 +1118,12 @@ export default function NgoDonationForm({
 
                               <div>
                                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
-                                  {language === "te" ? "ఫోన్" : language === "hi" ? "फोन" : "Phone"}
+                                  {t.pages.give.phoneLabel}
                                 </label>
                                 <div className="relative">
                                   <input
                                     type="tel"
-                                    placeholder="+91 98765 43210"
+                                    placeholder={t.pages.give.phonePlaceholder}
                                     value={donorPhone}
                                     onChange={(e) => setDonorPhone(e.target.value)}
                                     className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-500 focus:outline-none transition-all text-sm"

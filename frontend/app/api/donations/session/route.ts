@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from '@/lib/authMiddleware';
 import { DonationSessionSchema, sanitizeInput } from '@/lib/security';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
+import QRCode from 'qrcode';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,7 +74,28 @@ export async function POST(req: Request) {
     const referenceNumber = generateReferenceNumber();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins expiry
 
-    // 4. Create the session in the database
+    // 4. Construct standard UPI deep link parameters and pre-generate QR code
+    const upiId = process.env.NEXT_PUBLIC_UPI_ID || 'kcm.kristhraj2004-1@okicici';
+    const churchName = process.env.NEXT_PUBLIC_CHURCH_NAME || 'Kingdom of Christ Ministries';
+    
+    const encodedName = encodeURIComponent(churchName);
+    const note = `KCM ${purpose.code} Ref ${referenceNumber}`;
+    const encodedNote = encodeURIComponent(note);
+
+    // upi://pay?pa=payeeAddress&pn=payeeName&am=transactionAmount&cu=currency&tn=transactionNote&tr=transactionRefId
+    const upiUri = `upi://pay?pa=${upiId}&pn=${encodedName}&am=${amount.toFixed(2)}&cu=INR&tn=${encodedNote}&tr=${referenceNumber}`;
+
+    // Generate high-quality QR code image (Base64)
+    const qrCodeBase64 = await QRCode.toDataURL(upiUri, {
+      margin: 2,
+      width: 320,
+      color: {
+        dark: '#4F1C91', // Church primary deep purple
+        light: '#FFFFFF',
+      },
+    });
+
+    // 5. Create the session in the database directly in PROCESSING status
     const session = await prisma.donationSession.create({
       data: {
         memberId: authUser?.uid || null,
@@ -82,7 +104,7 @@ export async function POST(req: Request) {
         amount,
         currency: 'INR',
         referenceNumber,
-        status: 'PENDING',
+        status: 'PROCESSING',
         expiresAt,
         ipAddress: ip,
         device: userAgent.substring(0, 255),
@@ -97,33 +119,31 @@ export async function POST(req: Request) {
     await writeAuditLog({
       userId: authUser?.uid || null,
       action: 'DONATION_SESSION_CREATED',
-      details: `Initialized donation session ${session.id} for ₹${amount} (${purpose.code}) with Ref: ${referenceNumber}`,
+      details: `Initialized donation session ${session.id} for ₹${amount} (${purpose.code}) and pre-generated dynamic UPI QR. Ref: ${referenceNumber}`,
       ipAddress: ip,
       userAgent,
     });
 
-    // Dispatch socket notification about pending session creation
-    try {
-      const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'donation.created',
-          payload: {
-            sessionId: session.id,
-            amount: session.amount,
-            purpose: purpose.nameEn,
-            referenceNumber,
-            status: 'PENDING',
-            createdAt: session.createdAt,
-          },
-          room: 'admin:dashboard',
-        }),
-      });
-    } catch (socketErr) {
+    // Dispatch socket notification about pending session creation (Non-blocking)
+    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+    fetch(`${companionUrl}/api/trigger-event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'donation.created',
+        payload: {
+          sessionId: session.id,
+          amount: session.amount,
+          purpose: purpose.nameEn,
+          referenceNumber,
+          status: 'PROCESSING',
+          createdAt: session.createdAt,
+        },
+        room: 'admin:dashboard',
+      }),
+    }).catch((socketErr) => {
       console.warn('[SESSION_API] Realtime event trigger bypassed:', socketErr);
-    }
+    });
 
     return NextResponse.json(
       {
@@ -135,6 +155,10 @@ export async function POST(req: Request) {
           currency: session.currency,
           expiresAt: session.expiresAt,
           purpose: session.purpose.nameEn,
+          upiUri,
+          qrCode: qrCodeBase64,
+          upiId,
+          churchName,
         },
       },
       {

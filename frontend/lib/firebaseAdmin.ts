@@ -98,7 +98,7 @@ export async function verifyFirebaseToken(idToken: string): Promise<VerifiedToke
 
   try {
     const { getAuth } = require('firebase-admin/auth');
-    const decoded = await getAuth(app).verifyIdToken(idToken, true); // checkRevoked = true
+    const decoded = await getAuth(app).verifyIdToken(idToken, false); // checkRevoked = false for faster verification
     return {
       uid: decoded.uid,
       email: decoded.email,

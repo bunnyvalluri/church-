@@ -488,21 +488,29 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       setReferenceNumber(sessionData.session.referenceNumber);
       setExpiresAt(new Date(sessionData.session.expiresAt));
 
-      const qrRes = await fetch("/api/donations/generate-qr", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ sessionId: sid }),
-      });
+      // Use pre-generated QR code if available to avoid sequential API call
+      if (sessionData.session.qrCode) {
+        setQrCodeData(sessionData.session.qrCode);
+        setUpiUri(sessionData.session.upiUri);
+        setUpiId(sessionData.session.upiId);
+        setChurchName(sessionData.session.churchName);
+      } else {
+        const qrRes = await fetch("/api/donations/generate-qr", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ sessionId: sid }),
+        });
 
-      const qrData = await qrRes.json();
-      if (!qrRes.ok || !qrData.success) {
-        throw new Error(qrData.error || "Failed to generate dynamic QR code.");
+        const qrData = await qrRes.json();
+        if (!qrRes.ok || !qrData.success) {
+          throw new Error(qrData.error || "Failed to generate dynamic QR code.");
+        }
+
+        setQrCodeData(qrData.qrCode);
+        setUpiUri(qrData.upiUri);
+        setUpiId(qrData.upiId);
+        setChurchName(qrData.churchName);
       }
-
-      setQrCodeData(qrData.qrCode);
-      setUpiUri(qrData.upiUri);
-      setUpiId(qrData.upiId);
-      setChurchName(qrData.churchName);
 
       setStep(2);
 
