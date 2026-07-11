@@ -34,7 +34,7 @@ const layoutTranslations = {
       prayers: { label: "Prayer Requests", desc: "Prayer wall" },
       sermons: { label: "Sermon Library", desc: "Watch & listen" },
       volunteer: { label: "Volunteer", desc: "Serve in ministry" },
-      give: { label: "Give & Tithe", desc: "Online offerings" }
+      give: { label: "Online Giving", desc: "Support the ministry" }
     }
   },
   te: {
@@ -54,7 +54,7 @@ const layoutTranslations = {
       prayers: { label: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన గోడ" },
       sermons: { label: "ప్రసంగాల లైబ్రరీ", desc: "వీక్షించండి & వినండి" },
       volunteer: { label: "వాలంటీర్", desc: "పరిచర్యలో సేవ చేయండి" },
-      give: { label: "కానుకలు & దశమభాగాలు", desc: "ఆన్‌లైన్ కానుకలు" }
+      give: { label: "ఆన్‌లైన్ కానుక", desc: "పరిచర్యకు మద్దతు" }
     }
   },
   hi: {
@@ -74,7 +74,7 @@ const layoutTranslations = {
       prayers: { label: "प्रार्थना निवेदन", desc: "प्रार्थना वाल" },
       sermons: { label: "प्रवचन लाइब्रेरी", desc: "देखें और सुनें" },
       volunteer: { label: "स्वयंसेवक", desc: "मंत्रालय में सेवा" },
-      give: { label: "दान और प्रसाद", desc: "ऑनलाइन दान" }
+      give: { label: "ऑनलाइन दान", desc: "मंत्रालय का समर्थन करें" }
     }
   }
 };
