@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthContextType>({
 // ── Cookie helpers (lightweight presence cookies for Edge Middleware) ──────────
 function setSessionCookies(uid: string, role: string) {
   if (typeof document === "undefined") return;
-  const maxAge = 60 * 60; // 1 hour — matches Firebase ID token lifetime
+  const maxAge = 7 * 24 * 60 * 60; // 7 days — prevents premature session cookie expiration issues
   document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
   document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
 }

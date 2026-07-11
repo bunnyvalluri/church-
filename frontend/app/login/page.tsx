@@ -245,7 +245,7 @@ export default function LoginPage() {
 
         // Instantly set session cookies for middleware and client-side AuthProvider
         if (typeof document !== "undefined") {
-          const maxAge = 60 * 60;
+          const maxAge = 7 * 24 * 60 * 60; // 7 days
           document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
           document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
         }
@@ -342,7 +342,7 @@ export default function LoginPage() {
 
       // Instantly set session cookies for middleware and client-side AuthProvider
       if (typeof document !== "undefined") {
-        const maxAge = 60 * 60;
+        const maxAge = 7 * 24 * 60 * 60; // 7 days
         document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
         document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
       }

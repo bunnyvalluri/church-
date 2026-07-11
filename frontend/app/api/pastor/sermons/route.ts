@@ -209,10 +209,9 @@ export async function POST(req: Request) {
 
 
 export async function DELETE(req: Request) {
-  // ── Auth Guard ─────────────────────────────────────────────────────────────
-  // The Next.js Edge Middleware (middleware.ts) already validates __kcm_session_role
-  // cookie and rejects unauthenticated / insufficient-role requests before they
-  // reach this handler. No additional Firebase JWT check needed here.
+  // Protect route using requireEventManagerOrDev (allows PASTOR, EVENT_MANAGER, ADMIN, SUPER_ADMIN)
+  const auth = await requireEventManagerOrDev(req);
+  if (auth instanceof NextResponse) return auth;
 
   try {
     const { searchParams } = new URL(req.url);

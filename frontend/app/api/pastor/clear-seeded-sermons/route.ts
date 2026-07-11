@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireEventManagerOrDev } from "@/lib/authMiddleware";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,9 @@ export const dynamic = "force-dynamic";
  * No Firebase JWT check needed here.
  */
 export async function POST(req: Request) {
+  const auth = await requireEventManagerOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     // Delete all 6 seeded placeholder sermons
     const result = await prisma.sermon.deleteMany({
