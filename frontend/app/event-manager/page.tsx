@@ -223,12 +223,15 @@ export default function UnifiedEventManagementPortal() {
   const [showManageServices, setShowManageServices] = useState(false);
   const [showManageEvents, setShowManageEvents] = useState(false);
   const [successEvent, setSuccessEvent] = useState<{ title: string; category: string; date: string; time: string; location: string } | null>(null);
+  const [editingService, setEditingService] = useState<any | null>(null);
+  const [showEditService, setShowEditService] = useState(false);
 
   // Manage Sermons list states and handlers
   const [sermonsList, setSermonsList] = useState<any[]>([]);
   const [loadingSermons, setLoadingSermons] = useState(false);
   const [deletingSermonId, setDeletingSermonId] = useState<string | null>(null);
   const [clearingSeeded, setClearingSeeded] = useState(false);
+  const [clearingSeededServices, setClearingSeededServices] = useState(false);
 
   // Manage Services list states and handlers
   const [servicesList, setServicesList] = useState<any[]>([]);
@@ -343,6 +346,32 @@ export default function UnifiedEventManagementPortal() {
       alert(err.message || "Failed to delete service");
     } finally {
       setDeletingServiceId(null);
+    }
+  };
+
+  const clearSeededServices = async () => {
+    if (!confirm("This will permanently delete all 8 placeholder services/events seeded from the database. Only real events you schedule will remain. Proceed?")) return;
+    setClearingSeededServices(true);
+    try {
+      const token = await getIdToken();
+      const res = await fetch("/api/events/clear-seeded", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("🗑️ Seeded Services Cleared", `Removed ${data.deletedCount} static services. The calendar is now fully dynamic!`);
+        fetchAllServices();
+      } else {
+        throw new Error(data.error || "Failed to clear seeded services");
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to clear seeded services");
+    } finally {
+      setClearingSeededServices(false);
     }
   };
 
@@ -1809,6 +1838,67 @@ export default function UnifiedEventManagementPortal() {
         )}
       </AnimatePresence>
 
+      {/* Edit Service Modal */}
+      <AnimatePresence>
+        {showEditService && editingService && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-lg w-full relative space-y-4 overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
+              <button onClick={() => { setShowEditService(false); setEditingService(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-4">
+                <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"><Calendar className="w-5 h-5" /></div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Edit Worship Service / Event</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Update branch service or ministry activity details</p>
+                </div>
+              </div>
+              <div className="max-h-[70vh] overflow-y-auto pr-1">
+                <EventForm
+                  key={editingService.id}
+                  branches={branches}
+                  initialData={{
+                    title: editingService.title,
+                    description: editingService.description,
+                    date: editingService.date ? new Date(editingService.date).toISOString().split('T')[0] : '',
+                    time: editingService.time || '09:00',
+                    location: editingService.location,
+                    category: editingService.category,
+                    branchId: editingService.branchId || undefined,
+                    status: editingService.status || 'PUBLISHED',
+                    image: editingService.image || '',
+                  }}
+                  isEditMode={true}
+                  onSubmit={async data => {
+                    try {
+                      const token = await getIdToken();
+                      const res = await fetch(`/api/events/${editingService.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                        body: JSON.stringify(data),
+                      });
+                      if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Failed to update service."); }
+                      setShowEditService(false);
+                      setEditingService(null);
+                      fetchAllServices();
+                      showToast("✅ Service Updated", "Successfully updated service/event details.");
+                    } catch (err: any) { alert(err.message || "Failed to update service."); }
+                  }}
+                  onCancel={() => { setShowEditService(false); setEditingService(null); }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Edit Camera Overlay */}
       {showEditCamera && <CameraCapture onCapture={handleEditPhotoCapture} onClose={() => setShowEditCamera(false)} />}
 
@@ -1941,15 +2031,26 @@ export default function UnifiedEventManagementPortal() {
                           <span>{service.category}</span><span>•</span><span>{service.branch?.name || "General"}</span><span>•</span><span>{new Date(service.date).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <button type="button" onClick={() => handleDeleteService(service.id)} disabled={deletingServiceId === service.id}
-                        className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
-                        {deletingServiceId === service.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button type="button" onClick={() => { setShowManageServices(false); setEditingService(service); setShowEditService(true); }}
+                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button type="button" onClick={() => handleDeleteService(service.id)} disabled={deletingServiceId === service.id}
+                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
+                          {deletingServiceId === service.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
               </div>
-              <div className="flex items-center justify-end mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+                <button type="button" onClick={clearSeededServices} disabled={clearingSeededServices || loadingServices}
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
+                  {clearingSeededServices ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  {clearingSeededServices ? "Clearing..." : "Clear All Static Services"}
+                </button>
                 <button type="button" onClick={() => setShowManageServices(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
               </div>
             </motion.div>
@@ -1998,10 +2099,16 @@ export default function UnifiedEventManagementPortal() {
                           <span>•</span><span>{report.branch?.name || "General"}</span><span>•</span><span>{new Date(report.reportDate).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <button type="button" onClick={() => handleDeleteReportFromModal(report.id)} disabled={deletingEventsReportId === report.id}
-                        className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
-                        {deletingEventsReportId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button type="button" onClick={() => { setShowManageEvents(false); openEditModal(report); }}
+                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button type="button" onClick={() => handleDeleteReportFromModal(report.id)} disabled={deletingEventsReportId === report.id}
+                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
+                          {deletingEventsReportId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
