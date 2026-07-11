@@ -1211,14 +1211,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center">
                                       {language === 'te' ? '— లేదా నేరుగా తెరవండి —' : language === 'hi' ? '— या सीधे खोलें —' : '— Or open directly in —'}
                                     </p>
-                                    <div className="grid grid-cols-6 gap-1.5">
+                                    <div className="grid grid-cols-5 gap-1.5">
                                       {[
-                                        { name: "GPay",       pkg: "com.google.android.apps.nbu.paisa.user",  logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",    color: "#4285F4" },
-                                        { name: "PhonePe",    pkg: "com.phonepe.app",                         logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",                 color: "#5f259f" },
-                                        { name: "Paytm",      pkg: "net.one97.paytm",                         logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg",   color: "#00BAF2" },
-                                        { name: "BHIM",       pkg: "in.org.npci.upiapp",                      logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                    color: "#FF6B00" },
-                                        { name: "FamApp",     pkg: "com.fampay.in",                           logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                       color: "#b8860b", invert: true },
-                                        { name: "SuperMoney", pkg: "com.supermoney.app",                      logo: "https://play-lh.googleusercontent.com/oVyvz6bXIYzh7g9ZkKP_jn7bRfJlBDjENGiVZHqXFKfMVNJZ7HlD3z-7wCrGu-DHEA=s48", color: "#FF4500" },
+                                        { name: "GPay",       initial: "G",  pkg: "com.google.android.apps.nbu.paisa.user",  logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",  color: "#4285F4", bg: "#e8f0fe" },
+                                        { name: "PhonePe",    initial: "P",  pkg: "com.phonepe.app",                         logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",               color: "#5f259f", bg: "#f3eaff" },
+                                        { name: "Paytm",      initial: "Pt", pkg: "net.one97.paytm",                         logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", color: "#00BAF2", bg: "#e0f7fe" },
+                                        { name: "BHIM",       initial: "B",  pkg: "in.org.npci.upiapp",                      logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                  color: "#FF6B00", bg: "#fff3e0" },
+                                        { name: "FamApp",     initial: "F",  pkg: "com.fampay.in",                           logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                     color: "#b8860b", bg: "#fffde7", invert: true },
                                       ].map((app) => (
                                         <button
                                           key={app.name}
@@ -1232,7 +1231,32 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             className="w-7 h-7 object-contain rounded-md"
                                             alt={app.name}
                                             style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
+                                            onError={(e) => {
+                                              const img = e.currentTarget;
+                                              img.style.display = "none";
+                                              const badge = img.nextElementSibling as HTMLElement;
+                                              if (badge) badge.style.display = "flex";
+                                            }}
                                           />
+                                          {/* Fallback letter badge (hidden by default, shown on img error) */}
+                                          <span
+                                            style={{
+                                              display: "none",
+                                              width: 28,
+                                              height: 28,
+                                              borderRadius: 8,
+                                              backgroundColor: app.bg,
+                                              color: app.color,
+                                              fontWeight: 800,
+                                              fontSize: app.initial.length > 1 ? 9 : 13,
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              flexShrink: 0,
+                                              letterSpacing: "-0.5px",
+                                            }}
+                                          >
+                                            {app.initial}
+                                          </span>
                                           <span className="text-[8px] font-bold tracking-tight leading-tight text-center" style={{ color: app.color }}>{app.name}</span>
                                         </button>
                                       ))}
