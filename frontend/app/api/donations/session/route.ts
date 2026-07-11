@@ -54,21 +54,22 @@ export async function POST(req: Request) {
 
     const { amount, purposeCode, branchId } = validation.data;
 
-    // 1. Fetch dynamic donation purpose
-    const purpose = await prisma.donationPurpose.findFirst({
-      where: { code: purposeCode, isActive: true, isArchived: false },
-    });
+    // 1 & 2. Fetch dynamic donation purpose and branch in parallel to save database roundtrips
+    const [purpose, branchCheck] = await Promise.all([
+      prisma.donationPurpose.findFirst({
+        where: { code: purposeCode, isActive: true, isArchived: false },
+      }),
+      branchId
+        ? prisma.branch.findUnique({ where: { id: branchId } })
+        : Promise.resolve(true),
+    ]);
 
     if (!purpose) {
       return NextResponse.json({ error: 'Selected donation purpose is invalid or inactive.' }, { status: 400 });
     }
 
-    // 2. Fetch branch if specified
-    if (branchId) {
-      const branch = await prisma.branch.findUnique({ where: { id: branchId } });
-      if (!branch) {
-        return NextResponse.json({ error: 'Selected branch is invalid.' }, { status: 400 });
-      }
+    if (branchId && !branchCheck) {
+      return NextResponse.json({ error: 'Selected branch is invalid.' }, { status: 400 });
     }
 
     // 3. Create a unique reference number and expiration timestamp (15 minutes from now)
@@ -116,13 +117,15 @@ export async function POST(req: Request) {
       },
     });
 
-    // Write Audit Log
-    await writeAuditLog({
+    // Write Audit Log (non-blocking in background)
+    writeAuditLog({
       userId: authUser?.uid || null,
       action: 'DONATION_SESSION_CREATED',
       details: `Initialized donation session ${session.id} for ₹${amount} (${purpose.code}) and pre-generated dynamic UPI QR. Ref: ${referenceNumber}`,
       ipAddress: ip,
       userAgent,
+    }).catch((auditErr) => {
+      console.warn('[SESSION_API] Background audit log write bypassed:', auditErr);
     });
 
     // Dispatch socket notification about pending session creation (Non-blocking)

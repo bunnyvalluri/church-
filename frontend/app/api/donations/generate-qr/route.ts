@@ -92,11 +92,13 @@ export async function POST(req: Request) {
       },
     });
 
-    await writeAuditLog({
+    writeAuditLog({
       userId: authUser?.uid || null,
       action: 'DONATION_QR_GENERATED',
       details: `Generated UPI QR for session ${sessionId} (amount: ₹${session.amount})`,
       ipAddress: ip,
+    }).catch((auditErr) => {
+      console.warn('[GENERATE_QR_API] Background audit log write bypassed:', auditErr);
     });
 
     // Update status to PROCESSING on QR generation to show it is active
