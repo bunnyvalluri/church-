@@ -549,35 +549,41 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   };
 
   /**
-   * Launch a specific UPI app by its Android package ID.
-   * Uses Intent URL with the package set, so only that specific app launches.
+   * Launch a specific UPI app.
+   * Strategy: navigate via app-specific UPI scheme first (most reliable on Android Chrome),
+   * then fall back to Intent URL if the page is still visible after 1.8s.
+   * If neither works (app not installed), open Play Store after 3s.
    */
-  const handleOpenSpecificApp = (pkg: string) => {
+  const handleOpenSpecificApp = (pkg: string, scheme: string) => {
     if (!upiUri) {
       setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
       return;
     }
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
-    const intentUrl = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
 
-    const anchor = document.createElement("a");
-    anchor.href = intentUrl;
-    anchor.style.display = "none";
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+    // Step 1: Try app-native UPI scheme — most reliable way to open a specific app
+    window.location.href = `${scheme}?${params}`;
 
-    // If the specific app isn't installed, open its Play Store page after 2s
+    // Step 2: If still on page after 1.8s (app not installed / scheme not handled),
+    //         try Android Intent URL as fallback
+    const intentTimer = setTimeout(() => {
+      if (!document.hidden) {
+        window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};end`;
+      }
+    }, 1800);
+
+    // Step 3: If still on page after 3.5s (neither worked), open Play Store
     setTimeout(() => {
       if (!document.hidden) {
+        clearTimeout(intentTimer);
         window.open(
           `https://play.google.com/store/apps/details?id=${pkg}`,
           "_blank",
           "noopener"
         );
       }
-    }, 2000);
+    }, 3500);
   };
 
   // Legacy — kept for backward compatibility
@@ -1213,17 +1219,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     </p>
                                     <div className="grid grid-cols-5 gap-1.5">
                                       {[
-                                        { name: "GPay",       initial: "G",  pkg: "com.google.android.apps.nbu.paisa.user",  logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",  color: "#4285F4", bg: "#e8f0fe" },
-                                        { name: "PhonePe",    initial: "P",  pkg: "com.phonepe.app",                         logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",               color: "#5f259f", bg: "#f3eaff" },
-                                        { name: "Paytm",      initial: "Pt", pkg: "net.one97.paytm",                         logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", color: "#00BAF2", bg: "#e0f7fe" },
-                                        { name: "BHIM",       initial: "B",  pkg: "in.org.npci.upiapp",                      logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                  color: "#FF6B00", bg: "#fff3e0" },
-                                        { name: "FamApp",     initial: "F",  pkg: "com.fampay.in",                           logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                     color: "#b8860b", bg: "#fffde7", invert: true },
+                                        { name: "GPay",    initial: "G",  pkg: "com.google.android.apps.nbu.paisa.user", scheme: "tez://upi/pay",      logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",  color: "#4285F4", bg: "#e8f0fe" },
+                                        { name: "PhonePe", initial: "P",  pkg: "com.phonepe.app",                        scheme: "phonepe://pay",       logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",               color: "#5f259f", bg: "#f3eaff" },
+                                        { name: "Paytm",   initial: "Pt", pkg: "net.one97.paytm",                        scheme: "paytmmp://upi/pay",  logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", color: "#00BAF2", bg: "#e0f7fe" },
+                                        { name: "BHIM",    initial: "B",  pkg: "in.org.npci.upiapp",                     scheme: "upi://pay",          logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                  color: "#FF6B00", bg: "#fff3e0" },
+                                        { name: "FamApp",  initial: "F",  pkg: "com.fampay.in",                          scheme: "fampay://upi/pay",   logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                     color: "#b8860b", bg: "#fffde7", invert: true },
                                       ].map((app) => (
                                         <button
                                           key={app.name}
                                           type="button"
                                           title={`Pay with ${app.name}`}
-                                          onClick={() => handleOpenSpecificApp(app.pkg)}
+                                          onClick={() => handleOpenSpecificApp(app.pkg, app.scheme)}
                                           className="flex flex-col items-center justify-center gap-1 py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
                                         >
                                           <img
