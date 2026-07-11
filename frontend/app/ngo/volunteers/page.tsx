@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Users, Send, CheckCircle2, AlertCircle, Loader2, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 
@@ -216,18 +216,21 @@ export default function NgoVolunteersPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     {ngoT.volunteersPage.initiative}
                   </label>
-                  <select
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 transition-colors"
-                  >
-                    <option value="">{ngoT.volunteersPage.initiativePlaceholder}</option>
-                    {projects.map((proj) => (
-                      <option key={proj.id} value={proj.id}>
-                        {proj.title}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={projectId}
+                      onChange={(e) => setProjectId(e.target.value)}
+                      className="w-full py-3 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 appearance-none transition-colors"
+                    >
+                      <option value="">{ngoT.volunteersPage.initiativePlaceholder}</option>
+                      {projects.map((proj) => (
+                        <option key={proj.id} value={proj.id}>
+                          {proj.title}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
