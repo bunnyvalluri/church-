@@ -265,14 +265,17 @@ export default function RegisterPage() {
           <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
         </div>
 
-        {/* Mobile Header Bar - Unified to prevent overlapping on small mobile viewports */}
-        <div className="absolute top-4 left-0 right-0 px-4 sm:px-6 flex items-center justify-between lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
-            <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-medium sm:inline hidden">{registerT.backToSignIn}</span>
-            <span className="text-xs font-medium sm:hidden inline">Sign in</span>
-          </Link>
+        {/* Language Selection */}
+        <div className="absolute top-6 right-6 z-20">
           <LanguageToggle />
+        </div>
+
+        {/* Mobile Header / Back Button */}
+        <div className="absolute top-6 left-6 lg:hidden z-20">
+          <Link href="/login" className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-white/10 dark:bg-white/5 border border-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full">
+            <ChevronLeft className="w-4 h-4" />
+            <span className="text-xs font-medium">{registerT.backToSignIn}</span>
+          </Link>
         </div>
 
         <div className="w-full max-w-lg mt-12 lg:mt-0 pb-10 lg:pb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
