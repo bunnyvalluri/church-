@@ -544,33 +544,56 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       return;
     }
 
-    const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
-    const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
+    const ua = navigator.userAgent.toLowerCase();
+    const isAndroid = ua.includes("android");
+    const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    // Intent URL: no package → OS shows UPI app chooser
-    // S.browser_fallback_url → Chrome navigates here if no UPI app handles it
-    window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
+    if (isAndroid) {
+      const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+      const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
+      // Intent URL: no package → OS shows UPI app chooser
+      // S.browser_fallback_url → Chrome navigates here if no UPI app handles it
+      window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
+    } else {
+      // On iOS and other platforms, raw upiUri triggers system chooser or default app
+      window.location.href = upiUri;
+    }
   };
 
   /**
-   * Open a SPECIFIC UPI app using Android Intent URL.
-   * S.browser_fallback_url tells Chrome to open Play Store if the app is not installed.
-   * This works on both HTTP and HTTPS (Vercel) pages.
+   * Open a SPECIFIC UPI app. Uses intent URLs on Android and custom schemes on iOS.
    */
-  const handleOpenSpecificApp = (pkg: string) => {
+  const handleOpenSpecificApp = (pkg: string, scheme: string) => {
     if (!upiUri) {
       setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
       return;
     }
 
     const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
-    const playStoreUrl = encodeURIComponent(
-      `https://play.google.com/store/apps/details?id=${pkg}`
-    );
+    const ua = navigator.userAgent.toLowerCase();
+    const isAndroid = ua.includes("android");
+    const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    // Chrome resolves this intent and opens the specific app directly.
-    // If not installed, Chrome follows S.browser_fallback_url → Play Store.
-    window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
+    if (isAndroid) {
+      const playStoreUrl = encodeURIComponent(
+        `https://play.google.com/store/apps/details?id=${pkg}`
+      );
+      // Chrome resolves this intent and opens the specific app directly.
+      // If not installed, Chrome follows S.browser_fallback_url → Play Store.
+      window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
+    } else if (isIOS) {
+      // iOS app custom scheme (e.g. phonepe://pay? or tez://upi/pay?)
+      let targetUrl = scheme;
+      if (!targetUrl.includes("?")) {
+        targetUrl += targetUrl.endsWith("/") ? "?" : "/?";
+      } else if (!targetUrl.endsWith("&") && !targetUrl.endsWith("?")) {
+        targetUrl += "&";
+      }
+      window.location.href = `${targetUrl}${params}`;
+    } else {
+      // General desktop / other fallback
+      window.location.href = `upi://pay?${params}`;
+    }
   };
 
 
@@ -643,7 +666,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </AnimatePresence>
 
       {/* ── HERO SECTION ──────────────────────────────────── */}
-      <section className="relative py-28 overflow-hidden">
+      <section className="relative py-16 sm:py-24 md:py-28 overflow-hidden">
         {/* Layered background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d1261] to-[#0f172a]" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
@@ -680,7 +703,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm mb-8 shadow-xl"
+              className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl"
             >
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               <Heart className="h-4 w-4 text-pink-300" />
@@ -693,7 +716,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white mb-6 tracking-tight font-heading leading-[1.05]"
+              className="text-3xl min-[480px]:text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-4 sm:mb-6 tracking-tight font-heading leading-[1.05]"
             >
               {t.pages.give.title}
             </motion.h1>
@@ -702,7 +725,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl text-white max-w-xl mx-auto leading-relaxed"
+              className="text-sm min-[480px]:text-base sm:text-xl text-white/90 max-w-xl mx-auto leading-relaxed px-2"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -712,7 +735,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.35 }}
-              className="flex flex-wrap items-center justify-center gap-3 mt-10"
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-8 sm:mt-10 px-2"
             >
               {[
                 { icon: <Lock className="w-3.5 h-3.5" />, label: "Bank-Grade Security" },
@@ -839,13 +862,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <IndianRupee className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.presetsTitle}
                               </label>
-                              <div className="grid grid-cols-3 gap-2.5">
+                              <div className="grid grid-cols-2 min-[480px]:grid-cols-3 gap-2 sm:gap-2.5">
                                 {["500", "1000", "2500", "5000", "10000"].map((preset) => (
                                   <button
                                     key={preset}
                                     type="button"
                                     onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-3.5 px-2 rounded-2xl border-2 text-center font-bold text-base transition-all duration-200 overflow-hidden group ${
+                                    className={`relative py-3 px-1.5 sm:py-3.5 sm:px-2 rounded-2xl border-2 text-center font-bold text-sm sm:text-base transition-all duration-200 overflow-hidden group ${
                                       preset === "10000" ? "col-span-1" : ""
                                     } ${
                                       amount === preset && !customAmount
@@ -865,13 +888,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 ))}
                                 {/* Custom amount */}
                                 <div className="relative col-span-1">
-                                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-sm z-10">₹</span>
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm z-10">₹</span>
                                   <input
                                     type="number"
                                     placeholder={t.pages.give.customPlaceholder}
                                     value={customAmount}
                                     onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 font-bold text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
+                                    className={`w-full py-3 pl-7 pr-2.5 rounded-2xl border-2 font-bold text-xs sm:text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
                                       customAmount
                                         ? "border-purple-600 ring-2 ring-purple-600/20"
                                         : "border-gray-200 dark:border-gray-700 focus:border-purple-400 dark:focus:border-purple-600"
@@ -887,7 +910,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <Gift className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.purposeLabel}
                               </label>
-                              <div className="grid sm:grid-cols-2 gap-2.5">
+                              <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-2.5">
                                 {purposes.map((p) => {
                                   const isSelected = selectedPurpose === p.code;
                                   const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
@@ -898,25 +921,25 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-3 w-full group overflow-hidden ${
+                                      className={`relative p-3 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full group overflow-hidden ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 hover:border-gray-300 dark:hover:border-gray-600"
                                       }`}
                                     >
-                                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
+                                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
                                         {icon}
                                       </div>
-                                      <div className="min-w-0">
-                                        <span className={`block font-bold text-sm transition-colors ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
+                                      <div className="min-w-0 flex-1">
+                                        <span className={`block font-bold text-xs sm:text-sm transition-colors ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
-                                        <span className="block text-gray-400 dark:text-gray-500 text-[11px] mt-0.5 leading-snug line-clamp-2">
+                                        <span className="block text-gray-400 dark:text-gray-500 text-[10px] sm:text-[11px] mt-0.5 leading-snug line-clamp-2">
                                           {getLanguagePurposeDesc(p)}
                                         </span>
                                       </div>
                                       {isSelected && (
-                                        <CheckCircle2 className="w-4 h-4 text-purple-600 flex-shrink-0 ml-auto mt-0.5" />
+                                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0 ml-auto mt-0.5" />
                                       )}
                                     </button>
                                   );
@@ -934,7 +957,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <select
                                   value={selectedBranch}
                                   onChange={(e) => setSelectedBranch(e.target.value)}
-                                  className="w-full py-3.5 pl-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-sm"
+                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-xs sm:text-sm"
                                 >
                                   {branches.map((b) => (
                                     <option key={b.id} value={b.id}>⛪ {b.name}</option>
@@ -948,14 +971,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             <div className="space-y-4 pt-2">
                               <div className="flex items-center gap-2">
                                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-                                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                                <span className="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                                   {t.pages.give.contactTitle}
                                 </span>
                                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
                               </div>
 
-                              <div className="grid sm:grid-cols-2 gap-3">
-                                <div className="sm:col-span-2">
+                              <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-3">
+                                <div className="min-[480px]:col-span-2">
                                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
                                     {t.pages.give.fullNameLabel}
                                   </label>
@@ -965,9 +988,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.fullNamePlaceholder}
                                       value={donorName}
                                       onChange={(e) => setDonorName(e.target.value)}
-                                      className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
 
@@ -981,9 +1004,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.emailPlaceholder}
                                       value={donorEmail}
                                       onChange={(e) => setDonorEmail(e.target.value)}
-                                      className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
 
@@ -997,9 +1020,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.phonePlaceholder}
                                       value={donorPhone}
                                       onChange={(e) => setDonorPhone(e.target.value)}
-                                      className="w-full py-3 px-4 pl-11 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
                               </div>
@@ -1010,7 +1033,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               type="button"
                               disabled={actionLoading}
                               onClick={handleGeneratePaymentSession}
-                              className="w-full py-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-60 relative overflow-hidden group"
+                              className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-60 relative overflow-hidden group"
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
                               <span className="relative z-10 flex items-center gap-2.5">
@@ -1210,7 +1233,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center">
                                         {language === 'te' ? '— లేదా నేరుగా తెరవండి —' : language === 'hi' ? '— या सीधे खोलें —' : '— Or open directly in —'}
                                       </p>
-                                      <div className="grid grid-cols-5 gap-1.5">
+                                      <div className="grid grid-cols-5 gap-1 sm:gap-1.5">
                                         {[
                                           { name: "GPay",    initial: "G",  pkg: "com.google.android.apps.nbu.paisa.user", scheme: "tez://upi/pay",      logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",  color: "#4285F4", bg: "#e8f0fe" },
                                           { name: "PhonePe", initial: "P",  pkg: "com.phonepe.app",                        scheme: "phonepe://pay",       logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",               color: "#5f259f", bg: "#f3eaff" },
@@ -1222,12 +1245,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             key={app.name}
                                             type="button"
                                             title={`Pay with ${app.name}`}
-                                            onClick={() => handleOpenSpecificApp(app.pkg)}
-                                            className="flex flex-col items-center justify-center gap-1 py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
+                                            onClick={() => handleOpenSpecificApp(app.pkg, app.scheme)}
+                                            className="flex flex-col items-center justify-center gap-0.5 sm:gap-1 py-1.5 sm:py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
                                           >
                                             <img
                                               src={app.logo}
-                                              className="w-7 h-7 object-contain rounded-md"
+                                              className="w-5 h-5 sm:w-7 sm:h-7 object-contain rounded-md"
                                               alt={app.name}
                                               style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
                                               onError={(e) => {
@@ -1241,13 +1264,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             <span
                                               style={{
                                                 display: "none",
-                                                width: 28,
-                                                height: 28,
-                                                borderRadius: 8,
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: 6,
                                                 backgroundColor: app.bg,
                                                 color: app.color,
                                                 fontWeight: 800,
-                                                fontSize: app.initial.length > 1 ? 9 : 13,
+                                                fontSize: app.initial.length > 1 ? 8 : 11,
                                                 alignItems: "center",
                                                 justifyContent: "center",
                                                 flexShrink: 0,
@@ -1256,7 +1279,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             >
                                               {app.initial}
                                             </span>
-                                            <span className="text-[8px] font-bold tracking-tight leading-tight text-center" style={{ color: app.color }}>{app.name}</span>
+                                            <span className="text-[7px] sm:text-[8px] font-bold tracking-tight leading-tight text-center" style={{ color: app.color }}>{app.name}</span>
                                           </button>
                                         ))}
                                       </div>
@@ -1530,16 +1553,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 shadow-md border border-gray-100 dark:border-gray-800">
                   <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-1">{t.pages.give.helpTitle}</h4>
                   <p className="text-gray-500 dark:text-gray-400 text-xs mb-3 leading-relaxed">{t.pages.give.helpDesc}</p>
-                  <div className="space-y-1.5">
-                    <a href="mailto:kingofchristministries23@gmail.com" className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline">
+                  <div className="space-y-2">
+                    <a href="mailto:kingofchristministries23@gmail.com" className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline break-all">
                       <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                      kingofchristministries23@gmail.com
+                      <span className="truncate">kingofchristministries23@gmail.com</span>
                     </a>
-                    <div className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400 font-semibold">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-purple-600 dark:text-purple-400 font-semibold">
                       <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                      <a href="tel:+919704090069" className="hover:underline">+91 97040 90069</a>
-                      <span className="text-gray-300 dark:text-gray-600">|</span>
-                      <a href="tel:+919640943777" className="hover:underline">+91 96409 43777</a>
+                      <a href="tel:+919704090069" className="hover:underline whitespace-nowrap">+91 97040 90069</a>
+                      <span className="text-gray-300 dark:text-gray-600 hidden min-[360px]:inline">|</span>
+                      <a href="tel:+919640943777" className="hover:underline whitespace-nowrap">+91 96409 43777</a>
                     </div>
                   </div>
                 </div>
@@ -1637,16 +1660,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-5 space-y-3 text-sm border border-gray-100 dark:border-gray-700/50 mt-auto">
+                <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-4 sm:p-5 space-y-2.5 sm:space-y-3 text-xs sm:text-sm border border-gray-100 dark:border-gray-700/50 mt-auto">
                   {[
                     { label: language === 'te' ? 'ఖాతాదారుని పేరు' : language === 'hi' ? 'खाता धारक का नाम' : 'Account Name', value: 'Kingdom of Christ Ministries', mono: false },
                     { label: language === 'te' ? 'ఖాతా సంఖ్య' : language === 'hi' ? 'खाता संख्या' : 'Account Number', value: '12041203940129', mono: true },
                     { label: language === 'te' ? 'IFSC కోడ్' : language === 'hi' ? 'IFSC कोड' : 'IFSC Code', value: 'UTIB0001092', mono: true },
                     { label: language === 'te' ? 'బ్యాంక్ బ్రాంచ్' : language === 'hi' ? 'बैंक स्थान' : 'Bank Location', value: 'Axis Bank, Jeedimetla', mono: false },
                   ].map((row) => (
-                    <div key={row.label} className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700/50 last:border-0 pb-2.5 last:pb-0">
-                      <span className="text-gray-500 dark:text-gray-400 font-medium">{row.label}:</span>
-                      <span className={`font-bold text-gray-900 dark:text-white text-right ml-2 ${row.mono ? "font-mono text-purple-700 dark:text-purple-400" : ""}`}>{row.value}</span>
+                    <div key={row.label} className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-100 dark:border-gray-700/50 last:border-0 pb-2 sm:pb-2.5 last:pb-0">
+                      <span className="text-gray-500 dark:text-gray-400 font-medium text-[11px] sm:text-xs">{row.label}:</span>
+                      <span className={`font-bold text-gray-950 dark:text-white sm:text-right text-xs sm:text-sm ${row.mono ? "font-mono text-purple-700 dark:text-purple-400" : ""}`}>{row.value}</span>
                     </div>
                   ))}
                 </div>
@@ -1678,14 +1701,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
                     {language === 'te' ? 'మా బ్రాంచ్‌లను సందర్శించండి' : language === 'hi' ? 'हमारी शाखाओं का दौरा करें' : 'Visit our branches'}
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-2 sm:gap-3">
                     {branches.map((b) => (
                       <div
                         key={b.id}
-                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm flex flex-col items-center justify-center gap-2 w-full"
+                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-2.5 sm:p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm flex flex-row min-[480px]:flex-col items-center justify-start min-[480px]:justify-center gap-2.5 sm:gap-2 w-full"
                       >
-                        <span className="text-2xl">⛪</span>
-                        <span className="text-[11px] font-bold truncate max-w-full text-gray-800 dark:text-white">{b.name.split(" ")[0]}</span>
+                        <span className="text-xl sm:text-2xl">⛪</span>
+                        <span className="text-xs sm:text-[11px] font-bold truncate max-w-full text-gray-800 dark:text-white">{b.name}</span>
                       </div>
                     ))}
                   </div>
