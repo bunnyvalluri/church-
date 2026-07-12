@@ -7,12 +7,6 @@ const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
 
-console.log("DEBUG LAYOUT IMPORTS:");
-console.log("  Providers:", typeof Providers);
-console.log("  AIChat:", typeof AIChat);
-console.log("  SmoothScroll:", typeof SmoothScroll);
-console.log("  BackToTop:", typeof BackToTop);
-
 const inter  = Inter({
   subsets: ["latin"],
   variable: "--font-inter",

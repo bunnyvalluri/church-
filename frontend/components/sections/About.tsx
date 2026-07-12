@@ -3,6 +3,7 @@
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Church, Heart, Users, BookOpen, MapPin, Phone } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function About() {
   const { t, language } = useLanguage();
@@ -167,10 +168,12 @@ export default function About() {
               {/* Pastor */}
               <div className="flex flex-col items-center text-center mb-12 pb-12 border-b border-slate-200/80 dark:border-white/10">
                 <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
-                  <img
+                  <Image
                     src="/pastor.png"
                     alt="Bishop Kurra Kristhu Raju"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="112px"
+                    className="object-cover"
                   />
                 </div>
                 <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">Led By</p>

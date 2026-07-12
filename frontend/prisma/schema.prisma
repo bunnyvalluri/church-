@@ -100,6 +100,8 @@ model Event {
   eventNotifications    EventNotification[]
   eventReport           EventReport?
 
+  @@index([branchId])
+  @@index([createdById])
   @@map("events")
 }
 
@@ -235,6 +237,7 @@ model Sermon {
   @@index([date])
   @@index([category])
   @@index([slug])
+  @@index([createdById])
   @@map("sermons")
 }
 
@@ -247,6 +250,7 @@ model SermonMedia {
   publicId  String?  @map("public_id")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([sermonId])
   @@map("sermon_media")
 }
 
@@ -258,6 +262,7 @@ model SermonAudio {
   publicId  String?  @map("public_id")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([sermonId])
   @@map("sermon_audio")
 }
 
@@ -269,6 +274,7 @@ model SermonNotes {
   publicId  String?  @map("public_id")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([sermonId])
   @@map("sermon_notes")
 }
 
@@ -284,6 +290,8 @@ model SermonView {
   completionRate Float    @default(0) @map("completion_rate")
   createdAt      DateTime @default(now()) @map("created_at")
 
+  @@index([sermonId])
+  @@index([userId])
   @@map("sermon_views")
 }
 
@@ -310,6 +318,8 @@ model SermonComment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([sermonId])
+  @@index([userId])
   @@map("sermon_comments")
 }
 
@@ -323,6 +333,8 @@ model SermonDownload {
   ipAddress String?  @map("ip_address")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([sermonId])
+  @@index([userId])
   @@map("sermon_downloads")
 }
 
@@ -349,6 +361,8 @@ model PrayerRequest {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Donation {
@@ -377,6 +391,10 @@ model Donation {
   user              User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
   receipt           Receipt?
 
+  @@index([userId])
+  @@index([purposeId])
+  @@index([branchId])
+  @@index([sessionId])
   @@map("donations")
 }
 
@@ -398,6 +416,8 @@ model Testimonial {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Ministry {
@@ -883,6 +903,8 @@ model NotificationLog {
   errorMessage   String?       @map("error_message")
   sentAt         DateTime      @default(now()) @map("sent_at")
 
+  @@index([notificationId])
+  @@index([recipientId])
   @@map("notification_logs")
 }
 
@@ -896,6 +918,7 @@ model AuditLog {
   userAgent String?  @map("user_agent")
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@index([userId])
   @@map("audit_logs")
 }
 
@@ -910,6 +933,7 @@ model DeviceToken {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("device_tokens")
 }
 
@@ -959,6 +983,8 @@ model ChurchService {
   @@index([displayOrder])
   @@index([featured])
   @@index([isDeleted])
+  @@index([branchId])
+  @@index([createdById])
   @@map("church_services")
 }
 
@@ -1001,6 +1027,8 @@ model EventAttendance {
   checkedInBy    String?            @map("checked_in_by")
 
   @@index([eventId])
+  @@index([registrationId])
+  @@index([memberId])
   @@map("event_attendance")
 }
 

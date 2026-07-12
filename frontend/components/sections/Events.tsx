@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Calendar,
@@ -224,10 +225,12 @@ export default function Events() {
                   <div>
                     {/* Image Banner */}
                     <div className="relative h-52 w-full overflow-hidden bg-slate-900">
-                      <img
+                      <Image
                         src={displayImage}
                         alt={event.title}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                       
@@ -423,7 +426,7 @@ export default function Events() {
 
                     {!ticketData.isWaitlisted && ticketData.qrCode && (
                       <div className="p-4 bg-white dark:bg-slate-950 border border-slate-100 dark:border-white/10 rounded-2xl inline-block shadow-sm">
-                        <img src={ticketData.qrCode} alt="Ticket Code" className="w-40 h-40 mx-auto" />
+                        <Image src={ticketData.qrCode} alt="Ticket Code" width={160} height={160} className="mx-auto" />
                         <p className="text-[9px] font-black text-slate-400 tracking-wider mt-2 flex items-center justify-center gap-1">
                           <QrCode className="w-3.5 h-3.5 text-indigo-500" /> TICKET #{ticketData.id.toUpperCase()}
                         </p>

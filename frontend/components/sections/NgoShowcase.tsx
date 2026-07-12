@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
@@ -142,12 +143,13 @@ export default function NgoShowcase() {
                   key={`row1-${idx}`}
                   className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
                 >
-                  <img
+                  <Image
                     src={src}
                     alt={`NGO Outreach ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 256px, 288px"
+                    className="object-cover"
                     loading="lazy"
-                    decoding="async"
                   />
                   <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <span className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -166,12 +168,13 @@ export default function NgoShowcase() {
                   key={`row2-${idx}`}
                   className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
                 >
-                  <img
+                  <Image
                     src={src}
                     alt={`NGO Outreach ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 256px, 288px"
+                    className="object-cover"
                     loading="lazy"
-                    decoding="async"
                   />
                 </div>
               ))}
@@ -186,12 +189,13 @@ export default function NgoShowcase() {
                   key={`row3-${idx}`}
                   className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
                 >
-                  <img
+                  <Image
                     src={src}
                     alt={`NGO Outreach ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 256px, 288px"
+                    className="object-cover"
                     loading="lazy"
-                    decoding="async"
                   />
                 </div>
               ))}
