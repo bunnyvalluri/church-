@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 datasource db {
@@ -33,30 +34,68 @@ model User {
   notificationLogs   NotificationLog[]
   auditLogs          AuditLog[]
   deviceTokens       DeviceToken[]
+  eventAttendance    EventAttendance[]
 
   @@map("members")
 }
 
 model Event {
-  id            String              @id @default(cuid())
-  title         String
-  description   String
-  date          DateTime            @map("event_date")
-  time          String              @map("event_time")
-  location      String
-  image         String?             @map("image_url")
-  category      EventCategory
-  status        EventStatus         @default(DRAFT)
-  isPublished   Boolean             @default(false) @map("is_published")
-  branchId      String?             @map("branch_id")
-  branch        Branch?             @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  createdById   String?             @map("created_by")
-  createdBy     User?               @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt     DateTime            @default(now()) @map("created_at")
-  updatedAt     DateTime            @updatedAt
-  videoUrl      String?             @map("video_url")
-  registrations EventRegistration[]
-  media         EventMedia[]
+  id                    String              @id @default(cuid())
+  title                 String              // Event Name
+  slug                  String              @unique
+  shortDescription      String?             @db.Text
+  description           String              @db.Text // Full Description
+  date                  DateTime            @map("event_date") // Mapped to startDate
+  endDate               DateTime?           @map("end_date")
+  time                  String              @map("event_time") // start time
+  endTime               String?             @map("end_time")
+  timezone              String              @default("Asia/Kolkata")
+  location              String              // Venue
+  googleMapsUrl         String?             @map("google_maps_url")
+  category              String              // Mapped as string (Service, Conference, etc.)
+  organizer             String?
+  speaker               String?
+  pastor                String?
+  contactPerson         String?             @map("contact_person")
+  contactPhone          String?             @map("contact_phone")
+  contactEmail          String?             @map("contact_email")
+  registrationRequired  Boolean             @default(false) @map("registration_required")
+  registrationLimit     Int?                @map("registration_limit")
+  remainingSeats        Int?                @map("remaining_seats")
+  image                 String?             @map("image_url") // cover image URL
+  coverImagePublicId    String?             @map("cover_image_public_id")
+  eventBanner           String?             @map("event_banner")
+  eventBannerPublicId   String?             @map("event_banner_public_id")
+  tags                  String[]            @default([])
+  featured              Boolean             @default(false)
+  priority              Priority            @default(NORMAL)
+  colorTheme            String?             @map("color_theme")
+  status                EventStatus         @default(DRAFT)
+  visibility            EventVisibility     @default(PUBLIC)
+  registrationOpenDate  DateTime?           @map("registration_open_date")
+  registrationCloseDate DateTime?           @map("registration_close_date")
+  seoTitle              String?             @map("seo_title")
+  seoDescription        String?             @map("seo_description")
+  isDeleted             Boolean             @default(false) @map("is_deleted")
+  deletedAt             DateTime?           @map("deleted_at")
+  displayOrder          Int                 @default(0) @map("display_order")
+  isPublished           Boolean             @default(false) @map("is_published")
+  branchId              String?             @map("branch_id")
+  branch                Branch?             @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdById           String?             @map("created_by")
+  createdBy             User?               @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt
+  videoUrl              String?             @map("video_url")
+  registrations         EventRegistration[]
+  media                 EventMedia[]
+  eventImages           EventImage[]
+  eventVideos           EventVideo[]
+  eventAttendance       EventAttendance[]
+  eventNotifications    EventNotification[]
+  eventReport           EventReport?
+
+  @@map("events")
 }
 
 model EventMedia {
@@ -73,15 +112,49 @@ model EventMedia {
   @@index([eventId])
 }
 
+model EventImage {
+  id           String   @id @default(cuid())
+  eventId      String   @map("event_id")
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  url          String   @map("image_url")
+  publicId     String?  @map("public_id")
+  caption      String?
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  @@index([eventId])
+  @@map("event_images")
+}
+
+model EventVideo {
+  id           String   @id @default(cuid())
+  eventId      String   @map("event_id")
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  url          String   @map("video_url")
+  publicId     String?  @map("public_id")
+  caption      String?
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  @@index([eventId])
+  @@map("event_videos")
+}
+
 model EventRegistration {
-  id        String   @id @default(cuid())
-  userId    String
-  eventId   String
-  createdAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String            @id @default(cuid())
+  userId    String?           @map("user_id") // Nullable for guest registrations
+  eventId   String            @map("event_id")
+  name      String            // Registrant name
+  email     String            // Registrant email
+  phone     String?           // Registrant phone
+  qrCode    String?           @map("qr_code") // QR ticket contents
+  status    String            @default("REGISTERED") // REGISTERED, CANCELLED, WAITLISTED
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+  event     Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attendance EventAttendance[]
 
   @@unique([userId, eventId])
+  @@map("event_registrations")
 }
 
 model Sermon {
@@ -299,21 +372,20 @@ enum UserRole {
   MEDIA_TEAM
 }
 
-enum EventCategory {
-  WORSHIP
-  PRAYER
-  YOUTH
-  CHILDREN
-  WOMEN
-  MEN
-  SPECIAL
-}
+
 
 enum EventStatus {
   DRAFT
   PUBLISHED
   CANCELLED
   COMPLETED
+  ARCHIVED
+}
+
+enum EventVisibility {
+  PUBLIC
+  MEMBERS_ONLY
+  PRIVATE
 }
 
 enum PrayerCategory {
@@ -464,22 +536,34 @@ model Branch {
 
 
 model EventReport {
-  id              String        @id @default(cuid())
-  branchId        String
-  branch          Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  title           String
-  description     String        @db.Text
-  attendanceCount Int
-  offeringAmount  Float
-  reportDate      DateTime
-  gpsLocation     String?       // Latitude, Longitude string (e.g. "17.4947, 78.4002")
-  volunteerNames  String[]      // List of names of attending volunteers
-  status          String        @default("PENDING") // PENDING, APPROVED, REJECTED
-  createdById     String
-  createdBy       User          @relation(fields: [createdById], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  media           MediaReport[]
+  id                  String        @id @default(cuid())
+  branchId            String
+  branch              Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  eventId             String?       @unique @map("event_id")
+  event               Event?        @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  title               String
+  description         String        @db.Text
+  attendanceCount     Int           @map("attendance_count")
+  offeringAmount      Float         @map("offering_amount")
+  visitorsCount       Int           @default(0) @map("visitors_count")
+  newMembersCount     Int           @default(0) @map("new_members_count")
+  prayerRequestsCount Int           @default(0) @map("prayer_requests_count")
+  expenses            Float         @default(0)
+  comments            String?       @db.Text
+  summary             String?       @db.Text
+  photos              String[]      @default([])
+  videos              String[]      @default([])
+  reportDate          DateTime      @map("report_date")
+  gpsLocation         String?       @map("gps_location") // Latitude, Longitude string (e.g. "17.4947, 78.4002")
+  volunteerNames      String[]      @map("volunteer_names") // List of names of attending volunteers
+  status              String        @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdById         String        @map("created_by")
+  createdBy           User          @relation(fields: [createdById], references: [id])
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  media               MediaReport[]
+
+  @@map("event_reports")
 }
 
 model MediaReport {
@@ -730,5 +814,48 @@ enum ServiceFreq {
   MONTHLY
   DAILY
   SPECIAL
+}
+
+model EventCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("event_categories")
+}
+
+model EventAttendance {
+  id             String             @id @default(cuid())
+  eventId        String             @map("event_id")
+  event          Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId String?            @map("registration_id")
+  registration   EventRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  memberId       String?            @map("member_id")
+  member         User?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  name           String
+  email          String?
+  attendedAt     DateTime           @default(now()) @map("attended_at")
+  checkedInBy    String?            @map("checked_in_by")
+
+  @@index([eventId])
+  @@map("event_attendance")
+}
+
+model EventNotification {
+  id        String   @id @default(cuid())
+  eventId   String   @map("event_id")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  type      String   // NEW_EVENT, EVENT_UPDATED, EVENT_CANCELLED, REMINDER, STARTING_SOON
+  title     String
+  content   String
+  sentAt    DateTime @default(now()) @map("sent_at")
+  channels  String[] // ["EMAIL", "PUSH", "SMS"]
+
+  @@index([eventId])
+  @@map("event_notifications")
 }
 

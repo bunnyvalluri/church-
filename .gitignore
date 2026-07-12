@@ -44,6 +44,7 @@ frontend/next-env.d.ts
 # prisma
 /prisma/migrations
 backend/prisma/migrations
+frontend/prisma/generated/
 
 # local fallbacks
 /prisma/fallback_*.json
@@ -64,3 +65,6 @@ eslint-report*.txt
 **/*.avi
 **/*.mov
 **/*.wmv
+
+# temp/test scripts
+frontend/prisma/test-service.js

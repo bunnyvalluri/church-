@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../prisma/generated/client';
 
 // ── Global type extension for singleton pattern ───────────────────────────────
 const globalForPrisma = globalThis as unknown as {

@@ -75,6 +75,7 @@ export async function PUT(req: Request) {
         const newEvent = await prisma.event.create({
           data: {
             title: updatedReport.title,
+            slug: `report-${updatedReport.id}`,
             description: updatedReport.description,
             date: updatedReport.reportDate,
             time: "10:00 AM", // default church service time

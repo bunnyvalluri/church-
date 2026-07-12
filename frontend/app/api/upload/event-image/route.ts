@@ -20,9 +20,6 @@ export async function POST(req: Request) {
     if (!file) {
       return NextResponse.json({ error: "No file provided in request." }, { status: 400 });
     }
-    if (!eventId) {
-      return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
-    }
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
@@ -44,37 +41,40 @@ export async function POST(req: Request) {
     // Phase 5: Automated image optimization and Cloudinary upload
     const uploadResult = await uploadBufferToCloudinary(buffer, targetFolder, "image");
 
-    // Phase 7: Save in Neon PostgreSQL database
-    const eventMedia = await prisma.eventMedia.create({
-      data: {
-        eventId,
-        imageUrl: uploadResult.secure_url,
-        publicId: uploadResult.public_id,
-        caption: caption || file.name,
-        uploadedById: auth.uid,
-      },
-    });
-
-    // Phase 10: Trigger Socket.io real-time popup
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "media-uploaded",
-          payload: {
-            id: eventMedia.id,
-            eventId,
-            type: "IMAGE",
-            url: uploadResult.secure_url,
-            publicId: uploadResult.public_id,
-            uploadedBy: auth.name || "Event Manager",
-            timestamp: new Date(),
-          },
-        }),
+    let eventMedia = null;
+    if (eventId) {
+      // Phase 7: Save in Neon PostgreSQL database if eventId is provided
+      eventMedia = await prisma.eventMedia.create({
+        data: {
+          eventId,
+          imageUrl: uploadResult.secure_url,
+          publicId: uploadResult.public_id,
+          caption: caption || file.name,
+          uploadedById: auth.uid,
+        },
       });
-    } catch {
-      // Socket server optional failover
+
+      // Phase 10: Trigger Socket.io real-time popup
+      try {
+        await fetch("http://localhost:3001/api/trigger-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "media-uploaded",
+            payload: {
+              id: eventMedia.id,
+              eventId,
+              type: "IMAGE",
+              url: uploadResult.secure_url,
+              publicId: uploadResult.public_id,
+              uploadedBy: auth.name || "Event Manager",
+              timestamp: new Date(),
+            },
+          }),
+        });
+      } catch {
+        // Socket server optional failover
+      }
     }
 
     return NextResponse.json({

@@ -38,8 +38,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User ID and Event ID are required' }, { status: 400 });
     }
 
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
     const registration = await prisma.eventRegistration.create({
-      data: { userId, eventId },
+      data: {
+        userId,
+        eventId,
+        name: targetUser.name || "Attendee",
+        email: targetUser.email || "attendee@kcm.org",
+      },
     });
 
     return NextResponse.json({ success: true, registration });

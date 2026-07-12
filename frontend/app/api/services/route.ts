@@ -5,6 +5,7 @@ import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // ── Validation Schema ────────────────────────────────────────────────────────────
 const CreateServiceSchema = z.object({
@@ -55,7 +56,7 @@ async function ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<s
   let slug = baseSlug;
   let counter = 1;
   while (true) {
-    const existing = await (prisma as any).churchService.findFirst({
+    const existing = await prisma.churchService.findFirst({
       where: { slug, ...(excludeId ? { id: { not: excludeId } } : {}) },
     });
     if (!existing) return slug;
@@ -97,7 +98,7 @@ export async function GET(req: Request) {
     }
 
     const [services, total] = await Promise.all([
-      (prisma as any).churchService.findMany({
+      prisma.churchService.findMany({
         where,
         orderBy: [{ displayOrder: "asc" }, { createdAt: "desc" }],
         take: limit,
@@ -106,7 +107,7 @@ export async function GET(req: Request) {
           branch: { select: { id: true, name: true } },
         },
       }),
-      (prisma as any).churchService.count({ where }),
+      prisma.churchService.count({ where }),
     ]);
 
     return NextResponse.json({ success: true, services, total });
@@ -151,7 +152,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const service = await (prisma as any).churchService.create({
+    const service = await prisma.churchService.create({
       data: {
         ...data,
         slug,
@@ -184,7 +185,7 @@ export async function POST(req: Request) {
 
     // Audit log
     try {
-      await (prisma as any).auditLog.create({
+      await prisma.auditLog.create({
         data: {
           userId: auth.uid,
           action: "SERVICE_CREATED",

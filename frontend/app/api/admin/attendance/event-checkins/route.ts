@@ -19,7 +19,9 @@ export async function GET(req: Request) {
       if (!checkins[reg.eventId]) {
         checkins[reg.eventId] = [];
       }
-      checkins[reg.eventId].push(reg.userId);
+      if (reg.userId) {
+        checkins[reg.eventId].push(reg.userId);
+      }
     }
 
     return NextResponse.json({ success: true, checkins });
@@ -55,10 +57,16 @@ export async function POST(req: Request) {
       });
     } else {
       // Toggle on: create check-in/registration
+      const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+      if (!targetUser) {
+        return NextResponse.json({ error: "User not found." }, { status: 404 });
+      }
       await prisma.eventRegistration.create({
         data: {
           eventId,
           userId,
+          name: targetUser.name || "Attendee",
+          email: targetUser.email || "attendee@kcm.org",
         },
       });
     }

@@ -120,7 +120,7 @@ const BLANK_FORM: Partial<ChurchService> = {
   serviceType: "WORSHIP", icon: "Heart", iconColor: "#ffffff",
   cardColor: "from-violet-500 to-purple-600", badgeColor: "from-violet-500 to-purple-600",
   serviceDay: "", frequency: "WEEKLY", occurrence: "",
-  startTime: "", endTime: "", timezone: "Asia/Kolkata",
+  startTime: "", endTime: "",
   location: "", googleMapsUrl: "", speakerName: "",
   capacity: undefined, registrationEnabled: false, registrationLimit: undefined,
   featured: false, displayOrder: 0, status: "DRAFT",
@@ -751,11 +751,6 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                     </FormField>
                     <FormField label="End Time">
                       <input type="time" value={formData.endTime || ""} onChange={e => setFormData(p => ({...p, endTime: e.target.value}))} className={inputCls()} />
-                    </FormField>
-                    <FormField label="Timezone">
-                      <select value={formData.timezone || "Asia/Kolkata"} onChange={e => setFormData(p => ({...p, timezone: e.target.value}))} className={inputCls()}>
-                        {["Asia/Kolkata","UTC","America/New_York","Europe/London"].map(tz => <option key={tz} value={tz}>{tz}</option>)}
-                      </select>
                     </FormField>
                   </FormRow>
                 </FormSection>

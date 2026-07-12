@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     const event = await prisma.event.create({
       data: {
         title: report.title,
+        slug: `publish-${report.id}`,
         description: report.description,
         date: report.reportDate,
         time: "10:00 AM", // default time

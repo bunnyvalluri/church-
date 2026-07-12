@@ -12,8 +12,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
     const eventData = {
       title,
+      slug,
       description,
       date: new Date(date).toISOString(),
       time,

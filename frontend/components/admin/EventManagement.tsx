@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 import {
   PlusCircle,
   Calendar,
@@ -12,23 +12,45 @@ import {
   BarChart3,
   CheckCircle2,
   Clock,
-  Globe,
   Loader2,
   Upload,
   X,
-  ChevronDown,
   Sparkles,
   AlertCircle,
   Trash2,
   Edit3,
   Image as ImageIcon,
   Activity,
+  Copy,
+  Archive,
+  RotateCcw,
+  UserCheck,
+  FileCheck,
+  ChevronUp,
+  ChevronDown,
+  User,
+  Phone,
+  Mail,
+  QrCode,
+  DollarSign,
+  PenTool,
 } from "lucide-react";
-import EventCard, { EventCardData } from "@/components/EventCard";
+import EventCard from "@/components/EventCard";
 import EventForm, { EventFormData } from "@/components/EventForm";
-import UploadSection from "@/components/UploadSection";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
 import { useAuth } from "@/components/providers/AuthProvider";
+import {
+  useEvents,
+  useCreateEvent,
+  useUpdateEvent,
+  useDeleteEvent,
+  useRestoreEvent,
+  useDuplicateEvent,
+  useReorderEvents,
+  useCheckInAttendee,
+  useSubmitEventReport,
+  useUpdateEventStatus,
+} from "@/hooks/useEvents";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Branch {
@@ -36,18 +58,22 @@ interface Branch {
   name: string;
 }
 
-type FilterStatus = "ALL" | "PUBLISHED" | "DRAFT" | "CANCELLED" | "COMPLETED";
+type TabType = "list" | "reorder" | "checkin" | "reports" | "trash";
 
-// ── Modal types ────────────────────────────────────────────────────────────────
-type ModalType = "create" | "edit" | "upload" | "delete" | null;
-
-// ── Stats ──────────────────────────────────────────────────────────────────────
-interface Stats {
-  total: number;
-  published: number;
-  draft: number;
-  upcoming: number;
-}
+const CATEGORIES = [
+  { value: "service", label: "Service", emoji: "⛪" },
+  { value: "conference", label: "Conference", emoji: "🎤" },
+  { value: "youth", label: "Youth", emoji: "⚡" },
+  { value: "prayer", label: "Prayer", emoji: "🙏" },
+  { value: "womens-fellowship", label: "Women's Fellowship", emoji: "🌸" },
+  { value: "mens-fellowship", label: "Men's Fellowship", emoji: "💪" },
+  { value: "children", label: "Children", emoji: "🌟" },
+  { value: "bible-study", label: "Bible Study", emoji: "📖" },
+  { value: "outreach", label: "Outreach", emoji: "❤️" },
+  { value: "ngo", label: "NGO", emoji: "🤝" },
+  { value: "camp", label: "Camp", emoji: "⛺" },
+  { value: "special-meeting", label: "Special Meeting", emoji: "✨" },
+];
 
 export default function EventManagement() {
   const { user, getIdToken } = useAuth();
@@ -55,23 +81,40 @@ export default function EventManagement() {
   const canManage = ["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER"].includes(role);
   const canDelete = ["SUPER_ADMIN", "ADMIN"].includes(role);
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  const [events, setEvents] = useState<EventCardData[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // ── States ──────────────────────────────────────────────────────────────────
+  const [activeTab, setActiveTab] = useState<TabType>("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [branchFilter, setBranchFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState<FilterStatus>("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
 
-  // ── Modal state ────────────────────────────────────────────────────────────
-  const [modal, setModal] = useState<ModalType>(null);
-  const [selectedEvent, setSelectedEvent] = useState<EventCardData | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
+  // Modals
+  const [modal, setModal] = useState<"create" | "edit" | "upload" | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-  // ── Socket & Notifications ─────────────────────────────────────────────────
-  const socketRef = useRef<Socket | null>(null);
+  // Check-In Form
+  const [checkinEventId, setCheckinEventId] = useState("");
+  const [ticketCode, setTicketCode] = useState("");
+  const [checkinMessage, setCheckinMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // Completion Report Form
+  const [reportEventId, setReportEventId] = useState("");
+  const [attendanceCount, setAttendanceCount] = useState(0);
+  const [offeringAmount, setOfferingAmount] = useState(0);
+  const [visitorsCount, setVisitorsCount] = useState(0);
+  const [newMembersCount, setNewMembersCount] = useState(0);
+  const [prayerRequestsCount, setPrayerRequestsCount] = useState(0);
+  const [expenses, setExpenses] = useState(0);
+  const [comments, setComments] = useState("");
+  const [summary, setSummary] = useState("");
+  const [reportMessage, setReportMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // Branches
+  const [branches, setBranches] = useState<Branch[]>([]);
+
+  // Socket Feed
   const [notification, setNotification] = useState<NotificationData | null>(null);
   const [liveActivity, setLiveActivity] = useState<
     { id: string; text: string; time: string; type: string }[]
@@ -79,249 +122,767 @@ export default function EventManagement() {
     { id: "sys-1", text: "Event management portal initialized.", time: "Just now", type: "sys" },
   ]);
 
-  // ── Upload state ───────────────────────────────────────────────────────────
-  const uploadSectionRef = useRef<{
-    uploadAll: (getIdToken: () => Promise<string | null>) => void;
-  } | null>(null);
-
-  // ── Computed stats ─────────────────────────────────────────────────────────
-  const stats: Stats = {
-    total: events.length,
-    published: events.filter((e) => e.status === "PUBLISHED").length,
-    draft: events.filter((e) => e.status === "DRAFT").length,
-    upcoming: events.filter((e) => new Date(e.date) > new Date() && e.status === "PUBLISHED").length,
-  };
-
-  // ── Filtered events ────────────────────────────────────────────────────────
-  const filteredEvents = events.filter((e) => {
-    const matchSearch =
-      searchQuery === "" ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchBranch = branchFilter === "ALL" || e.branch?.id === branchFilter;
-    const matchStatus = statusFilter === "ALL" || e.status === statusFilter;
-    const matchCat = categoryFilter === "ALL" || e.category === categoryFilter;
-    return matchSearch && matchBranch && matchStatus && matchCat;
+  // ── React Query Queries & Mutations ───────────────────────────────────────
+  const { data: eventsData, isLoading, refetch } = useEvents({
+    branchId: branchFilter,
+    category: categoryFilter,
+    status: statusFilter,
+    search: searchQuery,
+    cursor,
+    limit: 25,
   });
 
-  // ── Fetch events ───────────────────────────────────────────────────────────
-  const loadEvents = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const token = await getIdToken();
-      const query = new URLSearchParams();
-      if (statusFilter !== "ALL") query.set("status", statusFilter);
-      else query.set("status", "ALL"); // admin: see all statuses
+  // Query to get all events for reordering (draft + published, non-deleted)
+  const { data: allEventsData } = useEvents({
+    status: "ALL",
+    limit: 100,
+  });
 
-      const res = await fetch(`/api/events?${query}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) setEvents(data.events);
-      }
-    } catch (err) {
-      console.error("[EventMgmt] Failed to load events:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [getIdToken, statusFilter]);
+  const createMutation = useCreateEvent();
+  const updateMutation = useUpdateEvent();
+  const deleteMutation = useDeleteEvent();
+  const restoreMutation = useRestoreEvent();
+  const duplicateMutation = useDuplicateEvent();
+  const reorderMutation = useReorderEvents();
+  const checkinMutation = useCheckInAttendee();
+  const reportMutation = useSubmitEventReport();
+  const statusMutation = useUpdateEventStatus();
 
-  // ── Fetch branches ─────────────────────────────────────────────────────────
-  const loadBranches = useCallback(async () => {
-    try {
-      const res = await fetch("/api/field-volunteer/branches");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) setBranches(data.branches);
-      }
-    } catch { /* fail silently */ }
+  const events = eventsData?.events || [];
+  const nextCursor = eventsData?.nextCursor;
+
+  // Compute metrics
+  const stats = {
+    total: allEventsData?.events?.length || 0,
+    published: allEventsData?.events?.filter((e: any) => e.status === "PUBLISHED").length || 0,
+    drafts: allEventsData?.events?.filter((e: any) => e.status === "DRAFT").length || 0,
+    upcoming: allEventsData?.events?.filter((e: any) => new Date(e.date) > new Date() && e.status === "PUBLISHED").length || 0,
+  };
+
+  // Fetch branches
+  useEffect(() => {
+    const loadBranches = async () => {
+      try {
+        const res = await fetch("/api/field-volunteer/branches");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) setBranches(data.branches);
+        }
+      } catch { /* fail silently */ }
+    };
+    loadBranches();
   }, []);
 
-  useEffect(() => {
-    loadEvents();
-    loadBranches();
-  }, [loadEvents, loadBranches]);
-
-  // ── Socket.io ──────────────────────────────────────────────────────────────
+  // ── Socket.io Listeners ────────────────────────────────────────────────────
   useEffect(() => {
     const socket = io("http://localhost:3001");
-    socketRef.current = socket;
 
-    socket.on("new-event", (payload: any) => {
+    socket.on("event.created", (payload: any) => {
       setNotification({
         id: String(Date.now()),
         type: "new-event",
-        title: `New Event: ${payload.title}`,
-        description: `${payload.location} · ${new Date(payload.date).toLocaleDateString("en-IN")}`,
+        title: `New Event Published`,
+        description: `"${payload.title}" is scheduled at ${payload.location}.`,
         timestamp: new Date(),
         icon: "event",
       });
       setLiveActivity((prev) => [
         {
           id: String(Date.now()),
-          text: `New event "${payload.title}" published by ${payload.createdBy || "admin"}.`,
+          text: `New event "${payload.title}" created.`,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           type: "event",
         },
         ...prev.slice(0, 19),
       ]);
-      loadEvents();
+      refetch();
     });
 
-    socket.on("event-images-uploaded", (payload: any) => {
-      setNotification({
-        id: String(Date.now()),
-        type: "event-images-uploaded",
-        title: `${payload.imagesCount} Photos Uploaded`,
-        description: `Event: ${payload.eventTitle} · by ${payload.uploadedBy}`,
-        timestamp: new Date(),
-        icon: "upload",
-      });
+    socket.on("event.updated", (payload: any) => {
       setLiveActivity((prev) => [
         {
           id: String(Date.now()),
-          text: `${payload.imagesCount} photo(s) uploaded to "${payload.eventTitle}".`,
+          text: `Event "${payload.title}" updated (Status: ${payload.status}).`,
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          type: "event",
+        },
+        ...prev.slice(0, 19),
+      ]);
+      refetch();
+    });
+
+    socket.on("event.registration.created", (payload: any) => {
+      setLiveActivity((prev) => [
+        {
+          id: String(Date.now()),
+          text: `Member "${payload.name}" registered for ticket (${payload.status}).`,
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          type: "event",
+        },
+        ...prev.slice(0, 19),
+      ]);
+      refetch();
+    });
+
+    socket.on("event.attendance.checkin", (payload: any) => {
+      setLiveActivity((prev) => [
+        {
+          id: String(Date.now()),
+          text: `Attendee "${payload.name}" checked in successfully.`,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           type: "upload",
         },
         ...prev.slice(0, 19),
       ]);
-      loadEvents();
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [loadEvents]);
+  }, [refetch]);
 
-  // ── Create event ───────────────────────────────────────────────────────────
-  const handleCreateEvent = async (data: EventFormData) => {
-    const token = await getIdToken();
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Failed to create event.");
-    }
-    await loadEvents();
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleCreate = async (data: EventFormData) => {
+    await createMutation.mutateAsync(data);
     setModal(null);
   };
 
-  // ── Update event ───────────────────────────────────────────────────────────
-  const handleUpdateEvent = async (data: EventFormData) => {
+  const handleUpdate = async (data: EventFormData) => {
     if (!selectedEvent) return;
-    const token = await getIdToken();
-    const res = await fetch(`/api/events/${selectedEvent.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Failed to update event.");
-    }
-    await loadEvents();
+    await updateMutation.mutateAsync({ id: selectedEvent.id, data });
     setModal(null);
     setSelectedEvent(null);
   };
 
-  // ── Delete event ───────────────────────────────────────────────────────────
-  const handleDeleteEvent = async (id: string) => {
-    setActionLoading(true);
-    try {
-      const token = await getIdToken();
-      const res = await fetch(`/api/events/${id}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+  const handleDelete = async (id: string) => {
+    await deleteMutation.mutateAsync(id);
+    setDeleteConfirmId(null);
+  };
 
-      if (res.ok) {
-        setEvents((prev) => prev.filter((e) => e.id !== id));
-        setDeleteConfirmId(null);
-        setModal(null);
-      }
-    } catch (err) {
-      console.error("[EventMgmt] Delete error:", err);
-    } finally {
-      setActionLoading(false);
+  const handleDuplicate = async (id: string) => {
+    await duplicateMutation.mutateAsync(id);
+    setActiveTab("list");
+  };
+
+  const handleRestore = async (id: string) => {
+    await restoreMutation.mutateAsync(id);
+    refetch();
+  };
+
+  const handleStatusChange = async (id: string, status: string) => {
+    await statusMutation.mutateAsync({ id, status });
+  };
+
+  // UP/DOWN Reordering panel
+  const handleMoveOrder = async (index: number, direction: "up" | "down") => {
+    const list = [...(allEventsData?.events || [])];
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === list.length - 1) return;
+
+    const swapTarget = direction === "up" ? index - 1 : index + 1;
+    const temp = list[index];
+    list[index] = list[swapTarget];
+    list[swapTarget] = temp;
+
+    const ids = list.map((e: any) => e.id);
+    await reorderMutation.mutateAsync(ids);
+  };
+
+  // QR check-in
+  const handleCheckin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCheckinMessage(null);
+    try {
+      const res = await checkinMutation.mutateAsync({
+        eventId: checkinEventId,
+        ticketCode,
+      });
+      setCheckinMessage({
+        text: `Checked in successfully: ${res.registration?.name}! Ticket status: ${res.registration?.status}`,
+        type: "success",
+      });
+      setTicketCode("");
+    } catch (err: any) {
+      setCheckinMessage({ text: err.message || "Failed to check in.", type: "error" });
     }
   };
 
-  // ── Upload images ──────────────────────────────────────────────────────────
-  const handleUploadImages = async (eventId: string) => {
-    setSelectedEvent(events.find((e) => e.id === eventId) || null);
-    setModal("upload");
+  // Submit Post-Event Completion Report
+  const handleReportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setReportMessage(null);
+    try {
+      await reportMutation.mutateAsync({
+        eventId: reportEventId,
+        data: {
+          attendanceCount,
+          offeringAmount,
+          visitorsCount,
+          newMembersCount,
+          prayerRequestsCount,
+          expenses,
+          comments,
+          summary,
+        },
+      });
+      setReportMessage({
+        text: "Post-event report submitted successfully! Event status set to COMPLETED.",
+        type: "success",
+      });
+      // Reset form
+      setAttendanceCount(0);
+      setOfferingAmount(0);
+      setVisitorsCount(0);
+      setNewMembersCount(0);
+      setPrayerRequestsCount(0);
+      setExpenses(0);
+      setComments("");
+      setSummary("");
+    } catch (err: any) {
+      setReportMessage({ text: err.message || "Failed to submit report.", type: "error" });
+    }
   };
 
-  // ── Upload trigger (wired from UploadSection custom event) ─────────────────
-  useEffect(() => {
-    const handler = async (e: any) => {
-      if (e.detail?.eventId && modal === "upload") {
-        const uploadSection = document.querySelector<any>("[data-upload-section]");
-        // We trigger by calling the API directly from here with auth
-        const files = document.querySelectorAll<HTMLInputElement>('input[type="file"]');
-        // The UploadSection handles this via its own uploadAll function
-      }
-    };
-    document.addEventListener("upload-request", handler);
-    return () => document.removeEventListener("upload-request", handler);
-  }, [modal]);
-
-  const handleUploadComplete = (count: number) => {
-    setLiveActivity((prev) => [
-      {
-        id: String(Date.now()),
-        text: `${count} photo(s) uploaded to "${selectedEvent?.title}".`,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        type: "upload",
-      },
-      ...prev,
-    ]);
-    loadEvents();
-  };
-
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Notification popup */}
-      <NotificationPopup
-        notification={notification}
-        onDismiss={() => setNotification(null)}
-      />
+      <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
 
-      {/* Modal Overlays */}
+      {/* ── Welcome Banner ───────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-955 rounded-3xl p-6 text-white border border-white/[0.08] shadow-xl group">
+        <div className="absolute -right-8 -top-8 w-48 h-48 rounded-full bg-white/5 group-hover:scale-110 transition-transform duration-500" />
+        <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+          <Sparkles className="w-36 h-36" />
+        </div>
+
+        <div className="relative space-y-2 max-w-xl">
+          <span className="inline-flex px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black uppercase tracking-widest text-indigo-200">
+            Principal Admin Portal
+          </span>
+          <h2 className="text-2xl font-black tracking-tight mt-1">
+            Event Management Suite
+          </h2>
+          <p className="text-xs text-indigo-200/80 leading-relaxed">
+            Fully dynamic CRUD, reordering, QR check-ins, and post-event reports synced instantly via Socket.IO to the public homepage.
+          </p>
+        </div>
+
+        {canManage && (
+          <div className="flex flex-wrap gap-3 mt-5">
+            <button
+              onClick={() => setModal("create")}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white text-indigo-950 hover:bg-indigo-50 rounded-xl text-xs font-bold transition-all shadow-sm hover:scale-[1.02]"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Create Event
+            </button>
+            <button
+              onClick={() => refetch()}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/15 border border-white/5 rounded-xl text-xs font-bold transition-all"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Sync API
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── Stats Panels ────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Active & Draft", value: stats.total, color: "text-slate-900 dark:text-white", dot: "bg-slate-400" },
+          { label: "Published Live", value: stats.published, color: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
+          { label: "Drafts Queue", value: stats.drafts, color: "text-amber-500 dark:text-amber-400", dot: "bg-amber-400" },
+          { label: "Future Live", value: stats.upcoming, color: "text-indigo-600 dark:text-indigo-400", dot: "bg-indigo-500" },
+        ].map((s) => (
+          <div key={s.label} className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{s.label}</span>
+            </div>
+            <p className={`text-2xl font-black tracking-tight ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Tabbed View Selection ────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-1">
+        {[
+          { id: "list", label: "Events Catalog", icon: Calendar },
+          { id: "reorder", label: "Custom Layout Order", icon: ChevronUp },
+          { id: "checkin", label: "Attendee Check-in", icon: UserCheck },
+          { id: "reports", label: "Completion Reports", icon: FileCheck },
+          { id: "trash", label: "Trash & Archive", icon: Trash2 },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as TabType)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 -mb-[2px] ${
+                isActive
+                  ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                  : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Content Grid ────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        {/* Main Work Area (3 Cols) */}
+        <div className="lg:col-span-3 space-y-6">
+
+          {/* TAB 1: Catalog List */}
+          {activeTab === "list" && (
+            <div className="space-y-6">
+              {/* Filter controls */}
+              <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-4 shadow-sm flex flex-col md:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCursor(undefined); }}
+                    placeholder="Search title, pastor, speaker or branch..."
+                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all"
+                  />
+                </div>
+
+                <select
+                  value={statusFilter}
+                  onChange={(e) => { setStatusFilter(e.target.value); setCursor(undefined); }}
+                  className="h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="PUBLISHED">Published</option>
+                  <option value="DRAFT">Draft</option>
+                  <option value="CANCELLED">Cancelled</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ARCHIVED">Archived</option>
+                </select>
+
+                <select
+                  value={branchFilter}
+                  onChange={(e) => { setBranchFilter(e.target.value); setCursor(undefined); }}
+                  className="h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
+                >
+                  <option value="ALL">All Branches</option>
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => { setCategoryFilter(e.target.value); setCursor(undefined); }}
+                  className="h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
+                >
+                  <option value="ALL">All Categories</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Grid */}
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-pulse">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-72 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl" />
+                  ))}
+                </div>
+              ) : events.length === 0 ? (
+                <div className="py-20 text-center bg-white dark:bg-slate-900/40 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                  <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No events found</h4>
+                  <p className="text-xs text-slate-400 mt-1">Try relaxing filters or search terms.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {events.map((event: any) => (
+                    <div key={event.id} className="relative group bg-white dark:bg-slate-900/40 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4 hover:shadow-md transition-all flex flex-col justify-between">
+                      <div>
+                        {/* Status Label */}
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                            event.status === "PUBLISHED" ? "bg-emerald-500/10 text-emerald-500" :
+                            event.status === "DRAFT" ? "bg-amber-500/10 text-amber-500" :
+                            "bg-slate-500/10 text-slate-500"
+                          }`}>
+                            {event.status}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-bold">{event.branch?.name || "General"}</span>
+                        </div>
+                        {event.image && (
+                          <img src={event.image} alt={event.title} className="h-32 w-full object-cover rounded-2xl mb-3 border border-slate-100 dark:border-white/5" />
+                        )}
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white line-clamp-1">{event.title}</h3>
+                        <p className="text-[11px] text-slate-400 line-clamp-2 mt-1">{event.shortDescription || event.description}</p>
+
+                        <div className="text-[11px] text-slate-500 space-y-1 mt-3">
+                          <p>📅 {new Date(event.date).toLocaleDateString("en-IN")} at {event.time}</p>
+                          <p>📍 {event.location}</p>
+                        </div>
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex flex-wrap gap-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                        <button
+                          onClick={() => { setSelectedEvent(event); setModal("edit"); }}
+                          className="flex-1 h-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 hover:bg-slate-100 transition-all"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDuplicate(event.id)}
+                          className="flex-1 h-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 hover:bg-slate-100 transition-all"
+                        >
+                          <Copy className="w-3.5 h-3.5" /> Clone
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(event.id, event.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED")}
+                          className="flex-1 h-8 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black flex items-center justify-center gap-1 transition-all"
+                        >
+                          {event.status === "PUBLISHED" ? <Archive className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                          {event.status === "PUBLISHED" ? "Unpublish" : "Publish"}
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirmId(event.id)}
+                          className="h-8 px-2.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold flex items-center justify-center transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Cursor Pagination triggers */}
+              {nextCursor && (
+                <div className="flex justify-center pt-4">
+                  <button
+                    onClick={() => setCursor(nextCursor)}
+                    className="h-10 px-5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                  >
+                    Load More Events
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: Custom Layout Reordering */}
+          {activeTab === "reorder" && (
+            <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <ChevronUp className="w-4 h-4 text-indigo-500" /> Landing Page Presentation Order
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Use Up and Down controls to sequence events. The order maps to display priority on the landing page.</p>
+              </div>
+
+              <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+                {(allEventsData?.events || []).map((e: any, index: number) => (
+                  <div key={e.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-white/10 rounded-2xl">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-black text-slate-400">#{index + 1}</span>
+                      {e.image && <img src={e.image} className="w-10 h-10 object-cover rounded-lg" />}
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-white leading-none">{e.title}</h4>
+                        <p className="text-[9px] text-slate-400 mt-1">📅 {new Date(e.date).toLocaleDateString("en-IN")} · {e.location}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleMoveOrder(index, "up")}
+                        disabled={index === 0}
+                        className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-white disabled:opacity-30"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleMoveOrder(index, "down")}
+                        disabled={index === (allEventsData?.events || []).length - 1}
+                        className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-white disabled:opacity-30"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: Attendee Check-In */}
+          {activeTab === "checkin" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Scan input */}
+              <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <QrCode className="w-4 h-4 text-indigo-500" /> Scanning & Check-in Panel
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Simulate ticket scanning by entering a Registration ID or Code (e.g. `KCM-TICKET-[id]`).</p>
+                </div>
+
+                <form onSubmit={handleCheckin} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Select Event *</label>
+                    <select
+                      value={checkinEventId}
+                      onChange={(e) => setCheckinEventId(e.target.value)}
+                      className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+                    >
+                      <option value="">-- Choose Event --</option>
+                      {(allEventsData?.events || []).filter((e: any) => e.status === "PUBLISHED").map((e: any) => (
+                        <option key={e.id} value={e.id}>{e.title}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Ticket QR Data or Registration ID *</label>
+                    <input
+                      value={ticketCode}
+                      onChange={(e) => setTicketCode(e.target.value)}
+                      placeholder="e.g. clrgwq... or KCM-TICKET-clrg..."
+                      className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-800 dark:text-white focus:outline-none"
+                    />
+                  </div>
+
+                  {checkinMessage && (
+                    <div className={`p-3.5 rounded-xl text-xs flex items-center gap-2 border ${
+                      checkinMessage.type === "success"
+                        ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-200/50"
+                        : "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200/50"
+                    }`}>
+                      {checkinMessage.type === "success" ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+                      <p className="font-semibold">{checkinMessage.text}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={!checkinEventId || !ticketCode}
+                    className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-md hover:from-indigo-500 transition-all disabled:opacity-50"
+                  >
+                    Check In Attendee
+                  </button>
+                </form>
+              </div>
+
+              {/* Checkin live logs */}
+              <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <User className="w-4 h-4 text-violet-500" /> Recent Attendance Check-Ins
+                </h3>
+                <div className="space-y-2.5 max-h-[50vh] overflow-y-auto">
+                  {liveActivity.filter((act) => act.type === "upload").length === 0 ? (
+                    <p className="text-[11px] text-slate-400 text-center py-8">No check-ins recorded in this session.</p>
+                  ) : (
+                    liveActivity.filter((act) => act.type === "upload").map((act) => (
+                      <div key={act.id} className="p-2.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-white/5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300">
+                        {act.text} <span className="float-right text-[10px] text-slate-400">{act.time}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: Post-Event Completion Reports */}
+          {activeTab === "reports" && (
+            <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <FileCheck className="w-4 h-4 text-indigo-500" /> Post-Event Report Form
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Submit offerings, visitor metrics, and expenses to auto-complete this event and publish statistics.</p>
+              </div>
+
+              <form onSubmit={handleReportSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Choose Completed Event *</label>
+                  <select
+                    value={reportEventId}
+                    onChange={(e) => setReportEventId(e.target.value)}
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+                  >
+                    <option value="">-- Select Event --</option>
+                    {(allEventsData?.events || []).filter((e: any) => e.status !== "COMPLETED").map((e: any) => (
+                      <option key={e.id} value={e.id}>{e.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Attendance Count</label>
+                    <input type="number" value={attendanceCount} onChange={(e) => setAttendanceCount(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-0.5"><DollarSign className="w-3 h-3 text-emerald-500" /> Offering Amount (INR)</label>
+                    <input type="number" value={offeringAmount} onChange={(e) => setOfferingAmount(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">New Visitors</label>
+                    <input type="number" value={visitorsCount} onChange={(e) => setVisitorsCount(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Expenses (INR)</label>
+                    <input type="number" value={expenses} onChange={(e) => setExpenses(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">New Saved Members</label>
+                    <input type="number" value={newMembersCount} onChange={(e) => setNewMembersCount(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">Prayer Requests Collected</label>
+                    <input type="number" value={prayerRequestsCount} onChange={(e) => setPrayerRequestsCount(Number(e.target.value))} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-white" />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1"><PenTool className="w-3.5 h-3.5" /> Event Summary (Full Report) *</label>
+                  <textarea
+                    rows={4}
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    placeholder="Provide a detailed summary of how the event went, testimonies, sermon highlights..."
+                    className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none resize-none"
+                  />
+                </div>
+
+                {reportMessage && (
+                  <div className={`p-3.5 rounded-xl text-xs flex items-center gap-2 border ${
+                    reportMessage.type === "success"
+                      ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-200/50"
+                      : "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200/50"
+                  }`}>
+                    {reportMessage.type === "success" ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+                    <p className="font-semibold">{reportMessage.text}</p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={!reportEventId || !summary}
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold shadow-md hover:from-emerald-500 transition-all disabled:opacity-50"
+                >
+                  Submit Completion Report & Close Event
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* TAB 5: Trash & Archive */}
+          {activeTab === "trash" && (
+            <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm space-y-4">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Trash2 className="w-4 h-4 text-rose-500" /> Soft Deleted & Archived Queue
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Recover soft-deleted items or manage archived historical events.</p>
+              </div>
+
+              {/* Load deleted / archived events */}
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin mx-auto text-indigo-500" />
+              ) : (allEventsData?.events || []).filter((e: any) => e.isDeleted || e.status === "ARCHIVED").length === 0 ? (
+                <div className="py-12 text-center text-slate-400 dark:text-slate-500 text-xs font-semibold">
+                  Queue empty. No deleted or archived events.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {(allEventsData?.events || []).filter((e: any) => e.isDeleted || e.status === "ARCHIVED").map((e: any) => (
+                    <div key={e.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-white/10 rounded-2xl">
+                      <div>
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-black uppercase mb-1 ${e.isDeleted ? "bg-rose-500/15 text-rose-600" : "bg-slate-500/15 text-slate-400"}`}>
+                          {e.isDeleted ? "DELETED" : "ARCHIVED"}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-white">{e.title}</h4>
+                        <p className="text-[9px] text-slate-400 mt-0.5">Venue: {e.location}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        {e.isDeleted ? (
+                          <button
+                            onClick={() => handleRestore(e.id)}
+                            className="h-8 px-3 rounded-lg bg-indigo-500 text-white text-[10px] font-black flex items-center gap-1 hover:bg-indigo-400 transition-all"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" /> Restore
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleStatusChange(e.id, "DRAFT")}
+                            className="h-8 px-3 rounded-lg bg-indigo-500 text-white text-[10px] font-black flex items-center gap-1 hover:bg-indigo-400 transition-all"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" /> Set Draft
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
+
+        {/* Right Sidebar Feed */}
+        <div className="space-y-5">
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
+              <Activity className="w-4 h-4 text-indigo-500" />
+              <div className="flex-1">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                  Real-time activity
+                </h3>
+                <p className="text-[9px] text-slate-400 font-semibold">WebSockets Live Monitor</p>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            </div>
+
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+              {liveActivity.map((act) => (
+                <div key={act.id} className="text-xs space-y-0.5 border-l-2 border-slate-200 dark:border-white/10 pl-3.5 relative">
+                  <div className={`absolute w-2 h-2 rounded-full -left-[5px] top-[5px] border-2 border-white dark:border-slate-900 ${act.type === "upload" ? "bg-emerald-500" : "bg-indigo-500"}`} />
+                  <p className="font-semibold text-slate-600 dark:text-slate-300 leading-relaxed">{act.text}</p>
+                  <span className="text-[9px] text-slate-400 font-bold">{act.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── Modals & Overlays ────────────────────────────────────────────────── */}
       {(modal === "create" || modal === "edit") && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}>
           <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white dark:bg-[#0f1021] border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
               <div className="flex items-center gap-2.5">
-                <div className="bg-gradient-to-br from-violet-600 to-indigo-600 p-2 rounded-xl">
-                  {modal === "create" ? (
-                    <PlusCircle className="w-4 h-4 text-white" />
-                  ) : (
-                    <Edit3 className="w-4 h-4 text-white" />
-                  )}
+                <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-2 rounded-xl">
+                  {modal === "create" ? <PlusCircle className="w-4 h-4 text-white" /> : <Edit3 className="w-4 h-4 text-white" />}
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-900 dark:text-white">
                     {modal === "create" ? "Create New Event" : "Edit Event"}
                   </h3>
                   <p className="text-[10px] text-slate-400 font-medium">
-                    {modal === "create"
-                      ? "Fill in the details — it'll publish immediately if set to Published"
-                      : `Editing: ${selectedEvent?.title}`}
+                    {modal === "create" ? "Add event details to sync instantly to the homepage." : `Editing: ${selectedEvent?.title}`}
                   </p>
                 </div>
               </div>
@@ -338,55 +899,44 @@ export default function EventManagement() {
                 branches={branches}
                 initialData={modal === "edit" && selectedEvent ? {
                   title: selectedEvent.title,
+                  slug: selectedEvent.slug,
+                  shortDescription: selectedEvent.shortDescription,
                   description: selectedEvent.description,
-                  date: new Date(selectedEvent.date).toISOString().split("T")[0],
+                  date: selectedEvent.date,
+                  endDate: selectedEvent.endDate,
                   time: selectedEvent.time,
+                  endTime: selectedEvent.endTime,
+                  timezone: selectedEvent.timezone,
                   location: selectedEvent.location,
-                  category: selectedEvent.category as any,
-                  branchId: selectedEvent.branch?.id,
-                  status: selectedEvent.status as any,
-                  image: selectedEvent.image || "",
+                  googleMapsUrl: selectedEvent.googleMapsUrl,
+                  category: selectedEvent.category,
+                  organizer: selectedEvent.organizer,
+                  speaker: selectedEvent.speaker,
+                  pastor: selectedEvent.pastor,
+                  contactPerson: selectedEvent.contactPerson,
+                  contactPhone: selectedEvent.contactPhone,
+                  contactEmail: selectedEvent.contactEmail,
+                  registrationRequired: selectedEvent.registrationRequired,
+                  registrationLimit: selectedEvent.registrationLimit,
+                  image: selectedEvent.image,
+                  coverImagePublicId: selectedEvent.coverImagePublicId,
+                  eventBanner: selectedEvent.eventBanner,
+                  eventBannerPublicId: selectedEvent.eventBannerPublicId,
+                  tags: selectedEvent.tags,
+                  featured: selectedEvent.featured,
+                  priority: selectedEvent.priority,
+                  colorTheme: selectedEvent.colorTheme,
+                  status: selectedEvent.status,
+                  visibility: selectedEvent.visibility,
+                  registrationOpenDate: selectedEvent.registrationOpenDate,
+                  registrationCloseDate: selectedEvent.registrationCloseDate,
+                  seoTitle: selectedEvent.seoTitle,
+                  seoDescription: selectedEvent.seoDescription,
+                  branchId: selectedEvent.branchId,
                 } : undefined}
                 isEditMode={modal === "edit"}
-                onSubmit={modal === "create" ? handleCreateEvent : handleUpdateEvent}
+                onSubmit={modal === "create" ? handleCreate : handleUpdate}
                 onCancel={() => { setModal(null); setSelectedEvent(null); }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Upload modal */}
-      {modal === "upload" && selectedEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}>
-          <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-md">
-            <div className="border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-xl">
-                  <Upload className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white">Upload Photos</h3>
-                  <p className="text-[10px] text-slate-400 font-medium line-clamp-1">{selectedEvent.title}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => { setModal(null); setSelectedEvent(null); }}
-                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 transition-all"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <UploadSectionWithAuth
-                eventId={selectedEvent.id}
-                getIdToken={getIdToken}
-                onUploadComplete={(count) => {
-                  handleUploadComplete(count);
-                  setModal(null);
-                }}
-                onClose={() => { setModal(null); setSelectedEvent(null); }}
               />
             </div>
           </div>
@@ -403,7 +953,7 @@ export default function EventManagement() {
               </div>
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white">Delete Event?</h3>
-                <p className="text-[10px] text-slate-400">This will permanently delete the event and all uploaded photos.</p>
+                <p className="text-[10px] text-slate-400">This will soft delete the event and move it to the Trash & Archive tab.</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -414,408 +964,15 @@ export default function EventManagement() {
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteEvent(deleteConfirmId)}
-                disabled={actionLoading}
-                className="flex-1 h-11 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-sm font-bold hover:from-rose-500 hover:to-red-500 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                onClick={() => handleDelete(deleteConfirmId)}
+                className="flex-1 h-11 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-sm font-bold hover:from-rose-500 hover:to-red-500 transition-all flex items-center justify-center gap-2"
               >
-                {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                Delete Event
+                Soft Delete
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* ── Main content ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-        {/* Left: Main area (3 cols) */}
-        <div className="lg:col-span-3 space-y-6">
-
-          {/* Welcome hero */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 rounded-3xl p-6 text-white shadow-lg group">
-            <div className="absolute -right-8 -top-8 w-48 h-48 rounded-full bg-white/5 group-hover:scale-110 transition-transform duration-500" />
-            <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-12 transition-transform duration-700">
-              <Sparkles className="w-36 h-36" />
-            </div>
-
-            <div className="relative space-y-2 max-w-xl">
-              <span className="inline-flex px-2.5 py-1 rounded-full bg-white/10 border border-white/20 text-[9px] font-black uppercase tracking-widest text-violet-100">
-                Event Management
-              </span>
-              <h2 className="text-2xl font-black tracking-tight mt-1">
-                {stats.upcoming > 0
-                  ? `${stats.upcoming} Upcoming Event${stats.upcoming > 1 ? "s" : ""} 🎉`
-                  : "Manage Church Events"}
-              </h2>
-              <p className="text-xs text-violet-100/80 leading-relaxed">
-                Create events for all branches — Shapur Nagar, Subhash Nagar, Bahadurpally. Upload photos and they instantly appear on the landing page via real-time sync.
-              </p>
-            </div>
-
-            {canManage && (
-              <div className="flex flex-wrap gap-3 mt-5">
-                <button
-                  onClick={() => setModal("create")}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white text-violet-700 hover:bg-violet-50 rounded-xl text-xs font-bold transition-all shadow-sm hover:scale-[1.02]"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Create New Event
-                </button>
-                <button
-                  onClick={() => loadEvents()}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 border border-white/10 rounded-xl text-xs font-bold transition-all"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Refresh
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: "Total Events", value: stats.total, color: "text-slate-900 dark:text-white", dot: "bg-slate-400" },
-              { label: "Published", value: stats.published, color: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
-              { label: "Drafts", value: stats.draft, color: "text-slate-500 dark:text-slate-400", dot: "bg-slate-400" },
-              { label: "Upcoming", value: stats.upcoming, color: "text-violet-600 dark:text-violet-400", dot: "bg-violet-500" },
-            ].map((s) => (
-              <div key={s.label} className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{s.label}</span>
-                </div>
-                <p className={`text-2xl font-black tracking-tight ${s.color}`}>{s.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Filters */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-4 shadow-sm">
-            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-              {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search events by title or location..."
-                  className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all"
-                />
-              </div>
-
-              {/* Status filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
-                className="h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="DRAFT">Draft</option>
-                <option value="CANCELLED">Cancelled</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
-
-              {/* Branch filter */}
-              <select
-                value={branchFilter}
-                onChange={(e) => setBranchFilter(e.target.value)}
-                className="h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
-              >
-                <option value="ALL">All Branches</option>
-                {branches.map((b) => (
-                  <option key={b.id} value={b.id}>{b.name}</option>
-                ))}
-              </select>
-
-              {/* Category filter */}
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none"
-              >
-                <option value="ALL">All Categories</option>
-                {["WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN", "SPECIAL"].map((c) => (
-                  <option key={c} value={c}>{c.charAt(0) + c.slice(1).toLowerCase()}</option>
-                ))}
-              </select>
-
-              {canManage && (
-                <button
-                  onClick={() => setModal("create")}
-                  className="h-10 flex items-center gap-1.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold hover:from-violet-500 hover:to-indigo-500 shadow-md transition-all shrink-0"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  New Event
-                </button>
-              )}
-            </div>
-
-            {(searchQuery || branchFilter !== "ALL" || statusFilter !== "ALL" || categoryFilter !== "ALL") && (
-              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/5 flex items-center gap-2">
-                <span className="text-[10px] text-slate-400 font-semibold">
-                  Showing {filteredEvents.length} of {events.length} events
-                </span>
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setBranchFilter("ALL");
-                    setStatusFilter("ALL");
-                    setCategoryFilter("ALL");
-                  }}
-                  className="text-[10px] font-bold text-violet-600 dark:text-violet-400 hover:underline"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Events grid */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-72 bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl animate-pulse" />
-              ))}
-            </div>
-          ) : filteredEvents.length === 0 ? (
-            <div className="py-20 text-center bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/[0.05] rounded-3xl shadow-sm">
-              <Calendar className="w-14 h-14 mx-auto mb-4 text-slate-200 dark:text-slate-800" />
-              <p className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
-                {events.length === 0 ? "No events yet" : "No events match your filters"}
-              </p>
-              <p className="text-xs mt-1.5 text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
-                {canManage && events.length === 0
-                  ? 'Click "Create New Event" to publish your first event.'
-                  : "Try adjusting the filters above."}
-              </p>
-              {canManage && events.length === 0 && (
-                <button
-                  onClick={() => setModal("create")}
-                  className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold rounded-xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-md"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Create First Event
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {filteredEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  isAdmin={canManage}
-                  onDelete={canDelete ? (id) => setDeleteConfirmId(id) : undefined}
-                  onEdit={(ev) => { setSelectedEvent(ev); setModal("edit"); }}
-                  onUploadImages={canManage ? handleUploadImages : undefined}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right sidebar: Live Activity feed (1 col) */}
-        <div className="space-y-5">
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-white/[0.05] rounded-3xl p-5 shadow-sm">
-            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
-              <Activity className="w-4 h-4 text-violet-500" />
-              <div className="flex-1">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                  Live Activity
-                </h3>
-                <p className="text-[9px] text-slate-400 font-semibold">Real-time event feed</p>
-              </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-              {liveActivity.map((act) => (
-                <div
-                  key={act.id}
-                  className="text-xs space-y-0.5 border-l-2 border-slate-200 dark:border-white/10 pl-3.5 relative"
-                >
-                  <div
-                    className={`absolute w-2 h-2 rounded-full -left-[5px] top-[5px] border-2 border-white dark:border-slate-900 ${
-                      act.type === "upload"
-                        ? "bg-emerald-500"
-                        : act.type === "event"
-                        ? "bg-violet-500"
-                        : "bg-slate-400"
-                    }`}
-                  />
-                  <p className="font-semibold text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {act.text}
-                  </p>
-                  <span className="text-[9px] text-slate-400 font-bold">{act.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick create shortcut */}
-          {canManage && (
-            <div className="bg-gradient-to-br from-violet-600/10 to-indigo-600/10 border border-violet-500/20 dark:border-violet-500/10 rounded-3xl p-5 space-y-3">
-              <h3 className="text-xs font-black uppercase tracking-wider text-violet-700 dark:text-violet-400">
-                Quick Actions
-              </h3>
-              <div className="space-y-2">
-                <button
-                  onClick={() => setModal("create")}
-                  className="w-full flex items-center gap-2.5 p-3 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-violet-400 dark:hover:border-violet-600/30 hover:shadow-sm transition-all"
-                >
-                  <PlusCircle className="w-4 h-4 text-violet-500" />
-                  Create New Event
-                </button>
-                <button
-                  onClick={() => loadEvents()}
-                  className="w-full flex items-center gap-2.5 p-3 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-indigo-600/30 hover:shadow-sm transition-all"
-                >
-                  <RefreshCw className="w-4 h-4 text-indigo-500" />
-                  Refresh Events
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Internal: UploadSection wired with auth ────────────────────────────────────
-function UploadSectionWithAuth({
-  eventId,
-  getIdToken,
-  onUploadComplete,
-  onClose,
-}: {
-  eventId: string;
-  getIdToken: () => Promise<string | null>;
-  onUploadComplete: (count: number) => void;
-  onClose: () => void;
-}) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [result, setResult] = useState<{ success: number; failed: number } | null>(null);
-  const [fileErrors, setFileErrors] = useState<string[]>([]);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const ALLOWED = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-  const MAX = 5 * 1024 * 1024;
-
-  const addFiles = (rawFiles: FileList | File[]) => {
-    const incoming = Array.from(rawFiles);
-    const valid: File[] = [];
-    const errors: string[] = [];
-
-    incoming.forEach((f) => {
-      if (!ALLOWED.includes(f.type)) errors.push(`${f.name}: Invalid type. Use JPEG/PNG/WebP.`);
-      else if (f.size > MAX) errors.push(`${f.name}: Too large (max 5MB).`);
-      else valid.push(f);
-    });
-
-    setFileErrors(errors);
-    setFiles((prev) => [...prev, ...valid].slice(0, 10));
-    setPreviews((prev) => [...prev, ...valid.map((f) => URL.createObjectURL(f))].slice(0, 10));
-  };
-
-  const doUpload = async () => {
-    if (files.length === 0) return;
-    setIsUploading(true);
-    const token = await getIdToken();
-    const fd = new FormData();
-    files.forEach((f) => fd.append("images[]", f));
-
-    try {
-      const res = await fetch(`/api/events/${eventId}/upload`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: fd,
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setResult({ success: data.uploaded, failed: data.failed || 0 });
-        onUploadComplete(data.uploaded);
-      } else {
-        setResult({ success: 0, failed: files.length });
-      }
-    } catch {
-      setResult({ success: 0, failed: files.length });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Drop zone */}
-      <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => { e.preventDefault(); setIsDragging(false); addFiles(e.dataTransfer.files); }}
-        onClick={() => fileRef.current?.click()}
-        className={`rounded-2xl border-2 border-dashed cursor-pointer p-8 text-center transition-all ${
-          isDragging ? "border-violet-500 bg-violet-500/5" : "border-slate-300 dark:border-white/10 hover:border-violet-400 bg-slate-50/50 dark:bg-white/[0.02]"
-        }`}
-      >
-        <input ref={fileRef} type="file" multiple accept={ALLOWED.join(",")} className="hidden" onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }} />
-        <Upload className={`w-8 h-8 mx-auto mb-2 transition-colors ${isDragging ? "text-violet-500" : "text-slate-300 dark:text-slate-600"}`} />
-        <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-          {isDragging ? "Drop here!" : "Drag & drop or click to browse"}
-        </p>
-        <p className="text-[11px] text-slate-400 mt-1">JPEG · PNG · WebP · Max 5MB · Up to 10 images</p>
-      </div>
-
-      {/* Validation errors */}
-      {fileErrors.map((err, i) => (
-        <p key={i} className="text-[10px] text-rose-500 font-semibold flex items-center gap-1.5">
-          <AlertCircle className="w-3 h-3 shrink-0" /> {err}
-        </p>
-      ))}
-
-      {/* Preview grid */}
-      {previews.length > 0 && (
-        <div className="grid grid-cols-4 gap-2">
-          {previews.map((src, idx) => (
-            <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200/50 dark:border-white/10 group">
-              <img src={src} alt="" className="w-full h-full object-cover" />
-              <button
-                onClick={(e) => { e.stopPropagation(); setFiles((p) => p.filter((_, i) => i !== idx)); setPreviews((p) => p.filter((_, i) => i !== idx)); }}
-                className="absolute top-1 right-1 p-0.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <X className="w-2.5 h-2.5" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Result */}
-      {result && (
-        <div className={`rounded-2xl p-4 flex items-center gap-3 text-xs font-semibold ${result.failed === 0 ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/30" : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200/50 dark:border-amber-800/30"}`}>
-          {result.failed === 0 ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-          {result.success > 0 ? `✅ ${result.success} image(s) uploaded!` : ""}{result.failed > 0 ? ` ⚠️ ${result.failed} failed.` : ""}
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <button onClick={onClose} className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
-          Cancel
-        </button>
-        <button
-          onClick={doUpload}
-          disabled={files.length === 0 || isUploading}
-          className="flex-1 h-11 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {isUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload {files.length > 0 ? `${files.length} Photo${files.length > 1 ? "s" : ""}` : "Photos"}</>}
-        </button>
-      </div>
     </div>
   );
 }
