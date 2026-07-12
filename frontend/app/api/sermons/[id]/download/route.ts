@@ -17,26 +17,27 @@ export async function POST(
   const userId = auth?.uid || null;
 
   try {
-    const { watchTime, completionRate } = await req.json();
-    const ipAddress = req.headers.get('x-forwarded-for') || '';
-    const userAgent = req.headers.get('user-agent') || '';
+    const { fileType } = await req.json();
+    if (!fileType || (fileType !== 'AUDIO' && fileType !== 'PDF')) {
+      return NextResponse.json({ error: 'Valid fileType (AUDIO or PDF) is required' }, { status: 400 });
+    }
 
-    const view = await prisma.sermonView.create({
+    const ipAddress = req.headers.get('x-forwarded-for') || '';
+
+    const download = await prisma.sermonDownload.create({
       data: {
         sermonId,
         userId,
+        fileType,
         ipAddress,
-        userAgent,
-        watchTime: watchTime ? parseInt(watchTime, 10) : 0,
-        completionRate: completionRate ? parseFloat(completionRate) : 0.0,
       },
     });
 
-    return NextResponse.json({ success: true, viewId: view.id });
+    return NextResponse.json({ success: true, downloadId: download.id });
   } catch (err: any) {
-    console.error('[API/SERMONS/VIEW] Error:', err);
+    console.error('[API/SERMONS/DOWNLOAD] Error:', err);
     return NextResponse.json(
-      { error: err?.message || 'Database error occurred while recording view' },
+      { error: err?.message || 'Database error occurred while recording download' },
       { status: 500 }
     );
   }

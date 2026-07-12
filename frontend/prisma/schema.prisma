@@ -35,6 +35,11 @@ model User {
   auditLogs          AuditLog[]
   deviceTokens       DeviceToken[]
   eventAttendance    EventAttendance[]
+  sermonLikes        SermonLike[]
+  sermonComments     SermonComment[]
+  sermonBookmarks    SermonBookmark[]
+  sermonViews        SermonView[]
+  sermonDownloads    SermonDownload[]
 
   @@map("members")
 }
@@ -157,26 +162,180 @@ model EventRegistration {
   @@map("event_registrations")
 }
 
+enum SermonVisibility {
+  PUBLIC
+  MEMBERS_ONLY
+  PRIVATE
+}
+
+enum SermonStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model Sermon {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  pastor      String
-  date        DateTime
-  videoUrl          String?
-  videoPublicId     String?
-  audioUrl          String?
-  transcript        String?
-  thumbnail         String?
-  thumbnailPublicId String?
-  category    String
-  tags        String[]
-  views       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String             @id @default(cuid())
+  title                String
+  slug                 String             @unique
+  subtitle             String?            @db.Text
+  shortDescription     String?            @db.Text
+  description          String             @db.Text // Full Description
+  bibleVerse           String?            @map("bible_verse")
+  book                 String?
+  chapter              String?
+  verses               String?
+  speaker              String
+  pastor               String?
+  guestSpeaker         String?            @map("guest_speaker")
+  branch               String?
+  category             String
+  language             String             @default("English")
+  date                 DateTime           @map("date_preached")
+  views                Int                @default(0)
+  duration             String?            // e.g. "45:00"
+  tags                 String[]           @default([])
+  keywords             String[]           @default([])
+  thumbnail            String?            @map("thumbnail_url")
+  thumbnailPublicId    String?            @map("thumbnail_public_id")
+  banner               String?            @map("banner_url")
+  bannerPublicId       String?            @map("banner_public_id")
+  videoUrl             String?            @map("video_url")
+  videoPublicId        String?            @map("video_public_id")
+  audioUrl             String?            @map("audio_url")
+  audioPublicId        String?            @map("audio_public_id")
+  pdfUrl               String?            @map("pdf_url")
+  pdfPublicId          String?            @map("pdf_public_id")
+  presentationUrl      String?            @map("presentation_url")
+  presentationPublicId String?            @map("presentation_public_id")
+  transcript           String?            @db.Text
+  featured             Boolean            @default(false)
+  recommended          Boolean            @default(false)
+  visibility           SermonVisibility   @default(PUBLIC)
+  status               SermonStatus       @default(DRAFT)
+  seoTitle             String?            @map("seo_title")
+  seoDescription       String?            @map("seo_description")
+  displayOrder         Int                @default(0) @map("display_order")
+  isDeleted            Boolean            @default(false) @map("is_deleted")
+  deletedAt            DateTime?          @map("deleted_at")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  createdById          String?            @map("created_by_id")
+
+  // Relations
+  media              SermonMedia[]
+  audios             SermonAudio[]
+  notes              SermonNotes[]
+  viewsRelation      SermonView[]
+  likes              SermonLike[]
+  comments           SermonComment[]
+  downloads          SermonDownload[]
+  bookmarks          SermonBookmark[]
 
   @@index([date])
   @@index([category])
+  @@index([slug])
+  @@map("sermons")
+}
+
+model SermonMedia {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  type      String   // e.g. "VIDEO", "THUMBNAIL", "BANNER"
+  url       String
+  publicId  String?  @map("public_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sermon_media")
+}
+
+model SermonAudio {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  url       String
+  publicId  String?  @map("public_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sermon_audio")
+}
+
+model SermonNotes {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  url       String
+  publicId  String?  @map("public_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sermon_notes")
+}
+
+model SermonView {
+  id             String   @id @default(cuid())
+  sermonId       String   @map("sermon_id")
+  sermon         Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  userId         String?  @map("user_id")
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  watchTime      Int      @default(0) @map("watch_time")
+  completionRate Float    @default(0) @map("completion_rate")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("sermon_views")
+}
+
+model SermonLike {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([sermonId, userId])
+  @@map("sermon_likes")
+}
+
+model SermonComment {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("sermon_comments")
+}
+
+model SermonDownload {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  fileType  String   @map("file_type")
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sermon_downloads")
+}
+
+model SermonBookmark {
+  id        String   @id @default(cuid())
+  sermonId  String   @map("sermon_id")
+  sermon    Sermon   @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([sermonId, userId])
+  @@map("sermon_bookmarks")
 }
 
 model PrayerRequest {
