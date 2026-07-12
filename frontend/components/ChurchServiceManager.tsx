@@ -408,28 +408,28 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
 
   // ── Rendered ──────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.25 }}
-        className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 dark:border-white/[0.08]"
+        className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[96vh] sm:max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 dark:border-white/[0.08]"
       >
         {/* ── Header ───────────────────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg">
               <Heart className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Manage Worship Services</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Manage Worship Services</h2>
               <p className="text-xs text-slate-500 dark:text-white/40">
                 CREATE · READ · UPDATE · DELETE · {total} service{total !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
             <button
               onClick={openCreate}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-semibold shadow-lg hover:shadow-violet-500/30 hover:scale-105 transition-all duration-200"
@@ -453,10 +453,10 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
         </div>
 
         {/* ── Toolbar ──────────────────────────────────────────────────────────── */}
-        <div className="px-6 py-3 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0 space-y-2">
-          <div className="flex items-center gap-3 flex-wrap">
+        <div className="px-4 py-3 sm:px-6 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Search */}
-            <div className="relative flex-1 min-w-[180px]">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 value={search}
@@ -466,29 +466,32 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
               />
             </div>
 
-            {/* Status filter */}
-            <select
-              value={filterStatus}
-              onChange={e => setFilterStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/70 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
-            >
-              <option value="ALL">All Status</option>
-              <option value="PUBLISHED">Published</option>
-              <option value="DRAFT">Draft</option>
-              <option value="ARCHIVED">Archived</option>
-            </select>
+            {/* Filters Group */}
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:w-auto">
+              {/* Status filter */}
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="w-full sm:w-auto px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/70 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+              >
+                <option value="ALL">All Status</option>
+                <option value="PUBLISHED">Published</option>
+                <option value="DRAFT">Draft</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
 
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/70 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
-            >
-              <option value="displayOrder">Display Order</option>
-              <option value="title">Alphabetical</option>
-              <option value="newest">Newest</option>
-              <option value="updated">Recently Updated</option>
-            </select>
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                className="w-full sm:w-auto px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/70 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+              >
+                <option value="displayOrder">Display Order</option>
+                <option value="title">Alphabetical</option>
+                <option value="newest">Newest</option>
+                <option value="updated">Recently Updated</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -519,45 +522,47 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
 
                 return (
                   <div key={service.id}>
-                    <div className={`flex items-center gap-4 px-6 py-4 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors ${isViewing ? "bg-violet-50 dark:bg-violet-500/5" : ""}`}>
-                      {/* Reorder */}
-                      <div className="flex flex-col gap-0.5">
-                        <button onClick={() => moveService(service.id, "up")} disabled={idx === 0} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
-                          <ChevronUp className="w-3 h-3 text-slate-400" />
-                        </button>
-                        <GripVertical className="w-3 h-3 text-slate-300 dark:text-white/20 mx-auto" />
-                        <button onClick={() => moveService(service.id, "down")} disabled={idx === services.length - 1} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
-                          <ChevronDown className="w-3 h-3 text-slate-400" />
-                        </button>
-                      </div>
-
-                      {/* Icon */}
-                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md" style={{ background: grad }}>
-                        <Icon className="w-6 h-6" style={{ color: service.iconColor || "#fff" }} />
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-slate-900 dark:text-white text-sm truncate">{service.title}</span>
-                          {service.featured && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />}
-                          <StatusBadge status={service.status} />
+                    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:px-6 sm:py-4 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors ${isViewing ? "bg-violet-50 dark:bg-violet-500/5" : ""}`}>
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        {/* Reorder */}
+                        <div className="flex sm:flex-col items-center gap-1 sm:gap-0.5 flex-shrink-0">
+                          <button onClick={() => moveService(service.id, "up")} disabled={idx === 0} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
+                            <ChevronUp className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-400" />
+                          </button>
+                          <GripVertical className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-300 dark:text-white/20 mx-auto hidden sm:block" />
+                          <button onClick={() => moveService(service.id, "down")} disabled={idx === services.length - 1} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
+                            <ChevronDown className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-400" />
+                          </button>
                         </div>
-                        <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500 dark:text-white/40 flex-wrap">
-                          {scheduleLabel(service) && (
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{scheduleLabel(service)}</span>
-                          )}
-                          {service.serviceType && (
-                            <span className="uppercase font-medium text-[10px] tracking-wider">{service.serviceType}</span>
-                          )}
-                          {service.branch && (
-                            <span className="flex items-center gap-1"><Globe className="w-3 h-3" />{service.branch.name}</span>
-                          )}
+
+                        {/* Icon */}
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md" style={{ background: grad }}>
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: service.iconColor || "#fff" }} />
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-slate-900 dark:text-white text-sm truncate">{service.title}</span>
+                            {service.featured && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 flex-shrink-0" />}
+                            <StatusBadge status={service.status} />
+                          </div>
+                          <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500 dark:text-white/40 flex-wrap">
+                            {scheduleLabel(service) && (
+                              <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{scheduleLabel(service)}</span>
+                            )}
+                            {service.serviceType && (
+                              <span className="uppercase font-medium text-[10px] tracking-wider">{service.serviceType}</span>
+                            )}
+                            {service.branch && (
+                              <span className="flex items-center gap-1"><Globe className="w-3 h-3" />{service.branch.name}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap border-t border-slate-100 dark:border-white/[0.04] sm:border-0 pt-3 sm:pt-0 justify-end w-full sm:w-auto">
                         {/* View */}
                         <button
                           onClick={() => setViewingService(isViewing ? null : service)}
@@ -638,7 +643,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden bg-violet-50 dark:bg-violet-500/[0.03] border-y border-violet-100 dark:border-violet-500/10"
                         >
-                          <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="px-4 py-4 sm:px-6 sm:py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-3">
                               <DetailRow label="Title" value={service.title} />
                               <DetailRow label="Short Description" value={service.shortDescription} />
@@ -664,7 +669,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                                 </div>
                               )}
                             </div>
-                            <div className="flex gap-3 md:col-span-2 pt-2 border-t border-violet-100 dark:border-violet-500/10">
+                            <div className="flex flex-wrap gap-3 md:col-span-2 pt-2 border-t border-violet-100 dark:border-violet-500/10">
                               <button
                                 onClick={() => openEdit(service)}
                                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 text-white text-sm font-medium hover:bg-violet-600 transition-colors"
@@ -690,13 +695,13 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
         </div>
 
         {/* ── Footer ───────────────────────────────────────────────────────────── */}
-        <div className="px-6 py-4 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between flex-shrink-0">
-          <p className="text-xs text-slate-400 dark:text-white/30">
+        <div className="px-4 py-4 sm:px-6 border-t border-slate-100 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0 bg-slate-50 dark:bg-white/[0.02]">
+          <p className="text-xs text-slate-400 dark:text-white/30 text-center sm:text-left">
             Showing {services.length} of {total} services · Changes appear live on landing page
           </p>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+            className="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
           >
             Close
           </button>
@@ -710,38 +715,40 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[110] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col border border-slate-200 dark:border-white/[0.08] overflow-hidden"
+              className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-3xl max-h-[95vh] sm:max-h-[90vh] flex flex-col border border-slate-200 dark:border-white/[0.08] overflow-hidden"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-white/[0.06]">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between px-4 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-white/[0.06]">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white truncate pr-4">
                   {modalMode === "create" ? "Create New Service" : `Edit: ${formData.title}`}
                 </h3>
-                <button onClick={() => setModalMode(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500">
+                <button onClick={() => setModalMode(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 flex-shrink-0">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Modal Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
                 {/* Preview card */}
-                <div className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 rounded-2xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
                     style={{ background: resolveGrad(formData.cardColor || "from-violet-500 to-purple-600") }}
                   >
-                    {(() => { const Icon = ICON_MAP[formData.icon || "Heart"] || Heart; return <Icon className="w-7 h-7" style={{ color: formData.iconColor || "#fff" }} />; })()}
+                    {(() => { const Icon = ICON_MAP[formData.icon || "Heart"] || Heart; return <Icon className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: formData.iconColor || "#fff" }} />; })()}
                   </div>
-                  <div>
-                    <p className="font-bold text-slate-900 dark:text-white text-sm">{formData.title || "Service Title"}</p>
-                    <p className="text-xs text-slate-500 dark:text-white/40">{formData.shortDescription || "Short description…"}</p>
-                    <StatusBadge status={formData.status || "DRAFT"} />
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{formData.title || "Service Title"}</p>
+                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">{formData.shortDescription || "Short description…"}</p>
+                    <div className="mt-1">
+                      <StatusBadge status={formData.status || "DRAFT"} />
+                    </div>
                   </div>
                 </div>
 
@@ -818,7 +825,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                             {label}
                             <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
                           </p>
-                          <div className="grid grid-cols-7 gap-2">
+                          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-1.5 sm:gap-2">
                             {ICON_OPTIONS.slice(start, start + count).map(({ name, label: iconLabel, icon: Ic, color }) => {
                               const isSelected = formData.icon === name;
                               return (
@@ -834,7 +841,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                                   title={iconLabel}
                                 >
                                   <div
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
                                     style={{ background: color }}
                                   >
                                     <Ic className="w-5 h-5 text-white" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }} />
@@ -857,7 +864,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                   </FormField>
                   <FormRow>
                     <FormField label="Card Color / Gradient">
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                         {COLOR_PRESETS.map(p => (
                           <button
                             key={p.value}
@@ -881,15 +888,15 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
 
                   {/* Image Upload */}
                   <FormField label="Service Image">
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                       {formData.imageUrl && (
-                        <img src={formData.imageUrl} alt="preview" className="w-16 h-16 rounded-xl object-cover border border-slate-200 dark:border-white/[0.08]" />
+                        <img src={formData.imageUrl} alt="preview" className="w-16 h-16 rounded-xl object-cover border border-slate-200 dark:border-white/[0.08] flex-shrink-0" />
                       )}
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploading}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-slate-300 dark:border-white/20 text-slate-500 dark:text-white/40 text-sm hover:border-violet-400 hover:text-violet-500 transition-colors"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-white/20 text-slate-500 dark:text-white/40 text-sm hover:border-violet-400 hover:text-violet-500 transition-colors w-full sm:w-auto"
                       >
                         {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {uploading ? "Uploading…" : "Upload Image"}
@@ -988,22 +995,25 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
               </div>
 
               {/* Modal Footer */}
-              <div className="px-6 py-4 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between gap-3">
-                <button onClick={() => setModalMode(null)} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-200 transition-colors">
+              <div className="px-4 py-4 sm:px-6 border-t border-slate-100 dark:border-white/[0.06] flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50 dark:bg-white/[0.01]">
+                <button 
+                  onClick={() => setModalMode(null)} 
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-200 transition-colors"
+                >
                   Cancel
                 </button>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => { setFormData(p => ({...p, status: "DRAFT"})); setTimeout(handleSave, 50); }}
                     disabled={saving || uploading}
-                    className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors disabled:opacity-50"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors disabled:opacity-50"
                   >
                     Save as Draft
                   </button>
                   <button
                     onClick={() => { setFormData(p => ({...p, status: "PUBLISHED"})); setTimeout(handleSave, 50); }}
                     disabled={saving || uploading}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-semibold shadow-lg hover:shadow-violet-500/30 disabled:opacity-50 transition-all"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-semibold shadow-lg hover:shadow-violet-500/30 disabled:opacity-50 transition-all"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                     {modalMode === "create" ? "Publish Service" : "Save Changes"}

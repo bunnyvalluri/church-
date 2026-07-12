@@ -34,51 +34,7 @@ async function main() {
     console.log(`- Upserted category: ${cat.name}`);
   }
 
-  // Find or create a branch
-  let branch = await prisma.branch.findFirst();
-  if (!branch) {
-    branch = await prisma.branch.create({
-      data: { name: "Hyderabad General Branch" }
-    });
-  }
-
-  // Create an initial dynamic event
-  const eventName = "KCM Sunday Service & Fellowship";
-  const eventSlug = "kcm-sunday-service-fellowship";
-  
-  await prisma.event.upsert({
-    where: { slug: eventSlug },
-    update: {},
-    create: {
-      title: eventName,
-      slug: eventSlug,
-      shortDescription: "Join us for our weekly worship, teaching, and community fellowship.",
-      description: "Welcome to our main Sunday Worship Service! We gather as a family to praise God, study His Word, and fellowship together. This week Pastor Joseph will be sharing a message on faith and patience.",
-      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next Sunday
-      time: "09:00 AM",
-      location: "KCM Auditorium, Jeedimetla, Hyderabad",
-      googleMapsUrl: "https://maps.google.com",
-      category: "service",
-      organizer: "KCM Media Team",
-      speaker: "Pastor Joseph",
-      pastor: "Pastor Joseph",
-      contactPerson: "Brother John",
-      contactPhone: "+91 98765 43210",
-      contactEmail: "info@kcm.org",
-      registrationRequired: true,
-      registrationLimit: 200,
-      remainingSeats: 200,
-      image: "https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&w=1000&q=80",
-      tags: ["worship", "fellowship", "sunday"],
-      featured: true,
-      priority: "HIGH",
-      status: "PUBLISHED",
-      visibility: "PUBLIC",
-      isPublished: true,
-      branchId: branch.id,
-    }
-  });
-  console.log(`- Upserted initial event: ${eventName}`);
+  // No initial events seeded
 
   console.log("✅ Seeding complete!");
 }
