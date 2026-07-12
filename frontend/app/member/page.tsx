@@ -104,6 +104,12 @@ const MOCK_ANNOUNCEMENTS: Announcement[] = [
   },
 ];
 
+const tLogOut = {
+  en: "Log Out",
+  te: "లాగ్ అవుట్",
+  hi: "लॉग आउट",
+};
+
 /* ────────────────────────── Helpers ─────────────────────── */
 function getGreeting(): { text: string; icon: React.ElementType } {
   const hour = new Date().getHours();
@@ -346,7 +352,7 @@ export default function MemberDashboard() {
             <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-violet-300/40 group-hover:border-violet-500/60 shadow-lg transition-all bg-white flex items-center justify-center">
               <Image src="/logo.png" alt="KCM" fill className="object-contain p-0.5" priority />
             </div>
-            <div className="hidden sm:block">
+            <div className="block">
               <p className="text-sm font-black bg-gradient-to-r from-violet-600 to-purple-500 bg-clip-text text-transparent leading-none">
                 KCM Portal
               </p>
@@ -464,7 +470,7 @@ export default function MemberDashboard() {
                       onClick={logout}
                       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-sm font-bold transition-all"
                     >
-                      <LogOut className="w-3.5 h-3.5" /> Sign Out
+                      <LogOut className="w-3.5 h-3.5" /> {tLogOut[language as keyof typeof tLogOut] || tLogOut.en}
                     </button>
                   </motion.div>
                 )}
@@ -474,10 +480,11 @@ export default function MemberDashboard() {
             {/* Direct logout */}
             <button
               onClick={logout}
-              className="flex w-9 h-9 items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 transition-all flex-shrink-0"
-              title="Sign Out"
+              className="flex h-9 w-9 sm:w-auto items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 hover:scale-[1.02] active:scale-95 transition-all flex-shrink-0 text-xs font-bold shadow-sm"
+              title={tLogOut[language as keyof typeof tLogOut] || tLogOut.en}
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{tLogOut[language as keyof typeof tLogOut] || tLogOut.en}</span>
             </button>
           </div>
         </div>

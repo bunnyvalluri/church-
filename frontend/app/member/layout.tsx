@@ -26,7 +26,7 @@ const layoutTranslations = {
     offline: "Offline",
     dashboard: "Dashboard",
     servicesHeader: "Services",
-    signOut: "Sign Out",
+    signOut: "Log Out",
     menu: "Menu",
     links: {
       profile: { label: "My Profile", desc: "Account & settings" },
@@ -66,7 +66,7 @@ const layoutTranslations = {
     offline: "ऑफ़लाइन",
     dashboard: "डैशबोर्ड",
     servicesHeader: "सेवाएं",
-    signOut: "साइन आउट",
+    signOut: "लॉग आउट",
     menu: "मेनू",
     links: {
       profile: { label: "मेरी प्रोफाइल", desc: "खाता और सेटिंग्स" },
@@ -469,10 +469,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               {/* Logout Button (Direct in Header) */}
               <button
                 onClick={logout}
-                className="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 items-center justify-center rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0"
-                title="Sign Out"
+                className="hidden sm:flex h-8 sm:h-9 items-center gap-1.5 px-3 sm:px-3.5 rounded-xl bg-red-500/10 dark:bg-red-500/5 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:scale-105 active:scale-95 shadow-sm transition-all flex-shrink-0 text-xs font-bold"
+                title={lt.signOut}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
+                <span>{lt.signOut}</span>
               </button>
             </div>
           </div>
