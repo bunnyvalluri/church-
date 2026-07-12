@@ -203,9 +203,9 @@ export default function RegisterPage() {
         </div>
 
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/login" className="flex items-center gap-3 group">
             <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-            <span className="text-white/60 text-sm group-hover:text-white transition-colors">{registerT.backToHome}</span>
+            <span className="text-white/60 text-sm group-hover:text-white transition-colors">{registerT.backToSignIn}</span>
           </Link>
         </div>
 
@@ -267,10 +267,10 @@ export default function RegisterPage() {
 
         {/* Mobile Header Bar - Unified to prevent overlapping on small mobile viewports */}
         <div className="absolute top-4 left-0 right-0 px-4 sm:px-6 flex items-center justify-between lg:hidden z-20">
-          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
+          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
             <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-medium sm:inline hidden">{registerT.backToHome}</span>
-            <span className="text-xs font-medium sm:hidden inline">Home</span>
+            <span className="text-xs font-medium sm:inline hidden">{registerT.backToSignIn}</span>
+            <span className="text-xs font-medium sm:hidden inline">Sign in</span>
           </Link>
           <LanguageToggle />
         </div>
