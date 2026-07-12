@@ -457,9 +457,11 @@ model Branch {
   donationSessions DonationSession[]
   donations        Donation[]
   galleryItems     Gallery[]
+  churchServices   ChurchService[]
 
   @@map("branches")
 }
+
 
 model EventReport {
   id              String        @id @default(cuid())
@@ -667,3 +669,66 @@ model DeviceToken {
 
   @@map("device_tokens")
 }
+
+// ── Church Services (Our Services section on landing page) ─────────────────────
+model ChurchService {
+  id                  String          @id @default(cuid())
+  slug                String          @unique
+  title               String
+  shortDescription    String?         @map("short_description")
+  description         String?         @db.Text
+  serviceType         String          @default("WORSHIP") @map("service_type")
+  icon                String          @default("Heart") // lucide-react icon name
+  iconColor           String          @default("#ffffff") @map("icon_color")
+  cardColor           String          @default("from-violet-500 to-purple-600") @map("card_color")
+  badgeColor          String          @default("from-violet-500 to-purple-600") @map("badge_color")
+  imageUrl            String?         @map("image_url")
+  imagePublicId       String?         @map("image_public_id")
+  branchId            String?         @map("branch_id")
+  branch              Branch?         @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  speakerName         String?         @map("speaker_name")
+  serviceDay          String?         @map("service_day") // "Sunday", "Wednesday", etc.
+  frequency           ServiceFreq     @default(WEEKLY)
+  occurrence          String?         // "Every 4th Sunday", "1st Sunday", etc.
+  startTime           String?         @map("start_time") // "05:45"
+  endTime             String?         @map("end_time")   // "07:00"
+  timezone            String          @default("Asia/Kolkata")
+  location            String?
+  googleMapsUrl       String?         @map("google_maps_url")
+  capacity            Int?
+  registrationEnabled Boolean         @default(false) @map("registration_enabled")
+  registrationLimit   Int?            @map("registration_limit")
+  featured            Boolean         @default(false)
+  displayOrder        Int             @default(0) @map("display_order")
+  status              ServiceStatus   @default(DRAFT)
+  seoTitle            String?         @map("seo_title")
+  seoDescription      String?         @map("seo_description")
+  tags                String[]        @default([])
+  language            String          @default("en")
+  isDeleted           Boolean         @default(false) @map("is_deleted")
+  createdById         String?         @map("created_by")
+  updatedById         String?         @map("updated_by")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+  deletedAt           DateTime?       @map("deleted_at")
+
+  @@index([status])
+  @@index([displayOrder])
+  @@index([featured])
+  @@index([isDeleted])
+  @@map("church_services")
+}
+
+enum ServiceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ServiceFreq {
+  WEEKLY
+  MONTHLY
+  DAILY
+  SPECIAL
+}
+

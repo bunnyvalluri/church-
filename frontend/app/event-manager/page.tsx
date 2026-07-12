@@ -67,6 +67,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CameraCapture from "@/components/CameraCapture";
 import EventForm from "@/components/EventForm";
 import SermonInlineForm from "@/components/SermonInlineForm";
+import ChurchServiceManager from "@/components/ChurchServiceManager";
 
 interface MediaItem {
   id: string;
@@ -252,6 +253,9 @@ export default function UnifiedEventManagementPortal() {
   const [eventsReportList, setEventsReportList] = useState<any[]>([]);
   const [loadingEventsReport, setLoadingEventsReport] = useState(false);
   const [deletingEventsReportId, setDeletingEventsReportId] = useState<string | null>(null);
+  const [viewingReport, setViewingReport] = useState<any | null>(null);
+  const [viewingSermon, setViewingSermon] = useState<any | null>(null);
+  const [viewingService, setViewingService] = useState<any | null>(null);
 
   const fetchAllSermons = async () => {
     setLoadingSermons(true);
@@ -1528,7 +1532,7 @@ export default function UnifiedEventManagementPortal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4"
             onClick={() => setDeletingReport(null)}
           >
             <motion.div
@@ -1574,7 +1578,7 @@ export default function UnifiedEventManagementPortal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/60 flex items-center justify-center p-4 overflow-y-auto"
+            className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4 overflow-y-auto"
             onClick={() => setEditingReport(null)}
           >
             <motion.div
@@ -1851,7 +1855,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Edit Service Modal */}
       <AnimatePresence>
         {showEditService && editingService && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1949,62 +1953,148 @@ export default function UnifiedEventManagementPortal() {
       {/* Manage Sermons Modal */}
       <AnimatePresence>
         {showManageSermons && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageSermons(false)}>
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowManageSermons(false); setViewingSermon(null); }}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-2xl w-full relative overflow-hidden"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
-              <button type="button" onClick={() => setShowManageSermons(false)} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+              <button type="button" onClick={() => { setShowManageSermons(false); setViewingSermon(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
                 <X className="w-4 h-4" />
               </button>
-              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
-                <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"><Settings className="w-5 h-5" /></div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Sermons</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Delete or update published sermons</p>
+
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-fuchsia-50 dark:bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400"><Mic2 className="w-5 h-5" /></div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Sermon Library</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Create · Read · Update · Delete</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  <button type="button" onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[11px] font-black transition-all active:scale-95 shadow-sm">
+                    <PlusCircle className="w-3.5 h-3.5" /> Upload Sermon
+                  </button>
+                  <button type="button" onClick={fetchAllSermons} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 rounded-xl text-[11px] font-black transition-all border border-slate-200 dark:border-white/10 active:scale-95">
+                    <RefreshCw className="w-3.5 h-3.5" /> Refresh
+                  </button>
+                  <span className="ml-auto text-[10px] font-bold text-slate-400">{sermonsList.length} sermon{sermonsList.length !== 1 ? 's' : ''}</span>
                 </div>
               </div>
-              <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
-                {loadingSermons ? (
-                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-purple-500" /><p className="text-xs font-bold">Loading sermons...</p></div>
-                ) : sermonsList.length === 0 ? (
-                  <div className="py-10 text-center text-slate-500 border border-dashed border-slate-200 dark:border-white/5 rounded-xl"><Play className="w-7 h-7 mx-auto mb-2 text-slate-300" /><p className="text-xs font-bold">No sermons found.</p></div>
-                ) : (
-                  sermonsList.map(sermon => (
-                    <div key={sermon.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-xl hover:border-purple-300/40 dark:hover:border-purple-500/20 transition-colors">
-                      <div className="min-w-0 flex-1 pr-4">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{sermon.title}</h4>
-                        <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                          <span>By {sermon.pastor}</span><span>•</span><span>{sermon.category}</span><span>•</span><span>{new Date(sermon.date).toLocaleDateString()}</span>
+
+              {/* Sermon Detail Drawer (Read) */}
+              <AnimatePresence>
+                {viewingSermon && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden border-b border-fuchsia-200/60 dark:border-fuchsia-500/20 bg-fuchsia-50/60 dark:bg-fuchsia-950/20"
+                  >
+                    <div className="px-6 py-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black text-fuchsia-700 dark:text-fuchsia-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5" /> Sermon Details
+                        </h4>
+                        <button type="button" onClick={() => setViewingSermon(null)} className="p-1 rounded-lg hover:bg-fuchsia-200/50 dark:hover:bg-white/10 text-fuchsia-500 transition-colors">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="bg-white dark:bg-slate-900/60 border border-fuchsia-200/50 dark:border-fuchsia-500/20 rounded-xl p-4 space-y-2">
+                        <h5 className="text-sm font-black text-slate-900 dark:text-white">{viewingSermon.title}</h5>
+                        <div className="flex flex-wrap gap-2 text-[10px]">
+                          <span className="bg-fuchsia-50 dark:bg-fuchsia-500/10 border border-fuchsia-200 dark:border-fuchsia-500/20 px-2 py-0.5 rounded-lg font-bold text-fuchsia-700 dark:text-fuchsia-300">By {viewingSermon.pastor}</span>
+                          <span className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 px-2 py-0.5 rounded-lg font-bold text-purple-700 dark:text-purple-300">{viewingSermon.category}</span>
+                          <span className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded-lg font-bold text-slate-600 dark:text-slate-300">{new Date(viewingSermon.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        </div>
+                        {viewingSermon.description && <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{viewingSermon.description}</p>}
+                        {viewingSermon.scripture && <p className="text-xs font-bold text-purple-600 dark:text-purple-400">📖 {viewingSermon.scripture}</p>}
+                        <div className="flex gap-2 pt-1">
+                          <button type="button" onClick={() => { setEditingSermon(viewingSermon); setShowEditSermon(true); setViewingSermon(null); }}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/20 dark:hover:bg-fuchsia-950/40 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl text-[11px] font-black transition-colors border border-fuchsia-200 dark:border-fuchsia-500/20">
+                            <Pencil className="w-3.5 h-3.5" /> Edit Sermon
+                          </button>
+                          <button type="button" onClick={() => { setDeletingSermon(viewingSermon); setViewingSermon(null); }}
+                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl text-[11px] font-black transition-colors border border-red-200 dark:border-red-500/20">
+                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={() => { setShowManageSermons(false); setEditingSermon(sermon); setShowEditSermon(true); }}
-                          className="p-2 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/20 dark:hover:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-xl transition-colors">
-                          <Pencil className="w-4 h-4" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Sermon List */}
+              <div className="px-6 py-4 space-y-2 max-h-[380px] overflow-y-auto">
+                {loadingSermons ? (
+                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-fuchsia-500" /><p className="text-xs font-bold">Loading sermons...</p></div>
+                ) : sermonsList.length === 0 ? (
+                  <div className="py-10 text-center space-y-3 border border-dashed border-slate-200 dark:border-white/5 rounded-xl">
+                    <Play className="w-8 h-8 mx-auto text-slate-300" />
+                    <p className="text-xs font-bold text-slate-500">No sermons found.</p>
+                    <button type="button" onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded-xl text-xs font-black transition-colors shadow-sm">
+                      <PlusCircle className="w-3.5 h-3.5" /> Upload First Sermon
+                    </button>
+                  </div>
+                ) : (
+                  sermonsList.map(sermon => (
+                    <div key={sermon.id} className={`group flex items-center gap-3 p-3.5 border rounded-xl transition-all cursor-default ${
+                      viewingSermon?.id === sermon.id
+                        ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30 border-fuchsia-300 dark:border-fuchsia-500/40'
+                        : 'bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 hover:border-fuchsia-300/40 dark:hover:border-fuchsia-500/20'
+                    }`}>
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+                        <Mic2 className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{sermon.title}</h4>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-400 font-semibold">
+                          <span>By {sermon.pastor}</span><span>•</span><span>{sermon.category}</span><span>•</span><span>{new Date(sermon.date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Read */}
+                        <button type="button" title="View Details"
+                          onClick={() => setViewingSermon(viewingSermon?.id === sermon.id ? null : sermon)}
+                          className={`p-2 rounded-xl transition-colors ${
+                            viewingSermon?.id === sermon.id
+                              ? 'bg-fuchsia-600 text-white'
+                              : 'bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/20 dark:hover:bg-fuchsia-950/40 text-fuchsia-600 dark:text-fuchsia-400'
+                          }`}>
+                          <Eye className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" onClick={() => { setShowManageSermons(false); setDeletingSermon(sermon); }}
+                        {/* Update */}
+                        <button type="button" title="Edit Sermon"
+                          onClick={() => { setEditingSermon(sermon); setShowEditSermon(true); setViewingSermon(null); }}
+                          className="p-2 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/20 dark:hover:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-xl transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        {/* Delete */}
+                        <button type="button" title="Delete Sermon"
+                          onClick={() => { setDeletingSermon(sermon); setViewingSermon(null); }}
                           className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
                   ))
                 )}
               </div>
-              <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
-                <button type="button" onClick={() => { setShowManageSermons(false); setShowClearSermonsConfirm(true); }} disabled={clearingSeeded || loadingSermons}
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
+                <button type="button" onClick={() => { setShowClearSermonsConfirm(true); }} disabled={clearingSeeded || loadingSermons}
                   className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Clear All Static Sermons
+                  <Trash2 className="w-3.5 h-3.5" /> Clear All Static Sermons
                 </button>
-                <button type="button" onClick={() => setShowManageSermons(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">
-                  Close
-                </button>
+                <button type="button" onClick={() => { setShowManageSermons(false); setViewingSermon(null); }} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
               </div>
             </motion.div>
           </div>
@@ -2014,123 +2104,196 @@ export default function UnifiedEventManagementPortal() {
       {/* Manage Services Modal */}
       <AnimatePresence>
         {showManageServices && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageServices(false)}>
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-2xl w-full relative overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
-              <button type="button" onClick={() => setShowManageServices(false)} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
-                <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"><Settings className="w-5 h-5" /></div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Services</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Delete or update scheduled services</p>
-                </div>
-              </div>
-              <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
-                {loadingServices ? (
-                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-indigo-500" /><p className="text-xs font-bold">Loading services...</p></div>
-                ) : servicesList.length === 0 ? (
-                  <div className="py-10 text-center text-slate-500 border border-dashed border-slate-200 dark:border-white/5 rounded-xl"><Calendar className="w-7 h-7 mx-auto mb-2 text-slate-300" /><p className="text-xs font-bold">No services found.</p></div>
-                ) : (
-                  servicesList.map(service => (
-                    <div key={service.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-xl hover:border-indigo-300/40 dark:hover:border-indigo-500/20 transition-colors">
-                      <div className="min-w-0 flex-1 pr-4">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{service.title}</h4>
-                        <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                          <span>{service.category}</span><span>•</span><span>{service.branch?.name || "General"}</span><span>•</span><span>{new Date(service.date).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={() => { setShowManageServices(false); setEditingService(service); setShowEditService(true); }}
-                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button type="button" onClick={() => { setShowManageServices(false); setDeletingService(service); }}
-                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
-                <button type="button" onClick={() => { setShowManageServices(false); setShowClearServicesConfirm(true); }} disabled={clearingSeededServices || loadingServices}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Clear All Static Services
-                </button>
-                <button type="button" onClick={() => setShowManageServices(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
-              </div>
-            </motion.div>
-          </div>
+          <ChurchServiceManager
+            onClose={() => setShowManageServices(false)}
+          />
         )}
       </AnimatePresence>
 
       {/* Manage Events Modal */}
       <AnimatePresence>
         {showManageEvents && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageEvents(false)}>
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowManageEvents(false); setViewingReport(null); }}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-2xl w-full relative overflow-hidden"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
-              <button type="button" onClick={() => setShowManageEvents(false)} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+              <button type="button" onClick={() => { setShowManageEvents(false); setViewingReport(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
                 <X className="w-4 h-4" />
               </button>
-              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
-                <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"><ClipboardList className="w-5 h-5" /></div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Events</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Delete or update submitted event reports</p>
+
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400"><ClipboardList className="w-5 h-5" /></div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Event Reports</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Create · Read · Update · Delete</p>
+                  </div>
+                </div>
+                {/* CRUD Action Bar */}
+                <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  <a href="/event-manager/report"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[11px] font-black transition-all active:scale-95 shadow-sm">
+                    <PlusCircle className="w-3.5 h-3.5" /> Create New
+                  </a>
+                  <button type="button" onClick={fetchAllEventsReports} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 rounded-xl text-[11px] font-black transition-all border border-slate-200 dark:border-white/10 active:scale-95">
+                    <RefreshCw className="w-3.5 h-3.5" /> Refresh
+                  </button>
+                  <span className="ml-auto text-[10px] font-bold text-slate-400">{eventsReportList.length} report{eventsReportList.length !== 1 ? 's' : ''}</span>
                 </div>
               </div>
-              <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
-                {loadingEventsReport ? (
-                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-indigo-500" /><p className="text-xs font-bold">Loading reports...</p></div>
-                ) : eventsReportList.length === 0 ? (
-                  <div className="py-10 text-center text-slate-500 border border-dashed border-slate-200 dark:border-white/5 rounded-xl"><FileText className="w-7 h-7 mx-auto mb-2 text-slate-300" /><p className="text-xs font-bold">No event reports found.</p></div>
-                ) : (
-                  eventsReportList.map(report => (
-                    <div key={report.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-xl hover:border-indigo-300/40 dark:hover:border-indigo-500/20 transition-colors">
-                      <div className="min-w-0 flex-1 pr-4">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{report.title}</h4>
-                        <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                          <span className={`px-1.5 py-0.5 text-[8px] font-black rounded border ${
-                            report.status === "APPROVED" ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                            : report.status === "REJECTED" ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400"
-                            : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400"
-                          }`}>{report.status}</span>
-                          <span>•</span><span>{report.branch?.name || "General"}</span><span>•</span><span>{new Date(report.reportDate).toLocaleDateString()}</span>
+
+              {/* Report Detail Drawer (Read) */}
+              <AnimatePresence>
+                {viewingReport && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden border-b border-violet-200/60 dark:border-violet-500/20 bg-violet-50/60 dark:bg-violet-950/20"
+                  >
+                    <div className="px-6 py-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black text-violet-700 dark:text-violet-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5" /> Viewing Report Details
+                        </h4>
+                        <button type="button" onClick={() => setViewingReport(null)} className="p-1 rounded-lg hover:bg-violet-200/50 dark:hover:bg-white/10 text-violet-500 transition-colors">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="bg-white dark:bg-slate-900/60 border border-violet-200/50 dark:border-violet-500/20 rounded-xl p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h5 className="text-sm font-black text-slate-900 dark:text-white">{viewingReport.title}</h5>
+                            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{viewingReport.branch?.name} • {new Date(viewingReport.reportDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          </div>
+                          <span className={`px-2 py-0.5 text-[9px] font-black rounded-lg border ${
+                            viewingReport.status === 'APPROVED' ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 text-emerald-700' :
+                            viewingReport.status === 'REJECTED' ? 'bg-red-50 dark:bg-red-500/10 border-red-200 text-red-700' :
+                            'bg-amber-50 dark:bg-amber-500/10 border-amber-200 text-amber-700'
+                          }`}>{viewingReport.status}</span>
+                        </div>
+                        {viewingReport.description && <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{viewingReport.description}</p>}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Attendance</p>
+                            <p className="text-base font-black text-slate-800 dark:text-white mt-0.5">{viewingReport.attendanceCount}</p>
+                          </div>
+                          <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Offering</p>
+                            <p className="text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5">₹{viewingReport.offeringAmount?.toLocaleString('en-IN')}</p>
+                          </div>
+                          <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Media</p>
+                            <p className="text-base font-black text-indigo-600 dark:text-indigo-400 mt-0.5">{viewingReport.media?.length || 0}</p>
+                          </div>
+                        </div>
+                        {viewingReport.volunteerNames?.length > 0 && (
+                          <div>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Volunteers</p>
+                            <div className="flex flex-wrap gap-1">
+                              {viewingReport.volunteerNames.map((v: string, i: number) => (
+                                <span key={i} className="text-[9px] font-bold bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 px-2 py-0.5 rounded-lg">{v}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex gap-2 pt-1">
+                          <button type="button" onClick={() => { openEditModal(viewingReport); setViewingReport(null); }}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl text-[11px] font-black transition-colors border border-indigo-200 dark:border-indigo-500/20">
+                            <Pencil className="w-3.5 h-3.5" /> Edit This Report
+                          </button>
+                          <button type="button" onClick={() => { setDeletingReport(viewingReport); setViewingReport(null); }}
+                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl text-[11px] font-black transition-colors border border-red-200 dark:border-red-500/20">
+                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={() => { setShowManageEvents(false); openEditModal(report); }}
-                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
-                          <Pencil className="w-4 h-4" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Report List */}
+              <div className="px-6 py-4 space-y-2 max-h-[380px] overflow-y-auto">
+                {loadingEventsReport ? (
+                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-violet-500" /><p className="text-xs font-bold">Loading reports...</p></div>
+                ) : eventsReportList.length === 0 ? (
+                  <div className="py-10 text-center space-y-3 border border-dashed border-slate-200 dark:border-white/5 rounded-xl">
+                    <FileText className="w-8 h-8 mx-auto text-slate-300" />
+                    <p className="text-xs font-bold text-slate-500">No event reports found.</p>
+                    <a href="/event-manager/report" className="inline-flex items-center gap-1.5 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-xs font-black transition-colors shadow-sm">
+                      <PlusCircle className="w-3.5 h-3.5" /> Submit First Report
+                    </a>
+                  </div>
+                ) : (
+                  eventsReportList.map(report => (
+                    <div key={report.id} className={`group flex items-center gap-3 p-3.5 border rounded-xl transition-all cursor-default ${
+                      viewingReport?.id === report.id
+                        ? 'bg-violet-50 dark:bg-violet-950/30 border-violet-300 dark:border-violet-500/40'
+                        : 'bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 hover:border-violet-300/40 dark:hover:border-violet-500/20'
+                    }`}>
+                      {/* Status dot */}
+                      <div className={`w-2 h-2 rounded-full shrink-0 mt-0.5 ${
+                        report.status === 'APPROVED' ? 'bg-emerald-500' :
+                        report.status === 'REJECTED' ? 'bg-red-500' : 'bg-amber-500'
+                      }`} />
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{report.title}</h4>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-400 font-semibold">
+                          <span>{report.branch?.name || 'General'}</span>
+                          <span>•</span>
+                          <span>{new Date(report.reportDate).toLocaleDateString('en-IN')}</span>
+                          <span>•</span>
+                          <span className="text-violet-500 dark:text-violet-400">{report.attendanceCount} attendees</span>
+                        </div>
+                      </div>
+                      {/* CRUD Buttons */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Read */}
+                        <button type="button"
+                          title="View Details"
+                          onClick={() => setViewingReport(viewingReport?.id === report.id ? null : report)}
+                          className={`p-2 rounded-xl transition-colors text-[10px] font-black ${
+                            viewingReport?.id === report.id
+                              ? 'bg-violet-600 text-white'
+                              : 'bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-950/40 text-violet-600 dark:text-violet-400'
+                          }`}>
+                          <Eye className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" onClick={() => { setShowManageEvents(false); setDeletingReport(report); }}
+                        {/* Update */}
+                        <button type="button"
+                          title="Edit Report"
+                          onClick={() => { openEditModal(report); setViewingReport(null); }}
+                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        {/* Delete */}
+                        <button type="button"
+                          title="Delete Report"
+                          onClick={() => { setDeletingReport(report); setViewingReport(null); }}
                           className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
                   ))
                 )}
               </div>
-              <div className="flex items-center justify-end mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
-                <button type="button" onClick={() => setShowManageEvents(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Approved</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> Pending</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Rejected</span>
+                </div>
+                <button type="button" onClick={() => { setShowManageEvents(false); setViewingReport(null); }} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
               </div>
             </motion.div>
           </div>
@@ -2190,7 +2353,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Edit Sermon Modal */}
       <AnimatePresence>
         {showEditSermon && editingSermon && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowEditSermon(false); setEditingSermon(null); }}>
+          <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowEditSermon(false); setEditingSermon(null); }}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -2228,7 +2391,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Delete Service Confirmation Modal */}
       <AnimatePresence>
         {deletingService && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingService(null)}>
+          <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingService(null)}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -2268,7 +2431,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Delete Sermon Confirmation Modal */}
       <AnimatePresence>
         {deletingSermon && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingSermon(null)}>
+          <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingSermon(null)}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -2308,7 +2471,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Clear Seeded Services Confirmation Modal */}
       <AnimatePresence>
         {showClearServicesConfirm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearServicesConfirm(false)}>
+          <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearServicesConfirm(false)}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -2348,7 +2511,7 @@ export default function UnifiedEventManagementPortal() {
       {/* Clear Seeded Sermons Confirmation Modal */}
       <AnimatePresence>
         {showClearSermonsConfirm && (
-          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearSermonsConfirm(false)}>
+          <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearSermonsConfirm(false)}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
