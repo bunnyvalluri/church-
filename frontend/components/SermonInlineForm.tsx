@@ -20,6 +20,8 @@ import {
 interface SermonInlineFormProps {
   onClose: () => void;
   onSuccess: (title: string) => void;
+  isEditMode?: boolean;
+  initialData?: any;
 }
 
 const SERMON_CATEGORIES = [
@@ -36,24 +38,26 @@ const SERMON_CATEGORIES = [
   "Other",
 ];
 
-export default function SermonInlineForm({ onClose, onSuccess }: SermonInlineFormProps) {
+export default function SermonInlineForm({ onClose, onSuccess, isEditMode = false, initialData }: SermonInlineFormProps) {
   const { getIdToken } = useAuth();
 
-  const [title, setTitle] = useState("");
-  const [pastor, setPastor] = useState("");
-  const [scripture, setScripture] = useState("");
-  const [category, setCategory] = useState("Faith");
-  const [sermonDate, setSermonDate] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [pastor, setPastor] = useState(initialData?.pastor || "");
+  const [scripture, setScripture] = useState(initialData?.tags?.[0] || "");
+  const [category, setCategory] = useState(initialData?.category || "Faith");
+  const [sermonDate, setSermonDate] = useState(
+    initialData?.date ? new Date(initialData.date).toISOString().split("T")[0] : ""
+  );
+  const [description, setDescription] = useState(initialData?.description || "");
   
   // Video Mode: "URL" or "FILE"
   const [videoMode, setVideoMode] = useState<"URL" | "FILE">("URL");
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState(initialData?.videoUrl || "");
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   // Thumbnail
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialData?.thumbnail || null);
 
   // Submission / Loading State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,10 +108,13 @@ export default function SermonInlineForm({ onClose, onSuccess }: SermonInlineFor
         formData.append("videoFile", videoFile);
       }
 
-      setUploadStep("Saving sermon details & broadcasting real-time notification...");
+      setUploadStep(isEditMode ? "Saving sermon updates..." : "Saving sermon details & broadcasting real-time notification...");
 
-      const res = await fetch("/api/pastor/sermons", {
-        method: "POST",
+      const url = isEditMode ? `/api/pastor/sermons?id=${initialData.id}` : "/api/pastor/sermons";
+      const method = isEditMode ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
@@ -116,7 +123,7 @@ export default function SermonInlineForm({ onClose, onSuccess }: SermonInlineFor
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "Failed to create sermon.");
+        throw new Error(err.error || `Failed to ${isEditMode ? "update" : "create"} sermon.`);
       }
 
       setUploadStep("Done!");
@@ -355,12 +362,12 @@ export default function SermonInlineForm({ onClose, onSuccess }: SermonInlineFor
           {isSubmitting ? (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              Uploading...
+              {isEditMode ? "Saving..." : "Uploading..."}
             </>
           ) : (
             <>
               <CheckCircle2 className="w-3.5 h-3.5" />
-              Create Sermon
+              {isEditMode ? "Save Changes" : "Create Sermon"}
             </>
           )}
         </button>

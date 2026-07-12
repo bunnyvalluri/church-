@@ -226,6 +226,16 @@ export default function UnifiedEventManagementPortal() {
   const [editingService, setEditingService] = useState<any | null>(null);
   const [showEditService, setShowEditService] = useState(false);
 
+  // Sermon Edit and Delete states
+  const [editingSermon, setEditingSermon] = useState<any | null>(null);
+  const [showEditSermon, setShowEditSermon] = useState(false);
+  const [deletingSermon, setDeletingSermon] = useState<any | null>(null);
+  const [showClearSermonsConfirm, setShowClearSermonsConfirm] = useState(false);
+
+  // Service Delete states
+  const [deletingService, setDeletingService] = useState<any | null>(null);
+  const [showClearServicesConfirm, setShowClearServicesConfirm] = useState(false);
+
   // Manage Sermons list states and handlers
   const [sermonsList, setSermonsList] = useState<any[]>([]);
   const [loadingSermons, setLoadingSermons] = useState(false);
@@ -261,7 +271,6 @@ export default function UnifiedEventManagementPortal() {
   }, [showManageSermons]);
 
   const handleDeleteSermon = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this sermon? This action cannot be undone.")) return;
     setDeletingSermonId(id);
     try {
       const token = await getIdToken();
@@ -273,6 +282,7 @@ export default function UnifiedEventManagementPortal() {
       if (res.ok && data.success) {
         showToast("✅ Sermon Deleted", "Successfully deleted sermon from database.");
         fetchAllSermons();
+        setDeletingSermon(null);
       } else {
         throw new Error(data.error || "Failed to delete sermon");
       }
@@ -284,7 +294,6 @@ export default function UnifiedEventManagementPortal() {
   };
 
   const clearSeededSermons = async () => {
-    if (!confirm("This will permanently delete all 6 placeholder sermons seeded from the database. Only real sermons you create will remain. Proceed?")) return;
     setClearingSeeded(true);
     try {
       const token = await getIdToken();
@@ -299,6 +308,7 @@ export default function UnifiedEventManagementPortal() {
       if (res.ok && data.success) {
         showToast("🗑️ Seeded Sermons Cleared", `Removed ${data.deletedCount} static sermons. The landing page is now fully dynamic!`);
         fetchAllSermons();
+        setShowClearSermonsConfirm(false);
       } else {
         throw new Error(data.error || "Failed to clear seeded sermons");
       }
@@ -327,7 +337,6 @@ export default function UnifiedEventManagementPortal() {
   }, [showManageServices]);
 
   const handleDeleteService = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this service? This action cannot be undone.")) return;
     setDeletingServiceId(id);
     try {
       const token = await getIdToken();
@@ -339,6 +348,7 @@ export default function UnifiedEventManagementPortal() {
       if (res.ok && data.success) {
         showToast("✅ Service Deleted", "Successfully deleted service/event from database.");
         fetchAllServices();
+        setDeletingService(null);
       } else {
         throw new Error(data.error || "Failed to delete service");
       }
@@ -350,7 +360,6 @@ export default function UnifiedEventManagementPortal() {
   };
 
   const clearSeededServices = async () => {
-    if (!confirm("This will permanently delete all 8 placeholder services/events seeded from the database. Only real events you schedule will remain. Proceed?")) return;
     setClearingSeededServices(true);
     try {
       const token = await getIdToken();
@@ -365,6 +374,7 @@ export default function UnifiedEventManagementPortal() {
       if (res.ok && data.success) {
         showToast("🗑️ Seeded Services Cleared", `Removed ${data.deletedCount} static services. The calendar is now fully dynamic!`);
         fetchAllServices();
+        setShowClearServicesConfirm(false);
       } else {
         throw new Error(data.error || "Failed to clear seeded services");
       }
@@ -1972,19 +1982,25 @@ export default function UnifiedEventManagementPortal() {
                           <span>By {sermon.pastor}</span><span>•</span><span>{sermon.category}</span><span>•</span><span>{new Date(sermon.date).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <button type="button" onClick={() => handleDeleteSermon(sermon.id)} disabled={deletingSermonId === sermon.id}
-                        className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
-                        {deletingSermonId === sermon.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button type="button" onClick={() => { setShowManageSermons(false); setEditingSermon(sermon); setShowEditSermon(true); }}
+                          className="p-2 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/20 dark:hover:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-xl transition-colors">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button type="button" onClick={() => { setShowManageSermons(false); setDeletingSermon(sermon); }}
+                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}
               </div>
               <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
-                <button type="button" onClick={clearSeededSermons} disabled={clearingSeeded || loadingSermons}
+                <button type="button" onClick={() => { setShowManageSermons(false); setShowClearSermonsConfirm(true); }} disabled={clearingSeeded || loadingSermons}
                   className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
-                  {clearingSeeded ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                  {clearingSeeded ? "Clearing..." : "Clear All Static Sermons"}
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Clear All Static Sermons
                 </button>
                 <button type="button" onClick={() => setShowManageSermons(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">
                   Close
@@ -2036,9 +2052,9 @@ export default function UnifiedEventManagementPortal() {
                           className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <button type="button" onClick={() => handleDeleteService(service.id)} disabled={deletingServiceId === service.id}
-                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
-                          {deletingServiceId === service.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        <button type="button" onClick={() => { setShowManageServices(false); setDeletingService(service); }}
+                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -2046,10 +2062,10 @@ export default function UnifiedEventManagementPortal() {
                 )}
               </div>
               <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
-                <button type="button" onClick={clearSeededServices} disabled={clearingSeededServices || loadingServices}
+                <button type="button" onClick={() => { setShowManageServices(false); setShowClearServicesConfirm(true); }} disabled={clearingSeededServices || loadingServices}
                   className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
-                  {clearingSeededServices ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                  {clearingSeededServices ? "Clearing..." : "Clear All Static Services"}
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Clear All Static Services
                 </button>
                 <button type="button" onClick={() => setShowManageServices(false)} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
               </div>
@@ -2104,9 +2120,9 @@ export default function UnifiedEventManagementPortal() {
                           className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <button type="button" onClick={() => handleDeleteReportFromModal(report.id)} disabled={deletingEventsReportId === report.id}
-                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors disabled:opacity-50">
-                          {deletingEventsReportId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        <button type="button" onClick={() => { setShowManageEvents(false); setDeletingReport(report); }}
+                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -2164,6 +2180,204 @@ export default function UnifiedEventManagementPortal() {
                 </button>
                 <button onClick={() => { setSuccessEvent(null); setShowManageServices(true); }} className="px-5 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl border border-slate-200 dark:border-white/10 transition-colors">
                   View All Services
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Sermon Modal */}
+      <AnimatePresence>
+        {showEditSermon && editingSermon && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowEditSermon(false); setEditingSermon(null); }}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-lg w-full relative overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-rose-500 to-orange-500" />
+              <button type="button" onClick={() => { setShowEditSermon(false); setEditingSermon(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-white/5 pb-4 mb-5">
+                <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400"><Pencil className="w-5 h-5" /></div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Edit Sermon</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Update sermon details or thumbnail</p>
+                </div>
+              </div>
+              <SermonInlineForm
+                isEditMode={true}
+                initialData={editingSermon}
+                onClose={() => { setShowEditSermon(false); setEditingSermon(null); }}
+                onSuccess={(title) => {
+                  setShowEditSermon(false);
+                  setEditingSermon(null);
+                  fetchAllSermons();
+                  showToast("✅ Sermon Updated", `Successfully updated sermon "${title}".`);
+                }}
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Service Confirmation Modal */}
+      <AnimatePresence>
+        {deletingService && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingService(null)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-rose-50 dark:bg-rose-500/10 p-2.5 rounded-xl text-rose-600 dark:text-rose-400 shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Delete Worship Service</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                    Are you sure you want to delete service "{deletingService.title}"? This action is permanent and cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button onClick={() => setDeletingService(null)} className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteService(deletingService.id)}
+                  disabled={deletingServiceId === deletingService.id}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 active:scale-95 shadow-md shadow-rose-500/10 flex items-center gap-1.5"
+                >
+                  {deletingServiceId === deletingService.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  Delete Permanently
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Sermon Confirmation Modal */}
+      <AnimatePresence>
+        {deletingSermon && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setDeletingSermon(null)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-rose-50 dark:bg-rose-500/10 p-2.5 rounded-xl text-rose-600 dark:text-rose-400 shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Delete Sermon</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                    Are you sure you want to delete sermon "{deletingSermon.title}"? This action is permanent and cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button onClick={() => setDeletingSermon(null)} className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteSermon(deletingSermon.id)}
+                  disabled={deletingSermonId === deletingSermon.id}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 active:scale-95 shadow-md shadow-rose-500/10 flex items-center gap-1.5"
+                >
+                  {deletingSermonId === deletingSermon.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  Delete Permanently
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Clear Seeded Services Confirmation Modal */}
+      <AnimatePresence>
+        {showClearServicesConfirm && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearServicesConfirm(false)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-rose-50 dark:bg-rose-500/10 p-2.5 rounded-xl text-rose-600 dark:text-rose-400 shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Clear Seeded Services</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                    This will permanently delete all 8 placeholder services/events seeded from the database. Only real events you schedule will remain. Proceed?
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button onClick={() => setShowClearServicesConfirm(false)} className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  Cancel
+                </button>
+                <button
+                  onClick={clearSeededServices}
+                  disabled={clearingSeededServices}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 active:scale-95 shadow-md shadow-rose-500/10 flex items-center gap-1.5"
+                >
+                  {clearingSeededServices ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  Clear All
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Clear Seeded Sermons Confirmation Modal */}
+      <AnimatePresence>
+        {showClearSermonsConfirm && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowClearSermonsConfirm(false)}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-rose-50 dark:bg-rose-500/10 p-2.5 rounded-xl text-rose-600 dark:text-rose-400 shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Clear Seeded Sermons</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                    This will permanently delete all 6 placeholder sermons seeded from the database. Only real sermons you create will remain. Proceed?
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button onClick={() => setShowClearSermonsConfirm(false)} className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  Cancel
+                </button>
+                <button
+                  onClick={clearSeededSermons}
+                  disabled={clearingSeeded}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 active:scale-95 shadow-md shadow-rose-500/10 flex items-center gap-1.5"
+                >
+                  {clearingSeeded ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  Clear All
                 </button>
               </div>
             </motion.div>

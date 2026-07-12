@@ -14,7 +14,7 @@ const UpdateEventSchema = z.object({
   category: z.enum(["WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN", "SPECIAL"]).optional(),
   branchId: z.string().nullable().optional(),
   status: z.enum(["DRAFT", "PUBLISHED", "CANCELLED", "COMPLETED"]).optional(),
-  image: z.string().url().nullable().optional().or(z.literal("")),
+  image: z.string().nullable().optional().or(z.literal("")),
 });
 
 // ── GET /api/events/[id] ────────────────────────────────────────────────────────
@@ -72,6 +72,10 @@ export async function PATCH(
     const data: any = { ...parsed.data };
     if (data.date) data.date = new Date(data.date);
     if (data.image === "") data.image = null;
+    if (data.branchId === "") data.branchId = null;
+    if (data.status) {
+      data.isPublished = data.status === "PUBLISHED";
+    }
 
     const event = await prisma.event.update({
       where: { id: params.id },
