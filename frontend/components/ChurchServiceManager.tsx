@@ -8,6 +8,14 @@ import {
   GripVertical, Upload, Loader2, Globe, Clock, MapPin, Heart,
   Music, Users2, BookHeart, Mic2, Calendar, Flame, Shield, Sparkles,
   Filter, SortAsc, ToggleLeft, ToggleRight, Tag, Image as ImageIcon,
+  // Extended icon set
+  HandHeart, Headphones, Radio, Video, BookOpen,
+  Feather, Sun, Rainbow, Leaf, TreePine,
+  Baby, HeartHandshake, Handshake, Users, UserCheck, GraduationCap, Award,
+  Zap, Lightbulb, Bell, Gift, Crown,
+  Infinity, Home, Landmark,
+  Send, Volume2, Mic, Camera,
+  Coffee, Languages, Scroll,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -51,18 +59,56 @@ interface ChurchService {
 
 // ── Icon options ──────────────────────────────────────────────────────────────────
 const ICON_OPTIONS = [
-  { name: "Heart",    icon: Heart    },
-  { name: "Music",    icon: Music    },
-  { name: "Users2",   icon: Users2   },
-  { name: "BookHeart",icon: BookHeart},
-  { name: "Mic2",     icon: Mic2     },
-  { name: "Calendar", icon: Calendar },
-  { name: "Flame",    icon: Flame    },
-  { name: "Shield",   icon: Shield   },
-  { name: "Sparkles", icon: Sparkles },
-  { name: "Globe",    icon: Globe    },
-  { name: "Clock",    icon: Clock    },
-  { name: "MapPin",   icon: MapPin   },
+  // ── Spiritual & Worship
+  { name: "Heart",          label: "Love",         icon: Heart,         color: "linear-gradient(135deg,#f43f5e,#e11d48)"   },
+  { name: "HandHeart",      label: "Devotion",     icon: HandHeart,     color: "linear-gradient(135deg,#ec4899,#be185d)"   },
+  { name: "HeartHandshake", label: "Ministry",     icon: HeartHandshake,color: "linear-gradient(135deg,#f97316,#ea580c)"   },
+  { name: "BookHeart",      label: "Bible",        icon: BookHeart,     color: "linear-gradient(135deg,#8b5cf6,#7c3aed)"   },
+  { name: "BookOpen",       label: "Scripture",    icon: BookOpen,      color: "linear-gradient(135deg,#6366f1,#4f46e5)"   },
+  { name: "Scroll",         label: "Word",         icon: Scroll,        color: "linear-gradient(135deg,#a78bfa,#7c3aed)"   },
+  { name: "Feather",        label: "Spirit",       icon: Feather,       color: "linear-gradient(135deg,#38bdf8,#0284c7)"   },
+  { name: "Flame",          label: "Revival",      icon: Flame,         color: "linear-gradient(135deg,#fb923c,#dc2626)"   },
+  { name: "Sparkles",       label: "Glory",        icon: Sparkles,      color: "linear-gradient(135deg,#fbbf24,#f59e0b)"   },
+  { name: "Crown",          label: "Kingdom",      icon: Crown,         color: "linear-gradient(135deg,#eab308,#ca8a04)"   },
+  { name: "Star",           label: "Praise",       icon: Star,          color: "linear-gradient(135deg,#facc15,#d97706)"   },
+  { name: "Sun",            label: "Light",        icon: Sun,           color: "linear-gradient(135deg,#fde68a,#f59e0b)"   },
+  { name: "Rainbow",        label: "Promise",      icon: Rainbow,       color: "linear-gradient(135deg,#34d399,#059669)"   },
+  { name: "Infinity",       label: "Eternal",      icon: Infinity,      color: "linear-gradient(135deg,#c084fc,#a855f7)"   },
+  // ── People & Community
+  { name: "Users2",         label: "Fellowship",   icon: Users2,        color: "linear-gradient(135deg,#22d3ee,#0891b2)"   },
+  { name: "Users",          label: "Community",    icon: Users,         color: "linear-gradient(135deg,#60a5fa,#2563eb)"   },
+  { name: "UserCheck",      label: "Disciples",    icon: UserCheck,     color: "linear-gradient(135deg,#4ade80,#16a34a)"   },
+  { name: "Baby",           label: "Children",     icon: Baby,          color: "linear-gradient(135deg,#f9a8d4,#db2777)"   },
+  { name: "GraduationCap",  label: "Youth",        icon: GraduationCap, color: "linear-gradient(135deg,#818cf8,#4f46e5)"   },
+  { name: "Award",          label: "Leaders",      icon: Award,         color: "linear-gradient(135deg,#fcd34d,#b45309)"   },
+  { name: "Handshake",      label: "Outreach",     icon: Handshake,     color: "linear-gradient(135deg,#6ee7b7,#059669)"   },
+  // ── Music & Media
+  { name: "Music",          label: "Worship",      icon: Music,         color: "linear-gradient(135deg,#e879f9,#a21caf)"   },
+  { name: "Mic2",           label: "Sermon",       icon: Mic2,          color: "linear-gradient(135deg,#f472b6,#be185d)"   },
+  { name: "Mic",            label: "Preaching",    icon: Mic,           color: "linear-gradient(135deg,#fb7185,#e11d48)"   },
+  { name: "Headphones",     label: "Podcast",      icon: Headphones,    color: "linear-gradient(135deg,#a78bfa,#6d28d9)"   },
+  { name: "Radio",          label: "Broadcast",    icon: Radio,         color: "linear-gradient(135deg,#67e8f9,#0891b2)"   },
+  { name: "Video",          label: "Stream",       icon: Video,         color: "linear-gradient(135deg,#f87171,#dc2626)"   },
+  { name: "Camera",         label: "Media",        icon: Camera,        color: "linear-gradient(135deg,#94a3b8,#475569)"   },
+  { name: "Volume2",        label: "Audio",        icon: Volume2,       color: "linear-gradient(135deg,#7dd3fc,#0369a1)"   },
+  // ── Schedule & Location
+  { name: "Calendar",       label: "Events",       icon: Calendar,      color: "linear-gradient(135deg,#6366f1,#818cf8)"   },
+  { name: "Clock",          label: "Schedule",     icon: Clock,         color: "linear-gradient(135deg,#64748b,#334155)"   },
+  { name: "MapPin",         label: "Location",     icon: MapPin,        color: "linear-gradient(135deg,#f43f5e,#9f1239)"   },
+  { name: "Globe",          label: "Global",       icon: Globe,         color: "linear-gradient(135deg,#22d3ee,#155e75)"   },
+  { name: "Landmark",       label: "Church",       icon: Landmark,      color: "linear-gradient(135deg,#c4b5fd,#7c3aed)"   },
+  { name: "Home",           label: "House",        icon: Home,          color: "linear-gradient(135deg,#86efac,#15803d)"   },
+  // ── Misc & Symbolism
+  { name: "Shield",         label: "Protection",   icon: Shield,        color: "linear-gradient(135deg,#3b82f6,#1d4ed8)"   },
+  { name: "Bell",           label: "Alerts",       icon: Bell,          color: "linear-gradient(135deg,#fbbf24,#92400e)"   },
+  { name: "Gift",           label: "Giving",       icon: Gift,          color: "linear-gradient(135deg,#f472b6,#9d174d)"   },
+  { name: "Zap",            label: "Power",        icon: Zap,           color: "linear-gradient(135deg,#facc15,#ca8a04)"   },
+  { name: "Lightbulb",      label: "Vision",       icon: Lightbulb,     color: "linear-gradient(135deg,#fde047,#a16207)"   },
+  { name: "Leaf",           label: "Growth",       icon: Leaf,          color: "linear-gradient(135deg,#4ade80,#065f46)"   },
+  { name: "TreePine",       label: "Nature",       icon: TreePine,      color: "linear-gradient(135deg,#86efac,#14532d)"   },
+  { name: "Coffee",         label: "Cafe",         icon: Coffee,        color: "linear-gradient(135deg,#d97706,#78350f)"   },
+  { name: "Send",           label: "Mission",      icon: Send,          color: "linear-gradient(135deg,#38bdf8,#0c4a6e)"   },
+  { name: "Languages",      label: "Multilingual", icon: Languages,     color: "linear-gradient(135deg,#a3e635,#3f6212)"   },
 ];
 
 const ICON_MAP: Record<string, React.ElementType> = Object.fromEntries(
@@ -758,17 +804,54 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                 {/* ── Appearance ─────────────────────────────────────────────────── */}
                 <FormSection title="Appearance">
                   <FormField label="Icon">
-                    <div className="grid grid-cols-6 gap-2">
-                      {ICON_OPTIONS.map(({ name, icon: Ic }) => (
-                        <button
-                          key={name}
-                          type="button"
-                          onClick={() => setFormData(p => ({...p, icon: name}))}
-                          className={`flex items-center justify-center p-3 rounded-xl border-2 transition-colors ${formData.icon === name ? "border-violet-500 bg-violet-50 dark:bg-violet-500/10" : "border-slate-200 dark:border-white/[0.08] hover:border-violet-300"}`}
-                          title={name}
-                        >
-                          <Ic className={`w-5 h-5 ${formData.icon === name ? "text-violet-600 dark:text-violet-400" : "text-slate-400 dark:text-white/40"}`} />
-                        </button>
+                    <div className="space-y-3">
+                      {[
+                        { label: "Spiritual & Worship", start: 0,  count: 14 },
+                        { label: "People & Community",  start: 14, count: 7  },
+                        { label: "Music & Media",        start: 21, count: 8  },
+                        { label: "Schedule & Location",  start: 29, count: 6  },
+                        { label: "Misc & Symbolism",     start: 35, count: ICON_OPTIONS.length - 35 },
+                      ].map(({ label, start, count }) => (
+                        <div key={label}>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 mb-2 px-0.5 flex items-center gap-2">
+                            <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+                            {label}
+                            <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+                          </p>
+                          <div className="grid grid-cols-7 gap-2">
+                            {ICON_OPTIONS.slice(start, start + count).map(({ name, label: iconLabel, icon: Ic, color }) => {
+                              const isSelected = formData.icon === name;
+                              return (
+                                <button
+                                  key={name}
+                                  type="button"
+                                  onClick={() => setFormData(p => ({...p, icon: name}))}
+                                  className={`relative flex flex-col items-center gap-1.5 py-2 px-1 rounded-2xl border-2 transition-all duration-200 ${
+                                    isSelected
+                                      ? "border-violet-500 bg-violet-50 dark:bg-violet-900/20 scale-[1.08] shadow-lg shadow-violet-200/60 dark:shadow-violet-900/40"
+                                      : "border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] hover:border-violet-300 dark:hover:border-violet-500/40 hover:scale-105 hover:shadow-md"
+                                  }`}
+                                  title={iconLabel}
+                                >
+                                  <div
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                                    style={{ background: color }}
+                                  >
+                                    <Ic className="w-5 h-5 text-white" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }} />
+                                  </div>
+                                  <span className={`text-[8px] font-bold leading-none truncate w-full text-center ${
+                                    isSelected ? "text-violet-700 dark:text-violet-300" : "text-slate-500 dark:text-white/40"
+                                  }`}>{iconLabel}</span>
+                                  {isSelected && (
+                                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-violet-500 rounded-full border-2 border-white dark:border-slate-950 flex items-center justify-center shadow-sm">
+                                      <Check className="w-2.5 h-2.5 text-white" />
+                                    </span>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </FormField>
