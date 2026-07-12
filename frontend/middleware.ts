@@ -83,11 +83,6 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(httpsUrl, 301);
   }
 
-  // Always allow public paths and static assets
-  if (isPublicPath(pathname) || pathname.startsWith('/_next/') || pathname.includes('.')) {
-    return NextResponse.next();
-  }
-
   // ── Dev bypass (non-production only) ────────────────────────────────────
   const isDev = process.env.NODE_ENV !== 'production';
   const devAutoLogin = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toLowerCase();
@@ -110,6 +105,26 @@ export function middleware(req: NextRequest) {
   const isPastorRole    = effectiveRole === 'PASTOR' || isAdminRole;
   const isEventManagerRole = effectiveRole === 'EVENT_MANAGER' || isAdminRole;
   const isVolunteerRole = effectiveRole === 'FIELD_VOLUNTEER' || isEventManagerRole;
+
+  // Server-side redirect for already-authenticated users trying to access login/register
+  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+    const dashUrl = req.nextUrl.clone();
+    if (isAdminRole) {
+      dashUrl.pathname = '/admin';
+    } else if (effectiveRole === 'PASTOR') {
+      dashUrl.pathname = '/pastor';
+    } else if (effectiveRole === 'EVENT_MANAGER' || effectiveRole === 'FIELD_VOLUNTEER') {
+      dashUrl.pathname = '/event-manager';
+    } else {
+      dashUrl.pathname = '/member';
+    }
+    return NextResponse.redirect(dashUrl);
+  }
+
+  // Always allow public paths and static assets
+  if (isPublicPath(pathname) || pathname.startsWith('/_next/') || pathname.includes('.')) {
+    return NextResponse.next();
+  }
 
   // ── Helper: redirect unauthenticated to login ───────────────────────────
   function redirectToLogin(next: string) {
