@@ -480,11 +480,11 @@ export default function MemberDashboard() {
             {/* Direct logout */}
             <button
               onClick={logout}
-              className="flex h-9 w-9 sm:w-auto items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 hover:scale-[1.02] active:scale-95 transition-all flex-shrink-0 text-xs font-bold shadow-sm"
+              className="flex h-9 items-center gap-1.5 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 hover:scale-[1.02] active:scale-95 transition-all flex-shrink-0 text-xs font-bold shadow-sm"
               title={tLogOut[language as keyof typeof tLogOut] || tLogOut.en}
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{tLogOut[language as keyof typeof tLogOut] || tLogOut.en}</span>
+              <span>{tLogOut[language as keyof typeof tLogOut] || tLogOut.en}</span>
             </button>
           </div>
         </div>
