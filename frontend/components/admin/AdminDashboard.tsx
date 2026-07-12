@@ -84,11 +84,7 @@ export default function AdminDashboard() {
   const { user, status, mounted, logout, getIdToken } = useAuth();
   const router = useRouter();
   const { language } = useLanguage();
-  const [localMounted, setLocalMounted] = useState(false);
-
-  useEffect(() => {
-    setLocalMounted(true);
-  }, []);
+  // localMounted removed — AuthProvider's `mounted` already signals readiness
 
   const t = adminTranslations[language || "en"];
 
@@ -343,60 +339,27 @@ export default function AdminDashboard() {
     }
   }, [mounted, status, user, router]);
 
-  // Load all platform databases
+  // Load all platform databases via unified aggregator endpoint for faster load times
   const loadWorkspaceData = useCallback(async () => {
     setLoading(true);
     try {
       const headers = await authHeaders();
+      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const data = await res.json();
 
-      const usersRes = await fetch("/api/admin/users", { headers });
-      const usersData = await usersRes.json();
-      const membersList = usersData.users || [];
-      setUsersDb(membersList);
-
-
-      // 2. Fetch Donations Ledger
-      const donRes = await fetch("/api/admin/donations", { headers });
-      const donData = await donRes.json();
-      setDonationsDb(donData.donations || []);
-
-      // 3. Fetch Sermons
-      const srmRes = await fetch(`/api/pastor/sermons?t=${Date.now()}`, { headers });
-      const srmData = await srmRes.json();
-      setSermonsDb(srmData.sermons || []);
-
-      // 4. Fetch Announcements
-      const ancRes = await fetch("/api/pastor/announcements", { headers });
-      const ancData = await ancRes.json();
-      setAnnouncementsDb(ancData.announcements || []);
-
-      // 5. Fetch Events
-      const evtRes = await fetch("/api/member/events", { headers });
-      const evtData = await evtRes.json();
-      setEventsDb(evtData.events || []);
-
-      // 6. Fetch Attendance Records
-      const attRes = await fetch("/api/admin/attendance", { headers });
-      const attData = await attRes.json();
-      setAttendanceRecordsDb(attData.records || []);
-
-      // 7. Fetch Pledges
-      const plgRes = await fetch("/api/admin/pledges", { headers });
-      const plgData = await plgRes.json();
-      setPledgesDb(plgData.pledges || []);
-
-      // 8. Fetch Transactions
-      const txRes = await fetch("/api/admin/transactions", { headers });
-      const txData = await txRes.json();
-      setTransactionsDb(txData.transactions || []);
-
-      // 9. Fetch Accounts
-      const accRes = await fetch("/api/admin/accounts", { headers });
-      const accData = await accRes.json();
-      setAccountsDb(accData.accounts || []);
-
-      // 10. Notifications now handled by useNotifications SWR hook — skip manual fetch
-
+      if (res.ok && data.success) {
+        setUsersDb(data.users || []);
+        setDonationsDb(data.donations || []);
+        setSermonsDb(data.sermons || []);
+        setAnnouncementsDb(data.announcements || []);
+        setEventsDb(data.events || []);
+        setAttendanceRecordsDb(data.records || []);
+        setPledgesDb(data.pledges || []);
+        setTransactionsDb(data.transactions || []);
+        setAccountsDb(data.accounts || []);
+      } else {
+        throw new Error(data.error || "Failed to load dashboard data");
+      }
     } catch (err) {
       console.error("Error loading admin workspace resources:", err);
     } finally {
@@ -874,7 +837,8 @@ export default function AdminDashboard() {
     return tAdmin.headers[activeView as keyof typeof tAdmin.headers] || tAdmin.headers.default;
   };
 
-  if (status === "loading" || !localMounted) {
+  // Only block render when Firebase auth state is genuinely unknown (first paint)
+  if (!mounted && status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center space-y-3">
