@@ -525,7 +525,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-10 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
         {/* Subtle grid pattern background (visible on desktop) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
         
@@ -542,17 +542,14 @@ export default function LoginPage() {
           <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
         </div>
 
-        {/* Language Selection */}
-        <div className="absolute top-6 right-6 z-20">
-          <LanguageToggle />
-        </div>
-
-        {/* Mobile Header / Back Button */}
-        <div className="absolute top-6 left-6 lg:hidden z-20">
-          <Link href="/" className="flex items-center gap-2 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md">
+        {/* Mobile Header Bar - Unified to prevent overlapping on small mobile viewports */}
+        <div className="absolute top-4 left-0 right-0 px-4 sm:px-6 flex items-center justify-between lg:hidden z-20">
+          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
             <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-semibold tracking-wide">{loginT.backToHome}</span>
+            <span className="text-xs font-semibold tracking-wide sm:inline hidden">{loginT.backToHome}</span>
+            <span className="text-xs font-semibold tracking-wide sm:hidden inline">Home</span>
           </Link>
+          <LanguageToggle />
         </div>
 
         {/* Form Container */}
@@ -560,7 +557,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-md mt-12 lg:mt-0 bg-white/80 dark:bg-gray-950/80 lg:bg-transparent lg:dark:bg-transparent p-6 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10"
+          className="w-full max-w-md mt-10 lg:mt-0 bg-white/80 dark:bg-gray-950/80 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10"
         >
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
