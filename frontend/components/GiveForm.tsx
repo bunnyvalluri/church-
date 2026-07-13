@@ -760,7 +760,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </section>
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
-      <section className="py-12 -mt-4 relative z-20">
+      <section className="pt-12 pb-24 sm:pb-16 -mt-4 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {loadingLists ? (
@@ -833,7 +833,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mx-6 sm:mx-8 mt-4 overflow-hidden"
+                        className="mx-5 sm:mx-8 mt-4 overflow-hidden"
                       >
                         <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-sm rounded-2xl flex items-start gap-3">
                           <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -844,7 +844,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   </AnimatePresence>
 
                   {/* Form Body */}
-                  <div className="px-6 sm:px-8 pt-6 pb-8">
+                  <div className="px-5 sm:px-8 pt-6 pb-8">
                     <div className="relative">
                       <AnimatePresence>
                         {step === 1 && (
@@ -854,7 +854,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0, position: "absolute", top: 0, left: 0, right: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="space-y-7"
+                            className="space-y-7 w-full"
                           >
                             {/* ── AMOUNT SELECTOR ─────────────── */}
                             <div>
@@ -868,7 +868,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     key={preset}
                                     type="button"
                                     onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-3 px-1.5 sm:py-3.5 sm:px-2 rounded-2xl border-2 text-center font-bold text-sm sm:text-base transition-all duration-200 overflow-hidden group ${
+                                    className={`relative py-3.5 px-1.5 sm:px-2 rounded-2xl border-2 text-center font-bold text-sm sm:text-base transition-all duration-200 overflow-hidden group ${
                                       preset === "10000" ? "col-span-1" : ""
                                     } ${
                                       amount === preset && !customAmount
@@ -894,7 +894,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     placeholder={t.pages.give.customPlaceholder}
                                     value={customAmount}
                                     onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-3 pl-7 pr-2.5 rounded-2xl border-2 font-bold text-xs sm:text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
+                                    className={`w-full py-3.5 pl-7 pr-2.5 rounded-2xl border-2 font-bold text-xs sm:text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
                                       customAmount
                                         ? "border-purple-600 ring-2 ring-purple-600/20"
                                         : "border-gray-200 dark:border-gray-700 focus:border-purple-400 dark:focus:border-purple-600"
@@ -921,7 +921,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-3 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full group overflow-hidden ${
+                                      className={`relative p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full group overflow-hidden ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 hover:border-gray-300 dark:hover:border-gray-600"
@@ -931,10 +931,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         {icon}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <span className={`block font-bold text-xs sm:text-sm transition-colors ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
+                                        <span className={`block font-bold text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
-                                        <span className="block text-gray-400 dark:text-gray-500 text-[10px] sm:text-[11px] mt-0.5 leading-snug line-clamp-2">
+                                        <span className="block text-gray-400 dark:text-gray-500 text-[10px] sm:text-[11px] mt-0.5 leading-snug line-clamp-2 break-words">
                                           {getLanguagePurposeDesc(p)}
                                         </span>
                                       </div>
@@ -1355,7 +1355,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     )}
 
                                     {/* Action buttons */}
-                                    <div className="flex gap-3 w-full max-w-sm">
+                                    <div className="flex gap-3 w-full max-w-sm mx-auto">
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -1365,7 +1365,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                           setPollTimeoutReached(false);
                                           setStep(1);
                                         }}
-                                        className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm"
+                                        className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm flex-shrink-0 min-h-[44px]"
                                       >
                                         <ArrowLeft className="w-4 h-4" />
                                         {t.pages.give.backBtn}
@@ -1374,7 +1374,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         type="button"
                                         disabled={verificationLoading || isExpired}
                                         onClick={handleVerifyPayment}
-                                        className="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm"
+                                        className="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm min-h-[44px]"
                                       >
                                         {verificationLoading ? (
                                           <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
@@ -1399,12 +1399,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               <div className="lg:col-span-5 space-y-5">
 
                 {/* Giving Summary Card */}
-                <div className="relative bg-gradient-to-br from-[#2d1261] via-[#3d1f8a] to-[#1e1065] rounded-3xl shadow-2xl overflow-hidden">
+                <div className="relative bg-gradient-to-br from-[#2d1261] via-[#3d1f8a] to-[#1e1065] rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] overflow-hidden">
                   {/* Background decoration */}
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full filter blur-3xl transform translate-x-16 -translate-y-16" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-400/10 rounded-full filter blur-2xl transform -translate-x-8 translate-y-8" />
                   
-                  <div className="relative p-6 sm:p-8">
+                  <div className="relative px-5 py-6 sm:p-8">
                     <div className="flex items-center gap-2 mb-6">
                       <Receipt className="w-5 h-5 text-purple-200" />
                       <h3 className="font-bold text-base uppercase tracking-widest text-white">
@@ -1457,8 +1457,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                 {/* Live Giving History */}
                 {mounted && user && (
-                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                    <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] overflow-hidden">
+                    <div className="px-5 py-4 sm:px-8 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                       <div>
                         <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
                           <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
@@ -1469,13 +1469,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                       <button 
                         onClick={() => loadHistory()} 
                         disabled={historyLoading}
-                        className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-700"
+                        className="w-11 h-11 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-700"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? "animate-spin" : ""}`} />
                       </button>
                     </div>
 
-                    <div className="p-4">
+                    <div className="px-5 py-5 sm:px-8 sm:pb-6">
                       {historyLoading && history.length === 0 ? (
                         <div className="py-8 flex items-center justify-center">
                           <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
@@ -1537,7 +1537,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 )}
 
                 {/* Scripture Card */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 rounded-3xl p-5 shadow-md border border-amber-100 dark:border-amber-800/20">
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 rounded-3xl px-5 py-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] border border-amber-100 dark:border-amber-800/20">
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
                       <BookOpen className="w-4 h-4 text-white" />
@@ -1550,7 +1550,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 </div>
 
                 {/* Help Card */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 shadow-md border border-gray-100 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl px-5 py-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-800">
                   <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-1">{t.pages.give.helpTitle}</h4>
                   <p className="text-gray-500 dark:text-gray-400 text-xs mb-3 leading-relaxed">{t.pages.give.helpDesc}</p>
                   <div className="space-y-2">
