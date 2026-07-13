@@ -804,8 +804,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
                   
                   {/* Card header strip */}
-                  <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center justify-between gap-4">
+                  <div className="px-4 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-5 border-b border-gray-100 dark:border-gray-800">
+                    <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-3 min-[480px]:gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-600/25">
                           <QrCode className="w-5 h-5 text-white" />
@@ -819,7 +819,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-full text-emerald-700 dark:text-emerald-400 text-[10px] font-bold tracking-wide border border-emerald-100 dark:border-emerald-800/40">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-full text-emerald-700 dark:text-emerald-400 text-[10px] font-bold tracking-wide border border-emerald-100 dark:border-emerald-800/40 self-start min-[480px]:self-auto">
                         <Lock className="w-3 h-3" />
                         Secure
                       </div>
@@ -867,7 +867,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   </AnimatePresence>
 
                   {/* Form Body */}
-                  <div className="px-5 sm:px-8 pt-6 pb-8">
+                  <div className="px-4 sm:px-8 pt-5 sm:pt-6 pb-6 sm:pb-8">
                     <div className="relative">
                       <AnimatePresence>
                         {step === 1 && (
@@ -1379,7 +1379,19 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     )}
 
                                     {/* Action buttons */}
-                                    <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mx-auto">
+                                    <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-xs sm:max-w-sm mx-auto">
+                                      <button
+                                        type="button"
+                                        disabled={verificationLoading || isExpired}
+                                        onClick={handleVerifyPayment}
+                                        className="w-full sm:flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm min-h-[44px]"
+                                      >
+                                        {verificationLoading ? (
+                                          <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
+                                        ) : (
+                                          <><CheckCircle2 className="h-4 w-4" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
+                                        )}
+                                      </button>
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -1390,22 +1402,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                           setStep(1);
                                           setTimeout(scrollToCard, 100);
                                         }}
-                                        className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm flex-shrink-0 min-h-[44px]"
+                                        className="w-full sm:w-auto py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98 text-sm min-h-[44px]"
                                       >
                                         <ArrowLeft className="w-4 h-4" />
                                         {t.pages.give.backBtn}
-                                      </button>
-                                      <button
-                                        type="button"
-                                        disabled={verificationLoading || isExpired}
-                                        onClick={handleVerifyPayment}
-                                        className="flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm min-h-[44px]"
-                                      >
-                                        {verificationLoading ? (
-                                          <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
-                                        ) : (
-                                          <><CheckCircle2 className="h-4 w-4" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
-                                        )}
                                       </button>
                                     </div>
                                   </>
