@@ -483,7 +483,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute right-0 mt-3 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-2xl p-5 space-y-4 z-50 origin-top-right"
+                      className="fixed top-14 right-3 sm:absolute sm:top-auto sm:right-0 sm:mt-3 w-[calc(100vw-1.5rem)] sm:w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-2xl p-5 space-y-4 z-50 origin-top-right"
                     >
                       {/* User Profile Card */}
                       <div className="flex items-center gap-3">
