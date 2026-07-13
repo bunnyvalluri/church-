@@ -783,7 +783,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </section>
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
-      <section className="pt-12 pb-24 sm:pb-16 -mt-4 relative z-20">
+      <section className="pt-8 sm:pt-12 pb-16 sm:pb-24 -mt-4 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {loadingLists ? (
@@ -797,11 +797,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </p>
             </div>
           ) : (
-            <div className="grid lg:grid-cols-12 gap-8 xl:gap-12 max-w-6xl mx-auto items-start">
+            <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-12 max-w-6xl mx-auto items-start">
 
               {/* ── LEFT: FORM CARD ───────────────────────── */}
               <div className="lg:col-span-7">
-                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
                   
                   {/* Card header strip */}
                   <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-gray-100 dark:border-gray-800">
@@ -1192,7 +1192,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 ) : (
                                   <>
                                     {/* QR Container */}
-                                    <div className="w-full max-w-sm">
+                                    <div className="w-full max-w-xs sm:max-w-sm">
                                       <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-3xl border-2 border-gray-100 dark:border-gray-700 shadow-[0_4px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] flex flex-col items-center">
                                         {/* Dynamic QR badge */}
                                         <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md">
@@ -1201,7 +1201,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         </div>
 
                                         {/* QR Code Image */}
-                                        <div className="w-52 h-52 bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center mt-2">
+                                        <div className="w-44 h-44 sm:w-52 sm:h-52 bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center mt-2">
                                           {qrCodeData ? (
                                             <img
                                               src={qrCodeData}
@@ -1238,7 +1238,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     </div>
 
                                     {/* Payment App Quick-Launch */}
-                                    <div className="w-full max-w-sm space-y-3">
+                                    <div className="w-full max-w-xs sm:max-w-sm space-y-3">
                                       {/* Open in UPI App — Android Intent chooser */}
                                       <button
                                         type="button"
@@ -1327,7 +1327,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       <motion.div
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="w-full max-w-sm p-4 bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/40 flex items-start gap-3"
+                                        className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/40 flex items-start gap-3"
                                       >
                                         <Loader2 className="w-5 h-5 text-amber-600 animate-spin flex-shrink-0 mt-0.5" />
                                         <div>
@@ -1345,7 +1345,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       <motion.div
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="w-full max-w-sm p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-800/40 flex items-start gap-3"
+                                        className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-800/40 flex items-start gap-3"
                                       >
                                         <ShieldAlert className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                                         <div>
@@ -1361,7 +1361,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                                     {/* Real-time notice */}
                                     {!verificationStatus && !pollTimeoutReached && (
-                                      <div className="w-full max-w-sm p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-blue-100 dark:border-blue-800/30">
+                                      <div className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-blue-100 dark:border-blue-800/30">
                                         <div className="flex items-start gap-3">
                                           <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                                             <Activity className="w-4 h-4 text-white" />
@@ -1379,7 +1379,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     )}
 
                                     {/* Action buttons */}
-                                    <div className="flex gap-3 w-full max-w-sm mx-auto">
+                                    <div className="flex gap-3 w-full max-w-xs sm:max-w-sm mx-auto">
                                       <button
                                         type="button"
                                         onClick={() => {
@@ -1421,7 +1421,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </div>
 
               {/* ── RIGHT: SIDEBAR ────────────────────────── */}
-              <div className="lg:col-span-5 space-y-5">
+              <div className="lg:col-span-5 space-y-4 sm:space-y-5">
 
                 {/* Giving Summary Card */}
                 <div className="relative bg-gradient-to-br from-[#2d1261] via-[#3d1f8a] to-[#1e1065] rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] overflow-hidden">
@@ -1429,7 +1429,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full filter blur-3xl transform translate-x-16 -translate-y-16" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-400/10 rounded-full filter blur-2xl transform -translate-x-8 translate-y-8" />
                   
-                  <div className="relative px-5 py-6 sm:p-8">
+                  <div className="relative px-4 py-5 sm:px-5 sm:py-6 lg:p-8">
                     <div className="flex items-center gap-2 mb-6">
                       <Receipt className="w-5 h-5 text-purple-200" />
                       <h3 className="font-bold text-base uppercase tracking-widest text-white">
@@ -1615,7 +1615,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
                   {t.pages.give.whyHeading}
                 </h2>
-                <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
+                <p className="text-sm sm:text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
                   {t.pages.give.whySubtitle}
                 </p>
               </motion.div>
@@ -1669,7 +1669,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-purple-100 dark:hover:border-purple-900/40 transition-all duration-300 flex flex-col"
+                className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-purple-100 dark:hover:border-purple-900/40 transition-all duration-300 flex flex-col"
               >
                 <div className="flex items-start gap-4 mb-5">
                   <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
@@ -1706,7 +1706,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-pink-100 dark:hover:border-pink-900/40 transition-all duration-300 flex flex-col"
+                className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-pink-100 dark:hover:border-pink-900/40 transition-all duration-300 flex flex-col"
               >
                 <div className="flex items-start gap-4 mb-5">
                   <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/25 flex-shrink-0">
