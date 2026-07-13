@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -60,78 +60,78 @@ const profileTranslations = {
     photoFailed: "Photo upload failed"
   },
   te: {
-    title: "నా ప్రొఫైల్",
-    subtitle: "మీ ఖాతా సమాచారం మరియు సెట్టింగులను నిర్వహించండి",
-    refresh: "రిఫ్రెష్",
-    syncedAt: "సమకాలీకరించబడింది",
+    title: "à°¨à°¾ à°ªà±à°°à±Šà°«à±ˆà°²à±",
+    subtitle: "à°®à±€ à°–à°¾à°¤à°¾ à°¸à°®à°¾à°šà°¾à°°à°‚ à°®à°°à°¿à°¯à± à°¸à±†à°Ÿà±à°Ÿà°¿à°‚à°—à±à°²à°¨à± à°¨à°¿à°°à±à°µà°¹à°¿à°‚à°šà°‚à°¡à°¿",
+    refresh: "à°°à°¿à°«à±à°°à±†à°·à±",
+    syncedAt: "à°¸à°®à°•à°¾à°²à±€à°•à°°à°¿à°‚à°šà°¬à°¡à°¿à°‚à°¦à°¿",
     avatarRole: {
-      ADMIN: "నిర్వాహకుడు",
-      PASTOR: "పాస్టర్",
-      MEMBER: "సభ్యుడు"
+      ADMIN: "à°¨à°¿à°°à±à°µà°¾à°¹à°•à±à°¡à±",
+      PASTOR: "à°ªà°¾à°¸à±à°Ÿà°°à±",
+      MEMBER: "à°¸à°­à±à°¯à±à°¡à±"
     },
-    accountInfo: "ఖాతా సమాచారం",
-    email: "ఈమెయిల్",
-    phone: "ఫోన్",
-    memberSince: "సభ్యత్వం ప్రారంభమైన తేదీ",
-    editProfile: "ప్రొఫైల్ సవరించండి",
-    unsavedChanges: "సేవ్ చేయని మార్పులు",
-    fullName: "పూర్తి పేరు *",
-    fullNamePlaceholder: "మీ పూర్తి పేరు",
-    emailAddress: "ఈమెయిల్ చిరునామా",
-    locked: "లాక్ చేయబడింది",
-    mobileNumber: "మొబైల్ సంఖ్య",
-    homeAddress: "ఇంటి చిరునామా",
-    homeAddressPlaceholder: "ఇంటి నంబర్, వీధి, నగరం...",
-    connected: "కనెక్ట్ చేయబడింది",
-    offline: "ఆఫ్‌లైన్",
-    autoSave: "ఆటో-సేవ్ సక్రియంగా ఉంది",
-    saveChanges: "మార్పులను సేవ్ చేయి",
-    saving: "సేవ్ అవుతోంది...",
-    saved: "సేవ్ చేయబడింది!",
-    tryAgain: "మళ్ళీ ప్రయత్నించండి",
-    toastSuccess: "ప్రొఫైల్ విజయవంతంగా సేవ్ చేయబడింది!",
-    toastError: "ప్రొఫైల్ డేటాను లోడ్ చేయడం విఫలమైంది",
-    toastSaveError: "ప్రొఫైల్ ఆటో-సేవ్ చేయడం విఫలమైంది",
-    uploadingPhoto: "అప్‌లోడ్ అవుతోంది...",
-    photoUpdated: "ఫోటో అప్‌డేట్ చేయబడింది!",
-    photoFailed: "ఫోటో అప్‌లోడ్ విఫలమైంది"
+    accountInfo: "à°–à°¾à°¤à°¾ à°¸à°®à°¾à°šà°¾à°°à°‚",
+    email: "à°ˆà°®à±†à°¯à°¿à°²à±",
+    phone: "à°«à±‹à°¨à±",
+    memberSince: "à°¸à°­à±à°¯à°¤à±à°µà°‚ à°ªà±à°°à°¾à°°à°‚à°­à°®à±ˆà°¨ à°¤à±‡à°¦à±€",
+    editProfile: "à°ªà±à°°à±Šà°«à±ˆà°²à± à°¸à°µà°°à°¿à°‚à°šà°‚à°¡à°¿",
+    unsavedChanges: "à°¸à±‡à°µà± à°šà±‡à°¯à°¨à°¿ à°®à°¾à°°à±à°ªà±à°²à±",
+    fullName: "à°ªà±‚à°°à±à°¤à°¿ à°ªà±‡à°°à± *",
+    fullNamePlaceholder: "à°®à±€ à°ªà±‚à°°à±à°¤à°¿ à°ªà±‡à°°à±",
+    emailAddress: "à°ˆà°®à±†à°¯à°¿à°²à± à°šà°¿à°°à±à°¨à°¾à°®à°¾",
+    locked: "à°²à°¾à°•à± à°šà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿",
+    mobileNumber: "à°®à±Šà°¬à±ˆà°²à± à°¸à°‚à°–à±à°¯",
+    homeAddress: "à°‡à°‚à°Ÿà°¿ à°šà°¿à°°à±à°¨à°¾à°®à°¾",
+    homeAddressPlaceholder: "à°‡à°‚à°Ÿà°¿ à°¨à°‚à°¬à°°à±, à°µà±€à°§à°¿, à°¨à°—à°°à°‚...",
+    connected: "à°•à°¨à±†à°•à±à°Ÿà± à°šà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿",
+    offline: "à°†à°«à±â€Œà°²à±ˆà°¨à±",
+    autoSave: "à°†à°Ÿà±‹-à°¸à±‡à°µà± à°¸à°•à±à°°à°¿à°¯à°‚à°—à°¾ à°‰à°‚à°¦à°¿",
+    saveChanges: "à°®à°¾à°°à±à°ªà±à°²à°¨à± à°¸à±‡à°µà± à°šà±‡à°¯à°¿",
+    saving: "à°¸à±‡à°µà± à°…à°µà±à°¤à±‹à°‚à°¦à°¿...",
+    saved: "à°¸à±‡à°µà± à°šà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿!",
+    tryAgain: "à°®à°³à±à°³à±€ à°ªà±à°°à°¯à°¤à±à°¨à°¿à°‚à°šà°‚à°¡à°¿",
+    toastSuccess: "à°ªà±à°°à±Šà°«à±ˆà°²à± à°µà°¿à°œà°¯à°µà°‚à°¤à°‚à°—à°¾ à°¸à±‡à°µà± à°šà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿!",
+    toastError: "à°ªà±à°°à±Šà°«à±ˆà°²à± à°¡à±‡à°Ÿà°¾à°¨à± à°²à±‹à°¡à± à°šà±‡à°¯à°¡à°‚ à°µà°¿à°«à°²à°®à±ˆà°‚à°¦à°¿",
+    toastSaveError: "à°ªà±à°°à±Šà°«à±ˆà°²à± à°†à°Ÿà±‹-à°¸à±‡à°µà± à°šà±‡à°¯à°¡à°‚ à°µà°¿à°«à°²à°®à±ˆà°‚à°¦à°¿",
+    uploadingPhoto: "à°…à°ªà±â€Œà°²à±‹à°¡à± à°…à°µà±à°¤à±‹à°‚à°¦à°¿...",
+    photoUpdated: "à°«à±‹à°Ÿà±‹ à°…à°ªà±â€Œà°¡à±‡à°Ÿà± à°šà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿!",
+    photoFailed: "à°«à±‹à°Ÿà±‹ à°…à°ªà±â€Œà°²à±‹à°¡à± à°µà°¿à°«à°²à°®à±ˆà°‚à°¦à°¿"
   },
   hi: {
-    title: "मेरी प्रोफाइल",
-    subtitle: "अपने खाते की जानकारी और सेटिंग्स प्रबंधित करें",
-    refresh: "रिफ्रेश",
-    syncedAt: "सिंक किया गया",
+    title: "à¤®à¥‡à¤°à¥€ à¤ªà¥à¤°à¥‹à¤«à¤¾à¤‡à¤²",
+    subtitle: "à¤…à¤ªà¤¨à¥‡ à¤–à¤¾à¤¤à¥‡ à¤•à¥€ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤”à¤° à¤¸à¥‡à¤Ÿà¤¿à¤‚à¤—à¥à¤¸ à¤ªà¥à¤°à¤¬à¤‚à¤§à¤¿à¤¤ à¤•à¤°à¥‡à¤‚",
+    refresh: "à¤°à¤¿à¤«à¥à¤°à¥‡à¤¶",
+    syncedAt: "à¤¸à¤¿à¤‚à¤• à¤•à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾",
     avatarRole: {
-      ADMIN: "प्रशासक",
-      PASTOR: "पादरी",
-      MEMBER: "सदस्य"
+      ADMIN: "à¤ªà¥à¤°à¤¶à¤¾à¤¸à¤•",
+      PASTOR: "à¤ªà¤¾à¤¦à¤°à¥€",
+      MEMBER: "à¤¸à¤¦à¤¸à¥à¤¯"
     },
-    accountInfo: "खाता जानकारी",
-    email: "ईमेल",
-    phone: "फ़ोन",
-    memberSince: "सदस्यता की शुरुआत",
-    editProfile: "प्रोफ़ाइल संपादित करें",
-    unsavedChanges: "असुरक्षित परिवर्तन",
-    fullName: "पूरा नाम *",
-    fullNamePlaceholder: "आपका पूरा नाम",
-    emailAddress: "ईमेल पता",
-    locked: "लॉक किया गया",
-    mobileNumber: "मोबाइल नंबर",
-    homeAddress: "घर का पता",
-    homeAddressPlaceholder: "मकान नंबर, गली, शहर...",
-    connected: "कनेक्टेड",
-    offline: "ऑफ़लाइन",
-    autoSave: "ऑटो-सेव सक्रिय है",
-    saveChanges: "परिवर्तन सहेजें",
-    saving: "सहेज रहा है...",
-    saved: "सहेजा गया!",
-    tryAgain: "पुनः प्रयास करें",
-    toastSuccess: "प्रोफ़ाइल सफलतापूर्वक सहेजी गई!",
-    toastError: "प्रोफ़ाइल डेटा लोड करने में विफल",
-    toastSaveError: "प्रोफ़ाइल ऑटो-सेव करने में विफल",
-    uploadingPhoto: "अपलोड हो रहा है...",
-    photoUpdated: "फ़ोटो अपडेट हो गई!",
-    photoFailed: "फ़ोटो अपलोड विफल"
+    accountInfo: "à¤–à¤¾à¤¤à¤¾ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€",
+    email: "à¤ˆà¤®à¥‡à¤²",
+    phone: "à¤«à¤¼à¥‹à¤¨",
+    memberSince: "à¤¸à¤¦à¤¸à¥à¤¯à¤¤à¤¾ à¤•à¥€ à¤¶à¥à¤°à¥à¤†à¤¤",
+    editProfile: "à¤ªà¥à¤°à¥‹à¤«à¤¼à¤¾à¤‡à¤² à¤¸à¤‚à¤ªà¤¾à¤¦à¤¿à¤¤ à¤•à¤°à¥‡à¤‚",
+    unsavedChanges: "à¤…à¤¸à¥à¤°à¤•à¥à¤·à¤¿à¤¤ à¤ªà¤°à¤¿à¤µà¤°à¥à¤¤à¤¨",
+    fullName: "à¤ªà¥‚à¤°à¤¾ à¤¨à¤¾à¤® *",
+    fullNamePlaceholder: "à¤†à¤ªà¤•à¤¾ à¤ªà¥‚à¤°à¤¾ à¤¨à¤¾à¤®",
+    emailAddress: "à¤ˆà¤®à¥‡à¤² à¤ªà¤¤à¤¾",
+    locked: "à¤²à¥‰à¤• à¤•à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾",
+    mobileNumber: "à¤®à¥‹à¤¬à¤¾à¤‡à¤² à¤¨à¤‚à¤¬à¤°",
+    homeAddress: "à¤˜à¤° à¤•à¤¾ à¤ªà¤¤à¤¾",
+    homeAddressPlaceholder: "à¤®à¤•à¤¾à¤¨ à¤¨à¤‚à¤¬à¤°, à¤—à¤²à¥€, à¤¶à¤¹à¤°...",
+    connected: "à¤•à¤¨à¥‡à¤•à¥à¤Ÿà¥‡à¤¡",
+    offline: "à¤‘à¤«à¤¼à¤²à¤¾à¤‡à¤¨",
+    autoSave: "à¤‘à¤Ÿà¥‹-à¤¸à¥‡à¤µ à¤¸à¤•à¥à¤°à¤¿à¤¯ à¤¹à¥ˆ",
+    saveChanges: "à¤ªà¤°à¤¿à¤µà¤°à¥à¤¤à¤¨ à¤¸à¤¹à¥‡à¤œà¥‡à¤‚",
+    saving: "à¤¸à¤¹à¥‡à¤œ à¤°à¤¹à¤¾ à¤¹à¥ˆ...",
+    saved: "à¤¸à¤¹à¥‡à¤œà¤¾ à¤—à¤¯à¤¾!",
+    tryAgain: "à¤ªà¥à¤¨à¤ƒ à¤ªà¥à¤°à¤¯à¤¾à¤¸ à¤•à¤°à¥‡à¤‚",
+    toastSuccess: "à¤ªà¥à¤°à¥‹à¤«à¤¼à¤¾à¤‡à¤² à¤¸à¤«à¤²à¤¤à¤¾à¤ªà¥‚à¤°à¥à¤µà¤• à¤¸à¤¹à¥‡à¤œà¥€ à¤—à¤ˆ!",
+    toastError: "à¤ªà¥à¤°à¥‹à¤«à¤¼à¤¾à¤‡à¤² à¤¡à¥‡à¤Ÿà¤¾ à¤²à¥‹à¤¡ à¤•à¤°à¤¨à¥‡ à¤®à¥‡à¤‚ à¤µà¤¿à¤«à¤²",
+    toastSaveError: "à¤ªà¥à¤°à¥‹à¤«à¤¼à¤¾à¤‡à¤² à¤‘à¤Ÿà¥‹-à¤¸à¥‡à¤µ à¤•à¤°à¤¨à¥‡ à¤®à¥‡à¤‚ à¤µà¤¿à¤«à¤²",
+    uploadingPhoto: "à¤…à¤ªà¤²à¥‹à¤¡ à¤¹à¥‹ à¤°à¤¹à¤¾ à¤¹à¥ˆ...",
+    photoUpdated: "à¤«à¤¼à¥‹à¤Ÿà¥‹ à¤…à¤ªà¤¡à¥‡à¤Ÿ à¤¹à¥‹ à¤—à¤ˆ!",
+    photoFailed: "à¤«à¤¼à¥‹à¤Ÿà¥‹ à¤…à¤ªà¤²à¥‹à¤¡ à¤µà¤¿à¤«à¤²"
   }
 };
 
@@ -355,7 +355,7 @@ export default function MemberProfile() {
   if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -363,73 +363,71 @@ export default function MemberProfile() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-xs backdrop-blur-xl ${
+            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-[90vw] sm:max-w-xs backdrop-blur-xl ${
               toast.type === "success"
                 ? "bg-green-500 text-white border-green-400/30"
                 : "bg-red-500 text-white border-red-400/30"
             }`}
           >
             {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
-            {toast.msg}
+            <span className="truncate">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Page Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      {/* â”€â”€ PAGE HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-5 sm:mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{pt.title}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {lastSynced && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
+            <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
               {pt.syncedAt} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
           <button
             onClick={() => loadProfile(false)}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
-            {pt.refresh}
+            <span className="hidden sm:inline">{pt.refresh}</span>
           </button>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left: Profile Card */}
-        <div className="lg:col-span-1 space-y-4">
-          {/* Avatar Card */}
+      {/* â”€â”€ MAIN GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 items-start">
+
+        {/* â”€â”€ LEFT COLUMN: Profile Identity â”€â”€ */}
+        <div className="md:col-span-1 xl:col-span-1 space-y-4">
+
+          {/* Avatar Hero Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
           >
-            {/* Gradient top */}
-            <div className="h-20 bg-gradient-to-r from-gradient-start to-gradient-end relative">
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E\")" }} />
+            {/* Gradient banner */}
+            <div className="h-20 sm:h-24 bg-gradient-to-br from-gradient-start via-purple-500 to-gradient-end relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3C/g%3E%3C/svg%3E\")" }} />
+              <div className="absolute bottom-0 right-0 w-20 h-20 bg-white/10 rounded-full translate-x-6 translate-y-6" />
             </div>
-            <div className="px-5 pb-5">
-              <div className="relative -mt-8 mb-4 w-fit">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
+            <div className="px-4 sm:px-5 pb-5">
+              <div className="relative -mt-8 mb-3 w-fit">
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                 <button
                   type="button"
                   disabled={photoUploading}
                   onClick={() => fileInputRef.current?.click()}
-                  className="group relative w-16 h-16 bg-gradient-to-r from-gradient-start to-gradient-end rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
+                  className="group relative w-16 h-16 bg-gradient-to-br from-gradient-start to-gradient-end rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
                   title="Upload profile picture"
                 >
                   {photoUploading ? (
                     <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : image && typeof image === 'string' && image.length > 0 ? (
+                  ) : image && typeof image === "string" && image.length > 0 ? (
                     <Image src={image} alt={name || "Member"} fill unoptimized className="object-cover" />
                   ) : (
                     <User className="w-8 h-8 text-white" />
@@ -440,42 +438,42 @@ export default function MemberProfile() {
                     </div>
                   )}
                 </button>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
               </div>
-              <h2 className="font-black text-gray-900 dark:text-white text-lg leading-tight">{name || user?.name || "Member"}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
-              <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-xs font-bold border ${rc.bg} ${rc.color}`}>
+              <h2 className="font-black text-gray-900 dark:text-white text-base sm:text-lg leading-tight">{name || user?.name || "Member"}</h2>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
+              <div className={`inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full text-xs font-bold border ${rc.bg} ${rc.color}`}>
                 <Shield className="w-3 h-3" />
                 {rc.label}
               </div>
             </div>
           </motion.div>
 
-          {/* Info Card */}
+          {/* Account Info Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 space-y-4"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5 space-y-3"
           >
-            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{pt.accountInfo}</h3>
-            <div className="space-y-3">
+            <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{pt.accountInfo}</h3>
+            <div className="space-y-2.5">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.email}</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "—"}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.email}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "â€”"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Phone className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
                 </div>
-                <div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.phone}</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{phone || "—"}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.phone}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{phone || "â€”"}</p>
                 </div>
               </div>
               {joinedAt && (
@@ -483,9 +481,9 @@ export default function MemberProfile() {
                   <div className="w-7 h-7 bg-amber-50 dark:bg-amber-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Star className="w-3.5 h-3.5 text-amber-500" />
                   </div>
-                  <div>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.memberSince}</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.memberSince}</p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
                       {new Date(joinedAt).toLocaleDateString(language === "en" ? "en-US" : "en-IN", { month: "long", year: "numeric" })}
                     </p>
                   </div>
@@ -495,93 +493,98 @@ export default function MemberProfile() {
           </motion.div>
         </div>
 
-        {/* Right: Edit Form */}
+        {/* â”€â”€ RIGHT COLUMN: Edit Form â”€â”€ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="lg:col-span-2"
+          className="md:col-span-2 xl:col-span-3"
         >
           <form onSubmit={handleSave} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+            {/* Form header */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-[hsl(var(--primary))]" />
-                <h3 className="font-bold text-gray-900 dark:text-white">{pt.editProfile}</h3>
+                <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white">{pt.editProfile}</h3>
               </div>
               {hasChanges && (
-                <span className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-semibold">
-                  <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-                  {pt.unsavedChanges}
+                <span className="flex items-center gap-1.5 text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 font-semibold">
+                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
+                  <span className="hidden sm:inline">{pt.unsavedChanges}</span>
+                  <span className="sm:hidden">Unsaved</span>
                 </span>
               )}
             </div>
 
-            <div className="p-6 space-y-5">
-              {/* Full Name */}
-              <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.fullName}</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    placeholder={pt.fullNamePlaceholder}
-                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
-                  />
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            {/* Form fields */}
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
+              {/* Name + Email â€” side-by-side on lg+ */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Full Name */}
+                <div>
+                  <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.fullName}</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      placeholder={pt.fullNamePlaceholder}
+                      className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
+                    />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  </div>
                 </div>
-              </div>
-
-              {/* Email (Read-only) */}
-              <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.emailAddress}</label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    value={user?.email || ""}
-                    disabled
-                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm"
-                  />
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">{pt.locked}</span>
+                {/* Email (Read-only) */}
+                <div>
+                  <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.emailAddress}</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={user?.email || ""}
+                      disabled
+                      className="w-full py-2.5 sm:py-3 px-4 pl-9 pr-16 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm truncate"
+                    />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">{pt.locked}</span>
+                  </div>
                 </div>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.mobileNumber}</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.mobileNumber}</label>
                 <div className="relative">
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 XXXXX XXXXX"
-                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-sm"
+                    className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
                   />
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 </div>
               </div>
 
               {/* Address */}
               <div>
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{pt.homeAddress}</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.homeAddress}</label>
                 <div className="relative">
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder={pt.homeAddressPlaceholder}
                     rows={3}
-                    className="w-full py-3 px-4 pl-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all resize-none text-sm"
+                    className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all resize-none text-sm"
                   />
-                  <MapPin className="absolute left-3.5 top-3.5 w-3.5 h-3.5 text-gray-400" />
+                  <MapPin className="absolute left-3 top-3 w-3.5 h-3.5 text-gray-400" />
                 </div>
               </div>
             </div>
 
             {/* Save Footer */}
-            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4 text-xs text-gray-400">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center flex-wrap gap-3 text-xs text-gray-400">
                 {isOnline
                   ? <div className="flex items-center gap-1.5"><Wifi className="w-3.5 h-3.5 text-green-500" /> {pt.connected}</div>
                   : <div className="flex items-center gap-1.5"><WifiOff className="w-3.5 h-3.5 text-red-500" /> {pt.offline}</div>
@@ -594,7 +597,7 @@ export default function MemberProfile() {
               <button
                 type="submit"
                 disabled={saving || !hasChanges}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
                   saveState === "saved"
                     ? "bg-green-500 text-white"
                     : saveState === "error"
@@ -621,3 +624,4 @@ export default function MemberProfile() {
     </div>
   );
 }
+
