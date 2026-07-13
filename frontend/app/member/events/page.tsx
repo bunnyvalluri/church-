@@ -214,7 +214,7 @@ export default function MemberEvents() {
   if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -222,36 +222,40 @@ export default function MemberEvents() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10 }}
-            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-xs ${
+            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-[90vw] sm:max-w-xs ${
               toast.type === "success" ? "bg-green-500 text-white border-green-400/30" :
               toast.type === "error"   ? "bg-red-500 text-white border-red-400/30" :
                                          "bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]/30"
             }`}
           >
             <Bell className="w-4 h-4 flex-shrink-0" />
-            {toast.msg}
+            <span className="truncate">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
+      <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{et.title}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{et.title}</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
         </div>
-        <div className="flex items-center gap-2">
-          {lastSynced && <span className="text-xs text-gray-400">{et.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {lastSynced && (
+            <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">
+              {et.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
           <button onClick={() => load()} disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            {et.refresh}
+            <span className="hidden sm:inline">{et.refresh}</span>
           </button>
         </div>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: et.totalEvents, value: stats.total, icon: Activity, color: "text-[hsl(var(--primary))]", bg: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30" },
           { label: et.upcoming,     value: stats.upcoming, icon: TrendingUp, color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-950/30" },
@@ -262,8 +266,8 @@ export default function MemberEvents() {
               <Icon className={`w-4 h-4 ${color}`} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900 dark:text-white leading-none">{loading ? "—" : value}</p>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide font-semibold mt-0.5">{label}</p>
+              <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-none">{loading ? "—" : value}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-555 uppercase tracking-wide font-semibold mt-0.5">{label}</p>
             </div>
           </div>
         ))}
@@ -281,10 +285,10 @@ export default function MemberEvents() {
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm shadow-sm"
           />
         </div>
-        <div className="flex bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-sm">
+        <div className="flex bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-sm overflow-x-auto scrollbar-none flex-nowrap">
           {(["ALL", "UPCOMING", "REGISTERED"] as FilterTab[]).map(tab => (
             <button key={tab} onClick={() => setFilter(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                 filter === tab
                   ? "bg-[hsl(var(--primary))] text-white shadow-sm"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
@@ -302,7 +306,7 @@ export default function MemberEvents() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-650 mx-auto mb-3" />
+          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-655 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400 font-semibold text-sm">
             {search ? et.noMatches.replace("{query}", search) : filter === "REGISTERED" ? et.noRegistered : et.noEvents}
           </p>
@@ -328,13 +332,13 @@ export default function MemberEvents() {
                   }`}
                 >
                   <div className={`h-1 ${style.bar}`} />
-                  <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
                     {/* Date block */}
-                    <div className="flex-shrink-0 w-14 text-center bg-gray-50 dark:bg-gray-800 rounded-xl py-2 px-1 border border-gray-100 dark:border-gray-700">
+                    <div className="flex-shrink-0 flex sm:flex-col flex-row items-center justify-center gap-2 sm:gap-0 sm:w-14 text-center bg-gray-50 dark:bg-gray-850 rounded-xl py-2 px-3 sm:px-1 border border-gray-100 dark:border-gray-700">
                       <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase">
                         {new Date(event.date).toLocaleDateString("en-IN", { month: "short" })}
                       </p>
-                      <p className="text-2xl font-black text-gray-900 dark:text-white leading-none">
+                      <p className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
                         {new Date(event.date).getDate()}
                       </p>
                     </div>
@@ -346,31 +350,31 @@ export default function MemberEvents() {
                         {!isPast && <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 dark:text-green-400"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />{et.upcomingBadge}</span>}
                         {isPast && <span className="text-[10px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{et.pastBadge}</span>}
                       </div>
-                      <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-[hsl(var(--primary))] transition-colors truncate">{event.title}</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">{event.description}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 dark:text-gray-500">
-                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{event.time}</span>
+                      <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-[hsl(var(--primary))] transition-colors truncate text-sm sm:text-base">{event.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 sm:line-clamp-1">{event.description}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2 text-xs text-gray-400 dark:text-gray-500">
+                        <span className="flex items-center gap-1 flex-shrink-0"><Clock className="w-3.5 h-3.5" />{event.time}</span>
                         <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{event.location}</span>
                       </div>
                     </div>
 
                     {/* Action */}
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 w-full sm:w-auto">
                       {isRegistered ? (
-                        <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-xl text-xs font-bold border border-green-200 dark:border-green-900/30">
+                        <span className="flex items-center justify-center gap-1.5 px-4 py-2 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-xl text-xs font-bold border border-green-200 dark:border-green-900/30 w-full sm:w-auto">
                           <UserCheck className="w-4 h-4" /> {et.statusRegistered}
                         </span>
                       ) : !isPast ? (
                         <button
                           onClick={() => handleRegister(event.id)}
                           disabled={processingId === event.id}
-                          className="flex items-center gap-1.5 px-4 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 active:scale-[0.98] disabled:opacity-50"
+                          className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
                         >
                           {processingId === event.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                           {et.statusRsvp}
                         </button>
                       ) : (
-                        <span className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl text-xs font-bold">{et.statusEnded}</span>
+                        <span className="flex items-center justify-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl text-xs font-bold w-full sm:w-auto">{et.statusEnded}</span>
                       )}
                     </div>
                   </div>
