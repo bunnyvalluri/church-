@@ -249,6 +249,22 @@ export default function NgoDonationForm({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const socketRef = useRef<any>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const scrollToCard = () => {
+    if (cardRef.current) {
+      const offset = 80; // offset for sticky header
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = cardRef.current.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
   // ── Mount guard ──────────────────────────────────────────────────────────────
   useEffect(() => { setMounted(true); }, []);
@@ -585,6 +601,7 @@ export default function NgoDonationForm({
 
       // Advance to Step 2
       setStep(2);
+      setTimeout(scrollToCard, 100);
 
       // Start real-time systems
       connectSocket(sid);
@@ -840,7 +857,7 @@ export default function NgoDonationForm({
 
               {/* ── LEFT: FORM CARD ─────────────────────────────────────────── */}
               <div className="lg:col-span-7">
-                <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
 
                   {/* Card header */}
                   <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-gray-100 dark:border-gray-800">
@@ -1318,6 +1335,7 @@ export default function NgoDonationForm({
                                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
                                 if (socketRef.current) socketRef.current.disconnect();
                                 setStep(1);
+                                setTimeout(scrollToCard, 100);
                                 setQrCodeData("");
                                 setSessionId("");
                                 setTimeLeft("");

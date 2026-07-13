@@ -149,6 +149,22 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const socketRef = useRef<any>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const scrollToCard = () => {
+    if (cardRef.current) {
+      const offset = 80; // offset for sticky header
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = cardRef.current.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
   // Prevent SSR mismatch
   useEffect(() => { setMounted(true); }, []);
@@ -438,6 +454,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       setChurchName(sessionData.session.churchName || "Kingdom of Christ Ministries");
 
       setStep(2);
+      setTimeout(scrollToCard, 100);
 
       connectSocket(sid);
       startStatusPolling(sid);
@@ -784,7 +801,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
               {/* ── LEFT: FORM CARD ───────────────────────── */}
               <div className="lg:col-span-7">
-                <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
                   
                   {/* Card header strip */}
                   <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-gray-100 dark:border-gray-800">
@@ -1164,6 +1181,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         setPollTimeoutReached(false);
                                         setVerificationStatus(null);
                                         setStep(1);
+                                        setTimeout(scrollToCard, 100);
                                       }}
                                       className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-purple-600/25 transition-all active:scale-[0.99]"
                                     >
@@ -1370,6 +1388,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                           setVerificationStatus(null);
                                           setPollTimeoutReached(false);
                                           setStep(1);
+                                          setTimeout(scrollToCard, 100);
                                         }}
                                         className="py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold transition-all flex items-center gap-1.5 active:scale-98 text-sm flex-shrink-0 min-h-[44px]"
                                       >
