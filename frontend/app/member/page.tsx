@@ -66,43 +66,6 @@ const SCRIPTURES = [
   { text: "The Lord will fight for you; you need only to be still.", ref: "Exodus 14:14" },
 ];
 
-const MOCK_ANNOUNCEMENTS: Announcement[] = [
-  {
-    id: "1",
-    title: "Prayer Chain — Join Today",
-    content: "Our 24/7 prayer chain needs volunteers. Sign up to cover a 30-minute prayer slot each week.",
-    priority: "HIGH",
-    createdAt: "2026-06-28T00:00:00.000Z",
-  },
-  {
-    id: "2",
-    title: "Tithe & Offerings — Online Payment Available",
-    content: "You can now give your tithes and offerings online. Visit the Donate section and choose your preferred method.",
-    priority: "NORMAL",
-    createdAt: "2026-06-28T00:00:00.000Z",
-  },
-  {
-    id: "3",
-    title: "New Small Group — Kompally Area",
-    content: "We are launching a new small group for members in Kompally and Medchal areas. Meeting every Tuesday at 7:00 PM.",
-    priority: "NORMAL",
-    createdAt: "2026-06-26T00:00:00.000Z",
-  },
-  {
-    id: "4",
-    title: "Youth Camp Registration Open",
-    content: "Registration is now open for the Youth Summer Camp 2024 (July 5-7). Cost: ₹500 per person includes accommodation, meals, and all activities.",
-    priority: "URGENT",
-    createdAt: "2026-06-25T00:00:00.000Z",
-  },
-  {
-    id: "5",
-    title: "Church Anniversary — August 10, 2024",
-    content: "We are celebrating 16 years of God's faithfulness! Join us on August 10th for a special anniversary service, testimonies, and fellowship lunch.",
-    priority: "HIGH",
-    createdAt: "2026-06-25T00:00:00.000Z",
-  },
-];
 
 const tLogOut = {
   en: "Log Out",
@@ -290,15 +253,15 @@ export default function MemberDashboard() {
         }
         prevAnnouncementCount.current = announcements.length;
       } else {
-        announcements = MOCK_ANNOUNCEMENTS;
+        announcements = [];
       }
 
       setStats({ prayers: prayersCount, prayersAnswered, events: eventsCount, sermons: sermonsCount, announcements });
       setLastSynced(new Date());
     } catch (err) {
       if (!silent) console.error("Dashboard feeds error:", err);
-      // Fallback to mock data
-      setStats(prev => ({ ...prev, announcements: MOCK_ANNOUNCEMENTS }));
+      // Fallback to empty
+      setStats(prev => ({ ...prev, announcements: [] }));
     } finally {
       setLoadingFeeds(false);
       setIsRefreshing(false);
