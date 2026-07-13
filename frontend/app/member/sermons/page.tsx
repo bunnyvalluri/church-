@@ -172,34 +172,36 @@ export default function MemberSermons() {
   if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-            className="fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-xs bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]/30">
-            <Bell className="w-4 h-4" />{toast.msg}
+            className="fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-[90vw] sm:max-w-xs bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]/30">
+            <Bell className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-4">
+      <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{st.title}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{st.subtitle}</p>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{st.title}</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{st.subtitle}</p>
         </div>
-        <div className="flex items-center gap-2">
-          {lastSynced && <span className="text-xs text-gray-400">{st.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {lastSynced && <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">{st.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
           <button onClick={() => fetch_()} disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold">
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />{st.refresh}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm">
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">{st.refresh}</span>
           </button>
         </div>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: st.totalSermons, value: sermons.length,                             icon: BookOpen,   color: "text-[hsl(var(--primary))]", bg: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30" },
           { label: st.withVideo,    value: sermons.filter(s => s.videoUrl).length,     icon: Video,      color: "text-rose-600 dark:text-rose-400",    bg: "bg-rose-50 dark:bg-rose-950/30"    },
@@ -210,8 +212,8 @@ export default function MemberSermons() {
               <Icon className={`w-4 h-4 ${color}`} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900 dark:text-white leading-none">{loading ? "—" : value}</p>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold mt-0.5">{label}</p>
+              <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-none">{loading ? "—" : value}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-555 uppercase tracking-wide font-semibold mt-0.5">{label}</p>
             </div>
           </div>
         ))}
@@ -226,10 +228,10 @@ export default function MemberSermons() {
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm shadow-sm"
           />
         </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none flex-nowrap max-w-full">
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0 ${
                 activeCategory === cat
                   ? "bg-[hsl(var(--primary))] text-white border-transparent shadow-md"
                   : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:text-gray-900 dark:hover:text-white"
@@ -240,7 +242,7 @@ export default function MemberSermons() {
 
       {/* Sermon Grid */}
       {loading ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => <div key={i} className="h-72 bg-white dark:bg-gray-900 rounded-2xl animate-pulse border border-gray-100 dark:border-gray-800" />)}
         </div>
       ) : filtered.length === 0 ? (
@@ -249,88 +251,91 @@ export default function MemberSermons() {
           <p className="text-sm font-semibold text-gray-400">{search ? st.noResults.replace("{query}", search) : st.noSermons}</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
-            {filtered.map((sermon, i) => (
-              <motion.article
-                key={sermon.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ delay: i * 0.04 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden hover:shadow-lg hover:border-[hsl(var(--primary))]/30 dark:hover:border-[hsl(var(--primary))]/25 transition-all group flex flex-col"
-              >
-                {/* Thumbnail */}
-                <div className="relative h-40 bg-slate-900 overflow-hidden flex-shrink-0">
-                  <Image
-                    src={sermon.thumbnail || THUMB}
-                    alt={sermon.title}
-                    fill unoptimized
-                    className="object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  {sermon.videoUrl && (
-                    <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer"
-                      className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-11 h-11 bg-white/20 backdrop-blur-md hover:bg-[hsl(var(--primary))] border border-white/40 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-xl">
-                        <Play className="w-5 h-5 fill-white ml-0.5" />
+            {filtered.map((sermon, i) => {
+              const catStyle = CAT_STYLE[sermon.category] || DEFAULT_CAT;
+              return (
+                <motion.article
+                  key={sermon.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden hover:shadow-lg hover:border-[hsl(var(--primary))]/30 dark:hover:border-[hsl(var(--primary))]/25 transition-all group flex flex-col"
+                >
+                  {/* Thumbnail */}
+                  <div className="relative h-40 bg-slate-900 overflow-hidden flex-shrink-0">
+                    <Image
+                      src={sermon.thumbnail || THUMB}
+                      alt={sermon.title}
+                      fill unoptimized
+                      className="object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {sermon.videoUrl && (
+                      <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer"
+                        className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-11 h-11 bg-white/20 backdrop-blur-md hover:bg-[hsl(var(--primary))] border border-white/40 text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-xl">
+                          <Play className="w-5 h-5 fill-white ml-0.5" />
+                        </div>
+                      </a>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
+                      <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full border ${catStyle}`}>
+                        {catsDict[sermon.category as keyof typeof catsDict] || sermon.category}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {sermon.videoUrl && <div className="w-5 h-5 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"><Video className="w-2.5 h-2.5 text-white" /></div>}
+                        {sermon.audioUrl && <div className="w-5 h-5 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"><Volume2 className="w-2.5 h-2.5 text-white" /></div>}
                       </div>
-                    </a>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
-                    <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full border ${CAT_STYLE[sermon.category] || DEFAULT_CAT}`}>
-                      {catsDict[sermon.category as keyof typeof catsDict] || sermon.category}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      {sermon.videoUrl && <div className="w-5 h-5 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"><Video className="w-2.5 h-2.5 text-white" /></div>}
-                      {sermon.audioUrl && <div className="w-5 h-5 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center"><Volume2 className="w-2.5 h-2.5 text-white" /></div>}
                     </div>
                   </div>
-                </div>
 
-                {/* Content */}
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-1 group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-2">
-                    {sermon.title}
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 mb-3 flex-1">
-                    {sermon.description}
-                  </p>
-                  {sermon.tags?.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {sermon.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="px-1.5 py-0.5 text-[10px] font-semibold bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-100 dark:border-gray-700">
-                          #{tag}
-                        </span>
-                      ))}
+                  {/* Content */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-1 group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-2">
+                      {sermon.title}
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 mb-3 flex-1">
+                      {sermon.description}
+                    </p>
+                    {sermon.tags?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {sermon.tags.slice(0, 3).map(tag => (
+                          <span key={tag} className="px-1.5 py-0.5 text-[10px] font-semibold bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-550 rounded-md border border-gray-100 dark:border-gray-700">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-555 border-t border-gray-100 dark:border-gray-800 pt-3 mb-3">
+                      <span className="flex items-center gap-1 font-medium"><User className="w-3 h-3 text-[hsl(var(--primary))]/80" />{sermon.pastor}</span>
+                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-[hsl(var(--primary))]/80" />{new Date(sermon.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
                     </div>
-                  )}
-                  <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-800 pt-3 mb-3">
-                    <span className="flex items-center gap-1 font-medium"><User className="w-3 h-3 text-[hsl(var(--primary))]/80" />{sermon.pastor}</span>
-                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-[hsl(var(--primary))]/80" />{new Date(sermon.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    {sermon.videoUrl
-                      ? <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer"
+                    <div className="flex gap-2">
+                      {sermon.videoUrl && (
+                        <a href={sermon.videoUrl} target="_blank" rel="noopener noreferrer"
                           className="flex-1 py-2 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 text-[hsl(var(--primary))] rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 hover:opacity-90 transition-all border border-[hsl(var(--primary))]/20">
                           <Video className="w-3.5 h-3.5" />{st.btnWatch}
                         </a>
-                      : null}
-                    {sermon.audioUrl
-                      ? <a href={sermon.audioUrl} target="_blank" rel="noopener noreferrer"
+                      )}
+                      {sermon.audioUrl && (
+                        <a href={sermon.audioUrl} target="_blank" rel="noopener noreferrer"
                           className="flex-1 py-2 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all border border-gray-100 dark:border-gray-700">
                           <Volume2 className="w-3.5 h-3.5" />{st.btnListen}
                         </a>
-                      : null}
-                    {!sermon.videoUrl && !sermon.audioUrl && (
-                      <span className="flex-1 py-2 text-center text-[11px] text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-                        {st.mediaComingSoon}
-                      </span>
-                    )}
+                      )}
+                      {!sermon.videoUrl && !sermon.audioUrl && (
+                        <span className="flex-1 py-2 text-center text-[11px] text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                          {st.mediaComingSoon}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </motion.article>
-            ))}
+                </motion.article>
+              );
+            })}
           </AnimatePresence>
         </div>
       )}
