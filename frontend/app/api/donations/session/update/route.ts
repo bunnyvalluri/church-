@@ -53,6 +53,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 });
   }
 
+  const phoneRegex = /^\+?[0-9]{10,15}$/;
+  const cleanedPhone = donorPhone ? donorPhone.replace(/[\s-]/g, "") : "";
+  if (!donorPhone || !phoneRegex.test(cleanedPhone)) {
+    return NextResponse.json({ error: 'A valid 10-15 digit phone number is required.' }, { status: 400 });
+  }
+
   try {
     // 4. Fetch the existing session
     const existingDonation = await prisma.donation.findUnique({
@@ -87,7 +93,7 @@ export async function POST(req: Request) {
         purpose,
         donorName: donorName.trim(),
         donorEmail: donorEmail.trim(),
-        donorPhone: donorPhone ? donorPhone.trim() : null,
+        donorPhone: cleanedPhone,
         userId: user?.uid || existingDonation.userId, // bind user to session if they logged in during checkout
       },
     });

@@ -466,6 +466,12 @@ export default function NgoDonationForm({
       setErrorMessage("Please enter a valid email address.");
       return false;
     }
+    const cleanedPhone = donorPhone.replace(/[\s-]/g, "");
+    const phoneRegex = /^\+?[0-9]{10,15}$/;
+    if (!donorPhone || !phoneRegex.test(cleanedPhone)) {
+      setErrorMessage("Please enter a valid 10-15 digit phone number.");
+      return false;
+    }
     setErrorMessage("");
     return true;
   };

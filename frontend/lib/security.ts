@@ -64,7 +64,7 @@ export const DonationSessionSchema = z.object({
   branchId: z.string().optional().nullable(),
   donorName: z.string().min(2, 'Name must be at least 2 characters').max(100),
   donorEmail: z.string().email('Invalid email address'),
-  donorPhone: z.string().regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number format').optional().nullable(),
+  donorPhone: z.string().regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number format'),
 });
 
 /**

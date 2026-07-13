@@ -41,7 +41,9 @@ export async function POST(req: Request) {
     // Input Sanitization
     if (body.donorName) body.donorName = sanitizeInput(body.donorName);
     if (body.donorEmail) body.donorEmail = sanitizeInput(body.donorEmail);
-    if (body.donorPhone) body.donorPhone = sanitizeInput(body.donorPhone);
+    if (body.donorPhone) {
+      body.donorPhone = sanitizeInput(body.donorPhone).replace(/[\s-]/g, "");
+    }
 
     // Zod Schema Validation
     const validation = DonationSessionSchema.safeParse(body);
