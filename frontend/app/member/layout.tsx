@@ -277,10 +277,12 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               <p className="text-purple-200 text-[10px] truncate">{user?.email}</p>
             </div>
           </div>
-          <div className="relative flex items-center gap-1.5 mt-3">
-            <Shield className="w-3 h-3 text-purple-200" />
-            <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider">{lt.verifiedMember}</span>
-            <div className="ml-auto flex items-center gap-1">
+          <div className="relative flex items-center flex-wrap justify-between gap-1.5 mt-3">
+            <div className="flex items-center gap-1.5">
+              <Shield className="w-3 h-3 text-purple-200" />
+              <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider">{lt.verifiedMember}</span>
+            </div>
+            <div className="flex items-center gap-1">
               {isOnline ? <Wifi className="w-3 h-3 text-green-300" /> : <WifiOff className="w-3 h-3 text-red-300" />}
               <span className={`text-[9px] font-bold ${isOnline ? "text-green-300" : "text-red-300"}`}>
                 {isOnline ? lt.live : lt.offline}
@@ -436,13 +438,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <PaletteToggle />
               </div>
 
-              <div className={`flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] font-bold border flex-shrink-0 ${
+              <div className={`flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
                 isOnline
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
-              }`}>
+              } p-1 sm:px-2.5 sm:py-1 gap-0 sm:gap-1.5`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-                <span className="hidden md:inline">{isOnline ? lt.live : lt.offline}</span>
+                <span className="hidden sm:inline">{isOnline ? lt.live : lt.offline}</span>
               </div>
 
               {/* Profile Dropdown Container */}

@@ -436,13 +436,13 @@ export default function MemberDashboard() {
           <div className="flex items-center gap-2 sm:gap-3">
 
             {/* Online badge */}
-            <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+            <div className={`flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
               isOnline
                 ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400"
                 : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
-            }`}>
+            } p-1 sm:px-2.5 sm:py-1 gap-0 sm:gap-1.5`}>
               <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
-              {isOnline ? "Live" : "Offline"}
+              <span className="hidden sm:inline">{isOnline ? "Live" : "Offline"}</span>
             </div>
 
             {/* Toggles capsule */}
@@ -574,7 +574,7 @@ export default function MemberDashboard() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 sm:p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
             >
               {/* Decorative blobs */}
               <div className="pointer-events-none absolute inset-0">
@@ -614,7 +614,7 @@ export default function MemberDashboard() {
                     { label: "Events", value: stats.events, icon: Calendar },
                     { label: "Prayers", value: stats.prayers, icon: Heart },
                   ].map(({ label, value, icon: Icon }) => (
-                    <div key={label} className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-2xl px-4 py-2.5">
+                    <div key={label} className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-2xl px-2.5 py-1.5 sm:px-4 sm:py-2.5">
                       <Icon className="w-4 h-4 text-white flex-shrink-0" />
                       <div>
                         <p className="text-lg font-black leading-none text-white">
@@ -708,7 +708,7 @@ export default function MemberDashboard() {
                 <Link
                   key={i}
                   href={href}
-                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
+                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-3.5 sm:p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
                 >
                   <div className="absolute top-3 right-3 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                   <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
