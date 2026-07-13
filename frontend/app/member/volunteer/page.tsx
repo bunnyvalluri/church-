@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Briefcase, Send, Loader2, Check, Bell, Users, Gift, Lock, Info,
@@ -226,10 +226,21 @@ export default function MemberVolunteer() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
+
+  // Smooth scroll to form on mobile when selection happens
+  useEffect(() => {
+    if (selected && typeof window !== "undefined" && window.innerWidth < 1024) {
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [selected]);
 
   const showToast = (msg: string, type: "success" | "error") => {
     setToast({ msg, type });
@@ -304,11 +315,11 @@ export default function MemberVolunteer() {
       {/* Total Open Slots Indicator Banner */}
       <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-purple-950/40 border border-indigo-200/20 dark:border-indigo-900/20 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4">
           <div className="w-12 h-12 bg-white/10 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg text-white">
             <Compass className="w-6 h-6 animate-pulse" />
           </div>
-          <div className="text-center sm:text-left">
+          <div>
             <p className="font-black text-xl leading-none text-white tracking-tight">
               {MINISTRIES.reduce((s, m) => s + m.slots, 0)} {vt.openPositions}
             </p>
@@ -382,7 +393,7 @@ export default function MemberVolunteer() {
                         <Icon className="w-5.5 h-5.5 text-white" />
                       </div>
                       <h3 className="font-black text-gray-900 dark:text-white text-sm tracking-tight mb-1">{localDetails.name}</h3>
-                      <p className="text-xs text-gray-550 dark:text-gray-450 leading-relaxed line-clamp-3 mb-5 font-medium">{localDetails.desc}</p>
+                      <p className="text-xs text-gray-550 dark:text-gray-455 leading-relaxed line-clamp-3 mb-5 font-medium">{localDetails.desc}</p>
                     </div>
                     
                     <div className="flex items-center justify-between w-full mt-auto pt-2">
@@ -401,7 +412,7 @@ export default function MemberVolunteer() {
           </div>
 
           {/* Dynamic Form Panel */}
-          <div className="lg:col-span-2 w-full">
+          <div ref={formRef} className="lg:col-span-2 w-full">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -434,9 +445,9 @@ export default function MemberVolunteer() {
                           type="text" 
                           value={user?.name || ""} 
                           disabled
-                          className="w-full py-2.5 pl-10 pr-3.5 rounded-xl border border-gray-150 dark:border-white/[0.06] bg-gray-100 dark:bg-white/[0.02] text-gray-400 dark:text-gray-500 cursor-not-allowed text-xs font-bold"
+                          className="w-full py-2.5 pl-10 pr-3.5 rounded-xl border border-gray-150 dark:border-white/[0.06] bg-gray-100 dark:bg-white/[0.02] text-gray-400 dark:text-gray-555 cursor-not-allowed text-xs font-bold"
                         />
-                        <Lock className="w-3.5 h-3.5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Lock className="w-3.5 h-3.5 text-gray-455 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       </div>
                     </div>
 
