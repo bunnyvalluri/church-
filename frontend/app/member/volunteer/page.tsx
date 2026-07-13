@@ -132,7 +132,7 @@ const volunteerTranslations = {
     characters: "అక్షరాలు నమోదయ్యాయి",
     promptSelect: "మీ దరఖాస్తును ప్రారంభించడానికి కుడి వైపు గ్రిడ్ నుండి ఒక పరిచర్య విభాగాన్ని ఎంచుకోండి",
     successTitle: "దరఖాస్తు విజయవంతంగా సమర్పించబడింది!",
-    successDesc: "{name} కోసం వాలంటీర్ చేసినందుకు ధನ್ಯवाదాలు. ఒక పరిచర్య సమన్వయకర్త 2-3 పనిదినాల్లో మిమ్మల్ని సంప్రదిస్తారు.",
+    successDesc: "{name} కోసం వాలంటీర్ చేసినందుకు ధన్యవాదాలు. ఒక పరిచర్య సమన్వయకర్త 2-3 పనిదినాల్లో మిమ్మల్ని సంప్రదిస్తారు.",
     btnApplyAnother: "మరో పరిచర్యకు దరఖాస్తు చేయండి",
     toastSuccess: "దరఖాస్తు సమర్పించబడింది! ఒక సమన్వయకర్త త్వరలోనే మిమ్మల్ని సంప్రదిస్తారు 🙌",
     toastFail: "సమర్పించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
@@ -192,7 +192,7 @@ const volunteerTranslations = {
       },
       TECH: {
         name: "तकनीकी और मीडिया",
-        desc: "ऑडियो, वीडियो उत्पादन, लाइव स्ट्रीमिंग, सोशल मीडिया प्रबंधन और ग्राफिक्स।"
+        desc: "ऑडियो, वीडियो उत्पादन, लाइव स्ट्रीमिंग, सोशल media प्रबंधन और ग्राफिक्स।"
       },
       KIDS: {
         name: "बच्चों का मंत्रालय",
@@ -264,7 +264,7 @@ export default function MemberVolunteer() {
   if (!mounted || status === "loading" || status === "unauthenticated") return null;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-12 animate-in fade-in duration-300">
+    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6 pb-12 animate-in fade-in duration-300">
       {/* Toast Alert */}
       <AnimatePresence>
         {toast && (
@@ -272,37 +272,37 @@ export default function MemberVolunteer() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }} 
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-xs ${
+            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-[90vw] sm:max-w-xs ${
               toast.type === "success" 
                 ? "bg-emerald-500 text-white border-emerald-400/20 shadow-emerald-500/10" 
                 : "bg-rose-500 text-white border-rose-400/20 shadow-rose-500/10"
             }`}
           >
             <Bell className="w-4.5 h-4.5 flex-shrink-0 animate-bounce" />
-            <span>{toast.msg}</span>
+            <span className="truncate">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header Profile Section */}
-      <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
+      <div className="relative overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
         <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative space-y-2 max-w-3xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/30 text-[#6366F1] border border-indigo-100 dark:border-indigo-900/30 text-[10px] font-extrabold uppercase tracking-wider">
             <Gift className="w-3.5 h-3.5" />
             {language === "te" ? "పరిచర్య పిలుపు" : language === "hi" ? "मंत्रालय सेवा" : "Ministry Calling"}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+          <h1 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
             {vt.title}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-405 leading-relaxed font-medium italic border-l-2 border-indigo-500 pl-3 py-0.5">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium italic border-l-2 border-indigo-500 pl-3 py-0.5">
             {vt.subtitle}
           </p>
         </div>
       </div>
 
       {/* Total Open Slots Indicator Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-650 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-purple-950/40 border border-indigo-200/20 dark:border-indigo-550/20 rounded-3xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5">
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-purple-950/40 border border-indigo-200/20 dark:border-indigo-900/20 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/10 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg text-white">
@@ -327,7 +327,7 @@ export default function MemberVolunteer() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-[#121324] rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-xl p-8 sm:p-12 text-center relative overflow-hidden"
+          className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-xl p-6 sm:p-12 text-center relative overflow-hidden"
         >
           <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
           
@@ -348,13 +348,13 @@ export default function MemberVolunteer() {
           </button>
         </motion.div>
       ) : (
-        <div className="grid lg:grid-cols-5 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 sm:gap-6 lg:gap-8 items-start">
           {/* Ministry Cards Grid */}
-          <div className="lg:col-span-3 space-y-4">
-            <h2 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+          <div className="lg:col-span-3 space-y-4 w-full">
+            <h2 className="text-xs font-black text-gray-400 dark:text-gray-555 uppercase tracking-widest pl-1">
               {vt.step1}
             </h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {MINISTRIES.map((m, i) => {
                 const Icon = m.icon;
                 const isSelected = selected === m.id;
@@ -366,7 +366,7 @@ export default function MemberVolunteer() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
                     onClick={() => setSelected(m.id)}
-                    className={`relative text-left p-5 rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between ${
+                    className={`relative text-left p-5 rounded-2xl sm:rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between ${
                       isSelected
                         ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-lg shadow-indigo-500/10"
                         : "border-gray-100 dark:border-white/[0.04] bg-white dark:bg-[#121324] hover:border-gray-250 dark:hover:border-white/[0.1] hover:shadow-xl hover:-translate-y-0.5"
@@ -401,7 +401,7 @@ export default function MemberVolunteer() {
           </div>
 
           {/* Dynamic Form Panel */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 w-full">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -410,7 +410,7 @@ export default function MemberVolunteer() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white dark:bg-[#121324] rounded-3xl border border-gray-100 dark:border-white/[0.04] shadow-sm overflow-hidden sticky top-24"
+                  className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-white/[0.04] shadow-sm overflow-hidden lg:sticky lg:top-24"
                 >
                   <div className="flex items-center gap-2 px-6 py-4.5 border-b border-gray-100 dark:border-white/[0.04] bg-indigo-50/20 dark:bg-indigo-950/10">
                     <Briefcase className="w-4.5 h-4.5 text-[#6366F1]" />
@@ -428,7 +428,7 @@ export default function MemberVolunteer() {
 
                     {/* Disabled Name Field */}
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.fullName}</label>
+                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-555 uppercase tracking-wider">{vt.fullName}</label>
                       <div className="relative">
                         <input 
                           type="text" 
@@ -442,7 +442,7 @@ export default function MemberVolunteer() {
 
                     {/* Testimony TextArea */}
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.skillsLabel}</label>
+                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-555 uppercase tracking-wider">{vt.skillsLabel}</label>
                       <textarea
                         value={skills} 
                         onChange={e => setSkills(e.target.value)} 
@@ -485,7 +485,7 @@ export default function MemberVolunteer() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="bg-white dark:bg-[#121324] rounded-3xl border border-dashed border-gray-200 dark:border-white/[0.08] p-8 text-center flex flex-col items-center justify-center min-h-[340px] gap-4"
+                  className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-dashed border-gray-200 dark:border-white/[0.08] p-8 text-center flex flex-col items-center justify-center min-h-[340px] gap-4"
                 >
                   <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shadow-md">
                     <ClipboardList className="w-8 h-8 animate-float" />
@@ -494,7 +494,7 @@ export default function MemberVolunteer() {
                     <h4 className="font-black text-sm text-gray-900 dark:text-white">
                       {language === "te" ? "పరిచర్యను ఎంచుకోండి" : language === "hi" ? "मंत्रालय चुनें" : "No Department Configured"}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-semibold">
+                    <p className="text-xs text-gray-550 dark:text-gray-400 leading-relaxed font-semibold">
                       {vt.promptSelect}
                     </p>
                   </div>
