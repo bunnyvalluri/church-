@@ -106,6 +106,16 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
+  // Warm up Next.js client router cache by prefetching all member route bundles aggressively
+  useEffect(() => {
+    if (status === "authenticated" && router) {
+      translatedLinks.forEach((link) => {
+        router.prefetch(link.href);
+      });
+      router.prefetch("/member");
+    }
+  }, [status, router]);
+
   // Online/offline detection
   useEffect(() => {
     const onOnline = () => setIsOnline(true);
