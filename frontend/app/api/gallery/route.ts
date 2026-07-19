@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const branchId = searchParams.get("branch");
     const isNgo = searchParams.get("ngo") === "true";
 
-    const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam))) : 20;
+    const limit = limitParam ? Math.min(isNgo ? 1000 : 100, Math.max(1, parseInt(limitParam))) : 20;
 
     const where: any = {};
     if (category && category !== "ALL") {

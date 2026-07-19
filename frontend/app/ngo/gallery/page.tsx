@@ -23,7 +23,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
 
 // Encode a URL path so parentheses and spaces are safe for browsers
@@ -177,9 +177,9 @@ export default function NgoGalleryPage() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // 1. Fetch gallery using TanStack React Query Infinite Fetcher
-  const fetchGallery = async ({ pageParam = null }: { pageParam: string | null }) => {
-    const url = `/api/gallery?limit=24&ngo=true&category=${selectedCategory}${pageParam ? `&cursor=${pageParam}` : ""}`;
+  // 1. Fetch NGO gallery images
+  const fetchGallery = async () => {
+    const url = `/api/gallery?limit=1000&ngo=true&category=ALL`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch gallery");
     return res.json();
@@ -187,27 +187,34 @@ export default function NgoGalleryPage() {
 
   const {
     data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
     status,
     refetch,
-  } = useInfiniteQuery({
-    queryKey: ["ngo-gallery", selectedCategory],
+  } = useQuery({
+    queryKey: ["ngo-gallery-all"],
     queryFn: fetchGallery,
-    initialPageParam: null,
-    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
   });
 
-  const allImages: GalleryItem[] = data?.pages.flatMap((page) => page.images) || [];
-  const filteredItems = allImages.filter((item) => !deletedUrls.has(item.imageUrl));
+  const allImages: GalleryItem[] = data?.images || [];
+  const filteredItems = allImages.filter(
+    (item) => (selectedCategory === "ALL" || item.category === selectedCategory) && !deletedUrls.has(item.imageUrl)
+  );
 
-  // 2. Infinite Scroll Intersection Observer
+  const [displayLimit, setDisplayLimit] = useState(24);
+
+  // Reset display limit when selected category changes for instant switch
+  useEffect(() => {
+    setDisplayLimit(24);
+  }, [selectedCategory]);
+
+  const displayedItems = filteredItems.slice(0, displayLimit);
+  const hasNextPage = displayLimit < filteredItems.length;
+
+  // 2. Infinite Scroll progressive loading observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
+        if (entries[0].isIntersecting && displayLimit < filteredItems.length) {
+          setDisplayLimit((prev) => prev + 24);
         }
       },
       { rootMargin: "300px" }
@@ -219,7 +226,7 @@ export default function NgoGalleryPage() {
     return () => {
       if (currentSentinel) observer.unobserve(currentSentinel);
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [displayLimit, filteredItems.length]);
 
   // 3. Realtime updates with Socket.IO
   useEffect(() => {
@@ -230,35 +237,13 @@ export default function NgoGalleryPage() {
     });
 
     socket.on("gallery.image.created", (newImage: GalleryItem) => {
-      // Prepend to "ALL" category page 0
-      queryClient.setQueryData(["ngo-gallery", "ALL"], (old: any) => {
+      queryClient.setQueryData(["ngo-gallery-all"], (old: any) => {
         if (!old) return old;
         return {
           ...old,
-          pages: old.pages.map((page: any, idx: number) => {
-            if (idx === 0) {
-              return { ...page, images: [newImage, ...page.images] };
-            }
-            return page;
-          }),
+          images: [newImage, ...old.images]
         };
       });
-
-      // Prepend to specific category if matches
-      if (newImage.category) {
-        queryClient.setQueryData(["ngo-gallery", newImage.category], (old: any) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page: any, idx: number) => {
-              if (idx === 0) {
-                return { ...page, images: [newImage, ...page.images] };
-              }
-              return page;
-            }),
-          };
-        });
-      }
     });
 
     return () => {
@@ -604,7 +589,7 @@ export default function NgoGalleryPage() {
         ) : (
           <div className="space-y-8">
             <div className="columns-1 sm:columns-2 md:columns-3 gap-5">
-              {filteredItems.map((item, index) => (
+              {displayedItems.map((item, index) => (
                 <GalleryCard
                   key={item.id}
                   item={item}
@@ -618,12 +603,7 @@ export default function NgoGalleryPage() {
 
             {/* Infinite scroll pagination sentinel */}
             <div ref={sentinelRef} className="flex justify-center py-6">
-              {isFetchingNextPage ? (
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-mono">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                  <span>Loading next batch...</span>
-                </div>
-              ) : hasNextPage ? (
+              {hasNextPage ? (
                 <span className="text-xs text-slate-400 font-mono">Scroll down for more</span>
               ) : (
                 <span className="text-xs text-slate-400 font-mono">No more photos to load</span>
