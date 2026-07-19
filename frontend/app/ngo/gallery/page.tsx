@@ -179,7 +179,7 @@ export default function NgoGalleryPage() {
 
   // 1. Fetch gallery using TanStack React Query Infinite Fetcher
   const fetchGallery = async ({ pageParam = null }: { pageParam: string | null }) => {
-    const url = `/api/gallery?limit=24&category=${selectedCategory}${pageParam ? `&cursor=${pageParam}` : ""}`;
+    const url = `/api/gallery?limit=24&ngo=true&category=${selectedCategory}${pageParam ? `&cursor=${pageParam}` : ""}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch gallery");
     return res.json();

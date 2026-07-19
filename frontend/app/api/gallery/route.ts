@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const limitParam = searchParams.get("limit");
     const category = searchParams.get("category");
     const branchId = searchParams.get("branch");
+    const isNgo = searchParams.get("ngo") === "true";
 
     const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam))) : 20;
 
@@ -17,25 +18,57 @@ export async function GET(request: NextRequest) {
     if (category && category !== "ALL") {
       where.category = category;
     }
-    if (branchId) {
-      where.branchId = branchId;
-    }
 
-    const items = await prisma.gallery.findMany({
-      take: limit + 1,
-      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-      where,
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        imageUrl: true,
-        thumbnailUrl: true,
-        title: true,
-        category: true,
-        createdAt: true,
-        branchId: true,
-      },
-    });
+    let items: any[] = [];
+
+    if (isNgo) {
+      where.type = "IMAGE";
+
+      const ngoItems = await prisma.ngoMedia.findMany({
+        take: limit + 1,
+        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+        where,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          url: true,
+          thumbnailUrl: true,
+          title: true,
+          category: true,
+          createdAt: true,
+        },
+      });
+
+      items = ngoItems.map(item => ({
+        id: item.id,
+        imageUrl: item.url,
+        thumbnailUrl: item.thumbnailUrl,
+        title: item.title,
+        category: item.category,
+        createdAt: item.createdAt,
+        branchId: null,
+      }));
+    } else {
+      if (branchId) {
+        where.branchId = branchId;
+      }
+
+      items = await prisma.gallery.findMany({
+        take: limit + 1,
+        ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+        where,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          imageUrl: true,
+          thumbnailUrl: true,
+          title: true,
+          category: true,
+          createdAt: true,
+          branchId: true,
+        },
+      });
+    }
 
     const hasMore = items.length > limit;
     const paginatedItems = hasMore ? items.slice(0, limit) : items;
