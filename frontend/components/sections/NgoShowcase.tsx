@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ArrowRight } from "lucide-react";
@@ -8,22 +8,47 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import { ALL_NGO_IMAGES } from "@/lib/ngoImages";
 
-// Cap to 30 images per row — enough for a seamless loop, avoids 1000+ DOM nodes
-const MAX_PER_ROW = 30;
+// Cap to 10 images per row — 20 total per row when doubled for seamless loop (60 total DOM nodes instead of 180)
+const MAX_PER_ROW = 10;
+
+// Memoized Gallery Image Card
+const NgoImageCard = memo(function NgoImageCard({
+  src,
+  alt,
+  badgeText,
+}: {
+  src: string;
+  alt: string;
+  badgeText?: string;
+}) {
+  return (
+    <div className="ngo-img-card w-60 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0 transform-gpu">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 320px"
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+        quality={75}
+      />
+      {badgeText && (
+        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span>{badgeText}</span>
+        </div>
+      )}
+    </div>
+  );
+});
 
 export default function NgoShowcase() {
   const { t } = useLanguage();
-  const [mounted, setMounted] = useState(false);
+  const ngoT = t.ngo ?? translations.en.ngo;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const ngoT = mounted ? t.ngo : translations.en.ngo;
-
-  // Interleave images by directory/event to ensure variety and prevent duplicate events from clustering together
+  // Interleave images by directory/event to ensure variety
   const interleavedImages = useMemo(() => {
-    const groups: { [key: string]: string[] } = {};
+    const groups: Record<string, string[]> = {};
     for (const src of ALL_NGO_IMAGES) {
       const lastSlashIndex = src.lastIndexOf('/');
       if (lastSlashIndex === -1) continue;
@@ -53,22 +78,22 @@ export default function NgoShowcase() {
     return interleaved;
   }, []);
 
-  // Distribute interleaved images, capped at MAX_PER_ROW each
+  // Distribute interleaved images capped at MAX_PER_ROW each
   const row1 = useMemo(() => interleavedImages.slice(0, MAX_PER_ROW), [interleavedImages]);
   const row2 = useMemo(() => interleavedImages.slice(MAX_PER_ROW, MAX_PER_ROW * 2), [interleavedImages]);
   const row3 = useMemo(() => interleavedImages.slice(MAX_PER_ROW * 2, MAX_PER_ROW * 3), [interleavedImages]);
 
-  // Duplicate for seamless infinite loop
+  // Duplicate for seamless infinite loop (20 cards per row)
   const itemsRow1 = useMemo(() => [...row1, ...row1], [row1]);
   const itemsRow2 = useMemo(() => [...row2, ...row2], [row2]);
   const itemsRow3 = useMemo(() => [...row3, ...row3], [row3]);
 
   return (
-    <section className="py-24 relative overflow-hidden bg-slate-50/50 dark:bg-slate-950/20 border-t border-b border-slate-200/50 dark:border-white/[0.04]">
-      {/* Single lightweight bg orb — not two */}
-      <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
-        <div className="absolute top-12 left-12 w-64 h-64 rounded-full bg-purple-500/5 blur-2xl" />
-        <div className="absolute bottom-12 right-12 w-64 h-64 rounded-full bg-red-500/5 blur-2xl" />
+    <section className="py-20 sm:py-24 relative overflow-hidden bg-slate-50/50 dark:bg-slate-950/20 border-t border-b border-slate-200/50 dark:border-white/[0.04]">
+      {/* Background Orbs */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-12 left-12 w-64 h-64 rounded-full bg-purple-500/5 blur-2xl transform-gpu" />
+        <div className="absolute bottom-12 right-12 w-64 h-64 rounded-full bg-red-500/5 blur-2xl transform-gpu" />
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
@@ -83,13 +108,13 @@ export default function NgoShowcase() {
         .animate-marquee-slow {
           display: flex;
           width: max-content;
-          animation: marquee 220s linear infinite;
+          animation: marquee 160s linear infinite;
           will-change: transform;
         }
         .animate-marquee-reverse-slow {
           display: flex;
           width: max-content;
-          animation: marquee-reverse 200s linear infinite;
+          animation: marquee-reverse 150s linear infinite;
           will-change: transform;
         }
         .marquee-group:hover .animate-marquee-slow,
@@ -97,8 +122,8 @@ export default function NgoShowcase() {
           animation-play-state: paused;
         }
         .marquee-row {
-          -webkit-mask-image: linear-gradient(to right, transparent 0px, black 100px, black calc(100% - 100px), transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0px, black 100px, black calc(100% - 100px), transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0px, black 80px, black calc(100% - 80px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0px, black 80px, black calc(100% - 80px), transparent 100%);
         }
         .ngo-img-card {
           transition: box-shadow 0.3s ease;
@@ -106,15 +131,9 @@ export default function NgoShowcase() {
         .ngo-img-card:hover {
           box-shadow: 0 12px 32px rgba(0,0,0,0.15);
         }
-        .ngo-img-card img {
-          transition: transform 0.6s ease;
-        }
-        .ngo-img-card:hover img {
-          transform: scale(1.06);
-        }
       ` }} />
 
-      <div className="relative z-10 space-y-16">
+      <div className="relative z-10 space-y-12 sm:space-y-16">
 
         {/* Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
@@ -133,71 +152,44 @@ export default function NgoShowcase() {
         </div>
 
         {/* Infinite Scroll Showcase — Full Bleed */}
-        <div className="marquee-group relative w-full py-4 select-none">
+        <div className="marquee-group relative w-full py-2 select-none">
 
           {/* Row 1: Leftward */}
-          <div className="marquee-row relative flex overflow-hidden w-full mb-6">
-            <div className="animate-marquee-slow flex gap-5">
+          <div className="marquee-row relative flex overflow-hidden w-full mb-5">
+            <div className="animate-marquee-slow flex gap-4 sm:gap-5">
               {itemsRow1.map((src, idx) => (
-                <div
+                <NgoImageCard
                   key={`row1-${idx}`}
-                  className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
-                >
-                  <Image
-                    src={src}
-                    alt={`NGO Outreach ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 256px, 288px"
-                    className="object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                    <span>Hospital Services</span>
-                  </div>
-                </div>
+                  src={src}
+                  alt={`KCM NGO Outreach ${idx + 1}`}
+                  badgeText="Hospital Services"
+                />
               ))}
             </div>
           </div>
 
           {/* Row 2: Rightward */}
-          <div className="marquee-row relative flex overflow-hidden w-full mb-6">
-            <div className="animate-marquee-reverse-slow flex gap-5">
+          <div className="marquee-row relative flex overflow-hidden w-full mb-5">
+            <div className="animate-marquee-reverse-slow flex gap-4 sm:gap-5">
               {itemsRow2.map((src, idx) => (
-                <div
+                <NgoImageCard
                   key={`row2-${idx}`}
-                  className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
-                >
-                  <Image
-                    src={src}
-                    alt={`NGO Outreach ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 256px, 288px"
-                    className="object-cover"
-                    loading="lazy"
-                  />
-                </div>
+                  src={src}
+                  alt={`KCM NGO Outreach ${idx + 1}`}
+                />
               ))}
             </div>
           </div>
 
           {/* Row 3: Leftward */}
           <div className="marquee-row relative flex overflow-hidden w-full">
-            <div className="animate-marquee-slow flex gap-5">
+            <div className="animate-marquee-slow flex gap-4 sm:gap-5">
               {itemsRow3.map((src, idx) => (
-                <div
+                <NgoImageCard
                   key={`row3-${idx}`}
-                  className="ngo-img-card w-64 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0"
-                >
-                  <Image
-                    src={src}
-                    alt={`NGO Outreach ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 256px, 288px"
-                    className="object-cover"
-                    loading="lazy"
-                  />
-                </div>
+                  src={src}
+                  alt={`KCM NGO Outreach ${idx + 1}`}
+                />
               ))}
             </div>
           </div>
@@ -205,10 +197,11 @@ export default function NgoShowcase() {
         </div>
 
         {/* CTA */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center pt-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center pt-2">
           <Link
             href="/ngo"
-            className="px-8 py-4 bg-gradient-to-r from-red-500 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+            aria-label="Visit KCM NGO Portal"
+            className="px-8 py-4 min-h-[44px] bg-gradient-to-r from-red-500 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 flex items-center gap-2"
           >
             <span>{ngoT.showcase?.actionBtn || "Visit NGO Portal"}</span>
             <ArrowRight className="w-4 h-4" />
@@ -219,3 +212,4 @@ export default function NgoShowcase() {
     </section>
   );
 }
+

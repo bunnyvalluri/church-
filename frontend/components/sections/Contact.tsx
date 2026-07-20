@@ -424,6 +424,7 @@ export default function Contact() {
                   </a>
                   <iframe
                     src={selectedContact.embedUrl}
+                    title="Church Branch Map Location"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -435,6 +436,7 @@ export default function Contact() {
                 </div>
               </div>
             )}
+
 
             {/* Map skeleton */}
             {loading && (

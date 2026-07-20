@@ -186,6 +186,19 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
     });
   };
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && registerEvent) {
+        setRegisterEvent(null);
+        setTicketData(null);
+        setRegError("");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [registerEvent]);
+
   return (
     <section id="events" className="py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
@@ -299,7 +312,8 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                   <div className="p-6 pt-0">
                     <button
                       onClick={() => setRegisterEvent(event)}
-                      className="w-full h-11 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white"
+                      aria-label={`Register for ${event.title}`}
+                      className="w-full h-11 min-h-[44px] rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                     >
                       {event.registrationRequired ? "Register / Reserve Seat" : "Attend Event"}
                     </button>
@@ -322,7 +336,13 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
 
         {/* ── Registration & Ticket Modal ──────────────────────────────────────── */}
         {registerEvent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-event-title"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}
+          >
             <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
               
               <div className="border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
@@ -331,7 +351,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                     <Ticket className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                    <h3 id="modal-event-title" className="text-sm font-black text-slate-900 dark:text-white">
                       {ticketData ? "Ticket Issued" : "Reserve Ticket"}
                     </h3>
                     <p className="text-[10px] text-slate-400 font-medium line-clamp-1">{registerEvent.title}</p>
@@ -343,11 +363,13 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                     setTicketData(null);
                     setRegError("");
                   }}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 transition-all"
+                  aria-label="Close modal"
+                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 transition-all focus-visible:ring-2 focus-visible:ring-indigo-500"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
+
 
               <div className="p-6">
                 {!ticketData ? (

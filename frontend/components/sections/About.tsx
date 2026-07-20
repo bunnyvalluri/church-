@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Church, Heart, Users, BookOpen, MapPin, Phone, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -67,7 +68,7 @@ function PastorSkeleton() {
 }
 
 // ── Branch Location Card ──────────────────────────────────────────────────────
-function BranchCard({ contact, idx, language }: { contact: SiteContact; idx: number; language: string }) {
+const BranchCard = memo(function BranchCard({ contact, idx, language }: { contact: SiteContact; idx: number; language: string }) {
   const style = BRANCH_STYLES[idx % 3] ?? BRANCH_STYLES[0];
 
   const name =
@@ -89,10 +90,21 @@ function BranchCard({ contact, idx, language }: { contact: SiteContact; idx: num
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   return (
     <div
+      tabIndex={0}
+      role="button"
+      aria-label={`Select branch ${name}`}
       onClick={handleClick}
-      className={`group/loc ${style.card} border rounded-2xl p-4 md:p-5 transition-all duration-300 cursor-pointer hover:shadow-sm`}
+      onKeyDown={handleKeyDown}
+      className={`group/loc ${style.card} border rounded-2xl p-4 md:p-5 transition-all duration-300 cursor-pointer hover:shadow-sm min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none`}
     >
       <p className="font-bold mb-1 tracking-wide flex items-center justify-between text-sm">
         <span className="flex items-center gap-2">
@@ -110,7 +122,8 @@ function BranchCard({ contact, idx, language }: { contact: SiteContact; idx: num
       )}
     </div>
   );
-}
+});
+
 
 // ── Main About Component ──────────────────────────────────────────────────────
 export default function About({ initialAboutData, initialContactsData, initialPastorsData }: { initialAboutData?: any, initialContactsData?: any, initialPastorsData?: any }) {

@@ -23,6 +23,15 @@ import { getLatestSermons } from "@/app/actions/sermons";
 
 const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 
+function SectionDivider() {
+  return (
+    <div
+      aria-hidden="true"
+      className="h-px w-full bg-gradient-to-r from-transparent via-primary/20 dark:via-primary/30 to-transparent pointer-events-none"
+    />
+  );
+}
+
 export default async function Home() {
   // Parallelize data fetching for instant rendering
   const [
@@ -71,40 +80,29 @@ export default async function Home() {
     <>
       <ScrollToTopOnMount />
       <Navbar />
-      <main id="main-content" className="min-h-screen overflow-x-hidden">
+      <main id="main-content" className="min-h-screen overflow-x-hidden relative">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
-
+        <SectionDivider />
         <NgoShowcase />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.3)] to-transparent" />
-
+        <SectionDivider />
         <About initialAboutData={aboutData} initialContactsData={contactsData} initialPastorsData={pastorsData} />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
-
+        <SectionDivider />
         <Services initialServices={servicesData} />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.2)] to-transparent" />
-
+        <SectionDivider />
         <Events initialEvents={eventsData} />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.3)] to-transparent" />
-
+        <SectionDivider />
         <Sermons initialSermons={formattedSermons} />
 
-        {/* Section divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
-
+        <SectionDivider />
         <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
         <Footer />
       </main>
     </>
   );
 }
+

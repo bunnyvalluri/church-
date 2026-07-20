@@ -6,7 +6,7 @@ import {
   MapPin, Clock, Flame, Star, Loader2, RefreshCw,
   Sparkles, ChevronRight, Globe, Shield,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Icon registry — maps icon name string from DB to Lucide component ─────────────
@@ -104,13 +104,154 @@ interface ChurchService {
   tags: string[];
 }
 
+// ── Memoized Service Card Component ───────────────────────────────────────────
+const ServiceCard = memo(function ServiceCard({
+  service,
+  index,
+  isExpanded,
+  onToggleExpand,
+}: {
+  service: ChurchService;
+  index: number;
+  isExpanded: boolean;
+  onToggleExpand: (id: string) => void;
+}) {
+  const Icon = getIcon(service.icon);
+  const { gradient } = resolveGradient(service.cardColor);
+  const scheduleLabel = buildScheduleLabel(service);
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: index * 0.07, ease: [0.21, 0.47, 0.32, 0.98] }}
+      tabIndex={0}
+      role="button"
+      aria-expanded={isExpanded}
+      aria-label={`${service.title} service details`}
+      className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 md:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      onClick={() => onToggleExpand(service.id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggleExpand(service.id);
+        }
+      }}
+    >
+      {/* Featured ribbon */}
+      {service.featured && (
+        <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
+          <Star className="w-3 h-3 fill-current" /> Featured
+        </div>
+      )}
+
+      {/* Top border glow on hover */}
+      <div
+        className="absolute top-0 inset-x-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl"
+        style={{ background: gradient }}
+      />
+
+      <div className="relative z-10">
+        {/* Icon */}
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg services-icon"
+          style={{ background: gradient }}
+        >
+          <Icon className="h-8 w-8" style={{ color: service.iconColor || "#ffffff" }} />
+        </div>
+
+        {/* Title */}
+        <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
+          {service.title}
+        </h3>
+
+        {/* Schedule badge */}
+        {scheduleLabel && (
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold mb-4"
+            style={{ background: gradient }}
+          >
+            <span>🕐</span>
+            {scheduleLabel}
+          </div>
+        )}
+
+        {/* Description */}
+        <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
+          {service.shortDescription || service.description || ""}
+        </p>
+
+        {/* Expanded details */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] space-y-2">
+                {service.description && service.shortDescription && (
+                  <p className="text-slate-500 dark:text-white/50 text-xs leading-relaxed">
+                    {service.description}
+                  </p>
+                )}
+                {service.location && (
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
+                    <MapPin className="w-3 h-3 shrink-0" />
+                    <span>{service.location}</span>
+                  </div>
+                )}
+                {service.branch && (
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
+                    <Globe className="w-3 h-3 shrink-0" />
+                    <span>{service.branch.name} Branch</span>
+                  </div>
+                )}
+                {service.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {service.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-white/40 text-[10px] font-medium"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Expand hint */}
+        <div className="flex items-center gap-1 mt-3 text-xs text-[hsl(var(--primary)/0.7)] font-medium">
+          <ChevronRight
+            className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+          />
+          <span>{isExpanded ? "Less" : "More info"}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
 export default function Services({ initialServices = [] }: { initialServices?: ChurchService[] }) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [services, setServices] = useState<ChurchService[]>(initialServices);
   const [loading, setLoading] = useState(initialServices.length === 0);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const socketRef = useRef<any>(null);
+
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  }, []);
 
   // ── Fetch published services ────────────────────────────────────────────────────
   const fetchServices = useCallback(async () => {
@@ -236,128 +377,21 @@ export default function Services({ initialServices = [] }: { initialServices?: C
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                 <AnimatePresence mode="popLayout">
-                  {services.map((service, index) => {
-                    const Icon = getIcon(service.icon);
-                    const { gradient } = resolveGradient(service.cardColor);
-                    const scheduleLabel = buildScheduleLabel(service);
-                    const isExpanded = expandedId === service.id;
-
-                    return (
-                      <motion.div
-                        key={service.id}
-                        layout
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        viewport={{ once: true, margin: "-40px" }}
-                        transition={{ duration: 0.5, delay: index * 0.07, ease: [0.21, 0.47, 0.32, 0.98] }}
-                        className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 md:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden cursor-pointer"
-                        onClick={() => setExpandedId(isExpanded ? null : service.id)}
-                      >
-                        {/* Featured ribbon */}
-                        {service.featured && (
-                          <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
-                            <Star className="w-3 h-3 fill-current" /> Featured
-                          </div>
-                        )}
-
-                        {/* Top border glow on hover */}
-                        <div
-                          className="absolute top-0 inset-x-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl"
-                          style={{ background: gradient }}
-                        />
-
-                        <div className="relative z-10">
-                          {/* Icon */}
-                          <div
-                            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg services-icon"
-                            style={{ background: gradient }}
-                          >
-                            <Icon className="h-8 w-8" style={{ color: service.iconColor || "#ffffff" }} />
-                          </div>
-
-                          {/* Title */}
-                          <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
-                            {service.title}
-                          </h3>
-
-                          {/* Schedule badge */}
-                          {scheduleLabel && (
-                            <div
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold mb-4"
-                              style={{ background: gradient }}
-                            >
-                              <span>🕐</span>
-                              {scheduleLabel}
-                            </div>
-                          )}
-
-                          {/* Description */}
-                          <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
-                            {service.shortDescription || service.description || ""}
-                          </p>
-
-                          {/* Expanded details */}
-                          <AnimatePresence>
-                            {isExpanded && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="overflow-hidden"
-                              >
-                                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] space-y-2">
-                                  {service.description && service.shortDescription && (
-                                    <p className="text-slate-500 dark:text-white/50 text-xs leading-relaxed">
-                                      {service.description}
-                                    </p>
-                                  )}
-                                  {service.location && (
-                                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
-                                      <MapPin className="w-3 h-3 shrink-0" />
-                                      <span>{service.location}</span>
-                                    </div>
-                                  )}
-                                  {service.branch && (
-                                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
-                                      <Globe className="w-3 h-3 shrink-0" />
-                                      <span>{service.branch.name} Branch</span>
-                                    </div>
-                                  )}
-                                  {service.tags?.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 pt-1">
-                                      {service.tags.map((tag) => (
-                                        <span
-                                          key={tag}
-                                          className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-white/40 text-[10px] font-medium"
-                                        >
-                                          #{tag}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-
-                          {/* Expand hint */}
-                          <div className="flex items-center gap-1 mt-3 text-xs text-[hsl(var(--primary)/0.7)] font-medium">
-                            <ChevronRight
-                              className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
-                            />
-                            <span>{isExpanded ? "Less" : "More info"}</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {services.map((service, index) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      index={index}
+                      isExpanded={expandedId === service.id}
+                      onToggleExpand={handleToggleExpand}
+                    />
+                  ))}
                 </AnimatePresence>
               </div>
             )}
           </>
         )}
+
 
         {/* CTA */}
         {!loading && (

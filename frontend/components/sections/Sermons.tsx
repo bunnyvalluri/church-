@@ -106,6 +106,17 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
     }
   }, []);
 
+  // Close video modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && selectedVideo) {
+        setSelectedVideo(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedVideo]);
+
   return (
     <section id="sermons" className="py-14 sm:py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
@@ -193,7 +204,7 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
         >
           <a
             href="/pastor"
-            className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-2 px-10 py-4 min-h-[44px] bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             {t.sermons.viewAll}
             <span className="text-white/70">→</span>
@@ -203,12 +214,19 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
 
       {/* Video Modal */}
       {selectedVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedVideo(null)}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Sermon Video Player"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+          onClick={() => setSelectedVideo(null)}
+        >
           <div className="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
             {/* Close Button */}
             <button
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+              aria-label="Close video player"
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-white"
             >
               <X className="h-6 w-6" />
             </button>
@@ -238,3 +256,4 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
     </section>
   );
 }
+

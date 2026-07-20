@@ -4,10 +4,24 @@ import { ArrowRight, Users, HeartHandshake, Award, BookOpen, Sparkles, LucideIco
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useHeroContent, useStatistics } from "@/hooks/useCmsData";
 import { useCountUp, useInView } from "@/hooks/useCountUp";
 import type { SiteStatistic } from "@/types/cms";
+
+// ── Icon registry helper ──────────────────────────────────────────────────────
+const ICON_MAP: Record<string, LucideIcon> = {
+  Users,
+  HeartHandshake,
+  Award,
+  BookOpen,
+  Sparkles,
+};
+
+function getHeroIcon(name: string): LucideIcon {
+  if (!name) return Users;
+  return ICON_MAP[name] || Users;
+}
 
 // ── Color scheme configuration ─────────────────────────────────────────────────
 const COLOR_SCHEMES: Record<string, { border: string; glow: string; num: string; icon: string }> = {
@@ -61,24 +75,11 @@ const COLOR_SCHEMES: Record<string, { border: string; glow: string; num: string;
   },
 };
 
-// ── Icon registry ─────────────────────────────────────────────────────────────
-const ICON_MAP: Record<string, LucideIcon> = {
-  Users,
-  HeartHandshake,
-  Award,
-  BookOpen,
-  Sparkles,
-};
-
-function getIcon(name: string): LucideIcon {
-  return ICON_MAP[name] || Users;
-}
-
 // ── Stat Card Component ───────────────────────────────────────────────────────
-function StatCard({ stat, isInView, index }: { stat: SiteStatistic; isInView: boolean; index: number }) {
+const StatCard = memo(function StatCard({ stat, isInView, index }: { stat: SiteStatistic; isInView: boolean; index: number }) {
   const { language } = useLanguage();
   const colors = COLOR_SCHEMES[stat.colorScheme] ?? COLOR_SCHEMES.violet;
-  const Icon = getIcon(stat.icon);
+  const Icon = getHeroIcon(stat.icon);
 
   const label =
     language === "te" && stat.labelTe
@@ -93,13 +94,20 @@ function StatCard({ stat, isInView, index }: { stat: SiteStatistic; isInView: bo
     easing: "easeOut",
   });
 
+  const handleStatClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const aboutSection = document.getElementById("about");
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <Link
-      href="/"
-      onClick={() => {
-        window.location.href = "/";
-      }}
-      className="block text-left no-underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-2xl h-full"
+    <a
+      href="#about"
+      onClick={handleStatClick}
+      aria-label={`View statistics for ${label}: ${stat.value}`}
+      className="block text-left no-underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 rounded-2xl h-full"
     >
       <motion.div
         variants={{
@@ -140,9 +148,9 @@ function StatCard({ stat, isInView, index }: { stat: SiteStatistic; isInView: bo
           </div>
         </div>
       </motion.div>
-    </Link>
+    </a>
   );
-}
+});
 
 // ── Skeleton Loaders ───────────────────────────────────────────────────────────
 function StatCardSkeleton() {
@@ -160,16 +168,11 @@ function StatCardSkeleton() {
 // ── Main Hero Component ───────────────────────────────────────────────────────
 export default function Hero({ initialHeroData, initialStatsData }: { initialHeroData?: any, initialStatsData?: any }) {
   const { t, language } = useLanguage();
-  const [mounted, setMounted] = useState(false);
   const { ref: statsRef, inView: statsInView } = useInView({ threshold: 0.2 });
 
   // CMS data
   const { data: hero, loading: heroLoading } = useHeroContent(initialHeroData);
   const { statistics, loading: statsLoading } = useStatistics(initialStatsData);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -188,12 +191,12 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
     },
   };
 
-  // Resolve localized text from hero CMS data with fallback to translation strings
-  const badgeText = hero?.badgeText ?? (mounted ? t.hero.prayerBoxSub : "We are here for you 24/7");
-  const headline = hero?.headline ?? (mounted ? t.hero.welcome : "Welcome to");
-  const churchName = hero?.subheadline ?? (mounted ? t.hero.churchName : "Kingdom of Christ");
-  const ministriesText = mounted ? t.hero.ministries : "Ministries";
-  const subtitle = hero?.subtitle ?? (mounted ? t.hero.subtitle : "A place of Love, Faith, and Miracles");
+  // Resolve localized text instantly without client hydration mismatch
+  const badgeText = hero?.badgeText ?? t.hero.prayerBoxSub ?? "We are here for you 24/7";
+  const headline = hero?.headline ?? t.hero.welcome ?? "Welcome to";
+  const churchName = hero?.subheadline ?? t.hero.churchName ?? "Kingdom of Christ";
+  const ministriesText = t.hero.ministries ?? "Ministries";
+  const subtitle = hero?.subtitle ?? t.hero.subtitle ?? "A place of Love, Faith, and Miracles";
 
   // CTA text — use CMS values with language-specific override for hero CTA
   const ctaPrimaryText =
@@ -222,15 +225,15 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-transparent"
     >
-      {/* Animated Background */}
+      {/* Animated Background Orbs (GPU accelerated) */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] dark:opacity-5" />
-        <div className="hero-orb-1" />
-        <div className="hero-orb-2" />
+        <div className="hero-orb-1 transform-gpu" />
+        <div className="hero-orb-2 transform-gpu" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -238,7 +241,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           className="max-w-5xl mx-auto text-center"
         >
           {/* Live pulsing tag badge */}
-          <motion.div variants={itemVariants} className="flex justify-center mb-8">
+          <motion.div variants={itemVariants} className="flex justify-center mb-6 md:mb-8">
             <div className="inline-flex items-center gap-2.5 px-5 md:px-6 py-2 md:py-2.5 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -246,9 +249,9 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
               </span>
               <span
                 suppressHydrationWarning
-                className="font-extrabold tracking-wider text-[10px] md:text-xs uppercase font-outfit text-gray-500 dark:text-gray-300"
+                className="font-extrabold tracking-wider text-[10px] md:text-xs uppercase font-outfit text-gray-600 dark:text-gray-300"
               >
-                {mounted ? badgeText : "We are here for you 24/7"}
+                {badgeText}
               </span>
             </div>
           </motion.div>
@@ -261,13 +264,13 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             style={{ fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
           >
             <span suppressHydrationWarning>
-              {mounted ? headline : "Welcome to"}{" "}
+              {headline}{" "}
             </span>
             <span
               suppressHydrationWarning
               className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer"
             >
-              {mounted ? churchName : "Kingdom of Christ"}
+              {churchName}
             </span>
             <span
               suppressHydrationWarning
@@ -282,20 +285,20 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           <motion.p
             suppressHydrationWarning
             variants={itemVariants}
-            className="text-slate-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed font-semibold px-4"
+            className="text-slate-600 dark:text-gray-300 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-semibold px-4"
             style={{ fontSize: "clamp(0.95rem, 2.5vw, 1.15rem)" }}
           >
-            {mounted ? subtitle : "A place of Love, Faith, and Miracles"}
+            {subtitle}
           </motion.p>
 
           {/* CTA Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-24 max-w-2xl mx-auto px-4"
+            className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center items-center mb-16 md:mb-24 max-w-2xl mx-auto px-4"
           >
             <Link
               href={hero?.ctaPrimaryHref ?? "#services"}
-              className="w-full sm:w-auto group relative px-8 py-4 bg-gradient-to-r from-primary to-gradient-end text-white rounded-2xl font-bold overflow-hidden shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[44px] group relative px-8 py-4 bg-gradient-to-r from-primary to-gradient-end text-white rounded-2xl font-bold overflow-hidden shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2"
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">
@@ -305,13 +308,13 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </Link>
             <Link
               href={hero?.ctaSecondaryHref ?? "#sermons"}
-              className="w-full sm:w-auto px-8 py-4 bg-white/40 dark:bg-white/5 backdrop-blur-md border border-gray-200/80 dark:border-white/10 text-slate-800 dark:text-gray-200 hover:text-slate-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 text-center"
+              className="w-full sm:w-auto min-h-[44px] px-8 py-4 bg-white/40 dark:bg-white/5 backdrop-blur-md border border-gray-200/80 dark:border-white/10 text-slate-800 dark:text-gray-200 hover:text-slate-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center"
             >
               {ctaSecondaryText}
             </Link>
             <Link
               href={hero?.ctaTertiaryHref ?? "/prayer"}
-              className="w-full sm:w-auto px-8 py-4 bg-rose-500/8 hover:bg-rose-500/12 border border-rose-500/20 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-350 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 text-center"
+              className="w-full sm:w-auto min-h-[44px] px-8 py-4 bg-rose-500/8 hover:bg-rose-500/12 border border-rose-500/20 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-350 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center"
             >
               {ctaTertiaryText}
             </Link>
@@ -335,3 +338,4 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
     </section>
   );
 }
+
