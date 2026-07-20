@@ -6,7 +6,10 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     // Execute all DB queries concurrently in parallel using Promise.all
-    let [amounts, causes, branches, formFields, settings] = await Promise.all([
+    let [heroConfig, amounts, causes, branches, formFields, settings] = await Promise.all([
+      prisma.givingHeroConfig.findUnique({
+        where: { id: 'giving_hero' },
+      }),
       prisma.donationAmount.findMany({
         where: { isActive: true },
         orderBy: { displayOrder: 'asc' },
@@ -26,6 +29,26 @@ export async function GET() {
         where: { id: 'settings' },
       }),
     ]);
+
+    const defaultHeroConfig = {
+      headline: 'Sow a Seed of Faith & Transform Lives',
+      subtitle: 'Your generous giving supports our local church services, community outreach programs, youth development, and global missions.',
+      backgroundImageUrl: null,
+      backgroundType: 'gradient',
+      badgeText: '100% Tax Exempt (80G) & Secure',
+      ctaPrimaryText: 'Give Now',
+      ctaPrimaryHref: '#give-form',
+      ctaSecondaryText: 'Impact Report',
+      ctaSecondaryHref: '/about#impact',
+      campaignBannerText: 'Special Festival & Outreach Drive active! Join us in blessing 1,000+ families this month.',
+      campaignBannerHref: '#give-form',
+      securityBadges: ['80G Tax Exemption Registered', '256-bit SSL Encrypted', 'Instant Verified PDF Receipt'],
+      statistics: [
+        { label: 'Lives Impacted', value: '10,000+' },
+        { label: 'Outreach Programs', value: '25+' },
+        { label: 'Church Branches', value: '3' },
+      ],
+    };
 
     // Fast fallbacks if empty
     if (amounts.length === 0) {
@@ -50,6 +73,7 @@ export async function GET() {
           descTe: null,
           descHi: null,
           icon: 'Heart',
+          colorTheme: 'violet',
           category: 'OUTREACH',
           targetAmount: 500000,
           raisedAmount: 145000,
@@ -70,6 +94,7 @@ export async function GET() {
           descTe: null,
           descHi: null,
           icon: 'Gift',
+          colorTheme: 'violet',
           category: 'BENEVOLENCE',
           targetAmount: 300000,
           raisedAmount: 98000,

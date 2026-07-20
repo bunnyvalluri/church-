@@ -385,6 +385,10 @@ model Donation {
   donorName         String?
   donorEmail        String?
   donorPhone        String?
+  panNumber         String?          @map("pan_number")
+  prayerRequest     String?          @db.Text @map("prayer_request")
+  notes             String?          @db.Text
+  isAnonymous       Boolean          @default(false) @map("is_anonymous")
   status            DonationStatus   @default(PENDING)
   // Security audit fields — set by backend only, never by client
   amountVerified    Boolean          @default(false) @map("amount_verified")
@@ -825,6 +829,27 @@ enum FeedbackCategory {
   OVERALL
 }
 
+model GivingHeroConfig {
+  id                 String   @id @default("giving_hero")
+  headline           String   @default("Sow a Seed of Faith & Transform Lives")
+  subtitle           String   @db.Text @default("Your generous giving supports our local church services, community outreach programs, youth development, and global missions.")
+  backgroundImageUrl String?  @map("background_image_url")
+  backgroundType     String   @default("gradient") @map("background_type") // gradient | image | video
+  badgeText          String   @default("100% Tax Exempt (80G) & Secure") @map("badge_text")
+  ctaPrimaryText     String   @default("Give Now") @map("cta_primary_text")
+  ctaPrimaryHref     String   @default("#give-form") @map("cta_primary_href")
+  ctaSecondaryText   String   @default("Impact Report") @map("cta_secondary_text")
+  ctaSecondaryHref   String   @default("/about#impact") @map("cta_secondary_href")
+  campaignBannerText String?  @map("campaign_banner_text")
+  campaignBannerHref String?  @map("campaign_banner_href")
+  securityBadges     Json     @default("[\"80G Tax Exemption Registered\", \"256-bit SSL Encrypted\", \"Instant Verified PDF Receipt\"]") @map("security_badges")
+  statistics         Json     @default("[{\"label\":\"Lives Impacted\",\"value\":\"10,000+\"},{\"label\":\"Active Outreach Programs\",\"value\":\"25+\"},{\"label\":\"Church Branches\",\"value\":\"3\"}]") @map("statistics")
+  isActive           Boolean  @default(true) @map("is_active")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("giving_hero_config")
+}
+
 model DonationPurpose {
   id               String            @id @default(cuid())
   code             String            @unique
@@ -838,6 +863,7 @@ model DonationPurpose {
   raisedAmount     Float             @default(0) @map("raised_amount")
   imageUrl         String?           @map("image_url")
   icon             String?           @default("Heart")
+  colorTheme       String?           @default("violet") @map("color_theme")
   category         String?           @default("GENERAL")
   sortOrder        Int               @default(0) @map("sort_order")
   isActive         Boolean           @default(true) @map("is_active")
@@ -890,7 +916,18 @@ model DonationSession {
   purpose             DonationPurpose      @relation(fields: [purposeId], references: [id])
   amount              Float
   currency            String               @default("INR")
-  referenceNumber     String               @unique @map("reference_number")
+  referenceNumber     String               @unique @map("reference_number") // Razorpay Order ID
+  razorpayOrderId     String?              @map("razorpay_order_id")
+  donorName           String?              @map("donor_name")
+  donorEmail          String?              @map("donor_email")
+  donorPhone          String?              @map("donor_phone")
+  panNumber           String?              @map("pan_number")
+  prayerRequest       String?              @db.Text @map("prayer_request")
+  notes               String?              @db.Text
+  isAnonymous         Boolean              @default(false) @map("is_anonymous")
+  upiUri              String?              @db.Text @map("upi_uri")
+  qrCodeData          String?              @db.Text @map("qr_code_data")
+  paymentState        String               @default("CREATED") @map("payment_state") // DRAFT | CREATED | PENDING | QR_GENERATED | WAITING | PROCESSING | VERIFIED | COMPLETED | FAILED | CANCELLED | EXPIRED
   status              DonationStatus       @default(PENDING)
   expiresAt           DateTime             @map("expires_at")
   ipAddress           String?              @map("ip_address")

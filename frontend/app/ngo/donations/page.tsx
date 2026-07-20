@@ -1347,3 +1347,12 @@ function NgoDonationsContent() {
     </div>
   );
 }
+
+export default function NgoDonationsPage() {
+  return (
+    <DonationAgentProvider>
+      <NgoDonationsContent />
+    </DonationAgentProvider>
+  );
+}
+

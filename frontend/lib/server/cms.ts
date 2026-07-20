@@ -35,11 +35,6 @@ export async function getAboutContent() {
   try {
     const about = await (prisma as any).aboutConfig.findUnique({
       where: { id: "about" },
-      include: {
-        values: {
-          orderBy: { displayOrder: "asc" },
-        },
-      },
     });
     return about || ABOUT_FALLBACK;
   } catch (err) {
@@ -53,11 +48,6 @@ export async function getContacts() {
     const contacts = await (prisma as any).siteContact.findMany({
       where: { isActive: true },
       orderBy: { displayOrder: "asc" },
-      include: {
-        phones: {
-          orderBy: { displayOrder: "asc" },
-        },
-      },
     });
     return contacts.length > 0 ? contacts : CONTACT_FALLBACK;
   } catch (err) {
