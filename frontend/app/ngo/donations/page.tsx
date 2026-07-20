@@ -73,36 +73,42 @@ const BhimIcon = () => (
   </svg>
 );
 
-// Distinctive color themes for preset donation amount buttons
+// Distinctive color themes for preset donation amount buttons with high contrast legibility
 const PRESET_COLOR_SCHEMES = [
   {
     // Emerald Green (₹500)
-    unselected: "bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 border-emerald-200/90 dark:bg-emerald-950/40 dark:border-emerald-500/30 dark:text-emerald-300",
+    dot: "bg-emerald-500",
+    unselected: "bg-slate-50 hover:bg-emerald-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-emerald-400 dark:hover:border-emerald-500/60",
     selected: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-lg shadow-emerald-500/30 scale-[1.03]"
   },
   {
     // Ocean Blue (₹1,000)
-    unselected: "bg-blue-50/80 hover:bg-blue-100 text-blue-800 border-blue-200/90 dark:bg-blue-950/40 dark:border-blue-500/30 dark:text-blue-300",
+    dot: "bg-blue-500",
+    unselected: "bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-blue-400 dark:hover:border-blue-500/60",
     selected: "bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-blue-500 shadow-lg shadow-blue-500/30 scale-[1.03]"
   },
   {
     // Royal Purple (₹2,000)
-    unselected: "bg-purple-50/80 hover:bg-purple-100 text-purple-800 border-purple-200/90 dark:bg-purple-950/40 dark:border-purple-500/30 dark:text-purple-300",
+    dot: "bg-purple-500",
+    unselected: "bg-slate-50 hover:bg-purple-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-purple-400 dark:hover:border-purple-500/60",
     selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/30 scale-[1.03]"
   },
   {
     // Warm Amber Gold (₹5,000)
-    unselected: "bg-amber-50/80 hover:bg-amber-100 text-amber-800 border-amber-200/90 dark:bg-amber-950/40 dark:border-amber-500/30 dark:text-amber-300",
+    dot: "bg-amber-500",
+    unselected: "bg-slate-50 hover:bg-amber-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-amber-400 dark:hover:border-amber-500/60",
     selected: "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-amber-500 shadow-lg shadow-amber-500/30 scale-[1.03]"
   },
   {
     // Crown Rose Pink (₹10,000)
-    unselected: "bg-rose-50/80 hover:bg-rose-100 text-rose-800 border-rose-200/90 dark:bg-rose-950/40 dark:border-rose-500/30 dark:text-rose-300",
+    dot: "bg-rose-500",
+    unselected: "bg-slate-50 hover:bg-rose-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-rose-400 dark:hover:border-rose-500/60",
     selected: "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500 shadow-lg shadow-rose-500/30 scale-[1.03]"
   },
   {
     // Fuchsia Violet (Other)
-    unselected: "bg-fuchsia-50/80 hover:bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200/90 dark:bg-fuchsia-950/40 dark:border-fuchsia-500/30 dark:text-fuchsia-300",
+    dot: "bg-fuchsia-500",
+    unselected: "bg-slate-50 hover:bg-fuchsia-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-fuchsia-400 dark:hover:border-fuchsia-500/60",
     selected: "bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white border-fuchsia-500 shadow-lg shadow-fuchsia-500/30 scale-[1.03]"
   }
 ];
@@ -724,11 +730,14 @@ export default function NgoDonationsPage() {
                             setAmount(preset.amount.toString());
                             setCustomAmount("");
                           }}
-                          className={`py-3.5 rounded-xl border font-extrabold text-sm sm:text-base transition-all duration-200 ${
+                          className={`py-3.5 rounded-xl border font-extrabold text-sm sm:text-base transition-all duration-200 flex items-center justify-center gap-1.5 ${
                             isSelected ? scheme.selected : scheme.unselected
                           }`}
                         >
-                          ₹{preset.amount.toLocaleString("en-IN")}
+                          {!isSelected && (
+                            <span className={`w-1.5 h-1.5 rounded-full ${scheme.dot}`} />
+                          )}
+                          <span>₹{preset.amount.toLocaleString("en-IN")}</span>
                         </button>
                       );
                     })}
@@ -743,10 +752,10 @@ export default function NgoDonationsPage() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-6 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all ${
+                        className={`w-full py-3.5 pl-7 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all ${
                           customAmount
                             ? "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/30 scale-[1.03] placeholder-white/70"
-                            : "bg-fuchsia-50/80 hover:bg-fuchsia-100 dark:bg-fuchsia-950/40 border-fuchsia-200/90 dark:border-fuchsia-500/30 text-fuchsia-900 dark:text-fuchsia-200 placeholder-fuchsia-400 dark:placeholder-fuchsia-400/60 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20"
+                            : "bg-slate-50 hover:bg-fuchsia-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-fuchsia-500 dark:focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-500/20"
                         }`}
                       />
                       <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-extrabold ${customAmount ? "text-white" : "text-fuchsia-500 dark:text-fuchsia-400"}`}>
