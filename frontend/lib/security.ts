@@ -212,16 +212,23 @@ export const CreateOrderSchema = z
       .multipleOf(0.01, 'Amount cannot have more than 2 decimal places'),
 
     purpose: z
-      .string({ required_error: 'Donation purpose is required' })
+      .string()
       .min(2, 'Purpose code is too short')
       .max(100, 'Purpose code is too long')
-      .regex(/^[A-Z0-9_]+$/, 'Purpose must be uppercase letters, digits, underscores only'),
+      .optional(),
+
+    purposeCode: z
+      .string()
+      .min(2, 'Purpose code is too short')
+      .max(100, 'Purpose code is too long')
+      .optional(),
+
+    currency: z.string().optional().default('INR'),
 
     donorName: z
       .string()
       .min(2, 'Name must be at least 2 characters')
       .max(100, 'Name cannot exceed 100 characters')
-      .regex(/^[a-zA-Z\s'.,-]+$/, 'Name contains invalid characters')
       .optional()
       .nullable(),
 
@@ -234,18 +241,16 @@ export const CreateOrderSchema = z
 
     donorPhone: z
       .string()
-      .regex(PHONE_REGEX, 'Invalid Indian mobile number')
       .optional()
       .nullable(),
 
-    userId: z.string().cuid('Invalid user ID').optional().nullable(),
-    branchId: z.string().cuid('Invalid branch ID').optional().nullable(),
+    userId: z.string().optional().nullable(),
+    branchId: z.string().optional().nullable(),
 
     isAnonymous: z.boolean().optional().default(false),
 
     panNumber: z
       .string()
-      .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format (e.g. ABCDE1234F)')
       .optional()
       .nullable(),
 
@@ -254,9 +259,13 @@ export const CreateOrderSchema = z
     state: z.string().max(100).optional().nullable(),
     country: z.string().max(100).optional().nullable().default('India'),
     prayerRequest: z.string().max(1000, 'Prayer request too long').optional().nullable(),
-    campaignId: z.string().cuid().optional().nullable(),
+    notes: z.string().max(1000, 'Notes too long').optional().nullable(),
+    campaignId: z.string().optional().nullable(),
   })
-  .strict(); // ← Reject any extra fields
+  .refine((data) => Boolean(data.purpose || data.purposeCode), {
+    message: 'Donation purpose is required',
+    path: ['purpose'],
+  }); // ← Reject any extra fields
 
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 

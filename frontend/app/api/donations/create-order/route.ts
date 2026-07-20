@@ -95,7 +95,7 @@ export async function POST(req: Request) {
 
     const {
       amount,
-      purpose,
+      purpose: rawPurpose,
       donorName,
       donorEmail,
       donorPhone,
@@ -110,6 +110,8 @@ export async function POST(req: Request) {
       prayerRequest,
       campaignId,
     } = parsed.data;
+
+    const purpose = rawPurpose || (parsed.data as any).purposeCode || 'GENERAL';
 
     // ── 4. Load Dynamic Settings from DB ────────────────────────────────────
     const settings = await prisma.churchSettings.findUnique({
