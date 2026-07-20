@@ -73,6 +73,40 @@ const BhimIcon = () => (
   </svg>
 );
 
+// Distinctive color themes for preset donation amount buttons
+const PRESET_COLOR_SCHEMES = [
+  {
+    // Emerald Green (₹500)
+    unselected: "bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 border-emerald-200/90 dark:bg-emerald-950/40 dark:border-emerald-500/30 dark:text-emerald-300",
+    selected: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-lg shadow-emerald-500/30 scale-[1.03]"
+  },
+  {
+    // Ocean Blue (₹1,000)
+    unselected: "bg-blue-50/80 hover:bg-blue-100 text-blue-800 border-blue-200/90 dark:bg-blue-950/40 dark:border-blue-500/30 dark:text-blue-300",
+    selected: "bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-blue-500 shadow-lg shadow-blue-500/30 scale-[1.03]"
+  },
+  {
+    // Royal Purple (₹2,000)
+    unselected: "bg-purple-50/80 hover:bg-purple-100 text-purple-800 border-purple-200/90 dark:bg-purple-950/40 dark:border-purple-500/30 dark:text-purple-300",
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/30 scale-[1.03]"
+  },
+  {
+    // Warm Amber Gold (₹5,000)
+    unselected: "bg-amber-50/80 hover:bg-amber-100 text-amber-800 border-amber-200/90 dark:bg-amber-950/40 dark:border-amber-500/30 dark:text-amber-300",
+    selected: "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-amber-500 shadow-lg shadow-amber-500/30 scale-[1.03]"
+  },
+  {
+    // Crown Rose Pink (₹10,000)
+    unselected: "bg-rose-50/80 hover:bg-rose-100 text-rose-800 border-rose-200/90 dark:bg-rose-950/40 dark:border-rose-500/30 dark:text-rose-300",
+    selected: "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500 shadow-lg shadow-rose-500/30 scale-[1.03]"
+  },
+  {
+    // Fuchsia Violet (Other)
+    unselected: "bg-fuchsia-50/80 hover:bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200/90 dark:bg-fuchsia-950/40 dark:border-fuchsia-500/30 dark:text-fuchsia-300",
+    selected: "bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white border-fuchsia-500 shadow-lg shadow-fuchsia-500/30 scale-[1.03]"
+  }
+];
+
 // Icon mapping helper
 const ICON_MAP: Record<string, any> = {
   Heart,
@@ -679,23 +713,25 @@ export default function NgoDonationsPage() {
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
-                    {presetAmounts.map((preset) => (
-                      <button
-                        key={preset.id}
-                        type="button"
-                        onClick={() => {
-                          setAmount(preset.amount.toString());
-                          setCustomAmount("");
-                        }}
-                        className={`py-3.5 rounded-xl border font-extrabold text-sm sm:text-base transition-all duration-200 ${
-                          amount === preset.amount.toString() && !customAmount
-                            ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/25 scale-[1.02]"
-                            : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                        }`}
-                      >
-                        ₹{preset.amount.toLocaleString("en-IN")}
-                      </button>
-                    ))}
+                    {presetAmounts.map((preset, idx) => {
+                      const scheme = PRESET_COLOR_SCHEMES[idx % PRESET_COLOR_SCHEMES.length];
+                      const isSelected = amount === preset.amount.toString() && !customAmount;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => {
+                            setAmount(preset.amount.toString());
+                            setCustomAmount("");
+                          }}
+                          className={`py-3.5 rounded-xl border font-extrabold text-sm sm:text-base transition-all duration-200 ${
+                            isSelected ? scheme.selected : scheme.unselected
+                          }`}
+                        >
+                          ₹{preset.amount.toLocaleString("en-IN")}
+                        </button>
+                      );
+                    })}
 
                     {/* Custom Amount Input */}
                     <div className="relative">
@@ -707,9 +743,13 @@ export default function NgoDonationsPage() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className="w-full py-3.5 pl-6 pr-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs sm:text-sm font-bold focus:outline-none focus:border-purple-500"
+                        className={`w-full py-3.5 pl-6 pr-3 rounded-xl border text-xs sm:text-sm font-bold focus:outline-none transition-all ${
+                          customAmount
+                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/30 scale-[1.03] placeholder-white/70"
+                            : "bg-indigo-50/70 hover:bg-indigo-100/80 dark:bg-indigo-950/40 border-indigo-200/90 dark:border-indigo-500/30 text-indigo-900 dark:text-indigo-200 placeholder-indigo-400 dark:placeholder-indigo-400/60 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        }`}
                       />
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-xs font-bold">
+                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold ${customAmount ? "text-white" : "text-indigo-500 dark:text-indigo-400"}`}>
                         ₹
                       </span>
                     </div>
