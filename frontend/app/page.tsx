@@ -8,6 +8,7 @@ import Sermons from "@/components/sections/Sermons";
 import Contact from "@/components/sections/Contact";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import NgoShowcase from "@/components/sections/NgoShowcase";
+import ScrollToTopOnMount from "@/components/ui/ScrollToTopOnMount";
 
 import {
   getHeroContent,
@@ -68,6 +69,7 @@ export default async function Home() {
 
   return (
     <>
+      <ScrollToTopOnMount />
       <Navbar />
       <main id="main-content" className="min-h-screen overflow-x-hidden">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
