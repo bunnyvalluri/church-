@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   DollarSign, 
   Heart, 
@@ -15,7 +15,14 @@ import {
   X, 
   Calendar,
   AlertCircle,
-  ChevronDown
+  ChevronDown,
+  Settings,
+  Edit,
+  Trash2,
+  Save,
+  RefreshCw,
+  Lock,
+  QrCode
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
@@ -32,7 +39,7 @@ interface FinanceManagementProps {
   onAddPledge?: (pledge: any) => Promise<void>;
   onAddTransaction?: (transaction: any) => Promise<void>;
   onOpenAddDonation?: () => void;
-  activeSubTab?: "donations" | "pledges" | "transactions" | "accounts";
+  activeSubTab?: "donations" | "pledges" | "transactions" | "accounts" | "config";
 }
 
 interface Pledge {
@@ -94,10 +101,104 @@ export default function FinanceManagement({
     return name;
   };
   
-  const [subView, setSubView] = useState<"donations" | "pledges" | "transactions" | "accounts">(activeSubTab);
+  const [subView, setSubView] = useState<"donations" | "pledges" | "transactions" | "accounts" | "config">(activeSubTab);
   React.useEffect(() => {
     setSubView(activeSubTab);
   }, [activeSubTab]);
+
+  // Admin CMS Dynamic Data States
+  const [cmsAmounts, setCmsAmounts] = useState<any[]>([]);
+  const [cmsCauses, setCmsCauses] = useState<any[]>([]);
+  const [cmsFormFields, setCmsFormFields] = useState<any[]>([]);
+  const [cmsLoading, setCmsLoading] = useState(false);
+  const [newAmountVal, setNewAmountVal] = useState("");
+  const [newAmountLabel, setNewAmountLabel] = useState("");
+
+  const fetchCmsData = async () => {
+    setCmsLoading(true);
+    try {
+      const res = await fetch("/api/donations/config");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setCmsAmounts(data.amounts || []);
+          setCmsCauses(data.causes || []);
+          setCmsFormFields(data.formFields || []);
+        }
+      }
+    } catch (err) {
+      console.error("[ADMIN_CMS] Fetch config failed:", err);
+    } finally {
+      setCmsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (subView === "config") {
+      fetchCmsData();
+    }
+  }, [subView]);
+
+  const handleAddAmount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAmountVal || isNaN(Number(newAmountVal))) return;
+    try {
+      const res = await fetch("/api/admin/donations/amounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: Number(newAmountVal),
+          label: newAmountLabel || `₹${Number(newAmountVal).toLocaleString()}`,
+          displayOrder: cmsAmounts.length + 1,
+        }),
+      });
+      if (res.ok) {
+        setNewAmountVal("");
+        setNewAmountLabel("");
+        fetchCmsData();
+      }
+    } catch {}
+  };
+
+  const handleToggleAmount = async (id: string, currentActive: boolean) => {
+    try {
+      await fetch("/api/admin/donations/amounts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, isActive: !currentActive }),
+      });
+      fetchCmsData();
+    } catch {}
+  };
+
+  const handleDeleteAmount = async (id: string) => {
+    try {
+      await fetch(`/api/admin/donations/amounts?id=${id}`, { method: "DELETE" });
+      fetchCmsData();
+    } catch {}
+  };
+
+  const handleToggleFormField = async (field: any) => {
+    try {
+      await fetch("/api/admin/donations/form-fields", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: field.id, isVisible: !field.isVisible }),
+      });
+      fetchCmsData();
+    } catch {}
+  };
+
+  const handleToggleFormFieldRequired = async (field: any) => {
+    try {
+      await fetch("/api/admin/donations/form-fields", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: field.id, isRequired: !field.isRequired }),
+      });
+      fetchCmsData();
+    } catch {}
+  };
   const [isPledgeOpen, setIsPledgeOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   
@@ -174,7 +275,8 @@ export default function FinanceManagement({
           { id: "donations", label: t.donations, icon: DollarSign },
           { id: "pledges", label: t.pledges, icon: Heart },
           { id: "transactions", label: t.transactions, icon: CreditCard },
-          { id: "accounts", label: t.accounts, icon: Layers }
+          { id: "accounts", label: t.accounts, icon: Layers },
+          { id: "config", label: "Donation CMS", icon: Settings }
         ].map((tab) => {
           const isSelected = subView === tab.id;
           return (
@@ -661,6 +763,214 @@ export default function FinanceManagement({
         </div>
       )}
 
+      {/* ────────────────── SUB-VIEW: DONATION CMS (DYNAMIC CONFIG) ────────────────── */}
+      {subView === "config" && (
+        <div className="space-y-8 animate-in fade-in duration-200 text-left">
+          {/* Header */}
+          <div className="flex items-center justify-between bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent p-6 rounded-3xl border border-indigo-500/20">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                Donation System Configuration CMS
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Zero hardcoded logic. Admin controls preset amounts, causes, donor form fields, and UPI parameters.
+              </p>
+            </div>
+
+            <button
+              onClick={fetchCmsData}
+              disabled={cmsLoading}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${cmsLoading ? "animate-spin" : ""}`} />
+              <span>Refresh Config</span>
+            </button>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* 1. Preset Amounts Management */}
+            <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-3xl space-y-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-indigo-500" />
+                  Preset Donation Amounts
+                </h4>
+                <span className="text-xs text-slate-400">{cmsAmounts.length} Amounts Active</span>
+              </div>
+
+              {/* Add New Amount Form */}
+              <form onSubmit={handleAddAmount} className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="Amount (₹)"
+                  value={newAmountVal}
+                  onChange={(e) => setNewAmountVal(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-indigo-500"
+                />
+                <input
+                  type="text"
+                  placeholder="Label (optional)"
+                  value={newAmountLabel}
+                  onChange={(e) => setNewAmountLabel(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-indigo-500"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center gap-1"
+                >
+                  <Plus className="w-4 h-4" /> Add
+                </button>
+              </form>
+
+              {/* Amounts Table */}
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                {cmsAmounts.map((amt) => (
+                  <div
+                    key={amt.id}
+                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-extrabold text-slate-900 dark:text-white text-sm">
+                        ₹{amt.amount.toLocaleString("en-IN")}
+                      </span>
+                      {amt.isDefault && (
+                        <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-300 font-bold text-[10px]">
+                          DEFAULT
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleToggleAmount(amt.id, amt.isActive)}
+                        className={`px-2.5 py-1 rounded-lg font-bold text-[10px] ${
+                          amt.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-200 text-slate-500"
+                        }`}
+                      >
+                        {amt.isActive ? "Active" : "Disabled"}
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteAmount(amt.id)}
+                        className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Donor Form Fields Visibility & Rules */}
+            <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-3xl space-y-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-purple-500" />
+                  Donor Info Fields Control
+                </h4>
+                <span className="text-xs text-slate-400">Step 2 Form Rules</span>
+              </div>
+
+              <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                {cmsFormFields.map((field) => (
+                  <div
+                    key={field.id}
+                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <p className="font-bold text-slate-900 dark:text-white">{field.label}</p>
+                      <p className="text-[10px] text-slate-400 font-mono">{field.fieldName}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleToggleFormFieldRequired(field)}
+                        className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
+                          field.isRequired ? "bg-amber-500/10 text-amber-600" : "bg-slate-200 text-slate-500"
+                        }`}
+                      >
+                        {field.isRequired ? "Required" : "Optional"}
+                      </button>
+
+                      <button
+                        onClick={() => handleToggleFormField(field)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
+                          field.isVisible ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-500"
+                        }`}
+                      >
+                        {field.isVisible ? "Visible" : "Hidden"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Donation Causes & Target Tracking */}
+          <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-3xl space-y-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Heart className="w-4 h-4 text-pink-500" />
+                Donation Causes & Target Progress
+              </h4>
+              <span className="text-xs text-slate-400">{cmsCauses.length} Causes</span>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {cmsCauses.map((cause) => (
+                <div
+                  key={cause.id}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 space-y-2 text-xs"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="font-extrabold text-slate-900 dark:text-white text-sm">
+                        {cause.nameEn}
+                      </span>
+                      <span className="block text-[10px] font-mono text-purple-600 dark:text-purple-400">
+                        Code: {cause.code}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                        cause.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-500"
+                      }`}
+                    >
+                      {cause.isActive ? "Active" : "Archived"}
+                    </span>
+                  </div>
+
+                  <p className="text-slate-500 text-[11px] line-clamp-2">{cause.descEn}</p>
+
+                  {cause.targetAmount && (
+                    <div className="space-y-1 pt-1">
+                      <div className="flex justify-between font-bold text-[10px]">
+                        <span>Goal Progress</span>
+                        <span>
+                          ₹{(cause.raisedAmount || 0).toLocaleString()} / ₹{(cause.targetAmount || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className="bg-indigo-600 h-full rounded-full"
+                          style={{
+                            width: `${Math.min(100, Math.round(((cause.raisedAmount || 0) / (cause.targetAmount || 1)) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+

@@ -505,6 +505,11 @@ model ChurchSettings {
   worshipServices            String
   bilingualSupport           Boolean  @default(true)
   visitorRegistrationEnabled Boolean  @default(true)
+  minDonationAmount          Float    @default(10)
+  maxDonationAmount          Float    @default(500000)
+  upiId                      String   @default("kcm.kristhraj2004-1@okicici")
+  merchantName               String   @default("Kingdom of Christ Ministries")
+  qrExpiryMinutes            Int      @default(10)
   updatedAt                  DateTime @updatedAt
 }
 
@@ -823,6 +828,11 @@ model DonationPurpose {
   descEn           String            @map("desc_en")
   descTe           String?           @map("desc_te")
   descHi           String?           @map("desc_hi")
+  targetAmount     Float?            @map("target_amount")
+  raisedAmount     Float             @default(0) @map("raised_amount")
+  imageUrl         String?           @map("image_url")
+  icon             String?           @default("Heart")
+  category         String?           @default("GENERAL")
   sortOrder        Int               @default(0) @map("sort_order")
   isActive         Boolean           @default(true) @map("is_active")
   isArchived       Boolean           @default(false) @map("is_archived")
@@ -832,6 +842,36 @@ model DonationPurpose {
   donations        Donation[]
 
   @@map("donation_purposes")
+}
+
+model DonationAmount {
+  id           String    @id @default(cuid())
+  amount       Float
+  currency     String    @default("INR")
+  label        String?
+  displayOrder Int       @default(0) @map("display_order")
+  isActive     Boolean   @default(true) @map("is_active")
+  isDefault    Boolean   @default(false) @map("is_default")
+  campaignId   String?   @map("campaign_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("donation_amounts")
+}
+
+model DonationFormField {
+  id           String   @id @default(cuid())
+  fieldName    String   @unique @map("field_name")
+  label        String
+  placeholder  String?
+  isRequired   Boolean  @default(false) @map("is_required")
+  isVisible    Boolean  @default(true) @map("is_visible")
+  displayOrder Int      @default(0) @map("display_order")
+  fieldType    String   @default("text") @map("field_type")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("donation_form_fields")
 }
 
 model DonationSession {

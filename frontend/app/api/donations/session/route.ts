@@ -99,11 +99,30 @@ export async function POST(req: Request) {
       },
     });
 
-    // 5. Create the session in the database directly in PROCESSING status
+    // 5. Safe resolution of memberId and branchId to prevent FK violations
+    let validMemberId: string | null = null;
+    if (authUser?.uid) {
+      const userExists = await prisma.user.findUnique({
+        where: { id: authUser.uid },
+        select: { id: true },
+      });
+      if (userExists) validMemberId = userExists.id;
+    }
+
+    let validBranchId: string | null = null;
+    if (branchId) {
+      const branchExists = await prisma.branch.findUnique({
+        where: { id: branchId },
+        select: { id: true },
+      });
+      if (branchExists) validBranchId = branchExists.id;
+    }
+
+    // Create the session in the database directly in PROCESSING status
     const session = await prisma.donationSession.create({
       data: {
-        memberId: authUser?.uid || null,
-        branchId: branchId || null,
+        memberId: validMemberId,
+        branchId: validBranchId,
         purposeId: purpose.id,
         amount,
         currency: 'INR',

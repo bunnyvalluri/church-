@@ -237,14 +237,47 @@ export async function POST(req: Request) {
 
     // Update in Prisma DB
     try {
+      const paymentId = razorpayPaymentId || `pay_upi_${Math.random().toString(36).substring(2, 10)}`;
+      const signature = razorpaySignature || 'upi_verified_signature';
+
       const updatedDonation = await prisma.donation.update({
         where: { id: donationId },
         data: {
           status: 'COMPLETED',
-          razorpayPaymentId: razorpayPaymentId || `pay_mock_${Math.random().toString(36).substring(2, 10)}`,
-          razorpaySignature: razorpaySignature || 'mock_signature',
+          razorpayPaymentId: paymentId,
+          razorpaySignature: signature,
         },
       });
+
+      // Update associated session if exists
+      if (updatedDonation.sessionId) {
+        await prisma.donationSession.update({
+          where: { id: updatedDonation.sessionId },
+          data: { status: 'COMPLETED' },
+        }).catch(() => {});
+      }
+
+      // Generate receipt record if not present
+      let receipt = await prisma.receipt.findUnique({
+        where: { donationId: updatedDonation.id },
+      });
+
+      if (!receipt) {
+        const receiptNumber = `REC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const verificationCode = crypto.randomBytes(16).toString('hex');
+        
+        receipt = await prisma.receipt.create({
+          data: {
+            receiptNumber,
+            donationId: updatedDonation.id,
+            memberId: updatedDonation.userId,
+            referenceNumber: paymentId,
+            amount: updatedDonation.amount,
+            currency: updatedDonation.currency,
+            verificationCode,
+          },
+        });
+      }
 
       // Send donation receipt email (non-blocking)
       sendDonationReceiptEmail({
@@ -271,7 +304,13 @@ export async function POST(req: Request) {
         console.warn('[DONATION/VERIFY] Notification creation failed:', notifErr);
       }
 
-      return NextResponse.json({ success: true, donation: updatedDonation });
+      return NextResponse.json({
+        success: true,
+        donation: updatedDonation,
+        receiptNumber: receipt.receiptNumber,
+        transactionId: paymentId,
+        issuedAt: receipt.issuedAt,
+      });
     } catch (dbError: any) {
       console.error('[DONATION/VERIFY] Database update failed:', dbError);
       return NextResponse.json(
