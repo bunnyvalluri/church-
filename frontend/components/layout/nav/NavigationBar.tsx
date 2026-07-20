@@ -179,16 +179,8 @@ const NavigationBar = memo(function NavigationBar() {
               {/* Logo */}
               <NavigationLogo />
 
-              {/* ── Desktop nav (lg+) ── */}
+              {/* ── Primary Nav (sm+) ── */}
               <DesktopMenu
-                navItems={navItems}
-                activeSection={activeSection}
-                pathname={pathname}
-                resolveHref={resolveHref}
-              />
-
-              {/* ── Tablet nav (sm–lg) ── */}
-              <TabletMenu
                 navItems={navItems}
                 activeSection={activeSection}
                 pathname={pathname}

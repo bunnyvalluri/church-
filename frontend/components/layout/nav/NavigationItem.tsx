@@ -64,16 +64,22 @@ const NavigationItem = memo(function NavigationItem({
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {/* Icon — small, always present */}
-      <Icon
-        className={cn(
-          "flex-shrink-0 w-3 h-3 transition-all duration-150",
-          isActive
-            ? styles.activeText
-            : "text-gray-400 dark:text-gray-300 group-hover:scale-110",
-        )}
-        aria-hidden="true"
-      />
+      {/* Emoji or Icon */}
+      {item.emoji ? (
+        <span className="text-xs sm:text-sm flex-shrink-0" role="img" aria-hidden="true">
+          {item.emoji}
+        </span>
+      ) : (
+        <Icon
+          className={cn(
+            "flex-shrink-0 w-3.5 h-3.5 transition-all duration-150",
+            isActive
+              ? styles.activeText
+              : "text-gray-400 dark:text-gray-300 group-hover:scale-110",
+          )}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Label */}
       <span className="relative">{item.name}</span>
