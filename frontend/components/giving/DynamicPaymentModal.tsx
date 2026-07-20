@@ -92,6 +92,15 @@ export default function DynamicPaymentModal({
     return () => clearInterval(interval);
   }, [isOpen]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll into view on modal opening
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const minutes = Math.floor(timeLeft / 60);
@@ -145,15 +154,6 @@ export default function DynamicPaymentModal({
       setLaunchingRazorpay(false);
     }
   };
-
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Auto scroll into view on modal opening
-  useEffect(() => {
-    if (isOpen && modalRef.current) {
-      modalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [isOpen]);
 
   const isCompleted = status === "COMPLETED" || status === "VERIFIED";
 

@@ -12,7 +12,7 @@
     "build": "npm run build -w frontend",
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
-    "postinstall": "npm run db:generate -w backend",
+    "postinstall": "cd frontend && npx prisma generate",
     "db:seed": "npm run db:seed -w backend",
     "db:check": "npm run db:check -w backend",
     "db:push": "npm run db:push -w backend",
