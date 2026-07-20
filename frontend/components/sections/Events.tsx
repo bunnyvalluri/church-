@@ -187,31 +187,31 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
   };
 
   return (
-    <section id="events" className="py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
-      <div className="container mx-auto px-4 relative z-10">
+    <section id="events" className="py-14 sm:py-20 lg:py-24 bg-slate-50 dark:bg-transparent relative z-10 transition-colors duration-300">
+      <div className="container mx-auto px-3 sm:px-4 relative z-10">
         
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider mb-4 border border-indigo-500/20">
-            <Sparkles className="w-3.5 h-3.5" /> Live Booking Enabled
+        <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14 lg:mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 border border-indigo-500/20">
+            <Sparkles className="w-3 h-3" /> Live Booking Enabled
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight">
             Upcoming <span className="text-gradient">Events</span>
           </h2>
-          <p className="text-lg text-slate-600 dark:text-white/70">
+          <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-white/70 px-2">
             Register to reserve a seat, download entry passes, and receive calendar updates.
           </p>
         </div>
 
         {/* Grid / Empty State */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-96 bg-white dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] rounded-3xl animate-pulse" />
+              <div key={i} className="h-72 sm:h-96 bg-white dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] rounded-3xl animate-pulse" />
             ))}
           </div>
         ) : events.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {events.map((event, index) => {
               const displayImage = event.image || "https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&w=800&q=80";
               const branchName = event.branch?.name;

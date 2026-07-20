@@ -107,26 +107,26 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
   }, []);
 
   return (
-    <section id="sermons" className="py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
-      <div className="container mx-auto px-4 relative z-10">
+    <section id="sermons" className="py-14 sm:py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300">
+      <div className="container mx-auto px-3 sm:px-4 relative z-10">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="max-w-3xl mx-auto text-center mb-20"
+          className="max-w-3xl mx-auto text-center mb-10 sm:mb-16 lg:mb-20"
         >
-          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-4 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
+          <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-3 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
             Latest Sermons
           </span>
-          <h2 className="text-4xl md:text-5xl font-black mb-5 text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">
             {t.sermons.title.split(" ")[0]}{" "}
             <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
               {t.sermons.title.split(" ").slice(1).join(" ")}
             </span>
           </h2>
-          <p className="text-lg text-slate-600 dark:text-white/60">
+          <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-white/60 px-2">
             {t.sermons.subtitle}
           </p>
           <div className="flex items-center justify-center gap-2 mt-6">
@@ -139,7 +139,7 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
         </motion.div>
 
         {/* Sermons Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <div
