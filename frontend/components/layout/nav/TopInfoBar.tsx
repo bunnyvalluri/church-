@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { Phone, ChevronRight, Youtube } from "lucide-react";
+import { Phone, ChevronRight, Youtube, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TopInfoBarProps {
@@ -60,6 +60,18 @@ const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
               </React.Fragment>
             ))}
           </div>
+
+          {/* Location */}
+          <a
+            href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Hyderabad"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 hover:text-white transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-white rounded-md px-1"
+            aria-label="Church location"
+          >
+            <MapPin className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+            <span className="font-medium">Shapur Nagar, Hyderabad</span>
+          </a>
 
           {/* Service times */}
           <div className="flex items-center gap-2 text-purple-200/80">

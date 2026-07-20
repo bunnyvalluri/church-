@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { usePathname } from "next/navigation";
 import {
-  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Menu,
+  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -41,13 +41,13 @@ const NavigationBar = memo(function NavigationBar() {
   // ── Nav items — memoized, only rebuilds when translations change ────────────
   const navItems: NavItem[] = useMemo(
     () => [
-      { name: t.nav.home,       href: "#home",     icon: Home         },
-      { name: t.nav.about,      href: "#about",    icon: Info         },
-      { name: t.nav.ngo,        href: "/ngo",      icon: HeartHandshake },
-      { name: t.nav.ministries, href: "#services", icon: Church       },
-      { name: t.nav.events,     href: "#events",   icon: Calendar     },
-      { name: t.nav.sermons,    href: "#sermons",  icon: Mic          },
-      { name: t.nav.gallery,    href: "/gallery",  icon: ImageIcon    },
+      { name: t.nav.home,       href: "#home",     icon: Home,           emoji: "🏡" },
+      { name: t.nav.about,      href: "#about",    icon: Info,           emoji: "ℹ️" },
+      { name: t.nav.ngo,        href: "/ngo",      icon: HeartHandshake, emoji: "🤝" },
+      { name: t.nav.ministries, href: "#services", icon: Church,         emoji: "⛪" },
+      { name: t.nav.events,     href: "#events",   icon: Calendar,       emoji: "🗓️" },
+      { name: t.nav.sermons,    href: "#sermons",  icon: Mic,            emoji: "🎙️" },
+      { name: t.nav.gallery,    href: "/gallery",  icon: ImageIcon,      emoji: "🖼️" },
     ],
     [t.nav]
   );
@@ -203,8 +203,8 @@ const NavigationBar = memo(function NavigationBar() {
                 {/* Hamburger — mobile only (<sm) */}
                 <button
                   type="button"
-                  onClick={() => setMobileOpen(true)}
-                  aria-label="Open navigation menu"
+                  onClick={() => setMobileOpen(!isMobileOpen)}
+                  aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
                   aria-expanded={isMobileOpen}
                   aria-controls="mobile-drawer"
                   className={cn(
@@ -221,23 +221,27 @@ const NavigationBar = memo(function NavigationBar() {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   )}
                 >
-                  <Menu className="w-5 h-5" aria-hidden="true" />
+                  {isMobileOpen ? (
+                    <X className="w-5 h-5" aria-hidden="true" />
+                  ) : (
+                    <Menu className="w-5 h-5" aria-hidden="true" />
+                  )}
                 </button>
               </div>
             </div>
+
+            {/* ── Mobile Drawer — rendered inside nav container to act as a dropdown ── */}
+            <MobileDrawer
+              isOpen={isMobileOpen}
+              onClose={() => setMobileOpen(false)}
+              navItems={navItems}
+              activeSection={activeSection}
+              pathname={pathname}
+              resolveHref={resolveHref}
+            />
           </div>
         </nav>
       </header>
-
-      {/* ── Mobile Drawer — rendered outside header to avoid stacking context issues ── */}
-      <MobileDrawer
-        isOpen={isMobileOpen}
-        onClose={() => setMobileOpen(false)}
-        navItems={navItems}
-        activeSection={activeSection}
-        pathname={pathname}
-        resolveHref={resolveHref}
-      />
     </>
   );
 });
