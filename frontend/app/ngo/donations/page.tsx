@@ -236,7 +236,7 @@ export default function NgoDonationsPage() {
   const [branches, setBranches] = useState<BranchItem[]>(DEFAULT_BRANCHES);
   const [formFields, setFormFields] = useState<FormFieldRule[]>(DEFAULT_FORM_FIELDS);
   const [settings, setSettings] = useState<PaymentSettings>({
-    minDonationAmount: 10,
+    minDonationAmount: 1,
     maxDonationAmount: 500000,
     upiId: "kcm.kristhraj2004-1@okicici",
     merchantName: "Kingdom of Christ Ministries",

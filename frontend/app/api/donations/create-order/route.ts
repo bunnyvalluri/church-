@@ -22,14 +22,14 @@ export async function POST(req: Request) {
       where: { id: 'settings' },
     });
 
-    const minAmount = settings?.minDonationAmount || 10;
+    const minAmount = settings?.minDonationAmount ? Math.min(settings.minDonationAmount, 1) : 1;
     const maxAmount = settings?.maxDonationAmount || 500000;
     const upiId = settings?.upiId || process.env.NEXT_PUBLIC_UPI_ID || 'kcm.kristhraj2004-1@okicici';
     const merchantName = settings?.merchantName || process.env.NEXT_PUBLIC_CHURCH_NAME || 'Kingdom of Christ Ministries';
     const expiryMins = settings?.qrExpiryMinutes || 10;
 
-    if (!amount || isNaN(amount) || Number(amount) < minAmount) {
-      return NextResponse.json({ error: `Minimum donation amount is ₹${minAmount}` }, { status: 400 });
+    if (!amount || isNaN(amount) || Number(amount) < 1) {
+      return NextResponse.json({ error: 'Please enter a valid donation amount (minimum ₹1).' }, { status: 400 });
     }
 
     if (Number(amount) > maxAmount) {

@@ -107,7 +107,7 @@ export async function GET() {
       branches,
       formFields,
       settings: {
-        minDonationAmount: settings?.minDonationAmount || 10,
+        minDonationAmount: settings?.minDonationAmount ? Math.min(settings.minDonationAmount, 1) : 1,
         maxDonationAmount: settings?.maxDonationAmount || 500000,
         upiId: settings?.upiId || 'kcm.kristhraj2004-1@okicici',
         merchantName: settings?.merchantName || 'Kingdom of Christ Ministries',
