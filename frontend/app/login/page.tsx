@@ -238,61 +238,73 @@ export default function LoginPage() {
     try {
       const credential = await signInWithPopup(auth, provider);
       if (credential?.user) {
-        // Send login notification to admin (non-blocking)
+        const u = credential.user;
+        const maxAge = 7 * 24 * 60 * 60; // 7 days
+
+        // 1. Instantly set session cookies so middleware & AuthProvider recognize state immediately
+        if (typeof document !== "undefined") {
+          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+          document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
+        }
+
+        // 2. Instantly update client-side AuthProvider state
+        if (updateUser) {
+          updateUser({
+            uid: u.uid,
+            email: u.email,
+            name: u.displayName || "Member",
+            image: u.photoURL || null,
+            role: "MEMBER",
+          });
+        }
+
+        // 3. Fire-and-forget: background database sync
+        fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: u.uid,
+            email: u.email,
+            name: u.displayName,
+            photoURL: u.photoURL,
+            phoneNumber: u.phoneNumber,
+          }),
+        })
+          .then((res) => res.json())
+          .then((syncData) => {
+            if (syncData?.success && syncData?.user?.role) {
+              const role = syncData.user.role;
+              if (typeof document !== "undefined") {
+                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+              }
+              if (updateUser) updateUser({ role });
+              if (role !== "MEMBER") {
+                switch (role) {
+                  case "SUPER_ADMIN": router.replace("/portal-select"); break;
+                  case "ADMIN":       router.replace("/admin");          break;
+                  case "PASTOR":      router.replace("/pastor");         break;
+                  case "EVENT_MANAGER":
+                  case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
+                }
+              }
+            }
+          })
+          .catch(() => {});
+
+        // 4. Non-blocking login email notification
         fetch('/api/auth/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'LOGIN',
-            email: credential.user.email,
-            name: credential.user.displayName || credential.user.email,
+            email: u.email,
+            name: u.displayName || u.email,
             method: 'google',
           }),
         }).catch(() => {});
 
-        // Perform database sync immediately
-        const syncRes = await fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: credential.user.uid,
-            email: credential.user.email,
-            name: credential.user.displayName,
-            photoURL: credential.user.photoURL,
-            phoneNumber: credential.user.phoneNumber,
-          }),
-        });
-        const syncData = await syncRes.json();
-        const dbUser = syncData.success ? syncData.user : null;
-        const role = dbUser?.role || "MEMBER";
-
-        // Instantly set session cookies for middleware and client-side AuthProvider
-        if (typeof document !== "undefined") {
-          const maxAge = 7 * 24 * 60 * 60; // 7 days
-          document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-          document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        }
-
-        // Update AuthProvider state
-        if (updateUser && dbUser) {
-          updateUser({
-            uid: credential.user.uid,
-            email: credential.user.email,
-            name: dbUser.name || credential.user.displayName || "Member",
-            image: dbUser.image || credential.user.photoURL || null,
-            role: role,
-          });
-        }
-
-        // Redirect immediately to the correct portal
-        switch (role) {
-          case "SUPER_ADMIN": router.replace("/portal-select"); break;
-          case "ADMIN":       router.replace("/admin");          break;
-          case "PASTOR":      router.replace("/pastor");         break;
-          case "EVENT_MANAGER":
-          case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
-          default:            router.replace("/member");
-        }
+        // 5. INSTANT REDIRECT WITHOUT NETWORK LAG
+        router.replace("/member");
       }
     } catch (err: any) {
       console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
@@ -341,70 +353,64 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      sendLoginEmail(
-        credential.user.email || email,
-        credential.user.displayName || email.split('@')[0],
-        'email'
-      );
-      
-      // Perform database sync immediately to get the user's role
-      const syncRes = await fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: credential.user.uid,
-          email: credential.user.email,
-          name: credential.user.displayName,
-          photoURL: credential.user.photoURL,
-          phoneNumber: credential.user.phoneNumber,
-        }),
-      });
-      const syncData = await syncRes.json();
-      const dbUser = syncData.success ? syncData.user : null;
-      const role = dbUser?.role || "MEMBER";
+      const u = credential.user;
+      const maxAge = 7 * 24 * 60 * 60; // 7 days
 
-      // Instantly set session cookies for middleware and client-side AuthProvider
+      // 1. Instantly set session cookies
       if (typeof document !== "undefined") {
-        const maxAge = 7 * 24 * 60 * 60; // 7 days
-        document.cookie = `__kcm_session_uid=${credential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
       }
 
-      if (photoPreview) {
-        try {
-          await fetch("/api/member/profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: credential.user.uid, image: photoPreview }),
-          });
-          if (updateUser) {
-            updateUser({ image: photoPreview });
-          }
-        } catch (uploadErr) {
-          console.error("[AUTH] Photo upload error:", uploadErr);
-        }
-      }
-
-      // Update AuthProvider state
-      if (updateUser && dbUser) {
+      // 2. Instantly update client-side AuthProvider state
+      if (updateUser) {
         updateUser({
-          uid: credential.user.uid,
-          email: credential.user.email,
-          name: dbUser.name || credential.user.displayName || "Member",
-          image: dbUser.image || credential.user.photoURL || null,
-          role: role,
+          uid: u.uid,
+          email: u.email,
+          name: u.displayName || email.split('@')[0],
+          image: u.photoURL || null,
+          role: "MEMBER",
         });
       }
 
-      // Redirect immediately to the correct portal without waiting
-      switch (role) {
-        case "SUPER_ADMIN": router.replace("/portal-select"); break;
-        case "ADMIN":       router.replace("/admin");          break;
-        case "PASTOR":      router.replace("/pastor");         break;
-        case "EVENT_MANAGER":
-        case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
-        default:            router.replace("/member");
-      }
+      // 3. Fire-and-forget: background database sync
+      fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: u.uid,
+          email: u.email,
+          name: u.displayName,
+          photoURL: u.photoURL,
+          phoneNumber: u.phoneNumber,
+        }),
+      })
+        .then((res) => res.json())
+        .then((syncData) => {
+          if (syncData?.success && syncData?.user?.role) {
+            const role = syncData.user.role;
+            if (typeof document !== "undefined") {
+              document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+            }
+            if (updateUser) updateUser({ role });
+            if (role !== "MEMBER") {
+              switch (role) {
+                case "SUPER_ADMIN": router.replace("/portal-select"); break;
+                case "ADMIN":       router.replace("/admin");          break;
+                case "PASTOR":      router.replace("/pastor");         break;
+                case "EVENT_MANAGER":
+                case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
+              }
+            }
+          }
+        })
+        .catch(() => {});
+
+      // 4. Non-blocking login email notification
+      sendLoginEmail(u.email || email, u.displayName || email.split('@')[0], 'email');
+
+      // 5. INSTANT REDIRECT
+      router.replace("/member");
     } catch (err: any) {
       console.error("[AUTH] Login error:", err);
       setError(err.code || "sign-in-failed");

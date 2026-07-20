@@ -128,45 +128,44 @@ export default function RegisterPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName: fullName });
+      const u = userCredential.user;
+      const maxAge = 7 * 24 * 60 * 60; // 7 days
+
+      if (u) {
+        updateProfile(u, { displayName: fullName }).catch(() => {});
       }
 
-      // Synchronously sync to the database to register the user immediately
-      const syncRes = await fetch("/api/auth/sync", {
+      // 1. Instantly set session cookies
+      if (typeof document !== "undefined") {
+        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
+      }
+
+      // 2. Instantly update client-side AuthProvider state
+      if (updateUser) {
+        updateUser({
+          uid: u.uid,
+          email: formData.email,
+          name: fullName,
+          image: null,
+          role: "MEMBER",
+        });
+      }
+
+      // 3. Fire-and-forget: background database sync
+      fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          uid: userCredential.user.uid,
+          uid: u.uid,
           email: formData.email,
           name: fullName,
           photoURL: null,
           phoneNumber: formData.phone || null,
         }),
-      });
-      const syncData = await syncRes.json();
-      const dbUser = syncData.success ? syncData.user : null;
-      const role = dbUser?.role || "MEMBER";
+      }).catch(() => {});
 
-      // Instantly set session cookies for middleware and client-side AuthProvider
-      if (typeof document !== "undefined") {
-        const maxAge = 7 * 24 * 60 * 60; // 7 days
-        document.cookie = `__kcm_session_uid=${userCredential.user.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
-      }
-
-      // Update AuthProvider state
-      if (updateUser) {
-        updateUser({
-          uid: userCredential.user.uid,
-          email: formData.email,
-          name: fullName,
-          image: null,
-          role: role,
-        });
-      }
-
-      // Fire-and-forget: welcome email to member + new member alert to admin
+      // 4. Fire-and-forget: welcome email to member + new member alert to admin
       fetch('/api/auth/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -176,9 +175,9 @@ export default function RegisterPage() {
           email: formData.email,
           phone: formData.phone || '',
         }),
-      }).catch(() => {}); // Never block the user on email failure
+      }).catch(() => {});
 
-      // Redirect immediately to the member portal
+      // 5. INSTANT REDIRECT WITHOUT WAIT
       router.replace("/member");
     } catch (err: any) {
       console.error("[AUTH] Registration error:", err);
