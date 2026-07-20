@@ -32,7 +32,7 @@ export default function BibleStudyPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <div className="bg-blue-900 text-white py-16">
+      <div className="bg-blue-900 text-white pt-32 pb-16 md:pt-40 md:pb-20">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-6">
             <a

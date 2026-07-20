@@ -129,7 +129,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 w-full flex flex-col pt-[env(safe-area-inset-top)]">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col pt-[env(safe-area-inset-top)]">
       {/* Skip to Content Link for A11y */}
       <a 
         href="#main-content" 

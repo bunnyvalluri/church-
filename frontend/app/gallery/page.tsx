@@ -105,7 +105,7 @@ export default function GalleryPage() {
       <Navbar />
 
       {/* Hero Header Section */}
-      <section className="relative py-24 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 overflow-hidden">
+      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-500/20 blur-[100px] pointer-events-none" />

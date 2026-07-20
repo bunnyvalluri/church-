@@ -88,6 +88,9 @@ export default function NgoLayout({
       {/* Main Global Navbar */}
       <Navbar />
 
+      {/* Spacing for main fixed navbar */}
+      <div className="h-[76px] xl:h-[112px]" />
+
       {/* Dedicated NGO Glassmorphic Sub-Navbar */}
       <div className="sticky top-[60px] xl:top-[72px] z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/80 dark:border-white/5 py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

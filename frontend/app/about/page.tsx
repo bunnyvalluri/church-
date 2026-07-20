@@ -60,7 +60,7 @@ export default function AboutPage() {
       <Navbar />
       <div>
         {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
+      <section className="relative pt-36 pb-20 md:pt-44 md:pb-24 bg-gradient-to-r from-purple-600 to-indigo-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
