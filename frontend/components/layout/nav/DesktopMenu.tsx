@@ -29,13 +29,13 @@ const DesktopMenu = memo(function DesktopMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "hidden sm:flex",
+        "hidden md:flex",
         "items-center",
-        // Spacing between items
-        "gap-0.5 md:gap-1 xl:gap-1.5",
+        // Spacing between items — scales from small laptop to large desktop
+        "gap-0.5 md:gap-1 lg:gap-1.5 xl:gap-2",
         // Horizontal flex center
         "flex-1 justify-center",
-        // Overflow visible so items aren't clipped
+        // Prevent overflow clipping
         "min-w-0"
       )}
     >

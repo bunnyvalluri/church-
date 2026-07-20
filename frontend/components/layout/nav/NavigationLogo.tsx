@@ -51,14 +51,14 @@ const NavigationLogo = memo(function NavigationLogo() {
           "relative rounded-full overflow-hidden bg-white",
           "border-2 border-purple-300/40 group-hover:border-purple-400/70",
           "shadow-md transition-[border-color,box-shadow] duration-300",
-          // Responsive sizes
-          "w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-11 lg:h-11"
+          // Responsive sizes across 6 viewports
+          "w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-8.5 sm:h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 2xl:w-11 2xl:h-11"
         )}>
           <Image
             src="/logo.png"
             alt="KCM Logo"
             fill
-            sizes="(max-width: 640px) 32px, (max-width: 768px) 36px, (max-width: 1024px) 40px, 44px"
+            sizes="(max-width: 375px) 28px, (max-width: 540px) 32px, (max-width: 768px) 34px, (max-width: 1024px) 36px, 44px"
             className="object-contain p-0.5"
             priority
           />
@@ -72,8 +72,8 @@ const NavigationLogo = memo(function NavigationLogo() {
           suppressHydrationWarning
           className={cn(
             "font-black text-gray-900 dark:text-white leading-tight whitespace-nowrap",
-            // Responsive sizes
-            "text-[10px] min-[360px]:text-[11px] sm:text-sm md:text-base lg:text-lg",
+            // Responsive sizes across 6 viewports
+            "text-[9.5px] min-[360px]:text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg",
             language !== "en" ? "tracking-normal" : "tracking-tight",
             // GPU transition on hover
             "transition-colors duration-150"

@@ -162,24 +162,24 @@ const NavigationBar = memo(function NavigationBar() {
               "mx-auto w-full",
               // Max-widths per breakpoint
               "max-w-screen-xl 2xl:max-w-[1440px]",
-              // Horizontal padding — spacing scale
-              "px-4 sm:px-6 lg:px-8 2xl:px-12"
+              // Horizontal padding — 6 viewport responsive scale
+              "px-2.5 min-[360px]:px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 2xl:px-12"
             )}
           >
             {/* ── Flex row: Logo | Menu | Actions ── */}
             <div
               className={cn(
                 "flex items-center justify-between",
-                // Gap — spacing scale
-                "gap-3 sm:gap-4 lg:gap-6",
-                // Heights per breakpoint
-                "min-h-[56px] sm:min-h-[64px] md:min-h-[68px] lg:min-h-[72px] 2xl:min-h-[76px]"
+                // Gap — 6 viewport responsive scale
+                "gap-1.5 min-[360px]:gap-2 sm:gap-3 md:gap-4 lg:gap-6",
+                // Heights per breakpoint tier
+                "min-h-[52px] min-[360px]:min-h-[56px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] 2xl:min-h-[76px]"
               )}
             >
               {/* Logo */}
               <NavigationLogo />
 
-              {/* ── Primary Nav (sm+) ── */}
+              {/* ── Primary Nav (md+ : Small Laptop, Desktop, Large Desktop) ── */}
               <DesktopMenu
                 navItems={navItems}
                 activeSection={activeSection}
@@ -188,11 +188,11 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Settings + Login + Hamburger ── */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                {/* Branch Selector + Settings + Login (responsive per NavigationActions) */}
+              <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 flex-shrink-0">
+                {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
-                {/* Hamburger — mobile only (<sm) */}
+                {/* Hamburger — mobile & tablet (<768px) */}
                 <button
                   type="button"
                   onClick={() => setMobileOpen(!isMobileOpen)}
@@ -200,10 +200,10 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-expanded={isMobileOpen}
                   aria-controls="mobile-drawer"
                   className={cn(
-                    "sm:hidden",
+                    "md:hidden",
                     "flex items-center justify-center",
-                    // 44×44 min touch target
-                    "w-11 h-11 rounded-xl",
+                    // Touch target sizing
+                    "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 sm:w-11 sm:h-11 rounded-xl",
                     "bg-gray-100/80 dark:bg-white/10",
                     "border border-gray-200 dark:border-white/20",
                     "text-gray-700 dark:text-white",
@@ -214,9 +214,9 @@ const NavigationBar = memo(function NavigationBar() {
                   )}
                 >
                   {isMobileOpen ? (
-                    <X className="w-5 h-5" aria-hidden="true" />
+                    <X className="w-4.5 h-4.5 sm:w-5 sm:h-5" aria-hidden="true" />
                   ) : (
-                    <Menu className="w-5 h-5" aria-hidden="true" />
+                    <Menu className="w-4.5 h-4.5 sm:w-5 sm:h-5" aria-hidden="true" />
                   )}
                 </button>
               </div>

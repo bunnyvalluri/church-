@@ -40,12 +40,11 @@ const NavigationItem = memo(function NavigationItem({
         // Base
         "relative group flex items-center gap-1 font-medium",
         "whitespace-nowrap select-none",
-        // Typography
-        "text-[12.5px] xl:text-[13px]",
-        // Spacing — compact to fit all items
+        // Typography & Spacing — scaled per viewport
+        "text-[11px] md:text-[11.5px] lg:text-[12.5px] xl:text-[13px]",
         variant === "desktop"
-          ? "px-2 py-2"
-          : "px-1.5 py-1.5",
+          ? "px-1.5 py-1.5 md:px-2 md:py-2 xl:px-2.5"
+          : "px-1 py-1.5 md:px-1.5 md:py-2",
         // Transitions
         "transition-colors duration-150 ease-out",
         // Active state — colored text only, no background box
