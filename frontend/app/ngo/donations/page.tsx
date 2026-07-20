@@ -743,13 +743,13 @@ export default function NgoDonationsPage() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-6 pr-3 rounded-xl border text-xs sm:text-sm font-bold focus:outline-none transition-all ${
+                        className={`w-full py-3.5 pl-6 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all ${
                           customAmount
-                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/30 scale-[1.03] placeholder-white/70"
-                            : "bg-indigo-50/70 hover:bg-indigo-100/80 dark:bg-indigo-950/40 border-indigo-200/90 dark:border-indigo-500/30 text-indigo-900 dark:text-indigo-200 placeholder-indigo-400 dark:placeholder-indigo-400/60 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            ? "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/30 scale-[1.03] placeholder-white/70"
+                            : "bg-fuchsia-50/80 hover:bg-fuchsia-100 dark:bg-fuchsia-950/40 border-fuchsia-200/90 dark:border-fuchsia-500/30 text-fuchsia-900 dark:text-fuchsia-200 placeholder-fuchsia-400 dark:placeholder-fuchsia-400/60 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20"
                         }`}
                       />
-                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold ${customAmount ? "text-white" : "text-indigo-500 dark:text-indigo-400"}`}>
+                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-extrabold ${customAmount ? "text-white" : "text-fuchsia-500 dark:text-fuchsia-400"}`}>
                         ₹
                       </span>
                     </div>
