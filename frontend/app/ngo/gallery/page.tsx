@@ -35,6 +35,9 @@ function encodeSrc(src: string): string {
     .join("/");
 }
 
+// Session-wide cache of loaded image URLs to prevent skeleton flashes
+const loadedImagesCache = new Set<string>();
+
 // Category config
 const CATEGORIES = [
   { label: "All Photos", value: "ALL" },
@@ -77,7 +80,7 @@ const GalleryCard = React.memo(function GalleryCard({
   onDelete: (item: GalleryItem) => void;
   priority: boolean;
 }) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(() => loadedImagesCache.has(item.thumbnailUrl));
 
   return (
     <div
@@ -124,7 +127,10 @@ const GalleryCard = React.memo(function GalleryCard({
           className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
             isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
-          onLoad={() => setIsLoaded(true)}
+          onLoad={() => {
+            loadedImagesCache.add(item.thumbnailUrl);
+            setIsLoaded(true);
+          }}
         />
 
         {/* Premium Hover Overlay */}
@@ -317,15 +323,17 @@ export default function NgoGalleryPage() {
 
   // Lightbox methods
   const openLightbox = useCallback((idx: number) => {
-    setLbLoading(true);
-    setLbLoaded(false);
+    const item = filteredItems[idx];
+    const isCached = item ? loadedImagesCache.has(item.imageUrl) : false;
+    setLbLoading(!isCached);
+    setLbLoaded(isCached);
     setLbError(false);
     setLightboxIndex(idx);
     setShowMobileInfo(false);
     setZoomScale(1);
     setDirection(0);
     document.body.style.overflow = "hidden";
-  }, []);
+  }, [filteredItems]);
 
   const closeLightbox = useCallback(() => {
     setLightboxIndex(null);
@@ -342,14 +350,16 @@ export default function NgoGalleryPage() {
   }, []);
 
   const goTo = useCallback((idx: number, customDirection = 0) => {
-    setLbLoading(true);
-    setLbLoaded(false);
+    const item = filteredItems[idx];
+    const isCached = item ? loadedImagesCache.has(item.imageUrl) : false;
+    setLbLoading(!isCached);
+    setLbLoaded(isCached);
     setLbError(false);
     setDirection(customDirection);
     setLightboxIndex(idx);
     setShowMobileInfo(false);
     setZoomScale(1);
-  }, []);
+  }, [filteredItems]);
 
   const prevImage = useCallback((e?: React.MouseEvent | KeyboardEvent) => {
     if (e && "stopPropagation" in e) e.stopPropagation();
@@ -592,7 +602,13 @@ export default function NgoGalleryPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="columns-1 sm:columns-2 md:columns-3 gap-5">
+            <motion.div
+              key={selectedCategory}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="columns-1 sm:columns-2 md:columns-3 gap-5"
+            >
               {displayedItems.map((item, index) => (
                 <GalleryCard
                   key={item.id}
@@ -603,7 +619,7 @@ export default function NgoGalleryPage() {
                   priority={index < 4}
                 />
               ))}
-            </div>
+            </motion.div>
 
             {/* Infinite scroll pagination sentinel */}
             <div ref={sentinelRef} className="flex justify-center py-6">
@@ -893,6 +909,7 @@ export default function NgoGalleryPage() {
                               lbLoaded ? "opacity-100" : "opacity-0"
                             }`}
                             onLoad={() => {
+                              loadedImagesCache.add(currentItem.imageUrl);
                               setLbLoading(false);
                               setLbLoaded(true);
                             }}

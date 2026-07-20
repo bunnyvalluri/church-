@@ -29,8 +29,11 @@ function encodeSrc(src: string): string {
     .join("/");
 }
 
+// Session-wide cache of loaded image URLs to prevent skeleton flashes
+const loadedImagesCache = new Set<string>();
+
 function GalleryGridImage({ src, title }: { src: string; title: string }) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(() => loadedImagesCache.has(src));
 
   return (
     <div className="relative w-full h-full">
@@ -46,7 +49,10 @@ function GalleryGridImage({ src, title }: { src: string; title: string }) {
         className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
           isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
-        onLoad={() => setIsLoaded(true)}
+        onLoad={() => {
+          loadedImagesCache.add(src);
+          setIsLoaded(true);
+        }}
       />
     </div>
   );
