@@ -594,13 +594,13 @@ export default function NgoDonationsPage() {
           
           {/* ── LEFT COLUMN: NGO Hero & Information ─────────────────────────── */}
           <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/40 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
               <Heart className="w-3.5 h-3.5 text-purple-500 animate-pulse" />
-              {ngoT.donationsPage.tag}
+              <span>{ngoT.donationsPage.tag}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-900 via-purple-900 to-purple-600 dark:from-white dark:via-purple-200 dark:to-purple-400 bg-clip-text text-transparent">
-              {ngoT.donationsPage.title}
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
+              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-500 dark:from-purple-300 dark:via-indigo-300 dark:to-purple-200 bg-clip-text text-transparent">Our Projects</span>
             </h1>
 
             <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
