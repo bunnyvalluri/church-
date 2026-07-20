@@ -1,7 +1,7 @@
 "use client";
 import React, { memo } from "react";
 import Link from "next/link";
-import { Youtube, Instagram } from "lucide-react";
+import { Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -21,7 +21,7 @@ interface MobileDrawerProps {
 
 /**
  * MobileDrawer — Mobile Dropdown Menu (width < 541px)
- * Reverted to the original, clean, no-icon dropdown card with Instagram integration.
+ * Reverted to the original, clean, no-icon dropdown card.
  */
 const MobileDrawer = memo(function MobileDrawer({
   isOpen,
@@ -34,12 +34,6 @@ const MobileDrawer = memo(function MobileDrawer({
   if (!isOpen) return null;
 
   const socialLinks = [
-    {
-      icon: Instagram,
-      href: "https://instagram.com",
-      label: "Instagram",
-      bg: "bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]",
-    },
     {
       icon: Youtube,
       href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO",
