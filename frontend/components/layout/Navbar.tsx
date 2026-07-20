@@ -250,7 +250,7 @@ export default function Navbar() {
                       <span className={cn("absolute inset-0 rounded-xl border backdrop-blur-md shadow-sm transition-all duration-300 animate-scale-in", styles.activeBg, styles.activeBorder)} />
                     )}
                     <span className="relative z-10 flex items-center gap-1.5">
-                      <Icon className="w-3.5 h-3.5" />
+                      <Icon className={cn("w-3.5 h-3.5", styles.activeText)} />
                       <span>{item.name}</span>
                     </span>
                   </Link>
@@ -319,7 +319,7 @@ export default function Navbar() {
                           : cn("text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5 border-l-transparent", styles.hoverBg, styles.hoverText)
                       )}
                     >
-                      <Icon className={cn("w-4 h-4 flex-shrink-0 transition-colors", isActive ? styles.activeText : "text-gray-450 dark:text-gray-400")} />
+                      <Icon className={cn("w-4 h-4 flex-shrink-0", styles.activeText)} />
                       <span>{item.name}</span>
                     </Link>
                   );
