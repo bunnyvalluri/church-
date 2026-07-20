@@ -1248,3 +1248,76 @@ model AboutConfig {
 
   @@map("about_config")
 }
+
+// ─── Donation Agent Models ─────────────────────────────────────────────────────
+
+// Immutable event log for the Donation Management Agent.
+// Every state transition and user action is recorded here for analytics,
+// debugging, and compliance audit.
+model DonationAgentEvent {
+  id          String   @id @default(cuid())
+  sessionId   String?  @map("session_id")
+  donationId  String?  @map("donation_id")
+  memberId    String?  @map("member_id")
+
+  // The specific event that occurred
+  event       String   // e.g. STEP_AMOUNT_VIEWED, ORDER_CREATED, PAYMENT_VERIFIED
+
+  // Current state when the event fired
+  fromState   String?  @map("from_state")
+  toState     String?  @map("to_state")
+
+  // Contextual metadata (amount, cause, branch, error, etc.)
+  metadata    Json     @default("{}")
+
+  // Client context
+  ip          String?
+  userAgent   String?
+
+  // Immutable timestamp — never updated
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([sessionId])
+  @@index([donationId])
+  @@index([event])
+  @@index([createdAt])
+  @@map("donation_agent_events")
+}
+
+// DB-persisted retry job queue for background tasks.
+// Supports exponential backoff for failed notifications,
+// receipt generation, admin alerts, and dashboard updates.
+// Jobs survive server restarts.
+model DonationRetryJob {
+  id           String   @id @default(cuid())
+  donationId   String   @map("donation_id")
+  sessionId    String?  @map("session_id")
+
+  // Job classification
+  jobType      String   @map("job_type")
+  // NOTIFICATION_SMS | NOTIFICATION_EMAIL | NOTIFICATION_WHATSAPP
+  // NOTIFICATION_PUSH | RECEIPT_GENERATE | ADMIN_ALERT | DASHBOARD_UPDATE
+
+  // Retry state
+  status       String   @default("PENDING") @map("status")
+  // PENDING | IN_PROGRESS | COMPLETED | FAILED | DEAD_LETTER
+
+  attempts     Int      @default(0)
+  maxAttempts  Int      @default(3) @map("max_attempts")
+  nextRetryAt  DateTime @default(now()) @map("next_retry_at")
+  lastError    String?  @db.Text @map("last_error")
+
+  // Job payload — the data needed to execute the job
+  payload      Json     @default("{}")
+
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([status, nextRetryAt])
+  @@index([donationId])
+  @@index([jobType, status])
+  @@map("donation_retry_jobs")
+}
+
+

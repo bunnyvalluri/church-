@@ -37,6 +37,10 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import io from "socket.io-client";
+import { DonationAgentProvider, useDonationAgent } from "@/components/donations/DonationAgentProvider";
+import { AgentStatusBar } from "@/components/donations/AgentStatusBar";
+import { PaymentStateMonitor } from "@/components/donations/PaymentStateMonitor";
+
 
 // Brand SVG Icon Components for GPay, PhonePe, Paytm, and BHIM UPI
 const GPayIcon = () => (
@@ -225,7 +229,9 @@ const DEFAULT_FORM_FIELDS: FormFieldRule[] = [
   { id: "f11", fieldName: "isAnonymous", label: "Make donation anonymous", placeholder: "", isRequired: false, isVisible: true, displayOrder: 11, fieldType: "checkbox" },
 ];
 
-export default function NgoDonationsPage() {
+function NgoDonationsContent() {
+  const agent = useDonationAgent();
+
   const { user } = useAuth();
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
@@ -631,6 +637,15 @@ export default function NgoDonationsPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        {/* Live Agent Status & Guidance */}
+        <AgentStatusBar />
+
+        {/* Dynamic Payment State Machine Monitor */}
+        {step === 3 && <PaymentStateMonitor />}
+      </div>
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 max-w-5xl mx-auto items-start">
