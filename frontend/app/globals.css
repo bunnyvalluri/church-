@@ -127,6 +127,48 @@
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   Navigation System — Design Tokens & Animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Navbar heights — match breakpoints in NavigationBar.tsx */
+  --nav-height-xs: 56px;   /* 320–375px  */
+  --nav-height-sm: 60px;   /* 376–540px  */
+  --nav-height-md: 64px;   /* 541–768px  */
+  --nav-height-lg: 68px;   /* 769–1024px */
+  --nav-height-xl: 72px;   /* 1025–1440px */
+  --nav-height-2xl: 76px;  /* 1441px+    */
+  --nav-height: var(--nav-height-xs);
+}
+
+@media (min-width: 376px)  { :root { --nav-height: var(--nav-height-sm); } }
+@media (min-width: 541px)  { :root { --nav-height: var(--nav-height-md); } }
+@media (min-width: 769px)  { :root { --nav-height: var(--nav-height-lg); } }
+@media (min-width: 1025px) { :root { --nav-height: var(--nav-height-xl); } }
+@media (min-width: 1441px) { :root { --nav-height: var(--nav-height-2xl); } }
+
+/* Body offset to prevent content jumping under fixed header */
+.nav-offset {
+  padding-top: var(--nav-height);
+}
+
+/* ── Mobile drawer slide keyframe (GPU: transform only) ── */
+@keyframes drawer-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0);    }
+}
+@keyframes drawer-slide-out {
+  from { transform: translateX(0);    }
+  to   { transform: translateX(100%); }
+}
+
+/* ── More dropdown / popover scale-fade keyframe ── */
+@keyframes popover-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
 /* Custom Premium Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
