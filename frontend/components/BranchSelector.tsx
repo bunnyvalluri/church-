@@ -30,12 +30,12 @@ interface BranchStyle {
 
 const getBranchStyles = (_branchKey: "all" | "shapur" | "subhash" | "bahadur"): BranchStyle => {
   return {
-    active: "bg-gray-900 dark:bg-white/10 text-white dark:text-white shadow-sm hover:bg-gray-800 dark:hover:bg-white/15",
-    inactive: "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/8",
-    mapPin: "text-gray-500 dark:text-gray-400",
-    border: "border-gray-200/60 dark:border-white/10",
-    activeText: "text-gray-700 dark:text-gray-300",
-    triggerBg: "bg-gray-100/60 dark:bg-white/5 hover:bg-gray-200/60 dark:hover:bg-white/10"
+    active: "bg-gray-900 dark:bg-white/20 text-white dark:text-white shadow-sm hover:bg-gray-800 dark:hover:bg-white/30",
+    inactive: "text-gray-700 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-white/10",
+    mapPin: "text-gray-500 dark:text-white",
+    border: "border-gray-200/60 dark:border-white/20",
+    activeText: "text-gray-700 dark:text-white",
+    triggerBg: "bg-gray-100/60 dark:bg-white/10 hover:bg-gray-200/60 dark:hover:bg-white/20"
   };
 };
 
