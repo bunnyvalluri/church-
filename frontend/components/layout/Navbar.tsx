@@ -12,7 +12,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import PaletteToggle from "@/components/PaletteToggle";
 import BranchSelector from "@/components/BranchSelector";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useAuth } from "@/components/providers/AuthProvider";
+
 
 const navStyles: Record<string, {
   activeText: string;
@@ -82,7 +82,6 @@ const navStyles: Record<string, {
 
 export default function Navbar() {
   const { t, language } = useLanguage();
-  const { user } = useAuth();
   const pathname = usePathname() || "/";
   const isHomePage = pathname === "/";
   const [isScrolled, setIsScrolled]       = useState(false);
@@ -269,13 +268,13 @@ export default function Navbar() {
                 <PaletteToggle showPreferences={true} />
               </div>
 
-              {/* Member Login / Dashboard — Tablet/Desktop (visible at width >= 541px) */}
+              {/* Member Login — Tablet/Desktop (visible at width >= 541px) */}
               <Link
-                href={user ? "/portal-select" : "/login"}
+                href="/login"
                 className="hidden min-[541px]:flex items-center relative px-2.5 py-1.5 min-[640px]:px-4 min-[640px]:py-2 rounded-xl font-bold text-white text-[10px] min-[640px]:text-xs lg:text-sm overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 group-hover:from-violet-500 group-hover:to-purple-500 transition-all duration-300" />
-                <span className="relative z-10">{user ? "Dashboard" : "Member Login"}</span>
+                <span className="relative z-10">{t.nav.login}</span>
               </Link>
 
               {/* ── Hamburger Menu Button (mobile only, width < 541px) ── */}
@@ -347,11 +346,11 @@ export default function Navbar() {
 
                 {/* Login CTA */}
                 <Link
-                  href={user ? "/portal-select" : "/login"}
+                  href="/login"
                   onClick={() => setMobileMenu(false)}
                   className="block w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-bold text-center shadow-lg hover:shadow-purple-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  {user ? "Go to Dashboard" : "Member Login"}
+                  {t.nav.login}
                 </Link>
               </div>
             </div>
