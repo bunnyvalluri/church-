@@ -33,38 +33,38 @@ const getBranchStyles = (branchKey: "all" | "shapur" | "subhash" | "bahadur"): B
     case "shapur":
       return {
         active: "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white shadow-md shadow-orange-100 dark:shadow-none hover:brightness-105",
-        inactive: "text-orange-700 dark:text-orange-300 hover:bg-orange-50/80 dark:hover:bg-orange-950/20",
+        inactive: "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/8",
         mapPin: "text-orange-500 dark:text-orange-400",
         border: "border-orange-200/50 dark:border-orange-800/30",
-        activeText: "text-orange-700 dark:text-orange-250",
+        activeText: "text-orange-700 dark:text-orange-300",
         triggerBg: "bg-orange-50/60 dark:bg-orange-950/15 hover:bg-orange-100/60 dark:hover:bg-orange-950/25"
       };
     case "subhash":
       return {
         active: "bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-100 dark:shadow-none hover:brightness-105",
-        inactive: "text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/20",
+        inactive: "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/8",
         mapPin: "text-emerald-500 dark:text-emerald-400",
         border: "border-emerald-200/50 dark:border-emerald-800/30",
-        activeText: "text-emerald-700 dark:text-emerald-250",
+        activeText: "text-emerald-700 dark:text-emerald-300",
         triggerBg: "bg-emerald-50/60 dark:bg-emerald-950/15 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/25"
       };
     case "bahadur":
       return {
         active: "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white shadow-md shadow-cyan-100 dark:shadow-none hover:brightness-105",
-        inactive: "text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50/80 dark:hover:bg-cyan-950/20",
+        inactive: "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/8",
         mapPin: "text-cyan-500 dark:text-cyan-400",
         border: "border-cyan-200/50 dark:border-cyan-800/30",
-        activeText: "text-cyan-700 dark:text-cyan-250",
+        activeText: "text-cyan-700 dark:text-cyan-300",
         triggerBg: "bg-cyan-50/60 dark:bg-cyan-950/15 hover:bg-cyan-100/60 dark:hover:bg-cyan-950/25"
       };
     case "all":
     default:
       return {
         active: "bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-100 dark:shadow-none hover:brightness-105",
-        inactive: "text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/20",
+        inactive: "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/8",
         mapPin: "text-indigo-500 dark:text-indigo-400",
         border: "border-indigo-200/50 dark:border-indigo-800/30",
-        activeText: "text-indigo-700 dark:text-indigo-250",
+        activeText: "text-indigo-700 dark:text-indigo-300",
         triggerBg: "bg-indigo-50/60 dark:bg-indigo-950/15 hover:bg-indigo-100/60 dark:hover:bg-indigo-950/25"
       };
   }
