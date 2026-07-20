@@ -264,15 +264,10 @@ export default function NgoDonationsPage() {
 
   const getFinalAmount = () => (customAmount ? customAmount : amount);
 
-  // ── Step 1 Validation ────────────────────────────────────────────────────────
   const validateStep1 = () => {
     const finalAmt = Number(getFinalAmount());
-    if (isNaN(finalAmt) || finalAmt < settings.minDonationAmount) {
-      setErrorMessage(`Please select or enter a donation amount of at least ₹${settings.minDonationAmount}.`);
-      return false;
-    }
-    if (finalAmt > settings.maxDonationAmount) {
-      setErrorMessage(`Maximum allowed transaction amount is ₹${settings.maxDonationAmount.toLocaleString("en-IN")}.`);
+    if (isNaN(finalAmt) || finalAmt <= 0) {
+      setErrorMessage("Please select or enter a valid donation amount.");
       return false;
     }
     setErrorMessage("");
@@ -681,9 +676,6 @@ export default function NgoDonationsPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Step 1: Select Donation Amount
                     </label>
-                    <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
-                      Min ₹{settings.minDonationAmount}
-                    </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
