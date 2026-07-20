@@ -154,6 +154,7 @@ export default function NgoGalleryPage() {
   
   // Lightbox options state
   const [lbLoading, setLbLoading] = useState(false);
+  const [lbLoaded, setLbLoaded] = useState(false);
   const [lbError, setLbError] = useState(false);
   const [showMobileInfo, setShowMobileInfo] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
@@ -317,6 +318,7 @@ export default function NgoGalleryPage() {
   // Lightbox methods
   const openLightbox = useCallback((idx: number) => {
     setLbLoading(true);
+    setLbLoaded(false);
     setLbError(false);
     setLightboxIndex(idx);
     setShowMobileInfo(false);
@@ -328,6 +330,7 @@ export default function NgoGalleryPage() {
   const closeLightbox = useCallback(() => {
     setLightboxIndex(null);
     setLbLoading(false);
+    setLbLoaded(false);
     setLbError(false);
     setShowMobileInfo(false);
     setZoomScale(1);
@@ -340,6 +343,7 @@ export default function NgoGalleryPage() {
 
   const goTo = useCallback((idx: number, customDirection = 0) => {
     setLbLoading(true);
+    setLbLoaded(false);
     setLbError(false);
     setDirection(customDirection);
     setLightboxIndex(idx);
@@ -664,6 +668,9 @@ export default function NgoGalleryPage() {
                 {filteredItems[lightboxIndex + 1] && (
                   <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
                 )}
+                {filteredItems[lightboxIndex + 2] && (
+                  <img src={encodeSrc(filteredItems[lightboxIndex + 2].imageUrl)} className="hidden" alt="" />
+                )}
                 {filteredItems[lightboxIndex - 1] && (
                   <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
                 )}
@@ -859,21 +866,36 @@ export default function NgoGalleryPage() {
                         <motion.div
                           animate={{ scale: zoomScale }}
                           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                          className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in"
+                          className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in bg-black/40 rounded-lg overflow-hidden"
                           onClick={handleImageTap}
                         >
+                          {/* Instantly load low-res thumbnail as progressive placeholder */}
+                          {!lbError && currentItem && (
+                            <Image
+                              src={encodeSrc(currentItem.thumbnailUrl)}
+                              alt=""
+                              fill
+                              unoptimized
+                              priority
+                              className={`object-contain rounded-lg blur-md scale-105 pointer-events-none transition-opacity duration-300 ${
+                                lbLoaded ? "opacity-0" : "opacity-80"
+                              }`}
+                            />
+                          )}
                           <Image
                             src={encodeSrc(currentItem.imageUrl)}
                             alt={currentItem.title}
                             width={1620}
                             height={1080}
                             priority
-                            placeholder="blur"
-                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
+                            unoptimized
                             className={`max-w-[95vw] max-h-[70vh] sm:max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
-                              lbError ? "opacity-0" : "opacity-100"
+                              lbLoaded ? "opacity-100" : "opacity-0"
                             }`}
-                            onLoad={() => setLbLoading(false)}
+                            onLoad={() => {
+                              setLbLoading(false);
+                              setLbLoaded(true);
+                            }}
                             onError={() => { setLbLoading(false); setLbError(true); }}
                           />
                         </motion.div>

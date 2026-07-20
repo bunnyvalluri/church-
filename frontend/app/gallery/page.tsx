@@ -291,6 +291,7 @@ export default function GalleryPage() {
                     src={lightboxItem.url}
                     alt={lightboxItem.title}
                     fill
+                    unoptimized
                     className="object-contain"
                     priority
                   />
