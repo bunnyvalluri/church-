@@ -4,8 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, ChevronRight } from "lucide-react";
-import { Instagram, Youtube } from "lucide-react";
+import { Menu, X, Phone, ChevronRight, Youtube, Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -92,17 +91,16 @@ export default function Navbar() {
     href.startsWith("/") ? href : isHomePage ? href : `/${href}`;
 
   const navItems = [
-    { name: t.nav.home,       href: "#home" },
-    { name: t.nav.about,      href: "#about" },
-    { name: t.nav.ngo,        href: "/ngo" },
-    { name: t.nav.ministries, href: "#services" },
-    { name: t.nav.events,     href: "#events" },
-    { name: t.nav.sermons,    href: "#sermons" },
-    { name: t.nav.gallery,    href: "/gallery" },
+    { name: t.nav.home,       href: "#home",       icon: Home },
+    { name: t.nav.about,      href: "#about",      icon: Info },
+    { name: t.nav.ngo,        href: "/ngo",        icon: HeartHandshake },
+    { name: t.nav.ministries, href: "#services",   icon: Church },
+    { name: t.nav.events,     href: "#events",     icon: Calendar },
+    { name: t.nav.sermons,    href: "#sermons",    icon: Mic },
+    { name: t.nav.gallery,    href: "/gallery",    icon: ImageIcon },
   ];
 
   const socialLinks = [
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram",  color: "hover:text-[#E1306C]", bg: "bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]" },
     { icon: Youtube,   href: "https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO", label: "YouTube", color: "hover:text-[#FF0000]", bg: "bg-[#FF0000]" },
   ];
 
@@ -235,6 +233,7 @@ export default function Navbar() {
                   ? pathname === item.href
                   : activeSection === item.href.replace("#", "");
                 const styles = navStyles[item.href] || navStyles["#home"];
+                const Icon = item.icon;
 
                 return (
                   <Link
@@ -250,7 +249,10 @@ export default function Navbar() {
                     {isActive && (
                       <span className={cn("absolute inset-0 rounded-xl border backdrop-blur-md shadow-sm transition-all duration-300 animate-scale-in", styles.activeBg, styles.activeBorder)} />
                     )}
-                    <span className="relative z-10">{item.name}</span>
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{item.name}</span>
+                    </span>
                   </Link>
                 );
               })}
@@ -303,6 +305,7 @@ export default function Navbar() {
                     ? pathname === item.href
                     : activeSection === item.href.replace("#", "");
                   const styles = navStyles[item.href] || navStyles["#home"];
+                  const Icon = item.icon;
 
                   return (
                     <Link
@@ -316,7 +319,8 @@ export default function Navbar() {
                           : cn("text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5 border-l-transparent", styles.hoverBg, styles.hoverText)
                       )}
                     >
-                      {item.name}
+                      <Icon className={cn("w-4 h-4 flex-shrink-0 transition-colors", isActive ? styles.activeText : "text-gray-450 dark:text-gray-400")} />
+                      <span>{item.name}</span>
                     </Link>
                   );
                 })}
