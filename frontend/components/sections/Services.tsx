@@ -104,10 +104,10 @@ interface ChurchService {
   tags: string[];
 }
 
-export default function Services() {
+export default function Services({ initialServices = [] }: { initialServices?: ChurchService[] }) {
   const { t, language } = useLanguage();
-  const [services, setServices] = useState<ChurchService[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [services, setServices] = useState<ChurchService[]>(initialServices);
+  const [loading, setLoading] = useState(initialServices.length === 0);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const socketRef = useRef<any>(null);
@@ -131,8 +131,10 @@ export default function Services() {
   }, []);
 
   useEffect(() => {
-    fetchServices();
-  }, [fetchServices]);
+    if (initialServices.length === 0) {
+      fetchServices();
+    }
+  }, [fetchServices, initialServices]);
 
   // ── Socket.IO — real-time updates from admin ──────────────────────────────────
   useEffect(() => {

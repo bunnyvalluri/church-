@@ -431,15 +431,27 @@ model Ministry {
 }
 
 model Pastor {
-  id        String   @id @default(cuid())
-  name      String
-  title     String
-  bio       String
-  image     String?
-  email     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  title        String
+  designation  String?  // e.g. "Senior Pastor", "Associate Pastor"
+  bio          String   @db.Text
+  image        String?
+  imagePublicId String? @map("image_public_id")
+  email        String?
+  phone        String?
+  socialLinks  Json?    @map("social_links") // { facebook, instagram, youtube, twitter }
+  branchId     String?  @map("branch_id")
+  branch       Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  isActive     Boolean  @default(true) @map("is_active")
+  isDeleted    Boolean  @default(false) @map("is_deleted")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([branchId])
+  @@index([isActive])
+  @@map("pastors")
 }
 
 model Gallery {
@@ -702,6 +714,10 @@ model NgoVolunteer {
 model Branch {
   id               String            @id @default(cuid())
   name             String            @unique // e.g. "Shapur Nagar", "Subhash Nagar", "Bahadurpally"
+  address          String?           @db.Text
+  mapsUrl          String?           @map("maps_url")
+  serviceHours     String?           @map("service_hours")
+  phone            String?
   createdAt        DateTime          @default(now())
   eventReports     EventReport[]
   events           Event[]
@@ -709,6 +725,7 @@ model Branch {
   donations        Donation[]
   galleryItems     Gallery[]
   churchServices   ChurchService[]
+  pastors          Pastor[]
 
   @@map("branches")
 }
@@ -1046,3 +1063,129 @@ model EventNotification {
   @@map("event_notifications")
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// CMS — Homepage Dynamic Content Management
+// ══════════════════════════════════════════════════════════════════════════════
+
+model HomepageHero {
+  id                 String   @id @default("hero")
+  headline           String   @default("Welcome to Kingdom of Christ")
+  subheadline        String   @default("Ministries")
+  subtitle           String   @db.Text @default("A place of Love, Faith, and Miracles")
+  badgeText          String   @default("We are here for you 24/7") @map("badge_text")
+  ctaPrimaryText     String   @default("Join Worship") @map("cta_primary_text")
+  ctaPrimaryHref     String   @default("#services") @map("cta_primary_href")
+  ctaSecondaryText   String   @default("Watch Sermons") @map("cta_secondary_text")
+  ctaSecondaryHref   String   @default("#sermons") @map("cta_secondary_href")
+  ctaTertiaryText    String   @default("Prayer Request") @map("cta_tertiary_text")
+  ctaTertiaryHref    String   @default("/prayer") @map("cta_tertiary_href")
+  backgroundImageUrl String?  @map("background_image_url")
+  backgroundImageId  String?  @map("background_image_id")
+  backgroundVideoUrl String?  @map("background_video_url")
+  backgroundType     String   @default("gradient") @map("background_type") // gradient | image | video
+  isActive           Boolean  @default(true) @map("is_active")
+  updatedById        String?  @map("updated_by")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("homepage_hero")
+}
+
+model SiteStatistic {
+  id           String   @id @default(cuid())
+  key          String   @unique  // members | volunteers | years | programs | families | ministries | baptisms | outreach
+  label        String            // "Members"
+  labelTe      String?  @map("label_te") // "సభ్యులు"
+  labelHi      String?  @map("label_hi") // "सदस्य"
+  value        String            // "1000+"
+  icon         String   @default("Users") // Lucide icon name
+  colorScheme  String   @default("violet") @map("color_scheme") // violet|emerald|amber|rose|blue|teal
+  autoCompute  Boolean  @default(false) @map("auto_compute") // compute from DB vs manual
+  computeFrom  String?  @map("compute_from") // "User"|"Event"|etc.
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  updatedById  String?  @map("updated_by")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([displayOrder])
+  @@map("site_statistics")
+}
+
+model SiteContact {
+  id           String   @id @default(cuid())
+  branchKey    String   @unique @map("branch_key") // shapur|subhash|bahadur
+  branchName   String   @map("branch_name")
+  branchNameTe String?  @map("branch_name_te")
+  branchNameHi String?  @map("branch_name_hi")
+  address      String   @db.Text
+  addressTe    String?  @db.Text @map("address_te")
+  addressHi    String?  @db.Text @map("address_hi")
+  phones       Json     // Array of { label: string, number: string }
+  email        String?
+  mapsUrl      String   @map("maps_url")
+  embedUrl     String   @map("embed_url")
+  isStreetView Boolean  @default(false) @map("is_street_view")
+  serviceHours String?  @map("service_hours")
+  whatsappUrl  String?  @map("whatsapp_url")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("site_contact")
+}
+
+model FooterConfig {
+  id           String   @id @default("footer")
+  tagline      String   @db.Text @default("\"Time is fulfilled, and the Kingdom of God is at hand; repent and believe in the Gospel.\" — Mark 1:15")
+  taglineTe    String?  @db.Text @map("tagline_te")
+  address      String   @db.Text @default("Kingdom of Christ Ministries, 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad – 500055")
+  mapsUrl      String   @default("https://maps.google.com/?q=Kingdom+of+Christ+Ministries") @map("maps_url")
+  phones       Json     @default("[]") // Array of { label: string, number: string }
+  email        String   @default("kingofchristministries23@gmail.com")
+  instagramUrl String?  @map("instagram_url")
+  youtubeUrl   String?  @map("youtube_url")
+  facebookUrl  String?  @map("facebook_url")
+  twitterUrl   String?  @map("twitter_url")
+  copyright    String?  // If null, auto-generated with year
+  updatedById  String?  @map("updated_by")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("footer_config")
+}
+
+model NavigationItem {
+  id           String   @id @default(cuid())
+  label        String
+  labelTe      String?  @map("label_te")
+  labelHi      String?  @map("label_hi")
+  href         String
+  placement    String   // FOOTER_ABOUT|FOOTER_RESOURCES|FOOTER_INVOLVED|FOOTER_CONNECT|NAV_MAIN
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  openInNew    Boolean  @default(false) @map("open_in_new")
+  icon         String?  // Optional Lucide icon name
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([placement])
+  @@index([isActive])
+  @@map("navigation_items")
+}
+
+model AboutConfig {
+  id           String   @id @default("about")
+  sectionBadge String   @default("Who We Are") @map("section_badge")
+  heading      String   @default("About Our Ministry")
+  headingTe    String?  @map("heading_te")
+  headingHi    String?  @map("heading_hi")
+  subtitle     String   @db.Text @default("Serving Hyderabad with love, faith, and action")
+  subtitleTe   String?  @db.Text @map("subtitle_te")
+  subtitleHi   String?  @db.Text @map("subtitle_hi")
+  missionTitle String   @default("Our Mission") @map("mission_title")
+  missionText  String   @db.Text @map("mission_text") @default("To preach the Gospel of the Kingdom of Christ and make disciples of all nations.")
+  values       Json     @default("[]") @map("values") // Array of { icon, title, titleTe, description, descriptionTe, gradient }
+  updatedById  String?  @map("updated_by")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("about_config")
+}

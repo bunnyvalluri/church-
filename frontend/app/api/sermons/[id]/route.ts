@@ -237,7 +237,7 @@ export async function PUT(
       if (existingSermon.pdfPublicId) {
         await deleteCloudinaryAsset(existingSermon.pdfPublicId, 'raw').catch(() => {});
       }
-      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'raw');
+      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'auto');
       updateData.pdfUrl = uploadResult.secure_url;
       updateData.pdfPublicId = uploadResult.public_id;
     }
@@ -252,7 +252,7 @@ export async function PUT(
       if (existingSermon.presentationPublicId) {
         await deleteCloudinaryAsset(existingSermon.presentationPublicId, 'raw').catch(() => {});
       }
-      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'raw');
+      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'auto');
       updateData.presentationUrl = uploadResult.secure_url;
       updateData.presentationPublicId = uploadResult.public_id;
     }

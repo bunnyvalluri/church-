@@ -12,14 +12,14 @@ import { useCallback } from "react";
 
 const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 
-export default function Sermons() {
+export default function Sermons({ initialSermons = [] }: { initialSermons?: any[] }) {
   const { t } = useLanguage();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedSermonId, setSelectedSermonId] = useState<string | null>(null);
 
   // 2. State to hold our dynamic database sermons
-  const [sermons, setSermons] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sermons, setSermons] = useState<any[]>(initialSermons);
+  const [isLoading, setIsLoading] = useState(initialSermons.length === 0);
 
   // Standalone fetch function for database sermons
   const fetchSermonsFromDatabase = async () => {
@@ -64,7 +64,9 @@ export default function Sermons() {
 
   // 3. Fetch from Postgres on component mount + Listen to real-time companion updates
   useEffect(() => {
-    fetchSermonsFromDatabase();
+    if (initialSermons.length === 0) {
+      fetchSermonsFromDatabase();
+    }
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     const socket = io(socketUrl, { transports: ["websocket", "polling"] });

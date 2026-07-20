@@ -257,7 +257,7 @@ export async function POST(req: Request) {
       if (!security.isValid) {
         return NextResponse.json({ error: `PDF Notes validation: ${security.error}` }, { status: 422 });
       }
-      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'raw');
+      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'auto');
       pdfUrl = uploadResult.secure_url;
       pdfPublicId = uploadResult.public_id;
     }
@@ -271,7 +271,7 @@ export async function POST(req: Request) {
       if (!security.isValid) {
         return NextResponse.json({ error: `Presentation validation: ${security.error}` }, { status: 422 });
       }
-      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'raw');
+      const uploadResult = await uploadBufferToCloudinary(buffer, 'sermons', 'auto');
       presentationUrl = uploadResult.secure_url;
       presentationPublicId = uploadResult.public_id;
     }

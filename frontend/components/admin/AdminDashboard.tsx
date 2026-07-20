@@ -25,7 +25,8 @@ import {
   Image as ImageIcon,
   Menu,
   X,
-  Check
+  Check,
+  Sparkles
 } from "lucide-react";
 import Image from "next/image";
 
@@ -42,6 +43,7 @@ const AttendanceManagement = dynamic(() => import('@/components/admin/Attendance
 const ContentManagement = dynamic(() => import('@/components/admin/ContentManagement'), { ssr: false });
 const SettingsManagement = dynamic(() => import('@/components/admin/SettingsManagement'), { ssr: false });
 const NgoManagement = dynamic(() => import('@/components/admin/NgoManagement'), { ssr: false });
+const HomepageCmsManager = dynamic(() => import('@/components/admin/cms/HomepageCmsManager'), { ssr: false });
 
 import AdminControlBar from "@/components/admin/AdminControlBar";
 import NotificationCenter from "@/components/admin/NotificationCenter";
@@ -67,6 +69,7 @@ type ActiveViewType =
   | "event-attendance"
   | "reports"
   // CONTENT
+  | "homepage-cms"
   | "sermons"
   | "events"
   | "announcements"
@@ -1322,6 +1325,10 @@ export default function AdminDashboard() {
                   activeView === "ngo-projects" ? "projects" :
                   activeView === "ngo-media" ? "media" : "volunteers"
                 } />
+              )}
+
+              {activeView === "homepage-cms" && (
+                <HomepageCmsManager />
               )}
 
               {activeView === "settings" && (

@@ -101,8 +101,11 @@ export async function POST(req: Request) {
     const tags = scripture ? [scripture] : [];
     const date = dateStr ? new Date(dateStr) : new Date();
 
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
     const sermonData = {
       title,
+      slug,
+      speaker: pastor,
       description: description || `Sermon by ${pastor} — ${scripture || category}`,
       pastor,
       date,

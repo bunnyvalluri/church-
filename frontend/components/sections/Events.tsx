@@ -88,10 +88,10 @@ function CountdownTimer({ date }: { date: string }) {
   );
 }
 
-export default function Events() {
+export default function Events({ initialEvents = [] }: { initialEvents?: DynamicEvent[] }) {
   const { t } = useLanguage();
-  const [events, setEvents] = useState<DynamicEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<DynamicEvent[]>(initialEvents);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
 
   // Registration Modal state
   const [registerEvent, setRegisterEvent] = useState<DynamicEvent | null>(null);
@@ -119,7 +119,9 @@ export default function Events() {
   }, []);
 
   useEffect(() => {
-    fetchEvents();
+    if (initialEvents.length === 0) {
+      fetchEvents();
+    }
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     const socket = io(socketUrl, { transports: ["websocket", "polling"] });

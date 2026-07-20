@@ -8,7 +8,7 @@ export type Sermon = {
   id: string;
   title: string;
   description: string;
-  pastor: string;
+  pastor: string | null;
   date: Date;
   videoUrl: string | null;
   audioUrl: string | null;
