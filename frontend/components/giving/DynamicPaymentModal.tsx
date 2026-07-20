@@ -146,11 +146,20 @@ export default function DynamicPaymentModal({
     }
   };
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll into view on modal opening
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isOpen]);
+
   const isCompleted = status === "COMPLETED" || status === "VERIFIED";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg bg-slate-900 border border-violet-700/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+      <div ref={modalRef} className="relative w-full max-w-lg bg-slate-900 border border-violet-700/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white my-auto">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-5">
           <div>
