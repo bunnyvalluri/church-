@@ -102,10 +102,10 @@ export function clearPaymentFailures(ip: string): void {
 // ─── Rate Limit Presets for Payment Routes ────────────────────────────────────
 
 export const RATE_LIMITS = {
-  CREATE_ORDER: { windowMs: 10 * 60 * 1000, maxRequests: 5 },     // 5 orders per 10 min per IP
-  VERIFY_PAYMENT: { windowMs: 15 * 60 * 1000, maxRequests: 20 },  // 20 verifications per 15 min
-  WEBHOOK: { windowMs: 60 * 1000, maxRequests: 60 },              // 60 webhook events per min (Razorpay burst)
-  RECEIPT_PDF: { windowMs: 60 * 1000, maxRequests: 10 },          // 10 PDF downloads per min
+  CREATE_ORDER: { windowMs: 10 * 60 * 1000, maxRequests: 60 },     // 60 orders per 10 min
+  VERIFY_PAYMENT: { windowMs: 15 * 60 * 1000, maxRequests: 100 },  // 100 verifications per 15 min
+  WEBHOOK: { windowMs: 60 * 1000, maxRequests: 120 },              // 120 webhook events per min
+  RECEIPT_PDF: { windowMs: 60 * 1000, maxRequests: 60 },          // 60 PDF downloads per min
 } as const;
 
 // ─── Payment Security Guard ───────────────────────────────────────────────────

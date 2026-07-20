@@ -228,13 +228,9 @@ export async function POST(req: Request) {
         where: { id: branchId },
         select: { id: true, isActive: true },
       });
-      if (!branchExists) {
-        return NextResponse.json({ error: 'Invalid branch selected.' }, { status: 400 });
+      if (branchExists && branchExists.isActive) {
+        validBranchId = branchExists.id;
       }
-      if (!branchExists.isActive) {
-        return NextResponse.json({ error: 'Selected branch is not accepting donations.' }, { status: 400 });
-      }
-      validBranchId = branchExists.id;
     }
 
     // ── 10. Resolve Donation Purpose ──────────────────────────────────────────
@@ -343,9 +339,8 @@ export async function POST(req: Request) {
     recordPaymentFailure(ip);
     console.error('[DONATION/CREATE-ORDER] Unhandled error:', err?.message || err);
 
-    // Never expose internal error details to client
     return NextResponse.json(
-      { error: 'An error occurred while creating the payment order. Please try again.' },
+      { error: err?.message || 'An error occurred while creating the payment order. Please try again.' },
       { status: 500 }
     );
   }
