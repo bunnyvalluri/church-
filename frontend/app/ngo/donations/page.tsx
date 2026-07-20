@@ -1101,98 +1101,197 @@ export default function NgoDonationsPage() {
             {/* ── STEP 4: SUCCESS VIEW ───────────────────────────────────────── */}
             {step === 4 && paymentStatus === "SUCCESS" && receiptData && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-6 text-center"
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="space-y-5"
               >
-                {/* Success Icon */}
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-500 animate-bounce">
-                  <CheckCircle2 className="w-10 h-10" />
+                {/* ── Animated Success Badge ── */}
+                <div className="flex flex-col items-center text-center pt-2 pb-1">
+                  <motion.div
+                    initial={{ scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.1 }}
+                    className="relative w-20 h-20 mb-4"
+                  >
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping" style={{ animationDuration: "2s" }} />
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 shadow-2xl shadow-emerald-500/40 flex items-center justify-center">
+                      <CheckCircle2 className="w-10 h-10 text-white" strokeWidth={2.5} />
+                    </div>
+                  </motion.div>
+
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight"
+                  >
+                    Payment Successful! 🎉
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.35 }}
+                    className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs"
+                  >
+                    Thank you for your generous support. Your donation has been verified and recorded.
+                  </motion.p>
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">
-                    ✅ Payment Successful!
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Thank you for your generous support towards Kingdom of Christ Ministries NGO.
+                {/* ── Amount Hero ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 rounded-2xl p-5 text-center shadow-xl shadow-purple-500/25"
+                >
+                  <p className="text-purple-200 text-xs font-semibold uppercase tracking-widest mb-1">Amount Donated</p>
+                  <p className="text-white text-4xl font-black tracking-tight">
+                    ₹{receiptData.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </p>
-                </div>
+                  <p className="text-purple-200 text-xs mt-1.5">{receiptData.purpose}</p>
+                </motion.div>
 
-                {/* Receipt Metadata Box */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-left text-xs space-y-3 font-sans">
-                  <div className="flex justify-between border-b border-slate-200 dark:border-white/5 pb-2">
-                    <span className="text-slate-500">Receipt Number:</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">
-                      {receiptData.receiptNumber}
+                {/* ── Notification Status Chips ── */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex flex-wrap gap-2 justify-center"
+                >
+                  {[
+                    { icon: "📱", label: "SMS Sent", color: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/40 text-blue-700 dark:text-blue-300" },
+                    { icon: "💬", label: "WhatsApp Sent", color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700/40 text-emerald-700 dark:text-emerald-300" },
+                    { icon: "📧", label: "Email Sent", color: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-700/40 text-purple-700 dark:text-purple-300" },
+                    { icon: "🔔", label: "Push Sent", color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/40 text-amber-700 dark:text-amber-300" },
+                  ].map((chip) => (
+                    <span key={chip.label} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold border ${chip.color}`}>
+                      <Check className="w-3 h-3" />
+                      {chip.icon} {chip.label}
                     </span>
+                  ))}
+                </motion.div>
+
+                {/* ── Receipt Details Card ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm"
+                >
+                  {/* Card header */}
+                  <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 dark:from-purple-900/30 dark:to-indigo-900/30 px-5 py-3 border-b border-slate-200 dark:border-white/5">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-purple-700 dark:text-purple-300">Official Receipt</span>
+                    </div>
                   </div>
 
-                  <div className="flex justify-between border-b border-slate-200 dark:border-white/5 pb-2">
-                    <span className="text-slate-500">Transaction ID / UTR:</span>
-                    <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                      {receiptData.transactionId}
-                    </span>
+                  {/* Receipt rows */}
+                  <div className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
+                    {[
+                      { label: "Receipt Number", value: receiptData.receiptNumber, mono: true, highlight: true },
+                      { label: "Donation ID", value: donationId, mono: true },
+                      { label: "Transaction ID / UTR", value: receiptData.transactionId, mono: true },
+                      { label: "Date & Time", value: receiptData.issuedAt },
+                      { label: "Donor Name", value: receiptData.donorName },
+                      { label: "Donation Cause", value: receiptData.purpose },
+                      { label: "Branch", value: receiptData.branch },
+                      { label: "Payment Method", value: "UPI (Instant QR)" },
+                    ].map((row) => (
+                      <div key={row.label} className="flex justify-between items-center px-5 py-3 gap-3">
+                        <span className="text-slate-500 dark:text-slate-400 flex-shrink-0">{row.label}</span>
+                        <span className={`font-bold text-right break-all ${
+                          row.highlight
+                            ? "text-purple-700 dark:text-purple-300 font-mono"
+                            : row.mono
+                            ? "font-mono text-slate-700 dark:text-slate-200"
+                            : "text-slate-800 dark:text-slate-200"
+                        }`}>
+                          {row.value}
+                        </span>
+                      </div>
+                    ))}
                   </div>
+                </motion.div>
 
-                  <div className="flex justify-between border-b border-slate-200 dark:border-white/5 pb-2">
-                    <span className="text-slate-500">Amount Paid:</span>
-                    <span className="font-extrabold text-slate-900 dark:text-white text-sm">
-                      ₹{receiptData.amount.toLocaleString("en-IN")}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b border-slate-200 dark:border-white/5 pb-2">
-                    <span className="text-slate-500">Donor Name:</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {receiptData.donorName}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-b border-slate-200 dark:border-white/5 pb-2">
-                    <span className="text-slate-500">Cause / Purpose:</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {receiptData.purpose}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Branch:</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {receiptData.branch}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Receipt Action Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <Link
-                    href={`/give/receipt/${donationId}`}
-                    className="py-3 px-4 min-h-[44px] bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
+                {/* ── Action Buttons ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.65 }}
+                  className="space-y-2.5"
+                >
+                  {/* Primary: Download PDF */}
+                  <a
+                    href={`/api/receipts/${donationId}/pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download Receipt</span>
-                  </Link>
+                    Download Receipt (PDF)
+                  </a>
 
-                  <button
-                    type="button"
-                    onClick={handleShareReceipt}
-                    className="py-3 px-4 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    <span>Share Receipt</span>
-                  </button>
+                  {/* Secondary row: Share + Email */}
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={handleShareReceipt}
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                    >
+                      <Share2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      Share Receipt
+                    </button>
 
-                  <Link
-                    href="/ngo"
-                    className="py-3 px-4 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
-                  >
-                    <Home className="w-4 h-4" />
-                    <span>Return Home</span>
-                  </Link>
-                </div>
+                    <a
+                      href={`/api/receipts/${donationId}?email=true`}
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        fetch(`/api/receipts/${donationId}?email=true`)
+                          .then(() => showToast("📧 Receipt emailed successfully!", "success"))
+                          .catch(() => showToast("Could not send email. Try again.", "error"));
+                      }}
+                    >
+                      <Mail className="w-4 h-4 text-blue-500" />
+                      Email Receipt
+                    </a>
+                  </div>
+
+                  {/* Tertiary row: History + Home */}
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <Link
+                      href="/member/donations"
+                      className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/40 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Donation History
+                    </Link>
+
+                    <Link
+                      href="/ngo"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                    >
+                      <Home className="w-4 h-4" />
+                      Return Home
+                    </Link>
+                  </div>
+                </motion.div>
+
+                {/* ── Bible Verse Footer ── */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.75 }}
+                  className="text-center text-[11px] text-slate-400 dark:text-slate-500 italic pb-2"
+                >
+                  "God loves a cheerful giver." — 2 Corinthians 9:7
+                </motion.p>
               </motion.div>
             )}
+
 
             {/* ── STEP 4 (FAILED STATE) ─────────────────────────────────────── */}
             {paymentStatus === "FAILED" && (

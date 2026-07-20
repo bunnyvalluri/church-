@@ -955,13 +955,22 @@ model NotificationLog {
   recipientId    String?       @map("recipient_id")
   recipient      User?         @relation(fields: [recipientId], references: [id], onDelete: SetNull)
   recipientRole  UserRole?     @map("recipient_role")
-  channel        String
-  status         String
+  // Donation-specific tracking fields
+  donationId     String?       @map("donation_id")
+  receiptId      String?       @map("receipt_id")
+  receiptNumber  String?       @map("receipt_number")
+  channel        String        // SMS | WHATSAPP | EMAIL | PUSH | ADMIN_ALERT
+  status         String        @default("PENDING") // PENDING | SENT | FAILED | RETRYING | SKIPPED
+  recipient_addr String?       @map("recipient_addr") // phone number or email address
+  retryCount     Int           @default(0) @map("retry_count")
+  deliveredAt    DateTime?     @map("delivered_at")
   errorMessage   String?       @map("error_message")
   sentAt         DateTime      @default(now()) @map("sent_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   @@index([notificationId])
   @@index([recipientId])
+  @@index([donationId])
   @@map("notification_logs")
 }
 

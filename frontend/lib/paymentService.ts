@@ -4,91 +4,12 @@ import QRCode from 'qrcode';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
 import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
+import { dispatchDonationNotifications, type DonationNotificationPayload } from '@/lib/donationNotificationService';
 
-// Helper to send email receipt via Resend
-async function sendReceiptEmail(email: string, receiptData: any) {
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    console.info('[PAYMENT_SERVICE] Resend API key not configured. Skipping receipt email.');
-    return;
-  }
-
-  const formattedAmount = receiptData.amount.toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    style: 'currency',
-    currency: 'INR',
-  });
-
-  const formattedDate = new Date(receiptData.issuedAt).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const htmlBody = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
-      <h2 style="color: #4F1C91; text-align: center;">✝ Kingdom of Christ Ministries</h2>
-      <p style="text-align: center; color: #6b7280; font-size: 14px;">Official Donation Receipt</p>
-      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
-      <p>Dear <strong>${receiptData.donorName || 'Beloved Member'}</strong>,</p>
-      <p>Thank you for your generous contribution. Your gift helps us spread the Gospel and serve the community.</p>
-      <div style="background-color: #faf5ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Receipt Number:</td>
-            <td style="padding: 6px 0; font-weight: bold; text-align: right;">${receiptData.receiptNumber}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Verification Code:</td>
-            <td style="padding: 6px 0; font-family: monospace; text-align: right;">${receiptData.verificationCode}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Donation Purpose:</td>
-            <td style="padding: 6px 0; text-align: right; font-weight: 600;">${receiptData.purpose}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Date:</td>
-            <td style="padding: 6px 0; text-align: right;">${formattedDate}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Payment Method:</td>
-            <td style="padding: 6px 0; text-align: right;">Instant UPI QR</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #6b7280;">Transaction Ref (UTR):</td>
-            <td style="padding: 6px 0; text-align: right; font-family: monospace;">${receiptData.utr}</td>
-          </tr>
-          <tr style="border-top: 1px solid #ede9fe;">
-            <td style="padding: 12px 0 0 0; font-size: 16px; font-weight: bold; color: #4F1C91;">Total Contribution:</td>
-            <td style="padding: 12px 0 0 0; font-size: 18px; font-weight: 950; color: #4F1C91; text-align: right;">${formattedAmount}</td>
-          </tr>
-        </table>
-      </div>
-      <p style="font-size: 12px; color: #9ca3af; text-align: center; margin-top: 30px;">
-        This is an automatically generated receipt. Under Section 80G of the Income Tax Act, 1961, donations to KCM are tax-exempt.
-      </p>
-    </div>
-  `;
-
-  try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'KCM Donations <donations@kingdomofchristministries.org>',
-        to: [email],
-        subject: `Donation Receipt ${receiptData.receiptNumber} — KCM`,
-        html: htmlBody,
-      }),
-    });
-  } catch (emailErr) {
-    console.error('[PAYMENT_SERVICE] Resend email dispatch failed:', emailErr);
-  }
+// Notification dispatch is now handled entirely by donationNotificationService.ts
+// This helper is kept as a legacy stub for any direct callers outside the main flow.
+async function sendReceiptEmail(_email: string, _receiptData: any) {
+  // No-op: replaced by dispatchDonationNotifications() in completeDonationSession
 }
 
 /**
@@ -275,18 +196,36 @@ export async function completeDonationSession(
     console.warn('[PAYMENT_SERVICE] Push notification dispatch failed:', pushErr);
   }
 
-  // 10. Send Email receipt in background
-  if (donorEmail) {
-    sendReceiptEmail(donorEmail, {
-      receiptNumber,
-      verificationCode,
-      amount: session.amount,
-      purpose: session.purpose.nameEn,
-      issuedAt: receipt.issuedAt,
-      utr,
-      donorName,
-    }).catch((emailErr) => console.error('[PAYMENT_SERVICE] Email queue error:', emailErr));
-  }
+  // 10. Build notification payload and dispatch all channels concurrently
+  // (domain already defined above for QR URL generation)
+  const notificationPayload: DonationNotificationPayload = {
+    donationId: donation.id,
+    receiptId: receipt.id,
+    receiptNumber,
+    verificationCode,
+    donorName,
+    donorEmail,
+    donorPhone,
+    isAnonymous: !session.memberId && donorName === 'Anonymous Giver',
+    memberId: session.memberId,
+    amount: session.amount,
+    currency: session.currency,
+    purpose: session.purpose.nameEn,
+    purposeCode: session.purpose.code,
+    branchName: session.branch?.name || 'General',
+    paymentMethod: 'UPI',
+    utr,
+    razorpayPaymentId: utr,
+    paidAt: donation.createdAt,
+    receiptUrl: `${domain}/give/receipt/${donation.id}`,
+    verifyUrl: `${domain}/give/receipt/${donation.id}?verify=${verificationCode}`,
+    pdfUrl: `${domain}/api/receipts/${receipt.id}/pdf`,
+  };
+
+  // Fire all notification channels in the background (non-blocking)
+  dispatchDonationNotifications(notificationPayload).catch((notifErr) =>
+    console.error('[PAYMENT_SERVICE] Notification dispatch error:', notifErr)
+  );
 
   return { success: true, alreadyProcessed: false, donation, receipt };
 }
