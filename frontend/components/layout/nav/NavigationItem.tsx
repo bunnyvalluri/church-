@@ -52,8 +52,9 @@ const NavigationItem = memo(function NavigationItem({
         isActive
           ? cn(styles.activeText, "font-semibold")
           : cn(
-              "text-gray-500 dark:text-gray-400",
+              "text-gray-600 dark:text-gray-200",
               styles.hoverText,
+              "dark:hover:text-white"
             ),
         // Focus visible
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-lg",
@@ -69,7 +70,7 @@ const NavigationItem = memo(function NavigationItem({
           "flex-shrink-0 w-3 h-3 transition-all duration-150",
           isActive
             ? styles.activeText
-            : "text-gray-400 dark:text-gray-500 group-hover:scale-110",
+            : "text-gray-400 dark:text-gray-300 group-hover:scale-110",
         )}
         aria-hidden="true"
       />

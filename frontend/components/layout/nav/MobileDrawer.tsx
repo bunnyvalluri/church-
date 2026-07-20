@@ -47,8 +47,10 @@ const MobileDrawer = memo(function MobileDrawer({
       id="mobile-menu"
       className={cn(
         "sm:hidden mt-2 mb-3 p-4",
-        "bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl",
-        "rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10",
+        "bg-white dark:bg-[#120e22]",
+        "backdrop-blur-2xl",
+        "rounded-2xl shadow-2xl",
+        "border border-gray-100 dark:border-violet-500/20",
         "animate-scale-in"
       )}
     >
@@ -80,9 +82,9 @@ const MobileDrawer = memo(function MobileDrawer({
                           styles.mobileActiveBorder
                         )
                       : cn(
-                          "text-gray-600 dark:text-gray-400",
+                          "text-gray-700 dark:text-gray-100",
                           "border-l-transparent",
-                          "hover:bg-gray-50 dark:hover:bg-white/5",
+                          "hover:bg-gray-50 dark:hover:bg-violet-500/10",
                           styles.hoverText,
                           styles.hoverBg
                         )
@@ -102,10 +104,10 @@ const MobileDrawer = memo(function MobileDrawer({
       </nav>
 
       {/* Preferences section */}
-      <div className="mt-4 pt-4 border-t border-gray-200/70 dark:border-white/10 space-y-3">
+      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-violet-500/15 space-y-3">
         {/* Toggles row */}
         <div className="flex items-center justify-between px-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-violet-300">
             Preferences
           </span>
           <div className="flex items-center gap-1.5">
@@ -117,7 +119,7 @@ const MobileDrawer = memo(function MobileDrawer({
 
         {/* Social */}
         <div className="flex items-center gap-2 px-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mr-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-violet-300 mr-2">
             Follow
           </span>
           <div className="flex items-center gap-2">
