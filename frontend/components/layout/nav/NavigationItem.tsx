@@ -17,9 +17,9 @@ interface NavigationItemProps {
 }
 
 /**
- * Single navigation item — icon + label, active state, hover animation.
+ * Single navigation item — clean underline active state, no boxy pill.
  * GPU-only transitions: transform + opacity.
- * Meets WCAG AA: focus-visible ring, 44×44 min touch target on mobile.
+ * Meets WCAG AA: focus-visible ring.
  */
 const NavigationItem = memo(function NavigationItem({
   item,
@@ -38,70 +38,57 @@ const NavigationItem = memo(function NavigationItem({
       onClick={onClick}
       className={cn(
         // Base
-        "relative group flex items-center gap-1.5 rounded-xl font-semibold",
+        "relative group flex items-center gap-1 font-medium",
         "whitespace-nowrap select-none",
-        // Typography: 14px desktop, 13px on smaller lg screens
-        "text-[13px] xl:text-[14px]",
-        // Spacing: desktop variant — compact but breathing
+        // Typography
+        "text-[12.5px] xl:text-[13px]",
+        // Spacing — compact to fit all items
         variant === "desktop"
-          ? "px-3 py-2"
-          : "px-2.5 py-1.5",
-        // Transitions: GPU-composited only
-        "transition-[color,background-color,border-color,opacity,transform] duration-[150ms] ease-out",
-        // Active state
+          ? "px-2 py-2"
+          : "px-1.5 py-1.5",
+        // Transitions
+        "transition-colors duration-150 ease-out",
+        // Active state — colored text only, no background box
         isActive
-          ? cn(styles.activeText, styles.activeBg, styles.activeBorder, "border shadow-sm")
+          ? cn(styles.activeText, "font-semibold")
           : cn(
-              "text-gray-600 dark:text-gray-400",
-              "border border-transparent",
+              "text-gray-500 dark:text-gray-400",
               styles.hoverText,
-              styles.hoverBg,
             ),
-        // Focus visible (keyboard nav)
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
-        // Hover lift — transform only (GPU)
+        // Focus visible
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-lg",
+        // Hover lift
         "hover:-translate-y-px",
         className
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {/* Active background pill — animated scale-in */}
-      {isActive && (
-        <span
-          className={cn(
-            "absolute inset-0 rounded-xl backdrop-blur-[6px]",
-            "animate-scale-in pointer-events-none",
-            styles.activeBg, styles.activeBorder, "border"
-          )}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Icon */}
+      {/* Icon — small, always present */}
       <Icon
         className={cn(
-          "flex-shrink-0 transition-transform duration-[150ms] ease-out",
-          variant === "desktop" ? "w-3.5 h-3.5" : "w-3.5 h-3.5",
-          isActive ? styles.activeText : "text-gray-400 dark:text-gray-500 group-hover:scale-110",
-          isActive ? "scale-100" : ""
+          "flex-shrink-0 w-3 h-3 transition-all duration-150",
+          isActive
+            ? styles.activeText
+            : "text-gray-400 dark:text-gray-500 group-hover:scale-110",
         )}
         aria-hidden="true"
       />
 
       {/* Label */}
-      <span className="relative z-10">{item.name}</span>
+      <span className="relative">{item.name}</span>
 
-      {/* Bottom active indicator dot */}
-      {isActive && (
-        <span
-          className={cn(
-            "absolute -bottom-px left-1/2 -translate-x-1/2 w-1 h-1 rounded-full",
-            styles.activeIndicator,
-            "animate-scale-in pointer-events-none"
-          )}
-          aria-hidden="true"
-        />
-      )}
+      {/* Bottom active indicator — sleek underline bar */}
+      <span
+        className={cn(
+          "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full",
+          "transition-[width,opacity] duration-200 ease-out",
+          styles.activeIndicator,
+          isActive
+            ? "w-4/5 opacity-100"
+            : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-40"
+        )}
+        aria-hidden="true"
+      />
     </Link>
   );
 });

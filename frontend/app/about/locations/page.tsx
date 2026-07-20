@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { MapPin, Clock, Phone, Navigation, ArrowLeft, ExternalLink, ShieldCheck, Church, BookOpen, Users, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls } from "@/components/ui/map";
+import Navbar from "@/components/layout/Navbar";
 
 export default function LocationsPage() {
   const { t, language } = useLanguage();

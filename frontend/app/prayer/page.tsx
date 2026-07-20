@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { Heart, Phone, Mail, Clock, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export default function PrayerPage() {
   const { t } = useLanguage();

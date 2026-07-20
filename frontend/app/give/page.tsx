@@ -1,10 +1,10 @@
 "use client";
 
 import GiveForm from "@/components/GiveForm";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MemberLayout from "@/app/member/layout";
 import { useAuth } from "@/components/providers/AuthProvider";
+import Navbar from "@/components/layout/Navbar";
 
 export default function GivePage() {
   const { user } = useAuth();

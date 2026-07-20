@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Music, Users, Baby, Heart, Camera, Coffee, Wrench, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export default function VolunteerClientPage() {
   const { language, t } = useLanguage();

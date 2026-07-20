@@ -3,8 +3,8 @@
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Users, Heart, Shield, Award, ChevronLeft } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
 
 export default function MembershipPage() {
   const { t } = useLanguage();

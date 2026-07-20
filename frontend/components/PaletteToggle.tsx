@@ -40,7 +40,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/5 backdrop-blur-md border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
+        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-violet-500/10 backdrop-blur-md border border-gray-200/60 dark:border-violet-400/20 text-gray-700 dark:text-violet-200 hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group"
         title="Settings"
         type="button"
       >
@@ -49,7 +49,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
 
       {/* Glassmorphic Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/95 dark:bg-gray-950/95 border border-gray-200/50 dark:border-white/10 shadow-2xl backdrop-blur-xl p-4 z-50 animate-scale-in">
+        <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/95 dark:bg-[#0e0b1e]/98 border border-gray-200/50 dark:border-violet-500/20 shadow-2xl dark:shadow-[0_8px_40px_rgba(109,40,217,0.2)] backdrop-blur-xl p-4 z-50 animate-scale-in">
           {/* Header */}
           <div className="flex items-center gap-2 pb-3 mb-3 border-b border-gray-100 dark:border-white/5">
             <Settings className="w-4 h-4 text-[hsl(var(--primary))] animate-spin-slow" />

@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { ArrowRight, Church, Users, Heart, MapPin, ChevronLeft } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export default function OurStoryPage() {
   console.log("useLanguage in story page:", typeof useLanguage, useLanguage);

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, HandHeart, Mic, Music, Camera, Users, Baby, Car, Coffee, ChevronLeft } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
   title: "Serve | Kingdom of Christ Ministries",

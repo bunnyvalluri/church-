@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { PlayCircle, Mic, Music, Image as ImageIcon, ChevronLeft } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export default function MediaLibraryPage() {
   const categories = [

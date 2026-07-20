@@ -1,10 +1,10 @@
 "use client";
 
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Contact from "@/components/sections/Contact";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
 
 export default function ContactPage() {
   return (

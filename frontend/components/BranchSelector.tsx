@@ -91,7 +91,7 @@ export default function BranchSelector() {
 
   if (!mounted) {
     return (
-      <div className="h-9 w-32 bg-gray-100/50 dark:bg-white/5 animate-pulse rounded-xl" />
+      <div className="h-9 w-32 bg-gray-100/50 dark:bg-violet-500/8 animate-pulse rounded-xl" />
     );
   }
 
@@ -116,7 +116,7 @@ export default function BranchSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl rounded-2xl border border-gray-200/60 dark:border-white/10 shadow-2xl p-1.5 z-[99] animate-scale-in">
+        <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-[#0e0b1e]/98 backdrop-blur-2xl rounded-2xl border border-gray-200/60 dark:border-violet-500/20 shadow-2xl dark:shadow-[0_8px_40px_rgba(109,40,217,0.2)] p-1.5 z-[99] animate-scale-in">
           <button
             onClick={() => {
               setSelectedBranchId("all");

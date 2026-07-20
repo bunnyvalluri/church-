@@ -143,16 +143,16 @@ const NavigationBar = memo(function NavigationBar() {
             "border-b",
             isScrolled
               ? [
-                  "bg-white/95 dark:bg-gray-950/95",
+                  "bg-white/95 dark:bg-[#0e0b1e]/97",
                   "backdrop-blur-2xl",
-                  "border-gray-200/80 dark:border-white/10",
-                  "shadow-[0_1px_20px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_20px_0_rgba(0,0,0,0.3)]",
+                  "border-gray-200/80 dark:border-violet-500/20",
+                  "shadow-[0_1px_20px_0_rgba(0,0,0,0.06)] dark:shadow-[0_4px_32px_0_rgba(109,40,217,0.15)]",
                 ].join(" ")
               : [
-                  "bg-white/80 dark:bg-gray-950/80",
+                  "bg-white/85 dark:bg-[#0e0b1e]/85",
                   "backdrop-blur-xl",
-                  "border-transparent",
-                  "shadow-none",
+                  "border-transparent dark:border-violet-500/10",
+                  "shadow-none dark:shadow-[0_2px_16px_0_rgba(109,40,217,0.08)]",
                 ].join(" ")
           )}
         >
@@ -212,10 +212,10 @@ const NavigationBar = memo(function NavigationBar() {
                     "flex items-center justify-center",
                     // 44×44 min touch target
                     "w-11 h-11 rounded-xl",
-                    "bg-gray-100/80 dark:bg-white/8",
-                    "border border-gray-200 dark:border-white/15",
-                    "text-gray-700 dark:text-gray-300",
-                    "hover:bg-gray-200/80 dark:hover:bg-white/12",
+                    "bg-gray-100/80 dark:bg-violet-500/10",
+                    "border border-gray-200 dark:border-violet-400/20",
+                    "text-gray-700 dark:text-violet-200",
+                    "hover:bg-gray-200/80 dark:hover:bg-violet-500/20",
                     "transition-[background-color,color,transform] duration-150 ease-out",
                     "active:scale-90",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

@@ -32,12 +32,12 @@ const DesktopMenu = memo(function DesktopMenu({
         // Hidden below lg, flex on lg+
         "hidden lg:flex",
         "items-center",
-        // Spacing between items — consistent scale
-        "gap-0.5 xl:gap-1",
+        // Spacing between items
+        "gap-0 xl:gap-0.5",
         // Horizontal flex center
         "flex-1 justify-center",
-        // Overflow safety
-        "min-w-0 overflow-hidden"
+        // Overflow visible so items aren't clipped
+        "min-w-0"
       )}
     >
       {navItems.map((item) => {

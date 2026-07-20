@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Download, Play, MessageCircle, ChevronLeft } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 export default function BibleStudyPage() {
   const studies = [

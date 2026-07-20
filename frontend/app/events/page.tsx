@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
 import { useBranch } from "@/components/providers/BranchProvider";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import Navbar from "@/components/layout/Navbar";
 
 // ── Inline EventCard for landing page (simpler, public-facing) ──────────────
 interface PublicEvent {
@@ -62,6 +62,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
 
   return (
     <div className={`group bg-white dark:bg-slate-900 border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${isNew ? "border-violet-400/40 dark:border-violet-500/30 ring-2 ring-violet-500/20 animate-in slide-in-from-bottom-4 duration-500" : "border-slate-200/60 dark:border-white/[0.06] hover:border-violet-400/30 dark:hover:border-violet-500/20"}`}>
+      <Navbar />
       {/* Thumbnail */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700">
         {thumbnail ? (
@@ -248,7 +249,6 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 transition-colors">
-      <Navbar />
       {/* Notification popup */}
       <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
 
