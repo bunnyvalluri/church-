@@ -38,6 +38,41 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import io from "socket.io-client";
 
+// Brand SVG Icon Components for GPay, PhonePe, Paytm, and BHIM UPI
+const GPayIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+  </svg>
+);
+
+const PhonePeIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="6" fill="#5F259F"/>
+    <path d="M13.5 7H10.5C9.67 7 9 7.67 9 8.5V15.5C9 16.33 9.67 17 10.5 17H13.5C14.33 17 15 16.33 15 15.5V8.5C15 7.67 14.33 7 13.5 7Z" fill="#5F259F"/>
+    <path d="M12 8.5V15.5M9.5 10.5H14.5M9.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const PaytmIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="5" fill="#002E6E"/>
+    <path d="M5 9.5H7.5V14.5H5V9.5Z" fill="#00BAF2"/>
+    <path d="M8.5 9.5H12C12.8 9.5 13.5 10 13.5 11C13.5 12 12.8 12.5 12 12.5H10V14.5H8.5V9.5Z" fill="white"/>
+    <path d="M14.5 9.5H16V13C16 14 16.5 14.5 17.5 14.5C18.5 14.5 19 14 19 13V9.5H20.5V13C20.5 15 19 16 17.5 16C16 16 14.5 15 14.5 13V9.5Z" fill="#00BAF2"/>
+  </svg>
+);
+
+const BhimIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+    <path d="M5 16.5L12 5.5L19 16.5H5Z" fill="#008837"/>
+    <path d="M12 5.5L19 16.5H13.5L9.5 10L12 5.5Z" fill="#EF4123"/>
+    <path d="M8.5 12L12 16.5H6L8.5 12Z" fill="#FF9933"/>
+  </svg>
+);
+
 // Icon mapping helper
 const ICON_MAP: Record<string, any> = {
   Heart,
@@ -578,13 +613,19 @@ export default function NgoDonationsPage() {
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
                 Accepted UPI Apps
               </p>
-              <div className="flex items-center gap-3 flex-wrap">
-                {["GPay", "PhonePe", "Paytm", "BHIM", "Banking UPI"].map((appName) => (
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {[
+                  { name: "GPay", icon: GPayIcon },
+                  { name: "PhonePe", icon: PhonePeIcon },
+                  { name: "Paytm", icon: PaytmIcon },
+                  { name: "BHIM", icon: BhimIcon },
+                ].map((app) => (
                   <span
-                    key={appName}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-2xl"
+                    key={app.name}
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
                   >
-                    ✓ {appName}
+                    <app.icon />
+                    <span>{app.name}</span>
                   </span>
                 ))}
               </div>
@@ -934,18 +975,19 @@ export default function NgoDonationsPage() {
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      { name: "GPay", scheme: `tez://upi/pay?pa=${settings.upiId}` },
-                      { name: "PhonePe", scheme: `phonepe://pay?pa=${settings.upiId}` },
-                      { name: "Paytm", scheme: `paytmmp://upi/pay?pa=${settings.upiId}` },
-                      { name: "BHIM", scheme: `upi://pay?pa=${settings.upiId}` },
+                      { name: "GPay", icon: GPayIcon, scheme: `tez://upi/pay?pa=${settings.upiId}` },
+                      { name: "PhonePe", icon: PhonePeIcon, scheme: `phonepe://pay?pa=${settings.upiId}` },
+                      { name: "Paytm", icon: PaytmIcon, scheme: `paytmmp://upi/pay?pa=${settings.upiId}` },
+                      { name: "BHIM", icon: BhimIcon, scheme: `upi://pay?pa=${settings.upiId}` },
                     ].map((app) => (
                       <a
                         key={app.name}
                         href={upiUri || app.scheme}
-                        className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-purple-500 transition-all flex items-center justify-center gap-1"
+                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md transition-all flex items-center justify-center gap-1.5 shadow-sm"
                       >
+                        <app.icon />
                         <span>{app.name}</span>
-                        <ExternalLink className="w-3 h-3 text-slate-400" />
+                        <ExternalLink className="w-3 h-3 text-slate-400 opacity-60 flex-shrink-0" />
                       </a>
                     ))}
                   </div>
