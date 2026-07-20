@@ -266,26 +266,10 @@ export default function Footer() {
                 href="https://valluri-rahul-portfolio.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative font-black text-sm tracking-wide transition-all duration-300 hover:scale-105 inline-block"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #a855f7, #ec4899, #f97316, #eab308, #22c55e, #06b6d4, #6366f1, #a855f7)",
-                  backgroundSize: "300% auto",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  animation: "gradientShift 4s linear infinite",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.6))",
-                }}
+                className="font-bold text-sm tracking-wider transition-colors duration-200 text-purple-400 hover:text-purple-300 dark:text-purple-400 dark:hover:text-purple-300 inline-block"
               >
                 ✦ Developed by VALLURI RAHUL. ✦
               </a>
-              <style>{`
-                @keyframes gradientShift {
-                  0% { background-position: 0% center; }
-                  100% { background-position: 300% center; }
-                }
-              `}</style>
             </p>
             <div className="flex gap-6 text-sm">
               <Link href="/privacy" className="hover:text-[hsl(var(--primary))] transition-colors">
