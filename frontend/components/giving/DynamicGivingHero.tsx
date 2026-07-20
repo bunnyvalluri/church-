@@ -37,12 +37,12 @@ export default function DynamicGivingHero({
   ],
 }: GivingHeroConfigProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-950 via-purple-900 to-indigo-950 text-white p-8 sm:p-12 md:p-16 shadow-2xl border border-violet-700/40">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-950 via-purple-900 to-indigo-950 text-white p-5 sm:p-8 md:p-10 shadow-2xl border border-violet-700/40">
       {/* Background Decorative Ambient Glows */}
       <div className="absolute -top-32 -right-32 w-96 h-96 bg-violet-500/25 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center space-y-7">
+      <div className="relative z-10 max-w-4xl mx-auto text-center space-y-4 sm:space-y-6">
         {/* Active Campaign Alert Banner */}
         {campaignBannerText && (
           <motion.a

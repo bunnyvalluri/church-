@@ -240,7 +240,7 @@ export default function GiveForm() {
   const effectiveAmount = getEffectiveAmount();
 
   return (
-    <div className="space-y-10 py-6 max-w-5xl mx-auto px-4 sm:px-6">
+    <div className="space-y-6 sm:space-y-8 py-2 sm:py-4 max-w-5xl mx-auto px-2 sm:px-6">
       {/* 1. Dynamic Hero Section */}
       <DynamicGivingHero {...heroConfig} />
 
@@ -248,7 +248,7 @@ export default function GiveForm() {
       <form
         id="give-form"
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8"
+        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl space-y-6 sm:space-y-8"
       >
         {/* Purpose Selector */}
         <DynamicPurposeSelector
