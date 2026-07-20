@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Phone, MapPin, Send, Clock, RefreshCw } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock, RefreshCw, User, HelpCircle, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContacts } from "@/hooks/useCmsData";
 import type { SiteContact } from "@/types/cms";
@@ -377,113 +378,198 @@ export default function Contact() {
           </div>
 
           {/* ── Right Column: Contact Form ── */}
-          <div className="relative bg-white dark:bg-white/[0.03] rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/[0.06] backdrop-blur-xl h-fit">
-            {/* Gradient accent bar at top */}
-            <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-violet-500 to-purple-600" />
+          {/* ── Right Column: Contact Form ── */}
+          <div className="relative bg-white/95 dark:bg-[#0f0b21]/95 rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/40 dark:shadow-[0_12px_50px_rgba(109,40,217,0.25)] border border-slate-200/80 dark:border-violet-500/25 backdrop-blur-2xl h-fit">
+            {/* Top animated gradient bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 animate-shimmer" />
 
             <div className="p-4 sm:p-6 lg:p-8">
-              <h3 className="text-lg sm:text-xl font-bold mb-5 sm:mb-7 text-slate-900 dark:text-white tracking-tight">
-                {t.contact.formTitle}
-              </h3>
+              {/* Form Title & Subtitle */}
+              <div className="mb-6">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                  {t.contact.formTitle}
+                  <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                  Fill out the details below and our ministry team will respond promptly.
+                </p>
+              </div>
+
+              {/* Quick Subject Filter Chips */}
+              <div className="mb-5">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300 mb-2">
+                  Quick Subject Select
+                </label>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {[
+                    { key: "general", label: t.contact.subjectGeneral, emoji: "💬" },
+                    { key: "prayer", label: t.contact.subjectPrayer, emoji: "✝️" },
+                    { key: "event", label: t.contact.subjectEvent, emoji: "🗓️" },
+                    { key: "membership", label: t.contact.subjectMembership, emoji: "🤝" },
+                    { key: "volunteer", label: t.contact.subjectVolunteer, emoji: "🙋" },
+                  ].map((chip) => {
+                    const isSelected = formData.subject === chip.key;
+                    return (
+                      <button
+                        key={chip.key}
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, subject: chip.key }))}
+                        className={cn(
+                          "px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 border",
+                          isSelected
+                            ? "bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-500/30 scale-[1.02]"
+                            : "bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10"
+                        )}
+                      >
+                        <span>{chip.emoji}</span>
+                        <span>{chip.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Name */}
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
-                      {t.contact.name}
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                      {t.contact.name} <span className="text-rose-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/50 dark:focus:border-violet-500/40 transition-all placeholder:text-slate-300 dark:placeholder:text-white/20 text-sm"
-                      placeholder={t.contact.namePlaceholder}
-                    />
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-10 pr-9 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium"
+                        placeholder={t.contact.namePlaceholder}
+                      />
+                      {formData.name.trim().length > 1 && (
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-emerald-500">
+                          <CheckCircle2 className="w-4 h-4 animate-scale-in" />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Email */}
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
-                      {t.contact.emailLabel}
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                      {t.contact.emailLabel} <span className="text-rose-500">*</span>
                     </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/50 dark:focus:border-violet-500/40 transition-all placeholder:text-slate-300 dark:placeholder:text-white/20 text-sm"
-                      placeholder={t.contact.emailPlaceholder}
-                    />
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-10 pr-9 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium"
+                        placeholder={t.contact.emailPlaceholder}
+                      />
+                      {formData.email.includes("@") && formData.email.includes(".") && (
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-emerald-500">
+                          <CheckCircle2 className="w-4 h-4 animate-scale-in" />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
                       {t.contact.phoneLabel}
                     </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/50 dark:focus:border-violet-500/40 transition-all placeholder:text-slate-300 dark:placeholder:text-white/20 text-sm"
-                      placeholder={t.contact.phonePlaceholder}
-                    />
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                        <Phone className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium"
+                        placeholder={t.contact.phonePlaceholder}
+                      />
+                    </div>
                   </div>
 
                   {/* Subject */}
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
-                      {t.contact.subject}
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                      {t.contact.subject} <span className="text-rose-500">*</span>
                     </label>
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/50 dark:focus:border-violet-500/40 transition-all text-sm"
-                    >
-                      <option value="">{t.contact.subjectPlaceholder}</option>
-                      <option value="general">{t.contact.subjectGeneral}</option>
-                      <option value="prayer">{t.contact.subjectPrayer}</option>
-                      <option value="event">{t.contact.subjectEvent}</option>
-                      <option value="membership">{t.contact.subjectMembership}</option>
-                      <option value="volunteer">{t.contact.subjectVolunteer}</option>
-                    </select>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                        <HelpCircle className="w-4 h-4" />
+                      </div>
+                      <select
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-10 pr-8 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all text-sm font-medium appearance-none"
+                      >
+                        <option value="" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectPlaceholder}</option>
+                        <option value="general" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectGeneral}</option>
+                        <option value="prayer" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectPrayer}</option>
+                        <option value="event" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectEvent}</option>
+                        <option value="membership" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectMembership}</option>
+                        <option value="volunteer" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectVolunteer}</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
                 {/* Message */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
-                    {t.contact.message}
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/50 dark:focus:border-violet-500/40 transition-all resize-none placeholder:text-slate-300 dark:placeholder:text-white/20 text-sm"
-                    placeholder={t.contact.messagePlaceholder}
-                  />
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                      {t.contact.message} <span className="text-rose-500">*</span>
+                    </label>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                      {formData.message.length} / 500
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute top-3.5 left-0 pl-3.5 pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={4}
+                      maxLength={500}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium"
+                      placeholder={t.contact.messagePlaceholder}
+                    />
+                  </div>
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting || submitStatus === "success"}
-                  className={`w-full py-4 rounded-2xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2.5 text-sm ${
+                  className={cn(
+                    "w-full py-3.5 sm:py-4 rounded-xl font-black tracking-wide text-sm transition-all duration-300",
+                    "flex items-center justify-center gap-2.5 shadow-lg",
                     submitStatus === "success"
-                      ? "bg-emerald-500 text-white cursor-default"
+                      ? "bg-emerald-500 text-white cursor-default shadow-emerald-500/30"
                       : submitStatus === "error"
-                      ? "bg-rose-500 text-white"
-                      : "bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-xl hover:shadow-violet-500/25 hover:scale-[1.02] dark:from-white/10 dark:to-white/5 dark:border dark:border-white/10 dark:hover:border-white/20"
-                  } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
+                      ? "bg-rose-500 text-white shadow-rose-500/30"
+                      : "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.01] active:scale-[0.99]"
+                  )}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
@@ -492,9 +578,7 @@ export default function Contact() {
                     </span>
                   ) : submitStatus === "success" ? (
                     <span className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
+                      <CheckCircle2 className="w-5 h-5" />
                       {t.contact.sent}
                     </span>
                   ) : submitStatus === "error" ? (
@@ -506,7 +590,7 @@ export default function Contact() {
                     </span>
                   ) : (
                     <>
-                      <Send className="h-4 w-4" />
+                      <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       {t.contact.send}
                     </>
                   )}
