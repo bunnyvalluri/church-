@@ -733,6 +733,7 @@ model Branch {
   mapsUrl          String?           @map("maps_url")
   serviceHours     String?           @map("service_hours")
   phone            String?
+  isActive         Boolean           @default(true) @map("is_active")
   createdAt        DateTime          @default(now())
   eventReports     EventReport[]
   events           Event[]

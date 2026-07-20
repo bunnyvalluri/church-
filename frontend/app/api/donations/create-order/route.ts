@@ -226,9 +226,9 @@ export async function POST(req: Request) {
     if (branchId) {
       const branchExists = await prisma.branch.findUnique({
         where: { id: branchId },
-        select: { id: true, isActive: true },
+        select: { id: true },
       });
-      if (branchExists && branchExists.isActive) {
+      if (branchExists) {
         validBranchId = branchExists.id;
       }
     }
