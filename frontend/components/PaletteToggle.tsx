@@ -49,7 +49,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
 
       {/* Glassmorphic Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/95 dark:bg-[#0e0b1e]/98 border border-gray-200/50 dark:border-violet-500/20 shadow-2xl dark:shadow-[0_8px_40px_rgba(109,40,217,0.2)] backdrop-blur-xl p-4 z-50 animate-scale-in">
+        <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/95 dark:bg-slate-950/95 border border-gray-200/50 dark:border-violet-500/20 shadow-2xl dark:shadow-[0_8px_40px_rgba(109,40,217,0.2)] backdrop-blur-xl p-4 z-50 animate-scale-in">
           {/* Header */}
           <div className="flex items-center gap-2 pb-3 mb-3 border-b border-gray-100 dark:border-white/5">
             <Settings className="w-4 h-4 text-[hsl(var(--primary))] animate-spin-slow" />

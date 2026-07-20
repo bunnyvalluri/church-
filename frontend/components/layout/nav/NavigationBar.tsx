@@ -143,13 +143,13 @@ const NavigationBar = memo(function NavigationBar() {
             "border-b",
             isScrolled
               ? [
-                  "bg-white/95 dark:bg-[#0d0a1e]/98",
+                  "bg-white/95 dark:bg-slate-950/95",
                   "backdrop-blur-2xl",
                   "border-gray-200/80 dark:border-violet-500/30",
                   "shadow-[0_1px_20px_0_rgba(0,0,0,0.06)] dark:shadow-[0_4px_32px_0_rgba(109,40,217,0.25)]",
                 ].join(" ")
               : [
-                  "bg-white/85 dark:bg-[#0d0a1e]/90",
+                  "bg-white/85 dark:bg-slate-950/85",
                   "backdrop-blur-xl",
                   "border-transparent dark:border-violet-500/15",
                   "shadow-none dark:shadow-[0_2px_16px_0_rgba(109,40,217,0.12)]",
