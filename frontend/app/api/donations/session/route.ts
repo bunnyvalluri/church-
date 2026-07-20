@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/authMiddleware';
-import { DonationSessionSchema, sanitizeInput } from '@/lib/security';
+import { DonationSessionSchema, sanitizeHtml as sanitizeInput } from '@/lib/security';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
 import QRCode from 'qrcode';

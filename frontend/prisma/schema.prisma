@@ -386,6 +386,10 @@ model Donation {
   donorEmail        String?
   donorPhone        String?
   status            DonationStatus   @default(PENDING)
+  // Security audit fields — set by backend only, never by client
+  amountVerified    Boolean          @default(false) @map("amount_verified")
+  signatureVerified Boolean          @default(false) @map("signature_verified")
+  verifiedBy        String?          @map("verified_by") // WEBHOOK | RAZORPAY_API | DEV_SIMULATION
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   user              User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -395,8 +399,10 @@ model Donation {
   @@index([purposeId])
   @@index([branchId])
   @@index([sessionId])
+  @@index([razorpayOrderId])
   @@map("donations")
 }
+
 
 model Announcement {
   id        String    @id @default(cuid())
@@ -935,16 +941,20 @@ model Receipt {
 }
 
 model PaymentWebhook {
-  id           String    @id @default(cuid())
-  payload      Json
-  signature    String?
-  ipAddress    String?   @map("ip_address")
-  status       String    @default("PENDING")
-  errorMessage String?   @map("error_message")
-  processedAt  DateTime? @map("processed_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id              String    @id @default(cuid())
+  payload         Json
+  signature       String?   // Masked — first 12 chars only
+  ipAddress       String?   @map("ip_address")
+  status          String    @default("PENDING") // PENDING | PROCESSED | FAILED | DUPLICATE | IGNORED | INVALID
+  // Deduplication key: SHA-256(orderId|paymentId) — prevents replay attacks
+  webhookEventId  String?   @unique @map("webhook_event_id")
+  errorMessage    String?   @map("error_message")
+  processedAt     DateTime? @map("processed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  @@index([webhookEventId])
+  @@index([status])
   @@map("payment_webhooks")
 }
 
