@@ -173,7 +173,7 @@ const NavigationBar = memo(function NavigationBar() {
                 // Gap — spacing scale
                 "gap-3 sm:gap-4 lg:gap-6",
                 // Heights per breakpoint
-                "min-h-[56px] min-[376px]:min-h-[60px] sm:min-h-[64px] md:min-h-[68px] lg:min-h-[72px] 2xl:min-h-[76px]"
+                "min-h-[56px] sm:min-h-[64px] md:min-h-[68px] lg:min-h-[72px] 2xl:min-h-[76px]"
               )}
             >
               {/* Logo */}

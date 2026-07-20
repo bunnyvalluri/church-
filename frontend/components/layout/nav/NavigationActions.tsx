@@ -39,16 +39,16 @@ const NavigationActions = memo(function NavigationActions({
         <BranchSelector />
       </div>
 
-      {/* Settings / Preferences — desktop only (lg+) */}
+      {/* Settings / Preferences — desktop only (xl+) */}
       {showSettings && (
-        <div className="hidden lg:block flex-shrink-0">
+        <div className="hidden xl:block flex-shrink-0">
           <PaletteToggle showPreferences={true} />
         </div>
       )}
 
-      {/* Member Login — tablet+ (sm+), hidden on mobile */}
+      {/* Member Login — tablet+ (md+), hidden on mobile */}
       {showLogin && (
-        <div className="hidden sm:block flex-shrink-0">
+        <div className="hidden md:block flex-shrink-0">
           <MemberLoginButton variant="tablet" />
         </div>
       )}

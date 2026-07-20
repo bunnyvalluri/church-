@@ -33,7 +33,6 @@ const TabletMenu = memo(function TabletMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        // Visible sm–lg only
         "hidden sm:flex lg:hidden",
         "items-center gap-0.5",
         "flex-1 justify-center",

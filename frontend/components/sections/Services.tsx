@@ -173,7 +173,7 @@ export default function Services({ initialServices = [] }: { initialServices?: C
   return (
     <section
       id="services"
-      className="py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300"
+      className="py-20 md:py-28 bg-white dark:bg-transparent relative z-10 overflow-hidden transition-colors duration-300"
     >
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -251,7 +251,7 @@ export default function Services({ initialServices = [] }: { initialServices?: C
                         exit={{ opacity: 0, scale: 0.95 }}
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.5, delay: index * 0.07, ease: [0.21, 0.47, 0.32, 0.98] }}
-                        className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden cursor-pointer"
+                        className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 md:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden cursor-pointer"
                         onClick={() => setExpandedId(isExpanded ? null : service.id)}
                       >
                         {/* Featured ribbon */}

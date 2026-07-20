@@ -29,7 +29,6 @@ const DesktopMenu = memo(function DesktopMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        // Hidden below lg, flex on lg+
         "hidden lg:flex",
         "items-center",
         // Spacing between items

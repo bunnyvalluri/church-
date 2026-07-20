@@ -167,7 +167,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
   return (
     <section
       id="about"
-      className="py-28 md:py-36 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
+      className="py-20 md:py-28 lg:py-36 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
     >
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
@@ -233,8 +233,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           </div>
         </motion.div>
 
-        {/* Core Values */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {aboutLoading
             ? Array.from({ length: 4 }).map((_, i) => <ValueCardSkeleton key={i} />)
             : values.map((value, index) => {
