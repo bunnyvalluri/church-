@@ -30,7 +30,7 @@ const NavigationActions = memo(function NavigationActions({
   return (
     <div
       className={cn(
-        "flex items-center flex-shrink-0",
+        "flex items-center flex-shrink-0 z-10 relative",
         compact ? "gap-1" : "gap-1.5 sm:gap-2"
       )}
     >

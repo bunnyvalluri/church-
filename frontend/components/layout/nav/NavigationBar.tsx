@@ -105,21 +105,6 @@ const NavigationBar = memo(function NavigationBar() {
 
   return (
     <>
-      {/* Skip to main content — keyboard only */}
-      <a
-        href="#main-content"
-        className={cn(
-          "sr-only focus:not-sr-only",
-          "focus:absolute focus:top-4 focus:left-4 focus:z-[200]",
-          "focus:px-4 focus:py-2.5 focus:rounded-xl",
-          "focus:bg-violet-600 focus:text-white focus:font-bold focus:shadow-xl",
-          "focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2",
-          "transition-all duration-200"
-        )}
-      >
-        Skip to main content
-      </a>
-
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 w-full",
@@ -179,7 +164,15 @@ const NavigationBar = memo(function NavigationBar() {
               {/* Logo */}
               <NavigationLogo />
 
-              {/* ── Primary Nav (md+ : Small Laptop, Desktop, Large Desktop) ── */}
+              {/* ── Tablet Nav (md to lg: 768px – 1024px) ── */}
+              <TabletMenu
+                navItems={navItems}
+                activeSection={activeSection}
+                pathname={pathname}
+                resolveHref={resolveHref}
+              />
+
+              {/* ── Primary Nav (lg+ : Laptop, Desktop, Large Desktop) ── */}
               <DesktopMenu
                 navItems={navItems}
                 activeSection={activeSection}

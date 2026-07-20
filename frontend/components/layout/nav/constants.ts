@@ -70,11 +70,11 @@ export const NAV_STYLES: Record<string, NavStyles> = {
   },
 };
 
-/** Primary nav items visible at tablet (≥541px). Rest go into "More" */
-export const PRIMARY_NAV_KEYS = ["#home", "#about", "#events", "/gallery"];
+/** Primary nav items visible at tablet (≥768px). Rest go into "More" */
+export const PRIMARY_NAV_KEYS = ["#home", "#about", "#events"];
 
 /** Nav items that overflow into the "More" dropdown at tablet breakpoint */
-export const OVERFLOW_NAV_KEYS = ["/ngo", "#services", "#sermons"];
+export const OVERFLOW_NAV_KEYS = ["/ngo", "#services", "#sermons", "/gallery"];
 
 /** Navbar heights per breakpoint — used for body padding-top to prevent CLS */
 export const NAVBAR_HEIGHTS = {

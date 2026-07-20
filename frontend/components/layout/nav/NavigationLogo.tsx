@@ -23,7 +23,7 @@ const NavigationLogo = memo(function NavigationLogo() {
     <Link
       href="/"
       className={cn(
-        "flex items-center flex-shrink-0 min-w-0",
+        "flex items-center flex-shrink-0 min-w-0 z-10 relative",
         // Spacing between logo and text
         "gap-2 sm:gap-2.5",
         // Group for hover effects

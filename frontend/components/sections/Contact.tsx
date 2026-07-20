@@ -343,7 +343,7 @@ export default function Contact() {
                               </a>
                               <button
                                 type="button"
-                                onClick={() => copyToClipboard(selectedContact.email)}
+                                onClick={() => copyToClipboard(selectedContact.email ?? '')}
                                 className="opacity-0 group-hover/email:opacity-100 transition-opacity text-xs text-slate-400 dark:text-gray-400 hover:text-blue-500 flex items-center gap-1 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-lg"
                                 title="Copy email address"
                               >

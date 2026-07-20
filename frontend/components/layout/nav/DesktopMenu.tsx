@@ -29,33 +29,30 @@ const DesktopMenu = memo(function DesktopMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "hidden md:flex",
-        "items-center",
-        // Spacing between items — scales from small laptop to large desktop
-        "gap-0.5 md:gap-1 lg:gap-1.5 xl:gap-2",
-        // Horizontal flex center
-        "flex-1 justify-center",
-        // Prevent overflow clipping
-        "min-w-0"
+        "hidden lg:flex",
+        "flex-1 items-center justify-center",
+        "min-w-0 max-w-full px-2"
       )}
     >
-      {navItems.map((item) => {
-        const isActive = item.href.startsWith("/")
-          ? pathname === item.href || pathname.startsWith(item.href + "/")
-          : activeSection === item.href.replace("#", "");
-        const styles = NAV_STYLES[item.href] ?? NAV_STYLES["#home"];
+      <div className="flex items-center gap-0.5 lg:gap-1.5 xl:gap-2 mx-auto max-w-full">
+        {navItems.map((item) => {
+          const isActive = item.href.startsWith("/")
+            ? pathname === item.href || pathname.startsWith(item.href + "/")
+            : activeSection === item.href.replace("#", "");
+          const styles = NAV_STYLES[item.href] ?? NAV_STYLES["#home"];
 
-        return (
-          <NavigationItem
-            key={item.href}
-            item={item}
-            isActive={isActive}
-            styles={styles}
-            resolvedHref={resolveHref(item.href)}
-            variant="desktop"
-          />
-        );
-      })}
+          return (
+            <NavigationItem
+              key={item.href}
+              item={item}
+              isActive={isActive}
+              styles={styles}
+              resolvedHref={resolveHref(item.href)}
+              variant="desktop"
+            />
+          );
+        })}
+      </div>
     </nav>
   );
 });

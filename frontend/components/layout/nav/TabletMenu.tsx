@@ -33,40 +33,41 @@ const TabletMenu = memo(function TabletMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "hidden sm:flex lg:hidden",
-        "items-center gap-0.5",
-        "flex-1 justify-center",
-        "min-w-0 overflow-hidden"
+        "hidden md:flex lg:hidden",
+        "flex-1 items-center justify-center",
+        "min-w-0 max-w-full px-2"
       )}
     >
-      {/* Primary 4 items */}
-      {primaryItems.map((item) => {
-        const isActive = item.href.startsWith("/")
-          ? pathname === item.href || pathname.startsWith(item.href + "/")
-          : activeSection === item.href.replace("#", "");
-        const styles = NAV_STYLES[item.href] ?? NAV_STYLES["#home"];
+      <div className="flex items-center gap-1 sm:gap-1.5 mx-auto max-w-full">
+        {/* Primary 3 items */}
+        {primaryItems.map((item) => {
+          const isActive = item.href.startsWith("/")
+            ? pathname === item.href || pathname.startsWith(item.href + "/")
+            : activeSection === item.href.replace("#", "");
+          const styles = NAV_STYLES[item.href] ?? NAV_STYLES["#home"];
 
-        return (
-          <NavigationItem
-            key={item.href}
-            item={item}
-            isActive={isActive}
-            styles={styles}
-            resolvedHref={resolveHref(item.href)}
-            variant="tablet"
+          return (
+            <NavigationItem
+              key={item.href}
+              item={item}
+              isActive={isActive}
+              styles={styles}
+              resolvedHref={resolveHref(item.href)}
+              variant="tablet"
+            />
+          );
+        })}
+
+        {/* "More" overflow dropdown */}
+        {overflowItems.length > 0 && (
+          <MoreDropdown
+            items={overflowItems}
+            activeSection={activeSection}
+            pathname={pathname}
+            resolveHref={resolveHref}
           />
-        );
-      })}
-
-      {/* "More" overflow dropdown */}
-      {overflowItems.length > 0 && (
-        <MoreDropdown
-          items={overflowItems}
-          activeSection={activeSection}
-          pathname={pathname}
-          resolveHref={resolveHref}
-        />
-      )}
+        )}
+      </div>
     </nav>
   );
 });
