@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PlayCircle, Mic, Music, Image as ImageIcon, ChevronLeft } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import BackToHome from "@/components/ui/BackToHome";
 
 export default function MediaLibraryPage() {
   const categories = [
@@ -16,15 +17,9 @@ export default function MediaLibraryPage() {
       <Navbar />
       <div className="bg-pink-900 text-white pt-32 pb-16 md:pt-40 md:pb-20">
         <div className="container mx-auto px-4 text-center">
-          <div className="mb-6">
-            <a
-              href="/"
-              className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back to Home
-            </a>
-          </div>
+            <div className="mb-6 flex justify-center">
+              <BackToHome />
+            </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Media Library</h1>
           <p className="text-xl text-pink-200 max-w-2xl mx-auto">
             Explore our vast collection of digital resources.

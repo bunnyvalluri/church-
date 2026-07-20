@@ -21,6 +21,7 @@ import NotificationPopup, { NotificationData } from "@/components/NotificationPo
 import { useBranch } from "@/components/providers/BranchProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import BackToHome from "@/components/ui/BackToHome";
 
 // ── Inline EventCard for landing page (simpler, public-facing) ──────────────
 interface PublicEvent {
@@ -252,7 +253,7 @@ export default function EventsPage() {
       <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
 
       {/* ── Hero Header ──────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-slate-900 pt-24 pb-16">
+      <div className="relative overflow-hidden bg-slate-900 pt-36 pb-16">
         {/* Background orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-8 left-1/4 w-96 h-96 rounded-full bg-violet-600/15 blur-3xl" />
@@ -260,14 +261,8 @@ export default function EventsPage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 text-center">
-          <div className="mb-6">
-            <a
-              href="/"
-              className="inline-flex items-center gap-1.5 text-white/80 hover:text-white transition-all text-sm font-medium hover:-translate-x-1"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back to Home
-            </a>
+          <div className="mb-6 flex justify-center">
+            <BackToHome />
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-widest text-violet-300 mb-4">
             <Sparkles className="w-3 h-3" />

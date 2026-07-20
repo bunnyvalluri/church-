@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Video, Play, X, Maximize2, ArrowLeft, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import BackToHome from "@/components/ui/BackToHome";
 import { useBranch } from "@/components/providers/BranchProvider";
 
 interface GalleryItem {
@@ -111,13 +112,9 @@ export default function GalleryPage() {
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-500/20 blur-[100px] pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm transition-all text-xs font-semibold hover:-translate-x-1"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Home
-          </Link>
+          <div className="mb-6 flex justify-center">
+            <BackToHome />
+          </div>
           <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight font-outfit">
             Church Gallery
           </h1>
