@@ -37,23 +37,10 @@ export default function DynamicGivingHero({
   ],
 }: GivingHeroConfigProps) {
   return (
-    <div 
-      style={{
-        backgroundColor: "#0f172a",
-        backgroundImage: "linear-gradient(135deg, #0f172a 0%, #2e1065 50%, #1e1b4b 100%)",
-        color: "#ffffff",
-      }}
-      className="relative overflow-hidden rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl border border-purple-600/40"
-    >
-      {/* Ambient Radial Glow Effect */}
-      <div 
-        style={{ background: "radial-gradient(circle, rgba(147, 51, 234, 0.35) 0%, rgba(0, 0, 0, 0) 70%)" }}
-        className="absolute -top-32 -right-32 w-96 h-96 rounded-full pointer-events-none" 
-      />
-      <div 
-        style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(0, 0, 0, 0) 70%)" }}
-        className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full pointer-events-none" 
-      />
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-950 text-white p-6 sm:p-10 shadow-2xl border border-purple-500/40">
+      {/* Background Decorative Lighting Circles */}
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-4xl mx-auto text-center space-y-5 sm:space-y-6">
         {/* Active Campaign Alert Banner */}
@@ -62,10 +49,9 @@ export default function DynamicGivingHero({
             href={campaignBannerHref || "#give-form"}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ backgroundColor: "rgba(245, 158, 11, 0.2)", color: "#fde68a", borderColor: "rgba(245, 158, 11, 0.5)" }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-bold shadow-lg hover:bg-amber-500/30 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 text-amber-200 border border-amber-400/50 text-xs sm:text-sm font-bold shadow-lg hover:bg-black/60 transition-all duration-200"
           >
-            <Sparkles style={{ color: "#fbbf24" }} className="w-4 h-4 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
             <span>{campaignBannerText}</span>
             <ArrowRight className="w-4 h-4" />
           </motion.a>
@@ -73,28 +59,19 @@ export default function DynamicGivingHero({
 
         {/* Top Badge */}
         <div>
-          <span 
-            style={{ backgroundColor: "#022c22", color: "#6ee7b7", borderColor: "#059669" }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-black uppercase tracking-wider shadow-lg"
-          >
-            <ShieldCheck style={{ color: "#34d399" }} className="w-4 h-4" />
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 border border-emerald-400/60 text-emerald-300 text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
             {badgeText}
           </span>
         </div>
 
         {/* Main Headline */}
-        <h1 
-          style={{ color: "#ffffff" }} 
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight drop-shadow-md"
-        >
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-md">
           {headline}
         </h1>
 
         {/* Subtitle */}
-        <p 
-          style={{ color: "#e2e8f0" }} 
-          className="text-base sm:text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed"
-        >
+        <p className="text-base sm:text-lg md:text-xl text-purple-100 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
           {subtitle}
         </p>
 
@@ -104,11 +81,10 @@ export default function DynamicGivingHero({
             {statistics.map((stat, idx) => (
               <div 
                 key={idx} 
-                style={{ backgroundColor: "rgba(15, 23, 42, 0.9)", borderColor: "rgba(168, 85, 247, 0.4)" }}
-                className="rounded-2xl p-4 border text-center shadow-xl"
+                className="bg-black/50 backdrop-blur-md rounded-2xl p-4 border border-purple-400/30 text-center shadow-lg"
               >
-                <div style={{ color: "#fbbf24" }} className="text-2xl sm:text-3xl font-black drop-shadow">{stat.value}</div>
-                <div style={{ color: "#ffffff" }} className="text-xs sm:text-sm font-extrabold uppercase tracking-wide mt-1">{stat.label}</div>
+                <div className="text-2xl sm:text-3xl font-black text-amber-300 drop-shadow">{stat.value}</div>
+                <div className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wide mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -120,10 +96,9 @@ export default function DynamicGivingHero({
             {securityBadges.map((badge, idx) => (
               <span 
                 key={idx} 
-                style={{ backgroundColor: "#0f172a", color: "#ffffff", borderColor: "#4c1d95" }}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold px-4 py-1.5 rounded-full border shadow"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-white bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-purple-400/30 shadow-md"
               >
-                <CheckCircle2 style={{ color: "#34d399" }} className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 {badge}
               </span>
             ))}
