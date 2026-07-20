@@ -170,17 +170,71 @@ interface PaymentSettings {
   qrExpiryMinutes: number;
 }
 
+// Instant Default Metadata for 0ms Page Load Speed
+const DEFAULT_PRESETS: PresetAmount[] = [
+  { id: "1", amount: 500, label: "₹500", displayOrder: 1, isDefault: false },
+  { id: "2", amount: 1000, label: "₹1,000", displayOrder: 2, isDefault: true },
+  { id: "3", amount: 2000, label: "₹2,000", displayOrder: 3, isDefault: false },
+  { id: "4", amount: 5000, label: "₹5,000", displayOrder: 4, isDefault: false },
+  { id: "5", amount: 10000, label: "₹10,000", displayOrder: 5, isDefault: false },
+];
+
+const DEFAULT_CAUSES: CauseItem[] = [
+  {
+    id: "c1",
+    code: "CHARITY",
+    nameEn: "Hospital Outreach & Patient Kits",
+    descEn: "Support food packets, medical kits, and rehabilitation for hospital patients.",
+    icon: "Heart",
+    category: "OUTREACH",
+    targetAmount: 500000,
+    raisedAmount: 145000,
+  },
+  {
+    id: "c2",
+    code: "ASHRAMAM",
+    nameEn: "Ashramam & Handicap Support",
+    descEn: "Funding essential care and wheelchair gear for handicap shelters.",
+    icon: "Gift",
+    category: "BENEVOLENCE",
+    targetAmount: 300000,
+    raisedAmount: 98000,
+  },
+  {
+    id: "c3",
+    code: "FOOD",
+    nameEn: "Fresh Food Packets Drive",
+    descEn: "Daily fresh meals for underprivileged families.",
+    icon: "Gift",
+    category: "FOOD_AID",
+    targetAmount: 200000,
+    raisedAmount: 110000,
+  },
+];
+
+const DEFAULT_BRANCHES: BranchItem[] = [
+  { id: "b1", name: "Shapur Nagar (Main)" },
+  { id: "b2", name: "Subhash Nagar Branch" },
+  { id: "b3", name: "Bahadurpally Branch" },
+];
+
+const DEFAULT_FORM_FIELDS: FormFieldRule[] = [
+  { id: "f1", fieldName: "donorName", label: "Full Name", placeholder: "Enter full name", isRequired: true, isVisible: true, displayOrder: 1, fieldType: "text" },
+  { id: "f2", fieldName: "donorPhone", label: "Mobile Number", placeholder: "10-digit mobile number", isRequired: true, isVisible: true, displayOrder: 2, fieldType: "tel" },
+  { id: "f3", fieldName: "donorEmail", label: "Email Address", placeholder: "email@example.com", isRequired: false, isVisible: true, displayOrder: 3, fieldType: "email" },
+  { id: "f11", fieldName: "isAnonymous", label: "Make donation anonymous", placeholder: "", isRequired: false, isVisible: true, displayOrder: 11, fieldType: "checkbox" },
+];
+
 export default function NgoDonationsPage() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
-  // Dynamic Metadata State
-  const [configLoading, setConfigLoading] = useState(true);
-  const [presetAmounts, setPresetAmounts] = useState<PresetAmount[]>([]);
-  const [causes, setCauses] = useState<CauseItem[]>([]);
-  const [branches, setBranches] = useState<BranchItem[]>([]);
-  const [formFields, setFormFields] = useState<FormFieldRule[]>([]);
+  // Dynamic Metadata State initialized with instant defaults
+  const [presetAmounts, setPresetAmounts] = useState<PresetAmount[]>(DEFAULT_PRESETS);
+  const [causes, setCauses] = useState<CauseItem[]>(DEFAULT_CAUSES);
+  const [branches, setBranches] = useState<BranchItem[]>(DEFAULT_BRANCHES);
+  const [formFields, setFormFields] = useState<FormFieldRule[]>(DEFAULT_FORM_FIELDS);
   const [settings, setSettings] = useState<PaymentSettings>({
     minDonationAmount: 10,
     maxDonationAmount: 500000,
@@ -196,8 +250,8 @@ export default function NgoDonationsPage() {
   // Form Inputs
   const [amount, setAmount] = useState<string>("1000");
   const [customAmount, setCustomAmount] = useState<string>("");
-  const [selectedCause, setSelectedCause] = useState<string>("");
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
+  const [selectedCause, setSelectedCause] = useState<string>("CHARITY");
+  const [selectedBranch, setSelectedBranch] = useState<string>("b1");
 
   // Dynamic Donor Details State
   const [donorDetails, setDonorDetails] = useState<Record<string, any>>({
@@ -278,8 +332,6 @@ export default function NgoDonationsPage() {
         }
       } catch (err) {
         console.error("[DONATIONS] Dynamic config load failed:", err);
-      } finally {
-        setConfigLoading(false);
       }
     }
 
@@ -552,15 +604,6 @@ export default function NgoDonationsPage() {
     setDonationId("");
     setQrCodeBase64("");
   };
-
-  if (configLoading) {
-    return (
-      <div className="py-24 flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-        <p className="text-sm font-semibold text-slate-500">Loading donation platform metadata...</p>
-      </div>
-    );
-  }
 
   const activeCauseObj = causes.find((c) => c.code === selectedCause);
 
