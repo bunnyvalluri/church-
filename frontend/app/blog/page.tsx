@@ -63,7 +63,7 @@ export default function BlogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       {/* Page Header */}
       <div className="bg-gray-900 text-white py-16">

@@ -88,11 +88,8 @@ export default function NgoLayout({
       {/* Main Global Navbar */}
       <Navbar />
 
-      {/* Spacing for main sticky navbar */}
-      <div className="h-[76px] xl:h-[112px]" />
-
       {/* Dedicated NGO Glassmorphic Sub-Navbar */}
-      <div className="sticky top-[64px] xl:top-[100px] z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/80 dark:border-white/5 py-3">
+      <div className="sticky top-[60px] xl:top-[72px] z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/80 dark:border-white/5 py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-1.5 flex-shrink-0 justify-start">
@@ -130,7 +127,7 @@ export default function NgoLayout({
       </div>
 
       {/* NGO Content Area */}
-      <main className="min-h-[60vh] relative overflow-hidden">
+      <main id="main-content" className="min-h-[60vh] relative overflow-hidden">
         {/* Decorative Grid overlays */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 pointer-events-none" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl pointer-events-none" />

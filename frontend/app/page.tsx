@@ -16,9 +16,10 @@ const NgoShowcase = dynamic(() => import('@/components/sections/NgoShowcase'));
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden">
+    <>
       <Navbar />
-      <Hero />
+      <main id="main-content" className="min-h-screen overflow-x-hidden">
+        <Hero />
 
       {/* Section divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--primary)/0.15)] to-transparent" />
@@ -51,5 +52,6 @@ export default function Home() {
       <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
       <Footer />
     </main>
+    </>
   );
 }

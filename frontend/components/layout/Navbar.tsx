@@ -129,25 +129,35 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
+    <header className="sticky top-0 left-0 right-0 z-50 w-full flex flex-col pt-[env(safe-area-inset-top)]">
+      {/* Skip to Content Link for A11y */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-violet-600 focus:text-white focus:rounded-xl focus:font-bold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-200"
+      >
+        Skip to main content
+      </a>
 
-      {/* ── Top info bar (hidden on mobile) ── */}
-      <div className="hidden xl:block relative bg-gradient-to-r from-violet-700/90 via-purple-700/90 to-violet-700/90 text-purple-100 text-xs overflow-hidden">
+      {/* ── Top info bar (hidden on mobile, collapses on desktop scroll) ── */}
+      <div className={cn(
+        "hidden xl:block relative bg-gradient-to-r from-violet-700/90 via-purple-700/90 to-violet-700/90 text-purple-100 text-xs overflow-hidden transition-all duration-355 ease-in-out transform-gpu",
+        isScrolled ? "max-h-0 opacity-0 pointer-events-none" : "max-h-9 opacity-100"
+      )}>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex items-center justify-between h-9">
             <div className="flex items-center gap-3">
-              <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+              <a href="tel:+919704090069" className="flex items-center gap-1.5 hover:text-white transition-colors group focus-visible:ring-2 focus-visible:ring-white rounded-md px-1">
                 <Phone className="w-3 h-3" />
                 <span className="font-medium">+91 97040 90069 (Senior Pastor)</span>
               </a>
               <span className="text-purple-400/50">|</span>
-              <a href="tel:+919640943777" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+              <a href="tel:+919640943777" className="flex items-center gap-1.5 hover:text-white transition-colors group focus-visible:ring-2 focus-visible:ring-white rounded-md px-1">
                 <Phone className="w-3 h-3" />
                 <span className="font-medium">+91 96409 43777</span>
               </a>
               <span className="text-purple-400/50">|</span>
-              <a href="tel:+917396433856" className="flex items-center gap-1.5 hover:text-white transition-colors group">
+              <a href="tel:+917396433856" className="flex items-center gap-1.5 hover:text-white transition-colors group focus-visible:ring-2 focus-visible:ring-white rounded-md px-1">
                 <Phone className="w-3 h-3" />
                 <span className="font-medium">+91 73964 33856</span>
               </a>
@@ -161,7 +171,7 @@ export default function Navbar() {
               <span className="mr-1.5 text-purple-300/70 text-[10px] uppercase tracking-wider">Follow</span>
               {socialLinks.map(({ icon: Icon, href, label, color }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                  className={cn("w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/15 transition-all", color)}>
+                  className={cn("w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/15 transition-all focus-visible:ring-2 focus-visible:ring-white", color)}>
                   <Icon className="w-3 h-3" />
                 </a>
               ))}
@@ -171,21 +181,24 @@ export default function Navbar() {
       </div>
 
       {/* ── Main Navbar ── */}
-      <nav className={cn(
-        "transition-all duration-300 relative border-b",
-        isScrolled
-          ? "bg-white/90 dark:bg-gray-950/90 backdrop-blur-2xl shadow-sm shadow-purple-900/10 border-gray-200/60 dark:border-white/10 py-2"
-          : "bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl border-transparent py-3"
-      )}>
+      <nav 
+        aria-label="Main navigation"
+        className={cn(
+          "transition-all duration-250 ease-in-out transform-gpu border-b w-full",
+          isScrolled
+            ? "bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl shadow-md border-gray-200/80 dark:border-white/10 py-2"
+            : "bg-white/80 dark:bg-gray-950/85 backdrop-blur-xl border-transparent py-3"
+        )}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
 
             {/* ── Logo ── */}
-            <a href="/" className="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0 min-w-0">
+            <a href="/" className="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0 min-w-0 focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1">
               {/* Logo circle */}
-              <div className="relative w-9 h-9 sm:w-12 md:w-14 flex-shrink-0">
+              <div className="relative w-8 h-8 sm:w-11 md:w-13 flex-shrink-0">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500 via-purple-500 to-violet-600 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500 scale-125" />
-                <div className="relative w-9 h-9 sm:w-12 md:w-14 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-lg transition-all duration-300 bg-white flex items-center justify-center">
+                <div className="relative w-8 h-8 sm:w-11 md:w-13 rounded-full overflow-hidden border-2 border-purple-300/40 group-hover:border-purple-400/70 shadow-lg transition-all duration-300 bg-white flex items-center justify-center">
                   <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
                 </div>
               </div>
@@ -196,7 +209,7 @@ export default function Navbar() {
                   suppressHydrationWarning
                   className={cn(
                     "font-black leading-tight text-gray-900 dark:text-white whitespace-nowrap",
-                    "text-xs sm:text-base md:text-lg",
+                    "text-[10px] min-[360px]:text-[11px] min-[390px]:text-xs sm:text-base md:text-lg",
                     language !== "en" ? "tracking-normal" : "tracking-tight"
                   )}
                 >
@@ -207,8 +220,8 @@ export default function Navbar() {
                   className={cn(
                     "leading-none whitespace-nowrap",
                     language !== "en"
-                      ? "text-xs font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
-                      : "text-[0.55rem] sm:text-[0.6rem] font-bold uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 to-violet-500 bg-clip-text text-transparent"
+                      ? "text-[9px] min-[360px]:text-[10px] font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
+                      : "text-[0.45rem] min-[360px]:text-[0.5rem] sm:text-[0.6rem] font-bold uppercase tracking-[0.2em] bg-gradient-to-r from-purple-600 to-violet-500 bg-clip-text text-transparent"
                   )}
                 >
                   {t.nav.ministries}
@@ -216,8 +229,8 @@ export default function Navbar() {
               </div>
             </a>
 
-            {/* ── Desktop Nav Links (lg+) ── */}
-            <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+            {/* ── Desktop & Tablet Nav Links (visible at width >= 541px) ── */}
+            <div className="hidden min-[541px]:flex items-center gap-0.5 min-[640px]:gap-1 md:gap-1.5 lg:gap-2 flex-1 justify-center">
               {navItems.map((item) => {
                 const isActive = item.href.startsWith("/")
                   ? pathname === item.href
@@ -229,7 +242,7 @@ export default function Navbar() {
                     key={item.href}
                     href={resolveHref(item.href)}
                     className={cn(
-                      "relative px-3.5 py-1.5 text-sm font-semibold rounded-xl transition-all duration-300 whitespace-nowrap",
+                      "relative px-1.5 py-1 min-[640px]:px-3.5 min-[640px]:py-1.5 text-[10px] min-[640px]:text-xs lg:text-sm font-semibold rounded-xl transition-all duration-300 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                       isActive
                         ? styles.activeText
                         : cn("text-gray-600 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100/60 dark:hover:bg-white/5", styles.hoverText, styles.hoverBg)
@@ -245,8 +258,8 @@ export default function Navbar() {
             </div>
 
             {/* ── Right Controls ── */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              {/* BranchSelector — visible on mobile and desktop */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              {/* BranchSelector — visible on all viewports */}
               <div>
                 <BranchSelector />
               </div>
@@ -256,30 +269,34 @@ export default function Navbar() {
                 <PaletteToggle showPreferences={true} />
               </div>
 
-              {/* Member Login — desktop only (xl+) */}
+              {/* Member Login / Dashboard — Tablet/Desktop (visible at width >= 541px) */}
               <Link
-                href="/login"
-                className="hidden xl:flex items-center relative px-4 py-2 rounded-xl font-bold text-white text-sm overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap"
+                href={user ? "/portal-select" : "/login"}
+                className="hidden min-[541px]:flex items-center relative px-2.5 py-1.5 min-[640px]:px-4 min-[640px]:py-2 rounded-xl font-bold text-white text-[10px] min-[640px]:text-xs lg:text-sm overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 group-hover:from-violet-500 group-hover:to-purple-500 transition-all duration-300" />
-                <span className="relative z-10">Member Login</span>
+                <span className="relative z-10">{user ? "Dashboard" : "Member Login"}</span>
               </Link>
 
-              {/* ── Hamburger (< lg) ── */}
+              {/* ── Hamburger Menu Button (mobile only, width < 541px) ── */}
               <button
                 onClick={() => setMobileMenu(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
-                className="lg:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
+                className="min-[541px]:hidden flex items-center justify-center p-2 rounded-xl bg-gray-100/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all min-w-[44px] min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          {/* ── Mobile Dropdown Menu ── */}
+          {/* ── Mobile Dropdown Menu (width < 541px) ── */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in">
-
+            <div 
+              id="mobile-menu"
+              className="min-[541px]:hidden mt-3 mb-1 p-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 animate-scale-in"
+            >
               {/* Nav links */}
               <nav className="space-y-1">
                 {navItems.map((item) => {
@@ -294,7 +311,7 @@ export default function Navbar() {
                       href={resolveHref(item.href)}
                       onClick={() => setMobileMenu(false)}
                       className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all border-l-[3px]",
+                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all border-l-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                         isActive
                           ? cn(styles.activeBg, styles.activeText, styles.mobileActiveBorder)
                           : cn("text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5 border-l-transparent", styles.hoverBg, styles.hoverText)
@@ -322,7 +339,7 @@ export default function Navbar() {
                   <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold mr-1">Follow</span>
                   {socialLinks.map(({ icon: Icon, href, label, bg }) => (
                     <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                      className={cn("w-9 h-9 rounded-full text-white flex items-center justify-center shadow-sm transition-all hover:scale-110", bg)}>
+                      className={cn("w-9 h-9 rounded-full text-white flex items-center justify-center shadow-sm transition-all hover:scale-110 focus-visible:ring-2 focus-visible:ring-primary", bg)}>
                       <Icon className="w-3.5 h-3.5" />
                     </a>
                   ))}
@@ -330,17 +347,17 @@ export default function Navbar() {
 
                 {/* Login CTA */}
                 <Link
-                  href="/login"
+                  href={user ? "/portal-select" : "/login"}
                   onClick={() => setMobileMenu(false)}
-                  className="block w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-bold text-center shadow-lg hover:shadow-purple-500/30 transition-all"
+                  className="block w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-bold text-center shadow-lg hover:shadow-purple-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  Member Login
+                  {user ? "Go to Dashboard" : "Member Login"}
                 </Link>
               </div>
             </div>
           )}
         </div>
       </nav>
-    </div>
+    </header>
   );
 }

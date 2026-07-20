@@ -30,7 +30,7 @@ export default function BibleStudyPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <div className="bg-blue-900 text-white py-16">
         <div className="container mx-auto px-4 text-center">
