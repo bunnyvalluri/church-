@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Phone, MapPin, Send, Clock, RefreshCw, User, HelpCircle, MessageSquare, CheckCircle2, Sparkles, Copy, Check, ArrowRight } from "lucide-react";
+import {
+  Mail, Phone, MapPin, Send, Clock, RefreshCw, User, HelpCircle, MessageSquare, CheckCircle2, Sparkles, Copy, Check, ArrowRight
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContacts } from "@/hooks/useCmsData";
@@ -199,7 +201,9 @@ export default function Contact() {
             {t.contact.title}{" "}
             <span className="text-gradient">{t.contact.titleHighlight}</span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-500 dark:text-white/60 max-w-xl mx-auto px-2">{t.contact.subtitle}</p>
+          <p className="text-base sm:text-lg text-slate-500 dark:text-white/60 max-w-xl mx-auto px-2">
+            {t.contact.subtitle}
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-5 sm:gap-8 lg:gap-10 max-w-6xl mx-auto">
@@ -258,7 +262,7 @@ export default function Contact() {
                         {/* Address */}
                         <InfoRow
                           icon={<MapPin className="h-6 w-6 text-white" />}
-                          gradient={`from-violet-500 to-purple-600`}
+                          gradient="from-violet-500 to-purple-600"
                           title={t.contact.address}
                         >
                           <a
@@ -444,11 +448,280 @@ export default function Contact() {
             <div className="h-1.5 w-full bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600 animate-shimmer" />
 
             <div className="p-4 sm:p-6 lg:p-8">
-                      {t.contact.send}
-                    </>
-                  )}
-                </button>
-              </form>
+              {submitStatus === "success" ? (
+                /* ── Interactive Submission Confirmation Card ── */
+                <div className="py-8 px-4 text-center animate-scale-in space-y-5">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+                    <CheckCircle2 className="w-10 h-10 animate-bounce-in" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                      Message Received!
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-gray-300 mt-2 max-w-sm mx-auto leading-relaxed">
+                      Thank you! Our ministry team has received your message and will respond as soon as possible.
+                    </p>
+                  </div>
+
+                  <div className="pt-4">
+                    <button
+                      type="button"
+                      onClick={handleResetForm}
+                      className="px-6 py-3 rounded-xl bg-violet-600 text-white font-bold text-sm hover:bg-violet-700 transition-all shadow-md shadow-violet-500/30 flex items-center gap-2 mx-auto group"
+                    >
+                      <span>Send Another Message</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Form Title & Subtitle */}
+                  <div className="mb-6">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                      {t.contact.formTitle}
+                      <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                      Fill out the details below and our ministry team will respond promptly.
+                    </p>
+                  </div>
+
+                  {/* Quick Subject Filter Chips */}
+                  <div className="mb-5">
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300 mb-2">
+                      Quick Subject Select
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {[
+                        { key: "general", label: t.contact.subjectGeneral, emoji: "💬" },
+                        { key: "prayer", label: t.contact.subjectPrayer, emoji: "✝️" },
+                        { key: "event", label: t.contact.subjectEvent, emoji: "🗓️" },
+                        { key: "membership", label: t.contact.subjectMembership, emoji: "🤝" },
+                        { key: "volunteer", label: t.contact.subjectVolunteer, emoji: "🙋" },
+                      ].map((chip) => {
+                        const isSelected = formData.subject === chip.key;
+                        return (
+                          <button
+                            key={chip.key}
+                            type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, subject: chip.key }))}
+                            className={cn(
+                              "px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 border",
+                              isSelected
+                                ? "bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-500/30 scale-[1.02]"
+                                : "bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border-slate-200/80 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10"
+                            )}
+                          >
+                            <span>{chip.emoji}</span>
+                            <span>{chip.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Name */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.name} <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                            <User className="w-4 h-4" />
+                          </div>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur("name")}
+                            required
+                            aria-required="true"
+                            className={cn(
+                              "w-full pl-10 pr-9 py-3 rounded-xl border bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium",
+                              touched.name && !formData.name.trim()
+                                ? "border-rose-500/80 focus:ring-rose-500/40"
+                                : "border-slate-200/90 dark:border-violet-500/20 focus:ring-violet-500/40 focus:border-violet-500"
+                            )}
+                            placeholder={t.contact.namePlaceholder}
+                          />
+                          {formData.name.trim().length > 1 && (
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-emerald-500">
+                              <CheckCircle2 className="w-4 h-4 animate-scale-in" />
+                            </div>
+                          )}
+                        </div>
+                        {touched.name && !formData.name.trim() && (
+                          <p className="text-[11px] font-semibold text-rose-500 mt-1">Please enter your full name.</p>
+                        )}
+                      </div>
+
+                      {/* Email */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.emailLabel} <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                            <Mail className="w-4 h-4" />
+                          </div>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur("email")}
+                            required
+                            aria-required="true"
+                            className={cn(
+                              "w-full pl-10 pr-9 py-3 rounded-xl border bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium",
+                              touched.email && (!formData.email.includes("@") || !formData.email.includes("."))
+                                ? "border-rose-500/80 focus:ring-rose-500/40"
+                                : "border-slate-200/90 dark:border-violet-500/20 focus:ring-violet-500/40 focus:border-violet-500"
+                            )}
+                            placeholder={t.contact.emailPlaceholder}
+                          />
+                          {formData.email.includes("@") && formData.email.includes(".") && (
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-emerald-500">
+                              <CheckCircle2 className="w-4 h-4 animate-scale-in" />
+                            </div>
+                          )}
+                        </div>
+                        {touched.email && (!formData.email.includes("@") || !formData.email.includes(".")) && (
+                          <p className="text-[11px] font-semibold text-rose-500 mt-1">Please enter a valid email address.</p>
+                        )}
+                      </div>
+
+                      {/* Phone */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.phoneLabel}
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                            <Phone className="w-4 h-4" />
+                          </div>
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur("phone")}
+                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200/90 dark:border-violet-500/20 bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium"
+                            placeholder={t.contact.phonePlaceholder}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Subject */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.subject} <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                            <HelpCircle className="w-4 h-4" />
+                          </div>
+                          <select
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            onBlur={() => handleBlur("subject")}
+                            required
+                            aria-required="true"
+                            className={cn(
+                              "w-full pl-10 pr-8 py-3 rounded-xl border bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 transition-all text-sm font-medium appearance-none",
+                              touched.subject && !formData.subject
+                                ? "border-rose-500/80 focus:ring-rose-500/40"
+                                : "border-slate-200/90 dark:border-violet-500/20 focus:ring-violet-500/40 focus:border-violet-500"
+                            )}
+                          >
+                            <option value="" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectPlaceholder}</option>
+                            <option value="general" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectGeneral}</option>
+                            <option value="prayer" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectPrayer}</option>
+                            <option value="event" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectEvent}</option>
+                            <option value="membership" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectMembership}</option>
+                            <option value="volunteer" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{t.contact.subjectVolunteer}</option>
+                          </select>
+                        </div>
+                        {touched.subject && !formData.subject && (
+                          <p className="text-[11px] font-semibold text-rose-500 mt-1">Please select a subject.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-violet-300">
+                          {t.contact.message} <span className="text-rose-500">*</span>
+                        </label>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                          {formData.message.length} / 500
+                        </span>
+                      </div>
+                      <div className="relative group">
+                        <div className="absolute top-3.5 left-0 pl-3.5 pointer-events-none text-slate-400 dark:text-gray-400 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors">
+                          <MessageSquare className="w-4 h-4" />
+                        </div>
+                        <textarea
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          onBlur={() => handleBlur("message")}
+                          required
+                          aria-required="true"
+                          rows={4}
+                          maxLength={500}
+                          className={cn(
+                            "w-full pl-10 pr-4 py-3 rounded-xl border bg-slate-50/80 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-950/90 focus:outline-none focus:ring-2 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-gray-500 text-sm font-medium",
+                            touched.message && !formData.message.trim()
+                              ? "border-rose-500/80 focus:ring-rose-500/40"
+                              : "border-slate-200/90 dark:border-violet-500/20 focus:ring-violet-500/40 focus:border-violet-500"
+                          )}
+                          placeholder={t.contact.messagePlaceholder}
+                        />
+                      </div>
+                      {touched.message && !formData.message.trim() && (
+                        <p className="text-[11px] font-semibold text-rose-500 mt-1">Please enter your message.</p>
+                      )}
+                    </div>
+
+                    {/* Error Banner if API error */}
+                    {submitStatus === "error" && (
+                      <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-semibold flex items-center gap-2">
+                        <span>⚠️ Failed to send message. Please check your network or try again.</span>
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={cn(
+                        "w-full py-3.5 sm:py-4 rounded-xl font-black tracking-wide text-sm transition-all duration-300",
+                        "flex items-center justify-center gap-2.5 shadow-lg",
+                        "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.01] active:scale-[0.99]"
+                      )}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          {t.contact.sending}
+                        </span>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          {t.contact.send}
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>
