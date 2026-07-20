@@ -94,44 +94,53 @@ function StatCard({ stat, isInView, index }: { stat: SiteStatistic; isInView: bo
   });
 
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 25 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { type: "spring", stiffness: 60, damping: 14 },
-        },
+    <Link
+      href="/"
+      onClick={() => {
+        window.location.href = "/";
       }}
-      whileHover={{ y: -6, scale: 1.015 }}
-      className="relative group rounded-2xl p-[1px] bg-gradient-to-b from-white/60 to-white/15 dark:from-white/15 dark:to-transparent"
+      className="block text-left no-underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-2xl h-full"
     >
-      {/* Glow layer */}
-      <div
-        className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10 shadow-lg ${colors.glow}`}
-      />
-      {/* Border glow */}
-      <div
-        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.border} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}
-      />
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 25 },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: { type: "spring", stiffness: 60, damping: 14 },
+          },
+        }}
+        whileHover={{ y: -6, scale: 1.015 }}
+        whileTap={{ scale: 0.98 }}
+        className="relative group rounded-2xl p-[1px] bg-gradient-to-b from-white/60 to-white/15 dark:from-white/15 dark:to-transparent h-full"
+      >
+        {/* Glow layer */}
+        <div
+          className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10 shadow-lg ${colors.glow}`}
+        />
+        {/* Border glow */}
+        <div
+          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.border} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}
+        />
 
-      <div className="bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl rounded-2xl p-5 md:p-8 h-full border border-white/40 dark:border-white/5 flex flex-col items-center justify-center text-center transition-all duration-500">
-        <div
-          className={`w-12 h-12 md:w-14 md:h-14 ${colors.icon} rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}
-        >
-          <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
+        <div className="bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl rounded-2xl p-5 md:p-8 h-full border border-white/40 dark:border-white/5 flex flex-col items-center justify-center text-center transition-all duration-500">
+          <div
+            className={`w-12 h-12 md:w-14 md:h-14 ${colors.icon} rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}
+          >
+            <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
+          </div>
+          <div
+            className={`text-2xl md:text-4xl font-black mb-1.5 font-heading bg-gradient-to-r ${colors.num} bg-clip-text text-transparent`}
+            suppressHydrationWarning
+          >
+            {animatedValue}
+          </div>
+          <div className="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px] md:text-xs">
+            {label}
+          </div>
         </div>
-        <div
-          className={`text-2xl md:text-4xl font-black mb-1.5 font-heading bg-gradient-to-r ${colors.num} bg-clip-text text-transparent`}
-          suppressHydrationWarning
-        >
-          {animatedValue}
-        </div>
-        <div className="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[9px] md:text-xs">
-          {label}
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 }
 
