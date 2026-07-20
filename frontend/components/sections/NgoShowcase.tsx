@@ -29,7 +29,7 @@ const NgoImageCard = memo(function NgoImageCard({
         fill
         sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 320px"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
+        loading="eager"
         quality={75}
       />
       {badgeText && (
