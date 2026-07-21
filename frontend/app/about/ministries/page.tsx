@@ -73,7 +73,7 @@ export default function MinistriesPage() {
       color: "purple",
       accent: "from-purple-500 to-indigo-500",
       border: "border-purple-200 dark:border-purple-800/60",
-      badgeColor: "bg-purple-500/20 dark:bg-purple-500/35 text-purple-950 dark:text-white border border-purple-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-100 border border-purple-300 dark:border-purple-500/50 font-bold shadow-sm"
     },
     {
       id: "youth",
@@ -94,7 +94,7 @@ export default function MinistriesPage() {
       color: "indigo",
       accent: "from-indigo-500 to-cyan-500",
       border: "border-indigo-200 dark:border-indigo-800/60",
-      badgeColor: "bg-indigo-500/20 dark:bg-indigo-500/35 text-indigo-950 dark:text-white border border-indigo-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-100 border border-indigo-300 dark:border-indigo-500/50 font-bold shadow-sm"
     },
     {
       id: "children",
@@ -115,7 +115,7 @@ export default function MinistriesPage() {
       color: "pink",
       accent: "from-pink-500 to-rose-500",
       border: "border-pink-200 dark:border-pink-800/60",
-      badgeColor: "bg-pink-500/20 dark:bg-pink-500/35 text-pink-950 dark:text-white border border-pink-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-100 border border-pink-300 dark:border-pink-500/50 font-bold shadow-sm"
     },
     {
       id: "women",
@@ -136,7 +136,7 @@ export default function MinistriesPage() {
       color: "rose",
       accent: "from-rose-500 to-red-500",
       border: "border-rose-200 dark:border-rose-800/60",
-      badgeColor: "bg-rose-500/20 dark:bg-rose-500/35 text-rose-950 dark:text-white border border-rose-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-100 border border-rose-300 dark:border-rose-500/50 font-bold shadow-sm"
     },
     {
       id: "men",
@@ -157,7 +157,7 @@ export default function MinistriesPage() {
       color: "blue",
       accent: "from-blue-500 to-indigo-500",
       border: "border-blue-200 dark:border-blue-800/60",
-      badgeColor: "bg-blue-500/20 dark:bg-blue-500/35 text-blue-950 dark:text-white border border-blue-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-100 border border-blue-300 dark:border-blue-500/50 font-bold shadow-sm"
     },
     {
       id: "outreach",
@@ -178,7 +178,7 @@ export default function MinistriesPage() {
       color: "emerald",
       accent: "from-emerald-500 to-teal-500",
       border: "border-emerald-200 dark:border-emerald-800/60",
-      badgeColor: "bg-emerald-500/20 dark:bg-emerald-500/35 text-emerald-950 dark:text-white border border-emerald-400/60 font-extrabold shadow-sm"
+      badgeColor: "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-100 border border-emerald-300 dark:border-emerald-500/50 font-bold shadow-sm"
     },
   ], [pageT]);
 
@@ -337,7 +337,7 @@ export default function MinistriesPage() {
                             <IconComponent className="h-7 w-7" />
                           </div>
                           
-                          <span className={`px-3 py-1.5 rounded-full text-xs ${ministry.badgeColor}`}>
+                          <span className={`px-3.5 py-1.5 rounded-full text-xs ${ministry.badgeColor}`}>
                             {ministry.categoryLabel}
                           </span>
                         </div>
@@ -347,9 +347,9 @@ export default function MinistriesPage() {
                           {ministry.title}
                         </h3>
 
-                        <div className="flex items-center gap-2 text-xs font-extrabold text-slate-900 dark:text-white mb-4 bg-purple-500/20 dark:bg-purple-500/30 border border-purple-400/50 px-3.5 py-1.5 rounded-xl w-fit shadow-sm">
-                          <Clock className="h-3.5 w-3.5 text-purple-600 dark:text-purple-300" />
-                          <span className="text-slate-900 dark:text-white font-extrabold">{ministry.schedule}</span>
+                        <div className="flex items-center gap-2 text-xs font-bold text-purple-700 dark:text-purple-100 mb-4 bg-purple-100 dark:bg-purple-900/60 border border-purple-300 dark:border-purple-500/50 px-3 py-1.5 rounded-lg w-fit shadow-sm">
+                          <Clock className="h-3.5 w-3.5 text-purple-600 dark:text-purple-200" />
+                          <span>{ministry.schedule}</span>
                         </div>
 
                         <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-6 font-medium">
