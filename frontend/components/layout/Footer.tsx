@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Youtube, Facebook, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Youtube, Facebook, Twitter, Mail, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -153,17 +153,6 @@ export default function Footer() {
 
               {/* Social Links */}
               <div className="flex gap-3 mt-4 flex-wrap">
-                {footer?.instagramUrl && (
-                  <a
-                    href={footer.instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                    className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/40 hover:brightness-110 group"
-                  >
-                    <Instagram className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
-                  </a>
-                )}
                 {footer?.youtubeUrl && (
                   <a
                     href={footer.youtubeUrl}
