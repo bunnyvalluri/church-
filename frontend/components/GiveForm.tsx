@@ -352,6 +352,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       socket.emit("join", `member:${user?.uid || "guest"}`);
     });
 
+    socket.on("connect_error", () => {
+      // Quietly fall back to polling
+    });
+
     socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
         showToast("Payment verified! Redirecting...", "success");

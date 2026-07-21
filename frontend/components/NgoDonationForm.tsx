@@ -431,6 +431,10 @@ export default function NgoDonationForm({
       socket.emit("join", "ngo:donations");
     });
 
+    socket.on("connect_error", () => {
+      // Quietly fall back to polling
+    });
+
     socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
         // Emit NGO-specific Socket.IO events for admin/finance dashboards

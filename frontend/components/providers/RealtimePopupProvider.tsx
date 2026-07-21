@@ -21,6 +21,10 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
       console.log("[SOCKET] Connected to realtime companion server:", socket.id);
     });
 
+    socket.on("connect_error", () => {
+      // Quietly handle connection errors when optional socket companion server is offline
+    });
+
     // 2. Listen for generic socket popups and event upload notifications
     socket.on("notification:popup", (data: any) => {
       console.log("[SOCKET] Received popup notification:", data);

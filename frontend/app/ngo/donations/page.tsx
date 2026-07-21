@@ -513,6 +513,10 @@ function NgoDonationsContent() {
       socket.emit("join", "ngo:donations");
     });
 
+    socket.on("connect_error", () => {
+      // Quietly fall back to polling
+    });
+
     socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === refNum) {
         handlePaymentSuccess(data.donationId || donationId);
