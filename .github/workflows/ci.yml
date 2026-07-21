@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
     steps:
       - name: Checkout Repository
@@ -26,11 +27,17 @@ jobs:
       - name: Install Monorepo Dependencies
         run: npm ci
 
-      - name: Prisma Generate (schema validation — no live DB needed)
-        working-directory: ./backend
+      - name: Prisma Generate Frontend
+        working-directory: ./frontend
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
         run: npx prisma generate
+
+      - name: Prisma Generate Backend
+        working-directory: ./backend
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+        run: npx prisma generate --schema=./prisma/schema.prisma
 
       - name: Lint Frontend
         run: npm run lint -w frontend --if-present
