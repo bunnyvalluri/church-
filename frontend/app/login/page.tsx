@@ -863,27 +863,6 @@ export default function LoginPage() {
                   {loginT.createAccountLink}
                 </Link>
               </motion.p>
-
-              {/* Role & Portal Quick Switcher */}
-              <motion.div variants={itemVariants} className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
-                <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-center mb-2.5">
-                  Church Portals & Role Access
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-semibold">
-                  <Link href="/portal-select" className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors border border-purple-100 dark:border-purple-800/40 flex items-center justify-center gap-1">
-                    🏛 Portal Select
-                  </Link>
-                  <Link href="/admin" className="p-2 rounded-xl bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors border border-violet-100 dark:border-violet-800/40 flex items-center justify-center gap-1">
-                    🛡 Admin
-                  </Link>
-                  <Link href="/pastor" className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors border border-amber-100 dark:border-amber-800/40 flex items-center justify-center gap-1">
-                    📖 Pastor
-                  </Link>
-                  <Link href="/event-manager" className="p-2 rounded-xl bg-pink-50 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-colors border border-pink-100 dark:border-pink-800/40 flex items-center justify-center gap-1">
-                    📷 Event Manager
-                  </Link>
-                </div>
-              </motion.div>
             </motion.div>
           </form>
         </motion.div>
