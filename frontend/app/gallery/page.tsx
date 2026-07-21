@@ -38,7 +38,6 @@ function GalleryGridImage({ src, title }: { src: string; title: string }) {
 
   return (
     <div className="relative w-full h-full">
-      <Navbar />
       {!isLoaded && (
         <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800/50 animate-pulse z-10" />
       )}
@@ -104,6 +103,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] transition-colors duration-300">
+      <Navbar />
 
       {/* Hero Header Section */}
       <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 overflow-hidden">

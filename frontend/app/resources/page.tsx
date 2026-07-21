@@ -26,13 +26,6 @@ export default function ResourcesPage() {
       href: "/resources/media",
       color: "bg-gradient-end/10 text-gradient-end",
     },
-    {
-      title: "Blog & Articles",
-      description: "Read inspiring articles and ministry updates.",
-      icon: Share2,
-      href: "/blog",
-      color: "bg-[hsl(var(--accent))] text-[hsl(var(--primary))]",
-    },
   ];
 
   return (
@@ -58,7 +51,7 @@ export default function ResourcesPage() {
       {/* Resources Grid */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {resources.map((resource, index) => (
               <Link
                 href={resource.href}

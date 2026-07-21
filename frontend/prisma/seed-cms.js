@@ -191,8 +191,7 @@ async function main() {
     // FOOTER_RESOURCES
     { label: "Sermons", href: "/sermons", placement: "FOOTER_RESOURCES", displayOrder: 0 },
     { label: "Events", href: "/events", placement: "FOOTER_RESOURCES", displayOrder: 1 },
-    { label: "Blog", href: "/blog", placement: "FOOTER_RESOURCES", displayOrder: 2 },
-    { label: "Prayer", href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 3 },
+    { label: "Prayer", href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 2 },
     // FOOTER_INVOLVED
     { label: "Small Groups", href: "/get-involved/small-groups", placement: "FOOTER_INVOLVED", displayOrder: 0 },
     { label: "Volunteer", href: "/get-involved/volunteer", placement: "FOOTER_INVOLVED", displayOrder: 1 },

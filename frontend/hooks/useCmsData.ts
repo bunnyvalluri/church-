@@ -306,8 +306,7 @@ export const FOOTER_NAV_FALLBACK: FooterNavGroups = {
   resources: [
     { id: "f-6", label: "Sermons", labelTe: null, labelHi: null, href: "/sermons", placement: "FOOTER_RESOURCES", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
     { id: "f-7", label: "Events", labelTe: null, labelHi: null, href: "/events", placement: "FOOTER_RESOURCES", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-8", label: "Blog", labelTe: null, labelHi: null, href: "/blog", placement: "FOOTER_RESOURCES", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-9", label: "Prayer", labelTe: null, labelHi: null, href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-9", label: "Prayer", labelTe: null, labelHi: null, href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   involved: [
     { id: "f-10", label: "Small Groups", labelTe: null, labelHi: null, href: "/get-involved/small-groups", placement: "FOOTER_INVOLVED", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
@@ -330,13 +329,21 @@ export function useFooterNavigation(initialData?: FooterNavGroups | Record<strin
     { initialData }
   );
 
-  // Normalize grouped data
+  // Normalize grouped data & filter out deleted blog links
   const groups = data as any;
+  const filterBlog = (items: NavigationItem[] = []) =>
+    items.filter(
+      (item) =>
+        item.href !== "/blog" &&
+        !item.href?.includes("/blog") &&
+        item.label?.toLowerCase() !== "blog"
+    );
+
   const navigation: FooterNavGroups = {
-    about: groups.FOOTER_ABOUT ?? groups.about ?? FOOTER_NAV_FALLBACK.about,
-    resources: groups.FOOTER_RESOURCES ?? groups.resources ?? FOOTER_NAV_FALLBACK.resources,
-    involved: groups.FOOTER_INVOLVED ?? groups.involved ?? FOOTER_NAV_FALLBACK.involved,
-    connect: groups.FOOTER_CONNECT ?? groups.connect ?? FOOTER_NAV_FALLBACK.connect,
+    about: filterBlog(groups.FOOTER_ABOUT ?? groups.about ?? FOOTER_NAV_FALLBACK.about),
+    resources: filterBlog(groups.FOOTER_RESOURCES ?? groups.resources ?? FOOTER_NAV_FALLBACK.resources),
+    involved: filterBlog(groups.FOOTER_INVOLVED ?? groups.involved ?? FOOTER_NAV_FALLBACK.involved),
+    connect: filterBlog(groups.FOOTER_CONNECT ?? groups.connect ?? FOOTER_NAV_FALLBACK.connect),
   };
 
   return { navigation, loading, error, refetch };

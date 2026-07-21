@@ -605,7 +605,19 @@ export const translations = {
         supportDesc: "Always here for you",
         meetingsTitle: "Join Our Prayer Meetings",
         thursday: "Thursday Evening",
-        tuesday: "2nd Tuesday"
+        tuesday: "2nd Tuesday",
+        verseText: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+        verseRef: "Philippians 4:6-7",
+        quickSelect: "Quick Select Category",
+        submitting: "Submitting Request...",
+        successTitle: "Prayer Request Received!",
+        successMessage: "Thank you for sharing your prayer request. Our prayer team will stand with you in faith and lift you up in prayer.",
+        submitAnother: "Submit Another Request",
+        callAction: "Call Now",
+        emailAction: "Send Email",
+        subhashLoc: "Subhash Nagar Location",
+        bahadurLoc: "Bahadurpally Location",
+        viewMap: "View Map"
       },
       volunteer: {
         title: "Volunteer",
@@ -1701,7 +1713,19 @@ export const translations = {
         supportDesc: "మీ కోసం ఎల్లప్పుడూ",
         meetingsTitle: "మా ప్రార్థన కూటములలో చేరండి",
         thursday: "గురువారం సాయంత్రం",
-        tuesday: "2వ మంగళవారం"
+        tuesday: "2వ మంగళవారం",
+        verseText: "దేనిని గూర్చియు చింతింపకుడి గాని ప్రతి విషయములోను ప్రార్థన ప్రార్థన విజ్ఞాపనములచేత కృతజ్ఞతాపూర్వకముగా మీ విన్నపములు దేవునికి తెలియజేయుడి.",
+        verseRef: "ఫిలిప్పీయులకు 4:6-7",
+        quickSelect: "త్వరిత ప్రార్థన అంశాలు",
+        submitting: "పంపుతోంది...",
+        successTitle: "ప్రార్థన విన్నపం స్వీకరించబడింది!",
+        successMessage: "మీ ప్రార్థన విన్నపాన్ని పంచుకున్నందుకు ధన్యవాదాలు. మా ప్రార్థన బృందం విశ్వాసంతో మీతో నిలబడి మీ కోసం ప్రార్థిస్తుంది.",
+        submitAnother: "మరొక విన్నపాన్ని పంపండి",
+        callAction: "ఇప్పుడే కాల్ చేయండి",
+        emailAction: "ఈమెయిల్ చేయండి",
+        subhashLoc: "సుభాష్ నగర్ ప్రాంగణం",
+        bahadurLoc: "బహదూర్ పల్లి ప్రాంగణం",
+        viewMap: "మ్యాప్ చూడండి"
       },
       volunteer: {
         title: "వాలంటీర్",
@@ -2797,7 +2821,19 @@ export const translations = {
         supportDesc: "हमेशा आपके लिए यहाँ",
         meetingsTitle: "हमारी प्रार्थना सभाओं में शामिल हों",
         thursday: "गुरुवार शाम",
-        tuesday: "दूसरा मंगलवार"
+        tuesday: "दूसरा मंगलवार",
+        verseText: "किसी भी बात की चिन्ता न करो: परन्तु हर एक बात में तुम्हारे निवेदन, प्रार्थना और विनती के द्वारा धन्यवाद के साथ परमेश्वर के सम्मुख प्रस्तुत किए जाएं।",
+        verseRef: "फ़िलिप्पियों 4:6-7",
+        quickSelect: "त्वरित श्रेणी चुनें",
+        submitting: "भेज रहा है...",
+        successTitle: "प्रार्थना निवेदन प्राप्त हुआ!",
+        successMessage: "अपना प्रार्थना निवेदन साझा करने के लिए धन्यवाद। हमारी प्रार्थना टीम विश्वास में आपके साथ खड़ी होगी और आपके लिए प्रार्थना करेगी।",
+        submitAnother: "एक और निवेदन भेजें",
+        callAction: "अभी कॉल करें",
+        emailAction: "ईमेल भेजें",
+        subhashLoc: "सुभाष नगर स्थान",
+        bahadurLoc: "बहादुरपल्ली स्थान",
+        viewMap: "मानचित्र देखें"
       },
       volunteer: {
         title: "स्वयंसेवक",

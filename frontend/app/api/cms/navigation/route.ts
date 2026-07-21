@@ -24,13 +24,20 @@ export async function GET(req: Request) {
   const placement = searchParams.get("placement");
 
   try {
-    const items = await (prisma as any).navigationItem.findMany({
+    const rawItems = await (prisma as any).navigationItem.findMany({
       where: {
         isActive: true,
         ...(placement ? { placement } : {}),
       },
       orderBy: [{ placement: "asc" }, { displayOrder: "asc" }],
     });
+
+    const items = rawItems.filter(
+      (item: any) =>
+        item.href !== "/blog" &&
+        !item.href?.includes("/blog") &&
+        item.label?.toLowerCase() !== "blog"
+    );
 
     // Group by placement if no specific placement requested
     if (!placement) {
