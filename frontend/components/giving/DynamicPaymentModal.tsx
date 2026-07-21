@@ -57,6 +57,26 @@ export default function DynamicPaymentModal({
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState("");
 
+  const handleOpenUpiApp = (pkg?: string) => {
+    if (typeof window === "undefined" || !upiUri) return;
+    const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
+    const ua = navigator.userAgent.toLowerCase();
+    const isAndroid = /android/i.test(ua);
+    const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    if (isAndroid) {
+      if (pkg) {
+        const playStoreUrl = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkg}`);
+        window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
+      } else {
+        const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
+        window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
+      }
+    } else {
+      window.location.href = upiUri;
+    }
+  };
+
   useEffect(() => {
     if (initialDonationId) setDonationId(initialDonationId);
   }, [initialDonationId]);
@@ -299,12 +319,13 @@ export default function DynamicPaymentModal({
 
             {/* Direct UPI App Button */}
             {upiUri && (
-              <a
-                href={upiUri}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition"
+              <button
+                type="button"
+                onClick={() => handleOpenUpiApp()}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition active:scale-95 min-h-[44px]"
               >
                 <Smartphone className="w-4 h-4" /> Open UPI App Directly
-              </a>
+              </button>
             )}
 
             {/* UPI ID Copy Box */}

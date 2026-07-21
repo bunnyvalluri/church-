@@ -31,6 +31,7 @@ import {
   MapPin,
   MessageSquare,
   Globe,
+  Smartphone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -584,6 +585,57 @@ function NgoDonationsContent() {
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
+  // ── Mobile Deep Link Handler for UPI Apps ───────────────────────────────
+  const handleOpenUpiApp = (pkg?: string, scheme?: string) => {
+    if (typeof window === "undefined") return;
+
+    let params = "";
+    if (upiUri && upiUri.includes("?")) {
+      params = upiUri.split("?")[1];
+    } else {
+      const finalAmt = Number(getFinalAmount() || "1");
+      const merchantName = settings?.merchantName || "Kingdom of Christ Ministries";
+      const upiId = settings?.upiId || "kcm.kristhraj2004-1@okicici";
+      const encodedName = encodeURIComponent(merchantName);
+      const txNote = encodeURIComponent(`KCM NGO Donation Ref ${referenceNumber || orderId || "NGO"}`);
+      const ref = referenceNumber || orderId || `KCM-NGO-${Date.now()}`;
+      params = `pa=${upiId}&pn=${encodedName}&am=${finalAmt.toFixed(2)}&cu=INR&tn=${txNote}&tr=${ref}`;
+    }
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isAndroid = /android/i.test(ua);
+    const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    if (isAndroid) {
+      if (pkg) {
+        const playStoreUrl = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkg}`);
+        // Chrome resolves intent:// and opens specific app directly.
+        // Falls back to Play Store if the app isn't installed.
+        window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
+      } else {
+        // Universal Android UPI Chooser intent
+        const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
+        window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
+      }
+    } else if (isIOS) {
+      if (scheme) {
+        let targetUrl = scheme;
+        if (!targetUrl.includes("?")) {
+          targetUrl += targetUrl.endsWith("/") ? "?" : "/?";
+        } else if (!targetUrl.endsWith("&") && !targetUrl.endsWith("?")) {
+          targetUrl += "&";
+        }
+        window.location.href = `${targetUrl}${params}`;
+      } else {
+        window.location.href = `upi://pay?${params}`;
+      }
+    } else {
+      // Desktop / universal fallback
+      window.location.href = `upi://pay?${params}`;
+      showToast("Opening UPI payment app... If on desktop, scan the QR code above.", "success");
+    }
+  };
+
   const handleShareReceipt = async () => {
     const receiptUrl = `${window.location.origin}/give/receipt/${donationId}`;
     if (navigator.share) {
@@ -1066,28 +1118,59 @@ function NgoDonationsContent() {
                 )}
 
                 {/* Mobile Deep Link Apps */}
-                <div className="w-full max-w-sm pt-2 space-y-2">
+                <div className="w-full max-w-sm pt-2 space-y-2.5">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Tap to pay on mobile
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      { name: "GPay", icon: GPayIcon, scheme: `tez://upi/pay?pa=${settings.upiId}` },
-                      { name: "PhonePe", icon: PhonePeIcon, scheme: `phonepe://pay?pa=${settings.upiId}` },
-                      { name: "Paytm", icon: PaytmIcon, scheme: `paytmmp://upi/pay?pa=${settings.upiId}` },
-                      { name: "BHIM", icon: BhimIcon, scheme: `upi://pay?pa=${settings.upiId}` },
+                      {
+                        name: "GPay",
+                        icon: GPayIcon,
+                        pkg: "com.google.android.apps.nbu.paisa.user",
+                        scheme: "tez://upi/pay?",
+                      },
+                      {
+                        name: "PhonePe",
+                        icon: PhonePeIcon,
+                        pkg: "com.phonepe.app",
+                        scheme: "phonepe://pay?",
+                      },
+                      {
+                        name: "Paytm",
+                        icon: PaytmIcon,
+                        pkg: "net.one97.paytm",
+                        scheme: "paytmmp://upi/pay?",
+                      },
+                      {
+                        name: "BHIM",
+                        icon: BhimIcon,
+                        pkg: "in.org.npci.upiapp",
+                        scheme: "upi://pay?",
+                      },
                     ].map((app) => (
-                      <a
+                      <button
                         key={app.name}
-                        href={upiUri || app.scheme}
-                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                        type="button"
+                        onClick={() => handleOpenUpiApp(app.pkg, app.scheme)}
+                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
                       >
                         <app.icon />
                         <span>{app.name}</span>
                         <ExternalLink className="w-3 h-3 text-slate-400 opacity-60 flex-shrink-0" />
-                      </a>
+                      </button>
                     ))}
                   </div>
+
+                  {/* Universal Open in UPI App Chooser Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleOpenUpiApp()}
+                    className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                  >
+                    <Smartphone className="w-4 h-4" />
+                    <span>Open in any UPI App</span>
+                  </button>
                 </div>
 
                 {/* Simulation Button for Testing */}
