@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install Monorepo Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Prisma Generate Frontend
         working-directory: ./frontend
