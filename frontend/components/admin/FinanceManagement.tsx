@@ -148,7 +148,7 @@ export default function FinanceManagement({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: Number(newAmountVal),
-          label: newAmountLabel || `₹${Number(newAmountVal).toLocaleString()}`,
+          label: newAmountLabel || `₹${Number(newAmountVal).toLocaleString('en-IN')}`,
           displayOrder: cmsAmounts.length + 1,
         }),
       });
@@ -950,7 +950,7 @@ export default function FinanceManagement({
                       <div className="flex justify-between font-bold text-[10px]">
                         <span>Goal Progress</span>
                         <span>
-                          ₹{(cause.raisedAmount || 0).toLocaleString()} / ₹{(cause.targetAmount || 0).toLocaleString()}
+                          ₹{(cause.raisedAmount || 0).toLocaleString('en-IN')} / ₹{(cause.targetAmount || 0).toLocaleString('en-IN')}
                         </span>
                       </div>
                       <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">

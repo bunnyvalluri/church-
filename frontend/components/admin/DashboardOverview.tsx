@@ -306,7 +306,7 @@ export default function DashboardOverview({
         {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.totalMembers}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalMembers.toLocaleString()}</h3>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalMembers.toLocaleString('en-IN')}</h3>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
               <ArrowUp className="w-3 h-3 stroke-[2.5]" />
               <span>+{newUsersCount} {t.thisWeek}</span>
@@ -347,7 +347,7 @@ export default function DashboardOverview({
         <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("reports")}>
           <div className="space-y-2.5">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.attendanceWeek}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString()}</h3>
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString('en-IN')}</h3>
             {attPercentChange === null ? (
               <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
                 <Sparkles className="w-3 h-3" />
@@ -612,11 +612,11 @@ export default function DashboardOverview({
             {/* Metrics List */}
             <div className="space-y-3">
               {[
-                { label: t.totalAttendance, val: totalHeadcount.toLocaleString() },
-                { label: t.averageDaily, val: avgAttendance.toLocaleString() },
+                { label: t.totalAttendance, val: totalHeadcount.toLocaleString('en-IN') },
+                { label: t.averageDaily, val: avgAttendance.toLocaleString('en-IN') },
                 { label: t.highestDay, val: highestDayName, highlight: true },
-                { label: t.newVisitors, val: latestNewVisitors.toLocaleString() },
-                { label: t.returningVisitors, val: latestReturningVisitors.toLocaleString() }
+                { label: t.newVisitors, val: latestNewVisitors.toLocaleString('en-IN') },
+                { label: t.returningVisitors, val: latestReturningVisitors.toLocaleString('en-IN') }
               ].map((stat, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs font-semibold border-b border-slate-50 dark:border-white/[0.02] pb-2 last:border-0 last:pb-0">
                   <span className="text-slate-500 dark:text-gray-400">{stat.label}</span>

@@ -79,12 +79,12 @@ export function useCountUp(
       }
 
       const currentValue = Math.floor(easedProgress * targetNumber);
-      setDisplayValue(`${prefix}${currentValue.toLocaleString()}${suffix}`);
+      setDisplayValue(`${prefix}${currentValue.toLocaleString('en-IN')}${suffix}`);
 
       if (progress < 1) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
-        setDisplayValue(`${prefix}${targetNumber.toLocaleString()}${suffix}`);
+        setDisplayValue(`${prefix}${targetNumber.toLocaleString('en-IN')}${suffix}`);
       }
     };
 
