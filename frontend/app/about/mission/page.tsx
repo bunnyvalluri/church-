@@ -480,8 +480,8 @@ export default function MissionPage() {
             </p>
 
             {/* Key Quote Pill */}
-            <div className="inline-block p-4 sm:p-5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl max-w-xl mx-auto shadow-2xl animate-scale-in animate-delay-300">
-              <p className="text-sm sm:text-base text-white italic font-bold">
+            <div className="inline-block p-4 sm:p-5 bg-purple-950/80 backdrop-blur-xl border border-purple-400/60 rounded-2xl max-w-xl mx-auto shadow-2xl shadow-purple-950/50 animate-scale-in animate-delay-300">
+              <p className="text-base sm:text-lg italic font-black tracking-wide" style={{ color: '#ffffff', textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                 "To know Christ and make Him known"
               </p>
             </div>
@@ -530,7 +530,7 @@ export default function MissionPage() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.missionHeading || "Our Mission"}
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-purple-600 dark:text-purple-400 mb-6">
+            <p className="text-2xl sm:text-3xl font-extrabold text-purple-700 dark:text-purple-300 mb-6 drop-shadow-sm">
               "To know Christ and make Him known"
             </p>
             <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-2xl mx-auto">

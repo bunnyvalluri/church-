@@ -257,8 +257,8 @@ export default function OurStoryPage() {
 
               <p className="text-slate-700 dark:text-slate-200 leading-relaxed text-lg sm:text-xl mb-6">
                 {pageT.todayP1Part1}
-                <strong className="text-purple-600 dark:text-purple-300 font-bold px-2 py-0.5 bg-purple-500/10 rounded-md">
-                  {pageT.todayMissionQuote}
+                <strong className="font-extrabold px-2.5 py-1 bg-purple-500/20 rounded-md border border-purple-400/30 text-purple-700 dark:text-purple-300" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  "{pageT.todayMissionQuote}"
                 </strong>
                 {pageT.todayP1Part2}
               </p>
