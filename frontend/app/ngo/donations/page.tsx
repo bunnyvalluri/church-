@@ -304,7 +304,10 @@ function NgoDonationsContent() {
     setMounted(true);
   }, []);
 
-  const ngoT = mounted ? t.ngo : translations.en.ngo;
+  // LanguageProvider already returns translations.en before mount (its own `mounted` guard).
+  // Using t directly here is safe and avoids a double-guard text mismatch (hydration error).
+  const ngoT = t.ngo;
+
 
   // ── 1. Fetch Dynamic Configuration Metadata ─────────────────────────────────
   useEffect(() => {

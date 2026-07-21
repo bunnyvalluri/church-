@@ -15,7 +15,7 @@ export default function NgoOverviewPage() {
     setMounted(true);
   }, []);
 
-  const ngoT = mounted ? t.ngo : translations.en.ngo;
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
 
   const stats = [
     { value: "5,000+", label: ngoT.stats.peopleAssisted, desc: ngoT.stats.peopleAssistedDesc },

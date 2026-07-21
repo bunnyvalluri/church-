@@ -469,7 +469,7 @@ export default function NgoGalleryPage() {
     }
   };
 
-  const ngoT = mounted ? t.ngo : translations.en.ngo;
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
 
   return (
     <div className="py-12 sm:py-16">

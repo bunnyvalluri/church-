@@ -27,7 +27,7 @@ export default function NgoProjectsPage() {
     setMounted(true);
   }, []);
 
-  const ngoT = mounted ? t.ngo : translations.en.ngo;
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
 
   // Fallback / seed projects in case DB is empty on first load
   const presetProjects: Project[] = [
