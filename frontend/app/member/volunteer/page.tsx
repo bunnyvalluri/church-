@@ -272,7 +272,7 @@ export default function MemberVolunteer() {
   const selectedData = MINISTRIES.find(m => m.id === selected);
   const selectedDetails = selected ? vt.ministries[selected as keyof typeof vt.ministries] : null;
 
-  if (!mounted || status === "loading" || status === "unauthenticated") return null;
+  if (status === "unauthenticated" && mounted) return null;
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6 pb-12 animate-in fade-in duration-300">

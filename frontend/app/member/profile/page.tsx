@@ -352,7 +352,7 @@ export default function MemberProfile() {
   };
   const rc = roleConfig[role] || roleConfig.MEMBER;
 
-  if (!mounted || status === "loading" || status === "unauthenticated") return null;
+  if (status === "unauthenticated" && mounted) return null;
 
   return (
     <div className="w-full max-w-5xl xl:max-w-6xl mx-auto">

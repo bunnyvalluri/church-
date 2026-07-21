@@ -283,7 +283,7 @@ export default function MemberPrayers() {
     answered: prayers.filter(p => p.status === "ANSWERED").length,
   };
 
-  if (!mounted || status === "loading" || status === "unauthenticated") return null;
+  if (status === "unauthenticated" && mounted) return null;
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
