@@ -41,9 +41,9 @@ const NavigationItem = memo(function NavigationItem({
         "relative group flex items-center gap-1 font-medium",
         "whitespace-nowrap select-none",
         // Typography & Spacing — scaled per viewport
-        "text-[11px] md:text-[11.5px] lg:text-[12.5px] xl:text-[13px]",
+        "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
         variant === "desktop"
-          ? "px-1.5 py-1.5 md:px-2 md:py-2 xl:px-2.5"
+          ? "px-1 py-1 lg:px-2 lg:py-1.5 xl:px-2.5"
           : "px-1 py-1.5 md:px-1.5 md:py-2",
         // Transitions
         "transition-colors duration-150 ease-out",
@@ -63,15 +63,19 @@ const NavigationItem = memo(function NavigationItem({
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {/* Emoji or Icon */}
+      {/* Emoji or Icon — hidden on tight lg desktop screens, visible on xl+ or mobile drawer */}
       {item.emoji ? (
-        <span className="text-xs sm:text-sm flex-shrink-0" role="img" aria-hidden="true">
+        <span className={cn(
+          "text-xs xl:text-sm flex-shrink-0",
+          variant === "desktop" ? "hidden xl:inline-block" : "inline-block"
+        )} role="img" aria-hidden="true">
           {item.emoji}
         </span>
       ) : (
         <Icon
           className={cn(
             "flex-shrink-0 w-3.5 h-3.5 transition-all duration-150",
+            variant === "desktop" ? "hidden xl:inline-block" : "inline-block",
             isActive
               ? styles.activeText
               : "text-gray-400 dark:text-gray-300 group-hover:scale-110",

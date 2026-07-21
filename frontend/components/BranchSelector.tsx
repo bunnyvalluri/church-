@@ -92,7 +92,7 @@ export default function BranchSelector() {
         className={`h-9 px-2.5 md:px-3 flex items-center gap-1.5 md:gap-2 ${currentStyles.triggerBg} backdrop-blur-md rounded-xl border ${currentStyles.border} text-xs font-black ${currentStyles.activeText} transition-all shadow-sm hover:scale-[1.01] active:scale-95`}
       >
         <MapPin className={`w-3.5 h-3.5 ${currentStyles.mapPin} flex-shrink-0 transition-colors`} />
-        <span className="truncate max-w-[110px] sm:max-w-none">{activeBranchName}</span>
+        <span className="truncate max-w-[95px] min-[400px]:max-w-[110px] xl:max-w-none">{activeBranchName}</span>
         <ChevronDown className={`w-3 h-3 text-gray-400 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 

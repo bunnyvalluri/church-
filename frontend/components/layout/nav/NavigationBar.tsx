@@ -164,15 +164,7 @@ const NavigationBar = memo(function NavigationBar() {
               {/* Logo */}
               <NavigationLogo />
 
-              {/* ── Tablet Nav (md to lg: 768px – 1024px) ── */}
-              <TabletMenu
-                navItems={navItems}
-                activeSection={activeSection}
-                pathname={pathname}
-                resolveHref={resolveHref}
-              />
-
-              {/* ── Primary Nav (lg+ : Laptop, Desktop, Large Desktop) ── */}
+              {/* ── Primary Desktop Nav (lg+: Laptop, Desktop, Ultra-wide) ── */}
               <DesktopMenu
                 navItems={navItems}
                 activeSection={activeSection}
@@ -185,7 +177,7 @@ const NavigationBar = memo(function NavigationBar() {
                 {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
-                {/* Hamburger — mobile & tablet (<768px) */}
+                {/* Hamburger — mobile & tablet (<1024px) */}
                 <button
                   type="button"
                   onClick={() => setMobileOpen(!isMobileOpen)}
@@ -193,7 +185,7 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-expanded={isMobileOpen}
                   aria-controls="mobile-drawer"
                   className={cn(
-                    "md:hidden",
+                    "lg:hidden",
                     "flex items-center justify-center",
                     // Touch target sizing
                     "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 sm:w-11 sm:h-11 rounded-xl",

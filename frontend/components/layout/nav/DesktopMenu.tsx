@@ -31,10 +31,10 @@ const DesktopMenu = memo(function DesktopMenu({
       className={cn(
         "hidden lg:flex",
         "flex-1 items-center justify-center",
-        "min-w-0 max-w-full px-2"
+        "min-w-0 max-w-full px-1 lg:px-2"
       )}
     >
-      <div className="flex items-center gap-0.5 lg:gap-1.5 xl:gap-2 mx-auto max-w-full">
+      <div className="flex items-center gap-0.5 lg:gap-1 xl:gap-2.5 mx-auto max-w-full">
         {navItems.map((item) => {
           const isActive = item.href.startsWith("/")
             ? pathname === item.href || pathname.startsWith(item.href + "/")

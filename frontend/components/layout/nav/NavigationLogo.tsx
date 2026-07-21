@@ -73,7 +73,7 @@ const NavigationLogo = memo(function NavigationLogo() {
           className={cn(
             "font-black text-gray-900 dark:text-white leading-tight whitespace-nowrap",
             // Responsive sizes across 6 viewports
-            "text-[9.5px] min-[360px]:text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg",
+            "text-[9.5px] min-[360px]:text-[11px] sm:text-xs md:text-xs lg:text-sm xl:text-base 2xl:text-lg",
             language !== "en" ? "tracking-normal" : "tracking-tight",
             // GPU transition on hover
             "transition-colors duration-150"

@@ -15,10 +15,10 @@ interface TabletMenuProps {
 }
 
 /**
- * TabletMenu — Visible at sm–lg (541–1024px)
+ * TabletMenu — Visible at md–xl (768–1279px)
  *
- * Shows 4 primary nav items inline + "More" dropdown for overflow.
- * Hidden below sm, hidden at lg+ (DesktopMenu takes over).
+ * Shows 3 primary nav items inline + "More" dropdown for overflow.
+ * Hidden below md, hidden at xl+ (DesktopMenu takes over).
  */
 const TabletMenu = memo(function TabletMenu({
   navItems,
@@ -33,7 +33,7 @@ const TabletMenu = memo(function TabletMenu({
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "hidden md:flex lg:hidden",
+        "hidden md:flex xl:hidden",
         "flex-1 items-center justify-center",
         "min-w-0 max-w-full px-2"
       )}
