@@ -18,6 +18,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { useLanguage } from "@/components/providers/LanguageProvider";
+
 /* ──────────────────────────────────────────────────────
    Types
 ────────────────────────────────────────────────────── */
@@ -45,22 +47,113 @@ interface Props {
 }
 
 /* ──────────────────────────────────────────────────────
+   Translations
+────────────────────────────────────────────────────── */
+const feedbackTranslations = {
+  en: {
+    title: "Church Platform Feedback",
+    ratingLabel: "Your Rating",
+    categoryLabel: "Category",
+    quickReactionLabel: "Quick Reaction",
+    commentLabel: "Comment (optional)",
+    placeholder: "Share what blessed you or how we can improve...",
+    anonymousLabel: "Post anonymously",
+    sending: "Sending...",
+    submit: "Submit",
+    thankYou: "Thank you for your feedback!",
+    thankYouSub: "Your response helps us serve our church family better.",
+    submitAnother: "Submit another feedback",
+    reviews: "reviews",
+    live: "Live",
+    categories: {
+      WORSHIP: "Worship",
+      SERMONS: "Sermons",
+      EVENTS: "Events",
+      COMMUNITY: "Community",
+      FACILITIES: "Facilities",
+      ONLINE_PLATFORM: "Online Platform",
+      LEADERSHIP: "Leadership",
+      OVERALL: "Overall",
+    },
+    starLabels: ["", "Poor", "Fair", "Good", "Great", "Excellent"],
+    footerText: "Auto-refreshes every 10 seconds · Last synced",
+    communityVoices: "Community Voices",
+  },
+  te: {
+    title: "చర్చి ప్లాట్‌ఫారమ్ అభిప్రాయం",
+    ratingLabel: "మీ రేటింగ్",
+    categoryLabel: "వర్గం",
+    quickReactionLabel: "త్వరిత స్పందన",
+    commentLabel: "కామెంట్ (ఐచ్ఛికం)",
+    placeholder: "మీ ఆశీర్వాదం లేదా సలహాలను పంచుకోండి...",
+    anonymousLabel: "అనామకంగా పంపండి",
+    sending: "పంపుతోంది...",
+    submit: "సమర్పించండి",
+    thankYou: "మీ అభిప్రాయానికి ధన్యవాదాలు!",
+    thankYouSub: "మీ స్పందన మా చర్చి కుటుంభానికి మెరుగ్గా సేవ చేయడానికి సహాయపడుతుంది.",
+    submitAnother: "మరో అభిప్రాయం పంపండి",
+    reviews: "సమీక్షలు",
+    live: "లైవ్",
+    categories: {
+      WORSHIP: "ఆరాధన",
+      SERMONS: "ప్రసంగాలు",
+      EVENTS: "కార్యక్రమాలు",
+      COMMUNITY: "సంఘం",
+      FACILITIES: "వసతులు",
+      ONLINE_PLATFORM: "ఆన్‌లైన్ వేదిక",
+      LEADERSHIP: "నాయకత్వం",
+      OVERALL: "మొత్తంగా",
+    },
+    starLabels: ["", "బాగోలేదు", "పర్వాలేదు", "మంచిది", "చాలా మంచిది", "అద్భుతం"],
+    footerText: "ప్రతి 10 సెకన్లకు నవీకరించబడుతుంది · నవీకరించబడింది",
+    communityVoices: "విశ్వాసుల మాటలు",
+  },
+  hi: {
+    title: "चर्च प्लेटफॉर्म फीडबैक",
+    ratingLabel: "आपकी रेटिंग",
+    categoryLabel: "श्रेणी",
+    quickReactionLabel: "त्वरित प्रतिक्रिया",
+    commentLabel: "टिप्पणी (वैकल्पिक)",
+    placeholder: "अपना अनुभव या सुझाव साझा करें...",
+    anonymousLabel: "गुमनाम रूप से पोस्ट करें",
+    sending: "भेज रहा है...",
+    submit: "सबमिट करें",
+    thankYou: "आपकी प्रतिक्रिया के लिए धन्यवाद!",
+    thankYouSub: "आपका उत्तर हमें हमारे चर्च परिवार की बेहतर सेवा करने में मदद करता है।",
+    submitAnother: "एक और प्रतिक्रिया भेजें",
+    reviews: "समीक्षाएं",
+    live: "लाइव",
+    categories: {
+      WORSHIP: "आराधना",
+      SERMONS: "प्रवचन",
+      EVENTS: "कार्यक्रम",
+      COMMUNITY: "समुदाय",
+      FACILITIES: "सुविधाएं",
+      ONLINE_PLATFORM: "ऑनलाइन प्लेटफॉर्म",
+      LEADERSHIP: "नेतृत्व",
+      OVERALL: "कुल मिलाकर",
+    },
+    starLabels: ["", "खराब", "ठीक है", "अच्छा", "बहुत अच्छा", "उत्कृष्ट"],
+    footerText: "हर 10 सेकंड में ऑटो-रिफ्रेश होता है · अंतिम सिंक",
+    communityVoices: "समुदाय की आवाजें",
+  }
+};
+
+/* ──────────────────────────────────────────────────────
    Constants
 ────────────────────────────────────────────────────── */
-const CATEGORIES: { value: string; label: string; emoji: string }[] = [
-  { value: "WORSHIP", label: "Worship", emoji: "🙏" },
-  { value: "SERMONS", label: "Sermons", emoji: "📖" },
-  { value: "EVENTS", label: "Events", emoji: "🎉" },
-  { value: "COMMUNITY", label: "Community", emoji: "❤️" },
-  { value: "FACILITIES", label: "Facilities", emoji: "🏛️" },
-  { value: "ONLINE_PLATFORM", label: "Online Platform", emoji: "💻" },
-  { value: "LEADERSHIP", label: "Leadership", emoji: "⭐" },
-  { value: "OVERALL", label: "Overall", emoji: "✨" },
+const CATEGORIES: { value: string; emoji: string }[] = [
+  { value: "WORSHIP", emoji: "🙏" },
+  { value: "SERMONS", emoji: "📖" },
+  { value: "EVENTS", emoji: "🎉" },
+  { value: "COMMUNITY", emoji: "❤️" },
+  { value: "FACILITIES", emoji: "🏛️" },
+  { value: "ONLINE_PLATFORM", emoji: "💻" },
+  { value: "LEADERSHIP", emoji: "⭐" },
+  { value: "OVERALL", emoji: "✨" },
 ];
 
 const QUICK_EMOJIS = ["🙏", "🔥", "✨", "❤️", "🌟", "🎉"];
-
-const STAR_LABELS = ["", "Poor", "Fair", "Good", "Great", "Excellent"];
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -76,13 +169,16 @@ function timeAgo(dateStr: string): string {
    Main Component
 ────────────────────────────────────────────────────── */
 export default function ChurchFeedbackWidget({ userId, userName }: Props) {
+  const { language } = useLanguage();
+  const ft = feedbackTranslations[language as keyof typeof feedbackTranslations] || feedbackTranslations.en;
+
   /* ─── State ─────────────────────────────────────────── */
   const [stats, setStats] = useState<FeedbackStats | null>(null);
   const [recentFeed, setRecentFeed] = useState<FeedbackEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [polling, setPolling] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [liveCount, setLiveCount] = useState(0); // new submissions since page load
+  const [liveCount, setLiveCount] = useState(0); 
 
   // Form state
   const [rating, setRating] = useState(0);
@@ -209,11 +305,11 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
           </div>
           <div>
             <h4 className="text-sm font-black text-gray-900 dark:text-white leading-none">
-              Church Platform Feedback
+              {ft.title}
             </h4>
             {stats && (
               <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">
-                {stats.total} ratings · avg {avgDisplay}★
+                {stats.total} {ft.reviews} · avg {avgDisplay}★
               </p>
             )}
           </div>
@@ -222,7 +318,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
           {/* Live pulse */}
           <div className="flex items-center gap-1 px-2 py-1 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/30 rounded-full">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Live</span>
+            <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">{ft.live}</span>
           </div>
           {polling && <RefreshCw className="w-3 h-3 text-gray-400 animate-spin" />}
           {liveCount > 0 && (
@@ -258,7 +354,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                   />
                 ))}
               </div>
-              <p className="text-[9px] text-gray-400 font-semibold mt-0.5">{stats.total} reviews</p>
+              <p className="text-[9px] text-gray-400 font-semibold mt-0.5">{stats.total} {ft.reviews}</p>
             </div>
 
             {/* Distribution mini bars */}
@@ -306,11 +402,12 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                   .sort((a, b) => b[1].avg - a[1].avg)
                   .map(([cat, { avg, count }]) => {
                     const info = CATEGORIES.find(c => c.value === cat);
+                    const catLabel = ft.categories[cat as keyof typeof ft.categories] || cat;
                     return (
                       <div key={cat} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/30 rounded-xl px-3 py-2">
                         <span className="text-base">{info?.emoji || "📊"}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate">{info?.label || cat}</p>
+                          <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate">{catLabel}</p>
                           <div className="flex items-center gap-1 mt-0.5">
                             {[1, 2, 3, 4, 5].map(s => (
                               <Star key={s} className={`w-2 h-2 ${s <= Math.round(avg) ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-600"}`} />
@@ -339,8 +436,8 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
               <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Thank you! 🙏</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Your feedback helps us grow.</p>
+              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{ft.thankYou} 🙏</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{ft.thankYouSub}</p>
             </motion.div>
           ) : (
             <motion.form
@@ -352,7 +449,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
             >
               {/* Star rating picker */}
               <div className="space-y-1.5">
-                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Your Rating</p>
+                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{ft.ratingLabel}</p>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map(s => (
                     <button
@@ -380,7 +477,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                       animate={{ opacity: 1, x: 0 }}
                       className="ml-2 text-xs font-bold text-violet-600 dark:text-violet-400"
                     >
-                      {STAR_LABELS[hoverRating || rating]}
+                      {ft.starLabels[hoverRating || rating]}
                     </motion.span>
                   )}
                 </div>
@@ -388,28 +485,31 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
 
               {/* Category chips */}
               <div className="space-y-1.5">
-                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Category</p>
+                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{ft.categoryLabel}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {CATEGORIES.map(c => (
-                    <button
-                      type="button"
-                      key={c.value}
-                      onClick={() => setCategory(c.value)}
-                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
-                        category === c.value
-                          ? "bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-500/25"
-                          : "bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-violet-400/60"
-                      }`}
-                    >
-                      <span>{c.emoji}</span> {c.label}
-                    </button>
-                  ))}
+                  {CATEGORIES.map(c => {
+                    const catLabel = ft.categories[c.value as keyof typeof ft.categories] || c.value;
+                    return (
+                      <button
+                        type="button"
+                        key={c.value}
+                        onClick={() => setCategory(c.value)}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
+                          category === c.value
+                            ? "bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-500/25"
+                            : "bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-violet-400/60"
+                        }`}
+                      >
+                        <span>{c.emoji}</span> {catLabel}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Quick emoji reactions */}
               <div className="space-y-1.5">
-                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Quick Reaction</p>
+                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{ft.quickReactionLabel}</p>
                 <div className="flex gap-2">
                   {QUICK_EMOJIS.map(e => (
                     <button
@@ -430,13 +530,13 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
 
               {/* Optional comment */}
               <div className="space-y-1.5">
-                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Comment (optional)</p>
+                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{ft.commentLabel}</p>
                 <textarea
                   value={comment}
                   onChange={e => setComment(e.target.value.slice(0, 300))}
                   rows={2}
                   maxLength={300}
-                  placeholder="Share what blessed you or how we can improve..."
+                  placeholder={ft.placeholder}
                   className="w-full px-3 py-2.5 text-xs bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-white/10 rounded-xl text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 dark:focus:border-violet-600 transition-all"
                 />
                 <p className="text-[9px] text-gray-400 text-right">{comment.length}/300</p>
@@ -453,7 +553,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                   >
                     <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${isAnonymous ? "left-4.5 left-[18px]" : "left-0.5"}`} />
                   </div>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Post anonymously</span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{ft.anonymousLabel}</span>
                 </label>
 
                 {formError && (
@@ -470,7 +570,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
-                  {submitting ? "Sending..." : "Submit"}
+                  {submitting ? ft.sending : ft.submit}
                 </button>
               </div>
             </motion.form>
@@ -502,6 +602,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                   {recentFeed.map(entry => {
                     const isNew = newEntryIds.has(entry.id);
                     const cat = CATEGORIES.find(c => c.value === entry.category);
+                    const catLabel = ft.categories[entry.category as keyof typeof ft.categories] || entry.category;
                     return (
                       <motion.div
                         key={entry.id}
@@ -523,7 +624,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                               <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate">
                                 {entry.isAnonymous ? "Anonymous" : (entry.userName || "Member")}
                               </span>
-                              <span className="text-[9px] text-gray-400">{cat?.emoji} {cat?.label}</span>
+                              <span className="text-[9px] text-gray-400">{cat?.emoji} {catLabel}</span>
                             </div>
                             {isNew && (
                               <span className="text-[8px] font-black text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/30 px-1.5 py-0.5 rounded-full flex-shrink-0">

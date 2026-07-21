@@ -17,7 +17,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
 
-  // Load saved preference
+  // Load saved preference & listen for global language events
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem("language") as Language;
@@ -31,6 +31,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         document.documentElement.lang = "en";
       }
     }
+
+    const handleCustomEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<Language>;
+      if (customEvent.detail) {
+        setLanguage(customEvent.detail);
+      }
+    };
+    window.addEventListener("kcm-language-change", handleCustomEvent);
+    return () => window.removeEventListener("kcm-language-change", handleCustomEvent);
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
@@ -38,6 +47,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("language", lang);
     if (typeof document !== "undefined") {
       document.documentElement.lang = lang;
+      window.dispatchEvent(new CustomEvent("kcm-language-change", { detail: lang }));
     }
   };
 
