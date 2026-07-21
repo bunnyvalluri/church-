@@ -339,30 +339,30 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       console.warn(`[AUTH] ${name} Popup sign-in warning:`, err.code || err);
-      setIsLoggingIn(false);
-      setSocialLoading(null);
       
-      const fallbackErrors = [
+      const shouldAttemptRedirect = [
         "auth/popup-blocked",
-        "auth/cancelled-popup-request",
         "auth/popup-closed-by-user",
+        "auth/cancelled-popup-request",
         "auth/network-request-failed"
-      ];
-      
-      if (err.code === "auth/popup-blocked" || err.message?.includes("COOP")) {
+      ].includes(err.code) || err.message?.includes("COOP");
+
+      if (shouldAttemptRedirect) {
         console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
         try {
           await signInWithRedirect(auth, provider);
+          return;
         } catch (redirectErr: any) {
           console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
-          setError("auth/popup-blocked");
         }
-      } else if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
-        // User voluntarily closed popup — don't show alarming error message
-        setError("");
-      } else if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
+      }
+
+      setIsLoggingIn(false);
+      setSocialLoading(null);
+
+      if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
         setError("auth/operation-not-allowed");
-      } else {
+      } else if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
         setError(err.code || "social-generic-failed");
       }
     }

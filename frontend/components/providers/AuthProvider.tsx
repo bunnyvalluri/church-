@@ -253,10 +253,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       clearSessionCookies();
       setUser(null);
+      window.location.href = "/";
     } catch (err) {
       console.error("[AUTH] Sign out error:", err);
       clearSessionCookies();
       setUser(null);
+      window.location.href = "/";
     }
   };
 
