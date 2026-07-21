@@ -377,7 +377,10 @@ model Donation {
   branch            Branch?          @relation(fields: [branchId], references: [id], onDelete: SetNull)
   sessionId         String?          @map("session_id")
   session           DonationSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  campaignId        String?          @map("campaign_id")   // optional campaign linkage
+  campaignName      String?          @map("campaign_name") // denormalized for receipts
   paymentMethod     String
+  upiApp            String?          @map("upi_app")       // GPAY | PHONEPE | PAYTM | BHIM | AMAZON_PAY | BANK | UNKNOWN
   stripeId          String?
   razorpayOrderId   String?
   razorpayPaymentId String?
@@ -404,6 +407,7 @@ model Donation {
   @@index([branchId])
   @@index([sessionId])
   @@index([razorpayOrderId])
+  @@index([campaignId])
   @@map("donations")
 }
 
@@ -520,6 +524,13 @@ model ChurchSettings {
   upiId                      String   @default("kcm.kristhraj2004-1@okicici")
   merchantName               String   @default("Kingdom of Christ Ministries")
   qrExpiryMinutes            Int      @default(10)
+  // 80G Tax Exemption details
+  eightygRegistrationNo      String?  @map("eightyg_registration_no")  // e.g. DIT(E)/80G/HYDTSC/2023-24
+  eightygValidFrom           DateTime? @map("eightyg_valid_from")
+  eightygValidUntil          DateTime? @map("eightyg_valid_until")
+  // Admin notification emails (comma-separated)
+  adminAlertEmails           String?  @map("admin_alert_emails")
+  financeAlertEmails         String?  @map("finance_alert_emails")
   updatedAt                  DateTime @updatedAt
 }
 
@@ -919,6 +930,8 @@ model DonationSession {
   currency            String               @default("INR")
   referenceNumber     String               @unique @map("reference_number") // Razorpay Order ID
   razorpayOrderId     String?              @map("razorpay_order_id")
+  campaignId          String?              @map("campaign_id")
+  campaignName        String?              @map("campaign_name")
   donorName           String?              @map("donor_name")
   donorEmail          String?              @map("donor_email")
   donorPhone          String?              @map("donor_phone")
@@ -928,7 +941,9 @@ model DonationSession {
   isAnonymous         Boolean              @default(false) @map("is_anonymous")
   upiUri              String?              @db.Text @map("upi_uri")
   qrCodeData          String?              @db.Text @map("qr_code_data")
-  paymentState        String               @default("CREATED") @map("payment_state") // DRAFT | CREATED | PENDING | QR_GENERATED | WAITING | PROCESSING | VERIFIED | COMPLETED | FAILED | CANCELLED | EXPIRED
+  qrGenerationCount   Int                  @default(1) @map("qr_generation_count") // Track QR regenerations (max 3)
+  paymentState        String               @default("CREATED") @map("payment_state") // DRAFT | CREATED | PENDING | QR_GENERATED | WAITING | PROCESSING | VERIFIED | COMPLETED | FAILED | CANCELLED | EXPIRED | PHONEPE_BLOCKED
+  blockedReason       String?              @db.Text @map("blocked_reason")  // PhonePe "Blocked by Authorities" etc.
   status              DonationStatus       @default(PENDING)
   expiresAt           DateTime             @map("expires_at")
   ipAddress           String?              @map("ip_address")
