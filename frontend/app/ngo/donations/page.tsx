@@ -804,13 +804,13 @@ function NgoDonationsContent() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-7 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-full py-3.5 pl-8 pr-3 rounded-xl border-2 text-sm sm:text-base font-black focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           customAmount
-                            ? "bg-purple-50 dark:bg-purple-950/40 text-purple-950 dark:text-white border-2 border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
-                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
+                            ? "bg-purple-50/80 dark:bg-purple-950/60 text-slate-900 dark:text-white border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
+                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
                         }`}
                       />
-                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-extrabold ${customAmount ? "text-purple-600 dark:text-purple-400" : "text-purple-500 dark:text-purple-400"}`}>
+                      <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm font-black ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-purple-500 dark:text-purple-400"}`}>
                         ₹
                       </span>
                     </div>

@@ -911,16 +911,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 ))}
                                 {/* Custom amount */}
                                 <div className="relative col-span-1">
-                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm z-10">₹</span>
+                                  <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
                                   <input
                                     type="number"
                                     placeholder={t.pages.give.customPlaceholder}
                                     value={customAmount}
                                     onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-3.5 pl-7 pr-2.5 rounded-2xl border-2 font-bold text-xs sm:text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
+                                    className={`w-full py-3.5 pl-8 pr-2.5 rounded-2xl border-2 font-black text-sm sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
                                       customAmount
-                                        ? "border-purple-600 ring-2 ring-purple-600/20"
-                                        : "border-gray-200 dark:border-gray-700 focus:border-purple-400 dark:focus:border-purple-600"
+                                        ? "border-purple-600 dark:border-purple-400 ring-2 ring-purple-600/20 bg-purple-50/80 dark:bg-purple-950/60"
+                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 focus:border-purple-400 dark:focus:border-purple-600"
                                     }`}
                                   />
                                 </div>

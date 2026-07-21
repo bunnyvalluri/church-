@@ -968,16 +968,16 @@ export default function NgoDonationForm({
                               })}
                               {/* Custom amount */}
                               <div className="relative col-span-1">
-                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-bold text-sm z-10">₹</span>
+                                <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-sm z-10 ${customAmount ? "text-emerald-700 dark:text-emerald-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
                                 <input
                                   type="number"
                                   placeholder={language === "te" ? "మొత్తం" : language === "hi" ? "राशि" : "Custom"}
                                   value={customAmount}
                                   onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                  className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 font-bold text-sm transition-all duration-200 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none ${
+                                  className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 font-black text-sm sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
                                     customAmount
-                                      ? "border-emerald-500 ring-2 ring-emerald-500/25 bg-emerald-50/10 dark:bg-emerald-950/10"
-                                      : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 focus:border-emerald-400"
+                                      ? "border-emerald-600 dark:border-emerald-400 ring-2 ring-emerald-500/25 bg-emerald-50/80 dark:bg-emerald-950/60"
+                                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:border-emerald-300 dark:hover:border-emerald-700 focus:border-emerald-400"
                                   }`}
                                 />
                               </div>
