@@ -294,14 +294,21 @@ export default function LoginPage() {
         const result = await signInWithPopup(auth, provider);
         u = result?.user;
       } catch (popupErr: any) {
-        console.warn(`[AUTH] ${name} Popup login failed/blocked, trying redirect fallback:`, popupErr?.code || popupErr);
-        if (popupErr?.code === "auth/popup-blocked" || popupErr?.code === "auth/cancelled-popup-request") {
-          await signInWithRedirect(auth, provider);
-          return;
-        } else if (popupErr?.code === "auth/popup-closed-by-user") {
-          setIsLoggingIn(false);
-          setSocialLoading(null);
-          return;
+        console.warn(`[AUTH] ${name} Popup login failed/interrupted, trying redirect fallback:`, popupErr?.code || popupErr);
+        if (
+          popupErr?.code === "auth/popup-blocked" ||
+          popupErr?.code === "auth/cancelled-popup-request" ||
+          popupErr?.code === "auth/popup-closed-by-user" ||
+          popupErr?.code === "auth/internal-error" ||
+          popupErr?.code === "auth/network-request-failed" ||
+          popupErr?.code === "auth/auth-domain-config-required"
+        ) {
+          try {
+            await signInWithRedirect(auth, provider);
+            return;
+          } catch (redirectErr: any) {
+            throw redirectErr;
+          }
         } else {
           throw popupErr;
         }
