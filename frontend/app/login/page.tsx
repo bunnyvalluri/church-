@@ -445,108 +445,91 @@ export default function LoginPage() {
   return (
     <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-slate-950">
       {/* ── Left Branding Panel ── */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
-        {/* Modern dark gradient backdrop */}
-        <div className="absolute inset-0 bg-slate-950" />
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#0f072b]">
+        {/* Glowing top accent border */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-500" />
         
-        {/* Layered glowing mesh gradients */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(139,92,246,0.18),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(236,72,153,0.12),transparent_45%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
-        
+        {/* Layered glowing radial mesh */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.35),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.25),transparent_55%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+
         {/* Ambient Animated Orbs */}
         <motion.div 
           animate={{
             scale: [1, 1.12, 1],
-            opacity: [0.25, 0.35, 0.25],
-            y: [0, -10, 0]
+            opacity: [0.3, 0.45, 0.3],
           }}
           transition={{
-            duration: 12,
+            duration: 10,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute -top-32 -left-32 w-[30rem] h-[30rem] bg-[hsl(var(--primary))]/20 rounded-full blur-[90px] pointer-events-none" 
+          className="absolute -top-24 -left-24 w-[28rem] h-[28rem] bg-purple-500/25 rounded-full blur-[80px] pointer-events-none" 
         />
         <motion.div 
           animate={{
             scale: [1, 1.15, 1],
-            opacity: [0.18, 0.25, 0.18],
-            x: [0, 15, 0]
+            opacity: [0.2, 0.35, 0.2],
           }}
           transition={{
-            duration: 15,
+            duration: 12,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 1.5
+            delay: 1
           }}
-          className="absolute -bottom-32 -right-32 w-[30rem] h-[30rem] bg-gradient-end/15 rounded-full blur-[90px] pointer-events-none" 
+          className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] bg-indigo-600/20 rounded-full blur-[80px] pointer-events-none" 
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-start/5 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Dash-Outline Cross Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none">
-          <svg className="w-[36rem] h-[36rem] text-white" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.3" strokeDasharray="2 3">
-            <path d="M50,12 L50,88 M32,36 L68,36" strokeLinecap="round" />
+        {/* Centered Large Solid Cross Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none select-none">
+          <svg className="w-[36rem] h-[36rem] text-white" viewBox="0 0 100 100" fill="currentColor">
+            <rect x="42" y="6" width="16" height="88" rx="2" />
+            <rect x="14" y="28" width="72" height="16" rx="2" />
           </svg>
         </div>
 
         {/* Header Back Link */}
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 group px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 backdrop-blur-md transition-all duration-300">
-            <ChevronLeft className="w-4 h-4 text-white/70 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-white/80 text-xs font-semibold tracking-wide">{loginT.backToHome}</span>
+          <Link href="/" className="inline-flex items-center gap-2 group text-white/80 hover:text-white text-sm font-medium transition-colors">
+            <ChevronLeft className="w-4 h-4 text-white/70 group-hover:-translate-x-1 transition-transform" />
+            <span>{loginT.backToHome}</span>
           </Link>
         </div>
 
         {/* Central Quote & Identity */}
         <div className="relative z-10 text-white max-w-xl my-auto">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-white/10 backdrop-blur-md shadow-2xl p-1 bg-white/5 group hover:border-white/30 transition-all duration-300">
-              <div className="relative w-full h-full rounded-full overflow-hidden">
-                <Image
-                  src="/logo.png"
-                  alt="Kingdom of Christ Ministries Logo"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  priority
-                />
-              </div>
+          {/* Identity Header */}
+          <div className="flex items-center gap-3.5 mb-10">
+            <div className="w-13 h-13 p-3.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-xl flex-shrink-0">
+              <span className="leading-none text-white text-xl font-semibold">✝</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">{loginT.churchName}</h1>
-              <p className="text-white/60 text-xs font-medium tracking-widest uppercase mt-0.5">{loginT.ministries}</p>
+              <h1 className="text-2xl font-bold tracking-tight text-white">{loginT.churchName}</h1>
+              <p className="text-purple-200/70 text-xs font-semibold tracking-widest uppercase mt-0.5">{loginT.ministries}</p>
             </div>
           </div>
 
-          {/* Premium Glassmorphic Quote Card */}
+          {/* Clean Quote Display matching requested image */}
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
-            className="relative p-8 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-lg shadow-2xl overflow-hidden group hover:border-white/25 transition-all duration-500"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="space-y-4"
           >
-            {/* Gloss sheen animate overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-            <div className="absolute top-2 right-6 opacity-[0.08] text-white font-serif text-[10rem] select-none pointer-events-none leading-none">
-              ”
-            </div>
-            <blockquote className="text-xl font-light leading-relaxed text-white/90 mb-5 italic relative z-10 pr-4">
+            <blockquote className="text-2xl sm:text-3xl font-normal leading-snug text-white tracking-tight">
               "{loginT.quote}"
             </blockquote>
-            <div className="flex items-center gap-3 relative z-10">
-              <span className="w-8 h-[1px] bg-gradient-start" />
-              <cite className="text-gradient-start text-xs font-semibold not-italic tracking-widest uppercase filter brightness-125">
-                {loginT.author}
-              </cite>
-            </div>
+            <p className="text-purple-200/90 text-sm font-medium italic pt-1">
+              — {loginT.author}
+            </p>
           </motion.div>
         </div>
 
-        {/* Footer Status */}
+        {/* Footer Status Ticker */}
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-sm">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-            <span className="text-white/60 text-xs font-medium tracking-wide">{loginT.footerTicker}</span>
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="text-white/80 text-xs font-medium tracking-wide">{loginT.footerTicker}</span>
           </div>
         </div>
       </div>
