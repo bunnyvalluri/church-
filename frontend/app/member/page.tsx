@@ -55,95 +55,195 @@ interface Announcement {
   createdAt: string;
 }
 
-/* ────────────────────────── Constants ────────────────────── */
-const SCRIPTURES = [
-  { text: "For God so loved the world that He gave His only Son.", ref: "John 3:16" },
-  { text: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
-  { text: "The Lord is my shepherd; I shall not want.", ref: "Psalm 23:1" },
-  { text: "Trust in the Lord with all your heart.", ref: "Proverbs 3:5" },
-  { text: "Be still, and know that I am God.", ref: "Psalm 46:10" },
-  { text: "Come to me, all who are weary, and I will give you rest.", ref: "Matthew 11:28" },
-  { text: "The Lord will fight for you; you need only to be still.", ref: "Exodus 14:14" },
-];
-
-
-const tLogOut = {
-  en: "Log Out",
-  te: "లాగ్ అవుట్",
-  hi: "लॉग आउट",
+/* ────────────────────────── Translations ────────────────────── */
+const dashboardTranslations = {
+  en: {
+    greetings: {
+      morning: "Good Morning",
+      afternoon: "Good Afternoon",
+      evening: "Good Evening",
+      welcome: "Welcome back",
+      sub: "So glad to have you in our spiritual family. Explore your events, submit prayers, and stay connected.",
+    },
+    memberTag: "Verified Member",
+    syncText: "Live · Last synced",
+    scriptures: [
+      { text: "For God so loved the world that He gave His only Son.", ref: "John 3:16" },
+      { text: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+      { text: "The Lord is my shepherd; I shall not want.", ref: "Psalm 23:1" },
+      { text: "Trust in the Lord with all your heart.", ref: "Proverbs 3:5" },
+      { text: "Be still, and know that I am God.", ref: "Psalm 46:10" },
+      { text: "Come to me, all who are weary, and I will give you rest.", ref: "Matthew 11:28" },
+      { text: "The Lord will fight for you; you need only to be still.", ref: "Exodus 14:14" },
+    ],
+    scriptureHeading: "Daily Scripture Promise",
+    cards: [
+      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
+      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
+      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
+      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
+      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
+      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+    ],
+    directoryHeading: "Believer Services Directory",
+    statsHeading: "Quick Fellowship Overview",
+    stats: {
+      events: { label: "Registered Events", badgeRSVP: "RSVPs", badgeDefault: "Register" },
+      prayers: { label: "Prayer Requests", badgeAnswered: "Answered", badgeDefault: "Submit" },
+      sermons: { label: "Sermons Available", badgeDefault: "Watch" },
+      announcements: { label: "Announcements", badgeUrgent: "⚠️ Urgent", badgeDefault: "View" },
+    },
+    announcementsTitle: "Latest Announcements",
+    noAnnouncements: "No announcements currently.",
+    live: "Live",
+    quickActionsTitle: "Quick Actions",
+    quickActions: [
+      { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
+      { label: "Register for Event", href: "/member/events", icon: Calendar },
+      { label: "Give Online", href: "/member/give", icon: Gift },
+    ],
+    activityTitle: "Your Activity",
+    activityLabels: {
+      events: "Events Registered",
+      prayers: "Prayers Submitted",
+      answered: "Prayers Answered",
+      sermons: "Sermons Watched",
+    },
+    userMenu: {
+      myAccount: "My Account",
+      viewProfile: "View Profile",
+      editProfile: "Edit Details",
+      logOut: "Log Out",
+    }
+  },
+  te: {
+    greetings: {
+      morning: "శుభోదయం",
+      afternoon: "శుభ మధ్యాహ్నం",
+      evening: "శుభ సాయంత్రం",
+      welcome: "తిరిగి స్వాగతం",
+      sub: "మా ఆత్మీయ కుటుంబంలో మిమ్మల్ని చూడటం ఎంతో సంతోషం. మీ కార్యక్రమాలు చూసి, ప్రార్థనలు సమర్పించండి.",
+    },
+    memberTag: "ధృవీకరించబడిన సభ్యుడు",
+    syncText: "లైవ్ · నవీకరించబడింది",
+    scriptures: [
+      { text: "దేవుడు లోకమును ఎంతో ప్రేమించెను, అందువలన ఆయన తన అద్వితీయ కుమారుడిని అనుగ్రహించెను.", ref: "యోహాను 3:16" },
+      { text: "నన్ను బలపరచు క్రీస్తు నందే నేను సమస్తమును చేయగలను.", ref: "ఫిలిప్పీయులకు 4:13" },
+      { text: "యెహోవా నా కాపరి; నాకు ఏ కొరతయు ఉండదు.", ref: "కీర్తనలు 23:1" },
+      { text: "నీ పూర్ణహృదయముతో యెహోవాయందు నమ్మకముంచుము.", ref: "సామెతలు 3:5" },
+      { text: "ఊరకుండుడి, నేనే దేవుడనని తెలుసుకొనుడి.", ref: "కీర్తనలు 46:10" },
+      { text: "ప్రయాసపడి భారము మోసుకొనుచున్న సమస్త జనులారా, నా యొద్దకు రండి, నేను మీకు విశ్రాంతినిచ్చెదను.", ref: "మత్తయి 11:28" },
+      { text: "యెహోవా మీ పక్షమున యుద్ధము చేయును; మీరు ఊరకయే యుండవలెను.", ref: "నిర్గమకాండము 14:14" },
+    ],
+    scriptureHeading: "దైనందిన వాగ్దానం",
+    cards: [
+      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
+      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
+      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
+      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
+      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
+      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+    ],
+    directoryHeading: "విశ్వాసుల సేవల జాబితా",
+    statsHeading: "పరిచర్య ముఖ్యాంశాలు",
+    stats: {
+      events: { label: "నమోదైన కార్యక్రమాలు", badgeRSVP: "నమోదులు", badgeDefault: "చేరండి" },
+      prayers: { label: "ప్రార్థన విన్నపాలు", badgeAnswered: "సమాధానం పొందినవి", badgeDefault: "పంపండి" },
+      sermons: { label: "ప్రసంగాల లైబ్రరీ", badgeDefault: "చూడండి" },
+      announcements: { label: "ప్రకటనలు", badgeUrgent: "⚠️ అత్యవసరం", badgeDefault: "చూడండి" },
+    },
+    announcementsTitle: "తాజా ప్రకటనలు",
+    noAnnouncements: "ప్రస్తుతం ప్రకటనలు లేవు.",
+    live: "లైవ్",
+    quickActionsTitle: "త్వరిత చర్యలు",
+    quickActions: [
+      { label: "ప్రార్థన విన్నపం సమర్పించండి", href: "/member/prayers", icon: Heart },
+      { label: "కార్యక్రమంలో నమోదు అవ్వండి", href: "/member/events", icon: Calendar },
+      { label: "ఆన్‌లైన్‌లో కానుక ఇవ్వండి", href: "/member/give", icon: Gift },
+    ],
+    activityTitle: "మీ కార్యాచరణ",
+    activityLabels: {
+      events: "నమోదైన కార్యక్రమాలు",
+      prayers: "సమర్పించిన ప్రార్థనలు",
+      answered: "సమాధానం పొందినవి",
+      sermons: "వీక్షించిన ప్రసంగాలు",
+    },
+    userMenu: {
+      myAccount: "నా ఖాతా",
+      viewProfile: "ప్రొఫైల్ చూడండి",
+      editProfile: "వివరాలు మార్చండి",
+      logOut: "లాగ్ అవుట్",
+    }
+  },
+  hi: {
+    greetings: {
+      morning: "शुभ प्रभात",
+      afternoon: "शुभ दोपहर",
+      evening: "शुभ संध्या",
+      welcome: "पुनः स्वागत है",
+      sub: "हमारे आत्मिक परिवार में आपका स्वागत है। अपने कार्यक्रम देखें और प्रार्थना निवेदन भेजें।",
+    },
+    memberTag: "सत्यापित सदस्य",
+    syncText: "लाइव · अंतिम सिंक",
+    scriptures: [
+      { text: "क्योंकि परमेश्वर ने जगत से ऐसा प्रेम रखा कि उसने अपना एकलौता पुत्र दे दिया।", ref: "यूहन्ना 3:16" },
+      { text: "जो मुझे सामर्थ्य देता है उसमें मैं सब कुछ कर सकता हूँ।", ref: "फिलिपियों 4:13" },
+      { text: "यहोवा मेरा चरवाहा है; मुझे कोई घटी न होगी।", ref: "भजन संहिता 23:1" },
+      { text: "तू अपने पूरे मन से यहोवा पर भरोसा रख।", ref: "नीतिवचन 3:5" },
+      { text: "शांत रहो और जान लो कि मैं ही परमेश्वर हूँ।", ref: "भजन संहिता 46:10" },
+      { text: "हे सब परिश्रम करने वालों और बोझ से दबे लोगों, मेरे पास आओ, मैं तुम्हें विश्राम दूँगा।", ref: "मत्ती 11:28" },
+      { text: "यहोवा स्वयं तुम्हारे लिए लड़ेगा; तुम बस शांत रहो।", ref: "निर्गमन 14:14" },
+    ],
+    scriptureHeading: "दैनिक बाइबिल वचन",
+    cards: [
+      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
+      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
+      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
+      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
+      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
+      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+    ],
+    directoryHeading: "विश्वास योग्य सेवाएं",
+    statsHeading: "फैलोशिप सारांश",
+    stats: {
+      events: { label: "पंजीकृत कार्यक्रम", badgeRSVP: "पंजीकरण", badgeDefault: "जुड़ें" },
+      prayers: { label: "प्रार्थना निवेदन", badgeAnswered: "उत्तर मिले", badgeDefault: "भेजें" },
+      sermons: { label: "प्रवचन लाइब्रेरी", badgeDefault: "देखें" },
+      announcements: { label: "घोषणाएं", badgeUrgent: "⚠️ अति आवश्यक", badgeDefault: "देखें" },
+    },
+    announcementsTitle: "नवीनतम घोषणाएं",
+    noAnnouncements: "वर्तमान में कोई घोषणा नहीं है।",
+    live: "लाइव",
+    quickActionsTitle: "त्वरित कार्रवाई",
+    quickActions: [
+      { label: "प्रार्थना निवेदन भेजें", href: "/member/prayers", icon: Heart },
+      { label: "कार्यक्रम में भाग लें", href: "/member/events", icon: Calendar },
+      { label: "ऑनलाइन दान दें", href: "/member/give", icon: Gift },
+    ],
+    activityTitle: "आपकी गतिविधि",
+    activityLabels: {
+      events: "पंजीकृत कार्यक्रम",
+      prayers: "भेजी गई प्रार्थनाएं",
+      answered: "उत्तर मिली प्रार्थनाएं",
+      sermons: "देखे गए प्रवचन",
+    },
+    userMenu: {
+      myAccount: "मेरा खाता",
+      viewProfile: "प्रोफाइल देखें",
+      editProfile: "विवरण बदलें",
+      logOut: "लॉग आउट",
+    }
+  }
 };
 
 /* ────────────────────────── Helpers ─────────────────────── */
-function getGreeting(): { text: string; icon: React.ElementType } {
+function getGreeting(lang: string): { text: string; icon: React.ElementType } {
+  const dt = dashboardTranslations[lang as keyof typeof dashboardTranslations] || dashboardTranslations.en;
   const hour = new Date().getHours();
-  if (hour < 12) return { text: "Good Morning", icon: Sun };
-  if (hour < 17) return { text: "Good Afternoon", icon: Sunset };
-  return { text: "Good Evening", icon: Moon };
+  if (hour < 12) return { text: dt.greetings.morning, icon: Sun };
+  if (hour < 17) return { text: dt.greetings.afternoon, icon: Sunset };
+  return { text: dt.greetings.evening, icon: Moon };
 }
-
-/* ────────────────────────── Service Cards Data ──────────── */
-const SERVICE_CARDS = [
-  {
-    title: "My Profile",
-    desc: "Update your details & photo",
-    href: "/member/profile",
-    icon: User,
-    gradient: "from-violet-500 to-purple-700",
-    glow: "shadow-purple-500/25",
-    badge: "Update",
-    badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
-  },
-  {
-    title: "Church Events",
-    desc: "Browse & RSVP for services",
-    href: "/member/events",
-    icon: Calendar,
-    gradient: "from-blue-500 to-indigo-700",
-    glow: "shadow-blue-500/25",
-    badge: "Browse",
-    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
-  },
-  {
-    title: "Prayer Requests",
-    desc: "Submit & track your prayers",
-    href: "/member/prayers",
-    icon: Heart,
-    gradient: "from-rose-500 to-pink-700",
-    glow: "shadow-rose-500/25",
-    badge: "Submit",
-    badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
-  },
-  {
-    title: "Sermon Library",
-    desc: "Watch & listen to messages",
-    href: "/member/sermons",
-    icon: Play,
-    gradient: "from-indigo-500 to-blue-700",
-    glow: "shadow-indigo-500/25",
-    badge: "Watch",
-    badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300",
-  },
-  {
-    title: "Volunteer",
-    desc: "Serve in active ministries",
-    href: "/member/volunteer",
-    icon: Briefcase,
-    gradient: "from-amber-500 to-orange-600",
-    glow: "shadow-amber-500/25",
-    badge: "Apply",
-    badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
-  },
-  {
-    title: "Giving & Tithe",
-    desc: "Offerings & download receipts",
-    href: "/member/give",
-    icon: Gift,
-    gradient: "from-emerald-500 to-green-700",
-    glow: "shadow-emerald-500/25",
-    badge: "Give Now",
-    badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
-  },
-];
 
 /* ═══════════════════════════════════════════════════════════
    MAIN COMPONENT
@@ -152,6 +252,9 @@ export default function MemberDashboard() {
   const { user, status, mounted, logout } = useAuth();
   const { language } = useLanguage();
   const router = useRouter();
+
+  const dt = dashboardTranslations[language as keyof typeof dashboardTranslations] || dashboardTranslations.en;
+  const activeGreeting = getGreeting(language);
 
   const [stats, setStats] = useState<DashboardStats>({
     prayers: 0,
@@ -171,10 +274,7 @@ export default function MemberDashboard() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevAnnouncementCount = useRef(0);
 
-  const [greeting, setGreeting] = useState<{ text: string; icon: React.ElementType }>({
-    text: "Welcome back",
-    icon: Sparkles
-  });
+  const scripture = dt.scriptures[scriptureIndex % dt.scriptures.length] || dt.scriptures[0];
 
   /* ── Auth redirect ─────────────────────────────────────── */
   useEffect(() => {
@@ -200,10 +300,9 @@ export default function MemberDashboard() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /* ── Random scripture & greeting (client-only to avoid hydration mismatch) */
+  /* ── Random scripture index (client-only to avoid hydration mismatch) */
   useEffect(() => {
-    setScriptureIndex(Math.floor(Math.random() * SCRIPTURES.length));
-    setGreeting(getGreeting());
+    setScriptureIndex(Math.floor(Math.random() * dt.scriptures.length));
   }, []);
 
   /* ── Toast ─────────────────────────────────────────────── */
@@ -275,8 +374,6 @@ export default function MemberDashboard() {
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [user, status, loadFeeds]);
-
-  const scripture = SCRIPTURES[scriptureIndex];
 
   /* ── Security guard — after ALL hooks ─────────────────── */
   if (!mounted || status === "loading") {
@@ -509,7 +606,7 @@ export default function MemberDashboard() {
                         <p className="font-extrabold text-sm text-gray-900 dark:text-white truncate">{user?.name || "Member"}</p>
                         <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
                         <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 px-2 py-0.5 bg-violet-50 dark:bg-violet-950/30 rounded-full border border-violet-100 dark:border-violet-900/30">
-                          <Shield className="w-2.5 h-2.5" /> Verified Member
+                          <Shield className="w-2.5 h-2.5" /> {dt.memberTag}
                         </span>
                       </div>
                     </div>
@@ -528,10 +625,10 @@ export default function MemberDashboard() {
                     {/* Nav links */}
                     <div className="space-y-1">
                       <Link href="/member/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
-                        <User className="w-4 h-4 text-violet-500" /> My Profile
+                        <User className="w-4 h-4 text-violet-500" /> {dt.userMenu.viewProfile}
                       </Link>
                       <Link href="/member/prayers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
-                        <Heart className="w-4 h-4 text-rose-500" /> Prayer Requests
+                        <Heart className="w-4 h-4 text-rose-500" /> {dt.stats.prayers.label}
                       </Link>
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-white/5" />
@@ -540,7 +637,7 @@ export default function MemberDashboard() {
                       onClick={logout}
                       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-sm font-bold transition-all"
                     >
-                      <LogOut className="w-3.5 h-3.5" /> {tLogOut[language as keyof typeof tLogOut] || tLogOut.en}
+                      <LogOut className="w-3.5 h-3.5" /> {dt.userMenu.logOut}
                     </button>
                   </motion.div>
                 )}
@@ -551,10 +648,10 @@ export default function MemberDashboard() {
             <button
               onClick={logout}
               className="hidden sm:flex h-9 items-center gap-1.5 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 hover:scale-[1.02] active:scale-95 transition-all flex-shrink-0 text-xs font-bold shadow-sm"
-              title={tLogOut[language as keyof typeof tLogOut] || tLogOut.en}
+              title={dt.userMenu.logOut}
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>{tLogOut[language as keyof typeof tLogOut] || tLogOut.en}</span>
+              <span>{dt.userMenu.logOut}</span>
             </button>
           </div>
         </div>
@@ -587,23 +684,23 @@ export default function MemberDashboard() {
               <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center gap-2">
-                    <greeting.icon className="w-4 h-4 text-yellow-300" />
+                    <activeGreeting.icon className="w-4 h-4 text-yellow-300" />
                     <span className="text-xs font-bold text-violet-200 uppercase tracking-widest">
-                      {greeting.text}
+                      {activeGreeting.text}
                     </span>
                   </div>
                   <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                    Welcome back, <br />
+                    {dt.greetings.welcome}, <br />
                     <span className="text-yellow-300">{firstName}! 🙏</span>
                   </h2>
                   <p className="text-violet-100/80 text-sm leading-relaxed max-w-md">
-                    So glad to have you in our spiritual family. Explore your events, submit prayers, and stay connected.
+                    {dt.greetings.sub}
                   </p>
 
                   {lastSynced && (
                     <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">
                       <Wifi className="w-3 h-3" />
-                      Live · Last synced {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                      {dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                     </div>
                   )}
                 </div>
@@ -611,8 +708,8 @@ export default function MemberDashboard() {
                 {/* Quick greeting stats */}
                 <div className="flex sm:flex-col gap-3 sm:gap-2 flex-shrink-0">
                   {[
-                    { label: "Events", value: stats.events, icon: Calendar },
-                    { label: "Prayers", value: stats.prayers, icon: Heart },
+                    { label: dt.stats.events.label, value: stats.events, icon: Calendar },
+                    { label: dt.stats.prayers.label, value: stats.prayers, icon: Heart },
                   ].map(({ label, value, icon: Icon }) => (
                     <div key={label} className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-2xl px-2.5 py-1.5 sm:px-4 sm:py-2.5">
                       <Icon className="w-4 h-4 text-white flex-shrink-0" />
@@ -644,7 +741,7 @@ export default function MemberDashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-600 dark:text-amber-400 block mb-2">
-                    Scripture of the Day
+                    {dt.scriptureHeading}
                   </span>
                   <p className="text-sm font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">
                     &ldquo;{scripture.text}&rdquo;
@@ -665,43 +762,43 @@ export default function MemberDashboard() {
             >
               {[
                 {
-                  label: "Registered Events",
+                  label: dt.stats.events.label,
                   value: stats.events,
                   icon: Calendar,
                   iconColor: "text-violet-600 dark:text-violet-400",
                   iconBg: "bg-violet-50 dark:bg-violet-950/30",
                   accent: "border-violet-200 dark:border-violet-900/20",
-                  badge: stats.events > 0 ? `${stats.events} RSVPs` : "Register",
+                  badge: stats.events > 0 ? `${stats.events} ${dt.stats.events.badgeRSVP}` : dt.stats.events.badgeDefault,
                   href: "/member/events",
                 },
                 {
-                  label: "Prayer Requests",
+                  label: dt.stats.prayers.label,
                   value: stats.prayers,
                   icon: Heart,
                   iconColor: "text-rose-600 dark:text-rose-400",
                   iconBg: "bg-rose-50 dark:bg-rose-950/30",
                   accent: "border-rose-200 dark:border-rose-900/20",
-                  badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} Answered` : "Submit",
+                  badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${dt.stats.prayers.badgeAnswered}` : dt.stats.prayers.badgeDefault,
                   href: "/member/prayers",
                 },
                 {
-                  label: "Sermons",
+                  label: dt.stats.sermons.label,
                   value: stats.sermons,
                   icon: BookOpen,
                   iconColor: "text-indigo-600 dark:text-indigo-400",
                   iconBg: "bg-indigo-50 dark:bg-indigo-950/30",
                   accent: "border-indigo-200 dark:border-indigo-900/20",
-                  badge: "Watch",
+                  badge: dt.stats.sermons.badgeDefault,
                   href: "/member/sermons",
                 },
                 {
-                  label: "Announcements",
+                  label: dt.stats.announcements.label,
                   value: stats.announcements.length,
                   icon: Bell,
                   iconColor: "text-amber-600 dark:text-amber-400",
                   iconBg: "bg-amber-50 dark:bg-amber-950/30",
                   accent: "border-amber-200 dark:border-amber-900/20",
-                  badge: stats.announcements.some(a => a.priority === "URGENT") ? "⚠️ Urgent" : "View",
+                  badge: stats.announcements.some(a => a.priority === "URGENT") ? dt.stats.announcements.badgeUrgent : dt.stats.announcements.badgeDefault,
                   href: "#announcements",
                 },
               ].map(({ label, value, icon: Icon, iconColor, iconBg, accent, badge, href }, i) => (
@@ -739,12 +836,12 @@ export default function MemberDashboard() {
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-4 h-4 text-violet-500" />
                 <h3 className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                  Believer Services Directory
+                  {dt.directoryHeading}
                 </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {SERVICE_CARDS.map((card, i) => {
+                {dt.cards.map((card, i) => {
                   const Icon = card.icon;
                   return (
                     <motion.div
@@ -800,11 +897,11 @@ export default function MemberDashboard() {
                   <div className="w-8 h-8 bg-violet-50 dark:bg-violet-950/30 rounded-xl flex items-center justify-center">
                     <Bell className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                   </div>
-                  <h3 className="text-sm font-black text-gray-900 dark:text-white">Latest Announcements</h3>
+                  <h3 className="text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  Live
+                  {dt.live}
                 </div>
               </div>
 
@@ -819,7 +916,7 @@ export default function MemberDashboard() {
                 ) : stats.announcements.length === 0 ? (
                   <div className="text-center py-12">
                     <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">No announcements currently.</p>
+                    <p className="text-xs text-gray-400">{dt.noAnnouncements}</p>
                   </div>
                 ) : (
                   stats.announcements.map((anc) => {
@@ -874,14 +971,10 @@ export default function MemberDashboard() {
               <div className="relative">
                 <div className="flex items-center gap-2 mb-4">
                   <Zap className="w-4 h-4 text-yellow-300" />
-                  <h4 className="text-sm font-black">Quick Actions</h4>
+                  <h4 className="text-sm font-black">{dt.quickActionsTitle}</h4>
                 </div>
                 <div className="space-y-2">
-                  {[
-                    { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
-                    { label: "Register for Event", href: "/member/events", icon: Calendar },
-                    { label: "Give Online", href: "/member/give", icon: Gift },
-                  ].map(({ label, href, icon: Icon }) => (
+                  {dt.quickActions.map(({ label, href, icon: Icon }) => (
                     <Link
                       key={href}
                       href={href}
@@ -906,16 +999,16 @@ export default function MemberDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-emerald-500" />
-                  <h4 className="text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Your Activity</h4>
+                  <h4 className="text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{dt.activityTitle}</h4>
                 </div>
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               </div>
               <div className="space-y-3">
                 {[
-                  { label: "Events Registered", value: stats.events, color: "bg-violet-500", bar: "bg-violet-100 dark:bg-violet-900/40" },
-                  { label: "Prayers Submitted", value: stats.prayers, color: "bg-rose-500", bar: "bg-rose-100 dark:bg-rose-900/40" },
-                  { label: "Prayers Answered", value: stats.prayersAnswered, color: "bg-emerald-500", bar: "bg-emerald-100 dark:bg-emerald-900/40" },
-                  { label: "Sermons Watched", value: stats.sermons, color: "bg-indigo-500", bar: "bg-indigo-100 dark:bg-indigo-900/40" },
+                  { label: dt.activityLabels.events, value: stats.events, color: "bg-violet-500", bar: "bg-violet-100 dark:bg-violet-900/40" },
+                  { label: dt.activityLabels.prayers, value: stats.prayers, color: "bg-rose-500", bar: "bg-rose-100 dark:bg-rose-900/40" },
+                  { label: dt.activityLabels.answered, value: stats.prayersAnswered, color: "bg-emerald-500", bar: "bg-emerald-100 dark:bg-emerald-900/40" },
+                  { label: dt.activityLabels.sermons, value: stats.sermons, color: "bg-indigo-500", bar: "bg-indigo-100 dark:bg-indigo-900/40" },
                 ].map(({ label, value, color, bar }) => (
                   <div key={label} className="space-y-1.5">
                     <div className="flex items-center justify-between">
