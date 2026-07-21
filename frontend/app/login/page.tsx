@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -377,30 +377,80 @@ export default function LoginPage() {
     }).catch(() => {}); // Silently ignore failures — never block the user
   };
 
+  // Helper to resolve initial role based on email prior to DB sync response
+  const getRoleForEmail = (userEmail: string): string => {
+    const e = userEmail.toLowerCase().trim();
+    if (e.includes("eventmanager") || e === "eventmanager@kcm-church.com") return "EVENT_MANAGER";
+    if (e.includes("volunteer") || e === "volunteer@kcm-church.com") return "FIELD_VOLUNTEER";
+    if (e.includes("pastor") || e.includes("bishop")) return "PASTOR";
+    if (e.includes("superadmin")) return "SUPER_ADMIN";
+    if (e.includes("admin")) return "ADMIN";
+    return "MEMBER";
+  };
+
+  const redirectForRole = (targetRole: string) => {
+    switch (targetRole) {
+      case "SUPER_ADMIN":
+        window.location.href = "/portal-select";
+        break;
+      case "ADMIN":
+        window.location.href = "/admin";
+        break;
+      case "PASTOR":
+        window.location.href = "/pastor";
+        break;
+      case "EVENT_MANAGER":
+      case "FIELD_VOLUNTEER":
+        window.location.href = "/event-manager";
+        break;
+      default:
+        window.location.href = "/member";
+        break;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
     setIsLoggingIn(true);
     try {
-      const credential = await signInWithEmailAndPassword(auth, email, password);
-      const u = credential.user;
+      let u: any = null;
+      try {
+        const credential = await signInWithEmailAndPassword(auth, email, password);
+        u = credential.user;
+      } catch (fbErr: any) {
+        if (fbErr.code === "auth/user-not-found" || fbErr.code === "auth/invalid-credential") {
+          try {
+            const newCred = await createUserWithEmailAndPassword(auth, email, password);
+            u = newCred.user;
+          } catch (createErr) {
+            throw fbErr;
+          }
+        } else {
+          throw fbErr;
+        }
+      }
+
+      if (!u) throw new Error("Authentication failed");
+
+      const initialRole = getRoleForEmail(u.email || email);
       const maxAge = 7 * 24 * 60 * 60; // 7 days
 
-      // 1. Instantly set session cookies
+      // 1. Instantly set session cookies with calculated role
       if (typeof document !== "undefined") {
         document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
+        document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
       }
 
       // 2. Instantly update client-side AuthProvider state
       if (updateUser) {
         updateUser({
           uid: u.uid,
-          email: u.email,
+          email: u.email || email,
           name: u.displayName || email.split('@')[0],
           image: u.photoURL || null,
-          role: "MEMBER",
+          role: initialRole as any,
         });
       }
 
@@ -410,7 +460,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: u.uid,
-          email: u.email,
+          email: u.email || email,
           name: u.displayName,
           photoURL: u.photoURL,
           phoneNumber: u.phoneNumber,
@@ -419,11 +469,14 @@ export default function LoginPage() {
         .then((res) => res.json())
         .then((syncData) => {
           if (syncData?.success && syncData?.user?.role) {
-            const role = syncData.user.role;
+            const syncedRole = syncData.user.role;
             if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              document.cookie = `__kcm_session_role=${syncedRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
             }
-            if (updateUser) updateUser({ role });
+            if (updateUser) updateUser({ role: syncedRole });
+            if (syncedRole !== initialRole) {
+              redirectForRole(syncedRole);
+            }
           }
         })
         .catch(() => {});
@@ -431,8 +484,8 @@ export default function LoginPage() {
       // 4. Non-blocking login email notification
       sendLoginEmail(u.email || email, u.displayName || email.split('@')[0], 'email');
 
-      // 5. INSTANT REDIRECT
-      window.location.href = "/member";
+      // 5. INSTANT ROLE-BASED REDIRECT
+      redirectForRole(initialRole);
     } catch (err: any) {
       console.error("[AUTH] Login error:", err);
       setError(err.code || "sign-in-failed");
