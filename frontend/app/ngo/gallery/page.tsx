@@ -469,7 +469,7 @@ export default function NgoGalleryPage() {
     }
   };
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount � no double-guard needed
+    const ngoT = t.ngo; // LanguageProvider guards t to en before mount - no double-guard needed
 
   return (
     <div className="py-12 sm:py-16">
@@ -549,7 +549,7 @@ export default function NgoGalleryPage() {
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">
             {filteredItems.length} photos loaded
-            {selectedCategory !== "ALL" && ` · ${CATEGORIES.find((c) => c.value === selectedCategory)?.label}`}
+            {selectedCategory !== "ALL" && ` Â· ${CATEGORIES.find((c) => c.value === selectedCategory)?.label}`}
           </p>
         </div>
 
