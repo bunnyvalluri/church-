@@ -17,9 +17,15 @@ interface BranchContextType {
 
 const BranchContext = createContext<BranchContextType | undefined>(undefined);
 
+export const DEFAULT_BRANCHES: Branch[] = [
+  { id: "b1", name: "Shapur Nagar" },
+  { id: "b2", name: "Subhash Nagar" },
+  { id: "b3", name: "Bahadurpally" },
+];
+
 export function BranchProvider({ children }: { children: React.ReactNode }) {
   const [selectedBranchId, setSelectedBranchId] = useState<string>("all");
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const [branches, setBranches] = useState<Branch[]>(DEFAULT_BRANCHES);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Load selected branch from localStorage (if browser)
@@ -37,8 +43,7 @@ export function BranchProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch("/api/branches");
         if (res.ok) {
           const data = await res.json();
-          if (data.success) {
-            // Sort customly to guarantee: Shapur Nagar, Subhash Nagar, Bahadurpally
+          if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
             const getIndex = (name: string) => {
               const norm = name.toLowerCase();
               if (norm.includes("shapur")) return 0;

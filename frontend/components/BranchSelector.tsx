@@ -64,10 +64,26 @@ export default function BranchSelector() {
     );
   }
 
+  const displayBranches =
+    branches && branches.length > 0
+      ? branches
+      : [
+          { id: "b1", name: "Shapur Nagar" },
+          { id: "b2", name: "Subhash Nagar" },
+          { id: "b3", name: "Bahadurpally" },
+        ];
+
   const activeBranchName =
     selectedBranchId === "all"
       ? "All Branches"
-      : branches.find((b) => b.id === selectedBranchId)?.name || "Select Branch";
+      : displayBranches.find((b) => b.id === selectedBranchId)?.name ||
+        (selectedBranchId === "b1" || selectedBranchId === "shapur"
+          ? "Shapur Nagar"
+          : selectedBranchId === "b2" || selectedBranchId === "subhash"
+          ? "Subhash Nagar"
+          : selectedBranchId === "b3" || selectedBranchId === "bahadur"
+          ? "Bahadurpally"
+          : "Select Branch");
 
   const currentKey = getBranchKey(selectedBranchId, selectedBranchId === "all" ? undefined : activeBranchName);
   const currentStyles = getBranchStyles(currentKey);
@@ -103,7 +119,7 @@ export default function BranchSelector() {
           <div className="h-px bg-gray-100 dark:bg-white/5 my-1" />
 
           <div className="space-y-0.5">
-            {branches.map((branch) => {
+            {displayBranches.map((branch) => {
               const isActive = selectedBranchId === branch.id;
               const branchKey = getBranchKey(branch.id, branch.name);
               const styles = getBranchStyles(branchKey);
