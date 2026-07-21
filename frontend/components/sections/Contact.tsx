@@ -423,12 +423,27 @@ export default function Contact() {
                     </span>
                   </a>
                   <iframe
-                    src={selectedContact.embedUrl}
+                    src={(() => {
+                      if (
+                        selectedContact.embedUrl &&
+                        !selectedContact.embedUrl.includes("6m8!1m7!") &&
+                        !selectedContact.embedUrl.includes("0x3bcb91e2f02d5555") &&
+                        selectedContact.embedUrl.includes("google.com/maps")
+                      ) {
+                        return selectedContact.embedUrl;
+                      }
+                      if (selectedContact.branchKey === "subhash" || selectedContact.branchName?.toLowerCase().includes("subhash")) {
+                        return "https://maps.google.com/maps?q=Subhash+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed";
+                      }
+                      if (selectedContact.branchKey === "bahadur" || selectedContact.branchName?.toLowerCase().includes("bahadur")) {
+                        return "https://maps.google.com/maps?q=Bahadurpally,+Quthbullapur,+Hyderabad,+Telangana+500043&hl=en&z=15&output=embed";
+                      }
+                      return "https://maps.google.com/maps?q=15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055&hl=en&z=15&output=embed";
+                    })()}
                     title="Church Branch Map Location"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
-                    className={selectedContact.isStreetView ? "" : "dark:invert-[0.9] dark:hue-rotate-180"}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
