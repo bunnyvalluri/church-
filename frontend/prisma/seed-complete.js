@@ -305,42 +305,9 @@ async function main() {
   ok(`${registrations.length} Event Registrations seeded`);
 
   // ──────────────────────────────────────────────
-  // 7. ANNOUNCEMENTS
+  // 7. ANNOUNCEMENTS (Live pastor broadcast only)
   // ──────────────────────────────────────────────
-  const announcements = [
-    {
-      id: 'ann_001',
-      title: '🎉 Church Anniversary — August 10, 2024',
-      content: 'We are celebrating 16 years of God\'s faithfulness! Join us on August 10th for a special anniversary service, testimonies, and fellowship lunch. Invite your friends and family!',
-      priority: 'URGENT',
-      expiresAt: new Date('2024-08-11T00:00:00Z'),
-    },
-    {
-      id: 'ann_002',
-      title: 'Youth Camp Registration Open',
-      content: 'Registration is now open for the Youth Summer Camp 2024 (July 5-7). Limited spots available! Cost: ₹500 per person includes accommodation, meals, and all activities. Contact Pastor David to register.',
-      priority: 'HIGH',
-      expiresAt: new Date('2024-07-01T00:00:00Z'),
-    },
-    {
-      id: 'ann_003',
-      title: 'New Small Group — Kompally Area',
-      content: 'We are launching a new small group for members in Kompally and Medchal areas. Meeting every Tuesday at 7:00 PM. Led by Brother Emmanuel Reddy. All are welcome!',
-      priority: 'NORMAL',
-    },
-    {
-      id: 'ann_004',
-      title: 'Tithe & Offerings — Online Payment Available',
-      content: 'You can now give your tithes and offerings online through our website. Visit the Donate section and choose your preferred method — UPI, Razorpay, or bank transfer.',
-      priority: 'NORMAL',
-    },
-    {
-      id: 'ann_005',
-      title: 'Prayer Chain — Join Today',
-      content: 'Our 24/7 prayer chain needs volunteers. Sign up to cover a 30-minute prayer slot each week. Contact the church office or submit a prayer request through the website.',
-      priority: 'LOW',
-    },
-  ];
+  const announcements = [];
 
   for (const ann of announcements) {
     await prisma.announcement.upsert({
@@ -349,7 +316,7 @@ async function main() {
       create: ann,
     });
   }
-  ok(`${announcements.length} Announcements seeded`);
+  ok(`0 Announcements seeded (Waiting for live pastor broadcasts)`);
 
   // ──────────────────────────────────────────────
   // 8. PRAYER REQUESTS

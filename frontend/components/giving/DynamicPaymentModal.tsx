@@ -234,31 +234,15 @@ export default function DynamicPaymentModal({
               </div>
             )}
 
-            {/* Action Buttons: UPI App & Razorpay Gateway */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {upiUri && (
-                <a
-                  href={upiUri}
-                  className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition"
-                >
-                  <Smartphone className="w-4 h-4" /> Open UPI App Directly
-                </a>
-              )}
-
-              <button
-                type="button"
-                onClick={handleLaunchRazorpay}
-                disabled={launchingRazorpay}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs shadow-md transition cursor-pointer"
+            {/* Action Button: Direct UPI App */}
+            {upiUri && (
+              <a
+                href={upiUri}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition"
               >
-                {launchingRazorpay ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CreditCard className="w-4 h-4" />
-                )}
-                Pay via Razorpay SDK
-              </button>
-            </div>
+                <Smartphone className="w-4 h-4" /> Open UPI App Directly
+              </a>
+            )}
 
             {/* UPI ID Copy Box */}
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono">
