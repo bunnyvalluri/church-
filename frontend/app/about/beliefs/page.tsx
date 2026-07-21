@@ -353,7 +353,7 @@ export default function BeliefsPage() {
                         <div className={`w-14 h-14 ${doctrine.bg} border border-slate-200/50 dark:border-slate-700/50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                           <Icon className={`h-7 w-7 ${doctrine.color}`} />
                         </div>
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 rounded-full text-xs font-bold tracking-wide">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 dark:bg-purple-600/70 text-purple-700 dark:text-white border border-purple-200 dark:border-purple-500/60 rounded-full text-xs font-bold tracking-wide">
                           <BookOpen className="h-3.5 w-3.5" />
                           {doctrine.verse}
                         </span>

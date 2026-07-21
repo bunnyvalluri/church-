@@ -45,10 +45,10 @@ export default function MinistriesPage() {
 
   // Categories definition
   const categories = [
-    { id: "all", label: pageT.filterAll || "All Ministries" },
-    { id: "worship", label: pageT.filterWorship || "Worship & Media" },
-    { id: "nextgen", label: pageT.filterNextGen || "NextGen & Youth" },
-    { id: "care", label: pageT.filterCare || "Fellowship & Care" },
+    { id: "all",      label: pageT.filterAll     || "All Ministries" },
+    { id: "worship",  label: pageT.filterWorship  || "Worship & Media" },
+    { id: "nextgen",  label: pageT.filterNextGen  || "NextGen & Youth" },
+    { id: "care",     label: pageT.filterCare     || "Fellowship & Care" },
     { id: "outreach", label: pageT.filterOutreach || "Outreach & Service" },
   ];
 
@@ -72,8 +72,10 @@ export default function MinistriesPage() {
       icon: Music,
       color: "purple",
       accent: "from-purple-500 to-indigo-500",
-      border: "border-purple-200 dark:border-purple-800/60",
-      badgeColor: "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-100 border border-purple-300 dark:border-purple-500/50 font-bold shadow-sm"
+      border: "border-purple-200 dark:border-purple-700",
+      cardBg: "bg-white dark:bg-purple-950/60",
+      badgeColor: "bg-purple-100 dark:bg-purple-600 text-purple-800 dark:text-white border border-purple-300 dark:border-purple-400 font-bold shadow-sm",
+      scheduleColor: "text-purple-700 dark:text-white bg-purple-100 dark:bg-purple-800 border-purple-300 dark:border-purple-400/70 [&_svg]:text-purple-600 dark:[&_svg]:text-white"
     },
     {
       id: "youth",
@@ -93,8 +95,10 @@ export default function MinistriesPage() {
       icon: Users,
       color: "indigo",
       accent: "from-indigo-500 to-cyan-500",
-      border: "border-indigo-200 dark:border-indigo-800/60",
-      badgeColor: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-100 border border-indigo-300 dark:border-indigo-500/50 font-bold shadow-sm"
+      border: "border-indigo-200 dark:border-cyan-700",
+      cardBg: "bg-white dark:bg-indigo-950/60",
+      badgeColor: "bg-cyan-100 dark:bg-cyan-600 text-cyan-800 dark:text-white border border-cyan-300 dark:border-cyan-400 font-bold shadow-sm",
+      scheduleColor: "text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-800 border-indigo-300 dark:border-indigo-400/70 [&_svg]:text-indigo-600 dark:[&_svg]:text-white"
     },
     {
       id: "children",
@@ -114,8 +118,10 @@ export default function MinistriesPage() {
       icon: Baby,
       color: "pink",
       accent: "from-pink-500 to-rose-500",
-      border: "border-pink-200 dark:border-pink-800/60",
-      badgeColor: "bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-100 border border-pink-300 dark:border-pink-500/50 font-bold shadow-sm"
+      border: "border-pink-200 dark:border-pink-700",
+      cardBg: "bg-white dark:bg-pink-950/60",
+      badgeColor: "bg-pink-100 dark:bg-pink-600 text-pink-800 dark:text-white border border-pink-300 dark:border-pink-400 font-bold shadow-sm",
+      scheduleColor: "text-pink-700 dark:text-white bg-pink-100 dark:bg-pink-800 border-pink-300 dark:border-pink-400/70 [&_svg]:text-pink-600 dark:[&_svg]:text-white"
     },
     {
       id: "women",
@@ -135,8 +141,10 @@ export default function MinistriesPage() {
       icon: Heart,
       color: "rose",
       accent: "from-rose-500 to-red-500",
-      border: "border-rose-200 dark:border-rose-800/60",
-      badgeColor: "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-100 border border-rose-300 dark:border-rose-500/50 font-bold shadow-sm"
+      border: "border-rose-200 dark:border-rose-700",
+      cardBg: "bg-white dark:bg-rose-950/60",
+      badgeColor: "bg-rose-100 dark:bg-rose-600 text-rose-800 dark:text-white border border-rose-300 dark:border-rose-400 font-bold shadow-sm",
+      scheduleColor: "text-rose-700 dark:text-white bg-rose-100 dark:bg-rose-800 border-rose-300 dark:border-rose-400/70 [&_svg]:text-rose-600 dark:[&_svg]:text-white"
     },
     {
       id: "men",
@@ -156,8 +164,10 @@ export default function MinistriesPage() {
       icon: Briefcase,
       color: "blue",
       accent: "from-blue-500 to-indigo-500",
-      border: "border-blue-200 dark:border-blue-800/60",
-      badgeColor: "bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-100 border border-blue-300 dark:border-blue-500/50 font-bold shadow-sm"
+      border: "border-blue-200 dark:border-blue-700",
+      cardBg: "bg-white dark:bg-blue-950/60",
+      badgeColor: "bg-blue-100 dark:bg-blue-600 text-blue-800 dark:text-white border border-blue-300 dark:border-blue-400 font-bold shadow-sm",
+      scheduleColor: "text-blue-700 dark:text-white bg-blue-100 dark:bg-blue-800 border-blue-300 dark:border-blue-400/70 [&_svg]:text-blue-600 dark:[&_svg]:text-white"
     },
     {
       id: "outreach",
@@ -177,8 +187,10 @@ export default function MinistriesPage() {
       icon: HandHeart,
       color: "emerald",
       accent: "from-emerald-500 to-teal-500",
-      border: "border-emerald-200 dark:border-emerald-800/60",
-      badgeColor: "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-100 border border-emerald-300 dark:border-emerald-500/50 font-bold shadow-sm"
+      border: "border-emerald-200 dark:border-emerald-700",
+      cardBg: "bg-white dark:bg-emerald-950/60",
+      badgeColor: "bg-emerald-100 dark:bg-emerald-600 text-emerald-800 dark:text-white border border-emerald-300 dark:border-emerald-400 font-bold shadow-sm",
+      scheduleColor: "text-emerald-700 dark:text-white bg-emerald-100 dark:bg-emerald-800 border-emerald-300 dark:border-emerald-400/70 [&_svg]:text-emerald-600 dark:[&_svg]:text-white"
     },
   ], [pageT]);
 
@@ -347,8 +359,8 @@ export default function MinistriesPage() {
                           {ministry.title}
                         </h3>
 
-                        <div className="flex items-center gap-2 text-xs font-bold text-purple-700 dark:text-purple-100 mb-4 bg-purple-100 dark:bg-purple-900/60 border border-purple-300 dark:border-purple-500/50 px-3 py-1.5 rounded-lg w-fit shadow-sm">
-                          <Clock className="h-3.5 w-3.5 text-purple-600 dark:text-purple-200" />
+                        <div className={`flex items-center gap-2 text-xs font-bold mb-4 border px-3 py-1.5 rounded-lg w-fit shadow-sm ${ministry.scheduleColor}`}>
+                          <Clock className="h-3.5 w-3.5" />
                           <span>{ministry.schedule}</span>
                         </div>
 

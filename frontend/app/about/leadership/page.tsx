@@ -588,15 +588,15 @@ export default function LeadershipPage() {
 
                     <div>
                       <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-400">
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-300">
                           {item.roleTitle}
                         </span>
                         <button
                           onClick={() => setSelectedMinistry(item)}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white transition-colors group/btn"
                         >
-                          <span>{pageT.viewDetails || "View Focus & Details"}</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
+                          <span className="underline underline-offset-2 decoration-purple-400 dark:decoration-purple-500">{pageT.viewDetails || "View Focus & Details"}</span>
+                          <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                         </button>
                       </div>
                     </div>
