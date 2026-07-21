@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -41,24 +41,22 @@ const compressImage = (file: File, maxPx = 300): Promise<string> =>
   });
 
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
+      staggerChildren: 0.02,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 1, y: 0 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
-      stiffness: 110,
-      damping: 15,
+      duration: 0.2,
     },
   },
 };
@@ -209,7 +207,6 @@ export default function LoginPage() {
       const handleRedirectResult = async () => {
         try {
           if (!auth || typeof auth.onIdTokenChanged !== "function") return;
-          const { getRedirectResult } = await import("firebase/auth");
           const result = await getRedirectResult(auth);
           if (result?.user) {
             console.info("[AUTH] Redirect sign-in successful for:", result.user?.email);
@@ -354,7 +351,6 @@ export default function LoginPage() {
       if (err.code === "auth/popup-blocked" || err.message?.includes("COOP")) {
         console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
         try {
-          const { signInWithRedirect } = await import("firebase/auth");
           await signInWithRedirect(auth, provider);
         } catch (redirectErr: any) {
           console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);

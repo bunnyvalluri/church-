@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export interface AuthUser {
   uid: string;
@@ -87,7 +89,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    */
   const getIdToken = async (): Promise<string | null> => {
     try {
-      const { auth } = await import("@/lib/firebase");
       if (auth?.currentUser) {
         return await auth.currentUser.getIdToken(/* forceRefresh */ false);
       }
@@ -99,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const { auth } = await import("@/lib/firebase");
       if (auth && auth.currentUser) {
         const dbUser = await syncUserToDatabase(auth.currentUser);
         if (dbUser) {
@@ -182,66 +182,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     let unsubscribe: (() => void) | undefined;
 
-    const initAuth = async () => {
-      try {
-        const { auth } = await import("@/lib/firebase");
-        const { onAuthStateChanged } = await import("firebase/auth");
+    if (!auth || typeof onAuthStateChanged !== "function") {
+      console.warn("[AUTH] Firebase Auth not available. Running in offline fallback mode.");
+      setLoading(false);
+    } else {
+      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          // 1. Instantly set user state from Firebase to avoid dynamic load blocking
+          const initialUser: AuthUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: firebaseUser.displayName || "Member",
+            image: firebaseUser.photoURL || null,
+            role: "MEMBER", // Default fallback role
+          };
 
-        if (!auth || typeof onAuthStateChanged !== "function") {
-          console.warn("[AUTH] Firebase Auth not available. Running in offline fallback mode.");
-          setLoading(false);
-          return;
-        }
-
-        unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-          if (firebaseUser) {
-            // 1. Instantly set user state from Firebase to avoid dynamic load blocking
-            const initialUser: AuthUser = {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              name: firebaseUser.displayName || "Member",
-              image: firebaseUser.photoURL || null,
-              role: "MEMBER", // Default fallback role
-            };
-
-            // Try to retrieve role from session cookies to prevent layout flashing
-            if (typeof document !== "undefined") {
-              const matches = document.cookie.match(/__kcm_session_role=([^;]+)/);
-              if (matches && matches[1]) {
-                initialUser.role = matches[1] as any;
-              }
+          // Try to retrieve role from session cookies to prevent layout flashing
+          if (typeof document !== "undefined") {
+            const matches = document.cookie.match(/__kcm_session_role=([^;]+)/);
+            if (matches && matches[1]) {
+              initialUser.role = matches[1] as any;
             }
-
-            setUser(initialUser);
-            setLoading(false);
-
-            // 2. Perform database sync in the background
-            syncUserToDatabase(firebaseUser).then((dbUser) => {
-              if (dbUser) {
-                const updatedUser: AuthUser = {
-                  uid: firebaseUser.uid,
-                  email: firebaseUser.email,
-                  name: dbUser.name || firebaseUser.displayName || "Member",
-                  image: dbUser.image || firebaseUser.photoURL || null,
-                  role: dbUser.role || "MEMBER",
-                };
-                setSessionCookies(updatedUser.uid, updatedUser.role);
-                setUser(updatedUser);
-              }
-            });
-          } else {
-            clearSessionCookies();
-            setUser(null);
-            setLoading(false);
           }
-        });
-      } catch (err) {
-        console.error("[AUTH] Dynamic import error during initAuth:", err);
-        setLoading(false);
-      }
-    };
 
-    initAuth();
+          setUser(initialUser);
+          setLoading(false);
+
+          // 2. Perform database sync in the background
+          syncUserToDatabase(firebaseUser).then((dbUser) => {
+            if (dbUser) {
+              const updatedUser: AuthUser = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: dbUser.name || firebaseUser.displayName || "Member",
+                image: dbUser.image || firebaseUser.photoURL || null,
+                role: dbUser.role || "MEMBER",
+              };
+              setSessionCookies(updatedUser.uid, updatedUser.role);
+              setUser(updatedUser);
+            }
+          });
+        } else {
+          clearSessionCookies();
+          setUser(null);
+          setLoading(false);
+        }
+      });
+    }
 
     return () => {
       if (unsubscribe) {
@@ -261,8 +248,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     try {
-      const { auth } = await import("@/lib/firebase");
-      const { signOut } = await import("firebase/auth");
       if (auth && typeof signOut === "function") {
         await signOut(auth);
       }
