@@ -333,7 +333,8 @@ export default function LoginPage() {
           }),
         }).catch(() => {});
 
-        // 5. INSTANT HARD NAVIGATION (prevents middleware state caching issues)
+        // 5. INSTANT NAVIGATION TO MEMBER PORTAL
+        router.push("/member");
         window.location.href = "/member";
       }
     } catch (err: any) {
