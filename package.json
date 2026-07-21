@@ -8,7 +8,7 @@
     "backend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run start -w backend\"",
+    "dev": "npx concurrently \"npm run dev -w frontend\" \"npm run start -w backend\"",
     "build": "npm run build -w frontend",
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
