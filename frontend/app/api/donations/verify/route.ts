@@ -191,13 +191,22 @@ async function sendDonationReceiptEmail(donation: {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, donationId } = body;
+    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, donationId, sessionId } = body;
 
-    if (!donationId) {
-      return NextResponse.json({ error: 'Donation ID is required' }, { status: 400 });
+    let activeDonationId = donationId;
+    if (!activeDonationId && sessionId) {
+      const found = await prisma.donation.findFirst({
+        where: { sessionId },
+        select: { id: true },
+      });
+      if (found) activeDonationId = found.id;
     }
 
-    const isMock = razorpayOrderId?.startsWith('order_mock_') || !razorpaySignature;
+    if (!activeDonationId) {
+      return NextResponse.json({ error: 'Donation ID or Session ID is required' }, { status: 400 });
+    }
+
+    const isMock = razorpayOrderId?.startsWith('order_mock_') || razorpayOrderId?.startsWith('REF-') || !razorpaySignature;
     let isValid = false;
 
     if (isMock) {
@@ -225,7 +234,7 @@ export async function POST(req: Request) {
       // Update donation status to FAILED in DB if possible
       try {
         await prisma.donation.update({
-          where: { id: donationId },
+          where: { id: activeDonationId },
           data: { status: 'FAILED' },
         });
       } catch {}
@@ -233,7 +242,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid payment signature. Verification failed.' }, { status: 400 });
     }
 
-    console.info(`[RAZORPAY/VERIFY] ✅ Payment verified successfully for donation: ${donationId}`);
+    console.info(`[RAZORPAY/VERIFY] ✅ Payment verified successfully for donation: ${activeDonationId}`);
 
     // Update in Prisma DB
     try {
@@ -241,7 +250,7 @@ export async function POST(req: Request) {
       const signature = razorpaySignature || 'upi_verified_signature';
 
       const updatedDonation = await prisma.donation.update({
-        where: { id: donationId },
+        where: { id: activeDonationId },
         data: {
           status: 'COMPLETED',
           razorpayPaymentId: paymentId,
