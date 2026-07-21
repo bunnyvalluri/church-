@@ -25,7 +25,7 @@ export default function NgoVideosPage() {
     setMounted(true);
   }, []);
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount ï¿½ no double-guard needed
 
   // The 5 required YouTube embeds provided by the user
   const presetVideos: VideoItem[] = [

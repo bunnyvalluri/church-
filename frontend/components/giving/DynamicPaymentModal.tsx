@@ -245,8 +245,6 @@ export default function DynamicPaymentModal({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -408,6 +406,8 @@ export default function DynamicPaymentModal({
   };
 
   // ─── RENDER ─────────────────────────────────────────────────────────────────
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">

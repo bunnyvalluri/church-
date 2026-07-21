@@ -24,7 +24,7 @@ export default function NgoLayout({
     setMounted(true);
   }, []);
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount ï¿½ no double-guard needed
 
   const subNavItems = [
     {

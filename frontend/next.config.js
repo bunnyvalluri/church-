@@ -6,9 +6,9 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com;
-  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://*.googleapis.com;
-  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com;
+  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com;
+  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://*.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com;
+  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://www.google.com https://maps.google.com;
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';

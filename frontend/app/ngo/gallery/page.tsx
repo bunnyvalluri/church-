@@ -463,13 +463,13 @@ export default function NgoGalleryPage() {
     } catch (err) {
       console.error("Error deleting image:", err);
       setToastMessage("Image hidden client-side");
-    } finally {
+        } finally {
       setIsDeleting(false);
       setDeletingItem(null);
     }
   };
 
-    const ngoT = t.ngo; // LanguageProvider guards t to en before mount - no double-guard needed
+  const ngoT = t.ngo; // LanguageProvider guards t to en before mount - no double-guard needed
 
   return (
     <div className="py-12 sm:py-16">

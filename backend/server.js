@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 
 const PROCESS_TYPE = process.env.PROCESS_TYPE || 'all';
-const PORT = process.env.SOCKET_PORT || (PROCESS_TYPE === 'api' ? 3001 : 3001);
+const BASE_PORT = parseInt(process.env.SOCKET_PORT || '3001', 10);
 
 let io;
 let redisEmitter;
@@ -180,32 +180,51 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
   }
 }
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`[SERVER ERROR] Port ${PORT} is already in use. Please stop any existing backend processes.`);
-    process.exit(1);
-  } else {
-    console.error(`[SERVER ERROR] ${err.message}`);
-  }
-});
-
-// Workers don't necessarily need to listen to a port, but listening gives a health check endpoint if we use Express.
-// Actually, in pure worker mode, we might not want to start HTTP unless we need health probes.
-// For Kubernetes, an HTTP health check is very useful.
-if (PROCESS_TYPE !== 'worker') {
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`==================================================`);
-    console.log(`🚀 KCM Companion Server (${PROCESS_TYPE}) running on http://0.0.0.0:${PORT}`);
-    if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') console.log(`🔌 Socket.io connections are active`);
-    if (PROCESS_TYPE === 'all') console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
-    console.log(`==================================================`);
+// ── Graceful shutdown ─────────────────────────────────────────────────────────
+function shutdown(signal) {
+  console.log(`\n[SERVER] Received ${signal}. Shutting down gracefully...`);
+  server.close(() => {
+    console.log('[SERVER] HTTP server closed.');
+    process.exit(0);
   });
-} else {
-  // Pure worker mode - we still listen for k8s probes if we want, but let's just use it
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`==================================================`);
-    console.log(`📡 BullMQ Worker running and listening for probes on port ${PORT}`);
-    app.get('/health', (req, res) => res.json({ status: 'OK', type: 'worker' }));
-    console.log(`==================================================`);
-  });
+  setTimeout(() => { process.exit(0); }, 3000);
 }
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+// ── Port auto-retry (handles EADDRINUSE gracefully) ───────────────────────────
+function startServer(port, attempt = 0) {
+  if (attempt > 5) {
+    console.error('[SERVER ERROR] Could not find a free port after 5 attempts. Exiting.');
+    process.exit(1);
+  }
+
+  server.listen(port, '0.0.0.0')
+    .once('listening', () => {
+      const actualPort = server.address().port;
+      console.log('==================================================');
+      if (PROCESS_TYPE === 'worker') {
+        console.log(`📡 BullMQ Worker running and listening for probes on port ${actualPort}`);
+        app.get('/health', (req, res) => res.json({ status: 'OK', type: 'worker', port: actualPort }));
+      } else {
+        console.log(`🚀 KCM Companion Server (${PROCESS_TYPE}) running on http://0.0.0.0:${actualPort}`);
+        if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') console.log('🔌 Socket.io connections are active');
+        if (PROCESS_TYPE === 'all') console.log(`📡 BullMQ queue processing active: ${queueInitialized}`);
+      }
+      console.log('==================================================');
+    })
+    .once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        const nextPort = port + 1;
+        console.warn(`[SERVER] Port ${port} is busy — trying port ${nextPort}...`);
+        server.removeAllListeners('error');
+        server.removeAllListeners('listening');
+        startServer(nextPort, attempt + 1);
+      } else {
+        console.error(`[SERVER ERROR] ${err.message}`);
+        process.exit(1);
+      }
+    });
+}
+
+startServer(BASE_PORT);
