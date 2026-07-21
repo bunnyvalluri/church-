@@ -51,6 +51,9 @@ export default function MissionPage() {
     accent: string;
     color: string;
     bg: string;
+    quoteBg?: string;
+    quoteText?: string;
+    quoteBorder?: string;
   } | null>(null);
 
   // Stats Data
@@ -107,6 +110,13 @@ export default function MissionPage() {
       accent: "from-purple-500 to-indigo-500",
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-500/10 dark:bg-purple-500/20",
+      badgeBg: "bg-purple-100 dark:bg-purple-950/60",
+      badgeText: "text-purple-700 dark:text-purple-300",
+      borderHover: "hover:border-purple-500/50",
+      btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
+      quoteBg: "bg-purple-50 dark:bg-purple-950/40",
+      quoteText: "text-purple-900 dark:text-purple-200",
+      quoteBorder: "border-purple-200 dark:border-purple-900/50",
     },
     {
       id: "grow",
@@ -124,6 +134,13 @@ export default function MissionPage() {
       accent: "from-indigo-500 to-cyan-500",
       color: "text-indigo-600 dark:text-indigo-400",
       bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
+      badgeBg: "bg-indigo-100 dark:bg-indigo-950/60",
+      badgeText: "text-indigo-700 dark:text-indigo-300",
+      borderHover: "hover:border-indigo-500/50",
+      btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
+      quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
+      quoteText: "text-indigo-900 dark:text-indigo-200",
+      quoteBorder: "border-indigo-200 dark:border-indigo-900/50",
     },
     {
       id: "serve",
@@ -141,6 +158,13 @@ export default function MissionPage() {
       accent: "from-pink-500 to-rose-500",
       color: "text-pink-600 dark:text-pink-400",
       bg: "bg-pink-500/10 dark:bg-pink-500/20",
+      badgeBg: "bg-pink-100 dark:bg-pink-950/60",
+      badgeText: "text-pink-700 dark:text-pink-300",
+      borderHover: "hover:border-pink-500/50",
+      btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
+      quoteBg: "bg-pink-50 dark:bg-pink-950/40",
+      quoteText: "text-pink-900 dark:text-pink-200",
+      quoteBorder: "border-pink-200 dark:border-pink-900/50",
     },
     {
       id: "reach",
@@ -158,6 +182,13 @@ export default function MissionPage() {
       accent: "from-emerald-500 to-teal-500",
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+      badgeBg: "bg-emerald-100 dark:bg-emerald-950/60",
+      badgeText: "text-emerald-700 dark:text-emerald-300",
+      borderHover: "hover:border-emerald-500/50",
+      btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
+      quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
+      quoteText: "text-emerald-900 dark:text-emerald-200",
+      quoteBorder: "border-emerald-200 dark:border-emerald-900/50",
     },
   ];
 
@@ -169,8 +200,13 @@ export default function MissionPage() {
       text: pageT.v1Text || "A community where everyone belongs, feels valued, and finds spiritual home.",
       verse: "Romans 12:5",
       icon: Users,
+      accent: "from-purple-500 to-indigo-500",
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-500/10 dark:bg-purple-500/20",
+      badgeBg: "bg-purple-50 dark:bg-purple-950/60",
+      badgeText: "text-purple-700 dark:text-purple-300",
+      badgeBorder: "border-purple-200/60 dark:border-purple-800/40",
+      borderHover: "hover:border-purple-500/50",
     },
     {
       id: "v2",
@@ -178,8 +214,13 @@ export default function MissionPage() {
       text: pageT.v2Text || "Believers growing in faith, biblical wisdom, and Christ-like character.",
       verse: "Ephesians 4:14-15",
       icon: BookOpen,
+      accent: "from-indigo-500 to-cyan-500",
       color: "text-indigo-600 dark:text-indigo-400",
       bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
+      badgeBg: "bg-indigo-50 dark:bg-indigo-950/60",
+      badgeText: "text-indigo-700 dark:text-indigo-300",
+      badgeBorder: "border-indigo-200/60 dark:border-indigo-800/40",
+      borderHover: "hover:border-indigo-500/50",
     },
     {
       id: "v3",
@@ -187,8 +228,13 @@ export default function MissionPage() {
       text: pageT.v3Text || "Families anchored in God's Word, prayer, and mutual love.",
       verse: "Joshua 24:15",
       icon: Heart,
+      accent: "from-pink-500 to-rose-500",
       color: "text-pink-600 dark:text-pink-400",
       bg: "bg-pink-500/10 dark:bg-pink-500/20",
+      badgeBg: "bg-pink-50 dark:bg-pink-950/60",
+      badgeText: "text-pink-700 dark:text-pink-300",
+      badgeBorder: "border-pink-200/60 dark:border-pink-800/40",
+      borderHover: "hover:border-pink-500/50",
     },
     {
       id: "v4",
@@ -196,8 +242,13 @@ export default function MissionPage() {
       text: pageT.v4Text || "Lives redeemed, healed, and set free by God's supernatural power.",
       verse: "2 Corinthians 5:17",
       icon: Sparkles,
+      accent: "from-amber-500 to-orange-500",
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-500/10 dark:bg-amber-500/20",
+      badgeBg: "bg-amber-50 dark:bg-amber-950/60",
+      badgeText: "text-amber-700 dark:text-amber-300",
+      badgeBorder: "border-amber-200/60 dark:border-amber-800/40",
+      borderHover: "hover:border-amber-500/50",
     },
     {
       id: "v5",
@@ -205,8 +256,13 @@ export default function MissionPage() {
       text: pageT.v5Text || "The light of Christ saturating every corner of Hyderabad and surrounding regions.",
       verse: "Matthew 28:19-20",
       icon: Globe,
+      accent: "from-emerald-500 to-teal-500",
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+      badgeBg: "bg-emerald-50 dark:bg-emerald-950/60",
+      badgeText: "text-emerald-700 dark:text-emerald-300",
+      badgeBorder: "border-emerald-200/60 dark:border-emerald-800/40",
+      borderHover: "hover:border-emerald-500/50",
     },
   ];
 
@@ -229,6 +285,13 @@ export default function MissionPage() {
         accent: "from-purple-500 to-indigo-500",
         color: "text-purple-600 dark:text-purple-400",
         bg: "bg-purple-500/10 dark:bg-purple-500/20",
+        badgeBg: "bg-purple-100 dark:bg-purple-950/60",
+        badgeText: "text-purple-700 dark:text-purple-300",
+        borderHover: "hover:border-purple-500/50",
+        btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
+        quoteBg: "bg-purple-50 dark:bg-purple-950/40",
+        quoteText: "text-purple-900 dark:text-purple-200",
+        quoteBorder: "border-purple-200 dark:border-purple-900/50",
       },
       {
         id: "val-bible",
@@ -246,6 +309,13 @@ export default function MissionPage() {
         accent: "from-indigo-500 to-cyan-500",
         color: "text-indigo-600 dark:text-indigo-400",
         bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
+        badgeBg: "bg-indigo-100 dark:bg-indigo-950/60",
+        badgeText: "text-indigo-700 dark:text-indigo-300",
+        borderHover: "hover:border-indigo-500/50",
+        btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
+        quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
+        quoteText: "text-indigo-900 dark:text-indigo-200",
+        quoteBorder: "border-indigo-200 dark:border-indigo-900/50",
       },
       {
         id: "val-love",
@@ -263,6 +333,13 @@ export default function MissionPage() {
         accent: "from-pink-500 to-rose-500",
         color: "text-pink-600 dark:text-pink-400",
         bg: "bg-pink-500/10 dark:bg-pink-500/20",
+        badgeBg: "bg-pink-100 dark:bg-pink-950/60",
+        badgeText: "text-pink-700 dark:text-pink-300",
+        borderHover: "hover:border-pink-500/50",
+        btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
+        quoteBg: "bg-pink-50 dark:bg-pink-950/40",
+        quoteText: "text-pink-900 dark:text-pink-200",
+        quoteBorder: "border-pink-200 dark:border-pink-900/50",
       },
       {
         id: "val-community",
@@ -280,6 +357,13 @@ export default function MissionPage() {
         accent: "from-emerald-500 to-teal-500",
         color: "text-emerald-600 dark:text-emerald-400",
         bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+        badgeBg: "bg-emerald-100 dark:bg-emerald-950/60",
+        badgeText: "text-emerald-700 dark:text-emerald-300",
+        borderHover: "hover:border-emerald-500/50",
+        btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
+        quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
+        quoteText: "text-emerald-900 dark:text-emerald-200",
+        quoteBorder: "border-emerald-200 dark:border-emerald-900/50",
       },
       {
         id: "val-mission",
@@ -297,6 +381,13 @@ export default function MissionPage() {
         accent: "from-amber-500 to-orange-500",
         color: "text-amber-600 dark:text-amber-400",
         bg: "bg-amber-500/10 dark:bg-amber-500/20",
+        badgeBg: "bg-amber-100 dark:bg-amber-950/60",
+        badgeText: "text-amber-700 dark:text-amber-300",
+        borderHover: "hover:border-amber-500/50",
+        btnHover: "hover:bg-amber-600 dark:hover:bg-amber-600",
+        quoteBg: "bg-amber-50 dark:bg-amber-950/40",
+        quoteText: "text-amber-900 dark:text-amber-200",
+        quoteBorder: "border-amber-200 dark:border-amber-900/50",
       },
       {
         id: "val-spirit",
@@ -314,6 +405,13 @@ export default function MissionPage() {
         accent: "from-purple-500 to-pink-500",
         color: "text-purple-600 dark:text-purple-400",
         bg: "bg-purple-500/10 dark:bg-purple-500/20",
+        badgeBg: "bg-purple-100 dark:bg-purple-950/60",
+        badgeText: "text-purple-700 dark:text-purple-300",
+        borderHover: "hover:border-purple-500/50",
+        btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
+        quoteBg: "bg-purple-50 dark:bg-purple-950/40",
+        quoteText: "text-purple-900 dark:text-purple-200",
+        quoteBorder: "border-purple-200 dark:border-purple-900/50",
       },
     ],
     [pageT]
@@ -377,13 +475,13 @@ export default function MissionPage() {
               {pageT.heroTitle || "Our Purpose & Direction"}
             </h1>
 
-            <p className="text-lg sm:text-xl text-purple-100 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed mb-8">
+            <p className="text-lg sm:text-xl text-slate-100 dark:text-slate-100 animate-fade-in-up animate-delay-200 font-semibold max-w-2xl mx-auto leading-relaxed mb-8">
               {pageT.heroSubtitle || "Guided by Holy Scripture, Motivated by Love, Empowered by the Holy Spirit."}
             </p>
 
             {/* Key Quote Pill */}
             <div className="inline-block p-4 sm:p-5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl max-w-xl mx-auto shadow-2xl animate-scale-in animate-delay-300">
-              <p className="text-sm sm:text-base text-purple-200 italic font-semibold">
+              <p className="text-sm sm:text-base text-white italic font-bold">
                 "To know Christ and make Him known"
               </p>
             </div>
@@ -447,7 +545,7 @@ export default function MissionPage() {
               return (
                 <div
                   key={pillar.id}
-                  className="relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden"
+                  className={`relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${pillar.borderHover} transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden`}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${pillar.accent}`} />
 
@@ -456,7 +554,7 @@ export default function MissionPage() {
                       <div className={`w-13 h-13 ${pillar.bg} border border-slate-200/50 dark:border-slate-700/50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <Icon className={`h-6 w-6 ${pillar.color}`} />
                       </div>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                      <span className={`text-xs font-bold ${pillar.badgeText} ${pillar.badgeBg} px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-800/60`}>
                         {pillar.verse}
                       </span>
                     </div>
@@ -464,7 +562,7 @@ export default function MissionPage() {
                     <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
                       {pillar.title}
                     </h3>
-                    <p className="text-sm font-bold text-purple-600 dark:text-purple-400 mb-3">
+                    <p className={`text-sm font-bold ${pillar.color} mb-3`}>
                       {pillar.subtitle}
                     </p>
                     <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-5">
@@ -484,9 +582,12 @@ export default function MissionPage() {
                         accent: pillar.accent,
                         color: pillar.color,
                         bg: pillar.bg,
+                        quoteBg: pillar.quoteBg,
+                        quoteText: pillar.quoteText,
+                        quoteBorder: pillar.quoteBorder,
                       })
                     }
-                    className="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/70 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm"
+                    className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/70 ${pillar.btnHover} hover:text-white dark:hover:text-white text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
                   >
                     <span>Pillar Details</span>
                     <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -523,15 +624,17 @@ export default function MissionPage() {
               return (
                 <div
                   key={goal.id}
-                  className="bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group"
+                  className={`relative bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${goal.borderHover} hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden`}
                 >
+                  <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${goal.accent}`} />
+
                   <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4 mt-1">
                       <div className={`w-12 h-12 ${goal.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <Icon className={`h-6 w-6 ${goal.color}`} />
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/40">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${goal.badgeBg} ${goal.badgeText} rounded-full text-xs font-bold border ${goal.badgeBorder}`}>
+                        <CheckCircle2 className={`h-3.5 w-3.5 ${goal.color}`} />
                         {goal.verse}
                       </span>
                     </div>
@@ -603,7 +706,7 @@ export default function MissionPage() {
                   onClick={() => setSelectedCategory(tab.id)}
                   className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ${
                     selectedCategory === tab.id
-                      ? "bg-purple-600 text-white shadow-lg shadow-purple-600/25 scale-105"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-105"
                       : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                   }`}
                 >
@@ -637,16 +740,16 @@ export default function MissionPage() {
                 return (
                   <div
                     key={val.id}
-                    className="relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden"
+                    className={`relative group bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-xl shadow-slate-900/5 dark:shadow-black/30 border border-slate-200/80 dark:border-slate-800 ${val.borderHover} transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden`}
                   >
                     <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${val.accent}`} />
 
                     <div>
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-4 mt-1">
                         <div className={`w-12 h-12 ${val.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                           <Icon className={`h-6 w-6 ${val.color}`} />
                         </div>
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                        <span className={`text-xs font-bold ${val.badgeText} ${val.badgeBg} px-3 py-1 rounded-full border border-slate-200/60 dark:border-slate-800/60`}>
                           {val.verse}
                         </span>
                       </div>
@@ -672,9 +775,12 @@ export default function MissionPage() {
                           accent: val.accent,
                           color: val.color,
                           bg: val.bg,
+                          quoteBg: val.quoteBg,
+                          quoteText: val.quoteText,
+                          quoteBorder: val.quoteBorder,
                         })
                       }
-                      className="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/60 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm"
+                      className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/60 ${val.btnHover} hover:text-white dark:hover:text-white text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
                     >
                       <span>Deep Dive & Scriptural Proof</span>
                       <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -690,7 +796,7 @@ export default function MissionPage() {
       {/* 📄 Downloadable / Copy Statement Section */}
       <section className="py-16 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-purple-900/10 via-slate-900/5 to-indigo-900/10 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/40 border border-purple-200/60 dark:border-purple-800/40 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-purple-900/10 via-slate-900/5 to-indigo-900/10 dark:from-purple-950/50 dark:via-slate-900/80 dark:to-indigo-950/50 border border-purple-200/80 dark:border-purple-800/60 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -731,22 +837,30 @@ export default function MissionPage() {
       </section>
 
       {/* 🚀 Call To Action (CTA) Section */}
-      <section className="py-20 bg-slate-950 relative overflow-hidden text-white">
+      <section className="py-24 bg-slate-950 relative overflow-hidden text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 tracking-tight animate-fade-in-up">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-600 border border-purple-400 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-widest mb-8 shadow-lg shadow-purple-600/40">
+              <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
+              <span>Step Into Purpose</span>
+            </div>
+
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
               Join Our Mission Today
             </h2>
 
-            <p className="text-lg sm:text-xl text-purple-100 mb-10 animate-fade-in-up animate-delay-100 font-medium">
+            <p className="text-xl sm:text-2xl text-slate-200 mb-12 animate-fade-in-up animate-delay-100 font-medium max-w-2xl mx-auto leading-relaxed">
               Be part of something greater. Experience fellowship, grow in faith, and make a lasting impact across Hyderabad.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in animate-delay-200">
               <Link
                 href="/membership"
-                className="group px-8 py-4 bg-white text-slate-950 rounded-2xl font-bold hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2.5 shadow-lg"
+                className="group px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 rounded-2xl font-black shadow-xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2.5"
               >
                 <span>Become a Member</span>
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-purple-600" />
@@ -754,14 +868,14 @@ export default function MissionPage() {
 
               <Link
                 href="/about/story"
-                className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center"
+                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-black shadow-xl shadow-purple-600/30 transition-all duration-300 hover:scale-105 flex items-center justify-center"
               >
                 Our Story
               </Link>
 
               <Link
                 href="/about/beliefs"
-                className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-2xl font-bold hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-2xl font-black transition-all duration-300 hover:scale-105 flex items-center justify-center"
               >
                 Our Beliefs
               </Link>
@@ -769,6 +883,7 @@ export default function MissionPage() {
           </div>
         </div>
       </section>
+
 
       {/* 📖 Deep Dive Detail Modal */}
       {selectedModalItem && (
@@ -792,7 +907,7 @@ export default function MissionPage() {
             {/* Modal Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 dark:text-slate-300">
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">
+                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${selectedModalItem.color} mb-2`}>
                   Overview & Purpose
                 </h4>
                 <p className="text-base sm:text-lg leading-relaxed font-medium">
@@ -801,15 +916,15 @@ export default function MissionPage() {
               </div>
 
               {selectedModalItem.quote && (
-                <div className="p-5 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-100 dark:border-purple-900/50">
-                  <p className="text-sm sm:text-base italic font-semibold text-purple-900 dark:text-purple-200">
+                <div className={`p-5 ${selectedModalItem.quoteBg || 'bg-purple-50 dark:bg-purple-950/40'} rounded-2xl border ${selectedModalItem.quoteBorder || 'border-purple-200 dark:border-purple-900/50'}`}>
+                  <p className={`text-sm sm:text-base italic font-semibold ${selectedModalItem.quoteText || 'text-purple-900 dark:text-purple-200'}`}>
                     "{selectedModalItem.quote}"
                   </p>
                 </div>
               )}
 
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-3">
+                <h4 className={`text-xs font-extrabold uppercase tracking-widest ${selectedModalItem.color} mb-3`}>
                   Practical Living & Ministry Action
                 </h4>
                 <div className="space-y-2.5">
@@ -818,7 +933,7 @@ export default function MissionPage() {
                       key={i}
                       className="flex items-center gap-3 p-3.5 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200"
                     >
-                      <CheckCircle2 className="h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                      <CheckCircle2 className={`h-4 w-4 ${selectedModalItem.color} flex-shrink-0`} />
                       <span>{item}</span>
                     </div>
                   ))}

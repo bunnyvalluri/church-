@@ -473,7 +473,7 @@ export default function LeadershipPage() {
                       <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Icon className={`h-6 w-6 ${pillar.color}`} />
                       </div>
-                      <span className="text-xs font-black uppercase tracking-wider px-2.5 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
+                      <span className="text-xs font-black uppercase tracking-wider px-2.5 py-1 bg-purple-100 dark:bg-purple-500/30 text-purple-700 dark:text-white rounded-full border border-purple-200 dark:border-purple-400/40">
                         {pillar.verse}
                       </span>
                     </div>
@@ -714,7 +714,7 @@ export default function LeadershipPage() {
               {pageT.serve}
             </h2>
 
-            <p className="text-lg sm:text-xl text-purple-100 mb-10 animate-fade-in-up animate-delay-100 font-medium">
+            <p className="text-lg sm:text-xl text-white mb-10 animate-fade-in-up animate-delay-100 font-medium drop-shadow">
               {pageT.serveDesc}
             </p>
 

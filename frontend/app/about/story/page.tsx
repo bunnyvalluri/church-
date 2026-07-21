@@ -139,16 +139,16 @@ export default function OurStoryPage() {
                     priority
                   />
                   {/* Theme Adaptive Gradient Overlay for Text Legibility */}
-                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-950 dark:via-slate-950/80 dark:to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-900/60 dark:via-slate-900/20 dark:to-transparent pointer-events-none" />
                 </div>
 
                 {/* Name & Title Badge Bar */}
-                <div className="relative z-10 p-6 -mt-8 text-slate-900 dark:text-white">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 dark:bg-amber-400/20 border border-amber-500/30 dark:border-amber-400/30 text-amber-700 dark:text-amber-300 rounded-full text-xs font-black uppercase tracking-wider mb-2 backdrop-blur-md">
-                    <Sparkles className="h-3 w-3 text-amber-500 dark:text-amber-300" />
-                    <span>Senior Pastor & Founder</span>
+                <div className="relative z-10 p-6" style={{ backgroundColor: '#0f172a' }}>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-400/50 rounded-full text-xs font-black uppercase tracking-wider mb-3">
+                    <Sparkles className="h-3 w-3" style={{ color: '#fbbf24' }} />
+                    <span style={{ color: '#fcd34d' }}>Senior Pastor &amp; Founder</span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-black tracking-tight" style={{ color: '#ffffff', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
                     {pageT.beganPastor}
                   </h3>
                 </div>
@@ -157,10 +157,10 @@ export default function OurStoryPage() {
               {/* Leadership Vision Quote Box */}
               <div className="relative bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-purple-900/5 dark:shadow-black/40 overflow-hidden border border-purple-100 dark:border-purple-900/50">
                 <Quote className="h-8 w-8 text-purple-600/40 dark:text-purple-400/40 mb-3" />
-                <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/50 px-3 py-1 rounded-full mb-3 border border-purple-200 dark:border-purple-800/50">
+                <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-white bg-purple-600 dark:bg-purple-500 px-3 py-1 rounded-full mb-3 border border-purple-500 dark:border-purple-400">
                   {pageT.quoteTitle || "Leadership Vision"}
                 </span>
-                <p className="text-sm sm:text-base text-slate-800 dark:text-slate-100 italic leading-relaxed font-medium">
+                <p className="text-sm sm:text-base text-slate-800 dark:text-white italic leading-relaxed font-medium">
                   "{pageT.quoteText || "God called us with a vision to build a prayer-filled, loving community that reflects Christ's light across Hyderabad."}"
                 </p>
               </div>
@@ -169,8 +169,8 @@ export default function OurStoryPage() {
 
             {/* Right Column: Detailed Story Narrative */}
             <div className="lg:col-span-7 animate-fade-in-up animate-delay-200">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
-                <Award className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 dark:bg-purple-500 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4" style={{ color: '#ffffff' }}>
+                <Award className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
                 <span>Our Heritage</span>
               </div>
 
