@@ -56,6 +56,7 @@ export default function GiveForm() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSession, setActiveSession] = useState<{
     sessionId: string;
+    donationId?: string;
     referenceNumber: string;
     amount: number;
     qrCodeDataUrl?: string;
@@ -194,7 +195,7 @@ export default function GiveForm() {
         throw new Error(createData.error || "Failed to initialize donation session.");
       }
 
-      const { sessionId, referenceNumber } = createData;
+      const { sessionId, referenceNumber, donationId } = createData;
 
       // 2. Generate dynamic single-use UPI QR code
       const qrRes = await fetch("/api/donations/generate-qr", {
@@ -211,6 +212,7 @@ export default function GiveForm() {
       // 3. Open dynamic payment state machine modal
       setActiveSession({
         sessionId,
+        donationId,
         referenceNumber,
         amount: effectiveAmount,
         qrCodeDataUrl: qrData.qrCode,
@@ -335,6 +337,7 @@ export default function GiveForm() {
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
           sessionId={activeSession.sessionId}
+          donationId={activeSession.donationId}
           referenceNumber={activeSession.referenceNumber}
           amount={activeSession.amount}
           qrCodeDataUrl={activeSession.qrCodeDataUrl}
