@@ -552,10 +552,18 @@ export default function LoginPage() {
 
         {/* Central Quote & Identity */}
         <div className="relative z-10 text-white max-w-xl my-auto">
-          {/* Identity Header */}
+          {/* Identity Header with Official Logo */}
           <div className="flex items-center gap-3.5 mb-10">
-            <div className="w-13 h-13 p-3.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-xl flex-shrink-0">
-              <span className="leading-none text-white text-xl font-semibold">✝</span>
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border border-white/20 backdrop-blur-md shadow-xl bg-white/10 p-1 flex-shrink-0 group hover:border-white/40 transition-all duration-300">
+              <div className="relative w-full h-full rounded-full overflow-hidden">
+                <Image
+                  src="/logo.png"
+                  alt="Kingdom of Christ Ministries Logo"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  priority
+                />
+              </div>
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white">{loginT.churchName}</h1>
