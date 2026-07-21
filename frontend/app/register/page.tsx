@@ -137,8 +137,8 @@ export default function RegisterPage() {
 
       // 1. Instantly set session cookies
       if (typeof document !== "undefined") {
-        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
       }
 
       // 2. Instantly update client-side AuthProvider state

@@ -211,8 +211,52 @@ export default function LoginPage() {
           if (!auth || typeof auth.onIdTokenChanged !== "function") return;
           const { getRedirectResult } = await import("firebase/auth");
           const result = await getRedirectResult(auth);
-          if (result) {
+          if (result?.user) {
             console.info("[AUTH] Redirect sign-in successful for:", result.user?.email);
+            const u = result.user;
+            const maxAge = 7 * 24 * 60 * 60; // 7 days
+
+            if (typeof document !== "undefined") {
+              document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
+            }
+
+            if (updateUser) {
+              updateUser({
+                uid: u.uid,
+                email: u.email,
+                name: u.displayName || "Member",
+                image: u.photoURL || null,
+                role: "MEMBER",
+              });
+            }
+
+            // Background database sync
+            fetch("/api/auth/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                uid: u.uid,
+                email: u.email,
+                name: u.displayName,
+                photoURL: u.photoURL,
+                phoneNumber: u.phoneNumber,
+              }),
+            })
+              .then((res) => res.json())
+              .then((syncData) => {
+                if (syncData?.success && syncData?.user?.role) {
+                  const role = syncData.user.role;
+                  if (typeof document !== "undefined") {
+                    document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+                  }
+                  if (updateUser) updateUser({ role });
+                }
+              })
+              .catch(() => {});
+
+            // Instant redirect
+            window.location.href = "/member";
           }
         } catch (err: any) {
           console.error("[AUTH] Redirect sign-in error:", err);
@@ -227,9 +271,7 @@ export default function LoginPage() {
       };
       handleRedirectResult();
     }
-  }, [mounted]);
-
-
+  }, [mounted, updateUser]);
 
   const handleSocialLogin = async (provider: any, name: string) => {
     setSocialLoading(name);
@@ -243,8 +285,8 @@ export default function LoginPage() {
 
         // 1. Instantly set session cookies so middleware & AuthProvider recognize state immediately
         if (typeof document !== "undefined") {
-          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-          document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
+          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
+          document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
         }
 
         // 2. Instantly update client-side AuthProvider state
@@ -275,18 +317,9 @@ export default function LoginPage() {
             if (syncData?.success && syncData?.user?.role) {
               const role = syncData.user.role;
               if (typeof document !== "undefined") {
-                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
               }
               if (updateUser) updateUser({ role });
-              if (role !== "MEMBER") {
-                switch (role) {
-                  case "SUPER_ADMIN": router.replace("/portal-select"); break;
-                  case "ADMIN":       router.replace("/admin");          break;
-                  case "PASTOR":      router.replace("/pastor");         break;
-                  case "EVENT_MANAGER":
-                  case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
-                }
-              }
             }
           })
           .catch(() => {});
@@ -303,12 +336,13 @@ export default function LoginPage() {
           }),
         }).catch(() => {});
 
-        // 5. INSTANT REDIRECT WITHOUT NETWORK LAG
-        router.replace("/member");
+        // 5. INSTANT HARD NAVIGATION (prevents middleware state caching issues)
+        window.location.href = "/member";
       }
     } catch (err: any) {
-      console.warn(`[AUTH] ${name} Popup sign-in warning (might be blocked or policy mismatch):`, err.code || err);
+      console.warn(`[AUTH] ${name} Popup sign-in warning:`, err.code || err);
       setIsLoggingIn(false);
+      setSocialLoading(null);
       
       const fallbackErrors = [
         "auth/popup-blocked",
@@ -317,7 +351,7 @@ export default function LoginPage() {
         "auth/network-request-failed"
       ];
       
-      if (fallbackErrors.includes(err.code) || err.message?.includes("COOP")) {
+      if (err.code === "auth/popup-blocked" || err.message?.includes("COOP")) {
         console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
         try {
           const { signInWithRedirect } = await import("firebase/auth");
@@ -325,14 +359,14 @@ export default function LoginPage() {
         } catch (redirectErr: any) {
           console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
           setError("auth/popup-blocked");
-          setSocialLoading(null);
         }
+      } else if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+        // User voluntarily closed popup — don't show alarming error message
+        setError("");
       } else if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
         setError("auth/operation-not-allowed");
-        setSocialLoading(null);
       } else {
         setError(err.code || "social-generic-failed");
-        setSocialLoading(null);
       }
     }
   };
@@ -358,8 +392,8 @@ export default function LoginPage() {
 
       // 1. Instantly set session cookies
       if (typeof document !== "undefined") {
-        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Strict`;
-        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Strict`;
+        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
       }
 
       // 2. Instantly update client-side AuthProvider state
@@ -390,18 +424,9 @@ export default function LoginPage() {
           if (syncData?.success && syncData?.user?.role) {
             const role = syncData.user.role;
             if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Strict`;
+              document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
             }
             if (updateUser) updateUser({ role });
-            if (role !== "MEMBER") {
-              switch (role) {
-                case "SUPER_ADMIN": router.replace("/portal-select"); break;
-                case "ADMIN":       router.replace("/admin");          break;
-                case "PASTOR":      router.replace("/pastor");         break;
-                case "EVENT_MANAGER":
-                case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
-              }
-            }
           }
         })
         .catch(() => {});
@@ -410,7 +435,7 @@ export default function LoginPage() {
       sendLoginEmail(u.email || email, u.displayName || email.split('@')[0], 'email');
 
       // 5. INSTANT REDIRECT
-      router.replace("/member");
+      window.location.href = "/member";
     } catch (err: any) {
       console.error("[AUTH] Login error:", err);
       setError(err.code || "sign-in-failed");
