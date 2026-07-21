@@ -401,15 +401,19 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                           <a
                             key={i}
                             href={`tel:${phone.number.replace(/\s/g, "")}`}
-                            className="inline-flex items-center gap-3 bg-white/40 hover:bg-white/60 dark:bg-white/[0.02] dark:hover:bg-white/[0.06] px-6 py-3.5 rounded-2xl border border-white/60 dark:border-white/[0.06] hover:border-violet-300/45 dark:hover:border-purple-500/25 transition-all duration-300 cursor-pointer w-full group/phone hover:shadow-sm"
+                            className="inline-flex items-center gap-3 bg-white/60 hover:bg-white dark:bg-white/[0.03] dark:hover:bg-white/[0.08] px-3.5 py-3 sm:px-5 sm:py-3.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] hover:border-violet-400 dark:hover:border-amber-400/50 transition-all duration-300 cursor-pointer w-full group/phone shadow-sm"
                           >
-                            <Phone className="w-5 h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform" />
-                            <p className="text-base md:text-lg font-bold tracking-wide text-slate-800 dark:text-white/90">
-                              {phone.number}
+                            <Phone className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform flex-shrink-0" />
+                            <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 min-w-0">
+                              <span className="text-sm min-[380px]:text-base md:text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+                                {phone.number}
+                              </span>
                               {phone.label && (
-                                <span className="text-xs text-slate-400 dark:text-white/40 ml-2">({phone.label})</span>
+                                <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-white/60 whitespace-nowrap">
+                                  ({phone.label})
+                                </span>
                               )}
-                            </p>
+                            </div>
                           </a>
                         ))}
                       </div>

@@ -291,14 +291,14 @@ export default function Contact() {
                           >
                             <div className="flex flex-col gap-2">
                               {selectedContact.phones.map((phone, i) => (
-                                <div key={i} className="flex items-center justify-between group/phone">
+                                <div key={i} className="flex items-center justify-between gap-2 group/phone">
                                   <a
                                     href={`tel:${phone.number.replace(/\s/g, "")}`}
-                                    className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium text-sm flex items-center gap-1.5"
+                                    className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium text-xs min-[360px]:text-sm flex flex-wrap items-center gap-1.5 min-w-0"
                                   >
-                                    {phone.number}
+                                    <span className="whitespace-nowrap font-bold">{phone.number}</span>
                                     {phone.label && (
-                                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-semibold">
+                                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-semibold whitespace-nowrap">
                                         {phone.label}
                                       </span>
                                     )}
