@@ -58,11 +58,7 @@ export default function BranchSelector() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="h-9 w-32 bg-gray-100/50 dark:bg-violet-500/8 animate-pulse rounded-xl" />
-    );
-  }
+
 
   const displayBranches =
     branches && branches.length > 0

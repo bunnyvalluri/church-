@@ -29,12 +29,7 @@ export default function AdminControlBar({ onNavigateSettings }: { onNavigateSett
     };
   }, []);
 
-  if (!mounted) {
-    // Return skeleton loader to prevent hydration flickering
-    return (
-      <div className="flex items-center gap-2 p-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full w-[240px] h-10 opacity-50" />
-    );
-  }
+
 
   const languages = [
     { code: "en", label: "English", short: "EN" },
