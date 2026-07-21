@@ -137,6 +137,26 @@ export default function About({ initialAboutData, initialContactsData, initialPa
   const primaryContact = contacts[0];
   const primaryPastor = pastors.find((p) => p.isActive) ?? pastors[0];
 
+  const handlePrimaryAddressClick = () => {
+    if (!primaryContact) return;
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+      window.dispatchEvent(
+        new CustomEvent("change-contact-branch", { detail: { branch: primaryContact.branchKey } })
+      );
+    } else {
+      window.open(primaryContact.mapsUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handlePrimaryAddressKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handlePrimaryAddressClick();
+    }
+  };
+
   // Resolve localized text
   const heading =
     language === "te" && about?.headingTe
@@ -356,7 +376,14 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                     </div>
                   ) : primaryContact ? (
                     <>
-                      <div className="space-y-1 text-slate-500 dark:text-slate-400 mb-8 text-sm leading-relaxed border-l-2 border-slate-200 dark:border-white/10 pl-4">
+                      <div
+                        onClick={handlePrimaryAddressClick}
+                        onKeyDown={handlePrimaryAddressKeyDown}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`View ${primaryContact.branchName} contact details`}
+                        className="space-y-1 text-slate-500 dark:text-slate-400 mb-8 text-sm leading-relaxed border-l-2 border-slate-200 dark:border-white/10 pl-4 cursor-pointer hover:text-violet-600 dark:hover:text-amber-300 transition-colors select-none outline-none focus-visible:ring-1 focus-visible:ring-violet-500 rounded"
+                      >
                         {(
                           language === "te" && primaryContact.addressTe
                             ? primaryContact.addressTe
