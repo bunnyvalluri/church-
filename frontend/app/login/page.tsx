@@ -289,15 +289,83 @@ export default function LoginPage() {
     setError("");
     setIsLoggingIn(true);
     try {
-      // Direct redirect sign-in avoids popup window hanging & cross-origin iframe delays
-      await signInWithRedirect(auth, provider);
+      let u: any = null;
+      try {
+        const result = await signInWithPopup(auth, provider);
+        u = result?.user;
+      } catch (popupErr: any) {
+        console.warn(`[AUTH] ${name} Popup login failed/blocked, trying redirect fallback:`, popupErr?.code || popupErr);
+        if (popupErr?.code === "auth/popup-blocked" || popupErr?.code === "auth/cancelled-popup-request") {
+          await signInWithRedirect(auth, provider);
+          return;
+        } else if (popupErr?.code === "auth/popup-closed-by-user") {
+          setIsLoggingIn(false);
+          setSocialLoading(null);
+          return;
+        } else {
+          throw popupErr;
+        }
+      }
+
+      if (u) {
+        console.info(`[AUTH] ${name} sign-in successful for:`, u.email);
+        const maxAge = 7 * 24 * 60 * 60; // 7 days
+        const initialRole = getRoleForEmail(u.email || "");
+
+        if (typeof document !== "undefined") {
+          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
+          document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        }
+
+        if (updateUser) {
+          updateUser({
+            uid: u.uid,
+            email: u.email,
+            name: u.displayName || "Member",
+            image: u.photoURL || null,
+            role: initialRole as any,
+          });
+        }
+
+        // Background database sync (non-blocking)
+        fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: u.uid,
+            email: u.email,
+            name: u.displayName,
+            photoURL: u.photoURL,
+            phoneNumber: u.phoneNumber,
+          }),
+        })
+          .then((res) => res.json())
+          .then((syncData) => {
+            if (syncData?.success && syncData?.user?.role) {
+              const role = syncData.user.role;
+              if (typeof document !== "undefined") {
+                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+              if (updateUser) updateUser({ role });
+            }
+          })
+          .catch(() => {});
+
+        // Non-blocking notification email
+        sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
+
+        // Instant role-based redirect
+        redirectForRole(initialRole);
+      }
     } catch (err: any) {
-      console.warn(`[AUTH] ${name} Sign-in error:`, err.code || err);
+      console.error(`[AUTH] ${name} Sign-in error:`, err.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
 
       if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
         setError("auth/operation-not-allowed");
+      } else if (err.code === "auth/unauthorized-domain") {
+        setError("auth/unauthorized-domain");
       } else {
         setError(err.code || "social-generic-failed");
       }
