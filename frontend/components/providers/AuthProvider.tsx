@@ -176,6 +176,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           console.info(`[AUTH] Instant render from presence cookie -> role: ${initialUser.role}`);
         }
+      } else {
+        // Instant 0ms status resolution for unauthenticated visitors
+        setLoading(false);
       }
     }
     // ────────────────────────────────────────────────────────────────────────

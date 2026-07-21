@@ -87,12 +87,19 @@ export default function LoginPage() {
 
   useEffect(() => {
     setIsClient(true);
+    // Instant prefetch of dashboard routes for 0ms page transitions
+    router.prefetch("/member");
+    router.prefetch("/admin");
+    router.prefetch("/event-manager");
+    router.prefetch("/pastor");
+    router.prefetch("/portal-select");
+
     // Redirect 127.0.0.1 to localhost to prevent Firebase auth/unauthorized-domain error
     if (typeof window !== "undefined" && window.location.hostname === "127.0.0.1") {
       const newUrl = window.location.href.replace("127.0.0.1", "localhost");
       window.location.replace(newUrl);
     }
-  }, []);
+  }, [router]);
 
   // Redirect already-authenticated users (skip photo step for returning sessions)
   useEffect(() => {
