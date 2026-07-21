@@ -28,7 +28,7 @@ export function PaymentStateMonitor() {
   };
 
   return (
-    <div className="w-full bg-slate-900/40 dark:bg-slate-950/60 border border-purple-500/20 rounded-2xl p-4 my-4 backdrop-blur-md">
+    <div className="w-full bg-white/80 dark:bg-slate-900/80 border border-purple-100 dark:border-purple-500/20 rounded-2xl p-4 my-4 backdrop-blur-md shadow-lg shadow-purple-900/5 transition-colors">
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none">
         {STEPS.map((step, i) => {
           const status = getStepStatus(step.activeStates);
@@ -43,7 +43,7 @@ export function PaymentStateMonitor() {
                       ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                       : status === 'in_progress'
                       ? 'bg-purple-600 text-white animate-pulse shadow-md shadow-purple-500/30'
-                      : 'bg-slate-800 text-slate-500 border border-slate-700'
+                      : 'bg-slate-100 text-slate-400 border border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700'
                   }`}
                 >
                   {status === 'completed' ? (
@@ -57,10 +57,10 @@ export function PaymentStateMonitor() {
                 <span
                   className={`text-[10px] font-medium mt-1.5 leading-tight ${
                     status === 'completed'
-                      ? 'text-emerald-400 font-semibold'
+                      ? 'text-emerald-700 dark:text-emerald-400 font-semibold'
                       : status === 'in_progress'
-                      ? 'text-purple-300 font-bold'
-                      : 'text-slate-500'
+                      ? 'text-purple-700 dark:text-purple-300 font-bold'
+                      : 'text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {step.label}
@@ -69,8 +69,10 @@ export function PaymentStateMonitor() {
 
               {i < STEPS.length - 1 && (
                 <div
-                  className={`flex-1 h-0.5 min-w-[15px] max-w-[40px] rounded mb-5 ${
-                    status === 'completed' ? 'bg-emerald-500/80' : 'bg-slate-800'
+                  className={`flex-1 h-0.5 min-w-[15px] max-w-[40px] rounded mb-5 transition-colors ${
+                    status === 'completed'
+                      ? 'bg-emerald-500/80'
+                      : 'bg-slate-200 dark:bg-slate-800'
                   }`}
                 />
               )}
