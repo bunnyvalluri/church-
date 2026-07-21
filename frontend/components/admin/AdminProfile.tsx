@@ -82,6 +82,7 @@ export default function AdminProfile() {
   const [syncing, setSyncing] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
@@ -97,6 +98,7 @@ export default function AdminProfile() {
   };
 
   useEffect(() => {
+    setMounted(true);
     const on = () => setIsOnline(true);
     const off = () => setIsOnline(false);
     window.addEventListener("online", on);
@@ -301,7 +303,7 @@ export default function AdminProfile() {
           </p>
         </div>
         <div className="flex items-center gap-2.5 shrink-0 ml-auto sm:ml-0">
-          {lastSynced && (
+          {mounted && lastSynced && (
             <span className="text-[10px] text-slate-400 dark:text-gray-500 font-bold hidden sm:inline">
               {t.members.registered} {lastSynced.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
             </span>

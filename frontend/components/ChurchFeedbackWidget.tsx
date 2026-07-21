@@ -179,6 +179,11 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
   const [polling, setPolling] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [liveCount, setLiveCount] = useState(0); 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Form state
   const [rating, setRating] = useState(0);
@@ -659,7 +664,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
         )}
 
         {/* ── Footer sync line ─────────────────────────── */}
-        {lastUpdated && (
+        {mounted && lastUpdated && (
           <p className="text-[9px] text-gray-400 dark:text-gray-600 flex items-center gap-1">
             <TrendingUp className="w-2.5 h-2.5" />
             Auto-refreshes every 10 seconds · Last synced {lastUpdated.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

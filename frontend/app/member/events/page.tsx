@@ -241,7 +241,7 @@ export default function MemberEvents() {
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          {lastSynced && (
+          {mounted && lastSynced && (
             <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">
               {et.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>

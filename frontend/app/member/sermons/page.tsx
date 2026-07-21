@@ -191,7 +191,7 @@ export default function MemberSermons() {
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{st.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          {lastSynced && <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">{st.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
+          {mounted && lastSynced && <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">{st.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>}
           <button onClick={() => fetch_()} disabled={refreshing}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />

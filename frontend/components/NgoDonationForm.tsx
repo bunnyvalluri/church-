@@ -1518,7 +1518,7 @@ export default function NgoDonationForm({
                         </div>
                       )}
 
-                      {lastHistorySynced && (
+                      {mounted && lastHistorySynced && (
                         <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800 text-[9px] text-gray-400 dark:text-gray-500 font-mono flex items-center justify-between">
                           <span className="flex items-center gap-1">
                             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />

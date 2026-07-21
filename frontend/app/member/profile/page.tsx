@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -382,7 +382,7 @@ export default function MemberProfile() {
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          {lastSynced && (
+          {mounted && lastSynced && (
             <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
               {pt.syncedAt} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>

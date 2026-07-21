@@ -697,7 +697,7 @@ export default function MemberDashboard() {
                     {dt.greetings.sub}
                   </p>
 
-                  {lastSynced && (
+                  {mounted && lastSynced && (
                     <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">
                       <Wifi className="w-3 h-3" />
                       {dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
