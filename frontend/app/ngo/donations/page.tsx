@@ -77,43 +77,37 @@ const BhimIcon = () => (
   </svg>
 );
 
-// Distinctive color themes for preset donation amount buttons with high contrast legibility
+// Color themes for preset donation amount buttons with high contrast legibility
 const PRESET_COLOR_SCHEMES = [
   {
-    // Emerald Green (₹500)
     dot: "bg-emerald-500",
     unselected: "bg-slate-50 hover:bg-emerald-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-emerald-400 dark:hover:border-emerald-500/60",
-    selected: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-lg shadow-emerald-500/30 scale-[1.03]"
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   },
   {
-    // Ocean Blue (₹1,000)
     dot: "bg-blue-500",
     unselected: "bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-blue-400 dark:hover:border-blue-500/60",
-    selected: "bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-blue-500 shadow-lg shadow-blue-500/30 scale-[1.03]"
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   },
   {
-    // Royal Purple (₹2,000)
     dot: "bg-purple-500",
     unselected: "bg-slate-50 hover:bg-purple-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-purple-400 dark:hover:border-purple-500/60",
-    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/30 scale-[1.03]"
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   },
   {
-    // Warm Amber Gold (₹5,000)
     dot: "bg-amber-500",
     unselected: "bg-slate-50 hover:bg-amber-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-amber-400 dark:hover:border-amber-500/60",
-    selected: "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-amber-500 shadow-lg shadow-amber-500/30 scale-[1.03]"
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   },
   {
-    // Crown Rose Pink (₹10,000)
     dot: "bg-rose-500",
     unselected: "bg-slate-50 hover:bg-rose-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-rose-400 dark:hover:border-rose-500/60",
-    selected: "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500 shadow-lg shadow-rose-500/30 scale-[1.03]"
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   },
   {
-    // Fuchsia Violet (Other)
-    dot: "bg-fuchsia-500",
-    unselected: "bg-slate-50 hover:bg-fuchsia-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-fuchsia-400 dark:hover:border-fuchsia-500/60",
-    selected: "bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white border-fuchsia-500 shadow-lg shadow-fuchsia-500/30 scale-[1.03]"
+    dot: "bg-violet-500",
+    unselected: "bg-slate-50 hover:bg-purple-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-800 dark:text-white hover:border-purple-400 dark:hover:border-purple-500/60",
+    selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   }
 ];
 
@@ -810,13 +804,13 @@ function NgoDonationsContent() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-7 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all ${
+                        className={`w-full py-3.5 pl-7 pr-3 rounded-xl border text-xs sm:text-sm font-extrabold focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           customAmount
-                            ? "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/30 scale-[1.03] placeholder-white/70"
-                            : "bg-slate-50 hover:bg-fuchsia-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-fuchsia-500 dark:focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-500/20"
+                            ? "bg-purple-50 dark:bg-purple-950/40 text-purple-950 dark:text-white border-2 border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
+                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
                         }`}
                       />
-                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-extrabold ${customAmount ? "text-white" : "text-fuchsia-500 dark:text-fuchsia-400"}`}>
+                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-extrabold ${customAmount ? "text-purple-600 dark:text-purple-400" : "text-purple-500 dark:text-purple-400"}`}>
                         ₹
                       </span>
                     </div>
