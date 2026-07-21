@@ -40,6 +40,16 @@ export async function POST(req: Request) {
     const sanitizedPhotoURL = photoURL ? sanitize(photoURL) : null;
     const sanitizedPhoneNumber = phoneNumber ? sanitize(phoneNumber) : null;
 
+function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' {
+  const e = email.toLowerCase().trim();
+  if (e.includes('superadmin')) return 'SUPER_ADMIN';
+  if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
+  if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
+  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
+  if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
+  return 'MEMBER';
+}
+
     // 3. Sync with the database
     // Find by ID and Email in parallel
     const [userByUid, userByEmail] = await Promise.all([
@@ -49,12 +59,14 @@ export async function POST(req: Request) {
 
     let user;
     let isNewUser = false;
+    const computedRole = getRoleForEmail(sanitizedEmail);
 
     if (userByUid) {
       // User already exists with this Firebase UID.
-      // If email has changed, update it.
-      if (userByUid.email !== sanitizedEmail) {
-        console.info(`[AUTH/SYNC] Email changed for UID ${sanitizedUid} (DB: ${userByUid.email}, Firebase: ${sanitizedEmail}). Updating email.`);
+      // If email has changed or role needs upgrading, update it.
+      const shouldUpgradeRole = userByUid.role === 'MEMBER' && computedRole !== 'MEMBER';
+      if (userByUid.email !== sanitizedEmail || shouldUpgradeRole) {
+        console.info(`[AUTH/SYNC] Updating user ${sanitizedUid} (Email: ${sanitizedEmail}, Role: ${shouldUpgradeRole ? computedRole : userByUid.role})`);
         user = await prisma.user.update({
           where: { id: sanitizedUid },
           data: {
@@ -62,10 +74,10 @@ export async function POST(req: Request) {
             name: sanitizedName || userByUid.name,
             image: sanitizedPhotoURL || userByUid.image,
             phone: sanitizedPhoneNumber || userByUid.phone,
+            ...(shouldUpgradeRole ? { role: computedRole } : {}),
           },
         });
       } else {
-        // Just return the existing user (optionally updating name/photo/phone if they changed)
         user = userByUid;
       }
     } else if (userByEmail) {
@@ -96,13 +108,14 @@ export async function POST(req: Request) {
         });
 
         // 2. Create the new user record
+        const finalRole = oldUser.role !== 'MEMBER' ? oldUser.role : computedRole;
         const newUser = await tx.user.create({
           data: {
             id: sanitizedUid,
             email: sanitizedEmail,
             name: sanitizedName || oldUser.name || 'Member',
             password: 'firebase-authenticated',
-            role: oldUser.role,
+            role: finalRole,
             phone: sanitizedPhoneNumber || oldUser.phone || null,
             address: oldUser.address || null,
             image: sanitizedPhotoURL || oldUser.image || null,
@@ -138,7 +151,7 @@ export async function POST(req: Request) {
         return newUser;
       });
     } else {
-      // Brand new user, create it
+      // Brand new user, create it with computed role
       isNewUser = true;
       user = await prisma.user.create({
         data: {
@@ -146,6 +159,7 @@ export async function POST(req: Request) {
           email: sanitizedEmail,
           name: sanitizedName || 'Member',
           password: 'firebase-authenticated',
+          role: computedRole,
           image: sanitizedPhotoURL || null,
           phone: sanitizedPhoneNumber || null,
         },

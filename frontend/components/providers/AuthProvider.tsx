@@ -192,19 +192,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
           // 1. Instantly set user state from Firebase to avoid dynamic load blocking
+          const getEmailRole = (emailStr: string | null): AuthUser["role"] => {
+            if (!emailStr) return "MEMBER";
+            const e = emailStr.toLowerCase().trim();
+            if (e.includes("superadmin")) return "SUPER_ADMIN";
+            if (e.includes("admin") || e === "bishop.kraju@kcmchurch.org") return "ADMIN";
+            if (e.includes("pastor") || e.includes("bishop")) return "PASTOR";
+            if (e.includes("eventmanager") || e === "eventmanager@kcm-church.com") return "EVENT_MANAGER";
+            if (e.includes("volunteer") || e === "volunteer@kcm-church.com") return "FIELD_VOLUNTEER";
+            return "MEMBER";
+          };
+
+          const calculatedRole = getEmailRole(firebaseUser.email);
           const initialUser: AuthUser = {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             name: firebaseUser.displayName || "Member",
             image: firebaseUser.photoURL || null,
-            role: "MEMBER", // Default fallback role
+            role: calculatedRole,
           };
 
           // Try to retrieve role from session cookies to prevent layout flashing
           if (typeof document !== "undefined") {
             const matches = document.cookie.match(/__kcm_session_role=([^;]+)/);
             if (matches && matches[1]) {
-              initialUser.role = matches[1] as any;
+              const cookieRole = matches[1].toUpperCase();
+              const validRolesList = ["MEMBER", "PASTOR", "ADMIN", "SUPER_ADMIN", "EVENT_MANAGER", "FIELD_VOLUNTEER", "NGO_ADMIN"];
+              if (validRolesList.includes(cookieRole)) {
+                initialUser.role = cookieRole as any;
+              }
             }
           }
 
@@ -214,12 +230,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // 2. Perform database sync in the background
           syncUserToDatabase(firebaseUser).then((dbUser) => {
             if (dbUser) {
+              const syncedRole = dbUser.role || initialUser.role || "MEMBER";
               const updatedUser: AuthUser = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 name: dbUser.name || firebaseUser.displayName || "Member",
                 image: dbUser.image || firebaseUser.photoURL || null,
-                role: dbUser.role || "MEMBER",
+                role: syncedRole,
               };
               setSessionCookies(updatedUser.uid, updatedUser.role);
               setUser(updatedUser);
