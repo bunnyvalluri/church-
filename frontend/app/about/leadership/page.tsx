@@ -721,9 +721,9 @@ export default function LeadershipPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in animate-delay-200">
               <Link
                 href="/get-involved/volunteer"
-                className="group px-8 py-4 bg-white text-purple-950 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2.5 shadow-lg"
+                className="group px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 font-extrabold rounded-2xl hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2.5 shadow-lg"
               >
-                <span>Volunteer</span>
+                <span className="text-slate-950 font-extrabold">Volunteer</span>
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-purple-600" />
               </Link>
 
