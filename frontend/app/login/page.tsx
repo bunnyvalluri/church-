@@ -212,10 +212,11 @@ export default function LoginPage() {
             console.info("[AUTH] Redirect sign-in successful for:", result.user?.email);
             const u = result.user;
             const maxAge = 7 * 24 * 60 * 60; // 7 days
+            const initialRole = getRoleForEmail(u.email || "");
 
             if (typeof document !== "undefined") {
               document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-              document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
+              document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
             }
 
             if (updateUser) {
@@ -224,7 +225,7 @@ export default function LoginPage() {
                 email: u.email,
                 name: u.displayName || "Member",
                 image: u.photoURL || null,
-                role: "MEMBER",
+                role: initialRole as any,
               });
             }
 
@@ -248,12 +249,18 @@ export default function LoginPage() {
                     document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
                   }
                   if (updateUser) updateUser({ role });
+                  if (role !== initialRole) {
+                    redirectForRole(role);
+                  }
                 }
               })
               .catch(() => {});
 
+            // Non-blocking notification email
+            sendLoginEmail(u.email || "", u.displayName || "Member", 'google');
+
             // Instant redirect
-            window.location.href = "/member";
+            redirectForRole(initialRole);
           }
         } catch (err: any) {
           console.error("[AUTH] Redirect sign-in error:", err);
@@ -275,94 +282,16 @@ export default function LoginPage() {
     setError("");
     setIsLoggingIn(true);
     try {
-      const credential = await signInWithPopup(auth, provider);
-      if (credential?.user) {
-        const u = credential.user;
-        const maxAge = 7 * 24 * 60 * 60; // 7 days
-
-        // 1. Instantly set session cookies so middleware & AuthProvider recognize state immediately
-        if (typeof document !== "undefined") {
-          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-          document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
-        }
-
-        // 2. Instantly update client-side AuthProvider state
-        if (updateUser) {
-          updateUser({
-            uid: u.uid,
-            email: u.email,
-            name: u.displayName || "Member",
-            image: u.photoURL || null,
-            role: "MEMBER",
-          });
-        }
-
-        // 3. Fire-and-forget: background database sync
-        fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: u.uid,
-            email: u.email,
-            name: u.displayName,
-            photoURL: u.photoURL,
-            phoneNumber: u.phoneNumber,
-          }),
-        })
-          .then((res) => res.json())
-          .then((syncData) => {
-            if (syncData?.success && syncData?.user?.role) {
-              const role = syncData.user.role;
-              if (typeof document !== "undefined") {
-                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
-              }
-              if (updateUser) updateUser({ role });
-            }
-          })
-          .catch(() => {});
-
-        // 4. Non-blocking login email notification
-        fetch('/api/auth/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'LOGIN',
-            email: u.email,
-            name: u.displayName || u.email,
-            method: 'google',
-          }),
-        }).catch(() => {});
-
-        // 5. INSTANT NAVIGATION TO MEMBER PORTAL
-        router.push("/member");
-        window.location.href = "/member";
-      }
+      // Direct redirect sign-in avoids popup window hanging & cross-origin iframe delays
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
-      console.warn(`[AUTH] ${name} Popup sign-in warning:`, err.code || err);
-      
-      const shouldAttemptRedirect = [
-        "auth/popup-blocked",
-        "auth/popup-closed-by-user",
-        "auth/cancelled-popup-request",
-        "auth/network-request-failed"
-      ].includes(err.code) || err.message?.includes("COOP");
-
-      if (shouldAttemptRedirect) {
-        console.info(`[AUTH] Attempting robust ${name} redirect fallback...`);
-        try {
-          await signInWithRedirect(auth, provider);
-          return;
-        } catch (redirectErr: any) {
-          console.error(`[AUTH] ${name} Redirect Fallback Error:`, redirectErr);
-        }
-      }
-
+      console.warn(`[AUTH] ${name} Sign-in error:`, err.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
 
       if (err.code === "auth/operation-not-allowed" || err.code === "auth/configuration-not-found") {
         setError("auth/operation-not-allowed");
-      } else if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
+      } else {
         setError(err.code || "social-generic-failed");
       }
     }
