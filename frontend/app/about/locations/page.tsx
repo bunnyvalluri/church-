@@ -10,6 +10,7 @@ import {
   Clock,
   Phone,
   Navigation,
+  ExternalLink,
   Church,
   BookOpen,
   Users,
@@ -66,20 +67,20 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
           },
         ],
-        serviceBorder: "border-l-purple-500",
-        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-        btnColor: "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-600/20",
-        isMain: false,
+        serviceBorder: "border-l-blue-500",
+        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20",
+        isMain: true,
         Icon: BookOpen,
-        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+        iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
       },
       {
         id: "subhash",
         name: isTelugu
-          ? "సుభాష్ నగర్ (ప్రధాన మందిరం)"
+          ? "సుభాష్ నగర్ బ్రాంచ్"
           : isHindi
-          ? "सुभाष नगर (मुख्य अभयारण्य)"
-          : "Subhash Nagar Branch (Main Sanctuary)",
+          ? "सुभाष नगर शाखा"
+          : "Subhash Nagar Branch",
         title: t.services?.subhash?.title || "Subhash Nagar Morning Prayer",
         description: `${t.services?.subhash?.desc || "Start your Sunday with early morning worship and powerful prayer."} ${t.services?.subhash?.secondDesc || ""}`,
         address: isTelugu
@@ -106,12 +107,12 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        serviceBorder: "border-l-indigo-500",
-        badgeBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
-        btnColor: "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-md shadow-indigo-600/20",
-        isMain: true,
+        serviceBorder: "border-l-purple-500",
+        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
+        isMain: false,
         Icon: Church,
-        iconBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
       },
       {
         id: "bahadur",
@@ -143,7 +144,7 @@ export default function LocationsPage() {
         ],
         serviceBorder: "border-l-emerald-500",
         badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20",
+        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20",
         isMain: false,
         Icon: Users,
         iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -241,9 +242,6 @@ export default function LocationsPage() {
                         <BranchIcon className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
-                          {isTelugu ? "బ్రాంచ్" : isHindi ? "शाखा" : "Branch"}
-                        </span>
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white font-serif">
                           {branch.name}
                         </h2>
