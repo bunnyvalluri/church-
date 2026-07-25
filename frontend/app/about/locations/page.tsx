@@ -117,10 +117,10 @@ export default function LocationsPage() {
       {
         id: "bahadur",
         name: isTelugu
-          ? "బహదూర్‌పల్లి బ్రాంచ్"
+          ? "బహదూర్‌పల్లి నగర్ బ్రాంచ్"
           : isHindi
-          ? "बहादुरपल्ली शाखा"
-          : "Bahadurpally Branch",
+          ? "बहादुरपल्ली नगर शाखा"
+          : "Bahadurpally Nagar Branch",
         title: t.services?.bahadur?.title || "Bahadurpally Afternoon Service",
         description: `${t.services?.bahadur?.desc || "Afternoon worship and fellowship at our Bahadurpally location."} ${t.services?.bahadur?.tuesdayDesc || ""}`,
         address: isTelugu
