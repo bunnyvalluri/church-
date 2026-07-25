@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   ImageIcon,
   X,
@@ -18,12 +18,15 @@ import {
   ZoomOut,
   Maximize2,
   Minimize2,
+  Search,
+  ArrowUp,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { translations } from "@/lib/translations";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
 
 // Encode a URL path so parentheses and spaces are safe for browsers
@@ -49,14 +52,65 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
+  "ALL": "from-purple-600 to-indigo-600",
   "NIMS-HOSPITAL": "from-blue-600 to-cyan-500",
-  "GOVT-HOSPITAL": "from-green-600 to-emerald-400",
-  "GANDHI-HOSPITAL": "from-orange-500 to-amber-400",
-  "ASHRAMAM": "from-purple-600 to-pink-400",
+  "GOVT-HOSPITAL": "from-emerald-600 to-teal-400",
+  "GANDHI-HOSPITAL": "from-amber-500 to-orange-400",
+  "ASHRAMAM": "from-fuchsia-600 to-pink-400",
   "DISABLED-AASHRAMAM": "from-rose-500 to-red-400",
 };
 
-// Memoized GalleryCard to prevent DOM re-renders and stabilize layouts
+const CATEGORY_STYLES: Record<string, {
+  active: string;
+  inactive: string;
+  badgeActive: string;
+  badgeInactive: string;
+  dot: string;
+}> = {
+  "ALL": {
+    active: "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white border-transparent shadow-lg shadow-purple-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-purple-200 dark:border-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-50/80 dark:hover:bg-purple-950/40 hover:border-purple-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 font-bold",
+    dot: "bg-purple-500",
+  },
+  "NIMS-HOSPITAL": {
+    active: "bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-500 text-white border-transparent shadow-lg shadow-blue-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 hover:border-blue-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold",
+    dot: "bg-blue-500",
+  },
+  "GOVT-HOSPITAL": {
+    active: "bg-gradient-to-r from-emerald-600 via-teal-600 to-green-500 text-white border-transparent shadow-lg shadow-emerald-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 hover:border-emerald-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-bold",
+    dot: "bg-emerald-500",
+  },
+  "GANDHI-HOSPITAL": {
+    active: "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-transparent shadow-lg shadow-orange-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 hover:border-amber-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 font-bold",
+    dot: "bg-amber-500",
+  },
+  "ASHRAMAM": {
+    active: "bg-gradient-to-r from-fuchsia-600 via-pink-600 to-rose-500 text-white border-transparent shadow-lg shadow-pink-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-fuchsia-200 dark:border-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300 hover:bg-fuchsia-50/80 dark:hover:bg-fuchsia-950/40 hover:border-fuchsia-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300 font-bold",
+    dot: "bg-fuchsia-500",
+  },
+  "DISABLED-AASHRAMAM": {
+    active: "bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white border-transparent shadow-lg shadow-rose-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 hover:border-rose-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold",
+    dot: "bg-rose-500",
+  },
+};
+
 interface GalleryItem {
   id: string;
   imageUrl: string;
@@ -67,6 +121,7 @@ interface GalleryItem {
   branchId?: string | null;
 }
 
+// Memoized GalleryCard to prevent DOM re-renders and stabilize layouts
 const GalleryCard = React.memo(function GalleryCard({
   item,
   onClick,
@@ -80,19 +135,20 @@ const GalleryCard = React.memo(function GalleryCard({
   onDelete: (item: GalleryItem) => void;
   priority: boolean;
 }) {
-  const [isLoaded, setIsLoaded] = useState(() => loadedImagesCache.has(item.thumbnailUrl));
+  const [isLoaded, setIsLoaded] = useState(() => loadedImagesCache.has(item.thumbnailUrl) || loadedImagesCache.has(item.imageUrl));
+  const [hasError, setHasError] = useState(false);
 
   return (
     <div
       onClick={onClick}
-      className="break-inside-avoid mb-5 relative group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/5 bg-slate-50 dark:bg-slate-900 cursor-pointer shadow-sm hover:border-purple-500/40 transition-all duration-500 hover:shadow-purple-500/10 hover:shadow-2xl aspect-[3/2] w-full"
+      className="relative group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-100 dark:bg-slate-900/90 cursor-pointer shadow-sm hover:border-purple-500/50 transition-all duration-300 hover:shadow-purple-500/15 hover:shadow-xl aspect-[3/2] w-full"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
       aria-label={`Open ${item.title}`}
     >
       {/* Category badge */}
-      <div className={`absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+      <div className={`absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md transition-transform duration-300 group-hover:scale-105`}>
         {item.category}
       </div>
 
@@ -112,37 +168,52 @@ const GalleryCard = React.memo(function GalleryCard({
       )}
 
       {/* Image container */}
-      <div className="relative overflow-hidden w-full h-full bg-slate-100 dark:bg-slate-950">
-        {!isLoaded && (
-          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse z-10" />
+      <div className="relative overflow-hidden w-full h-full bg-slate-200 dark:bg-slate-950 flex items-center justify-center">
+        {!isLoaded && !hasError && (
+          <div className="absolute inset-0 bg-slate-300 dark:bg-slate-800/80 animate-pulse z-10 flex items-center justify-center">
+            <Loader2 className="w-6 h-6 text-purple-500/50 animate-spin" />
+          </div>
         )}
-        <Image
-          src={encodeSrc(item.thumbnailUrl)}
-          alt={item.title}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          priority={priority}
-          placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFjMTkxZiIvPjwvc3ZnPg=="
-          className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
-            isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-          }`}
-          onLoad={() => {
-            loadedImagesCache.add(item.thumbnailUrl);
-            setIsLoaded(true);
-          }}
-        />
+
+        {hasError ? (
+          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2 bg-gradient-to-br from-slate-900 to-purple-950 text-white w-full h-full">
+            <ImageIcon className="w-8 h-8 text-purple-400 opacity-60" />
+            <span className="text-[11px] font-medium text-slate-300 truncate max-w-[90%]">{item.title}</span>
+            <span className="text-[9px] uppercase tracking-widest text-purple-300/80 font-mono">Service Photo</span>
+          </div>
+        ) : (
+          <Image
+            src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
+            alt={item.title || "Service photo"}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+            unoptimized
+            className={`object-cover transform group-hover:scale-105 transition-all duration-500 ease-out ${
+              isLoaded ? "opacity-100 scale-100" : "opacity-90 blur-sm"
+            }`}
+            onLoad={() => {
+              loadedImagesCache.add(item.thumbnailUrl);
+              loadedImagesCache.add(item.imageUrl);
+              setIsLoaded(true);
+            }}
+            onError={() => {
+              setHasError(true);
+              setIsLoaded(true);
+            }}
+          />
+        )}
 
         {/* Premium Hover Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-between p-4 z-20">
           <div className="flex justify-end">
-            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-500 delay-75">
+            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-300">
               <Maximize2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+          <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out space-y-1">
             <p className="text-white text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">{item.category}</p>
-            <p className="text-white/70 text-[10px] font-medium drop-shadow-sm truncate mt-0.5">
+            <p className="text-white/90 text-xs font-medium drop-shadow-sm truncate">
               {item.title}
             </p>
           </div>
@@ -156,7 +227,9 @@ export default function NgoGalleryPage() {
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   
   // Lightbox options state
   const [lbLoading, setLbLoading] = useState(false);
@@ -182,7 +255,15 @@ export default function NgoGalleryPage() {
   
   const queryClient = useQueryClient();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // 1. Fetch NGO gallery images
   const fetchGallery = async () => {
@@ -201,17 +282,41 @@ export default function NgoGalleryPage() {
     queryFn: fetchGallery,
   });
 
-  const allImages: GalleryItem[] = data?.images || [];
-  const filteredItems = allImages.filter(
-    (item) => (selectedCategory === "ALL" || item.category === selectedCategory) && !deletedUrls.has(item.imageUrl)
-  );
+  const allImages: GalleryItem[] = useMemo(() => data?.images || [], [data]);
+
+  // Category Photo Counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { ALL: 0 };
+    CATEGORIES.forEach((c) => { counts[c.value] = 0; });
+    
+    allImages.forEach((img) => {
+      if (deletedUrls.has(img.imageUrl)) return;
+      counts.ALL = (counts.ALL || 0) + 1;
+      if (counts[img.category] !== undefined) {
+        counts[img.category] += 1;
+      }
+    });
+    return counts;
+  }, [allImages, deletedUrls]);
+
+  // Filtering items by Category & Search
+  const filteredItems = useMemo(() => {
+    return allImages.filter((item) => {
+      if (deletedUrls.has(item.imageUrl)) return false;
+      const matchesCategory = selectedCategory === "ALL" || item.category === selectedCategory;
+      const matchesSearch = searchQuery.trim() === "" ||
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [allImages, selectedCategory, searchQuery, deletedUrls]);
 
   const [displayLimit, setDisplayLimit] = useState(24);
 
-  // Reset display limit when selected category changes for instant switch
+  // Reset display limit when filter or search changes
   useEffect(() => {
     setDisplayLimit(24);
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery]);
 
   const displayedItems = filteredItems.slice(0, displayLimit);
   const hasNextPage = displayLimit < filteredItems.length;
@@ -324,7 +429,7 @@ export default function NgoGalleryPage() {
   // Lightbox methods
   const openLightbox = useCallback((idx: number) => {
     const item = filteredItems[idx];
-    const isCached = item ? loadedImagesCache.has(item.imageUrl) : false;
+    const isCached = item ? loadedImagesCache.has(item.imageUrl) || loadedImagesCache.has(item.thumbnailUrl) : false;
     setLbLoading(!isCached);
     setLbLoaded(isCached);
     setLbError(false);
@@ -351,7 +456,7 @@ export default function NgoGalleryPage() {
 
   const goTo = useCallback((idx: number, customDirection = 0) => {
     const item = filteredItems[idx];
-    const isCached = item ? loadedImagesCache.has(item.imageUrl) : false;
+    const isCached = item ? loadedImagesCache.has(item.imageUrl) || loadedImagesCache.has(item.thumbnailUrl) : false;
     setLbLoading(!isCached);
     setLbLoaded(isCached);
     setLbError(false);
@@ -463,17 +568,21 @@ export default function NgoGalleryPage() {
     } catch (err) {
       console.error("Error deleting image:", err);
       setToastMessage("Image hidden client-side");
-        } finally {
+    } finally {
       setIsDeleting(false);
       setDeletingItem(null);
     }
   };
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount - no double-guard needed
+  const ngoT = t.ngo || {};
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <div className="py-12 sm:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         
         {/* Admin Mode Banner */}
         {isAdminMode && (
@@ -535,79 +644,130 @@ export default function NgoGalleryPage() {
           </div>
         )}
 
-        {/* Header */}
-        <div className="space-y-3 max-w-2xl">
-          <h1
-            onClick={handleTitleClick}
-            className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent cursor-pointer select-none"
-            title="Click 5 times to toggle Admin Mode"
-          >
-            {ngoT.galleryTitle}
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-            {ngoT.gallerySubtitle}
-          </p>
-          <p className="text-xs text-slate-500 dark:text-slate-500 font-mono">
-            {filteredItems.length} photos loaded
-            {selectedCategory !== "ALL" && ` Â· ${CATEGORIES.find((c) => c.value === selectedCategory)?.label}`}
-          </p>
+        {/* Header & Search Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 dark:border-white/10 pb-8">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Service Documentation</span>
+            </div>
+            <h1
+              onClick={handleTitleClick}
+              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-slate-900 via-slate-800 to-purple-600 dark:from-white dark:via-slate-100 dark:to-purple-300 bg-clip-text text-transparent cursor-pointer select-none"
+              title="Click 5 times to toggle Admin Mode"
+            >
+              {ngoT.galleryTitle || "Service Gallery"}
+            </h1>
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
+              {ngoT.gallerySubtitle || "Witness our physical ministries in action. Browse through photographs showing food distributions, patient healthcare kits, and Ashramam support projects."}
+            </p>
+            <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-mono pt-1">
+              <span>{filteredItems.length} photos displayed</span>
+              <span>•</span>
+              <span>{categoryCounts.ALL || 0} total photos</span>
+            </div>
+          </div>
+
+          {/* Interactive Search Input */}
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search photo title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-9 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all shadow-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-6">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 mr-2 uppercase font-mono tracking-wider">
+        {/* Category Filter Chips with Vibrant Color Identities */}
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider flex-shrink-0">
             <Filter className="w-3.5 h-3.5" />
-            {ngoT.filterLabel}
+            <span>Filter</span>
           </div>
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.value}
-              id={`gallery-filter-${cat.value.toLowerCase()}`}
-              onClick={() => setSelectedCategory(cat.value)}
-              className={`px-4 py-2 text-xs font-semibold rounded-full border transition-all ${
-                selectedCategory === cat.value
-                  ? "bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-300 border-purple-400/30 dark:border-purple-500/30 shadow-md"
-                  : "text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const count = categoryCounts[cat.value] || 0;
+            const isSelected = selectedCategory === cat.value;
+            const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
+            return (
+              <button
+                key={cat.value}
+                id={`gallery-filter-${cat.value.toLowerCase()}`}
+                onClick={() => setSelectedCategory(cat.value)}
+                className={`px-4 py-2.5 text-xs font-bold rounded-2xl border transition-all duration-300 flex items-center gap-2.5 flex-shrink-0 cursor-pointer ${
+                  isSelected ? styles.active : styles.inactive
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-white animate-pulse" : styles.dot}`} />
+                <span>{cat.label}</span>
+                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${
+                  isSelected ? styles.badgeActive : styles.badgeInactive
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Gallery Grid */}
         {status === "pending" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="w-full aspect-[3/2] bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="w-full aspect-[3/2] bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl border border-slate-200 dark:border-white/5" />
             ))}
           </div>
         ) : status === "error" ? (
-          <div className="min-h-[30vh] flex flex-col items-center justify-center border border-slate-200 dark:border-white/5 rounded-3xl bg-red-50/10 dark:bg-red-950/10 p-6 text-center space-y-3">
+          <div className="min-h-[30vh] flex flex-col items-center justify-center border border-slate-200 dark:border-white/5 rounded-3xl bg-red-50/10 dark:bg-red-950/10 p-8 text-center space-y-3">
             <AlertCircle className="w-12 h-12 text-red-500" />
-            <p className="text-sm font-semibold text-slate-900 dark:text-white">Failed to load NGO gallery</p>
+            <p className="text-base font-bold text-slate-900 dark:text-white">Failed to load NGO gallery</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">Please check your internet connection or reload the photo gallery.</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all"
+              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2"
             >
-              Retry
+              <RefreshCw className="w-3.5 h-3.5" />
+              Retry Loading
             </button>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="min-h-[30vh] flex items-center justify-center border border-slate-200 dark:border-white/5 rounded-3xl bg-slate-100/40 dark:bg-slate-900/40">
-            <div className="text-center space-y-2 text-slate-400">
-              <ImageIcon className="w-12 h-12 mx-auto" />
-              <p className="text-sm">{ngoT.noPhotos}</p>
+          <div className="min-h-[35vh] flex items-center justify-center border border-slate-200 dark:border-white/5 rounded-3xl bg-slate-50 dark:bg-slate-900/40 p-8">
+            <div className="text-center space-y-3 max-w-sm">
+              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-500 flex items-center justify-center mx-auto">
+                <ImageIcon className="w-7 h-7" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">No Photos Found</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                {searchQuery ? `No results for "${searchQuery}". Try clearing search keywords.` : (ngoT.noPhotos || "No service photographs found for this category.")}
+              </p>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="px-4 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold hover:bg-slate-300 transition-colors"
+                >
+                  Clear Search
+                </button>
+              )}
             </div>
           </div>
         ) : (
           <div className="space-y-8">
             <motion.div
-              key={selectedCategory}
+              key={selectedCategory + searchQuery}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="columns-1 sm:columns-2 md:columns-3 gap-5"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
             >
               {displayedItems.map((item, index) => (
                 <GalleryCard
@@ -616,7 +776,7 @@ export default function NgoGalleryPage() {
                   onClick={() => openLightbox(index)}
                   isAdminMode={isAdminMode}
                   onDelete={handleDeleteImage}
-                  priority={index < 4}
+                  priority={index < 6}
                 />
               ))}
             </motion.div>
@@ -624,12 +784,27 @@ export default function NgoGalleryPage() {
             {/* Infinite scroll pagination sentinel */}
             <div ref={sentinelRef} className="flex justify-center py-6">
               {hasNextPage ? (
-                <span className="text-xs text-slate-400 font-mono">Scroll down for more</span>
+                <div className="flex items-center gap-2 text-xs text-slate-400 font-mono animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Loading more service photos...</span>
+                </div>
               ) : (
-                <span className="text-xs text-slate-400 font-mono">No more photos to load</span>
+                <span className="text-xs text-slate-400 font-mono">End of gallery photos</span>
               )}
             </div>
           </div>
+        )}
+
+        {/* Floating Back to Top Button */}
+        {showScrollTop && (
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white shadow-xl shadow-purple-600/30 hover:scale-110 active:scale-95 transition-all duration-300 border border-purple-400/30"
+            title="Back to Top"
+            aria-label="Back to Top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </button>
         )}
 
         {/* Lightbox Overlay */}
@@ -674,7 +849,7 @@ export default function NgoGalleryPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 w-screen h-screen z-[200] flex flex-col justify-between items-center bg-black/95 backdrop-blur-sm overflow-hidden select-none"
+                className="fixed inset-0 w-screen h-screen z-[200] flex flex-col justify-between items-center bg-black/95 backdrop-blur-md overflow-hidden select-none"
                 onClick={closeLightbox}
                 role="dialog"
                 aria-modal="true"
@@ -684,9 +859,6 @@ export default function NgoGalleryPage() {
                 {filteredItems[lightboxIndex + 1] && (
                   <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
                 )}
-                {filteredItems[lightboxIndex + 2] && (
-                  <img src={encodeSrc(filteredItems[lightboxIndex + 2].imageUrl)} className="hidden" alt="" />
-                )}
                 {filteredItems[lightboxIndex - 1] && (
                   <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
                 )}
@@ -695,14 +867,14 @@ export default function NgoGalleryPage() {
                 <motion.div
                   animate={{ y: showControls ? 0 : -80, opacity: showControls ? 1 : 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none"
+                  className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center gap-3 pointer-events-auto">
                     <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md`}>
                       {currentItem?.category}
                     </span>
-                    <span className="text-white/70 text-xs font-mono font-bold">
+                    <span className="text-white/80 text-xs font-mono font-bold">
                       {lightboxIndex + 1} / {filteredItems.length}
                     </span>
                   </div>
@@ -794,7 +966,7 @@ export default function NgoGalleryPage() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         onClick={prevImage}
-                        className="absolute left-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-white/10 text-white border border-white/10 backdrop-blur-md"
+                        className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95"
                         aria-label="Previous Image"
                       >
                         <ChevronLeft className="w-6 h-6" />
@@ -805,7 +977,7 @@ export default function NgoGalleryPage() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         onClick={nextImage}
-                        className="absolute right-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-white/10 text-white border border-white/10 backdrop-blur-md"
+                        className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95"
                         aria-label="Next Image"
                       >
                         <ChevronRight className="w-6 h-6" />
@@ -820,9 +992,9 @@ export default function NgoGalleryPage() {
                   onClick={closeLightbox}
                 >
                   {lbLoading && !lbError && (
-                    <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/20 p-6 rounded-2xl backdrop-blur-sm">
+                    <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10">
                       <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
-                      <span className="text-white/60 text-xs font-mono">Loading Photo...</span>
+                      <span className="text-white/80 text-xs font-mono">Loading Photo...</span>
                     </div>
                   )}
 
@@ -885,29 +1057,14 @@ export default function NgoGalleryPage() {
                           className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in bg-black/40 rounded-lg overflow-hidden"
                           onClick={handleImageTap}
                         >
-                          {/* Instantly load low-res thumbnail as progressive placeholder */}
-                          {!lbError && currentItem && (
-                            <Image
-                              src={encodeSrc(currentItem.thumbnailUrl)}
-                              alt=""
-                              fill
-                              unoptimized
-                              priority
-                              className={`object-contain rounded-lg blur-md scale-105 pointer-events-none transition-opacity duration-300 ${
-                                lbLoaded ? "opacity-0" : "opacity-80"
-                              }`}
-                            />
-                          )}
                           <Image
-                            src={encodeSrc(currentItem.imageUrl)}
-                            alt={currentItem.title}
+                            src={encodeSrc(currentItem.imageUrl || currentItem.thumbnailUrl)}
+                            alt={currentItem.title || "Service Photo"}
                             width={1620}
                             height={1080}
                             priority
                             unoptimized
-                            className={`max-w-[95vw] max-h-[70vh] sm:max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
-                              lbLoaded ? "opacity-100" : "opacity-0"
-                            }`}
+                            className="max-w-[95vw] max-h-[70vh] sm:max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300"
                             onLoad={() => {
                               loadedImagesCache.add(currentItem.imageUrl);
                               setLbLoading(false);
@@ -1003,7 +1160,7 @@ export default function NgoGalleryPage() {
                         }`}
                       >
                         <img
-                          src={encodeSrc(item.thumbnailUrl)}
+                          src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
                           alt=""
                           loading="lazy"
                           className="w-full h-full object-cover"
