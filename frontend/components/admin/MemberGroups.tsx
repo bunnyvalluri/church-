@@ -94,42 +94,42 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
       case "YOUTH":
         return {
           icon: Sparkles,
-          badge: "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 border-indigo-200/60 dark:border-indigo-500/20",
+          badge: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/40",
           cardBg: "from-indigo-500/10 via-purple-500/5 to-transparent",
           glow: "border-indigo-500/50 shadow-indigo-500/10",
-          iconBg: "bg-indigo-500 text-white"
+          iconBg: "bg-indigo-600 text-white"
         };
       case "CHILDREN":
         return {
           icon: Smile,
-          badge: "bg-amber-50 dark:bg-amber-500/10 text-amber-650 dark:text-amber-400 border-amber-200/60 dark:border-amber-500/20",
-          cardBg: "from-amber-500/10 via-orange-500/5 to-transparent",
-          glow: "border-amber-500/50 shadow-amber-500/10",
-          iconBg: "bg-amber-500 text-white"
+          badge: "bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/40",
+          cardBg: "from-sky-500/10 via-blue-500/5 to-transparent",
+          glow: "border-sky-500/50 shadow-sky-500/10",
+          iconBg: "bg-sky-600 text-white"
         };
       case "WOMEN":
         return {
           icon: Heart,
-          badge: "bg-pink-50 dark:bg-pink-500/10 text-pink-650 dark:text-pink-400 border-pink-200/60 dark:border-pink-500/20",
-          cardBg: "from-pink-500/10 via-rose-500/5 to-transparent",
-          glow: "border-pink-500/50 shadow-pink-500/10",
-          iconBg: "bg-pink-500 text-white"
+          badge: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/40",
+          cardBg: "from-rose-500/10 via-pink-500/5 to-transparent",
+          glow: "border-rose-500/50 shadow-rose-500/10",
+          iconBg: "bg-rose-600 text-white"
         };
       case "MEN":
         return {
           icon: Users,
-          badge: "bg-sky-50 dark:bg-sky-500/10 text-sky-650 dark:text-sky-400 border-sky-200/60 dark:border-sky-500/20",
-          cardBg: "from-sky-500/10 via-blue-500/5 to-transparent",
-          glow: "border-sky-500/50 shadow-sky-500/10",
-          iconBg: "bg-sky-500 text-white"
+          badge: "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/40",
+          cardBg: "from-blue-500/10 via-indigo-500/5 to-transparent",
+          glow: "border-blue-500/50 shadow-blue-500/10",
+          iconBg: "bg-blue-600 text-white"
         };
       default:
         return {
           icon: Shield,
-          badge: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-500/20",
-          cardBg: "from-emerald-500/10 via-teal-500/5 to-transparent",
-          glow: "border-emerald-500/50 shadow-emerald-500/10",
-          iconBg: "bg-emerald-500 text-white"
+          badge: "bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border-violet-200/60 dark:border-violet-800/40",
+          cardBg: "from-violet-500/10 via-purple-500/5 to-transparent",
+          glow: "border-violet-500/50 shadow-violet-500/10",
+          iconBg: "bg-violet-600 text-white"
         };
     }
   };
@@ -259,50 +259,50 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
       
       {/* ─── Top Overview Metric Bar ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               {isTe ? "మొత్తం సమూహాలు" : isHi ? "कुल समूह" : "Total Groups"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{groups.length}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{groups.length}</h3>
           </div>
           <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
             <Layers className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               {isTe ? "చేరిన విశ్వాసులు" : isHi ? "नामांकित विश्वासी" : "Enrolled Believers"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
           </div>
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
             <UserCheck className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               {isTe ? "విభాగాల సంఖ్య" : isHi ? "इकाइयाँ" : "Fellowship Units"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">5</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">5</h3>
           </div>
-          <div className="p-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 rounded-2xl">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
             <Award className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               {isTe ? "నమోదైన సభ్యులు" : isHi ? "कुल सदस्य" : "Registered Members"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{users.length}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{users.length}</h3>
           </div>
-          <div className="p-3 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 rounded-2xl">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
             <Users className="w-5 h-5" />
           </div>
         </div>
@@ -313,7 +313,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
         
         {/* ─── Left Column: Groups List ─── */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
+          <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
             
             {/* Header & Create Button */}
             <div className="flex items-center justify-between">
@@ -435,7 +435,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
         <div className="lg:col-span-2 space-y-6">
           {selectedGroup ? (
             /* ACTIVE GROUP DETAIL VIEW */
-            <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-6">
+            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-6">
               
               {/* Header Banner */}
               <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900/10 via-purple-900/5 to-slate-900/5 dark:from-indigo-500/10 dark:via-purple-500/5 dark:to-transparent border border-indigo-100 dark:border-white/[0.06] relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">

@@ -388,12 +388,12 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
 
       {/* ─── Top Metric Stats Bar ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               {isTe ? "మొత్తం ప్రార్థనలు" : isHi ? "कुल प्रार्थनाएँ" : "Total Requests"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.total}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{stats.total}</h3>
           </div>
           <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
             <MessageSquare className="w-5 h-5" />
@@ -442,7 +442,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
         
         {/* ─── Left Column: Prayer Requests Index ─── */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
+          <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
             
             {/* Header & Log Action */}
             <div className="flex items-center justify-between">
@@ -576,7 +576,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
             <div className="space-y-6">
               
               {/* Main Details Card */}
-              <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-5">
+              <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-5">
                 
                 {/* Header Info & Status Controls */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

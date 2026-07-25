@@ -825,40 +825,11 @@ export default function AdminDashboard() {
 
   const getActiveItemStyle = (itemId: ActiveViewType) => {
     if (activeView !== itemId) {
-      return "hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white text-gray-500 dark:text-gray-400 border border-transparent";
+      return "hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white text-slate-500 dark:text-gray-400 border border-transparent";
     }
     
-    // Colorful gradients for each section
-    if (itemId === "dashboard") {
-      return "bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.35)] border border-indigo-400/20";
-    }
-    
-    const membersGroup = ["members", "member-groups", "prayers", "families"];
-    if (membersGroup.includes(itemId)) {
-      return "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-[0_4px_15px_rgba(16,185,129,0.35)] border border-emerald-400/20";
-    }
-    
-    const financeGroup = ["donations", "pledges", "transactions", "accounts"];
-    if (financeGroup.includes(itemId)) {
-      return "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-[0_4px_15px_rgba(245,158,11,0.35)] border border-amber-400/20";
-    }
-    
-    const attendanceGroup = ["attendance-records", "event-attendance", "reports"];
-    if (attendanceGroup.includes(itemId)) {
-      return "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(14,165,233,0.35)] border border-sky-400/20";
-    }
-    
-    const contentGroup = ["sermons", "events", "announcements", "media-library", "pages"];
-    if (contentGroup.includes(itemId)) {
-      return "bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(236,72,153,0.35)] border border-pink-400/20";
-    }
-    
-    const settingsGroup = ["settings", "users-roles"];
-    if (settingsGroup.includes(itemId)) {
-      return "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(6,182,212,0.35)] border border-cyan-400/20";
-    }
-    
-    return "bg-[#6366F1] text-white";
+    // Cohesive, royal Indigo & Violet primary active state across sidebar
+    return "bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 border border-indigo-400/30 font-bold";
   };
 
   const getHeaderTitle = () => {
