@@ -107,9 +107,9 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     return addr;
   };
 
-  const [families, setFamilies] = useState<Family[]>(DEFAULT_FAMILIES);
+  const [families, setFamilies] = useState<Family[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedFamily, setSelectedFamily] = useState<Family | null>(DEFAULT_FAMILIES[0]);
+  const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [familySearchQuery, setFamilySearchQuery] = useState("");
   const [memberSearchModal, setMemberSearchModal] = useState("");
 
@@ -122,16 +122,14 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     try {
       const res = await fetch('/api/admin/families');
       const data = await res.json();
-      if (data.success && data.families && data.families.length > 0) {
+      if (data.success && data.families) {
         setFamilies(data.families);
-        setSelectedFamily(data.families[0]);
-      } else {
-        setFamilies(DEFAULT_FAMILIES);
-        setSelectedFamily(DEFAULT_FAMILIES[0]);
+        if (data.families.length > 0) {
+          setSelectedFamily(data.families[0]);
+        }
       }
     } catch (err) {
-      setFamilies(DEFAULT_FAMILIES);
-      setSelectedFamily(DEFAULT_FAMILIES[0]);
+      console.error("Error fetching families", err);
     } finally {
       setLoading(false);
     }

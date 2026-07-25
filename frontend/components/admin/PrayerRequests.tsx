@@ -248,21 +248,19 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
         const data = await res.json();
         
         let list = data.prayers || [];
-        if (list.length > 0) {
-          const mapped = list.map((p: any) => {
-            const user = users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
-            return { ...p, user, assignedPartners: p.assignedPartners || [] };
-          });
-          setPrayers(mapped);
+        const mapped = list.map((p: any) => {
+          const user = users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
+          return { ...p, user, assignedPartners: p.assignedPartners || [] };
+        });
+        setPrayers(mapped);
+        if (mapped.length > 0) {
           setSelectedPrayer(mapped[0]);
         } else {
-          // Use rich default prayers if backend returns empty
-          setPrayers(DEFAULT_PRAYERS);
-          setSelectedPrayer(DEFAULT_PRAYERS[0]);
+          setSelectedPrayer(null);
         }
       } catch (e) {
-        setPrayers(DEFAULT_PRAYERS);
-        setSelectedPrayer(DEFAULT_PRAYERS[0]);
+        setPrayers([]);
+        setSelectedPrayer(null);
       } finally {
         setLoading(false);
       }

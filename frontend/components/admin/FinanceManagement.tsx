@@ -17,9 +17,7 @@ import {
   ChevronDown, 
   ArrowUpRight, 
   ArrowDownRight, 
-  Trash2,
-  Lock,
-  QrCode
+  Trash2
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
@@ -60,85 +58,6 @@ interface Transaction {
   date: string;
   account: string;
 }
-
-const DEFAULT_PLEDGES: Pledge[] = [
-  {
-    id: "plg_001",
-    donorName: "Sarah Thomas",
-    donorEmail: "sarah@kcm-church.com",
-    committedAmount: 100000,
-    paidAmount: 40000,
-    targetDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
-    purpose: "BUILDING",
-    status: "ACTIVE"
-  },
-  {
-    id: "plg_002",
-    donorName: "David Raju",
-    donorEmail: "david@kcm-church.com",
-    committedAmount: 50000,
-    paidAmount: 50000,
-    targetDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    purpose: "MISSIONS",
-    status: "FULFILLED"
-  },
-  {
-    id: "plg_003",
-    donorName: "John Babu",
-    donorEmail: "john.babu@gmail.com",
-    committedAmount: 25000,
-    paidAmount: 10000,
-    targetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    purpose: "BUILDING",
-    status: "ACTIVE"
-  }
-];
-
-const DEFAULT_TRANSACTIONS: Transaction[] = [
-  {
-    id: "tx_001",
-    type: "INFLOW",
-    amount: 25000,
-    category: "TITHE",
-    description: "Sunday Morning Bilingual Service Tithes & Offerings",
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    account: "General Fund"
-  },
-  {
-    id: "tx_002",
-    type: "OUTFLOW",
-    amount: 4500,
-    category: "UTILITIES",
-    description: "Jeedimetla Sanctuary Electricity & High-Speed Fiber Internet Bill",
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    account: "General Fund"
-  },
-  {
-    id: "tx_003",
-    type: "OUTFLOW",
-    amount: 15000,
-    category: "CHARITY",
-    description: "Slum Outreach Medical Relief & Free Food Distribution",
-    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    account: "Charity Fund"
-  },
-  {
-    id: "tx_004",
-    type: "INFLOW",
-    amount: 50000,
-    category: "BUILDING",
-    description: "Building Sanctuary Expansion Member Contribution",
-    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    account: "Building Fund"
-  }
-];
-
-const DEFAULT_ACCOUNTS = [
-  { id: "acc_001", name: "General Fund", balance: 245000, description: "Daily operating expenses, utility payments, and staff salaries." },
-  { id: "acc_002", name: "Building Fund", balance: 580000, description: "Capital collections for church sanctuary expansion projects." },
-  { id: "acc_003", name: "Missions Fund", balance: 175000, description: "Support for rural gospel missions, pastors support, and outreach programs." },
-  { id: "acc_004", name: "Charity Fund", balance: 95000, description: "Emergency relief, believer education supports, and food distributions." }
-];
 
 export default function FinanceManagement({ 
   donations = [], 
@@ -218,22 +137,14 @@ export default function FinanceManagement({
     }
   };
 
-  // Synchronized lists with fallbacks
-  const activePledges = useMemo(() => {
-    return pledgesProp.length > 0 ? pledgesProp : DEFAULT_PLEDGES;
-  }, [pledgesProp]);
-
-  const activeTransactions = useMemo(() => {
-    return transactionsProp.length > 0 ? transactionsProp : DEFAULT_TRANSACTIONS;
-  }, [transactionsProp]);
-
-  const activeAccounts = useMemo(() => {
-    return accountsProp.length > 0 ? accountsProp : DEFAULT_ACCOUNTS;
-  }, [accountsProp]);
+  // Real database props (no fake defaults)
+  const activePledges = useMemo(() => pledgesProp, [pledgesProp]);
+  const activeTransactions = useMemo(() => transactionsProp, [transactionsProp]);
+  const activeAccounts = useMemo(() => accountsProp, [accountsProp]);
 
   const [subView, setSubView] = useState<"donations" | "pledges" | "transactions" | "accounts" | "config">(activeSubTab);
   
-  // Local state for modals & forms
+  // Local state for modals
   const [isPledgeOpen, setIsPledgeOpen] = useState(false);
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   
@@ -243,9 +154,7 @@ export default function FinanceManagement({
   const [newPledge, setNewPledge] = useState({ donorName: "", donorEmail: "", committedAmount: "", targetDate: "", purpose: "BUILDING" });
   const [newTx, setNewTx] = useState({ type: "OUTFLOW" as "INFLOW" | "OUTFLOW", amount: "", category: "UTILITIES", description: "", account: "General Fund" });
 
-  // CMS Form fields state
   const [amountsList, setAmountsList] = useState([500, 1000, 2500, 5000, 10000]);
-  const [newAmountInput, setNewAmountInput] = useState("");
 
   // Metrics Calculations
   const completedDonations = useMemo(() => {
@@ -392,7 +301,6 @@ export default function FinanceManagement({
       {/* ────────────────── SUB-VIEW: DONATIONS ────────────────── */}
       {subView === "donations" && (
         <div className="space-y-6">
-          {/* Table Control */}
           <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3 w-full md:w-auto">
               <div className="relative w-full md:w-72">
@@ -569,6 +477,20 @@ export default function FinanceManagement({
                 </div>
               );
             })}
+
+            {activePledges.length === 0 && (
+              <div className="col-span-full py-16 text-center bg-white dark:bg-[#111827] border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center p-8 gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+                  <Heart className="w-7 h-7" />
+                </div>
+                <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                  {isTe ? "ఇంకా ఎలాంటి ఆర్థిక వాగ్దానాలు నమోదు కాలేదు" : isHi ? "अभी तक कोई वित्तीय प्रतिबद्धता दर्ज नहीं की गई है" : "No active pledges recorded yet"}
+                </h4>
+                <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs font-semibold">
+                  {isTe ? "విశ్వాస అభివృద్ధి వాగ్దానాన్ని జోడించడానికి '+ వాగ్దానం చేయండి' క్లిక్ చేయండి." : isHi ? "नया रिकॉर्ड जोड़ने के लिए '+ वादा करें' पर क्लिक करें।" : "Click '+ Make Pledge' above to record a new development commitment."}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -636,7 +558,7 @@ export default function FinanceManagement({
                   {activeTransactions.length === 0 && (
                     <tr>
                       <td colSpan={7} className="text-center py-16 text-xs text-slate-400 dark:text-gray-500 font-semibold">
-                        {t.noRecords}
+                        {isTe ? "ఖాతా వివరాల జర్నల్‌లో ఎలాంటి లావాదేవీలు లేవు. '+ లావాదేవీ రికార్డు చేయండి' క్లిక్ చేయండి." : isHi ? "लेनदेन बहीखाते में कोई रिकॉर्ड दर्ज नहीं है। नया रिकॉर्ड जोड़ने के लिए '+ लेनदेन दर्ज करें' पर क्लिक करें।" : "No accounting journal transactions recorded yet. Click '+ Record Transaction' above to add your first record."}
                       </td>
                     </tr>
                   )}
