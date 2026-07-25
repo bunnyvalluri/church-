@@ -294,125 +294,147 @@ export default function VolunteerClientPage() {
       </section>
 
       {/* 📝 Volunteer Form */}
-      <section ref={formRef} className="py-16 md:py-24 bg-white dark:bg-slate-950 relative z-10">
+      <section ref={formRef} className="py-16 md:py-24 bg-slate-50/80 dark:bg-slate-950 relative z-10">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-xl">
-            <div className="text-center max-w-xl mx-auto mb-8">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-2 font-serif">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-purple-500/5">
+            <div className="text-center max-w-xl mx-auto mb-10">
+              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <HeartHandshake className="w-7 h-7" />
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-3 font-serif tracking-tight">
                 {!mounted ? "Volunteer Application" : t.pages.volunteer.formTitle}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                Fill in your details below and our team will get in touch with you shortly.
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-light">
+                Fill in your details below and our ministry leaders will reach out to get you plugged in.
               </p>
             </div>
 
             {isSubmitted ? (
-              <div className="text-center py-10">
-                <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 font-serif">Application Submitted!</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                  Thank you, {formData.fname || "friend"}! We have received your application to serve in <strong>{selectedArea}</strong>.
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong>{formData.fname || "friend"}</strong>! We have received your application to serve in <strong>{selectedArea}</strong>.
                 </p>
               </div>
             ) : (
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                <div className="grid md:grid-cols-2 gap-5">
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       {!mounted ? "First Name" : t.pages.volunteer.fname} *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.fname}
-                      onChange={(e) => setFormData({ ...formData, fname: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-                      placeholder={!mounted ? "First Name" : t.pages.volunteer.fname}
-                    />
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        required
+                        value={formData.fname}
+                        onChange={(e) => setFormData({ ...formData, fname: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm"
+                        placeholder={!mounted ? "First Name" : t.pages.volunteer.fname}
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       {!mounted ? "Last Name" : t.pages.volunteer.lname} *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.lname}
-                      onChange={(e) => setFormData({ ...formData, lname: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-                      placeholder={!mounted ? "Last Name" : t.pages.volunteer.lname}
-                    />
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        required
+                        value={formData.lname}
+                        onChange={(e) => setFormData({ ...formData, lname: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm"
+                        placeholder={!mounted ? "Last Name" : t.pages.volunteer.lname}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
+                <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      {!mounted ? "Email" : t.pages.volunteer.email} *
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      {!mounted ? "Email Address" : t.pages.volunteer.email} *
                     </label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-                      placeholder="example@email.com"
-                    />
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm"
+                        placeholder="example@email.com"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      {!mounted ? "Phone" : t.pages.volunteer.phone} *
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      {!mounted ? "Phone Number" : t.pages.volunteer.phone} *
                     </label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-                      placeholder="+91 98765 43210"
-                    />
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm"
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {!mounted ? "Area of Interest" : t.pages.volunteer.area} *
                   </label>
-                  <select
-                    value={selectedArea}
-                    onChange={(e) => setSelectedArea(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-                  >
-                    <option value="Select an area">{!mounted ? "Select an area" : t.pages.volunteer.areaPlaceholder}</option>
-                    <option value="Worship Team">{!mounted ? "Worship Team" : (language === "te" ? "ఆరాధన బృందం" : language === "hi" ? "ఆరాధనా టీమ్" : "Worship Team")}</option>
-                    <option value="Children's Ministry">{!mounted ? "Children's Ministry" : (language === "te" ? "పిల్లల పరిచర్య" : language === "hi" ? "బాల మంత్రాలయా" : "Children's Ministry")}</option>
-                    <option value="Hospitality">{!mounted ? "Hospitality" : t.pages.volunteer.hospitalityTitle}</option>
-                    <option value="Technical Team">{!mounted ? "Technical Team" : t.pages.volunteer.techTitle}</option>
-                    <option value="Outreach">{!mounted ? "Outreach" : (language === "te" ? "అవుట్‌రీచ్ పరిచర్య" : language === "hi" ? "ఆవుటరీచ్ మంత్రాలయా" : "Outreach")}</option>
-                    <option value="Facilities">{!mounted ? "Facilities" : t.pages.volunteer.facilitiesTitle}</option>
-                  </select>
+                  <div className="relative">
+                    <Layers className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    <select
+                      value={selectedArea}
+                      onChange={(e) => setSelectedArea(e.target.value)}
+                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm cursor-pointer"
+                    >
+                      <option value="Select an area">{!mounted ? "Select an area" : t.pages.volunteer.areaPlaceholder}</option>
+                      <option value="Worship Team">{!mounted ? "Worship Team" : (language === "te" ? "ఆరాధన బృందం" : language === "hi" ? "ఆరాధనా టీమ్" : "Worship Team")}</option>
+                      <option value="Children's Ministry">{!mounted ? "Children's Ministry" : (language === "te" ? "పిల్లల పరిచర్య" : language === "hi" ? "బాల మంత్రాలయా" : "Children's Ministry")}</option>
+                      <option value="Hospitality">{!mounted ? "Hospitality" : t.pages.volunteer.hospitalityTitle}</option>
+                      <option value="Technical Team">{!mounted ? "Technical Team" : t.pages.volunteer.techTitle}</option>
+                      <option value="Outreach">{!mounted ? "Outreach" : (language === "te" ? "అవుట్‌రీచ్ పరిచర్య" : language === "hi" ? "ఆవుటరీచ్ మంత్రాలయా" : "Outreach")}</option>
+                      <option value="Facilities">{!mounted ? "Facilities" : t.pages.volunteer.facilitiesTitle}</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {!mounted ? "Tell us about yourself" : t.pages.volunteer.about}
                   </label>
-                  <textarea
-                    rows={4}
-                    value={formData.about}
-                    onChange={(e) => setFormData({ ...formData, about: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none text-sm resize-none"
-                    placeholder={!mounted ? "Share your experience, skills, and why you want to volunteer..." : t.pages.volunteer.aboutPlaceholder}
-                  />
+                  <div className="relative">
+                    <FileText className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+                    <textarea
+                      rows={4}
+                      value={formData.about}
+                      onChange={(e) => setFormData({ ...formData, about: e.target.value })}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none text-sm transition-all shadow-sm resize-none"
+                      placeholder={!mounted ? "Share your experience, skills, and why you want to volunteer..." : t.pages.volunteer.aboutPlaceholder}
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg flex items-center justify-center gap-2 active:scale-98"
+                  className="w-full py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl transition-all duration-200 shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2.5 cursor-pointer mt-2"
                 >
                   <Send className="w-4 h-4" />
                   <span>{!mounted ? "Submit Application" : t.pages.volunteer.submit}</span>
