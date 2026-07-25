@@ -10,7 +10,6 @@ import {
   Clock,
   Phone,
   Navigation,
-  ExternalLink,
   Church,
   BookOpen,
   Users,
@@ -39,12 +38,48 @@ export default function LocationsPage() {
   const getBranchData = () => {
     const defaultBranches = [
       {
+        id: "shapur",
+        name: isTelugu
+          ? "షాపూర్ నగర్ బ్రాంచ్"
+          : isHindi
+          ? "शापुर नगर शाखा"
+          : "Shapur Nagar Branch",
+        title: t.services?.shapur?.title || "Shapur Prayer Service",
+        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur location.",
+        address: isTelugu
+          ? "15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్, జీడిమెట్ల, హైదరాబాద్, తెలంగాణ 500055"
+          : isHindi
+          ? "15-201, विवेकानंद नगर, श्रीनिवास नगर, जीडीमेटला, हैदराबाद, तेलंगाना 500055"
+          : "15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055",
+        phone: "+91 97040 90069",
+        alternatePhone: "+91 96409 43777",
+        mapUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
+        services: [
+          {
+            day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
+            time: "6:00 PM",
+            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "प्रार्थना सभा" : "Prayer Meeting",
+          },
+          {
+            day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
+            time: "6:00 PM",
+            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+          },
+        ],
+        serviceBorder: "border-l-purple-500",
+        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+        btnColor: "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-600/20",
+        isMain: false,
+        Icon: BookOpen,
+        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+      },
+      {
         id: "subhash",
         name: isTelugu
           ? "సుభాష్ నగర్ (ప్రధాన మందిరం)"
           : isHindi
           ? "सुभाष नगर (मुख्य अभयारण्य)"
-          : "Subhash Nagar (Main Sanctuary)",
+          : "Subhash Nagar Branch (Main Sanctuary)",
         title: t.services?.subhash?.title || "Subhash Nagar Morning Prayer",
         description: `${t.services?.subhash?.desc || "Start your Sunday with early morning worship and powerful prayer."} ${t.services?.subhash?.secondDesc || ""}`,
         address: isTelugu
@@ -71,48 +106,12 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        serviceBorder: "border-l-purple-500",
-        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
+        serviceBorder: "border-l-indigo-500",
+        badgeBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+        btnColor: "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-md shadow-indigo-600/20",
         isMain: true,
         Icon: Church,
-        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-      },
-      {
-        id: "shapur",
-        name: isTelugu
-          ? "షాపూర్ బ్రాంచ్"
-          : isHindi
-          ? "शापुर शाखा"
-          : "Shapur Branch",
-        title: t.services?.shapur?.title || "Shapur Prayer Service",
-        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur location.",
-        address: isTelugu
-          ? "15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్, జీడిమెట్ల, హైదరాబాద్, తెలంగాణ 500055"
-          : isHindi
-          ? "15-201, विवेकानंद नगर, श्रीनिवास नगर, जीडीमेटला, हैदराबाद, तेलंगाना 500055"
-          : "15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055",
-        phone: "+91 97040 90069",
-        alternatePhone: "+91 96409 43777",
-        mapUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
-        services: [
-          {
-            day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
-            time: "6:00 PM",
-            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "प्रार्थना सभा" : "Prayer Meeting",
-          },
-          {
-            day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
-            time: "6:00 PM",
-            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
-          },
-        ],
-        serviceBorder: "border-l-blue-500",
-        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20",
-        isMain: false,
-        Icon: BookOpen,
-        iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+        iconBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
       },
       {
         id: "bahadur",
@@ -144,7 +143,7 @@ export default function LocationsPage() {
         ],
         serviceBorder: "border-l-emerald-500",
         badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20",
+        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20",
         isMain: false,
         Icon: Users,
         iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
