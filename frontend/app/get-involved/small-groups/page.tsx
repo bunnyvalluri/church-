@@ -25,6 +25,10 @@ import {
   ChevronRight
 } from "lucide-react";
 
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import BackToHome from "@/components/ui/BackToHome";
+
 export default function SmallGroupsPage() {
   const { t } = useLanguage();
   const sg = t?.pages?.smallGroups || {};
@@ -164,14 +168,22 @@ export default function SmallGroupsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-purple-500 selection:text-white">
+      {/* 🧭 Global Navigation Bar */}
+      <Navbar />
+
       {/* 🌌 Hero Section - Clean Deep Slate with Subtle Purple Orbs */}
-      <section className="relative py-20 md:py-28 bg-slate-950 text-white overflow-hidden shadow-xl">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-slate-950 text-white overflow-hidden shadow-xl">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            {/* Back to Home Button */}
+            <div className="mb-6 flex justify-center">
+              <BackToHome label={t?.nav?.home || "Home"} />
+            </div>
+
             {/* Pill Header */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-purple-200 text-xs sm:text-sm font-medium mb-6 shadow-md">
               <Sparkles className="w-4 h-4 text-purple-300" />
@@ -477,6 +489,9 @@ export default function SmallGroupsPage() {
           </div>
         </div>
       </section>
+
+      {/* 🦶 Global Footer */}
+      <Footer />
 
       {/* 📥 Join Group Modal */}
       {activeModalGroup && (
