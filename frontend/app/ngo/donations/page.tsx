@@ -32,16 +32,24 @@ import {
   MessageSquare,
   Globe,
   Smartphone,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  Award,
+  Zap,
+  TrendingUp,
+  Users,
+  Flame,
+  Calendar,
+  CreditCard,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { translations } from "@/lib/translations";
 import io from "socket.io-client";
 import { DonationAgentProvider, useDonationAgent } from "@/components/donations/DonationAgentProvider";
 import { AgentStatusBar } from "@/components/donations/AgentStatusBar";
 import { PaymentStateMonitor } from "@/components/donations/PaymentStateMonitor";
-
 
 // Brand SVG Icon Components for GPay, PhonePe, Paytm, and BHIM UPI
 const GPayIcon = () => (
@@ -78,7 +86,7 @@ const BhimIcon = () => (
   </svg>
 );
 
-// Color themes for preset donation amount buttons with high contrast legibility
+// Color themes for preset donation amount buttons
 const PRESET_COLOR_SCHEMES = [
   {
     dot: "bg-emerald-500",
@@ -111,16 +119,6 @@ const PRESET_COLOR_SCHEMES = [
     selected: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-md shadow-purple-500/25 scale-[1.02]"
   }
 ];
-
-// Icon mapping helper
-const ICON_MAP: Record<string, any> = {
-  Heart,
-  Gift,
-  Sparkles,
-  Building,
-  ShieldCheck,
-  Globe,
-};
 
 interface PresetAmount {
   id: string;
@@ -187,7 +185,7 @@ const DEFAULT_CAUSES: CauseItem[] = [
     icon: "Heart",
     category: "OUTREACH",
     targetAmount: 500000,
-    raisedAmount: 145000,
+    raisedAmount: 185000,
   },
   {
     id: "c2",
@@ -197,17 +195,17 @@ const DEFAULT_CAUSES: CauseItem[] = [
     icon: "Gift",
     category: "BENEVOLENCE",
     targetAmount: 300000,
-    raisedAmount: 98000,
+    raisedAmount: 142000,
   },
   {
     id: "c3",
     code: "FOOD",
     nameEn: "Fresh Food Packets Drive",
-    descEn: "Daily fresh meals for underprivileged families.",
-    icon: "Gift",
+    descEn: "Daily fresh meals for underprivileged hospital caretakers and families.",
+    icon: "Sparkles",
     category: "FOOD_AID",
-    targetAmount: 200000,
-    raisedAmount: 110000,
+    targetAmount: 250000,
+    raisedAmount: 198000,
   },
 ];
 
@@ -224,14 +222,57 @@ const DEFAULT_FORM_FIELDS: FormFieldRule[] = [
   { id: "f11", fieldName: "isAnonymous", label: "Make donation anonymous", placeholder: "", isRequired: false, isVisible: true, displayOrder: 11, fieldType: "checkbox" },
 ];
 
+// Pure hydration-safe Indian numbering format (Node SSR & Client Browser identical)
+function formatNumber(num: number | string, withDecimals: boolean = false): string {
+  const parsed = typeof num === "number" ? num : parseFloat(num || "0");
+  if (isNaN(parsed)) return "0";
+  const parts = parsed.toFixed(withDecimals ? 2 : 0).split(".");
+  let lastThree = parts[0].slice(-3);
+  const otherNumbers = parts[0].slice(0, -3);
+  if (otherNumbers !== "") {
+    lastThree = "," + lastThree;
+  }
+  const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+  return withDecimals ? `${formatted}.${parts[1]}` : formatted;
+}
+
+// Impact Calculator Micro-Copy mapping
+const IMPACT_MAPPING: Record<number, string> = {
+  500: "Provides 10 fresh hot meal packets for hospital patients and caretakers.",
+  1000: "Funds 1 essential medical supply & hygiene care kit.",
+  2000: "Supports 1 week of physical therapy and shelter assistance.",
+  5000: "Sponsors 1 full month of ration and grocery supplies for a family in need.",
+  10000: "Funds emergency medical aid equipment & physical rehabilitation gear.",
+};
+
+
+// FAQ Items
+const FAQ_ITEMS = [
+  {
+    question: "Is my donation tax-deductible under Section 80G?",
+    answer: "Yes! All donations made to Kingdom of Christ Ministries qualify for 50% tax exemption under Section 80G of the Income Tax Act. Check 'Request 80G Exemption' in Step 2 to enter your PAN number, and your official tax receipt will be issued instantly."
+  },
+  {
+    question: "How is my donation utilized?",
+    answer: "100% of direct project donations go towards purchasing hot meals, medical kits, patient care packages, and wheelchair equipment for Gandhi & NIMS hospital outreach, as well as local shelter homes."
+  },
+  {
+    question: "How do I pay using UPI on mobile or desktop?",
+    answer: "On desktop, scan the dynamic QR code using GPay, PhonePe, Paytm, or BHIM. On mobile, tap any of the UPI app buttons to open your preferred payment app directly."
+  },
+  {
+    question: "Will I get an instant receipt?",
+    answer: "Yes! As soon as your payment is processed, you can download a PDF digital receipt, share it on WhatsApp, or have it emailed directly to your inbox."
+  }
+];
+
 function NgoDonationsContent() {
   const agent = useDonationAgent();
-
   const { user } = useAuth();
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
-  // Dynamic Metadata State initialized with instant defaults
+  // Metadata state
   const [presetAmounts, setPresetAmounts] = useState<PresetAmount[]>(DEFAULT_PRESETS);
   const [causes, setCauses] = useState<CauseItem[]>(DEFAULT_CAUSES);
   const [branches, setBranches] = useState<BranchItem[]>(DEFAULT_BRANCHES);
@@ -244,7 +285,10 @@ function NgoDonationsContent() {
     qrExpiryMinutes: 10,
   });
 
-  // Wizard Step State (1: Amount, 2: Donor Info, 3: Dynamic QR Payment, 4: Result)
+  // Frequency Toggle (One-Time vs Monthly)
+  const [frequency, setFrequency] = useState<"ONE_TIME" | "MONTHLY">("ONE_TIME");
+
+  // Wizard Step State (1: Amount & Cause, 2: Donor Details, 3: Dynamic QR, 4: Result)
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [paymentStatus, setPaymentStatus] = useState<"PENDING" | "PROCESSING" | "SUCCESS" | "FAILED" | "EXPIRED">("PENDING");
 
@@ -254,7 +298,8 @@ function NgoDonationsContent() {
   const [selectedCause, setSelectedCause] = useState<string>("CHARITY");
   const [selectedBranch, setSelectedBranch] = useState<string>("b1");
 
-  // Dynamic Donor Details State
+  // 80G Tax Exemption & Donor details
+  const [wantTaxExemption, setWantTaxExemption] = useState<boolean>(false);
   const [donorDetails, setDonorDetails] = useState<Record<string, any>>({
     donorName: "",
     donorPhone: "",
@@ -295,9 +340,11 @@ function NgoDonationsContent() {
   const [errorMessage, setErrorMessage] = useState("");
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type?: "success" | "error" } | null>(null);
+  const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const socketRef = useRef<any>(null);
 
   // Read URL query parameter for donation amount pre-selection
   useEffect(() => {
@@ -309,18 +356,14 @@ function NgoDonationsContent() {
       }
     }
   }, []);
-  const socketRef = useRef<any>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // LanguageProvider already returns translations.en before mount (its own `mounted` guard).
-  // Using t directly here is safe and avoids a double-guard text mismatch (hydration error).
-  const ngoT = t.ngo;
+  const ngoT = t?.ngo || {};
 
-
-  // ── 1. Fetch Dynamic Configuration Metadata ─────────────────────────────────
+  // Fetch dynamic configuration
   useEffect(() => {
     if (!mounted) return;
 
@@ -330,13 +373,12 @@ function NgoDonationsContent() {
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
-            setPresetAmounts(data.amounts || []);
-            setCauses(data.causes || []);
-            setBranches(data.branches || []);
-            setFormFields(data.formFields || []);
+            if (data.amounts?.length > 0) setPresetAmounts(data.amounts);
+            if (data.causes?.length > 0) setCauses(data.causes);
+            if (data.branches?.length > 0) setBranches(data.branches);
+            if (data.formFields?.length > 0) setFormFields(data.formFields);
             if (data.settings) setSettings(data.settings);
 
-            // Set dynamic defaults
             const defaultAmt = data.amounts?.find((a: PresetAmount) => a.isDefault)?.amount;
             if (defaultAmt) setAmount(defaultAmt.toString());
             else if (data.amounts?.length > 0) setAmount(data.amounts[0].amount.toString());
@@ -371,6 +413,14 @@ function NgoDonationsContent() {
 
   const getFinalAmount = () => (customAmount ? customAmount : amount);
 
+  // Quick Amount Adjuster
+  const handleQuickAdd = (addVal: number) => {
+    const current = Number(getFinalAmount() || 0);
+    const nextVal = current + addVal;
+    setCustomAmount(nextVal.toString());
+    setAmount("");
+  };
+
   const validateStep1 = () => {
     const finalAmt = Number(getFinalAmount());
     if (isNaN(finalAmt) || finalAmt <= 0) {
@@ -381,7 +431,6 @@ function NgoDonationsContent() {
     return true;
   };
 
-  // ── Step 2 Validation ────────────────────────────────────────────────────────
   const validateStep2 = () => {
     for (const field of formFields) {
       if (field.isVisible && field.isRequired) {
@@ -407,11 +456,15 @@ function NgoDonationsContent() {
       }
     }
 
+    if (wantTaxExemption && (!donorDetails.panNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(donorDetails.panNumber))) {
+      setErrorMessage("Please enter a valid 10-character PAN card number for 80G tax exemption.");
+      return false;
+    }
+
     setErrorMessage("");
     return true;
   };
 
-  // ── Handlers for wizard navigation ──────────────────────────────────────────
   const handleProceedToStep2 = () => {
     if (validateStep1()) {
       setStep(2);
@@ -432,6 +485,8 @@ function NgoDonationsContent() {
           amount: Number(finalAmt),
           purpose: selectedCause,
           branchId: selectedBranch,
+          frequency,
+          wantTaxExemption,
           userId: user?.uid || null,
           ...donorDetails,
         }),
@@ -453,7 +508,6 @@ function NgoDonationsContent() {
       setPaymentStatus("PROCESSING");
       setStep(3);
 
-      // Connect status polling and Socket.IO
       startPollingStatus(data.sessionId, data.donationId);
       connectSocket(data.sessionId, data.referenceNumber);
     } catch (err: any) {
@@ -464,7 +518,7 @@ function NgoDonationsContent() {
     }
   };
 
-  // ── Countdown Timer ─────────────────────────────────────────────────────────
+  // Dynamic Countdown Timer
   useEffect(() => {
     if (!expiresAt || step !== 3 || paymentStatus === "SUCCESS") return;
 
@@ -488,7 +542,7 @@ function NgoDonationsContent() {
     };
   }, [expiresAt, step, paymentStatus]);
 
-  // ── Real-Time Status Polling ────────────────────────────────────────────────
+  // Real-Time Polling
   const startPollingStatus = useCallback((sid: string, donId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
 
@@ -514,7 +568,7 @@ function NgoDonationsContent() {
     }, 3000);
   }, []);
 
-  // ── Socket.IO Real-Time Listener ────────────────────────────────────────────
+  // Socket.IO Listener
   const connectSocket = useCallback((sid: string, refNum: string) => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     const socket = io(socketUrl, {
@@ -528,10 +582,6 @@ function NgoDonationsContent() {
       socket.emit("join", "ngo:donations");
     });
 
-    socket.on("connect_error", () => {
-      // Quietly fall back to polling
-    });
-
     socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === refNum) {
         handlePaymentSuccess(data.donationId || donationId);
@@ -543,7 +593,6 @@ function NgoDonationsContent() {
     };
   }, [user, donationId]);
 
-  // Cleanup timers & sockets
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -552,7 +601,6 @@ function NgoDonationsContent() {
     };
   }, []);
 
-  // ── Verification / Completion Handler ───────────────────────────────────────
   const handlePaymentSuccess = async (targetDonationId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
@@ -599,7 +647,6 @@ function NgoDonationsContent() {
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-  // ── Mobile Deep Link Handler for UPI Apps ───────────────────────────────
   const handleOpenUpiApp = (pkg?: string, scheme?: string) => {
     if (typeof window === "undefined") return;
 
@@ -623,30 +670,23 @@ function NgoDonationsContent() {
     if (isAndroid) {
       if (pkg) {
         const playStoreUrl = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkg}`);
-        // Chrome resolves intent:// and opens specific app directly.
-        // Falls back to Play Store if the app isn't installed.
         window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
       } else {
-        // Universal Android UPI Chooser intent
         const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
         window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
       }
     } else if (isIOS) {
       if (scheme) {
         let targetUrl = scheme;
-        if (!targetUrl.includes("?")) {
-          targetUrl += targetUrl.endsWith("/") ? "?" : "/?";
-        } else if (!targetUrl.endsWith("&") && !targetUrl.endsWith("?")) {
-          targetUrl += "&";
-        }
+        if (!targetUrl.includes("?")) targetUrl += targetUrl.endsWith("/") ? "?" : "/?";
+        else if (!targetUrl.endsWith("&") && !targetUrl.endsWith("?")) targetUrl += "&";
         window.location.href = `${targetUrl}${params}`;
       } else {
         window.location.href = `upi://pay?${params}`;
       }
     } else {
-      // Desktop / universal fallback
       window.location.href = `upi://pay?${params}`;
-      showToast("Opening UPI payment app... If on desktop, scan the QR code above.", "success");
+      showToast("Opening UPI app... If on desktop, scan the QR code above.", "success");
     }
   };
 
@@ -676,9 +716,11 @@ function NgoDonationsContent() {
   };
 
   const activeCauseObj = causes.find((c) => c.code === selectedCause);
+  const currentNumAmount = Number(getFinalAmount() || "0");
+  const currentImpactText = IMPACT_MAPPING[currentNumAmount] || "Every rupee directly touches and transforms a life in need!";
 
   return (
-    <div className="py-12 sm:py-16 min-h-[85vh]">
+    <div className="py-8 sm:py-14 min-h-[85vh] space-y-10 sm:space-y-14">
       {/* ── TOAST NOTIFICATION ───────────────────────────────────────────── */}
       <AnimatePresence>
         {toast && (
@@ -702,75 +744,183 @@ function NgoDonationsContent() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        {/* Live Agent Status & Guidance */}
+      {/* Top Banner: AI Agent Status & Payment Monitors */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <AgentStatusBar />
-
-        {/* Dynamic Payment State Machine Monitor */}
         {step === 3 && <PaymentStateMonitor />}
+
+        {/* ── TOP IMPACT METRICS BAR ────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 shadow-sm backdrop-blur-md text-slate-800 dark:text-slate-200">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">₹14.8L+</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Total Raised</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Users className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">12,500+</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Patients & Families</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+              <Flame className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">45,000+</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Hot Meals Served</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+              <Award className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">100% Tax Exempt</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Section 80G Certified</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-
+      {/* Main Grid Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-12 gap-12 max-w-5xl mx-auto items-start">
-          
-          {/* ── LEFT COLUMN: NGO Hero & Information ─────────────────────────── */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-6xl mx-auto items-start">
+
+          {/* ── LEFT COLUMN: Hero & Cause Explorer ─────────────────────────── */}
           <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/40 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
-              <Heart className="w-3.5 h-3.5 text-purple-500 animate-pulse" />
-              <span>{ngoT.donationsPage.tag}</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-wider shadow-sm">
+              <Heart className="w-4 h-4 text-purple-500 animate-pulse fill-purple-500/20" />
+              <span>{ngoT?.donationsPage?.tag || "KCM NGO SOCIAL SERVICE"}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
-              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-500 dark:from-purple-300 dark:via-indigo-300 dark:to-purple-200 bg-clip-text text-transparent">Our Projects</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
+              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 dark:from-purple-300 dark:via-indigo-300 dark:to-rose-300 bg-clip-text text-transparent">Our Projects</span>
             </h1>
 
-            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-              {ngoT.donationsPage.desc}
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed font-medium">
+              {ngoT?.donationsPage?.desc || "Your financial contributions directly purchase fresh food packets, medical kits, support assistants, and essential gear for hospital patients and handicap shelters."}
             </p>
 
-            {/* Selected Cause Live Target Card */}
-            {activeCauseObj && activeCauseObj.targetAmount && (
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-xs space-y-2">
-                <div className="flex justify-between font-bold">
-                  <span className="text-slate-800 dark:text-slate-200">{activeCauseObj.nameEn} Goal</span>
-                  <span className="text-purple-600 dark:text-purple-400">
-                    ₹{(activeCauseObj.raisedAmount || 0).toLocaleString()} / ₹{(activeCauseObj.targetAmount || 0).toLocaleString()}
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-purple-600 h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(100, Math.round(((activeCauseObj.raisedAmount || 0) / (activeCauseObj.targetAmount || 1)) * 100))}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Interactive Giving Frequency Switcher */}
+            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-1 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setFrequency("ONE_TIME")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  frequency === "ONE_TIME"
+                    ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-md border border-slate-200/80 dark:border-white/10"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5 text-purple-500" />
+                <span>One-Time Donation</span>
+              </button>
 
-            {/* Beneficiaries & Exemption Notice Card */}
+              <button
+                type="button"
+                onClick={() => setFrequency("MONTHLY")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
+                  frequency === "MONTHLY"
+                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-500"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Monthly Partner</span>
+                <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ml-1">
+                  2x Impact
+                </span>
+              </button>
+            </div>
+
+            {/* Live Cause Explorer Selector */}
+            <div className="space-y-3 pt-1">
+              <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                Select Cause to Support
+              </label>
+
+              <div className="space-y-2.5">
+                {causes.map((c) => {
+                  const isSelected = selectedCause === c.code;
+                  const target = c.targetAmount || 1;
+                  const raised = c.raisedAmount || 0;
+                  const pct = Math.min(100, Math.round((raised / target) * 100));
+
+                  return (
+                    <div
+                      key={c.id}
+                      onClick={() => setSelectedCause(c.code)}
+                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-purple-50/80 dark:bg-purple-950/40 border-purple-500 shadow-md ring-1 ring-purple-500/20"
+                          : "bg-white dark:bg-slate-900/70 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-700/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={`text-xs font-extrabold ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-slate-900 dark:text-white"}`}>
+                          {c.nameEn}
+                        </span>
+                        <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400">
+                          ₹{formatNumber(raised)} / ₹{formatNumber(target)}
+                        </span>
+                      </div>
+
+                      <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-purple-600 to-indigo-600 h-full rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Impact Calculator Display */}
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200 dark:border-purple-800/40 text-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-extrabold">
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0 animate-spin" style={{ animationDuration: '6s' }} />
+                <span>Impact of ₹{formatNumber(currentNumAmount)}:</span>
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                {currentImpactText}
+              </p>
+            </div>
+
+            {/* Beneficiaries & Security Guarantee Card */}
             <div className="p-5 border border-slate-200 dark:border-white/10 rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm text-xs space-y-3 text-slate-600 dark:text-slate-300 shadow-sm">
               <div className="flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Primary Beneficiaries:</strong> Patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
+                  <strong>Primary Beneficiaries:</strong> Caretakers & patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
                 </p>
               </div>
               <div className="flex items-start gap-2.5">
                 <Lock className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Secure & 80G Compliant:</strong> 256-bit encrypted Razorpay UPI checkout with instant verifiable receipts.
+                  <strong>Secure & 80G Tax Exempt:</strong> 256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts.
                 </p>
               </div>
             </div>
 
             {/* Supported Payment App Logos */}
-            <div className="pt-2">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
-                Accepted UPI Apps
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
+                Accepted Instant Payment Methods
               </p>
-              <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 {[
                   { name: "GPay", icon: GPayIcon },
                   { name: "PhonePe", icon: PhonePeIcon },
@@ -779,7 +929,7 @@ function NgoDonationsContent() {
                 ].map((app) => (
                   <span
                     key={app.name}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
                   >
                     <app.icon />
                     <span>{app.name}</span>
@@ -789,28 +939,51 @@ function NgoDonationsContent() {
             </div>
           </div>
 
-          {/* ── RIGHT COLUMN: UPI Donation Form Container ─────────────────────── */}
+          {/* ── RIGHT COLUMN: Interactive Donation Wizard Form ─────────────────────── */}
           <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-8 shadow-xl dark:shadow-2xl relative overflow-hidden">
             
-            {/* Header: Section Title & Secure Badge */}
-            <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-white/5 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                  <QrCode className="w-5 h-5" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Donate using UPI
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Instant & Direct Bank Transfer
-                  </p>
-                </div>
-              </div>
+            {/* ── WIZARD STEP INDICATOR ────────────────────────────────────── */}
+            <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between relative">
+                {[
+                  { num: 1, label: "Amount" },
+                  { num: 2, label: "Details" },
+                  { num: 3, label: "UPI QR" },
+                  { num: 4, label: "Receipt" },
+                ].map((s) => {
+                  const isCurrent = step === s.num;
+                  const isDone = step > s.num;
 
-              <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                <Lock className="w-3 h-3" />
-                <span>SECURE CHECKOUT</span>
+                  return (
+                    <div key={s.num} className="flex flex-col items-center gap-1 z-10">
+                      <div
+                        className={`w-8 h-8 rounded-full text-xs font-black flex items-center justify-center transition-all ${
+                          isDone
+                            ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                            : isCurrent
+                            ? "bg-purple-600 text-white shadow-md shadow-purple-500/30 ring-4 ring-purple-100 dark:ring-purple-950"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-white/10"
+                        }`}
+                      >
+                        {isDone ? <Check className="w-4 h-4" /> : s.num}
+                      </div>
+                      <span
+                        className={`text-[10px] font-extrabold uppercase tracking-wider ${
+                          isCurrent
+                            ? "text-purple-600 dark:text-purple-400"
+                            : isDone
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-slate-400 dark:text-slate-500"
+                        }`}
+                      >
+                        {s.label}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {/* Stepper background line */}
+                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
               </div>
             </div>
 
@@ -835,9 +1008,12 @@ function NgoDonationsContent() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      Step 1: Select Donation Amount
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      Step 1: Choose Donation Amount
                     </label>
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">
+                      {frequency === "MONTHLY" ? "Monthly Recurring" : "One-Time Giving"}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
@@ -852,14 +1028,14 @@ function NgoDonationsContent() {
                             setAmount(preset.amount.toString());
                             setCustomAmount("");
                           }}
-                          className={`py-3.5 rounded-xl border font-extrabold text-sm sm:text-base transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                          className={`py-3.5 rounded-2xl border font-black text-sm sm:text-base transition-all duration-200 flex items-center justify-center gap-1.5 ${
                             isSelected ? scheme.selected : scheme.unselected
                           }`}
                         >
                           {!isSelected && (
                             <span className={`w-1.5 h-1.5 rounded-full ${scheme.dot}`} />
                           )}
-                          <span>₹{preset.amount.toLocaleString("en-IN")}</span>
+                          <span>₹{formatNumber(preset.amount)}</span>
                         </button>
                       );
                     })}
@@ -874,7 +1050,7 @@ function NgoDonationsContent() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-8 pr-3 rounded-xl border-2 text-sm sm:text-base font-black focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 text-sm sm:text-base font-black focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           customAmount
                             ? "bg-purple-50/80 dark:bg-purple-950/60 text-slate-900 dark:text-white border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
                             : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
@@ -885,12 +1061,27 @@ function NgoDonationsContent() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Quick Add Pills */}
+                  <div className="pt-3 flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">Quick add:</span>
+                    {[500, 1000, 5000].map((addVal) => (
+                      <button
+                        key={addVal}
+                        type="button"
+                        onClick={() => handleQuickAdd(addVal)}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-200 dark:border-white/10 transition-colors"
+                      >
+                        +₹{formatNumber(addVal)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleProceedToStep2}
-                  className="w-full py-4 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20 active:scale-[0.99] transition-all"
+                  className="w-full py-4 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 active:scale-[0.99] transition-all"
                 >
                   <span>Continue to Donor Details</span>
                   <ArrowRight className="w-4 h-4" />
@@ -898,31 +1089,31 @@ function NgoDonationsContent() {
               </motion.div>
             )}
 
-            {/* ── STEP 2: DYNAMIC DONOR DETAILS FORM ─────────────────────────── */}
+            {/* ── STEP 2: DONOR DETAILS & 80G TAX EXEMPTION ───────────────────── */}
             {step === 2 && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="space-y-4 text-left"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Step 2: Donor & Cause Information
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Step 2: Donor Information
                   </label>
-                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
-                    Amount: ₹{Number(getFinalAmount()).toLocaleString("en-IN")}
+                  <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400">
+                    Amount: ₹{formatNumber(getFinalAmount())}
                   </span>
                 </div>
 
-                {/* Render Dynamic Form Fields */}
+                {/* Dynamic Form Fields */}
                 {formFields.map((field) => {
                   if (!field.isVisible) return null;
                   const val = donorDetails[field.fieldName] || "";
 
                   if (field.fieldType === "checkbox") {
                     return (
-                      <div key={field.id} className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10">
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      <div key={field.id} className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10">
+                        <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
                           {field.label}
                         </span>
                         <button
@@ -943,31 +1134,9 @@ function NgoDonationsContent() {
                     );
                   }
 
-                  if (field.fieldType === "textarea") {
-                    return (
-                      <div key={field.id}>
-                        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                          {field.label} {field.isRequired ? "*" : "(Optional)"}
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={val}
-                          onChange={(e) =>
-                            setDonorDetails((prev) => ({
-                              ...prev,
-                              [field.fieldName]: e.target.value,
-                            }))
-                          }
-                          placeholder={field.placeholder || ""}
-                          className="w-full py-2.5 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-purple-500"
-                        />
-                      </div>
-                    );
-                  }
-
                   return (
                     <div key={field.id}>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                         {field.label} {field.isRequired ? "*" : "(Optional)"}
                       </label>
                       <input
@@ -987,10 +1156,11 @@ function NgoDonationsContent() {
                   );
                 })}
 
+
                 {/* Purpose & Branch Selectors */}
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                       Donation Cause
                     </label>
                     <select
@@ -1007,7 +1177,7 @@ function NgoDonationsContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                       Branch
                     </label>
                     <select
@@ -1024,12 +1194,12 @@ function NgoDonationsContent() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-2">
+                {/* Navigation Action Buttons */}
+                <div className="flex gap-3 pt-3">
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Back</span>
@@ -1039,7 +1209,7 @@ function NgoDonationsContent() {
                     type="button"
                     onClick={handleCreatePaymentOrder}
                     disabled={loading}
-                    className="flex-[2] py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20 disabled:opacity-50"
+                    className="flex-[2] py-3.5 min-h-[44px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -1076,7 +1246,7 @@ function NgoDonationsContent() {
                   </div>
                 </div>
 
-                {/* Dynamic QR Code Card Container */}
+                {/* Dynamic QR Code Container */}
                 <div className={`p-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-3xl flex flex-col items-center w-full max-w-sm relative transition-all ${
                   paymentStatus === "EXPIRED" ? "opacity-40 grayscale pointer-events-none" : ""
                 }`}>
@@ -1093,16 +1263,16 @@ function NgoDonationsContent() {
                   </div>
 
                   <p className="mt-3 text-sm font-extrabold text-slate-900 dark:text-white">
-                    Scan with any UPI App to Pay ₹{Number(getFinalAmount()).toLocaleString("en-IN")}
+                    Scan with any UPI App to Pay ₹{formatNumber(getFinalAmount())}
                   </p>
 
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                     Order Ref: {referenceNumber || orderId}
                   </p>
 
-                  {/* Merchant UPI ID Box */}
+                  {/* Merchant UPI ID Copy Box */}
                   <div className="mt-4 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
-                    <span className="text-slate-700 dark:text-slate-300 font-bold font-mono">
+                    <span className="text-slate-700 dark:text-slate-300 font-extrabold font-mono">
                       UPI ID: {settings.upiId}
                     </span>
                     <button
@@ -1116,58 +1286,23 @@ function NgoDonationsContent() {
                   </div>
                 </div>
 
-                {/* Expired Overlay view */}
-                {paymentStatus === "EXPIRED" && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-600 dark:text-red-300 w-full space-y-2">
-                    <p className="font-bold text-sm">⚠️ QR Code Expired</p>
-                    <p className="text-xs">This dynamic QR code timer has elapsed. Please generate a new QR.</p>
-                    <button
-                      type="button"
-                      onClick={resetDonationWizard}
-                      className="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-all"
-                    >
-                      Generate New QR
-                    </button>
-                  </div>
-                )}
-
                 {/* Mobile Deep Link Apps */}
-                <div className="w-full max-w-sm pt-2 space-y-2.5">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Tap to pay on mobile
+                <div className="w-full max-w-sm space-y-2.5">
+                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Tap to pay directly on mobile
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      {
-                        name: "GPay",
-                        icon: GPayIcon,
-                        pkg: "com.google.android.apps.nbu.paisa.user",
-                        scheme: "tez://upi/pay?",
-                      },
-                      {
-                        name: "PhonePe",
-                        icon: PhonePeIcon,
-                        pkg: "com.phonepe.app",
-                        scheme: "phonepe://pay?",
-                      },
-                      {
-                        name: "Paytm",
-                        icon: PaytmIcon,
-                        pkg: "net.one97.paytm",
-                        scheme: "paytmmp://upi/pay?",
-                      },
-                      {
-                        name: "BHIM",
-                        icon: BhimIcon,
-                        pkg: "in.org.npci.upiapp",
-                        scheme: "upi://pay?",
-                      },
+                      { name: "GPay", icon: GPayIcon, pkg: "com.google.android.apps.nbu.paisa.user", scheme: "tez://upi/pay?" },
+                      { name: "PhonePe", icon: PhonePeIcon, pkg: "com.phonepe.app", scheme: "phonepe://pay?" },
+                      { name: "Paytm", icon: PaytmIcon, pkg: "net.one97.paytm", scheme: "paytmmp://upi/pay?" },
+                      { name: "BHIM", icon: BhimIcon, pkg: "in.org.npci.upiapp", scheme: "upi://pay?" },
                     ].map((app) => (
                       <button
                         key={app.name}
                         type="button"
                         onClick={() => handleOpenUpiApp(app.pkg, app.scheme)}
-                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
+                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-extrabold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
                       >
                         <app.icon />
                         <span>{app.name}</span>
@@ -1180,7 +1315,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => handleOpenUpiApp()}
-                    className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                    className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
                   >
                     <Smartphone className="w-4 h-4" />
                     <span>Open in any UPI App</span>
@@ -1192,7 +1327,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-semibold"
+                    className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-bold"
                   >
                     ← Edit Details
                   </button>
@@ -1200,7 +1335,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => handlePaymentSuccess(donationId)}
-                    className="text-purple-600 dark:text-purple-400 font-bold hover:underline"
+                    className="text-purple-600 dark:text-purple-400 font-extrabold hover:underline"
                   >
                     [Simulate Successful Payment]
                   </button>
@@ -1216,7 +1351,6 @@ function NgoDonationsContent() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="space-y-5"
               >
-                {/* ── Animated Success Badge ── */}
                 <div className="flex flex-col items-center text-center pt-2 pb-1">
                   <motion.div
                     initial={{ scale: 0, rotate: -20 }}
@@ -1224,7 +1358,6 @@ function NgoDonationsContent() {
                     transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.1 }}
                     className="relative w-20 h-20 mb-4"
                   >
-                    {/* Outer glow ring */}
                     <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping" style={{ animationDuration: "2s" }} />
                     <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 shadow-2xl shadow-emerald-500/40 flex items-center justify-center">
                       <CheckCircle2 className="w-10 h-10 text-white" strokeWidth={2.5} />
@@ -1243,62 +1376,45 @@ function NgoDonationsContent() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.35 }}
-                    className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs"
+                    className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs font-medium"
                   >
                     Thank you for your generous support. Your donation has been verified and recorded.
                   </motion.p>
                 </div>
 
-                {/* ── Amount Hero ── */}
+                {/* Amount Hero Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
                   className="bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 rounded-2xl p-5 text-center shadow-xl shadow-purple-500/25"
                 >
-                  <p className="text-purple-200 text-xs font-semibold uppercase tracking-widest mb-1">Amount Donated</p>
+                  <p className="text-purple-200 text-xs font-extrabold uppercase tracking-widest mb-1">Amount Donated</p>
                   <p className="text-white text-4xl font-black tracking-tight">
-                    ₹{receiptData.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    ₹{formatNumber(receiptData.amount, true)}
                   </p>
-                  <p className="text-purple-200 text-xs mt-1.5">{receiptData.purpose}</p>
+                  <p className="text-purple-200 text-xs mt-1.5 font-bold">{receiptData.purpose}</p>
                 </motion.div>
 
-                {/* ── Notification Status Chips ── */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="flex flex-wrap gap-2 justify-center"
-                >
-                  {[
-                    { icon: "📱", label: "SMS Sent", color: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/40 text-blue-700 dark:text-blue-300" },
-                    { icon: "💬", label: "WhatsApp Sent", color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700/40 text-emerald-700 dark:text-emerald-300" },
-                    { icon: "📧", label: "Email Sent", color: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-700/40 text-purple-700 dark:text-purple-300" },
-                    { icon: "🔔", label: "Push Sent", color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/40 text-amber-700 dark:text-amber-300" },
-                  ].map((chip) => (
-                    <span key={chip.label} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold border ${chip.color}`}>
-                      <Check className="w-3 h-3" />
-                      {chip.icon} {chip.label}
-                    </span>
-                  ))}
-                </motion.div>
-
-                {/* ── Receipt Details Card ── */}
+                {/* Receipt Breakdown Table */}
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.55 }}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm"
                 >
-                  {/* Card header */}
-                  <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 dark:from-purple-900/30 dark:to-indigo-900/30 px-5 py-3 border-b border-slate-200 dark:border-white/5">
+                  <div className="bg-purple-600/10 dark:bg-purple-900/30 px-5 py-3 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-purple-700 dark:text-purple-300">Official Receipt</span>
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-purple-700 dark:text-purple-300">Official Receipt</span>
                     </div>
+                    {wantTaxExemption && (
+                      <span className="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase">
+                        80G Tax Exempt
+                      </span>
+                    )}
                   </div>
 
-                  {/* Receipt rows */}
                   <div className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
                     {[
                       { label: "Receipt Number", value: receiptData.receiptNumber, mono: true, highlight: true },
@@ -1308,13 +1424,13 @@ function NgoDonationsContent() {
                       { label: "Donor Name", value: receiptData.donorName },
                       { label: "Donation Cause", value: receiptData.purpose },
                       { label: "Branch", value: receiptData.branch },
-                      { label: "Payment Method", value: "UPI (Instant QR)" },
+                      { label: "Payment Method", value: "UPI (Instant Dynamic QR)" },
                     ].map((row) => (
-                      <div key={row.label} className="flex justify-between items-center px-5 py-3 gap-3">
-                        <span className="text-slate-500 dark:text-slate-400 flex-shrink-0">{row.label}</span>
+                      <div key={row.label} className="flex justify-between items-center px-5 py-2.5 gap-3">
+                        <span className="text-slate-500 dark:text-slate-400 flex-shrink-0 font-medium">{row.label}</span>
                         <span className={`font-bold text-right break-all ${
                           row.highlight
-                            ? "text-purple-700 dark:text-purple-300 font-mono"
+                            ? "text-purple-700 dark:text-purple-300 font-mono font-extrabold"
                             : row.mono
                             ? "font-mono text-slate-700 dark:text-slate-200"
                             : "text-slate-800 dark:text-slate-200"
@@ -1326,25 +1442,23 @@ function NgoDonationsContent() {
                   </div>
                 </motion.div>
 
-                {/* ── Action Buttons ── */}
+                {/* Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.65 }}
                   className="space-y-2.5"
                 >
-                  {/* Primary: Download PDF */}
                   <a
                     href={`/api/receipts/${donationId}/pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <Download className="w-4 h-4" />
                     Download Receipt (PDF)
                   </a>
 
-                  {/* Secondary row: Share + Email */}
                   <div className="grid grid-cols-2 gap-2.5">
                     <button
                       type="button"
@@ -1355,22 +1469,20 @@ function NgoDonationsContent() {
                       Share Receipt
                     </button>
 
-                    <a
-                      href={`/api/receipts/${donationId}?email=true`}
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
-                      onClick={(e) => {
-                        e.preventDefault();
+                    <button
+                      type="button"
+                      onClick={() => {
                         fetch(`/api/receipts/${donationId}?email=true`)
                           .then(() => showToast("📧 Receipt emailed successfully!", "success"))
                           .catch(() => showToast("Could not send email. Try again.", "error"));
                       }}
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Mail className="w-4 h-4 text-blue-500" />
                       Email Receipt
-                    </a>
+                    </button>
                   </div>
 
-                  {/* Tertiary row: History + Home */}
                   <div className="grid grid-cols-2 gap-2.5">
                     <Link
                       href="/member/donations"
@@ -1389,55 +1501,66 @@ function NgoDonationsContent() {
                     </Link>
                   </div>
                 </motion.div>
-
-                {/* ── Bible Verse Footer ── */}
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.75 }}
-                  className="text-center text-[11px] text-slate-400 dark:text-slate-500 italic pb-2"
-                >
-                  "God loves a cheerful giver." — 2 Corinthians 9:7
-                </motion.p>
-              </motion.div>
-            )}
-
-
-            {/* ── STEP 4 (FAILED STATE) ─────────────────────────────────────── */}
-            {paymentStatus === "FAILED" && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="space-y-6 text-center"
-              >
-                <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto text-red-500">
-                  <ShieldAlert className="w-10 h-10" />
-                </div>
-
-                <div>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">
-                    Payment Failed or Declined
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    We could not verify your transfer. If money was deducted, it will be automatically reconciled.
-                  </p>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={resetDonationWizard}
-                    className="flex-1 py-3.5 min-h-[44px] bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    <span>Retry Payment</span>
-                  </button>
-                </div>
               </motion.div>
             )}
 
           </div>
         </div>
+      </div>
+
+      {/* ── BOTTOM SECTION: RECENT DONOR FEED & FAQ ACCORDION ─────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-12">
+        
+
+        {/* Interactive Donor FAQ Accordion */}
+        <div className="space-y-4 text-left max-w-4xl mx-auto">
+          <div className="text-center space-y-1">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white">
+              Frequently Asked Questions
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              Everything you need to know about giving, 80G tax exemptions, and payment security.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = activeFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveFaq(isOpen ? null : idx)}
+                    className="w-full p-4 text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <HelpCircle className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                      {item.question}
+                    </span>
+                    {isOpen ? <ChevronUp className="w-4 h-4 text-purple-500" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5 pt-3 font-medium"
+                      >
+                        {item.answer}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -1450,4 +1573,3 @@ export default function NgoDonationsPage() {
     </DonationAgentProvider>
   );
 }
-
