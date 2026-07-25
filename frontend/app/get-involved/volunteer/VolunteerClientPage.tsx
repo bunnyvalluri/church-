@@ -160,8 +160,8 @@ export default function VolunteerClientPage() {
               <BackToHome label={t?.nav?.home || "Home"} />
             </div>
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-purple-200 text-xs sm:text-sm font-medium mb-6 shadow-md">
-              <HeartHandshake className="h-4 w-4 text-pink-300" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white font-semibold text-xs sm:text-sm mb-6 shadow-md">
+              <HeartHandshake className="h-4 w-4 text-pink-400" />
               <span>
                 {!mounted
                   ? "Make a Difference"

@@ -185,7 +185,7 @@ export default function SmallGroupsPage() {
             </div>
 
             {/* Pill Header */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-purple-200 text-xs sm:text-sm font-medium mb-6 shadow-md">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-xs sm:text-sm mb-6 shadow-md">
               <Sparkles className="w-4 h-4 text-purple-300" />
               <span>Life is Better Together • Connect & Grow</span>
             </div>
