@@ -1,7 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { Settings, Shield, Plus, Check, Save, Info, Key, CheckSquare, Square } from "lucide-react";
+import { 
+  Settings, 
+  Shield, 
+  Plus, 
+  Check, 
+  Save, 
+  Key, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  Server, 
+  Radio, 
+  CheckCircle2, 
+  Trash2,
+  Lock,
+  Globe
+} from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { adminTranslations } from "@/components/admin/adminTranslations";
 
@@ -24,7 +41,10 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   React.useEffect(() => {
     setSubView(activeSubTab);
   }, [activeSubTab]);
+
   const { language } = useLanguage();
+  const isTe = language === "te";
+  const isHi = language === "hi";
   const t = adminTranslations[language as keyof typeof adminTranslations] || adminTranslations.en;
 
   const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: (val: boolean) => void }) => (
@@ -32,7 +52,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
       type="button"
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-        checked ? "bg-gradient-to-r from-indigo-500 to-violet-650" : "bg-slate-205 dark:bg-white/[0.08]"
+        checked ? "bg-gradient-to-r from-indigo-500 to-violet-650" : "bg-slate-200 dark:bg-white/[0.08]"
       }`}
     >
       <span
@@ -50,7 +70,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
       data-testid={id}
       className={`w-5.5 h-5.5 rounded-lg border flex items-center justify-center cursor-pointer transition-all duration-150 hover:scale-105 active:scale-95 shadow-sm ${
         checked 
-          ? "bg-gradient-to-tr from-[#6366F1] to-[#8B5CF6] border-transparent text-white shadow-indigo-500/20 animate-in zoom-in-95 duration-100" 
+          ? "bg-gradient-to-tr from-indigo-600 to-violet-600 border-transparent text-white shadow-indigo-500/20" 
           : "bg-white dark:bg-white/[0.02] border-slate-300 dark:border-white/[0.08] hover:border-indigo-400"
       }`}
     >
@@ -63,27 +83,33 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   );
 
   const LockedCheckbox = () => (
-    <div className="w-5.5 h-5.5 rounded-lg border border-indigo-100/50 dark:border-indigo-900/30 bg-indigo-50/40 dark:bg-indigo-950/10 flex items-center justify-center shadow-sm select-none cursor-not-allowed">
-      <svg className="w-3 h-3 text-[#6366F1] dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
+    <div className="w-5.5 h-5.5 rounded-lg border border-indigo-100 dark:border-indigo-900/30 bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center shadow-sm select-none cursor-not-allowed">
+      <Lock className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
     </div>
   );
   
   // Settings Form States
   const [contactEmail, setContactEmail] = useState("kingofchristministries23@gmail.com");
   const [contactPhone, setContactPhone] = useState("+91 97040 90069");
+  const [hqAddress, setHqAddress] = useState("Sanctuary Road, Jeedimetla, Hyderabad, Telangana 500055");
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [allowRegistrations, setAllowRegistrations] = useState(true);
+  const [requireEmailVerification, setRequireEmailVerification] = useState(false);
+  const [autoReceipts, setAutoReceipts] = useState(true);
+  
   const [loading, setLoading] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Office Locations & service times schedules
   const [locations, setLocations] = useState([
-    { name: "Subhash Nagar Sanctuary", schedule: "Sun 5:45 AM, 8:30 AM | Thu Evening Prayer" },
-    { name: "Shapur Location", schedule: "Fri 6:00 PM | Sun 6:00 PM" },
-    { name: "Bahadurpally Location", schedule: "Sun Afternoon 11:00 AM | Monthly 2nd Tuesday" }
+    { id: "loc_1", name: "Subhash Nagar Sanctuary", schedule: "Sun 5:45 AM, 8:30 AM | Thu Evening Prayer", phone: "+91 97040 90069" },
+    { id: "loc_2", name: "Shapur Location", schedule: "Fri 6:00 PM | Sun 6:00 PM", phone: "+91 96409 43777" },
+    { id: "loc_3", name: "Bahadurpally Location", schedule: "Sun Afternoon 11:00 AM | Monthly 2nd Tuesday", phone: "+91 87654 32109" }
   ]);
+
+  const [newLocName, setNewLocName] = useState("");
+  const [newLocSchedule, setNewLocSchedule] = useState("");
+  const [isAddLocOpen, setIsAddLocOpen] = useState(false);
 
   // Roles & Permissions matrix state
   const [permissions, setPermissions] = useState<PermissionRow[]>([
@@ -98,67 +124,27 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   // Translation helpers
   const getLocationNameTranslation = (name: string) => {
     switch (name) {
-      case "Subhash Nagar Sanctuary": return t.attendance.subhashNagar || name;
-      case "Shapur Location": return t.attendance.shapurLoc || name;
-      case "Bahadurpally Location": return t.attendance.bahadurpallyLoc || name;
+      case "Subhash Nagar Sanctuary": return isTe ? "సుభాష్ నగర్ మందిరం" : isHi ? "सुभाष नगर अभयारण्य" : name;
+      case "Shapur Location": return isTe ? "షాపూర్ ప్రాంతం" : isHi ? "शापूर स्थान" : name;
+      case "Bahadurpally Location": return isTe ? "బహదూర్ పల్లి ప్రాంతం" : isHi ? "बहादुरपल्ली स्थान" : name;
       default: return name;
     }
   };
 
   const getLocationScheduleTranslation = (schedule: string) => {
     if (schedule.includes("Sun 5:45 AM")) {
-      return language === "te" ? "ఆది 5:45 AM, 8:30 AM | గురువారం సాయంత్రం ప్రార్థన" :
-             language === "hi" ? "रवि 5:45 AM, 8:30 AM | गुरु शाम की प्रार्थना" : schedule;
+      return isTe ? "ఆది 5:45 AM, 8:30 AM | గురువారం సాయంత్రం ప్రార్థన" :
+             isHi ? "रवि 5:45 AM, 8:30 AM | गुरु शाम की प्रार्थना" : schedule;
     }
     if (schedule.includes("Fri 6:00 PM")) {
-      return language === "te" ? "శుక్ర 6:00 PM | ఆది 6:00 PM" :
-             language === "hi" ? "शुक्र 6:00 PM | रवि 6:00 PM" : schedule;
+      return isTe ? "శుక్ర 6:00 PM | ఆది 6:00 PM" :
+             isHi ? "शुक्र 6:00 PM | रवि 6:00 PM" : schedule;
     }
     if (schedule.includes("Sun Afternoon 11:00 AM")) {
-      return language === "te" ? "ఆదివారం మధ్యాహ్నం 11:00 AM | నెలవారీ 2వ మంగళవారం" :
-             language === "hi" ? "रवि दोपहर 11:00 AM | मासिक द्वितीय मंगलवार" : schedule;
+      return isTe ? "ఆదివారం మధ్యాహ్నం 11:00 AM | నెలవారీ 2వ మంగళవారం" :
+             isHi ? "रवि दोपहर 11:00 AM | मासिक द्वितीय मंगलवार" : schedule;
     }
     return schedule;
-  };
-
-  const getModuleTranslation = (module: string) => {
-    switch (module) {
-      case "Dashboard Overview": return t.headers.dashboard;
-      case "Believers Directory": return language === "te" ? "వినియోగదారుల డైరెక్టరీ" : language === "hi" ? "विश्वासियों की निर्देशिका" : "Believers Directory";
-      case "Donations Ledger": return t.headers.donations;
-      case "Prayer Request Dispatcher": return t.headers.prayers;
-      case "Content Manager (Sermons, Events)": return language === "te" ? "కంటెంట్ మేనేజర్ (ప్రసంగాలు, ఈవెంట్‌లు)" : language === "hi" ? "सामग्री प्रबंधक (उपदेश, कार्यक्रम)" : "Content Manager (Sermons, Events)";
-      case "System Console / Settings": return language === "te" ? "సిస్టమ్ కన్సోల్ / సెట్టింగ్‌లు" : language === "hi" ? "सिस्टम कंसोल / सेटिंग्स" : "System Console / Settings";
-      default: return module;
-    }
-  };
-
-  const getModuleDescTranslation = (desc: string) => {
-    if (desc.includes("Access the admin workspace")) {
-      return language === "te" ? "అడ్మిన్ వర్క్‌స్పేస్ డాష్‌బోర్డ్ స్క్రీన్‌ను యాక్సెస్ చేయండి." :
-             language === "hi" ? "एडमिन कार्यक्षेत्र डैशबोर्ड स्क्रीन तक पहुंचें।" : desc;
-    }
-    if (desc.includes("Read, edit, delete user profiles")) {
-      return language === "te" ? "వినియోగదారు ప్రొఫైల్‌లను చదవండి, సవరించండి, తొలగించండి మరియు ఆఫ్‌లైన్ విశ్వాసులను నమోదు చేయండి." :
-             language === "hi" ? "उपयोगकर्ता प्रोफाइल पढ़ें, संशोधित करें, हटाएं और ऑफ़लाइन विश्वासियों को पंजीकृत करें।" : desc;
-    }
-    if (desc.includes("Audit tax-deductible contributions")) {
-      return language === "te" ? "పన్ను మినహాయింపు కానుకలను ఆడిట్ చేయండి, లాగ్‌లను ఎగుమతి చేయండి, పన్ను రసీదులను ప్రింట్ చేయండి." :
-             language === "hi" ? "कर-कटौती योग्य योगदानों का ऑडिट करें, लॉग निर्यात करें, कर रसीदें प्रिंट करें।" : desc;
-    }
-    if (desc.includes("Approve prayer requests")) {
-      return language === "te" ? "ప్రార్థన విన్నపాలను ఆమోదించండి, ప్రార్థన భాగస్వాములను కేటాయించండి, లేఖనాలను జోడించండి." :
-             language === "hi" ? "प्रार्थना अनुरोधों को स्वीकृत करें, मध्यस्थों को सौंपें, शास्त्र जोड़ें।" : desc;
-    }
-    if (desc.includes("Upload preaching files")) {
-      return language === "te" ? "ప్రసంగ ఫైల్‌లను అప్‌లోడ్ చేయండి, క్యాలెండర్ ఈవెంట్‌లను సృష్టించండి, హెచ్చరికలను పోస్ట్ చేయండి." :
-             language === "hi" ? "उपदेश फ़ाइलें अपलोड करें, कैलेंडर कार्यक्रम बनाएं, अलर्ट पोस्ट करें।" : desc;
-    }
-    if (desc.includes("Global variables edit")) {
-      return language === "te" ? "గ్లోబల్ వేరియబుల్స్ సవరణ, మెయింటెనెన్స్ టోగుల్, అనుమతుల మాత్రిక." :
-             language === "hi" ? "वैश्विक चर संपादित करें, रखरखाव टॉगल, अनुमति मैट्रिक्स।" : desc;
-    }
-    return desc;
   };
 
   const handleSettingsSave = async (e: React.FormEvent) => {
@@ -168,17 +154,42 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
       await onSaveConfig({
         contactEmail,
         contactPhone,
+        hqAddress,
         maintenanceMode,
         allowRegistrations,
+        requireEmailVerification,
+        autoReceipts,
         locations
       });
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleAddLocation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLocName) return;
+    setLocations(prev => [
+      ...prev,
+      {
+        id: `loc_${Date.now()}`,
+        name: newLocName,
+        schedule: newLocSchedule || "Sundays 10:00 AM",
+        phone: contactPhone
+      }
+    ]);
+    setNewLocName("");
+    setNewLocSchedule("");
+    setIsAddLocOpen(false);
+  };
+
+  const handleRemoveLocation = (id: string) => {
+    setLocations(prev => prev.filter(l => l.id !== id));
+  };
+
   const handlePermissionToggle = (moduleName: string, roleName: "SUPER_ADMIN" | "ADMIN" | "PASTOR" | "MEMBER") => {
-    // Super admin role must remain lock-enabled for security
     if (roleName === "SUPER_ADMIN") return;
 
     setPermissions(prev => prev.map(row => {
@@ -193,23 +204,78 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-300">
       
+      {/* ─── Top Overview Metric Bar ─── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+              {isTe ? "సిస్టమ్ స్థితి" : isHi ? "सिस्टम स्थिति" : "System Health"}
+            </span>
+            <h3 className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 tracking-tight flex items-center gap-1.5">
+              <CheckCircle2 className="w-5 h-5" /> 99.9%
+            </h3>
+          </div>
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
+            <Radio className="w-5 h-5 animate-pulse" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+              {isTe ? "డేటాబేస్ హోస్ట్" : isHi ? "डेटाबेस होस्ट" : "Cloud Database"}
+            </span>
+            <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">Neon SSL</h3>
+          </div>
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
+            <Server className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+              {isTe ? "మందిరం ప్రాంతాలు" : isHi ? "चर्च स्थान" : "Sanctuary Branches"}
+            </span>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{locations.length}</h3>
+          </div>
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
+            <MapPin className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+              {isTe ? "మెయింటెనెన్స్ మోడ్" : isHi ? "रखरखाव मोड" : "Maintenance Mode"}
+            </span>
+            <h3 className={`text-xl font-black mt-1 tracking-tight ${maintenanceMode ? "text-rose-600" : "text-slate-900 dark:text-white"}`}>
+              {maintenanceMode ? "ACTIVE" : "OFF"}
+            </h3>
+          </div>
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
+            <Globe className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+
       {/* ─── Sub Navigation Tabs ─── */}
-      <div className="p-1 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04] rounded-2xl flex gap-1 items-center w-max max-w-full overflow-x-auto select-none scrollbar-none shadow-sm">
+      <div className="p-1 bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 rounded-2xl flex gap-1 items-center w-max max-w-full overflow-x-auto select-none scrollbar-none shadow-sm">
         {[
-          { id: "settings", label: language === "te" ? "చర్చి & సైట్ సెట్టింగ్‌లు" : language === "hi" ? "चर्च और साइट सेटिंग्स" : "Church & Site Settings", icon: Settings },
-          { id: "permissions", label: language === "te" ? "వినియోగదారు పాత్రలు & అనుమతులు" : language === "hi" ? "उपयोगकर्ता भूमिकाएं और अनुमतियां" : "User Roles & Permissions", icon: Shield }
+          { id: "settings", label: isTe ? "చర్చి & సైట్ సెట్టింగ్‌లు" : isHi ? "चर्च और साइट सेटिंग्स" : "Church & Site Settings", icon: Settings },
+          { id: "permissions", label: isTe ? "వినియోగదారు పాత్రలు & అనుమతులు" : isHi ? "उपयोगकर्ता भूमिकाएं और अनुमतियां" : "User Roles & Permissions Matrix", icon: Shield }
         ].map((tab) => {
           const isSelected = subView === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setSubView(tab.id as any)}
-              className={`py-2 px-4 rounded-xl flex items-center gap-2 text-xs font-bold transition-all ${
+              className={`py-2 px-4 rounded-xl flex items-center gap-2 text-xs font-black transition-all ${
                 isSelected
-                  ? "bg-white dark:bg-white/[0.06] text-[#6366F1] dark:text-indigo-400 shadow-sm border border-slate-200/50 dark:border-white/[0.02]"
-                  : "text-slate-400 hover:text-slate-650 dark:hover:text-gray-300 hover:bg-slate-50/50 dark:hover:bg-white/[0.01]"
+                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/20"
+                  : "text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -221,186 +287,303 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
 
       {/* ────────────────── SUB-VIEW: SETTINGS ────────────────── */}
       {subView === "settings" && (
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-8 max-w-2xl mx-auto space-y-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl">
-          <div className="border-b border-slate-100 dark:border-white/[0.03] pb-5">
-            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-tight">{t.settings.platformConfig}</h2>
-            <p className="text-xs text-slate-455 dark:text-gray-500 mt-1 font-semibold">{language === "te" ? "గ్లోబల్ అప్లికేషన్ వేరియబుల్స్, ఓవర్‌రైడ్‌లు మరియు అడ్మినిస్ట్రేటివ్ ఈమెయిల్ రూట్‌లను కాన్గర్ చేయండి." : language === "hi" ? "ग्लोबल एप्लिकेशन वेरिएबल्स, ओवरराइड्स और प्रशासनिक ईमेल रूट कॉन्फ़िगर करें।" : "Configure global application variables, overrides, and administrative email routes."}</p>
+        <form onSubmit={handleSettingsSave} className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          
+          {/* Left Column: Platform Configuration */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-sm backdrop-blur-xl space-y-6">
+              
+              <div className="border-b border-slate-150 dark:border-white/[0.04] pb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                    {t.settings.platformConfig}
+                  </h2>
+                  <p className="text-xs text-slate-450 dark:text-gray-400 mt-0.5 font-semibold">
+                    {isTe ? "గ్లోబల్ అప్లికేషన్ వేరియబుల్స్, ఓవర్‌రైడ్‌లు మరియు అడ్మినిస్ట్రేటివ్ ఈమెయిల్ రూట్‌లను కాన్గర్ చేయండి." : isHi ? "ग्लोबल एप्लिकेशन वेरिएबल्स, ओवरराइड्स और प्रशासनिक ईमेल रूट कॉन्फ़िगर करें।" : "Configure global application variables, overrides, and administrative email routes."}
+                  </p>
+                </div>
+                {savedSuccess && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 rounded-full text-xs font-bold animate-in fade-in">
+                    <Check className="w-3.5 h-3.5" /> Saved!
+                  </span>
+                )}
+              </div>
+
+              {/* Form Inputs Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5 flex items-center gap-1">
+                    <Mail className="w-3 h-3 text-indigo-500" />
+                    {isTe ? "ప్రాథమిక సంప్రదింపు ఈమెయిల్" : isHi ? "प्राथमिक संपर्क ईमेल" : "Primary Contact Email"}
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5 flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-indigo-500" />
+                    {isTe ? "ప్రాథమిక సహాయ ఫోన్" : isHi ? "प्राथमिक सहायता फ़ोन" : "Primary Help Phone"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5 flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-indigo-500" />
+                    {isTe ? "ప్రధాన కార్యాలయం చిరునామా" : isHi ? "मुख्यालय का पता" : "Ministry Headquarters Address"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={hqAddress}
+                    onChange={(e) => setHqAddress(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                  />
+                </div>
+              </div>
+
+              <hr className="border-t border-slate-150 dark:border-white/[0.04]" />
+
+              {/* Toggles List */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.04]">
+                  <div className="space-y-0.5 pr-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                      {isTe ? "మెయింటెనెన్స్ ఓవర్‌రైడ్ మోడ్" : isHi ? "रखरखाव ओवरराइड मोड" : "Maintenance Override Mode"}
+                    </span>
+                    <span className="text-[10px] text-slate-450 dark:text-gray-400 block leading-snug font-medium">
+                      {isTe ? "సేవ నిలిపివేత సమయాల్లో పాస్టర్ మరియు అడ్మిన్ పాత్రలకు మాత్రమే సైట్ యాక్సెస్‌ను పరిమితం చేయండి." : isHi ? "सेवा बंद होने के दौरान केवल पादरी और एडमिन भूमिकाओं तक साइट पहुंच को प्रतिबंधित करें।" : "Restrict site access only to pastor and admin roles during service shutdowns."}
+                    </span>
+                  </div>
+                  <ToggleSwitch checked={maintenanceMode} onChange={setMaintenanceMode} />
+                </div>
+
+                <div className="flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.04]">
+                  <div className="space-y-0.5 pr-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                      {isTe ? "పబ్లిక్ రిజిస్ట్రేషన్‌లను అనుమతించు" : isHi ? "सार्वजनिक पंजीकरण की अनुमति दें" : "Allow Public Believer Registrations"}
+                    </span>
+                    <span className="text-[10px] text-slate-450 dark:text-gray-400 block leading-snug font-medium">
+                      {isTe ? "కొత్త విశ్వాసులు అడ్మిన్ ప్రమేయం లేకుండా పోర్టల్‌లో ప్రొఫైల్‌లను సృష్టించుకోవడానికి అనుమతిస్తుంది." : isHi ? "नए विश्वासियों को एडमिन प्रविष्टि के बिना पोर्टल पर प्रोफाइल स्थापित करने में सक्षम बनाता है।" : "Enables new believers to establish profiles on the portal without admin seed."}
+                    </span>
+                  </div>
+                  <ToggleSwitch checked={allowRegistrations} onChange={setAllowRegistrations} />
+                </div>
+
+                <div className="flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.04]">
+                  <div className="space-y-0.5 pr-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                      {isTe ? "ఆటోమాటిక్ టాక్స్ రశీదు ఉత్పత్తి" : isHi ? "स्वचालित कर रसीद निर्माण" : "Automatic Tax Receipt Emailing"}
+                    </span>
+                    <span className="text-[10px] text-slate-450 dark:text-gray-400 block leading-snug font-medium">
+                      {isTe ? "కానుక పూర్తయిన వెంటనే 80G పన్ను మినహాయింపు రశీదును ఇమెయిల్ పంపుతుంది." : isHi ? "दान पूरा होने पर तुरंत 80G कर रसीद ईमेल भेजें।" : "Automatically dispatch 80G tax receipts to donor email upon payment completion."}
+                    </span>
+                  </div>
+                  <ToggleSwitch checked={autoReceipts} onChange={setAutoReceipts} />
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full py-3 bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 active:scale-95"
+                >
+                  <Save className="w-4 h-4" />
+                  {loading 
+                    ? (isTe ? "సెట్టింగ్‌లను సేవ్ చేస్తోంది..." : isHi ? "सेटिंग्स सहेजी जा रही हैं..." : "Saving Settings...") 
+                    : (isTe ? "సెట్టింగ్‌లను సేవ్ చేయి" : isHi ? "सेटिंग्स सहेजें" : "Save Platform Settings")}
+                </button>
+              </div>
+
+            </div>
           </div>
 
-          <form onSubmit={handleSettingsSave} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-2">{language === "te" ? "ప్రాథమిక సంప్రదింపు ఈమెయిల్" : language === "hi" ? "प्राथमिक संपर्क ईमेल" : "Primary Contact Email"}</label>
-                <input
-                  type="email"
-                  required
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 font-semibold"
-                />
-              </div>
+          {/* Right Column: Interactive Sanctuary Locations */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-sm backdrop-blur-xl space-y-4">
               
-              <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-2">{language === "te" ? "ప్రాథమిక సహాయ ఫోన్" : language === "hi" ? "प्राथमिक सहायता फ़ोन" : "Primary Help Phone"}</label>
-                <input
-                  type="text"
-                  required
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 font-semibold"
-                />
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                    {isTe ? "మందిరం ప్రాంతాలు & సమయాలు" : isHi ? "अभयारण्य स्थान" : "Sanctuary Branches"}
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400 font-semibold mt-0.5">
+                    {locations.length} {isTe ? "శాఖలు నమోదయ్యాయి" : isHi ? "शाखाएं पंजीकृत" : "active church locations"}
+                  </p>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setIsAddLocOpen(true)}
+                  className="py-1.5 px-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/20 rounded-xl text-xs font-bold flex items-center gap-1 hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  {isTe ? "చేర్చు" : isHi ? "जोड़ें" : "Add"}
+                </button>
               </div>
-            </div>
 
-            <hr className="border-t border-slate-100 dark:border-white/[0.03]" />
-
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-0.5 pr-2">
-                <span className="text-xs font-bold text-slate-800 dark:text-white block">{language === "te" ? "మెయింటెనెన్స్ ఓవర్‌రైడ్ మోడ్" : language === "hi" ? "रखरखाव ओवरराइड मोड" : "Maintenance Override Mode"}</span>
-                <span className="text-[10px] text-slate-450 dark:text-gray-500 block leading-snug font-medium">{language === "te" ? "సేవ నిలిపివేత సమయాల్లో పాస్టర్ మరియు అడ్మిన్ పాత్రలకు మాత్రమే సైట్ యాక్సెస్‌ను పరిమితం చేయండి." : language === "hi" ? "सेवा बंद होने के दौरान केवल पादरी और एडमिन भूमिकाओं तक साइट पहुंच को प्रतिबंधित करें।" : "Restrict site access only to pastor and admin roles during service shutdowns."}</span>
-              </div>
-              <ToggleSwitch checked={maintenanceMode} onChange={setMaintenanceMode} />
-            </div>
-
-            <hr className="border-t border-slate-100 dark:border-white/[0.03]" />
-
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-0.5 pr-2">
-                <span className="text-xs font-bold text-slate-800 dark:text-white block">{language === "te" ? "పబ్లిక్ రిజిస్ట్రేషన్‌లను అనుమతించు" : language === "hi" ? "सार्वजनिक पंजीकरण की अनुमति दें" : "Allow Public Registrations"}</span>
-                <span className="text-[10px] text-slate-455 dark:text-gray-550 block leading-snug font-medium">{language === "te" ? "కొత్త విశ్వాసులు అడ్మిన్ ప్రమేయం లేకుండా పోర్టల్‌లో ప్రొఫైల్‌లను సృష్టించుకోవడానికి అనుమతిస్తుంది." : language === "hi" ? "नए विश्वासियों को एडमिन प्रविष्टि के बिना पोर्टल पर प्रोफाइल स्थापित करने में सक्षम बनाता है।" : "Enables new believers to establish profiles on the portal without admin seed."}</span>
-              </div>
-              <ToggleSwitch checked={allowRegistrations} onChange={setAllowRegistrations} />
-            </div>
-
-            <hr className="border-t border-slate-100 dark:border-white/[0.03]" />
-
-            {/* Sanctuary Locations List */}
-            <div className="space-y-3">
-              <h4 className="text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase tracking-wider">{language === "te" ? "మందిరం ప్రాంతాలు & వారాంతపు సమయాలు" : language === "hi" ? "अभयारण्य स्थान और साप्ताहिक समय" : "Sanctuary Locations & Weekly Times"}</h4>
+              {/* Locations Cards List */}
               <div className="space-y-3">
-                {locations.map((loc, idx) => (
-                  <div key={idx} className="p-4 bg-slate-50/50 dark:bg-[#16172D]/30 border border-slate-150/60 dark:border-white/[0.04] rounded-xl flex flex-col gap-1.5 hover:border-indigo-150/40 dark:hover:border-indigo-500/10 transition-colors duration-300">
-                    <span className="text-xs font-extrabold text-slate-900 dark:text-white">{getLocationNameTranslation(loc.name)}</span>
-                    <span className="text-[10px] text-slate-400 dark:text-gray-500 font-mono font-bold">{getLocationScheduleTranslation(loc.schedule)}</span>
+                {locations.map((loc) => (
+                  <div 
+                    key={loc.id} 
+                    className="p-4 bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border border-slate-200/60 dark:border-white/[0.04] hover:border-indigo-300 dark:hover:border-indigo-500/30 rounded-2xl space-y-2 transition-all group"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                        {getLocationNameTranslation(loc.name)}
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLocation(loc.id)}
+                        className="text-slate-300 dark:text-gray-600 hover:text-rose-600 p-1 transition-colors"
+                        title="Remove location"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 font-mono font-bold flex items-center gap-1.5">
+                      <Clock className="w-3 h-3 text-indigo-500 shrink-0" />
+                      {getLocationScheduleTranslation(loc.schedule)}
+                    </p>
                   </div>
                 ))}
               </div>
-            </div>
 
-            <div className="pt-4">
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/10 active:scale-[0.98]"
-              >
-                <Save className="w-4.5 h-4.5" />
-                {loading 
-                  ? (language === "te" ? "సెట్టింగ్‌లను సేవ్ చేస్తోంది..." : language === "hi" ? "सेटिंग्स सहेजी जा रही हैं..." : "Saving Settings...") 
-                  : (language === "te" ? "సెట్టింగ్‌లను సేవ్ చేయి" : language === "hi" ? "सेटिंग्स सहेजें" : "Save Settings")}
-              </button>
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* ─── MODAL: ADD SANCTUARY BRANCH ─── */}
+          {isAddLocOpen && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
+                  <h3 className="font-black text-slate-900 dark:text-white text-base">Add Sanctuary Location</h3>
+                  <button 
+                    type="button"
+                    onClick={() => setIsAddLocOpen(false)} 
+                    className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="p-6 space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">Branch Location Name</label>
+                    <input 
+                      type="text" required placeholder="e.g. Miyapur Sanctuary" value={newLocName}
+                      onChange={(e) => setNewLocName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">Service Schedule & Weekly Times</label>
+                    <input 
+                      type="text" placeholder="e.g. Sundays 9:00 AM | Wednesdays 7:00 PM" value={newLocSchedule}
+                      onChange={(e) => setNewLocSchedule(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                    />
+                  </div>
+
+                  <div className="pt-3 flex gap-3">
+                    <button type="button" onClick={() => setIsAddLocOpen(false)} className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors">Cancel</button>
+                    <button type="button" onClick={handleAddLocation} className="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-500/10 active:scale-95">Save Branch</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </form>
       )}
 
-      {/* ────────────────── SUB-VIEW: PERMISSIONS ────────────────── */}
+      {/* ────────────────── SUB-VIEW: PERMISSIONS MATRIX ────────────────── */}
       {subView === "permissions" && (
-        <div className="border border-slate-100 dark:border-white/[0.05] bg-white dark:bg-[#121324]/40 backdrop-blur-xl rounded-2xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.015)] flex flex-col">
-          {/* Top premium gradient bar */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899]" />
+        <div className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#111827] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm flex flex-col">
           
-          <div className="p-6 pb-4">
-            <h2 className="text-base font-extrabold text-slate-950 dark:text-white tracking-tight uppercase flex items-center gap-2">
-              <Key className="w-5 h-5 text-[#6366F1]" /> {language === "te" ? "భద్రతా ఆధారాలు & అనుమతుల మాత్రిక" : language === "hi" ? "सुरक्षा क्रेडेंशियल और अनुमति मैट्रिक्स" : "Security Credentials & Permissions Matrix"}
+          <div className="p-6 border-b border-slate-150 dark:border-white/[0.04]">
+            <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Key className="w-5 h-5 text-indigo-500" /> 
+              {isTe ? "భద్రతా ఆధారాలు & అనుమతుల మాత్రిక" : isHi ? "सुरक्षा क्रेडेंशियल और अनुमति मैट्रिक्स" : "Security Credentials & Role Permissions Matrix"}
             </h2>
-            <p className="text-xs text-slate-455 dark:text-gray-550 mt-1 font-semibold">{t.settings.matricesSubtitle}</p>
+            <p className="text-xs text-slate-450 dark:text-gray-400 mt-1 font-semibold">
+              {t.settings.matricesSubtitle}
+            </p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-455 dark:text-gray-555 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
-                  <th className="py-4 px-6 pl-10">{language === "te" ? "యాక్సెస్ మాడ్యూల్" : language === "hi" ? "पहुंच मॉड्यूल" : "Access module"}</th>
+                <tr className="border-b border-slate-150 dark:border-white/[0.04] text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
+                  <th className="py-4 px-6 pl-8">{isTe ? "యాక్సెస్ మాడ్యూల్" : isHi ? "पहुंच मॉड्यूल" : "Access Module"}</th>
                   <th className="py-4 px-6 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold tracking-wider uppercase bg-purple-50 dark:bg-purple-950/20 text-purple-705 dark:text-purple-300 border border-purple-100/50 dark:border-purple-900/50 shadow-sm">
-                      🔐 {language === "te" ? "సూపర్ అడ్మిన్" : language === "hi" ? "सुपर एडमिन" : "Super Admin"}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200/60">
+                      Crown {isTe ? "సూపర్ అడ్మిన్" : isHi ? "सुपर एडमिन" : "Super Admin"}
                     </span>
                   </th>
                   <th className="py-4 px-6 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold tracking-wider uppercase bg-indigo-50 dark:bg-indigo-950/20 text-indigo-705 dark:text-indigo-300 border border-indigo-100/50 dark:border-indigo-900/50 shadow-sm">
-                      🛡️ {language === "te" ? "అడ్మిన్" : language === "hi" ? "एडमिन" : "Admin"}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60">
+                      Shield {isTe ? "అడ్మిన్" : isHi ? "एडमिन" : "Admin"}
                     </span>
                   </th>
                   <th className="py-4 px-6 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold tracking-wider uppercase bg-rose-50 dark:bg-rose-950/20 text-rose-705 dark:text-rose-300 border border-rose-100/50 dark:border-rose-900/50 shadow-sm">
-                      ❤️ {language === "te" ? "కాపరి / పాస్టర్" : language === "hi" ? "पादरी" : "Pastor"}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60">
+                      Star {isTe ? "పాస్టర్" : isHi ? "पास्टर" : "Pastor"}
                     </span>
                   </th>
                   <th className="py-4 px-6 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold tracking-wider uppercase bg-slate-100 dark:bg-slate-850 text-slate-705 dark:text-slate-300 border border-slate-200/50 dark:border-slate-800 shadow-sm">
-                      👥 {language === "te" ? "సభ్యుడు" : language === "hi" ? "सदस्य" : "Member"}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-slate-100 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-slate-200">
+                      User {isTe ? "సభ్యుడు" : isHi ? "सदस्य" : "Member"}
                     </span>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.03] text-xs font-semibold text-slate-700 dark:text-gray-300">
                 {permissions.map((row) => (
-                  <tr key={row.module} className="group/row hover:bg-slate-50/35 dark:hover:bg-[#16172D]/20 transition-all duration-200">
-                    <td className="py-5 px-6 pl-10 border-l-4 border-transparent group-hover/row:border-[#6366F1] group-hover/row:pl-11 transition-all duration-200">
-                      <span className="font-extrabold text-slate-900 dark:text-white block transition-colors group-hover/row:text-[#6366F1]">{getModuleTranslation(row.module)}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-gray-500 block mt-1.5 leading-snug font-medium">{getModuleDescTranslation(row.desc)}</span>
+                  <tr key={row.module} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                    <td className="py-4 px-6 pl-8">
+                      <span className="font-black text-slate-900 dark:text-white block">{row.module}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-gray-500 font-medium block mt-0.5">{row.desc}</span>
                     </td>
-                    
-                    <td className="py-5 px-6 text-center">
+                    <td className="py-4 px-6 text-center align-middle">
                       <div className="flex justify-center">
                         <LockedCheckbox />
                       </div>
                     </td>
-
-                    <td className="py-5 px-6 text-center">
+                    <td className="py-4 px-6 text-center align-middle">
                       <div className="flex justify-center">
-                        <CustomCheckbox 
-                          checked={row.ADMIN} 
-                          onClick={() => handlePermissionToggle(row.module, "ADMIN")} 
-                          id={`check-admin-${row.module.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`}
-                        />
+                        <CustomCheckbox checked={row.ADMIN} onClick={() => handlePermissionToggle(row.module, "ADMIN")} />
                       </div>
                     </td>
-
-                    <td className="py-5 px-6 text-center">
+                    <td className="py-4 px-6 text-center align-middle">
                       <div className="flex justify-center">
-                        <CustomCheckbox 
-                          checked={row.PASTOR} 
-                          onClick={() => handlePermissionToggle(row.module, "PASTOR")} 
-                          id={`check-pastor-${row.module.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`}
-                        />
+                        <CustomCheckbox checked={row.PASTOR} onClick={() => handlePermissionToggle(row.module, "PASTOR")} />
                       </div>
                     </td>
-
-                    <td className="py-5 px-6 text-center">
+                    <td className="py-4 px-6 text-center align-middle">
                       <div className="flex justify-center">
-                        <CustomCheckbox 
-                          checked={row.MEMBER} 
-                          onClick={() => handlePermissionToggle(row.module, "MEMBER")} 
-                          id={`check-member-${row.module.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`}
-                        />
+                        <CustomCheckbox checked={row.MEMBER} onClick={() => handlePermissionToggle(row.module, "MEMBER")} />
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="p-6 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/20 dark:bg-white/[0.01] flex">
-            <div className="bg-indigo-50/50 dark:bg-indigo-550/10 border border-indigo-100/50 dark:border-indigo-500/20 rounded-xl p-4 flex items-center gap-3 max-w-xl shadow-sm">
-              <Info className="w-5 h-5 text-[#6366F1] shrink-0 animate-pulse" />
-              <div className="text-[11px] font-bold text-indigo-750 dark:text-indigo-300 leading-normal">
-                {language === "te" ? "టోగుల్స్ స్వయంచాలకంగా మెమరీకి సేవ్ చేయబడతాయి మరియు భద్రత దృష్ట్యా ప్రతి పాత్రకు తక్షణమే వర్తిస్తాయి." : 
-                 language === "hi" ? "टॉगल स्वचालित रूप से मेमोरी में सहेजे जाते हैं और सुरक्षा के लिए प्रत्येक भूमिका पर तुरंत लागू होते हैं।" : 
-                 "Toggles are autosaved to memory and take effect immediately for the designated roles."}
-              </div>
-            </div>
           </div>
         </div>
       )}
