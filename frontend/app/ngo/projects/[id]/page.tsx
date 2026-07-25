@@ -42,7 +42,8 @@ export default function NgoProjectDetailPage({
     setMounted(true);
   }, []);
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount — no double-guard needed
+  const ngoT = t?.ngo || {};
+  const projectsPage = ngoT.projectsPage || {};
 
   useEffect(() => {
     async function loadProjectDetails() {

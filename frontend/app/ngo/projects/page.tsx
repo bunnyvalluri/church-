@@ -1,10 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Heart, DollarSign, Users, Award, Calendar, ArrowRight, Loader2 } from "lucide-react";
+import {
+  Heart,
+  Users,
+  Award,
+  Calendar,
+  ArrowRight,
+  Loader2,
+  Search,
+  Filter,
+  ShieldCheck,
+  CheckCircle2,
+  Sparkles,
+  MapPin,
+  TrendingUp,
+  Building2,
+  Eye,
+  Gift
+} from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { translations } from "@/lib/translations";
 
 interface Project {
   id: string;
@@ -14,6 +30,9 @@ interface Project {
   targetAmount: number | null;
   raisedAmount: number;
   status: string;
+  category?: string;
+  location?: string;
+  beneficiaries?: string;
   createdAt: string;
 }
 
@@ -23,22 +42,30 @@ export default function NgoProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter & Search State
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount � no double-guard needed
+  const ngoT = t?.ngo || {};
+  const projectsPage = ngoT.projectsPage || {};
 
-  // Fallback / seed projects in case DB is empty on first load
+  // Preset seed projects with detailed attributes
   const presetProjects: Project[] = [
     {
       id: "preset-gandhi",
       title: "Gandhi General Hospital Support",
-      description: "Distributing nutritious milk food, basic medical supplies, and sanitary items to critical care wards and patient caretakers.",
+      description: "Distributing nutritious milk food, basic medical supplies, sanitary clothes, and patient caretaker assistance kits in critical care wards.",
       imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800",
       targetAmount: 150000,
       raisedAmount: 95400,
       status: "ACTIVE",
+      category: "HOSPITAL",
+      location: "Gandhi Hospital, Secunderabad",
+      beneficiaries: "1,500+ Patients & Families",
       createdAt: new Date().toISOString(),
     },
     {
@@ -49,6 +76,9 @@ export default function NgoProjectsPage() {
       targetAmount: 200000,
       raisedAmount: 180000,
       status: "ACTIVE",
+      category: "ASHRAMAM",
+      location: "Bethany Ashramam, Hyderabad",
+      beneficiaries: "120+ Elders & Children",
       createdAt: new Date().toISOString(),
     },
     {
@@ -59,6 +89,9 @@ export default function NgoProjectsPage() {
       targetAmount: 300000,
       raisedAmount: 124000,
       status: "ACTIVE",
+      category: "REHABILITATION",
+      location: "Rehab Center, Jeedimetla",
+      beneficiaries: "85+ Disabled Individuals",
       createdAt: new Date().toISOString(),
     },
   ];
@@ -88,120 +121,320 @@ export default function NgoProjectsPage() {
     fetchProjects();
   }, []);
 
+  // Filtered Projects Logic
+  const filteredProjects = useMemo(() => {
+    return projects.filter((p) => {
+      const matchesCategory =
+        selectedCategory === "ALL" ||
+        (p.category && p.category.toUpperCase() === selectedCategory.toUpperCase());
+      const matchesSearch =
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [projects, selectedCategory, searchQuery]);
+
+  // Overall Statistics Metrics
+  const totalRaised = useMemo(
+    () => projects.reduce((acc, curr) => acc + (curr.raisedAmount || 0), 0),
+    [projects]
+  );
+
+  const totalTarget = useMemo(
+    () => projects.reduce((acc, curr) => acc + (curr.targetAmount || 0), 0),
+    [projects]
+  );
+
+  const overallPercent = totalTarget > 0 ? Math.min(Math.round((totalRaised / totalTarget) * 100), 100) : 0;
+
   return (
-    <div className="py-12 sm:py-16">
+    <div className="py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        {/* Header */}
-        <div className="space-y-4 max-w-2xl text-left">
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
-            {ngoT.projectsPage.title}
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-            {ngoT.projectsPage.desc}
-          </p>
+        {/* 1. Hero Section & Impact Metrics Banner */}
+        <div className="space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4 max-w-2xl text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-wider shadow-sm">
+                <Heart className="w-4 h-4 text-red-500 animate-pulse fill-red-500/20" />
+                <span>Active Humanitarian Relief Campaigns</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-900 via-slate-800 to-purple-700 dark:from-white dark:via-slate-100 dark:to-purple-300 bg-clip-text text-transparent">
+                {projectsPage.title || "Social Service Projects"}
+              </h1>
+
+              <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                {projectsPage.desc || "Discover our active community initiatives and help us achieve our goals. Your support directly finances medical items, wheelchairs, food campaigns, and Ashramam expenses."}
+              </p>
+            </div>
+
+            {/* Quick Action Button */}
+            <Link
+              href="/ngo/donations"
+              className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm whitespace-nowrap"
+            >
+              <Gift className="w-4 h-4" />
+              <span>Donate to All Projects</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Real-Time Total Progress Card */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white border border-slate-800 shadow-2xl space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-widest">
+                  <TrendingUp className="w-4 h-4 text-emerald-400" />
+                  <span>Cumulative Relief Progress</span>
+                </div>
+                <div className="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono">
+                  ₹{totalRaised.toLocaleString("en-IN")}{" "}
+                  <span className="text-sm font-semibold text-slate-400">/ ₹{totalTarget.toLocaleString("en-IN")} Goal</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
+                  <div className="text-[10px] text-slate-300 uppercase font-bold tracking-wider">Overall Goal</div>
+                  <div className="text-xl font-black text-amber-400 font-mono">{overallPercent}% Funded</div>
+                </div>
+                <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
+                  <div className="text-[10px] text-slate-300 uppercase font-bold tracking-wider">Active Drives</div>
+                  <div className="text-xl font-black text-emerald-400 font-mono">{projects.length} Campaigns</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-400 via-purple-400 to-pink-500 rounded-full transition-all duration-1000 shadow-md"
+                style={{ width: `${overallPercent}%` }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Loading Spinner */}
+        {/* 2. Filter & Search Controls */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
+          {/* Category Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full md:w-auto pb-1 md:pb-0">
+            {[
+              { id: "ALL", label: "All Projects" },
+              { id: "HOSPITAL", label: "Hospital Relief" },
+              { id: "ASHRAMAM", label: "Ashramam Care" },
+              { id: "REHABILITATION", label: "Handicap Aid" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedCategory(tab.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedCategory === tab.id
+                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+            />
+          </div>
+        </div>
+
+        {/* 3. Projects Grid */}
         {loading ? (
           <div className="min-h-[40vh] flex items-center justify-center">
             <div className="text-center space-y-3">
               <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto" />
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-mono">{ngoT.projectsPage.fetching}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-mono">
+                {projectsPage.fetching || "Loading active initiatives..."}
+              </p>
             </div>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="min-h-[30vh] flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-center space-y-3">
+            <Filter className="w-10 h-10 text-slate-400" />
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white">No projects found</h3>
+            <p className="text-slate-500 text-xs max-w-sm">No active initiatives match your selected filter or search query.</p>
+            <button
+              onClick={() => {
+                setSelectedCategory("ALL");
+                setSearchQuery("");
+              }}
+              className="px-4 py-2 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-bold rounded-xl text-xs hover:bg-purple-500/20 transition-all"
+            >
+              Reset Filters
+            </button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => {
+            {filteredProjects.map((project) => {
               const target = project.targetAmount || 0;
               const raised = project.raisedAmount || 0;
               const percent = target > 0 ? Math.min(Math.round((raised / target) * 100), 100) : 0;
-              
+
               return (
                 <div
                   key={project.id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 hover:border-purple-500/25 dark:hover:border-white/10 rounded-3xl overflow-hidden shadow-lg dark:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1"
+                  className="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-white/10 hover:border-purple-500/40 dark:hover:border-purple-500/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1.5"
                 >
                   <div>
-                    {/* Cover image */}
+                    {/* Cover image & Floating Badges */}
                     <div className="relative aspect-video overflow-hidden bg-slate-950">
                       {project.imageUrl ? (
                         <img
                           src={project.imageUrl}
                           alt={project.title}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-750"
+                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-900">
                           <Heart className="w-12 h-12" />
                         </div>
                       )}
-                      <div className="absolute top-4 right-4 bg-slate-950/70 border border-white/10 text-slate-200 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full backdrop-blur-md">
-                        {project.status}
+
+                      {/* Status Tag */}
+                      <div className="absolute top-3.5 right-3.5 bg-slate-950/80 backdrop-blur-md border border-white/20 text-amber-400 text-[10px] font-bold font-mono uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>{project.status}</span>
                       </div>
+
+                      {/* Category Pill */}
+                      {project.category && (
+                        <div className="absolute bottom-3.5 left-3.5 bg-purple-950/80 backdrop-blur-md border border-purple-400/30 text-purple-200 text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-md">
+                          {project.category}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 space-y-4">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                    {/* Content Details */}
+                    <div className="p-6 space-y-3.5 text-left">
+                      {/* Location / Beneficiary indicator */}
+                      {(project.location || project.beneficiaries) && (
+                        <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                          {project.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                              <span className="truncate max-w-[160px]">{project.location}</span>
+                            </span>
+                          )}
+                          {project.beneficiaries && (
+                            <span className="flex items-center gap-1">
+                              <Users className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
+                              <span>{project.beneficiaries}</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors leading-snug">
                         {project.title}
                       </h3>
-                      
-                      <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 leading-relaxed">
+
+                      <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
                         {project.description}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 space-y-6">
+                  <div className="p-6 pt-0 space-y-5">
                     {/* Target progress */}
                     {target > 0 && (
-                      <div className="space-y-2">
+                      <div className="space-y-2 text-left">
                         <div className="flex items-center justify-between text-xs font-semibold">
-                          <span className="text-slate-500">{ngoT.projectsPage.progressLabel}</span>
-                          <span className="text-purple-600 dark:text-purple-300">{percent}% {ngoT.projectsPage.completeLabel}</span>
+                          <span className="text-slate-500 dark:text-slate-400">{projectsPage.progressLabel || "Fundraising Progress"}</span>
+                          <span className="text-purple-600 dark:text-purple-300 font-extrabold">{percent}% {projectsPage.completeLabel || "Complete"}</span>
                         </div>
-                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        
+                        <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/50 dark:border-white/5">
                           <div
-                            className="h-full bg-gradient-to-r from-red-500 to-purple-600 rounded-full"
+                            className="h-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 rounded-full transition-all duration-700 shadow-sm"
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-                        <div className="flex justify-between text-xs">
+                        
+                        <div className="flex justify-between text-xs pt-1">
                           <div>
-                            <span className="text-slate-800 dark:text-slate-200 font-bold">₹{raised.toLocaleString("en-IN")}</span>
-                            <span className="text-slate-500"> {ngoT.projectsPage.raised}</span>
+                            <span className="text-slate-900 dark:text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
+                            <span className="text-slate-500 text-[11px]"> {projectsPage.raised || "raised"}</span>
                           </div>
-                          <div className="text-slate-500">
-                            {ngoT.projectsPage.target} <span className="font-bold text-slate-800 dark:text-slate-300">₹{target.toLocaleString("en-IN")}</span>
+                          <div className="text-slate-500 text-[11px]">
+                            {projectsPage.target || "Target:"}{" "}
+                            <span className="font-bold text-slate-800 dark:text-slate-300 text-xs">₹{target.toLocaleString("en-IN")}</span>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="flex gap-3">
+                    {/* Actions */}
+                    <div className="space-y-2.5">
+                      <div className="flex gap-2.5">
+                        <Link
+                          href={`/ngo/donations?project=${project.id}`}
+                          className="flex-1 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <Heart className="w-3.5 h-3.5 fill-current" />
+                          <span>{projectsPage.donateBtn || "Donate Now"}</span>
+                        </Link>
+                        
+                        <Link
+                          href={`/ngo/volunteers?project=${project.id}`}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          <span>{projectsPage.volunteerBtn || "Volunteer"}</span>
+                        </Link>
+                      </div>
+
                       <Link
-                        href={`/ngo/donations?project=${project.id}`}
-                        className="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
+                        href={`/ngo/projects/${project.id}`}
+                        className="w-full py-2 bg-purple-500/5 dark:bg-purple-500/10 hover:bg-purple-500/10 dark:hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/20 rounded-xl text-[11px] font-bold text-center flex items-center justify-center gap-1 transition-all"
                       >
-                        <Heart className="w-3.5 h-3.5 fill-current" />
-                        {ngoT.projectsPage.donateBtn}
-                      </Link>
-                      
-                      <Link
-                        href={`/ngo/volunteers?project=${project.id}`}
-                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-white/5 font-bold text-center rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
-                      >
-                        {ngoT.projectsPage.volunteerBtn}
+                        <Eye className="w-3.5 h-3.5 text-purple-500" />
+                        <span>View Project Details & Logs</span>
                       </Link>
                     </div>
-                  </div>
 
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
+
+        {/* 4. Tax Exemption & Verification Trust Footer Banner */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-500/10 via-indigo-500/5 to-blue-500/10 dark:from-slate-900 dark:via-indigo-950/50 dark:to-slate-900 border border-purple-200/80 dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 text-left shadow-lg">
+          <div className="space-y-2 max-w-xl">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Section 80G Tax Exemption Certified</span>
+            </div>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white">
+              Every Donation is Tax-Deductible & Fully Audited
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+              KCM Society NGO is registered under Regd No: 206/2024 with 12A & 80G(5)(VI) approvals. Instant tax receipts are generated for all campaign donations.
+            </p>
+          </div>
+
+          <Link
+            href="/ngo/donations"
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md text-xs whitespace-nowrap transition-all hover:scale-105"
+          >
+            Support Active Relief Drives
+          </Link>
+        </div>
 
       </div>
     </div>
