@@ -13,22 +13,7 @@ interface VideoItem {
   thumbnailUrl: string;
 }
 
-// Reliable YouTube thumbnail extractor
-function getYouTubeThumbnail(url: string, fallbackThumb?: string): string {
-  if (fallbackThumb && !fallbackThumb.includes("maxresdefault")) {
-    return fallbackThumb;
-  }
-  if (!url) return fallbackThumb || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800";
-  
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2] && match[2].length === 11) {
-    return `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
-  }
-  return fallbackThumb || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800";
-}
-
-// Preset Videos available instantly with 0ms load delay
+// Preset YouTube Videos with authentic local high-definition photo thumbnails from NGO drives
 const PRESET_VIDEOS: VideoItem[] = [
   {
     id: "vid-gandhi-new",
@@ -36,7 +21,7 @@ const PRESET_VIDEOS: VideoItem[] = [
     description: "Detailed video coverage of KCM volunteers distributing warm milk, food boxes, and basic sanitary kits to patient caretakers and critical care wards at Gandhi Hospital.",
     type: "VIDEO_YOUTUBE",
     url: "https://www.youtube.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r",
-    thumbnailUrl: "https://img.youtube.com/vi/cugBnrzyPF4/hqdefault.jpg",
+    thumbnailUrl: "/KCM_NGO_SERVICES/HOSPITALS/25-03-2026(GANDHI-HOSPITAL)/IMG-20260325-WA0031.jpg",
   },
   {
     id: "vid-nims-new",
@@ -44,7 +29,7 @@ const PRESET_VIDEOS: VideoItem[] = [
     description: "Watch our volunteers distribute specialized medications, patient clothes, and nutritional foods to patients in the oncology and orthopedic departments at NIMS.",
     type: "VIDEO_YOUTUBE",
     url: "https://www.youtube.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw",
-    thumbnailUrl: "https://img.youtube.com/vi/y7gLEkS9CcI/hqdefault.jpg",
+    thumbnailUrl: "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0037.jpg",
   },
   {
     id: "vid-govt-new",
@@ -52,7 +37,7 @@ const PRESET_VIDEOS: VideoItem[] = [
     description: "Direct footage showing wheelchair provisions, walkers, patient beds, and food packet distribution drives organized at the local government hospital.",
     type: "VIDEO_YOUTUBE",
     url: "https://www.youtube.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd",
-    thumbnailUrl: "https://img.youtube.com/vi/u4-lrU41HAc/hqdefault.jpg",
+    thumbnailUrl: "/KCM_NGO_SERVICES/HOSPITALS/23-02-2026(GOVT-HOSPITAL)/IMG-20260223-WA0018.jpg",
   },
   {
     id: "vid-ashramam",
@@ -60,7 +45,7 @@ const PRESET_VIDEOS: VideoItem[] = [
     description: "Delivering monthly groceries, rice bags, academic books, and healthy food items to children and residents at Bethany Samrakshana Ashramam.",
     type: "VIDEO_YOUTUBE",
     url: "https://www.youtube.com/embed/IhcbOLPMmM8?si=tOGhSKfBExTLmAT0",
-    thumbnailUrl: "https://img.youtube.com/vi/IhcbOLPMmM8/hqdefault.jpg",
+    thumbnailUrl: "/KCM_NGO_SERVICES/BETHANY_SAMRAKSHANA_ASHRAMAM/21-04-2026(AASHRAMAM)/IMG-20260421-WA0013.jpg",
   },
   {
     id: "vid-disabled-ashramam",
@@ -68,37 +53,34 @@ const PRESET_VIDEOS: VideoItem[] = [
     description: "Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to the residents of the Home for the Disabled.",
     type: "VIDEO_YOUTUBE",
     url: "https://www.youtube.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi",
-    thumbnailUrl: "https://img.youtube.com/vi/mE5NiqLGVSw/hqdefault.jpg",
+    thumbnailUrl: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED_AASHRAMAM/IMG-20260617-WA0010.jpg",
   },
 ];
 
 export default function NgoVideosPage() {
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  // Instant initialization from memory without network wait
   const [videos, setVideos] = useState<VideoItem[]>(PRESET_VIDEOS);
   const [activeVideo, setActiveVideo] = useState<VideoItem>(PRESET_VIDEOS[0]);
 
   useEffect(() => {
     setMounted(true);
 
-    // Asynchronous background hydration for dynamic media items
     async function fetchAdditionalVideos() {
       try {
         const res = await fetch("/api/ngo/media?type=VIDEO_YOUTUBE");
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.media.length > 0) {
-            const dbVideos = data.media.map((item: any) => ({
+            const dbVideos = data.media.map((item: any, idx: number) => ({
               id: item.id,
               title: item.title || "Social Service Video Log",
               description: item.description || "Video showing KCM outreach programs.",
               type: item.type,
               url: item.url,
-              thumbnailUrl: getYouTubeThumbnail(item.url, item.thumbnailUrl),
+              thumbnailUrl: item.thumbnailUrl || PRESET_VIDEOS[idx % PRESET_VIDEOS.length].thumbnailUrl,
             }));
             
-            // Deduplicate and merge
             setVideos((prev) => {
               const existingIds = new Set(prev.map((v) => v.id));
               const newItems = dbVideos.filter((v: VideoItem) => !existingIds.has(v.id));
@@ -107,7 +89,7 @@ export default function NgoVideosPage() {
           }
         }
       } catch (err) {
-        // Silent fallback to preset videos
+        // Silent fallback
       }
     }
 
@@ -186,9 +168,8 @@ export default function NgoVideosPage() {
             </div>
 
             <div className="overflow-y-auto divide-y divide-slate-200 dark:divide-white/5 max-h-[60vh] sm:max-h-[520px]">
-              {videos.map((vid) => {
+              {videos.map((vid, idx) => {
                 const isActive = activeVideo?.id === vid.id;
-                const thumb = getYouTubeThumbnail(vid.url, vid.thumbnailUrl);
                 return (
                   <div
                     key={vid.id}
@@ -200,19 +181,15 @@ export default function NgoVideosPage() {
                     }`}
                   >
                     {/* Thumbnail wrapper */}
-                    <div className="relative w-28 aspect-video rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-200 dark:border-white/10 flex items-center justify-center group shadow-sm">
+                    <div className="relative w-28 aspect-video rounded-xl overflow-hidden bg-slate-900 flex-shrink-0 border border-slate-200 dark:border-white/10 flex items-center justify-center group shadow-sm">
                       <img
-                        src={thumb}
+                        src={vid.thumbnailUrl}
                         alt={vid.title}
                         loading="eager"
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
                           const target = e.currentTarget;
-                          if (target.src.includes("maxresdefault")) {
-                            target.src = target.src.replace("maxresdefault", "hqdefault");
-                          } else if (!target.src.includes("unsplash")) {
-                            target.src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800";
-                          }
+                          target.src = PRESET_VIDEOS[idx % PRESET_VIDEOS.length].thumbnailUrl;
                         }}
                       />
                       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
