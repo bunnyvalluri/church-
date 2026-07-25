@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
@@ -11,21 +11,16 @@ import {
   Phone,
   Navigation,
   ExternalLink,
-  ShieldCheck,
   Church,
   BookOpen,
   Users,
   Map as MapIcon,
   Youtube
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls } from "@/components/ui/map";
 
 export default function LocationsPage() {
   const { t, language } = useLanguage();
-  const [selectedBranchId, setSelectedBranchId] = useState<string>("subhash");
   const [dbBranches, setDbBranches] = useState<any[]>([]);
-  const mapRef = useRef<any>(null);
 
   const isTelugu = language === "te";
   const isHindi = language === "hi";
@@ -40,19 +35,6 @@ export default function LocationsPage() {
       })
       .catch((err) => console.error("Failed to load DB branches:", err));
   }, []);
-
-  const handleBranchSelect = (branch: any) => {
-    setSelectedBranchId(branch.id);
-    if (mapRef.current) {
-      mapRef.current.flyTo({
-        center: branch.coordinates,
-        zoom: 14.5,
-        pitch: 45,
-        essential: true,
-        duration: 1500
-      });
-    }
-  };
 
   const getBranchData = () => {
     const defaultBranches = [
@@ -72,7 +54,6 @@ export default function LocationsPage() {
           : "Subhash Nagar, Jeedimetla, LP 119, Hyderabad, Telangana 500055",
         phone: "+91 97040 90069",
         mapUrl: "https://maps.google.com/?q=Subhash+nagar+jeedimetla+119lp",
-        coordinates: [78.4610, 17.5177] as [number, number],
         services: [
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
@@ -90,11 +71,9 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        gradient: "from-purple-600 to-indigo-600",
-        accentColor: "text-purple-600 dark:text-purple-400",
         serviceBorder: "border-l-purple-500",
-        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md",
+        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
         isMain: true,
         Icon: Church,
         iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
@@ -116,7 +95,6 @@ export default function LocationsPage() {
         phone: "+91 97040 90069",
         alternatePhone: "+91 96409 43777",
         mapUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
-        coordinates: [78.4532, 17.5123] as [number, number],
         services: [
           {
             day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
@@ -129,11 +107,9 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
           },
         ],
-        gradient: "from-blue-600 to-indigo-600",
-        accentColor: "text-blue-600 dark:text-blue-400",
         serviceBorder: "border-l-blue-500",
-        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md",
+        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20",
         isMain: false,
         Icon: BookOpen,
         iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
@@ -154,7 +130,6 @@ export default function LocationsPage() {
           : "Bahadurpally, Hyderabad, Telangana 500043",
         phone: "+91 97040 90069",
         mapUrl: "https://maps.google.com/?q=17.567689,78.443963",
-        coordinates: [78.4440, 17.5677] as [number, number],
         services: [
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
@@ -167,11 +142,9 @@ export default function LocationsPage() {
             type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Prayer",
           },
         ],
-        gradient: "from-emerald-600 to-teal-600",
-        accentColor: "text-emerald-600 dark:text-emerald-400",
         serviceBorder: "border-l-emerald-500",
-        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md",
+        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20",
         isMain: false,
         Icon: Users,
         iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -183,7 +156,7 @@ export default function LocationsPage() {
         !b.name.toLowerCase().includes("shapur") &&
         !b.name.toLowerCase().includes("subhash") &&
         !b.name.toLowerCase().includes("bahadur")
-    ).map((b, idx) => ({
+    ).map((b) => ({
       id: b.id,
       name: b.name.endsWith("Branch") ? b.name : `${b.name} Branch`,
       title: `${b.name} Service & Fellowship`,
@@ -191,7 +164,6 @@ export default function LocationsPage() {
       address: b.name,
       phone: "+91 97040 90069",
       mapUrl: `https://maps.google.com/?q=${encodeURIComponent(b.name)}`,
-      coordinates: [78.45 + (idx + 1) * 0.02, 17.51 + (idx + 1) * 0.02] as [number, number],
       services: [
         {
           day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
@@ -199,11 +171,9 @@ export default function LocationsPage() {
           type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
         },
       ],
-      gradient: "from-amber-600 to-orange-600",
-      accentColor: "text-amber-600 dark:text-amber-400",
       serviceBorder: "border-l-amber-500",
-      badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-      btnColor: "bg-amber-600 hover:bg-amber-700 text-white shadow-md",
+      badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+      btnColor: "bg-amber-600 hover:bg-amber-700 text-white shadow-md shadow-amber-600/20",
       isMain: false,
       Icon: MapIcon,
       iconBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
@@ -213,19 +183,6 @@ export default function LocationsPage() {
   };
 
   const branches = getBranchData();
-
-  useEffect(() => {
-    if (mapRef.current) {
-      const defaultBranch = branches.find(b => b.id === selectedBranchId);
-      if (defaultBranch) {
-        mapRef.current.jumpTo({
-          center: defaultBranch.coordinates,
-          zoom: 12.5,
-          pitch: 30
-        });
-      }
-    }
-  }, [mapRef.current]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-purple-500 selection:text-white">
@@ -268,177 +225,96 @@ export default function LocationsPage() {
         </div>
       </section>
 
-      {/* 🗺️ Main Locations & Map Layout */}
+      {/* 🏙️ Main Locations Grid */}
       <main className="container mx-auto px-4 py-16 max-w-7xl relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Branch Cards */}
-          <div className="lg:col-span-5 space-y-6 lg:max-h-[680px] lg:overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-purple-500/30">
-            {branches.map((branch) => {
-              const BranchIcon = branch.Icon;
-              const isSelected = selectedBranchId === branch.id;
-              return (
-                <div
-                  key={branch.id}
-                  onClick={() => handleBranchSelect(branch)}
-                  className={`cursor-pointer rounded-3xl p-6 border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
-                    isSelected
-                      ? "bg-purple-500/10 dark:bg-purple-950/40 border-purple-500 ring-2 ring-purple-500/50 shadow-xl"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-500/50 shadow-sm hover:shadow-xl"
-                  }`}
-                >
-                  <div className="relative z-10">
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${branch.iconBg}`}>
-                          <BranchIcon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
-                            {isTelugu ? "బ్రాంచ్" : isHindi ? "शाखा" : "Branch"}
-                          </span>
-                          <h2 className="text-lg font-bold text-slate-900 dark:text-white font-serif">
-                            {branch.name}
-                          </h2>
-                        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+          {branches.map((branch) => {
+            const BranchIcon = branch.Icon;
+            return (
+              <div
+                key={branch.id}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${branch.iconBg}`}>
+                        <BranchIcon className="w-6 h-6" />
                       </div>
-                      {branch.isMain && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold border border-amber-500/20 uppercase tracking-wider">
-                          {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
+                      <div>
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
+                          {isTelugu ? "బ్రాంచ్" : isHindi ? "शाखा" : "Branch"}
                         </span>
-                      )}
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-serif">
+                          {branch.name}
+                        </h2>
+                      </div>
                     </div>
+                    {branch.isMain && (
+                      <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold border border-amber-500/20 uppercase tracking-wider">
+                        {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
+                      </span>
+                    )}
+                  </div>
 
-                    <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-5">
-                      {branch.description}
-                    </p>
+                  <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
+                    {branch.description}
+                  </p>
 
-                    {/* Service Schedule */}
-                    <div className="space-y-2 mb-5">
-                      <h3 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-purple-500" />
-                        {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
-                      </h3>
-                      <div className="space-y-2">
-                        {branch.services.map((srv: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className={`p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 border-l-4 ${branch.serviceBorder} flex items-center justify-between text-xs`}
-                          >
-                            <span className="font-bold text-slate-800 dark:text-slate-200">
-                              {srv.day}
-                            </span>
-                            <div className="text-right">
-                              <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
-                              <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
-                            </div>
+                  {/* Service Schedule */}
+                  <div className="space-y-3 mb-6">
+                    <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-purple-500" />
+                      {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
+                    </h3>
+                    <div className="space-y-2.5">
+                      {branch.services.map((srv: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className={`p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 border-l-4 ${branch.serviceBorder} flex items-center justify-between text-xs`}
+                        >
+                          <span className="font-bold text-slate-900 dark:text-white">
+                            {srv.day}
+                          </span>
+                          <div className="text-right">
+                            <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Address & Contacts */}
-                    <div className="mb-4 text-xs space-y-1.5">
-                      <div className="flex items-start gap-2 text-slate-600 dark:text-slate-400">
-                        <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                        <span>{branch.address}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-semibold">
-                        <Phone className="w-4 h-4 text-purple-500 shrink-0" />
-                        <a href="tel:+919704090069" className="hover:text-purple-600 transition-colors">
-                          +91 97040 90069 (Senior Pastor)
-                        </a>
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleBranchSelect(branch);
-                      }}
-                      className="flex-1 py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <MapIcon className="w-3.5 h-3.5" />
-                      <span>{isTelugu ? "మ్యాప్ లో చూడు" : isHindi ? "मानचित्र" : "View Map"}</span>
-                    </button>
-
-                    <a
-                      href={branch.mapUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className={`flex-1 py-2.5 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5`}
-                    >
-                      <Navigation className="w-3.5 h-3.5" />
-                      <span>{isTelugu ? "రూట్" : isHindi ? "मार्ग" : "Directions"}</span>
-                    </a>
+                  {/* Address & Contacts */}
+                  <div className="mb-6 text-xs sm:text-sm space-y-2">
+                    <div className="flex items-start gap-2.5 text-slate-600 dark:text-slate-400">
+                      <MapPin className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+                      <span className="leading-relaxed">{branch.address}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-semibold pt-1">
+                      <Phone className="w-4 h-4 text-purple-500 shrink-0" />
+                      <a href="tel:+919704090069" className="hover:text-purple-600 transition-colors">
+                        +91 97040 90069 (Senior Pastor)
+                      </a>
+                    </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Right Column: Sticky Map */}
-          <div className="lg:col-span-7 lg:sticky lg:top-28 h-[450px] lg:h-[680px] w-full rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl relative z-20">
-            <Map
-              ref={mapRef}
-              center={[78.452, 17.532]}
-              zoom={11.5}
-              pitch={30}
-              className="h-full w-full"
-            >
-              {branches.map((branch) => (
-                <MapMarker
-                  key={branch.id}
-                  longitude={branch.coordinates[0]}
-                  latitude={branch.coordinates[1]}
-                  onClick={() => handleBranchSelect(branch)}
-                >
-                  <MarkerContent>
-                    <div className="relative group cursor-pointer flex flex-col items-center">
-                      <span className={`absolute -inset-2.5 rounded-full bg-gradient-to-r ${branch.gradient} opacity-40 blur-xs group-hover:scale-125 transition-transform duration-300 animate-pulse`} />
-                      <div className={`relative w-10 h-10 rounded-full bg-gradient-to-br ${branch.gradient} flex items-center justify-center border-2 border-white dark:border-slate-950 shadow-lg text-white hover:scale-110 active:scale-95 transition-all duration-200`}>
-                        <branch.Icon className="w-5 h-5" />
-                      </div>
-                      <div className="absolute bottom-full mb-2 bg-slate-900 text-white text-[11px] font-bold px-3 py-1 rounded-lg border border-slate-700 shadow-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
-                        {branch.name}
-                      </div>
-                    </div>
-                  </MarkerContent>
-
-                  <MarkerPopup className="rounded-2xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-[280px] shadow-2xl relative">
-                    <div className="flex flex-col gap-2 text-slate-900 dark:text-slate-100">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-8 h-8 rounded-lg ${branch.iconBg} flex items-center justify-center`}>
-                          <branch.Icon className="w-4 h-4" />
-                        </div>
-                        <h4 className="text-sm font-bold font-serif leading-none">
-                          {branch.name}
-                        </h4>
-                      </div>
-                      <p className="text-[11px] text-slate-600 dark:text-slate-400">
-                        {branch.address}
-                      </p>
-                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-                        <a
-                          href={branch.mapUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`w-full py-1.5 rounded-lg ${branch.btnColor} text-[11px] font-bold text-center text-white`}
-                        >
-                          {isTelugu ? "రూట్" : isHindi ? "नेविगेट" : "Directions"}
-                        </a>
-                      </div>
-                    </div>
-                  </MarkerPopup>
-                </MapMarker>
-              ))}
-              <MapControls position="bottom-right" showZoom showLocate showFullscreen />
-            </Map>
-          </div>
+                {/* Direct Google Maps Navigation Button */}
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
+                  <a
+                    href={branch.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`w-full py-3.5 px-4 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-98`}
+                  >
+                    <Navigation className="w-4 h-4" />
+                    <span>{isTelugu ? "గూగుల్ మ్యాప్‌లో దిశలను పొందండి" : isHindi ? "गूगल मैप्स पर दिशा-निर्देश प्राप्त करें" : "Get Directions on Google Maps"}</span>
+                  </a>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* 📺 Live Streaming Banner */}
