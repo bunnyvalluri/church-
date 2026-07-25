@@ -36,6 +36,7 @@ interface FinanceManagementProps {
   transactions?: any[];
   accounts?: any[];
   onAddDonation: (donation: any) => void;
+  onDeleteDonation?: (id: string) => Promise<void>;
   onAddPledge?: (pledge: any) => Promise<void>;
   onAddTransaction?: (transaction: any) => Promise<void>;
   onOpenAddDonation?: () => void;
@@ -70,6 +71,7 @@ export default function FinanceManagement({
   transactions: transactionsProp = [],
   accounts: accountsProp = [],
   onAddDonation, 
+  onDeleteDonation,
   onAddPledge,
   onAddTransaction,
   onOpenAddDonation,
@@ -408,9 +410,24 @@ export default function FinanceManagement({
                         {new Date(d.createdAt).toLocaleDateString(language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-IN")}
                       </td>
                       <td className="py-4 px-6 text-center">
-                        <Link href={`/give/receipt/${d.id}`} className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.08] hover:border-indigo-300 dark:hover:border-indigo-500/30 rounded-lg text-[#6366F1] dark:text-indigo-400 font-bold text-[9px] uppercase hover:bg-indigo-50/20 transition-all active:scale-95">
-                          <FileText className="w-3.5 h-3.5" /> {language === "te" ? "రశీదు చూడండి" : language === "hi" ? "रसीद देखें" : "View Receipt"}
-                        </Link>
+                        <div className="flex items-center justify-center gap-2">
+                          <Link href={`/give/receipt/${d.id}`} className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.08] hover:border-indigo-300 dark:hover:border-indigo-500/30 rounded-lg text-[#6366F1] dark:text-indigo-400 font-bold text-[9px] uppercase hover:bg-indigo-50/20 transition-all active:scale-95">
+                            <FileText className="w-3.5 h-3.5" /> {language === "te" ? "రశీదు చూడండి" : language === "hi" ? "रसीद देखें" : "View Receipt"}
+                          </Link>
+                          {onDeleteDonation && (
+                            <button
+                              onClick={() => {
+                                if (confirm(language === "te" ? "మీరు ఖచ్చితంగా ఈ రికార్డును తొలగించాలనుకుంటున్నారా?" : language === "hi" ? "क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?" : "Are you sure you want to delete this record?")) {
+                                  onDeleteDonation(d.id);
+                                }
+                              }}
+                              className="p-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-lg transition-all active:scale-95"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

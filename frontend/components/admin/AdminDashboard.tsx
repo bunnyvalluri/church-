@@ -786,6 +786,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteDonation = async (id: string) => {
+    try {
+      const headers = await authHeaders();
+      const res = await fetch(`/api/admin/donations?id=${id}`, {
+        method: "DELETE",
+        headers
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDonationsDb(prev => prev.filter(d => d.id !== id));
+        showToast(
+          language === "te"
+            ? "కానుక రికార్డు విజయవంతంగా తొలగించబడింది!"
+            : language === "hi"
+            ? "दान रिकॉर्ड सफलतापूर्वक हटा दिया गया!"
+            : "Donation record deleted successfully!",
+          "success"
+        );
+      } else {
+        throw new Error(data.error || "Failed to delete donation");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Failed to delete donation.", "error");
+    }
+  };
+
   // Utility toast
   const showToast = (msg: string, type: "success" | "error") => {
     if (type === "success") {
@@ -1284,6 +1310,7 @@ export default function AdminDashboard() {
                   transactions={transactionsDb}
                   accounts={accountsDb}
                   onAddDonation={handleAddDonation}
+                  onDeleteDonation={handleDeleteDonation}
                   onAddPledge={handleAddPledge}
                   onAddTransaction={handleAddTransaction}
                   activeSubTab={activeView}
