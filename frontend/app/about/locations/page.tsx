@@ -272,42 +272,50 @@ export default function LocationsPage() {
                       {branch.services.map((srv: any, idx: number) => {
                         const serviceColors = [
                           {
-                            border: "border-l-violet-500",
-                            bg: "bg-violet-50 dark:bg-violet-900/20",
+                            border: "border-l-violet-400",
+                            bg: "bg-violet-50 dark:bg-violet-500/10",
+                            borderFull: "border border-violet-200/60 dark:border-violet-500/30",
                             dayText: "text-violet-700 dark:text-violet-300",
-                            dot: "bg-violet-500",
+                            typeText: "text-slate-800 dark:text-violet-100",
+                            timeText: "text-slate-500 dark:text-violet-300/70",
                           },
                           {
-                            border: "border-l-rose-500",
-                            bg: "bg-rose-50 dark:bg-rose-900/20",
+                            border: "border-l-rose-400",
+                            bg: "bg-rose-50 dark:bg-rose-500/10",
+                            borderFull: "border border-rose-200/60 dark:border-rose-500/30",
                             dayText: "text-rose-700 dark:text-rose-300",
-                            dot: "bg-rose-500",
+                            typeText: "text-slate-800 dark:text-rose-100",
+                            timeText: "text-slate-500 dark:text-rose-300/70",
                           },
                           {
-                            border: "border-l-amber-500",
-                            bg: "bg-amber-50 dark:bg-amber-900/20",
+                            border: "border-l-amber-400",
+                            bg: "bg-amber-50 dark:bg-amber-500/10",
+                            borderFull: "border border-amber-200/60 dark:border-amber-500/30",
                             dayText: "text-amber-700 dark:text-amber-300",
-                            dot: "bg-amber-500",
+                            typeText: "text-slate-800 dark:text-amber-100",
+                            timeText: "text-slate-500 dark:text-amber-300/70",
                           },
                           {
-                            border: "border-l-teal-500",
-                            bg: "bg-teal-50 dark:bg-teal-900/20",
+                            border: "border-l-teal-400",
+                            bg: "bg-teal-50 dark:bg-teal-500/10",
+                            borderFull: "border border-teal-200/60 dark:border-teal-500/30",
                             dayText: "text-teal-700 dark:text-teal-300",
-                            dot: "bg-teal-500",
+                            typeText: "text-slate-800 dark:text-teal-100",
+                            timeText: "text-slate-500 dark:text-teal-300/70",
                           },
                         ];
                         const color = serviceColors[idx % serviceColors.length];
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl ${color.bg} border border-slate-200/60 dark:border-slate-700/40 border-l-4 ${color.border} flex items-center justify-between text-xs`}
+                            className={`p-3.5 rounded-2xl ${color.bg} ${color.borderFull} border-l-4 ${color.border} flex items-center justify-between text-xs`}
                           >
                             <span className={`font-bold ${color.dayText}`}>
                               {srv.day}
                             </span>
                             <div className="text-right">
-                              <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
-                              <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
+                              <div className={`font-semibold ${color.typeText}`}>{srv.type}</div>
+                              <div className={`text-[11px] ${color.timeText}`}>{srv.time}</div>
                             </div>
                           </div>
                         );
