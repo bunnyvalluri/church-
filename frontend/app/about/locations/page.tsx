@@ -15,7 +15,11 @@ import {
   BookOpen,
   Users,
   Map as MapIcon,
-  Youtube
+  Youtube,
+  Sunrise,
+  Heart,
+  Crown,
+  Star
 } from "lucide-react";
 
 export default function LocationsPage() {
@@ -67,12 +71,12 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
           },
         ],
-        serviceBorder: "border-l-blue-500",
-        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20",
+        serviceBorder: "border-l-amber-500",
+        badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+        btnColor: "bg-amber-500 hover:bg-amber-600 text-white shadow-md shadow-amber-500/30",
         isMain: true,
-        Icon: BookOpen,
-        iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+        Icon: Church,
+        iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400 ring-2 ring-amber-400/30",
       },
       {
         id: "subhash",
@@ -107,12 +111,12 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        serviceBorder: "border-l-purple-500",
-        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
+        serviceBorder: "border-l-orange-500",
+        badgeBg: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+        btnColor: "bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/30",
         isMain: false,
-        Icon: Church,
-        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+        Icon: Sunrise,
+        iconBg: "bg-orange-500/15 text-orange-600 dark:text-orange-400 ring-2 ring-orange-400/30",
       },
       {
         id: "bahadur",
@@ -142,12 +146,12 @@ export default function LocationsPage() {
             type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Prayer",
           },
         ],
-        serviceBorder: "border-l-emerald-500",
-        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20",
+        serviceBorder: "border-l-rose-500",
+        badgeBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+        btnColor: "bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-500/30",
         isMain: false,
-        Icon: Users,
-        iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        Icon: Heart,
+        iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400 ring-2 ring-rose-400/30",
       },
     ];
 
