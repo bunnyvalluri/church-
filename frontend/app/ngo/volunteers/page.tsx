@@ -1,9 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, Send, CheckCircle2, AlertCircle, Loader2, ChevronDown } from "lucide-react";
+import {
+  Users,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  ChevronDown,
+  HeartHandshake,
+  Building2,
+  Award,
+  Sparkles,
+  User,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Calendar,
+  ArrowRight,
+  Heart,
+} from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { translations } from "@/lib/translations";
 
 interface Project {
   id: string;
@@ -28,7 +45,7 @@ export default function NgoVolunteersPage() {
     setMounted(true);
   }, []);
 
-  const ngoT = t.ngo; // LanguageProvider guards t to en before mount � no double-guard needed
+  const ngoT = t.ngo || {};
 
   useEffect(() => {
     async function loadProjects() {
@@ -54,7 +71,7 @@ export default function NgoVolunteersPage() {
     setErrorMsg("");
 
     if (!name.trim() || !email.trim()) {
-      setErrorMsg(ngoT.volunteersPage.errorFields);
+      setErrorMsg(ngoT.volunteersPage?.errorFields || "Please enter your name and email address.");
       setStatus("ERROR");
       setLoading(false);
       return;
@@ -76,7 +93,6 @@ export default function NgoVolunteersPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("SUCCESS");
-        // Clear form
         setName("");
         setEmail("");
         setPhone("");
@@ -94,135 +110,332 @@ export default function NgoVolunteersPage() {
     }
   };
 
+  const volunteerRoles = [
+    {
+      id: "role-hospital",
+      title: "Hospital Outreach Drive",
+      desc: "Distribute hot meals, patient care kits, and essential medicines to caretakers in Gandhi & NIMS hospitals.",
+      badge: "Weekly Drives",
+      icon: HeartHandshake,
+      cardStyle: "bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 hover:border-blue-500 shadow-sm hover:shadow-blue-500/10",
+      badgeStyle: "bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50",
+      iconStyle: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20",
+      linkStyle: "text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300",
+    },
+    {
+      id: "role-ashramam",
+      title: "Ashramam Provisions & Care",
+      desc: "Package and deliver monthly groceries, rice bags, and blankets to Bethany Ashramam & care centers.",
+      badge: "Weekend Trips",
+      icon: Building2,
+      cardStyle: "bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-900/60 hover:border-purple-500 shadow-sm hover:shadow-purple-500/10",
+      badgeStyle: "bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50",
+      iconStyle: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20",
+      linkStyle: "text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300",
+    },
+    {
+      id: "role-logistics",
+      title: "Medical & Logistics Aid",
+      desc: "Assist in organizing inventory, wheelchair distribution, and coordination at relief distribution points.",
+      badge: "Field Support",
+      icon: Award,
+      cardStyle: "bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/60 hover:border-emerald-500 shadow-sm hover:shadow-emerald-500/10",
+      badgeStyle: "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50",
+      iconStyle: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+      linkStyle: "text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300",
+    },
+    {
+      id: "role-media",
+      title: "Media & Event Coordination",
+      desc: "Help document service projects through photography, volunteer registration, and event management.",
+      badge: "Media & Admin",
+      icon: Sparkles,
+      cardStyle: "bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/60 hover:border-amber-500 shadow-sm hover:shadow-amber-500/10",
+      badgeStyle: "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50",
+      iconStyle: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+      linkStyle: "text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300",
+    },
+  ];
+
   return (
-    <div className="py-12 sm:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
         
-        <div className="grid lg:grid-cols-12 gap-12 max-w-5xl mx-auto items-start">
-          
-          {/* Left Pane: Info Card */}
-          <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-semibold uppercase tracking-wider">
-              <Users className="w-3.5 h-3.5" />
-              {ngoT.volunteersPage.tag}
-            </div>
-
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-purple-600 dark:from-white dark:to-purple-400 bg-clip-text text-transparent">
-              {ngoT.volunteersPage.title}
-            </h1>
-
-            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-              {ngoT.volunteersPage.desc}
-            </p>
-
-            <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-white/5">
-              <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">1</div>
-                <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step1Title}</h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step1Desc}</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">2</div>
-                <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step2Title}</h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step2Desc}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 border border-purple-500/20 dark:border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-xs flex-shrink-0">3</div>
-                <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{ngoT.volunteersPage.step3Title}</h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{ngoT.volunteersPage.step3Desc}</p>
-                </div>
-              </div>
-            </div>
+        {/* 1. Hero Section */}
+        <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300 text-xs font-extrabold uppercase tracking-wider shadow-sm">
+            <Heart className="w-4 h-4 text-rose-500 animate-pulse fill-rose-500/20" />
+            <span>{ngoT.volunteersPage?.tag || "JOIN OUR OUTREACH MISSION"}</span>
           </div>
 
-          {/* Right Pane: Interactive Form */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg dark:shadow-2xl">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-left mb-6">{ngoT.volunteersPage.formTitle}</h3>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] bg-gradient-to-r from-slate-900 via-slate-800 to-purple-600 dark:from-white dark:via-slate-100 dark:to-purple-300 bg-clip-text text-transparent">
+            {ngoT.volunteersPage?.title || "Become a KCM Volunteer"}
+          </h1>
+
+          <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal max-w-2xl mx-auto">
+            {ngoT.volunteersPage?.desc || "Lend your hands to serve hospital patients, orphans, and elderly residents across Telangana. Whether you can give 2 hours on a weekend or manage relief drives, every effort transforms lives."}
+          </p>
+
+          {/* Quick Highlight Pills */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
+              <Calendar className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              <span>Flexible Weekend Hours</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
+              <Award className="w-3.5 h-3.5 text-amber-500" />
+              <span>Official Volunteer Certificate</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <span>100% Direct Field Impact</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Volunteer Opportunities Grid */}
+        <div className="space-y-6">
+          <div className="text-left space-y-1">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              Where You Can Help
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+              Choose an area of service that matches your skills and availability.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {volunteerRoles.map((role) => {
+              const Icon = role.icon;
+              return (
+                <div
+                  key={role.id}
+                  onClick={() => {
+                    const formEl = document.getElementById("volunteer-form");
+                    if (formEl) formEl.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className={`group relative p-6 rounded-3xl ${role.cardStyle} flex flex-col justify-between space-y-5 cursor-pointer hover:-translate-y-1 transition-all duration-300`}
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className={`w-11 h-11 rounded-2xl ${role.iconStyle} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${role.badgeStyle}`}>
+                        {role.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                      {role.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                      {role.desc}
+                    </p>
+                  </div>
+
+                  <div className={`pt-3 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs font-black uppercase tracking-wider ${role.linkStyle}`}>
+                    <span>Apply for Role</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 3. Main Form & Step Timeline */}
+        <div id="volunteer-form" className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start pt-4">
+          
+          {/* Left Column: How It Works & Perks */}
+          <div className="lg:col-span-5 space-y-8 text-left">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
+                <Users className="w-3.5 h-3.5" />
+                <span>Simple 3-Step Process</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                How Volunteering Works
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed font-medium">
+                We make it seamless for individuals, students, and corporate groups to register and start making a difference immediately.
+              </p>
+            </div>
+
+            {/* Timeline Steps */}
+            <div className="space-y-6 relative before:absolute before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-purple-500/30">
+              <div className="relative flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0 z-10">
+                  1
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+                    {ngoT.volunteersPage?.step1Title || "Submit Application Details"}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed font-medium">
+                    {ngoT.volunteersPage?.step1Desc || "Fill out the registration form with your contact details, area of interest, and available hours."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0 z-10">
+                  2
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+                    {ngoT.volunteersPage?.step2Title || "Orientation & Placement"}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed font-medium">
+                    {ngoT.volunteersPage?.step2Desc || "Our volunteer coordination team connects with you to assign a local hospital or Ashramam outreach project."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0 z-10">
+                  3
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+                    {ngoT.volunteersPage?.step3Title || "Start Serving & Make an Impact"}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed font-medium">
+                    {ngoT.volunteersPage?.step3Desc || "Join our weekly field teams to distribute meals, medicines, and essential supplies directly to those in need."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Volunteer Perks Card */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-slate-900 dark:bg-slate-950 text-white shadow-2xl space-y-4 relative overflow-hidden border border-purple-500/30">
+              <div className="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
+              
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-extrabold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Volunteer Benefits</span>
+              </div>
+
+              <h3 className="text-lg font-black text-white">Why Join KCM Social Services?</h3>
+              
+              <ul className="space-y-3 text-xs text-slate-200 font-medium">
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>Receive an official Certificate of Appreciation</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>Network with dedicated social service leaders</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>100% transparent field operations & direct impact</span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Right Column: Application Form */}
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-xl">
+            <div className="space-y-2 text-left mb-8 border-b border-slate-200 dark:border-white/10 pb-6">
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {ngoT.volunteersPage?.formTitle || "Volunteer Application"}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+                Fill in your details below and our team will get in touch with you shortly.
+              </p>
+            </div>
 
             {status === "SUCCESS" && (
-              <div className="mb-6 p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-start gap-3 text-left">
+              <div className="mb-6 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-start gap-4 text-left">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">{ngoT.volunteersPage.successTitle}</h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">
-                    {ngoT.volunteersPage.successDesc}
+                <div className="space-y-1">
+                  <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">
+                    {ngoT.volunteersPage?.successTitle || "Application Submitted Successfully!"}
+                  </h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    {ngoT.volunteersPage?.successDesc || "Thank you for stepping up to serve! Our volunteer coordinator will reach out via email or phone within 24-48 hours."}
                   </p>
                 </div>
               </div>
             )}
 
             {status === "ERROR" && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2.5 text-left text-xs sm:text-sm text-red-600 dark:text-red-300">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-500 dark:text-red-400" />
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-start gap-3 text-left text-xs sm:text-sm text-red-600 dark:text-red-300">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-500 dark:text-red-400 mt-0.5" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5 text-left">
-              {/* Row 1: Name & Email */}
-              <div className="grid md:grid-cols-2 gap-4">
+              
+              {/* Name & Email */}
+              <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                    {ngoT.volunteersPage.fullName}
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.fullName || "Full Name"} *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={ngoT.volunteersPage.fullName}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
-                  />
+                  <div className="relative">
+                    <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. Rahul Sharma"
+                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                    {ngoT.volunteersPage.email}
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.email || "Email Address"} *
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={ngoT.volunteersPage.email}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
-                  />
+                  <div className="relative">
+                    <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@example.com"
+                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Row 2: Phone & Project */}
-              <div className="grid md:grid-cols-2 gap-4">
+              {/* Phone & Initiative */}
+              <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                    {ngoT.volunteersPage.phone}
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.phone || "Phone Number (Optional)"}
                   </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder={ngoT.volunteersPage.phone}
-                    className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
-                  />
+                  <div className="relative">
+                    <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                    {ngoT.volunteersPage.initiative}
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.initiative || "Preferred Initiative"}
                   </label>
                   <div className="relative">
                     <select
                       value={projectId}
                       onChange={(e) => setProjectId(e.target.value)}
-                      className="w-full py-3 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 appearance-none transition-colors text-sm"
+                      className="w-full py-3 pl-4 pr-10 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 appearance-none transition-all text-sm shadow-sm cursor-pointer"
                     >
-                      <option value="">{ngoT.volunteersPage.initiativePlaceholder}</option>
+                      <option value="">{ngoT.volunteersPage?.initiativePlaceholder || "Any / General Social Service"}</option>
                       {projects.map((proj) => (
                         <option key={proj.id} value={proj.id}>
                           {proj.title}
@@ -234,34 +447,37 @@ export default function NgoVolunteersPage() {
                 </div>
               </div>
 
-              {/* Row 3: Skills / Details */}
+              {/* Message / Skills */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                  {ngoT.volunteersPage.skills}
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                  {ngoT.volunteersPage?.skills || "Skills, Experience or Message"}
                 </label>
-                <textarea
-                  rows={4}
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                  placeholder={ngoT.volunteersPage.skillsPlaceholder}
-                  className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors text-sm"
-                />
+                <div className="relative">
+                  <textarea
+                    rows={4}
+                    value={skills}
+                    onChange={(e) => setSkills(e.target.value)}
+                    placeholder={ngoT.volunteersPage?.skillsPlaceholder || "Tell us about yourself, your weekend availability, or any specific skills (e.g. driving, photography, medical training)..."}
+                    className="w-full py-3 px-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm resize-y min-h-[100px]"
+                  />
+                </div>
               </div>
 
+              {/* Submit CTA */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl shadow-lg shadow-purple-600/30 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2.5 text-sm cursor-pointer disabled:opacity-50"
               >
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>{ngoT.volunteersPage.submittingBtn}</span>
+                    <span>{ngoT.volunteersPage?.submittingBtn || "Submitting Application..."}</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>{ngoT.volunteersPage.submitBtn}</span>
+                    <span>{ngoT.volunteersPage?.submitBtn || "Submit Volunteer Application"}</span>
                   </>
                 )}
               </button>
