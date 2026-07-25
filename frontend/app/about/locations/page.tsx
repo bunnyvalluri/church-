@@ -148,7 +148,7 @@ export default function LocationsPage() {
         ],
         serviceBorder: "border-l-rose-500",
         badgeBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
-        btnColor: "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-600/30",
+        btnColor: "bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-600 hover:to-fuchsia-700 text-white shadow-lg shadow-pink-600/30",
         isMain: false,
         Icon: Heart,
         iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400 ring-2 ring-rose-400/30",
