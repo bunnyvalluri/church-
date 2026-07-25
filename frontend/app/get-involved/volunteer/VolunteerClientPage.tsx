@@ -18,7 +18,12 @@ import {
   ChevronRight,
   ShieldCheck,
   HeartHandshake,
-  Check
+  Check,
+  User,
+  Mail,
+  Phone,
+  Layers,
+  FileText
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
