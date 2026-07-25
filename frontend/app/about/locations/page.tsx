@@ -265,20 +265,49 @@ export default function LocationsPage() {
                       {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
                     </h3>
                     <div className="space-y-2.5">
-                      {branch.services.map((srv: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className={`p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 border-l-4 ${branch.serviceBorder} flex items-center justify-between text-xs`}
-                        >
-                          <span className="font-bold text-slate-900 dark:text-white">
-                            {srv.day}
-                          </span>
-                          <div className="text-right">
-                            <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
-                            <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
+                      {branch.services.map((srv: any, idx: number) => {
+                        const serviceColors = [
+                          {
+                            border: "border-l-violet-500",
+                            bg: "bg-violet-50 dark:bg-violet-900/20",
+                            dayText: "text-violet-700 dark:text-violet-300",
+                            dot: "bg-violet-500",
+                          },
+                          {
+                            border: "border-l-rose-500",
+                            bg: "bg-rose-50 dark:bg-rose-900/20",
+                            dayText: "text-rose-700 dark:text-rose-300",
+                            dot: "bg-rose-500",
+                          },
+                          {
+                            border: "border-l-amber-500",
+                            bg: "bg-amber-50 dark:bg-amber-900/20",
+                            dayText: "text-amber-700 dark:text-amber-300",
+                            dot: "bg-amber-500",
+                          },
+                          {
+                            border: "border-l-teal-500",
+                            bg: "bg-teal-50 dark:bg-teal-900/20",
+                            dayText: "text-teal-700 dark:text-teal-300",
+                            dot: "bg-teal-500",
+                          },
+                        ];
+                        const color = serviceColors[idx % serviceColors.length];
+                        return (
+                          <div
+                            key={idx}
+                            className={`p-3.5 rounded-2xl ${color.bg} border border-slate-200/60 dark:border-slate-700/40 border-l-4 ${color.border} flex items-center justify-between text-xs`}
+                          >
+                            <span className={`font-bold ${color.dayText}`}>
+                              {srv.day}
+                            </span>
+                            <div className="text-right">
+                              <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
