@@ -3,11 +3,23 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
-import { MapPin, Clock, Phone, Navigation, ArrowLeft, ExternalLink, ShieldCheck, Church, BookOpen, Users, Map as MapIcon } from "lucide-react";
-import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
+import BackToHome from "@/components/ui/BackToHome";
+import {
+  MapPin,
+  Clock,
+  Phone,
+  Navigation,
+  ExternalLink,
+  ShieldCheck,
+  Church,
+  BookOpen,
+  Users,
+  Map as MapIcon,
+  Youtube
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls } from "@/components/ui/map";
-import Navbar from "@/components/layout/Navbar";
 
 export default function LocationsPage() {
   const { t, language } = useLanguage();
@@ -45,52 +57,6 @@ export default function LocationsPage() {
   const getBranchData = () => {
     const defaultBranches = [
       {
-        id: "shapur",
-        name: isTelugu
-          ? "షాపూర్ బ్రాంచ్"
-          : isHindi
-          ? "शापुर शाखा"
-          : "Shapur Branch",
-        title: t.services?.shapur?.title || "Shapur Prayer Service",
-        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur location.",
-        address: isTelugu
-          ? "15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్, జీడిమెట్ల, హైదరాబాద్, తెలంగాణ 500055"
-          : isHindi
-          ? "15-201, विवेकानंद नगर, श्रीनिवास नगर, जीडीमेटला, हैदराबाद, तेलंगाना 500055"
-          : "15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055",
-        phone: "+91 97040 90069",
-        alternatePhone: "+91 96409 43777",
-        mapUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
-        coordinates: [78.4532, 17.5123] as [number, number],
-        services: [
-          {
-            day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
-            time: "6:00 PM",
-            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "ప్రार्थना सभा" : "Prayer Meeting",
-          },
-          {
-            day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
-            time: "6:00 PM",
-            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "ఆరాధన సేవ" : "Worship Service",
-          },
-        ],
-        gradient: "from-indigo-600 to-blue-500",
-        glowGradient: "from-indigo-500/10 via-blue-500/5 to-transparent",
-        accentColor: "text-indigo-600 dark:text-indigo-400",
-        hoverBorder: "hover:border-indigo-500/40 hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.12)]",
-        hoverTitle: "group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
-        serviceBorder: "border-l-indigo-500/80 dark:border-l-indigo-400/80",
-        badgeBg: "bg-indigo-50 dark:bg-indigo-950/40",
-        badgeText: "text-indigo-700 dark:text-indigo-300",
-        btnColor: "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-600/20 hover:shadow-indigo-600/30",
-        mapIconColor: "text-indigo-600 dark:text-indigo-400",
-        mapBtnHover: "hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20",
-        isMain: false,
-        Icon: BookOpen,
-        iconBg: "from-indigo-500/20 to-blue-500/10 dark:from-indigo-500/15 dark:to-blue-500/5",
-        iconColor: "text-indigo-600 dark:text-indigo-400",
-      },
-      {
         id: "subhash",
         name: isTelugu
           ? "సుభాష్ నగర్ (ప్రధాన మందిరం)"
@@ -98,7 +64,7 @@ export default function LocationsPage() {
           ? "सुभाष नगर (मुख्य अभयारण्य)"
           : "Subhash Nagar (Main Sanctuary)",
         title: t.services?.subhash?.title || "Subhash Nagar Morning Prayer",
-        description: `${t.services?.subhash?.desc || "Start your Sunday with early morning worship and powerful prayer."} ${t.services?.subhash?.secondDesc || ""} ${t.services?.subhash?.thursdayDesc || ""}`,
+        description: `${t.services?.subhash?.desc || "Start your Sunday with early morning worship and powerful prayer."} ${t.services?.subhash?.secondDesc || ""}`,
         address: isTelugu
           ? "సుభాష్ నగర్, జీడిమెట్ల, LP 119, హైదరాబాద్, తెలంగాణ 500055"
           : isHindi
@@ -124,21 +90,53 @@ export default function LocationsPage() {
             type: isTelugu ? "ఆయిల్ అభిషేక ప్రార్థనా సేవ" : isHindi ? "तेल अभिषेक प्रार्थना सेवा" : "Oil Anointing Prayer Service",
           },
         ],
-        gradient: "from-violet-600 via-fuchsia-500 to-rose-500",
-        glowGradient: "from-violet-500/10 via-rose-500/5 to-transparent",
-        accentColor: "text-violet-600 dark:text-violet-400",
-        hoverBorder: "hover:border-violet-500/40 hover:shadow-[0_0_40px_-5px_rgba(167,139,250,0.12)]",
-        hoverTitle: "group-hover:text-violet-600 dark:group-hover:text-violet-400",
-        serviceBorder: "border-l-violet-500/80 dark:border-l-violet-400/80",
-        badgeBg: "bg-violet-50 dark:bg-violet-950/40",
-        badgeText: "text-violet-700 dark:text-violet-300",
-        btnColor: "bg-gradient-to-r from-violet-600 to-rose-500 hover:from-violet-500 hover:to-rose-450 text-white shadow-md shadow-violet-600/20 hover:shadow-violet-600/30",
-        mapIconColor: "text-violet-600 dark:text-violet-400",
-        mapBtnHover: "hover:bg-violet-50/50 dark:hover:bg-violet-950/20",
+        gradient: "from-purple-600 to-indigo-600",
+        accentColor: "text-purple-600 dark:text-purple-400",
+        serviceBorder: "border-l-purple-500",
+        badgeBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+        btnColor: "bg-purple-600 hover:bg-purple-700 text-white shadow-md",
         isMain: true,
         Icon: Church,
-        iconBg: "from-violet-500/20 to-rose-500/10 dark:from-violet-500/15 dark:to-rose-500/5",
-        iconColor: "text-violet-600 dark:text-violet-400",
+        iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+      },
+      {
+        id: "shapur",
+        name: isTelugu
+          ? "షాపూర్ బ్రాంచ్"
+          : isHindi
+          ? "शापुर शाखा"
+          : "Shapur Branch",
+        title: t.services?.shapur?.title || "Shapur Prayer Service",
+        description: t.services?.shapur?.desc || "Join us for powerful worship and prayer at our Shapur location.",
+        address: isTelugu
+          ? "15-201, వివేకానంద నగర్, శ్రీనివాస్ నగర్, జీడిమెట్ల, హైదరాబాద్, తెలంగాణ 500055"
+          : isHindi
+          ? "15-201, विवेकानंद नगर, श्रीनिवास नगर, जीडीमेटला, हैदराबाद, तेलंगाना 500055"
+          : "15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055",
+        phone: "+91 97040 90069",
+        alternatePhone: "+91 96409 43777",
+        mapUrl: "https://maps.google.com/?q=Kingdom+of+Christ+Ministries,+15-201,+Vivekananda+Nagar,+Srinivas+Nagar,+Jeedimetla,+Hyderabad,+Telangana+500055",
+        coordinates: [78.4532, 17.5123] as [number, number],
+        services: [
+          {
+            day: isTelugu ? "శుక్రవారం" : isHindi ? "शुक्रवार" : "Friday",
+            time: "6:00 PM",
+            type: isTelugu ? "ప్రార్థన కూడిక" : isHindi ? "प्रार्थना सभा" : "Prayer Meeting",
+          },
+          {
+            day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
+            time: "6:00 PM",
+            type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
+          },
+        ],
+        gradient: "from-blue-600 to-indigo-600",
+        accentColor: "text-blue-600 dark:text-blue-400",
+        serviceBorder: "border-l-blue-500",
+        badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+        btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-md",
+        isMain: false,
+        Icon: BookOpen,
+        iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
       },
       {
         id: "bahadur",
@@ -152,7 +150,7 @@ export default function LocationsPage() {
         address: isTelugu
           ? "బహదూర్‌పల్లి, హైదరాబాద్, తెలంగాణ 500043"
           : isHindi
-          ? "बहादुरपल्ली, హైదరాబాద్, తెలంగాణ 500043"
+          ? "बहादुरपल्ली, हैदराबाद, तेलंगाना 500043"
           : "Bahadurpally, Hyderabad, Telangana 500043",
         phone: "+91 97040 90069",
         mapUrl: "https://maps.google.com/?q=17.567689,78.443963",
@@ -169,25 +167,17 @@ export default function LocationsPage() {
             type: isTelugu ? "నెలవారీ ప్రత్యేక ప్రార్థన" : isHindi ? "मासिक विशेष प्रार्थना" : "Monthly Special Prayer",
           },
         ],
-        gradient: "from-emerald-600 to-teal-500",
-        glowGradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
-        accentColor: "text-emerald-650 dark:text-emerald-400",
-        hoverBorder: "hover:border-emerald-500/40 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.12)]",
-        hoverTitle: "group-hover:text-emerald-650 dark:group-hover:text-emerald-400",
-        serviceBorder: "border-l-emerald-500/80 dark:border-l-emerald-400/80",
-        badgeBg: "bg-emerald-50 dark:bg-emerald-950/40",
-        badgeText: "text-emerald-700 dark:text-emerald-355",
-        btnColor: "bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30",
-        mapIconColor: "text-emerald-650 dark:text-emerald-400",
-        mapBtnHover: "hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
+        gradient: "from-emerald-600 to-teal-600",
+        accentColor: "text-emerald-600 dark:text-emerald-400",
+        serviceBorder: "border-l-emerald-500",
+        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md",
         isMain: false,
         Icon: Users,
-        iconBg: "from-emerald-500/20 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/5",
-        iconColor: "text-emerald-600 dark:text-emerald-400",
+        iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
       },
     ];
 
-    // Dynamically append any custom branches created via forms
     const extraBranches = dbBranches.filter(
       (b) =>
         !b.name.toLowerCase().includes("shapur") &&
@@ -209,21 +199,14 @@ export default function LocationsPage() {
           type: isTelugu ? "ఆరాధన సేవ" : isHindi ? "आराधना सेवा" : "Worship Service",
         },
       ],
-      gradient: "from-amber-600 to-orange-500",
-      glowGradient: "from-amber-500/10 via-orange-500/5 to-transparent",
+      gradient: "from-amber-600 to-orange-600",
       accentColor: "text-amber-600 dark:text-amber-400",
-      hoverBorder: "hover:border-amber-500/40 hover:shadow-[0_0_40px_-5px_rgba(245,158,11,0.12)]",
-      hoverTitle: "group-hover:text-amber-600 dark:group-hover:text-amber-400",
-      serviceBorder: "border-l-amber-500/80 dark:border-l-amber-400/80",
-      badgeBg: "bg-amber-50 dark:bg-amber-950/40",
-      badgeText: "text-amber-700 dark:text-amber-300",
-      btnColor: "bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-500 text-white shadow-md shadow-amber-600/20",
-      mapIconColor: "text-amber-600 dark:text-amber-400",
-      mapBtnHover: "hover:bg-amber-50/50 dark:hover:bg-amber-950/20",
+      serviceBorder: "border-l-amber-500",
+      badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      btnColor: "bg-amber-600 hover:bg-amber-700 text-white shadow-md",
       isMain: false,
       Icon: MapIcon,
-      iconBg: "from-amber-500/20 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/5",
-      iconColor: "text-amber-600 dark:text-amber-400",
+      iconBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     }));
 
     return [...defaultBranches, ...extraBranches];
@@ -231,7 +214,6 @@ export default function LocationsPage() {
 
   const branches = getBranchData();
 
-  // Trigger initial map fly to default selected branch when map loads
   useEffect(() => {
     if (mapRef.current) {
       const defaultBranch = branches.find(b => b.id === selectedBranchId);
@@ -245,203 +227,162 @@ export default function LocationsPage() {
     }
   }, [mapRef.current]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 60, damping: 14 },
-    },
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 selection:bg-purple-500 selection:text-white">
+      {/* 🧭 Global Navigation Bar */}
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="relative py-28 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 overflow-hidden mt-20">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+      {/* 🌌 Hero Header - Deep Slate with Ambient Glows */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-slate-950 text-white overflow-hidden shadow-xl">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm transition-all text-xs font-semibold hover:-translate-x-1"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {isTelugu ? "తిరిగి వెళ్ళండి" : isHindi ? "वापस जाएं" : "Back to Home"}
-          </a>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight font-outfit">
+          <div className="mb-6 flex justify-center">
+            <BackToHome label={t?.nav?.home || "Home"} />
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-xs sm:text-sm mb-6 shadow-md">
+            <MapPin className="w-4 h-4 text-purple-300" />
+            <span>
+              {isTelugu
+                ? "హైదరాబాద్‌లోని 3 బ్రాంచ్ ప్రాంతాలు"
+                : isHindi
+                ? "हैदराबाद में 3 शाखा स्थान"
+                : "3 Branch Locations Across Hyderabad"}
+            </span>
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 font-serif text-white">
             {isTelugu ? "మా ప్రాంతాలు & ఆరాధనలు" : isHindi ? "हमारे स्थान और आराधना" : "Our Locations & Services"}
           </h1>
-          <p className="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed">
+
+          <p className="text-base sm:text-lg md:text-xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
             {isTelugu
-              ? "హైదరాబాద్ అంతటా మా 3 బ్రాంచ్‌లలో ఏదైనా ఒకదానిలో మాతో చేరండి మరియు దేవుని ఆశీర్వాదాలను పొందండి."
+              ? "హైదరాబాద్ అంతటా మా బ్రాంచ్‌లలో ఒకదానిలో మాతో చేరి దేవుని ఆశీర్వాదాలను పొందుకోవచ్చు."
               : isHindi
-              ? "हैदराबाद में हमारी 3 शाखाओं में से किसी एक में हमसे जुड़ें और परमेश्वर के आशीर्वाद का अनुभव करें।"
-              : "Join us at any of our 3 branches across Hyderabad to fellowship and grow in faith."}
+              ? "हैदराबाद में हमारी शाखाओं में से किसी एक में हमसे जुड़ें और परमेश्वर के आशीर्वाद का अनुभव करें।"
+              : "Join us at any of our branches across Hyderabad to fellowship and grow in faith."}
           </p>
         </div>
       </section>
 
-      {/* Interactive split locations area */}
-      <main className="container mx-auto px-4 py-16 max-w-7xl">
+      {/* 🗺️ Main Locations & Map Layout */}
+      <main className="container mx-auto px-4 py-16 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Branch Cards List */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-5 space-y-6 lg:h-[650px] lg:overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/30 scrollbar-track-transparent"
-          >
-            {branches.map((branch) => (
-              <motion.article
-                key={branch.id}
-                variants={itemVariants}
-                onClick={() => handleBranchSelect(branch)}
-                className={`group relative bg-white dark:bg-white/[0.02] backdrop-blur-xl rounded-[2rem] border p-6 hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer ${
-                  selectedBranchId === branch.id
-                    ? "border-purple-500 dark:border-purple-400 shadow-xl shadow-purple-500/5 ring-1 ring-purple-500"
-                    : `border-slate-200/60 dark:border-white/[0.06] shadow-sm ${branch.hoverBorder}`
-                }`}
-              >
-                {/* Glow decorations */}
-                <div className={`absolute -right-16 -top-16 w-48 h-48 rounded-full bg-gradient-to-br ${branch.glowGradient} blur-[50px] pointer-events-none group-hover:scale-125 transition-transform duration-700 opacity-60`} />
-                <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${branch.gradient}`} />
-
-                <div className="relative z-10">
-                  {/* Header info */}
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${branch.iconBg} flex items-center justify-center border border-slate-200/50 dark:border-white/10 shadow-xs`}>
-                        <branch.Icon className={`w-5 h-5 ${branch.iconColor}`} />
-                      </div>
-                      <div>
-                        <span className="text-[9px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-505 block">
-                          {isTelugu ? "బ్రాంచ్" : isHindi ? "शाखा" : "Branch"}
-                        </span>
-                        <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight transition-colors duration-300">
-                          {branch.name}
-                        </h2>
-                      </div>
-                    </div>
-                    {branch.isMain && (
-                      <span className="bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[9px] font-extrabold px-2.5 py-0.5 rounded-full tracking-wider uppercase">
-                        {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main"}
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="text-slate-650 dark:text-slate-450 text-xs leading-relaxed mb-6">
-                    {branch.description}
-                  </p>
-
-                  {/* Services time */}
-                  <div className="space-y-2 mb-6">
-                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-505 tracking-widest flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-slate-400" />
-                      {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "ఆరాధన సమయాలు" : "Service Schedule"}
-                    </h3>
-                    <div className="space-y-2">
-                      {branch.services.map((srv, index) => (
-                        <div
-                          key={index}
-                          className={`bg-slate-50/50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/[0.02] p-3 rounded-xl flex items-center justify-between border-l-4 ${branch.serviceBorder} shadow-2xs`}
-                        >
-                          <span className={`font-extrabold text-[9px] uppercase tracking-wider ${branch.badgeBg} ${branch.badgeText} px-2 py-0.5 rounded-md`}>
-                            {srv.day}
+          {/* Left Column: Branch Cards */}
+          <div className="lg:col-span-5 space-y-6 lg:max-h-[680px] lg:overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-purple-500/30">
+            {branches.map((branch) => {
+              const BranchIcon = branch.Icon;
+              const isSelected = selectedBranchId === branch.id;
+              return (
+                <div
+                  key={branch.id}
+                  onClick={() => handleBranchSelect(branch)}
+                  className={`cursor-pointer rounded-3xl p-6 border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+                    isSelected
+                      ? "bg-purple-500/10 dark:bg-purple-950/40 border-purple-500 ring-2 ring-purple-500/50 shadow-xl"
+                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-purple-500/50 shadow-sm hover:shadow-xl"
+                  }`}
+                >
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${branch.iconBg}`}>
+                          <BranchIcon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">
+                            {isTelugu ? "బ్రాంచ్" : isHindi ? "शाखा" : "Branch"}
                           </span>
-                          <div className="text-right">
-                            <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
-                              {srv.type}
-                            </div>
-                            <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                              {srv.time}
+                          <h2 className="text-lg font-bold text-slate-900 dark:text-white font-serif">
+                            {branch.name}
+                          </h2>
+                        </div>
+                      </div>
+                      {branch.isMain && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold border border-amber-500/20 uppercase tracking-wider">
+                          {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-5">
+                      {branch.description}
+                    </p>
+
+                    {/* Service Schedule */}
+                    <div className="space-y-2 mb-5">
+                      <h3 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-purple-500" />
+                        {isTelugu ? "ఆరాధన సమయాలు" : isHindi ? "आराधना समय" : "Service Schedule"}
+                      </h3>
+                      <div className="space-y-2">
+                        {branch.services.map((srv: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className={`p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 border-l-4 ${branch.serviceBorder} flex items-center justify-between text-xs`}
+                          >
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                              {srv.day}
+                            </span>
+                            <div className="text-right">
+                              <div className="font-semibold text-slate-900 dark:text-white">{srv.type}</div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400">{srv.time}</div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Address & Contacts */}
+                    <div className="mb-4 text-xs space-y-1.5">
+                      <div className="flex items-start gap-2 text-slate-600 dark:text-slate-400">
+                        <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                        <span>{branch.address}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-semibold">
+                        <Phone className="w-4 h-4 text-purple-500 shrink-0" />
+                        <a href="tel:+919704090069" className="hover:text-purple-600 transition-colors">
+                          +91 97040 90069 (Senior Pastor)
+                        </a>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Address info */}
-                  <div className="mb-3">
-                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-550 tracking-widest mb-0.5">
-                      {isTelugu ? "చిరునామా" : isHindi ? "पता" : "Address"}
-                    </h3>
-                    <p className="text-slate-700 dark:text-slate-350 text-xs leading-relaxed">
-                      {branch.address}
-                    </p>
-                  </div>
+                  {/* Actions */}
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBranchSelect(branch);
+                      }}
+                      className="flex-1 py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <MapIcon className="w-3.5 h-3.5" />
+                      <span>{isTelugu ? "మ్యాప్ లో చూడు" : isHindi ? "मानचित्र" : "View Map"}</span>
+                    </button>
 
-                  {/* Phone info */}
-                  <div className="mb-4">
-                    <h3 className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-550 tracking-widest mb-0.5">
-                      {isTelugu ? "ఫోన్" : isHindi ? "फ़ोन" : "Phone"}
-                    </h3>
-                    <div className="flex flex-col gap-0.5 text-xs text-slate-750 dark:text-slate-300 font-semibold">
-                      <a href="tel:+919704090069" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
-                        +91 97040 90069 (Senior Pastor)
-                      </a>
-                      <a href="tel:+919640943777" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
-                        +91 96409 43777
-                      </a>
-                      <a href="tel:+917396433856" className="hover:text-purple-650 dark:hover:text-purple-400 transition-colors block">
-                        +91 73964 33856
-                      </a>
-                    </div>
+                    <a
+                      href={branch.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className={`flex-1 py-2.5 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5`}
+                    >
+                      <Navigation className="w-3.5 h-3.5" />
+                      <span>{isTelugu ? "రూట్" : isHindi ? "मार्ग" : "Directions"}</span>
+                    </a>
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                {/* Call & Direct Buttons */}
-                <div className="pt-4 border-t border-slate-100 dark:border-white/[0.04] mt-auto relative z-10 flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleBranchSelect(branch);
-                    }}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-purple-500/10 dark:bg-purple-400/5 hover:bg-purple-500/15 text-purple-600 dark:text-purple-400 text-[11px] font-extrabold transition-all`}
-                  >
-                    <MapIcon className="w-3.5 h-3.5" />
-                    {isTelugu ? "మ్యాప్ లో చూడు" : isHindi ? "मानचित्र पर देखें" : "View on Map"}
-                  </button>
-
-                  <a
-                    href={branch.mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 ${branch.mapBtnHover} text-slate-800 dark:text-white text-[11px] font-bold transition-all group/btn`}
-                  >
-                    <Navigation className={`w-3.5 h-3.5 ${branch.mapIconColor}`} />
-                    {isTelugu ? "రూట్" : isHindi ? "मार्ग" : "Route"}
-                  </a>
-
-                  <a
-                    href={`tel:${branch.phone}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl ${branch.btnColor} text-[11px] font-bold transition-all`}
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    {isTelugu ? "కాల్" : isHindi ? "कॉल" : "Call"}
-                  </a>
-                </div>
-              </motion.article>
-            ))}
-          </motion.div>
-
-          {/* Right Column: Sticky Interactive Map */}
-          <div className="lg:col-span-7 lg:sticky lg:top-28 h-[400px] lg:h-[650px] w-full rounded-[2.5rem] overflow-hidden border border-slate-200/60 dark:border-white/[0.06] shadow-xl z-20">
+          {/* Right Column: Sticky Map */}
+          <div className="lg:col-span-7 lg:sticky lg:top-28 h-[450px] lg:h-[680px] w-full rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl relative z-20">
             <Map
               ref={mapRef}
               center={[78.452, 17.532]}
@@ -458,76 +399,37 @@ export default function LocationsPage() {
                 >
                   <MarkerContent>
                     <div className="relative group cursor-pointer flex flex-col items-center">
-                      {/* Pulsing ring visual */}
                       <span className={`absolute -inset-2.5 rounded-full bg-gradient-to-r ${branch.gradient} opacity-40 blur-xs group-hover:scale-125 transition-transform duration-300 animate-pulse`} />
-                      
-                      {/* Circle pin with custom icon */}
-                      <div className={`relative w-9 h-9 rounded-full bg-gradient-to-br ${branch.gradient} flex items-center justify-center border-2 border-white dark:border-slate-950 shadow-lg text-white hover:scale-110 active:scale-95 transition-all duration-200`}>
-                        <branch.Icon className="w-4.5 h-4.5" />
+                      <div className={`relative w-10 h-10 rounded-full bg-gradient-to-br ${branch.gradient} flex items-center justify-center border-2 border-white dark:border-slate-950 shadow-lg text-white hover:scale-110 active:scale-95 transition-all duration-200`}>
+                        <branch.Icon className="w-5 h-5" />
                       </div>
-
-                      {/* Tooltip label above marker */}
-                      <div className="absolute bottom-full mb-2 bg-slate-900/95 dark:bg-[#0c0d21]/95 text-white text-[10px] font-black px-2.5 py-1 rounded-lg border border-white/10 shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                      <div className="absolute bottom-full mb-2 bg-slate-900 text-white text-[11px] font-bold px-3 py-1 rounded-lg border border-slate-700 shadow-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
                         {branch.name}
                       </div>
                     </div>
                   </MarkerContent>
 
-                  <MarkerPopup className="rounded-3xl p-5 bg-white dark:bg-[#0f1021] border border-slate-200 dark:border-white/[0.06] max-w-[280px] shadow-2xl relative">
-                    <div className="flex flex-col gap-2.5 text-slate-800 dark:text-slate-200">
+                  <MarkerPopup className="rounded-2xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-[280px] shadow-2xl relative">
+                    <div className="flex flex-col gap-2 text-slate-900 dark:text-slate-100">
                       <div className="flex items-center gap-2">
-                        <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${branch.iconBg} flex items-center justify-center border border-slate-200/50 dark:border-white/10 shadow-xs`}>
-                          <branch.Icon className={`w-4 h-4 ${branch.iconColor}`} />
+                        <div className={`w-8 h-8 rounded-lg ${branch.iconBg} flex items-center justify-center`}>
+                          <branch.Icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                        <h4 className="text-sm font-bold font-serif leading-none">
                           {branch.name}
                         </h4>
                       </div>
-                      
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400">
                         {branch.address}
                       </p>
-                      
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal flex flex-col gap-0.5 border-t border-slate-100 dark:border-white/[0.04] pt-2">
-                        <a href="tel:+919704090069" className="hover:text-purple-500 transition-colors">
-                          +91 97040 90069 (Senior Pastor)
-                        </a>
-                        <a href="tel:+919640943777" className="hover:text-purple-500 transition-colors">
-                          +91 96409 43777
-                        </a>
-                        <a href="tel:+917396433856" className="hover:text-purple-500 transition-colors">
-                          +91 73964 33856
-                        </a>
-                      </div>
-                      
-                      <div className="pt-2.5 border-t border-slate-100 dark:border-white/[0.04] flex flex-col gap-1.5">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">
-                          {isTelugu ? "సేవా సమయాలు" : isHindi ? "आराधना समय" : "Service Timings"}
-                        </span>
-                        <div className="space-y-1">
-                          {branch.services.map((srv, idx) => (
-                            <div key={idx} className="flex justify-between items-center text-[10px] font-bold text-slate-650 dark:text-slate-300">
-                              <span className="text-purple-600 dark:text-purple-400">{srv.day}:</span>
-                              <span>{srv.time}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="pt-2 border-t border-slate-100 dark:border-white/[0.04] flex gap-2">
-                        <a
-                          href={`tel:${branch.phone}`}
-                          className="flex-1 py-1.5 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 text-[10px] font-bold text-center text-slate-800 dark:text-white"
-                        >
-                          {isTelugu ? "కాల్" : isHindi ? "कॉल" : "Call"}
-                        </a>
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex gap-2">
                         <a
                           href={branch.mapUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`flex-1 py-1.5 px-2 rounded-lg ${branch.btnColor} text-[10px] font-bold text-center text-white`}
+                          className={`w-full py-1.5 rounded-lg ${branch.btnColor} text-[11px] font-bold text-center text-white`}
                         >
-                          {isTelugu ? "రూట్" : isHindi ? "नेविगेट" : "Route"}
+                          {isTelugu ? "రూట్" : isHindi ? "नेविगेट" : "Directions"}
                         </a>
                       </div>
                     </div>
@@ -537,39 +439,36 @@ export default function LocationsPage() {
               <MapControls position="bottom-right" showZoom showLocate showFullscreen />
             </Map>
           </div>
-
         </div>
 
-        {/* Footer info box */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="max-w-4xl mx-auto mt-20 bg-gradient-to-br from-violet-500/5 to-indigo-500/5 border border-purple-500/10 rounded-3xl p-8 text-center"
-        >
-          <ShieldCheck className="w-10 h-10 text-purple-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+        {/* 📺 Live Streaming Banner */}
+        <div className="max-w-4xl mx-auto mt-16 bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 text-center shadow-2xl relative">
+          <div className="w-14 h-14 bg-red-600/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Youtube className="w-7 h-7" />
+          </div>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-2 font-serif">
             {isTelugu ? "లైవ్ ఆరాధన కూడా అందుబాటులో ఉంది" : isHindi ? "लाइव आराधना भी उपलब्ध है" : "Live Streaming Available"}
           </h3>
-          <p className="text-sm text-slate-650 dark:text-slate-400 max-w-xl mx-auto mb-6">
+          <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto mb-6 font-light leading-relaxed">
             {isTelugu
-              ? "ఒకవేళ మీరు మా ఏ ప్రాంతానికైనా రాలేకపోతే, మా ప్రతి ఆదివారం ఆరాధనలను మా యూట్యూబ్ ఛానెల్‌లో లైవ్ స్ట్రీమింగ్ ద్వారా వీక్షించవచ్చు."
+              ? "ఒకవేళ మీరు స్వయంగా రాలేకపోతే, మా యూట్యూబ్ ఛానెల్‌లో ప్రతి ఆదివారం ప్రత్యక్ష ఆరాధనలో పాలుపొందవచ్చు."
               : isHindi
-              ? "यदि आप व्यक्तिगत रूप से किसी भी स्थान पर नहीं आ सकते हैं, तो आप हमारे YouTube चैनल पर प्रत्येक रविवार को लाइव स्ट्रीम में शामिल हो सकते हैं।"
-              : "If you are unable to join us in person, you can stream our Sunday Worship Services live on our official YouTube channel."}
+              ? "यदि आप व्यक्तिगत रूप से नहीं आ सकते हैं, तो आप हमारे YouTube चैनल पर प्रत्येक रविवार लाइव स्ट्रीम में शामिल हो सकते हैं।"
+              : "If you are unable to join us in person, stream our Sunday Worship Services live on our official YouTube channel."}
           </p>
           <a
             href="https://youtube.com/@kcmchurchshapur7107?si=NbnoJjdl5lqt7fkO"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-extrabold text-sm group"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:scale-105"
           >
-            {isTelugu ? "యూట్యూబ్ లో లైవ్ చూడండి" : isHindi ? "YouTube पर लाइव देखें" : "Watch on YouTube"}
-            <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <Youtube className="w-4 h-4" />
+            <span>{isTelugu ? "యూట్యూబ్ లో చూడండి" : isHindi ? "YouTube पर देखें" : "Watch Live on YouTube"}</span>
           </a>
-        </motion.div>
+        </div>
       </main>
 
+      {/* 🦶 Global Footer */}
       <Footer />
     </div>
   );
