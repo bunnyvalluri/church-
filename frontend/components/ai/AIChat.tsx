@@ -2,36 +2,89 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useChat } from "ai/react";
-import { Send, X, ChevronDown } from "lucide-react";
+import {
+  Send,
+  X,
+  ChevronDown,
+  Sparkles,
+  Clock,
+  MapPin,
+  User,
+  HeartHandshake,
+  RotateCcw,
+  MessageSquare,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-// Simple markdown-to-JSX renderer (avoids ESM-only react-markdown package)
+// Enhanced markdown-to-JSX renderer with support for links, bold, lists, and headers
 function SimpleMarkdown({ content }: { content: string }) {
   const lines = content.split("\n");
   return (
-    <div className="space-y-1 text-sm leading-relaxed">
+    <div className="space-y-1.5 text-sm leading-relaxed">
       {lines.map((line, i) => {
-        if (line.startsWith("### ")) return <h3 key={i} className="font-bold text-base mt-2">{line.slice(4)}</h3>;
-        if (line.startsWith("## "))  return <h2 key={i} className="font-bold text-base mt-2">{line.slice(3)}</h2>;
-        if (line.startsWith("# "))   return <h1 key={i} className="font-bold text-lg mt-2">{line.slice(2)}</h1>;
-        if (line.startsWith("- ") || line.startsWith("* ")) return <li key={i} className="ml-4 list-disc">{line.slice(2)}</li>;
-        if (line.trim() === "") return <br key={i} />;
-        // Inline bold: **text**
-        const parts = line.split(/(\*\*[^*]+\*\*)/g);
-        return (
-          <p key={i}>
-            {parts.map((part, j) =>
-              part.startsWith("**") && part.endsWith("**")
-                ? <strong key={j}>{part.slice(2, -2)}</strong>
-                : part
-            )}
-          </p>
-        );
+        if (line.startsWith("### "))
+          return (
+            <h3 key={i} className="font-bold text-base mt-3 mb-1 text-gray-900 dark:text-white">
+              {line.slice(4)}
+            </h3>
+          );
+        if (line.startsWith("## "))
+          return (
+            <h2 key={i} className="font-bold text-base mt-3 mb-1 text-gray-900 dark:text-white">
+              {line.slice(3)}
+            </h2>
+          );
+        if (line.startsWith("# "))
+          return (
+            <h1 key={i} className="font-bold text-lg mt-3 mb-1 text-gray-900 dark:text-white">
+              {line.slice(2)}
+            </h1>
+          );
+        if (line.startsWith("- ") || line.startsWith("* "))
+          return (
+            <div key={i} className="flex items-start gap-2 ml-2 my-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 shrink-0" />
+              <span>{renderInlineText(line.slice(2))}</span>
+            </div>
+          );
+        if (line.trim() === "") return <div key={i} className="h-1" />;
+
+        return <p key={i}>{renderInlineText(line)}</p>;
       })}
     </div>
   );
+}
+
+function renderInlineText(text: string) {
+  // Regex to match markdown links [text](url) or bold **text**
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, j) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={j} className="font-semibold text-gray-900 dark:text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      return (
+        <a
+          key={j}
+          href={linkMatch[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-600 dark:text-purple-400 underline hover:text-purple-700 transition-colors"
+        >
+          {linkMatch[1]}
+        </a>
+      );
+    }
+    return part;
+  });
 }
 
 export default function AIChat() {
@@ -45,78 +98,150 @@ export default function AIChat() {
   }, []);
 
   // Vercel AI SDK hook
-  const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append, setMessages } = useChat({
     api: "/api/chat",
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   if (pathname?.startsWith("/admin") || pathname?.startsWith("/pastor")) return null;
   if (!mounted) return null;
 
+  // Floating trigger button when closed
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-1 bg-white dark:bg-gray-900 rounded-full shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 z-50 flex items-center justify-center border-2 border-purple-500/20"
-      >
-        <div className="rounded-full overflow-hidden">
-          <Image src="/chatbot-bird-logo.png" alt="KCM AI Assistant" width={48} height={48} className="object-cover" />
+      <div className="fixed bottom-6 right-6 z-50 group">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="relative p-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-white/20 dark:border-gray-800"
+          aria-label="Open KCM Assistant"
+        >
+          {/* Animated pulsing status ring */}
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-gray-900"></span>
+          </span>
+
+          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm">
+            <Image
+              src="/chatbot-bird-logo.png"
+              alt="KCM AI Assistant"
+              width={36}
+              height={36}
+              className="object-cover rounded-full"
+            />
+          </div>
+        </button>
+
+        {/* Hover Tooltip */}
+        <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none border border-gray-700">
+          Chat with KCM Assistant ✨
         </div>
-      </button>
+      </div>
     );
   }
+
+  const quickTopics = [
+    {
+      icon: Clock,
+      label: "Sunday Service Timings",
+      msg: "What are the Sunday service timings?",
+    },
+    {
+      icon: MapPin,
+      label: "Church Location & Map",
+      msg: "Where is the church located?",
+    },
+    {
+      icon: User,
+      label: "Senior Pastor Info",
+      msg: "Who is the Senior Pastor?",
+    },
+    {
+      icon: HeartHandshake,
+      label: "Submit Prayer Request",
+      msg: "How can I submit a prayer request?",
+    },
+  ];
 
   return (
     <div
       className={cn(
-        "fixed z-50 transition-all duration-300 ease-in-out shadow-2xl",
+        "fixed z-50 transition-all duration-300 ease-in-out shadow-2xl rounded-2xl overflow-hidden border border-gray-200/80 dark:border-gray-800",
         isMinimized
-          ? "bottom-6 right-6 w-72 h-[60px]"
-          : "bottom-6 right-6 w-[90vw] md:w-[400px] h-[600px] max-h-[85vh]",
+          ? "bottom-6 right-6 w-80 h-[64px]"
+          : "bottom-6 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[420px] h-[620px] max-h-[88vh]"
       )}
     >
-      <div className="relative w-full h-full bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col shadow-2xl">
-        {/* Header */}
+      <div className="relative w-full h-full bg-white dark:bg-gray-950 flex flex-col">
+        {/* Modern Header with subtle gradient */}
         <div
-          className="px-5 py-4 bg-gray-900 dark:bg-black border-b border-gray-800 flex items-center justify-between cursor-pointer transition-colors hover:bg-gray-800 dark:hover:bg-gray-900"
+          className="px-4 py-3.5 bg-gradient-to-r from-gray-900 via-indigo-950 to-purple-950 border-b border-gray-800 flex items-center justify-between cursor-pointer select-none"
           onClick={() => setIsMinimized(!isMinimized)}
         >
           <div className="flex items-center gap-3 text-white">
-            <div className="rounded-full overflow-hidden bg-white flex items-center justify-center shrink-0">
-              <Image src="/chatbot-bird-logo.png" alt="Bot" width={32} height={32} className="object-cover" />
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 p-0.5 border border-white/20 flex items-center justify-center">
+                <Image
+                  src="/chatbot-bird-logo.png"
+                  alt="KCM Bot"
+                  width={32}
+                  height={32}
+                  className="object-cover rounded-full"
+                />
+              </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-gray-900"></span>
             </div>
             <div>
-              <h3 className="font-semibold text-sm leading-tight">KCM Assistant</h3>
-              <p className="text-[10px] text-green-400 font-medium flex items-center gap-1 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-                Online
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-semibold text-sm leading-tight text-white">KCM Assistant</h3>
+                <span className="px-1.5 py-0.5 text-[9px] font-medium bg-purple-500/20 text-purple-300 rounded border border-purple-400/30 flex items-center gap-0.5">
+                  <Sparkles className="w-2.5 h-2.5" /> AI
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-300 font-normal flex items-center gap-1 mt-0.5">
+                Always here to answer & guide
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-gray-400">
+
+          <div className="flex items-center gap-1 text-gray-300">
+            {messages.length > 0 && !isMinimized && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMessages([]);
+                }}
+                title="Clear chat"
+                className="p-1.5 hover:bg-white/10 hover:text-white rounded-md transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsMinimized(!isMinimized);
               }}
-              className="p-1.5 hover:bg-gray-800 rounded-md transition-colors"
+              title={isMinimized ? "Expand" : "Minimize"}
+              className="p-1.5 hover:bg-white/10 hover:text-white rounded-md transition-colors"
             >
-              <ChevronDown className={`w-4 h-4 transition-transform ${isMinimized ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMinimized ? "rotate-180" : ""}`} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsOpen(false);
               }}
-              className="p-1.5 hover:bg-gray-800 hover:text-white rounded-md transition-colors"
+              title="Close chat"
+              className="p-1.5 hover:bg-red-500/20 hover:text-red-300 rounded-md transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -125,64 +250,98 @@ export default function AIChat() {
 
         {!isMinimized && (
           <>
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gray-50 dark:bg-gray-900" ref={scrollRef}>
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-gray-950" ref={scrollRef}>
               {messages.length === 0 && (
-                <div className="text-center py-6 mt-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                    <Image src="/chatbot-bird-logo.png" alt="Bot" width={64} height={64} className="object-cover" />
+                <div className="py-4 px-2 space-y-5 animate-fade-in">
+                  {/* Hero Avatar Card */}
+                  <div className="text-center bg-gradient-to-b from-purple-500/5 via-indigo-500/5 to-transparent dark:from-purple-900/10 dark:to-transparent p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30">
+                    <div className="relative inline-block mb-3">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 p-0.5 shadow-lg shadow-purple-500/20 mx-auto flex items-center justify-center">
+                        <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full p-1 flex items-center justify-center overflow-hidden">
+                          <Image
+                            src="/chatbot-bird-logo.png"
+                            alt="KCM Assistant"
+                            width={56}
+                            height={56}
+                            className="object-cover rounded-full"
+                          />
+                        </div>
+                      </div>
+                      <span className="absolute bottom-0 right-0 p-1 bg-purple-600 text-white rounded-full shadow-md">
+                        <Sparkles className="w-3 h-3" />
+                      </span>
+                    </div>
+
+                    <h4 className="font-heading font-semibold text-gray-900 dark:text-white text-base mb-1">
+                      How can I help you today?
+                    </h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
+                      Ask me about service times, location, prayer requests, or church events.
+                    </p>
                   </div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm">
-                    How can I help you today?
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 px-4">
-                    Ask me about service times, locations, prayer requests, or church events.
-                  </p>
-                  <div className="text-xs text-gray-500 mb-3 uppercase tracking-wider font-semibold">Quick Topics</div>
-                  <div className="grid grid-cols-2 gap-2 px-2">
-                    {[
-                      { label: "Sunday service timings?", msg: "What are the Sunday service timings?" },
-                      { label: "Where is KCM located?", msg: "Where is the church located?" },
-                      { label: "Who is Senior Pastor?", msg: "Who is the Senior Pastor?" },
-                      { label: "Submit prayer request?", msg: "How can I submit a prayer request?" },
-                    ].map(({ label, msg }) => (
-                      <button
-                        key={label}
-                        onClick={() => append({ role: "user", content: msg })}
-                        className="text-xs bg-white dark:bg-gray-800 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 hover:shadow-sm text-left transition-all text-gray-700 dark:text-gray-300 flex items-center justify-between group"
-                      >
-                        <span className="truncate">{label}</span>
-                        <Send className="w-3 h-3 text-gray-400 group-hover:text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1" />
-                      </button>
-                    ))}
+
+                  {/* Quick Topics */}
+                  <div>
+                    <div className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
+                      <MessageSquare className="w-3 h-3" /> Suggested Questions
+                    </div>
+                    <div className="space-y-2">
+                      {quickTopics.map(({ icon: Icon, label, msg }) => (
+                        <button
+                          key={label}
+                          onClick={() => append({ role: "user", content: msg })}
+                          className="w-full text-left p-3 bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 rounded-xl hover:border-purple-500 dark:hover:border-purple-500/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/20 hover:shadow-sm text-xs font-medium text-gray-700 dark:text-gray-200 flex items-center justify-between transition-all duration-200 group"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                              <Icon className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="truncate">{label}</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* Chat Messages */}
               {messages.map((m) => (
                 <div
                   key={m.id}
                   className={cn(
-                    "flex gap-3 max-w-[90%]",
+                    "flex gap-2.5 max-w-[92%] animate-fade-in",
                     m.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
                   )}
                 >
                   <div
                     className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs shadow-sm overflow-hidden",
+                      "w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[11px] font-semibold shadow-sm overflow-hidden mt-0.5",
                       m.role === "user"
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-purple-600 to-indigo-600 text-white"
+                        : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
                     )}
                   >
-                    {m.role === "user" ? "You" : <Image src="/chatbot-bird-logo.png" alt="Bot" width={28} height={28} className="object-cover" />}
+                    {m.role === "user" ? (
+                      "You"
+                    ) : (
+                      <Image
+                        src="/chatbot-bird-logo.png"
+                        alt="KCM Bot"
+                        width={28}
+                        height={28}
+                        className="object-cover rounded-full"
+                      />
+                    )}
                   </div>
                   <div
                     className={cn(
-                      "px-4 py-2.5 rounded-2xl text-sm shadow-sm",
+                      "px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm shadow-sm",
                       m.role === "user"
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-tr-sm"
-                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm border border-gray-100 dark:border-gray-700 leading-relaxed"
+                        ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-tr-xs"
+                        : "bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-tl-xs border border-gray-200/80 dark:border-gray-800"
                     )}
                   >
                     <SimpleMarkdown content={m.content} />
@@ -190,25 +349,30 @@ export default function AIChat() {
                 </div>
               ))}
 
+              {/* Loading Indicator */}
               {isLoading && (
-                <div className="flex gap-3 mr-auto max-w-[85%]">
-                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
-                    <Image src="/chatbot-bird-logo.png" alt="Bot" width={28} height={28} className="object-cover" />
+                <div className="flex gap-2.5 mr-auto max-w-[85%] animate-fade-in">
+                  <div className="w-7 h-7 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                    <Image
+                      src="/chatbot-bird-logo.png"
+                      alt="KCM Bot"
+                      width={28}
+                      height={28}
+                      className="object-cover rounded-full"
+                    />
                   </div>
-                  <div className="px-4 py-3 rounded-2xl bg-white dark:bg-gray-800 rounded-tl-sm border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <div className="flex gap-1.5 h-4 items-center">
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
-                    </div>
+                  <div className="px-4 py-3 rounded-2xl bg-white dark:bg-gray-900 rounded-tl-xs border border-gray-200/80 dark:border-gray-800 shadow-sm flex items-center gap-1.5">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></span>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input Area */}
-            <div className="p-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <form onSubmit={handleSubmit} className="flex gap-2 items-end relative">
+            {/* Input Bar */}
+            <div className="p-3 bg-white dark:bg-gray-950 border-t border-gray-200/80 dark:border-gray-800">
+              <form onSubmit={handleSubmit} className="flex gap-2 items-end">
                 <textarea
                   value={input}
                   onChange={handleInputChange}
@@ -218,21 +382,23 @@ export default function AIChat() {
                       if (input.trim()) handleSubmit(e as any);
                     }
                   }}
-                  placeholder="Type a message..."
-                  className="flex-1 max-h-32 min-h-[44px] px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-all text-sm outline-none resize-none"
+                  placeholder="Type your message..."
+                  className="flex-1 max-h-28 min-h-[44px] px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition-all text-xs sm:text-sm outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                   disabled={isLoading}
                   rows={1}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="h-[44px] px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 disabled:opacity-50 transition-colors shadow-sm flex items-center justify-center flex-shrink-0"
+                  className="h-[44px] px-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl disabled:opacity-40 transition-all shadow-md hover:shadow-purple-500/25 flex items-center justify-center shrink-0 active:scale-95"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </form>
               <div className="text-center mt-2">
-                <span className="text-[10px] text-gray-400">Powered by advanced AI. Responses may vary.</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                  Powered by KCM AI • Instant Answers
+                </span>
               </div>
             </div>
           </>
@@ -240,4 +406,4 @@ export default function AIChat() {
       </div>
     </div>
   );
-}
+}
