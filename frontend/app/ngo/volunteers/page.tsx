@@ -19,6 +19,7 @@ import {
   Calendar,
   ArrowRight,
   Heart,
+  MessageSquare,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
@@ -337,11 +338,20 @@ export default function NgoVolunteersPage() {
           </div>
 
           {/* Right Column: Application Form */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-xl">
-            <div className="space-y-2 text-left mb-8 border-b border-slate-200 dark:border-white/10 pb-6">
-              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                {ngoT.volunteersPage?.formTitle || "Volunteer Application"}
-              </h3>
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-7 sm:p-10 shadow-2xl relative overflow-hidden">
+            {/* Top Gradient Accent Bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-indigo-500 to-rose-500" />
+
+            <div className="space-y-2 text-left mb-8 border-b border-slate-200 dark:border-white/10 pb-6 pt-2">
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                  {ngoT.volunteersPage?.formTitle || "Volunteer Application"}
+                </h3>
+                <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300 text-[11px] font-extrabold uppercase tracking-wider">
+                  <Sparkles className="w-3 h-3 text-purple-500" />
+                  <span>Quick Review</span>
+                </span>
+              </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
                 Fill in your details below and our team will get in touch with you shortly.
               </p>
@@ -368,40 +378,40 @@ export default function NgoVolunteersPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5 text-left">
+            <form onSubmit={handleSubmit} className="space-y-6 text-left">
               
               {/* Name & Email */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
-                    {ngoT.volunteersPage?.fullName || "Full Name"} *
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.fullName || "Full Name"} <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <div className="relative group">
+                    <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Rahul Sharma"
-                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                      className="w-full py-3.5 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50/70 dark:bg-slate-950/80 text-slate-900 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:ring-4 focus:ring-purple-600/15 focus:border-purple-600 focus:bg-white dark:focus:bg-slate-950 transition-all text-sm shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
-                    {ngoT.volunteersPage?.email || "Email Address"} *
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                    {ngoT.volunteersPage?.email || "Email Address"} <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <div className="relative group">
+                    <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                      className="w-full py-3.5 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50/70 dark:bg-slate-950/80 text-slate-900 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:ring-4 focus:ring-purple-600/15 focus:border-purple-600 focus:bg-white dark:focus:bg-slate-950 transition-all text-sm shadow-sm"
                     />
                   </div>
                 </div>
@@ -410,30 +420,31 @@ export default function NgoVolunteersPage() {
               {/* Phone & Initiative */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
                     {ngoT.volunteersPage?.phone || "Phone Number (Optional)"}
                   </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <div className="relative group">
+                    <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors" />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full py-3 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm"
+                      className="w-full py-3.5 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50/70 dark:bg-slate-950/80 text-slate-900 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:ring-4 focus:ring-purple-600/15 focus:border-purple-600 focus:bg-white dark:focus:bg-slate-950 transition-all text-sm shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
                     {ngoT.volunteersPage?.initiative || "Preferred Initiative"}
                   </label>
-                  <div className="relative">
+                  <div className="relative group">
+                    <HeartHandshake className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors" />
                     <select
                       value={projectId}
                       onChange={(e) => setProjectId(e.target.value)}
-                      className="w-full py-3 pl-4 pr-10 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 appearance-none transition-all text-sm shadow-sm cursor-pointer"
+                      className="w-full py-3.5 pl-10 pr-10 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50/70 dark:bg-slate-950/80 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-4 focus:ring-purple-600/15 focus:border-purple-600 focus:bg-white dark:focus:bg-slate-950 appearance-none transition-all text-sm shadow-sm cursor-pointer"
                     >
                       <option value="">{ngoT.volunteersPage?.initiativePlaceholder || "Any / General Social Service"}</option>
                       {projects.map((proj) => (
@@ -449,16 +460,17 @@ export default function NgoVolunteersPage() {
 
               {/* Message / Skills */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2">
                   {ngoT.volunteersPage?.skills || "Skills, Experience or Message"}
                 </label>
-                <div className="relative">
+                <div className="relative group">
+                  <MessageSquare className="w-4 h-4 absolute left-3.5 top-4 text-slate-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors" />
                   <textarea
                     rows={4}
                     value={skills}
                     onChange={(e) => setSkills(e.target.value)}
-                    placeholder={ngoT.volunteersPage?.skillsPlaceholder || "Tell us about yourself, your weekend availability, or any specific skills (e.g. driving, photography, medical training)..."}
-                    className="w-full py-3 px-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600/30 focus:border-purple-600 transition-all text-sm shadow-sm resize-y min-h-[100px]"
+                    placeholder={ngoT.volunteersPage?.skillsPlaceholder || "Tell us about yourself, your availability, or any specific skills you have..."}
+                    className="w-full py-3.5 pl-10 pr-4 rounded-2xl border border-slate-300 dark:border-white/15 bg-slate-50/70 dark:bg-slate-950/80 text-slate-900 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:ring-4 focus:ring-purple-600/15 focus:border-purple-600 focus:bg-white dark:focus:bg-slate-950 transition-all text-sm shadow-sm resize-y min-h-[110px]"
                   />
                 </div>
               </div>
@@ -467,7 +479,7 @@ export default function NgoVolunteersPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl shadow-lg shadow-purple-600/30 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2.5 text-sm cursor-pointer disabled:opacity-50"
+                className="group relative w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-sm tracking-wide shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2.5 overflow-hidden cursor-pointer disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -476,11 +488,17 @@ export default function NgoVolunteersPage() {
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-300" />
                     <span>{ngoT.volunteersPage?.submitBtn || "Submit Volunteer Application"}</span>
                   </>
                 )}
               </button>
+
+              {/* Security & Privacy Footer */}
+              <div className="pt-2 flex items-center justify-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>100% Confidential • Used only for volunteer coordination</span>
+              </div>
 
             </form>
           </div>
