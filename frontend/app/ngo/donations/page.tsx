@@ -298,6 +298,17 @@ function NgoDonationsContent() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Read URL query parameter for donation amount pre-selection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlAmount = urlParams.get("amount");
+      if (urlAmount && !isNaN(Number(urlAmount))) {
+        setAmount(urlAmount);
+      }
+    }
+  }, []);
   const socketRef = useRef<any>(null);
 
   useEffect(() => {
