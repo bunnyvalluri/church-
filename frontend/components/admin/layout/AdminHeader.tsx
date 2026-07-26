@@ -35,36 +35,46 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-16 bg-white/90 dark:bg-[#0D0E1A]/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/10 px-4 lg:px-6 flex items-center justify-between transition-colors shadow-sm dark:shadow-none">
+      <header className="sticky top-0 z-20 h-16 bg-white/90 dark:bg-[#0D0E1A]/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/10 px-2.5 sm:px-4 lg:px-6 flex items-center justify-between transition-colors shadow-sm dark:shadow-none min-w-0">
         {/* ── Left Section: Mobile Menu Trigger & Search Trigger ── */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink-0">
           <button
             type="button"
             onClick={onToggleMobileSidebar}
-            className="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+            className="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors shrink-0"
             aria-label="Open Navigation Sidebar"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Quick Search Bar / Trigger */}
+          {/* Quick Search Bar / Trigger — Mobile Icon Button (< sm) */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10 transition-all text-xs w-44 sm:w-64 md:w-80 group shadow-inner dark:shadow-none"
+            className="sm:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors shrink-0"
+            aria-label="Search"
           >
-            <Search className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+            <Search className="w-4.5 h-4.5" />
+          </button>
+
+          {/* Quick Search Bar / Trigger — Desktop Bar (>= sm) */}
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10 transition-all text-xs sm:w-48 md:w-80 group shadow-inner dark:shadow-none shrink-0"
+          >
+            <Search className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0" />
             <span className="flex-1 text-left truncate">Search resources, members...</span>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-[#070812] border border-gray-200 dark:border-white/10 rounded-md text-gray-400 shadow-sm">
+            <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-[#070812] border border-gray-200 dark:border-white/10 rounded-md text-gray-400 shadow-sm shrink-0">
               <Command className="w-3 h-3" /> K
             </kbd>
           </button>
         </div>
 
         {/* ── Right Section: Actions & Profile ── */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 min-[375px]:gap-1.5 sm:gap-3 shrink-0">
           {/* Notifications Button */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -92,10 +102,10 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          <div className="h-6 w-px bg-gray-200 dark:bg-white/10 mx-1 hidden sm:block" />
+          <div className="h-6 w-px bg-gray-200 dark:bg-white/10 mx-0.5 hidden sm:block" />
 
           {/* Admin User Profile Dropdown */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
