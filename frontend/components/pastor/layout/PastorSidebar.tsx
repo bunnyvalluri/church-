@@ -126,7 +126,7 @@ export default function PastorSidebar({
   ];
 
   const renderContent = (onLinkClick?: () => void) => (
-    <div className="flex flex-col h-full bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl border-r border-slate-200/50 dark:border-white/[0.04] transition-all duration-300">
+    <div className="flex flex-col h-full bg-white dark:bg-[#070814] border-r border-slate-200/50 dark:border-white/[0.04] transition-all duration-300 shadow-2xl">
       {/* Brand Header */}
       <div className="h-20 flex items-center justify-between px-5 border-b border-slate-200/50 dark:border-white/[0.04] shrink-0">
         <div className="flex items-center gap-3 min-w-0">
@@ -161,6 +161,18 @@ export default function PastorSidebar({
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
+
+        {/* Close Button for Mobile */}
+        {onLinkClick && (
+          <button
+            type="button"
+            onClick={onLinkClick}
+            className="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            title="Close Drawer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}
@@ -233,7 +245,7 @@ export default function PastorSidebar({
       </div>
 
       {/* Footer Profile & Language Card */}
-      <div className="p-3.5 border-t border-slate-200/50 dark:border-white/[0.04] bg-slate-50/50 dark:bg-[#0A0B16]/50 flex flex-col gap-3 shrink-0">
+      <div className="p-3.5 pb-6 sm:pb-3.5 border-t border-slate-200/50 dark:border-white/[0.04] bg-slate-50/50 dark:bg-[#0A0B16]/50 flex flex-col gap-3 shrink-0">
         {!isCollapsed && (
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
@@ -293,14 +305,14 @@ export default function PastorSidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onMobileClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-45 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="fixed inset-y-0 left-0 w-[280px] z-50 lg:hidden shadow-2xl"
+              className="fixed inset-y-0 left-0 w-[280px] sm:w-[320px] z-[100] lg:hidden shadow-2xl"
             >
               {renderContent(onMobileClose)}
             </motion.aside>
