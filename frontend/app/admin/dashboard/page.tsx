@@ -9,9 +9,10 @@ import { useAuth } from "@/components/providers/AuthProvider";
 export default function ExecutiveDashboardPage() {
   const { getIdToken } = useAuth();
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
+    setLoading(true);
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
