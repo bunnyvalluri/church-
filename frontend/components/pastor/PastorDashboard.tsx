@@ -1562,7 +1562,7 @@ export default function PastorDashboard() {
                         </div>
                         <div className="overflow-hidden flex-1">
                           <h4 className="text-xs font-bold text-slate-800 dark:text-white truncate leading-snug">{sermon.title}</h4>
-                          <p className="text-[10px] text-slate-450 dark:text-gray-500 truncate mt-0.5">{sermon.scripture} • {sermon.duration || "30m"}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{sermon.scripture} • {sermon.duration || "30m"}</p>
                         </div>
                         <div className="shrink-0 flex items-center gap-2">
                           <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider ${
@@ -1614,7 +1614,7 @@ export default function PastorDashboard() {
                           </div>
                           <div className="overflow-hidden">
                             <h4 className="text-xs font-bold text-slate-800 dark:text-white truncate leading-snug">{req.name}</h4>
-                            <p className="text-[10px] text-slate-455 dark:text-gray-500 truncate mt-0.5">{req.type} Request • {req.time}</p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{req.type} Request • {req.time}</p>
                           </div>
                         </div>
                         
@@ -1812,13 +1812,13 @@ export default function PastorDashboard() {
 
                     {/* Events detailed popup based on selected calendar date */}
                     <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.04]">
-                      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase block tracking-wider">Events on May {selectedCalendarDate}</span>
+                      <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase block tracking-wider">Events on May {selectedCalendarDate}</span>
                       {getEventsForDay(selectedCalendarDate).length > 0 ? (
                         getEventsForDay(selectedCalendarDate).map(ev => (
-                          <span key={ev.id} className="text-[11px] font-bold text-gray-800 dark:text-gray-250 block mt-1">• {ev.title} ({ev.time})</span>
+                          <span key={ev.id} className="text-[11px] font-bold text-slate-800 dark:text-white block mt-1">• {ev.title} ({ev.time})</span>
                         ))
                       ) : (
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 italic block mt-1">No ministry activities scheduled</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 italic block mt-1">No ministry activities scheduled</span>
                       )}
                     </div>
                   </div>
@@ -1833,28 +1833,28 @@ export default function PastorDashboard() {
                   
                   <div className="p-6 py-5 flex-1 space-y-3">
                     {[
-                      { label: "Upload New Sermon", sub: "Share God's Word", icon: Play, color: "bg-purple-50 dark:bg-purple-950/20 text-purple-650 dark:text-purple-400 border-purple-100/40 dark:border-purple-500/10", act: () => setIsSermonModalOpen(true) },
-                      { label: "Add New Event", sub: "Create church event", icon: Calendar, color: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-100/40 dark:border-emerald-500/10", act: () => setIsEventModalOpen(true) },
-                      { label: "New Announcement", sub: "Send to all members", icon: Megaphone, color: "bg-amber-50 dark:bg-amber-955/20 text-amber-600 dark:text-amber-400 border-amber-100/40 dark:border-amber-500/10", act: () => setIsAnnouncementModalOpen(true) },
-                      { label: "Message Members", sub: "Send a message", icon: MessageSquare, color: "bg-blue-50 dark:bg-blue-955/20 text-blue-650 dark:text-blue-400 border-blue-100/40 dark:border-blue-500/10", act: () => setActiveNav("Messages") },
-                      { label: "View Reports", sub: "Ministry insights", icon: FileText, color: "bg-pink-50 dark:bg-pink-955/20 text-pink-600 dark:text-pink-400 border-pink-100/40 dark:border-pink-500/10", act: () => triggerToast("Direct reports and analytics will open in a separate tab.", "success") }
+                      { label: "Upload New Sermon", sub: "Share God's Word", icon: Play, color: "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-300 border-purple-100/40 dark:border-purple-500/20", act: () => setIsSermonModalOpen(true) },
+                      { label: "Add New Event", sub: "Create church event", icon: Calendar, color: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-300 border-emerald-100/40 dark:border-emerald-500/20", act: () => setIsEventModalOpen(true) },
+                      { label: "New Announcement", sub: "Send to all members", icon: Megaphone, color: "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-300 border-amber-100/40 dark:border-amber-500/20", act: () => setIsAnnouncementModalOpen(true) },
+                      { label: "Message Members", sub: "Send a message", icon: MessageSquare, color: "bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-300 border-blue-100/40 dark:border-blue-500/20", act: () => setActiveNav("Messages") },
+                      { label: "View Reports", sub: "Ministry insights", icon: FileText, color: "bg-pink-50 dark:bg-pink-950/30 text-pink-600 dark:text-pink-300 border-pink-100/40 dark:border-pink-500/20", act: () => triggerToast("Direct reports and analytics will open in a separate tab.", "success") }
                     ].map((act, idx) => (
                       <button 
                         key={idx}
                         type="button"
                         onClick={act.act}
-                        className="w-full flex items-center justify-between p-3.5 bg-slate-50/30 dark:bg-white/[0.01] hover:bg-slate-50/80 dark:hover:bg-white/[0.03] border border-slate-100/30 dark:border-white/[0.02] hover:border-indigo-500/10 dark:hover:border-indigo-500/10 rounded-2xl transition-all duration-300 text-left group hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(99,102,241,0.03)]"
+                        className="w-full flex items-center justify-between p-3.5 bg-slate-50/50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.08] border border-slate-100 dark:border-white/[0.08] hover:border-indigo-500/20 dark:hover:border-indigo-500/30 rounded-2xl transition-all duration-300 text-left group hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(99,102,241,0.06)]"
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className={`w-10 h-10 rounded-2xl ${act.color} flex items-center justify-center shrink-0 border group-hover:scale-105 transition-transform duration-300 shadow-sm`}>
                             <act.icon className="w-4.5 h-4.5" />
                           </div>
                           <div className="overflow-hidden">
-                            <span className="text-xs font-bold text-slate-700 dark:text-gray-250 group-hover:text-[#6366F1] dark:group-hover:text-indigo-400 transition-colors duration-300 block">{act.label}</span>
-                            <span className="text-[9px] text-gray-400 dark:text-gray-500 block">{act.sub}</span>
+                            <span className="text-xs font-bold text-slate-800 dark:text-white group-hover:text-[#6366F1] dark:group-hover:text-indigo-400 transition-colors duration-300 block">{act.label}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 font-medium">{act.sub}</span>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-400 group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     ))}
                   </div>
