@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Heart, Send, Check, Clock, EyeOff, Sparkles, Loader2,
-  RefreshCw, Bell, MessageCircle, CheckCircle2, AlertCircle
+  RefreshCw, Bell, MessageCircle, CheckCircle2, AlertCircle, Shield
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,9 +21,9 @@ interface PrayerRequest {
 }
 
 const STATUS_CFG = {
-  PENDING:  { dot: "bg-amber-400",  pill: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/30" },
-  PRAYING:  { dot: "bg-[hsl(var(--primary))] animate-pulse", pill: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 text-[hsl(var(--primary))] border-[hsl(var(--primary))]/20" },
-  ANSWERED: { dot: "bg-green-500",  pill: "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/30" },
+  PENDING:  { dot: "bg-amber-400",  pill: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/40" },
+  PRAYING:  { dot: "bg-purple-500 animate-pulse", pill: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40" },
+  ANSWERED: { dot: "bg-emerald-500",  pill: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40" },
 };
 
 const CATS = [
@@ -217,7 +217,6 @@ export default function MemberPrayers() {
       const data = await res.json();
       if (res.ok && data.success) {
         const fresh: PrayerRequest[] = data.prayers || [];
-        // Notify on status upgrades
         fresh.forEach(p => {
           const prev = prevPrayers.current.find(pp => pp.id === p.id);
           if (prev && prev.status !== p.status) {
@@ -286,152 +285,195 @@ export default function MemberPrayers() {
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
-      {/* Toast */}
+    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6">
+      {/* Floating Bottom Pop-Up Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-[90vw] sm:max-w-xs leading-snug ${
-              toast.type === "success" ? "bg-green-500 text-white border-green-400/30" :
-              toast.type === "error"   ? "bg-red-500 text-white border-red-400/30" :
-                                         "bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]/30"
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className={`fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
+              toast.type === "success" ? "bg-emerald-600 text-white border-emerald-400/40 shadow-emerald-600/30" :
+              toast.type === "error"   ? "bg-red-600 text-white border-red-400/40 shadow-red-600/30" :
+                                         "bg-rose-600 text-white border-rose-400/40 shadow-rose-600/30"
             }`}
           >
-            <Bell className="w-4 h-4 flex-shrink-0" />
-            <span className="truncate">{toast.msg}</span>
+            {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-white" /> :
+             toast.type === "error"   ? <AlertCircle className="w-4 h-4 flex-shrink-0 text-white" /> :
+                                        <Bell className="w-4 h-4 flex-shrink-0 text-white" />}
+            <span className="leading-snug whitespace-normal">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-3">
+      {/* PAGE HEADER */}
+      <div className="flex items-center justify-between gap-3 mb-1 sm:mb-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+              <Heart className="w-3 h-3 fill-rose-500/20" /> Prayer Wall
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 italic">{pt.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {mounted && lastSynced && (
-            <span className="text-xs text-gray-400 dark:text-gray-555 hidden sm:inline">
+            <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
               {pt.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
-          <button onClick={() => load()} disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm">
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+          <button
+            onClick={() => load()}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 dark:hover:border-rose-700 transition-all text-xs font-semibold shadow-sm active:scale-95"
+            title="Refresh prayer wall"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-rose-600" : ""}`} />
             <span className="hidden sm:inline">{pt.refresh}</span>
           </button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-3 sm:gap-4">
+      {/* STATS ROW — 3-Column Compact Grid on Mobile */}
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
         {[
-          { label: pt.totalSubmitted, value: stats.total,    color: "text-[hsl(var(--primary))]",   bg: "bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30",     icon: Heart },
-          { label: pt.beingPrayed,   value: stats.praying,  color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30", icon: Sparkles },
-          { label: pt.answered,       value: stats.answered, color: "text-green-600 dark:text-green-400",  bg: "bg-green-50 dark:bg-green-950/30",   icon: CheckCircle2 },
+          { label: pt.totalSubmitted, value: stats.total, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/40", icon: Heart },
+          { label: pt.beingPrayed,   value: stats.praying, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/40", icon: Sparkles },
+          { label: pt.answered,       value: stats.answered, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/40", icon: CheckCircle2 },
         ].map(({ label, value, color, bg, icon: Icon }) => (
-          <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3">
-            <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-              <Icon className={`w-4 h-4 ${color}`} />
+          <div
+            key={label}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-md p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1.5 sm:gap-3.5 transition-transform active:scale-[0.98]"
+          >
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
             </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-none">{loading ? "—" : value}</p>
-              <p className="text-[10px] text-gray-400 dark:text-gray-555 uppercase tracking-wide font-semibold mt-0.5">{label}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-base sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
+                {loading ? "—" : value}
+              </p>
+              <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 truncate">
+                {label}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Main Grid */}
+      {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 sm:gap-6 items-start">
-        {/* Submit Form */}
+        {/* SUBMIT FORM */}
         <motion.div
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+          className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl"
         >
-          <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/20">
-            <Heart className="w-4 h-4 text-[hsl(var(--primary))] fill-[hsl(var(--accent))]/40" />
-            <h3 className="font-bold text-gray-900 dark:text-white text-sm">{pt.formTitle}</h3>
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-rose-50/50 dark:bg-rose-950/20">
+            <div className="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+              <Heart className="w-4 h-4 fill-rose-500/20" />
+            </div>
+            <h3 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base">{pt.formTitle}</h3>
           </div>
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
+              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
               <input
                 type="text" value={title} onChange={e => setTitle(e.target.value)} required
                 placeholder={pt.placeholderTitle}
-                className="w-full py-2.5 px-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
+                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
+              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
               <select value={category} onChange={e => setCategory(e.target.value)}
-                className="w-full py-2.5 px-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm">
+                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
                 {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
+              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
               <textarea
                 value={description} onChange={e => setDescription(e.target.value)} required
                 placeholder={pt.placeholderPrayer}
                 rows={4}
-                className="w-full py-2.5 px-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-55 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all resize-none text-sm leading-relaxed"
+                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
               />
             </div>
             <label className="flex items-center gap-2.5 cursor-pointer select-none">
               <div
                 onClick={() => setIsAnonymous(!isAnonymous)}
-                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-[hsl(var(--primary))] border-[hsl(var(--primary))]" : "border-gray-300 dark:border-gray-600"}`}
+                className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-rose-600 border-rose-600" : "border-gray-300 dark:border-gray-600"}`}
               >
-                {isAnonymous && <Check className="w-3 h-3 text-white" />}
+                {isAnonymous && <Check className="w-3.5 h-3.5 text-white" />}
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                <EyeOff className="w-3.5 h-3.5" /> {pt.anonymousLabel}
+              <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
+                <EyeOff className="w-3.5 h-3.5 text-gray-400" /> {pt.anonymousLabel}
               </span>
             </label>
             <button
               type="submit" disabled={submitting}
-              className="w-full py-3 bg-gradient-to-r from-gradient-start to-gradient-end hover:opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[hsl(var(--primary))]/20 transition-all active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50"
             >
               {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
             </button>
           </form>
         </motion.div>
 
-        {/* Prayer List */}
+        {/* PRAYER LIST & FILTERS */}
         <motion.div
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.05 }}
-          className="lg:col-span-3 space-y-3 w-full"
+          className="lg:col-span-3 space-y-3.5 w-full min-w-0"
         >
-          {/* Filter */}
-          <div className="flex items-center gap-2 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-1 shadow-sm overflow-x-auto scrollbar-none flex-nowrap max-w-full">
-            {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => (
-              <button key={f} onClick={() => setFilterStatus(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-                  filterStatus === f ? "bg-[hsl(var(--primary))] text-white shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }`}>
-                {f === "ALL" ? `${pt.tabAll} (${stats.total})` : f === "PRAYING" ? `${pt.tabPraying} (${stats.praying})` : f === "ANSWERED" ? `${pt.tabAnswered} (${stats.answered})` : `${pt.tabPending} (${prayers.filter(p => p.status === "PENDING").length})`}
-              </button>
-            ))}
+          {/* Responsive Filter Tab Bar — Smooth Horizontal Scroll with No Text Cutoffs */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1 min-w-0">
+            {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => {
+              const count = f === "ALL" ? stats.total : f === "PRAYING" ? stats.praying : f === "ANSWERED" ? stats.answered : prayers.filter(p => p.status === "PENDING").length;
+              const label = f === "ALL" ? pt.tabAll : f === "PRAYING" ? pt.tabPraying : f === "ANSWERED" ? pt.tabAnswered : pt.tabPending;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setFilterStatus(f)}
+                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 ${
+                    filterStatus === f
+                      ? "bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-md"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  }`}
+                >
+                  <span>{label}</span>
+                  <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${filterStatus === f ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
+          {/* List Content */}
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map(i => <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl animate-pulse border border-gray-100 dark:border-gray-800" />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-28 bg-white dark:bg-gray-900 rounded-3xl animate-pulse border border-gray-100 dark:border-gray-800" />)}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-              <Heart className="w-10 h-10 text-gray-300 dark:text-gray-655 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-gray-400">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12 sm:py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 shadow-sm"
+            >
+              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-rose-600 dark:text-rose-400">
+                <Heart className="w-7 h-7 fill-rose-500/20" />
+              </div>
+              <h3 className="font-extrabold text-base text-gray-900 dark:text-white">
                 {filterStatus === "ALL" ? pt.noPrayersAll : pt.noPrayersFilter.replace("{status}", filterStatus === "PRAYING" ? pt.tabPraying : filterStatus === "ANSWERED" ? pt.tabAnswered : pt.tabPending)}
+              </h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
+                Submit your prayer request using the form. Our pastors and prayer team intercede daily.
               </p>
-            </div>
+            </motion.div>
           ) : (
             <AnimatePresence mode="popLayout">
               {filtered.map((prayer, i) => {
@@ -445,29 +487,38 @@ export default function MemberPrayers() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97 }}
                     transition={{ delay: i * 0.04 }}
-                    className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm hover:shadow-md transition-all p-4 ${
-                      prayer.status === "ANSWERED" ? "border-green-200 dark:border-green-900/30" :
-                      prayer.status === "PRAYING"  ? "border-[hsl(var(--primary))]/35 dark:border-[hsl(var(--primary))]/20" :
+                    className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-md hover:shadow-lg transition-all p-4.5 sm:p-5 backdrop-blur-xl ${
+                      prayer.status === "ANSWERED" ? "border-emerald-300 dark:border-emerald-900/40 shadow-emerald-500/5" :
+                      prayer.status === "PRAYING"  ? "border-purple-300 dark:border-purple-900/40 shadow-purple-500/5" :
                                                      "border-gray-100 dark:border-gray-800"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3 mb-2 flex-wrap sm:flex-nowrap">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-lg flex-shrink-0">{cat?.emoji || "🙏"}</span>
+                    <div className="flex items-start justify-between gap-3 mb-2.5 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-xl flex-shrink-0">{cat?.emoji || "🙏"}</span>
                         <div className="min-w-0">
-                          <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{prayer.title}</p>
-                          <p className="text-[10px] text-gray-400 uppercase tracking-wide">{catsDict[prayer.category as keyof typeof catsDict] || prayer.category}</p>
+                          <h4 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base leading-tight truncate">{prayer.title}</h4>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{catsDict[prayer.category as keyof typeof catsDict] || prayer.category}</p>
                         </div>
                       </div>
-                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border flex-shrink-0 ${cfg.pill}`}>
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border flex-shrink-0 ${cfg.pill}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                         {statusDict.label}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed border-l-2 border-gray-100 dark:border-gray-700 pl-3 mb-3 line-clamp-2">{prayer.description}</p>
-                    <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-555">
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(prayer.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
-                      {prayer.isAnonymous && <span className="flex items-center gap-1"><EyeOff className="w-3 h-3" />{pt.tagAnonymous}</span>}
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-l-2 border-rose-500/40 dark:border-rose-400/30 pl-3 mb-3 font-medium">
+                      {prayer.description}
+                    </p>
+                    <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-500 font-semibold pt-1 border-t border-gray-100 dark:border-gray-800/80">
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-rose-500" />
+                        {new Date(prayer.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      </span>
+                      {prayer.isAnonymous && (
+                        <span className="flex items-center gap-1 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+                          <EyeOff className="w-3 h-3" /> {pt.tagAnonymous}
+                        </span>
+                      )}
                     </div>
                   </motion.div>
                 );
