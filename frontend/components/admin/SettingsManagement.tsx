@@ -52,7 +52,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
       type="button"
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-        checked ? "bg-gradient-to-r from-indigo-500 to-violet-650" : "bg-slate-200 dark:bg-white/[0.08]"
+        checked ? "bg-gradient-to-r from-indigo-500 to-violet-600" : "bg-slate-200 dark:bg-white/[0.08]"
       }`}
     >
       <span
