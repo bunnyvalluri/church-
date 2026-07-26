@@ -23,6 +23,7 @@ import { adminTranslations } from "@/components/admin/adminTranslations";
 
 interface PrayerRequestsProps {
   users?: any[];
+  externalSearchQuery?: string;
 }
 
 interface Prayer {
@@ -163,7 +164,7 @@ const BIBLE_VERSES: Record<string, Record<string, string[]>> = {
   }
 };
 
-export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
+export default function PrayerRequests({ users = [], externalSearchQuery }: PrayerRequestsProps) {
   const { language } = useLanguage();
   const isTe = language === "te";
   const isHi = language === "hi";
@@ -270,10 +271,16 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
   const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(DEFAULT_PRAYERS[0]);
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(externalSearchQuery || "");
   const [assignedPartnerInput, setAssignedPartnerInput] = useState("");
   const [copiedVerse, setCopiedVerse] = useState(false);
   const [mobileTab, setMobileTab] = useState<"list" | "detail">("list");
+
+  useEffect(() => {
+    if (externalSearchQuery !== undefined) {
+      setSearchQuery(externalSearchQuery);
+    }
+  }, [externalSearchQuery]);
 
   // Modal State
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);

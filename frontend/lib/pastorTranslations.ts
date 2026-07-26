@@ -170,6 +170,11 @@ export const pastorTranslations = {
     yesterday: "Yesterday",
     daysAgo: "days ago",
     memberApplicationsExported: "Member applications exported successfully",
+
+    // Prayer Requests Page
+    prayerRequestsTitle: "Intercessory Prayer Desk",
+    prayerRequestsSubtitle: "Confidential prayer requests submitted by congregation members for pastoral intercession & team follow-up",
+    activePrayersBadge: "Active Intercessions",
   },
   te: {
     // Topbar & Navigation
@@ -340,6 +345,11 @@ export const pastorTranslations = {
     yesterday: "నిన్న",
     daysAgo: "రోజుల క్రితం",
     memberApplicationsExported: "సభ్యుల దరఖాస్తులు విజయవంతంగా ఎగుమతి చేయబడ్డాయి",
+
+    // Prayer Requests Page
+    prayerRequestsTitle: "విజ్ఞాపన ప్రార్థనల విభాగం",
+    prayerRequestsSubtitle: "సంఘ విశ్వాసుల నుండి వచ్చిన గోప్యమైన ప్రార్థన అభ్యర్థనలు మరియు పాస్టరల్ విజ్ఞాపనల వివరాలు",
+    activePrayersBadge: "క్రియాశీల ప్రార్థనలు",
   },
   hi: {
     // Topbar & Navigation
@@ -510,6 +520,11 @@ export const pastorTranslations = {
     yesterday: "कल",
     daysAgo: "दिन पहले",
     memberApplicationsExported: "सदस्य आवेदन सफलतापूर्वक निर्यात किए गए",
+
+    // Prayer Requests Page
+    prayerRequestsTitle: "मध्यस्थता प्रार्थना डेस्क",
+    prayerRequestsSubtitle: "कलीसिया सदस्यों द्वारा सबमिट किए गए गोपनीय प्रार्थना अनुरोध और चरवाहाई मध्यस्थता विवरण",
+    activePrayersBadge: "सक्रिय प्रार्थनाएँ",
   }
 };
 
