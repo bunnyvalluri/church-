@@ -402,78 +402,88 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
                 <AnimatePresence>
                   {isProfileOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 12, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="fixed top-14 right-3 sm:absolute sm:top-auto sm:right-0 sm:mt-3 w-[calc(100vw-1.5rem)] sm:w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-2xl p-5 space-y-4 z-50 origin-top-right"
-                    >
-                      {/* User Profile Card */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
-                          {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
-                            <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
-                              <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-extrabold text-sm text-gray-950 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
-                          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate leading-none mt-0.5">{user?.email}</p>
-                          <span className="inline-block text-[9px] font-black uppercase tracking-wider text-[hsl(var(--primary))] mt-1 px-2 py-0.5 bg-[hsl(var(--primary))/0.08] rounded-full border border-[hsl(var(--primary))/0.1]">
-                            {lt.verifiedMember}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="h-[1px] bg-gray-100 dark:bg-gray-800" />
-
-                      {/* Regional Dropdown Utilities */}
-                      <div className="space-y-4">
-                        {/* Mobile Preferences (Visible on screens < md) */}
-                        <div className="md:hidden space-y-3">
-                          <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">⚙️ Preferences</span>
-                          <div className="flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-white/5 border border-gray-150 dark:border-white/5 rounded-2xl">
-                            <div className="flex flex-col gap-1.5">
-                              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
-                              <div className="scale-[0.9] origin-left">
-                                <LanguageToggle />
-                              </div>
-                            </div>
-                            <div className="h-[1px] bg-gray-200/50 dark:bg-gray-800/50" />
-                            <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Appearance</span>
-                              <div className="flex gap-2 items-center">
-                                <ThemeToggle />
-                                <PaletteToggle />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Tablet Language Selection (Visible on screens md to lg) */}
-                        <div className="hidden md:block lg:hidden space-y-1.5">
-                          <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🌐 Choose Language</span>
-                          <div className="scale-[0.98] origin-left">
-                            <LanguageToggle />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="lg:hidden h-[1px] bg-gray-100 dark:bg-gray-800" />
-
-                      {/* Sign Out Button */}
-                      <button
-                        onClick={logout}
-                        className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+                    <>
+                      {/* Mobile Backdrop Overlay */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 sm:hidden"
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="fixed top-14 right-3 sm:absolute sm:top-auto sm:right-0 sm:mt-3 w-[calc(100vw-1.5rem)] sm:w-72 bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/10 rounded-3xl shadow-[0_20px_50px_-10px_rgba(0,0,0,0.25)] dark:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)] p-5 space-y-4 z-50 origin-top-right"
                       >
-                        <LogOut className="w-3.5 h-3.5" />
-                        {lt.signOut}
-                      </button>
-                    </motion.div>
+                        {/* User Profile Card */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border border-[hsl(var(--primary))/0.2] flex-shrink-0">
+                            {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
+                              <Image src={user.image} alt={user.name || "Member"} width={40} height={40} unoptimized className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                                <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-extrabold text-sm text-gray-950 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate leading-none mt-0.5">{user?.email}</p>
+                            <span className="inline-block text-[9px] font-black uppercase tracking-wider text-[hsl(var(--primary))] mt-1 px-2 py-0.5 bg-[hsl(var(--primary))/0.08] rounded-full border border-[hsl(var(--primary))/0.1]">
+                              {lt.verifiedMember}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="h-[1px] bg-gray-100 dark:bg-gray-800" />
+
+                        {/* Regional Dropdown Utilities */}
+                        <div className="space-y-4">
+                          {/* Mobile Preferences (Visible on screens < md) */}
+                          <div className="md:hidden space-y-3">
+                            <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">⚙️ Preferences</span>
+                            <div className="flex flex-col gap-3 p-3.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/60 rounded-2xl shadow-inner">
+                              <div className="flex flex-col gap-1.5">
+                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
+                                <div className="scale-[0.9] origin-left">
+                                  <LanguageToggle />
+                                </div>
+                              </div>
+                              <div className="h-[1px] bg-gray-200/50 dark:bg-gray-800/50" />
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Appearance</span>
+                                <div className="flex gap-2 items-center">
+                                  <ThemeToggle />
+                                  <PaletteToggle />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Tablet Language Selection (Visible on screens md to lg) */}
+                          <div className="hidden md:block lg:hidden space-y-1.5">
+                            <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">🌐 Choose Language</span>
+                            <div className="scale-[0.98] origin-left">
+                              <LanguageToggle />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="lg:hidden h-[1px] bg-gray-100 dark:bg-gray-800" />
+
+                        {/* Sign Out Button */}
+                        <button
+                          onClick={logout}
+                          className="w-full py-3 bg-red-500/10 dark:bg-red-500/15 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-900/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all shadow-sm"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          {lt.signOut}
+                        </button>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>
