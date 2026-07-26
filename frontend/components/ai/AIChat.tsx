@@ -183,12 +183,12 @@ export default function AIChat() {
       <div className="relative w-full h-full bg-white dark:bg-gray-950 flex flex-col">
         {/* Modern Header with subtle gradient */}
         <div
-          className="px-4 py-3.5 bg-gradient-to-r from-gray-900 via-indigo-950 to-purple-950 border-b border-gray-800 flex items-center justify-between cursor-pointer select-none"
+          className="px-4 py-3.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 dark:from-slate-900 dark:via-gray-900 dark:to-slate-900 border-b border-purple-500/20 dark:border-gray-800 flex items-center justify-between cursor-pointer select-none"
           onClick={() => setIsMinimized(!isMinimized)}
         >
           <div className="flex items-center gap-3 text-white">
             <div className="relative shrink-0">
-              <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 p-0.5 border border-white/20 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 dark:bg-white/10 p-0.5 border border-white/30 dark:border-white/20 flex items-center justify-center">
                 <Image
                   src="/chatbot-bird-logo.png"
                   alt="KCM Bot"
@@ -197,22 +197,22 @@ export default function AIChat() {
                   className="object-cover rounded-full"
                 />
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-gray-900"></span>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-purple-700 dark:ring-gray-900"></span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="font-semibold text-sm leading-tight text-white">KCM Assistant</h3>
-                <span className="px-1.5 py-0.5 text-[9px] font-medium bg-purple-500/20 text-purple-300 rounded border border-purple-400/30 flex items-center gap-0.5">
+                <span className="px-1.5 py-0.5 text-[9px] font-medium bg-white/20 dark:bg-purple-500/20 text-white dark:text-purple-300 rounded border border-white/30 dark:border-purple-400/30 flex items-center gap-0.5">
                   <Sparkles className="w-2.5 h-2.5" /> AI
                 </span>
               </div>
-              <p className="text-[11px] text-gray-300 font-normal flex items-center gap-1 mt-0.5">
+              <p className="text-[11px] text-purple-100 dark:text-gray-300 font-normal flex items-center gap-1 mt-0.5">
                 Always here to answer & guide
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-gray-300">
+          <div className="flex items-center gap-1 text-purple-100 dark:text-gray-300">
             {messages.length > 0 && !isMinimized && (
               <button
                 onClick={(e) => {
@@ -220,7 +220,7 @@ export default function AIChat() {
                   setMessages([]);
                 }}
                 title="Clear chat"
-                className="p-1.5 hover:bg-white/10 hover:text-white rounded-md transition-colors"
+                className="p-1.5 hover:bg-white/20 dark:hover:bg-white/10 hover:text-white rounded-md transition-colors"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
@@ -231,7 +231,7 @@ export default function AIChat() {
                 setIsMinimized(!isMinimized);
               }}
               title={isMinimized ? "Expand" : "Minimize"}
-              className="p-1.5 hover:bg-white/10 hover:text-white rounded-md transition-colors"
+              className="p-1.5 hover:bg-white/20 dark:hover:bg-white/10 hover:text-white rounded-md transition-colors"
             >
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMinimized ? "rotate-180" : ""}`} />
             </button>
@@ -241,7 +241,7 @@ export default function AIChat() {
                 setIsOpen(false);
               }}
               title="Close chat"
-              className="p-1.5 hover:bg-red-500/20 hover:text-red-300 rounded-md transition-colors"
+              className="p-1.5 hover:bg-red-500/30 dark:hover:bg-red-500/20 hover:text-white dark:hover:text-red-300 rounded-md transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -251,11 +251,11 @@ export default function AIChat() {
         {!isMinimized && (
           <>
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-gray-950" ref={scrollRef}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-purple-50/20 dark:bg-gray-950" ref={scrollRef}>
               {messages.length === 0 && (
                 <div className="py-4 px-2 space-y-5 animate-fade-in">
                   {/* Hero Avatar Card */}
-                  <div className="text-center bg-gradient-to-b from-purple-500/5 via-indigo-500/5 to-transparent dark:from-purple-900/10 dark:to-transparent p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30">
+                  <div className="text-center bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-white dark:from-purple-950/30 dark:via-indigo-950/15 dark:to-gray-900/40 p-5 rounded-2xl border border-purple-100 dark:border-purple-900/40 shadow-xs">
                     <div className="relative inline-block mb-3">
                       <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 p-0.5 shadow-lg shadow-purple-500/20 mx-auto flex items-center justify-center">
                         <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full p-1 flex items-center justify-center overflow-hidden">
@@ -276,25 +276,25 @@ export default function AIChat() {
                     <h4 className="font-heading font-semibold text-gray-900 dark:text-white text-base mb-1">
                       How can I help you today?
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 max-w-xs mx-auto leading-relaxed">
                       Ask me about service times, location, prayer requests, or church events.
                     </p>
                   </div>
 
                   {/* Quick Topics */}
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
-                      <MessageSquare className="w-3 h-3" /> Suggested Questions
+                    <div className="text-[11px] font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
+                      <MessageSquare className="w-3 h-3 text-purple-600 dark:text-purple-400" /> Suggested Questions
                     </div>
                     <div className="space-y-2">
                       {quickTopics.map(({ icon: Icon, label, msg }) => (
                         <button
                           key={label}
                           onClick={() => append({ role: "user", content: msg })}
-                          className="w-full text-left p-3 bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 rounded-xl hover:border-purple-500 dark:hover:border-purple-500/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/20 hover:shadow-sm text-xs font-medium text-gray-700 dark:text-gray-200 flex items-center justify-between transition-all duration-200 group"
+                          className="w-full text-left p-3 bg-white dark:bg-gray-900/90 border border-purple-100/80 dark:border-gray-800 rounded-xl hover:border-purple-500 dark:hover:border-purple-500 hover:bg-purple-50/60 dark:hover:bg-purple-900/20 hover:shadow-sm text-xs font-medium text-gray-800 dark:text-gray-200 flex items-center justify-between transition-all duration-200 group"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <div className="w-7 h-7 rounded-lg bg-purple-100/70 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                               <Icon className="w-3.5 h-3.5" />
                             </div>
                             <span className="truncate">{label}</span>
@@ -383,7 +383,7 @@ export default function AIChat() {
                     }
                   }}
                   placeholder="Type your message..."
-                  className="flex-1 max-h-28 min-h-[44px] px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition-all text-xs sm:text-sm outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="flex-1 max-h-28 min-h-[44px] px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition-all text-xs sm:text-sm outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   disabled={isLoading}
                   rows={1}
                 />
@@ -396,7 +396,7 @@ export default function AIChat() {
                 </button>
               </form>
               <div className="text-center mt-2">
-                <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
                   Powered by KCM AI • Instant Answers
                 </span>
               </div>
