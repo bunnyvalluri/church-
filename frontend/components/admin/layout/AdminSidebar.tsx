@@ -49,6 +49,9 @@ interface MenuItem {
   icon: React.ElementType;
   roles?: string[];
   badge?: string;
+  color: string;
+  activeGradient: string;
+  iconBg: string;
 }
 
 interface MenuGroup {
@@ -60,67 +63,288 @@ const menuGroups: MenuGroup[] = [
   {
     title: "Overview",
     items: [
-      { name: "Executive Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      {
+        name: "Executive Dashboard",
+        href: "/admin/dashboard",
+        icon: LayoutDashboard,
+        color: "text-indigo-500 dark:text-indigo-400",
+        activeGradient: "from-indigo-600 via-indigo-700 to-purple-700",
+        iconBg: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+      },
     ],
   },
   {
     title: "Members",
     items: [
-      { name: "Directory Overview", href: "/admin/members", icon: Users },
-      { name: "Member Registry", href: "/admin/members/member", icon: UserCheck },
-      { name: "Member Groups", href: "/admin/members/groups", icon: UsersRound },
-      { name: "Prayer Desk", href: "/admin/members/prayer-requests", icon: HeartHandshake },
-      { name: "Family Management", href: "/admin/members/family-management", icon: FolderKanban },
+      {
+        name: "Directory Overview",
+        href: "/admin/members",
+        icon: Users,
+        color: "text-emerald-500 dark:text-emerald-400",
+        activeGradient: "from-emerald-600 to-teal-600",
+        iconBg: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
+      },
+      {
+        name: "Member Registry",
+        href: "/admin/members/member",
+        icon: UserCheck,
+        color: "text-teal-500 dark:text-teal-400",
+        activeGradient: "from-teal-600 to-cyan-600",
+        iconBg: "bg-teal-500/10 text-teal-500 dark:text-teal-400",
+      },
+      {
+        name: "Member Groups",
+        href: "/admin/members/groups",
+        icon: UsersRound,
+        color: "text-cyan-500 dark:text-cyan-400",
+        activeGradient: "from-cyan-600 to-blue-600",
+        iconBg: "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400",
+      },
+      {
+        name: "Prayer Desk",
+        href: "/admin/members/prayer-requests",
+        icon: HeartHandshake,
+        color: "text-rose-500 dark:text-rose-400",
+        activeGradient: "from-rose-600 to-pink-600",
+        iconBg: "bg-rose-500/10 text-rose-500 dark:text-rose-400",
+      },
+      {
+        name: "Family Management",
+        href: "/admin/members/family-management",
+        icon: FolderKanban,
+        color: "text-violet-500 dark:text-violet-400",
+        activeGradient: "from-violet-600 to-purple-600",
+        iconBg: "bg-violet-500/10 text-violet-500 dark:text-violet-400",
+      },
     ],
   },
   {
     title: "Finance",
     items: [
-      { name: "Financial Overview", href: "/admin/finance", icon: DollarSign },
-      { name: "Donations Ledger", href: "/admin/finance/donations", icon: CreditCard },
-      { name: "Pledges & Campaigns", href: "/admin/finance/pledges", icon: Receipt },
-      { name: "Transactions", href: "/admin/finance/transactions", icon: BarChart3 },
-      { name: "Bank Accounts", href: "/admin/finance/accounts", icon: Landmark },
+      {
+        name: "Financial Overview",
+        href: "/admin/finance",
+        icon: DollarSign,
+        color: "text-amber-500 dark:text-amber-400",
+        activeGradient: "from-amber-500 via-orange-600 to-amber-600",
+        iconBg: "bg-amber-500/10 text-amber-500 dark:text-amber-400",
+      },
+      {
+        name: "Donations Ledger",
+        href: "/admin/finance/donations",
+        icon: CreditCard,
+        color: "text-green-500 dark:text-green-400",
+        activeGradient: "from-green-600 to-emerald-600",
+        iconBg: "bg-green-500/10 text-green-500 dark:text-green-400",
+      },
+      {
+        name: "Pledges & Campaigns",
+        href: "/admin/finance/pledges",
+        icon: Receipt,
+        color: "text-yellow-500 dark:text-yellow-400",
+        activeGradient: "from-yellow-500 to-amber-600",
+        iconBg: "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400",
+      },
+      {
+        name: "Transactions",
+        href: "/admin/finance/transactions",
+        icon: BarChart3,
+        color: "text-lime-500 dark:text-lime-400",
+        activeGradient: "from-lime-600 to-emerald-600",
+        iconBg: "bg-lime-500/10 text-lime-500 dark:text-lime-400",
+      },
+      {
+        name: "Bank Accounts",
+        href: "/admin/finance/accounts",
+        icon: Landmark,
+        color: "text-blue-500 dark:text-blue-400",
+        activeGradient: "from-blue-600 to-indigo-600",
+        iconBg: "bg-blue-500/10 text-blue-500 dark:text-blue-400",
+      },
     ],
   },
   {
     title: "Attendance",
     items: [
-      { name: "Attendance Hub", href: "/admin/attendance", icon: CalendarCheck },
-      { name: "Service Records", href: "/admin/attendance/records", icon: FileSpreadsheet },
-      { name: "Event Attendance", href: "/admin/attendance/events", icon: CalendarDays },
-      { name: "Analytics & Reports", href: "/admin/attendance/reports", icon: BarChart2 },
+      {
+        name: "Attendance Hub",
+        href: "/admin/attendance",
+        icon: CalendarCheck,
+        color: "text-sky-500 dark:text-sky-400",
+        activeGradient: "from-sky-500 to-blue-600",
+        iconBg: "bg-sky-500/10 text-sky-500 dark:text-sky-400",
+      },
+      {
+        name: "Service Records",
+        href: "/admin/attendance/records",
+        icon: FileSpreadsheet,
+        color: "text-indigo-500 dark:text-indigo-400",
+        activeGradient: "from-indigo-600 to-sky-600",
+        iconBg: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+      },
+      {
+        name: "Event Attendance",
+        href: "/admin/attendance/events",
+        icon: CalendarDays,
+        color: "text-purple-500 dark:text-purple-400",
+        activeGradient: "from-purple-600 to-pink-600",
+        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
+      },
+      {
+        name: "Analytics & Reports",
+        href: "/admin/attendance/reports",
+        icon: BarChart2,
+        color: "text-fuchsia-500 dark:text-fuchsia-400",
+        activeGradient: "from-fuchsia-600 to-rose-600",
+        iconBg: "bg-fuchsia-500/10 text-fuchsia-500 dark:text-fuchsia-400",
+      },
     ],
   },
   {
     title: "Content & CMS",
     items: [
-      { name: "CMS Dashboard", href: "/admin/content", icon: Globe },
-      { name: "Sermon Archive", href: "/admin/content/sermons", icon: Video },
-      { name: "Events Manager", href: "/admin/content/events", icon: CalendarDays },
-      { name: "Announcements", href: "/admin/content/announcements", icon: Radio },
-      { name: "Media Library", href: "/admin/content/media", icon: Camera },
-      { name: "Public Page CMS", href: "/admin/content/pages", icon: FileCode },
+      {
+        name: "CMS Dashboard",
+        href: "/admin/content",
+        icon: Globe,
+        color: "text-pink-500 dark:text-pink-400",
+        activeGradient: "from-pink-600 to-rose-600",
+        iconBg: "bg-pink-500/10 text-pink-500 dark:text-pink-400",
+      },
+      {
+        name: "Sermon Archive",
+        href: "/admin/content/sermons",
+        icon: Video,
+        color: "text-red-500 dark:text-red-400",
+        activeGradient: "from-red-600 to-rose-700",
+        iconBg: "bg-red-500/10 text-red-500 dark:text-red-400",
+      },
+      {
+        name: "Events Manager",
+        href: "/admin/content/events",
+        icon: CalendarDays,
+        color: "text-orange-500 dark:text-orange-400",
+        activeGradient: "from-orange-500 to-amber-600",
+        iconBg: "bg-orange-500/10 text-orange-500 dark:text-orange-400",
+      },
+      {
+        name: "Announcements",
+        href: "/admin/content/announcements",
+        icon: Radio,
+        color: "text-emerald-500 dark:text-emerald-400",
+        activeGradient: "from-emerald-500 to-teal-600",
+        iconBg: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
+      },
+      {
+        name: "Media Library",
+        href: "/admin/content/media",
+        icon: Camera,
+        color: "text-teal-500 dark:text-teal-400",
+        activeGradient: "from-teal-500 to-cyan-600",
+        iconBg: "bg-teal-500/10 text-teal-500 dark:text-teal-400",
+      },
+      {
+        name: "Public Page CMS",
+        href: "/admin/content/pages",
+        icon: FileCode,
+        color: "text-cyan-500 dark:text-cyan-400",
+        activeGradient: "from-cyan-600 to-blue-600",
+        iconBg: "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400",
+      },
     ],
   },
   {
     title: "NGO & Outreach",
     items: [
-      { name: "NGO Overview", href: "/admin/ngo", icon: Building2 },
-      { name: "Outreach Projects", href: "/admin/ngo/projects", icon: HandHeart },
-      { name: "Field Media", href: "/admin/ngo/media", icon: Film },
-      { name: "Volunteer Roster", href: "/admin/ngo/volunteers", icon: UserPlus },
+      {
+        name: "NGO Overview",
+        href: "/admin/ngo",
+        icon: Building2,
+        color: "text-emerald-600 dark:text-emerald-400",
+        activeGradient: "from-emerald-600 to-green-600",
+        iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      },
+      {
+        name: "Outreach Projects",
+        href: "/admin/ngo/projects",
+        icon: HandHeart,
+        color: "text-rose-500 dark:text-rose-400",
+        activeGradient: "from-rose-500 to-pink-600",
+        iconBg: "bg-rose-500/10 text-rose-500 dark:text-rose-400",
+      },
+      {
+        name: "Field Media",
+        href: "/admin/ngo/media",
+        icon: Film,
+        color: "text-amber-500 dark:text-amber-400",
+        activeGradient: "from-amber-500 to-orange-600",
+        iconBg: "bg-amber-500/10 text-amber-500 dark:text-amber-400",
+      },
+      {
+        name: "Volunteer Roster",
+        href: "/admin/ngo/volunteers",
+        icon: UserPlus,
+        color: "text-blue-500 dark:text-blue-400",
+        activeGradient: "from-blue-600 to-indigo-600",
+        iconBg: "bg-blue-500/10 text-blue-500 dark:text-blue-400",
+      },
     ],
   },
   {
     title: "Settings & Security",
     items: [
-      { name: "Settings Overview", href: "/admin/settings", icon: Settings },
-      { name: "General Config", href: "/admin/settings/general", icon: Globe },
-      { name: "User Directory", href: "/admin/settings/users", icon: Users, roles: ["SUPER_ADMIN", "ADMIN"] },
-      { name: "Roles & Access", href: "/admin/settings/roles", icon: ShieldCheck, roles: ["SUPER_ADMIN"] },
-      { name: "Permissions Matrix", href: "/admin/settings/permissions", icon: KeyRound, roles: ["SUPER_ADMIN"] },
-      { name: "Security & Audit", href: "/admin/settings/security", icon: Lock, roles: ["SUPER_ADMIN"] },
+      {
+        name: "Settings Overview",
+        href: "/admin/settings",
+        icon: Settings,
+        color: "text-slate-500 dark:text-gray-400",
+        activeGradient: "from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800",
+        iconBg: "bg-slate-500/10 text-slate-600 dark:text-gray-300",
+      },
+      {
+        name: "General Config",
+        href: "/admin/settings/general",
+        icon: Globe,
+        color: "text-cyan-500 dark:text-cyan-400",
+        activeGradient: "from-cyan-600 to-teal-600",
+        iconBg: "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400",
+      },
+      {
+        name: "User Directory",
+        href: "/admin/settings/users",
+        icon: Users,
+        roles: ["SUPER_ADMIN", "ADMIN"],
+        color: "text-indigo-500 dark:text-indigo-400",
+        activeGradient: "from-indigo-600 to-violet-600",
+        iconBg: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+      },
+      {
+        name: "Roles & Access",
+        href: "/admin/settings/roles",
+        icon: ShieldCheck,
+        roles: ["SUPER_ADMIN"],
+        color: "text-purple-500 dark:text-purple-400",
+        activeGradient: "from-purple-600 to-fuchsia-600",
+        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
+      },
+      {
+        name: "Permissions Matrix",
+        href: "/admin/settings/permissions",
+        icon: KeyRound,
+        roles: ["SUPER_ADMIN"],
+        color: "text-yellow-500 dark:text-yellow-400",
+        activeGradient: "from-yellow-600 to-amber-600",
+        iconBg: "bg-yellow-500/10 text-yellow-500 dark:text-yellow-400",
+      },
+      {
+        name: "Security & Audit",
+        href: "/admin/settings/security",
+        icon: Lock,
+        roles: ["SUPER_ADMIN"],
+        color: "text-red-500 dark:text-red-400",
+        activeGradient: "from-red-600 to-rose-600",
+        iconBg: "bg-red-500/10 text-red-500 dark:text-red-400",
+      },
     ],
   },
 ];
@@ -291,15 +515,20 @@ export default function AdminSidebar({
                         title={isCollapsed ? item.name : undefined}
                         className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group ${
                           isActive
-                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/25"
+                            ? `bg-gradient-to-r ${item.activeGradient} text-white shadow-md shadow-indigo-500/20`
                             : "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
                         }`}
                       >
-                        <Icon
-                          className={`w-4 h-4 flex-shrink-0 transition-transform group-hover:scale-110 ${
-                            isActive ? "text-white" : "text-slate-400 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                        <div
+                          className={`p-1 rounded-lg flex items-center justify-center transition-all ${
+                            isActive
+                              ? "bg-white/20 text-white"
+                              : `${item.iconBg} group-hover:scale-110`
                           }`}
-                        />
+                        >
+                          <Icon className="w-4 h-4 flex-shrink-0" />
+                        </div>
+
                         {!isCollapsed && (
                           <span className="truncate flex-1">{item.name}</span>
                         )}
