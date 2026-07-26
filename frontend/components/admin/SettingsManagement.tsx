@@ -36,56 +36,56 @@ interface PermissionRow {
   MEMBER: boolean;
 }
 
+const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: (val: boolean) => void }) => (
+  <button
+    type="button"
+    onClick={() => onChange(!checked)}
+    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/30 ${
+      checked ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-700"
+    }`}
+  >
+    <span
+      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${
+        checked ? "translate-x-5" : "translate-x-0"
+      }`}
+    />
+  </button>
+);
+
+const CustomCheckbox = ({ checked, onClick, id }: { checked: boolean, onClick: () => void, id?: string }) => (
+  <button
+    type="button" 
+    onClick={onClick}
+    id={id}
+    data-testid={id}
+    className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 active:scale-95 shadow-sm ${
+      checked 
+        ? "bg-indigo-600 border-indigo-600 text-white shadow-indigo-500/20" 
+        : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-transparent"
+    }`}
+  >
+    {checked && (
+      <Check className="w-3.5 h-3.5 stroke-[3]" />
+    )}
+  </button>
+);
+
+const LockedCheckbox = () => (
+  <div className="w-5 h-5 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center shadow-sm select-none cursor-not-allowed text-slate-400 dark:text-slate-500">
+    <Lock className="w-3 h-3" />
+  </div>
+);
+
 export default function SettingsManagement({ onSaveConfig, activeSubTab = "settings" }: SettingsManagementProps) {
   const [subView, setSubView] = useState<"settings" | "permissions">(activeSubTab);
   React.useEffect(() => {
-    setSubView(activeSubTab);
+    setSubView((prev) => (prev !== activeSubTab ? activeSubTab : prev));
   }, [activeSubTab]);
 
   const { language } = useLanguage();
   const isTe = language === "te";
   const isHi = language === "hi";
   const t = adminTranslations[language as keyof typeof adminTranslations] || adminTranslations.en;
-
-  const ToggleSwitch = ({ checked, onChange }: { checked: boolean, onChange: (val: boolean) => void }) => (
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/30 ${
-        checked ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-700"
-      }`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${
-          checked ? "translate-x-5" : "translate-x-0"
-        }`}
-      />
-    </button>
-  );
-
-  const CustomCheckbox = ({ checked, onClick, id }: { checked: boolean, onClick: () => void, id?: string }) => (
-    <button
-      type="button" 
-      onClick={onClick}
-      id={id}
-      data-testid={id}
-      className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-150 active:scale-95 shadow-sm ${
-        checked 
-          ? "bg-indigo-600 border-indigo-600 text-white shadow-indigo-500/20" 
-          : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-transparent"
-      }`}
-    >
-      {checked && (
-        <Check className="w-3.5 h-3.5 stroke-[3]" />
-      )}
-    </button>
-  );
-
-  const LockedCheckbox = () => (
-    <div className="w-5 h-5 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center shadow-sm select-none cursor-not-allowed text-slate-400 dark:text-slate-500">
-      <Lock className="w-3 h-3" />
-    </div>
-  );
   
   // Settings Form States
   const [contactEmail, setContactEmail] = useState("kingofchristministries23@gmail.com");
