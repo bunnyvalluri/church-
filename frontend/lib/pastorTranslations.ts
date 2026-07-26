@@ -7,6 +7,7 @@ export const pastorTranslations = {
     seniorPastor: "Senior Pastor & Founder",
     overviewWorkspace: "Executive Pastoral Workspace",
     searchPlaceholder: "Search sermons, requests, members, giving...",
+    searchRecords: "Search records...",
     newAction: "New",
 
     // Menu Groups
@@ -17,7 +18,7 @@ export const pastorTranslations = {
     groupMedia: "CALENDAR & MEDIA",
     groupSettings: "SETTINGS & PROFILE",
 
-    // Navigation Links
+    // Navigation Links & Bottom Bar
     navDashboard: "Dashboard",
     navSermons: "Sermons",
     navDonations: "Donations & Giving",
@@ -45,6 +46,17 @@ export const pastorTranslations = {
     navNotifications: "Notification Alerts",
     navPreferences: "UI Preferences",
 
+    // Subtitles & Badges
+    publishedThisMonth: "4 Published this month",
+    newThisWeek: "3 New this week",
+    urgentPrayersCount: "8 Urgent prayers",
+    next30Days: "Next 30 Days",
+    viewAll: "View All",
+    published: "Published",
+    sundayWorship: "Sunday Worship",
+    midweekService: "Midweek Service",
+    familySpecial: "Family Special",
+
     // Dashboard Overview Stats & Headings
     welcomePastor: "Grace & Peace, Bishop Kurra Kristhu Raju",
     dashboardSubtitle: "Here is your ministry overview, congregation engagement, and pastoral requests for today.",
@@ -67,6 +79,7 @@ export const pastorTranslations = {
     seniorPastor: "సీనియర్ పాస్టర్ & స్థాపకులు",
     overviewWorkspace: "పాస్టర్ ఎగ్జిక్యూటివ్ వర్క్‌స్పేస్",
     searchPlaceholder: "ప్రసంగాలు, ప్రార్థనలు, సభ్యులు, చందాలు శోధించండి...",
+    searchRecords: "సమాచారం శోధించండి...",
     newAction: "కొత్తది",
 
     // Menu Groups
@@ -77,7 +90,7 @@ export const pastorTranslations = {
     groupMedia: "క్యాలెండర్ & మీడియా",
     groupSettings: "సెట్టింగ్‌లు & ప్రొఫైల్",
 
-    // Navigation Links
+    // Navigation Links & Bottom Bar
     navDashboard: "డాష్‌బోర్డ్",
     navSermons: "వాక్య ప్రసంగాలు",
     navDonations: "విరాళాలు & చందాలు",
@@ -105,6 +118,17 @@ export const pastorTranslations = {
     navNotifications: "నోటిఫికేషన్ హెచ్చరికలు",
     navPreferences: "భాషా ప్రాధాన్యతలు",
 
+    // Subtitles & Badges
+    publishedThisMonth: "ఈ నెలలో 4 ప్రచురించబడ్డాయి",
+    newThisWeek: "ఈ వారంలో 3 కొత్తవి",
+    urgentPrayersCount: "8 అత్యవసర ప్రార్థనలు",
+    next30Days: "రాబోయే 30 రోజులు",
+    viewAll: "అన్నీ చూడండి",
+    published: "ప్రచురించబడింది",
+    sundayWorship: "ఆదివారం ఆరాధన",
+    midweekService: "వారపు కూడిక",
+    familySpecial: "కుటుంబ సభ",
+
     // Dashboard Overview Stats & Headings
     welcomePastor: "కృపా సమాధానములు కలుగును గాక, బిషప్ కుర్రా క్రీస్తు రాజు గారు",
     dashboardSubtitle: "ఈనాటి సంఘ సమాచారం, ప్రార్థన విజ్ఞప్తులు మరియు పరిచర్య వివరాల అవలోకనం.",
@@ -127,6 +151,7 @@ export const pastorTranslations = {
     seniorPastor: "वरिष्ठ पास्टर और संस्थापक",
     overviewWorkspace: "पास्टर कार्यकारी कार्यक्षेत्र",
     searchPlaceholder: "उपदेश, प्रार्थनाएं, सदस्य, दान खोजें...",
+    searchRecords: "रिकॉर्ड खोजें...",
     newAction: "नया",
 
     // Menu Groups
@@ -137,7 +162,7 @@ export const pastorTranslations = {
     groupMedia: "कैलेंडर और मीडिया",
     groupSettings: "सेटिंग्स और प्रोफ़ाइल",
 
-    // Navigation Links
+    // Navigation Links & Bottom Bar
     navDashboard: "डैशबोर्ड",
     navSermons: "उपदेश (सर्मन्स)",
     navDonations: "दान और दशमांश",
@@ -164,6 +189,17 @@ export const pastorTranslations = {
     navSecurity: "सुरक्षा और पहुंच",
     navNotifications: "सूचना अलर्ट",
     navPreferences: "भाषा प्राथमिकताएं",
+
+    // Subtitles & Badges
+    publishedThisMonth: "इस महीने 4 प्रकाशित",
+    newThisWeek: "इस सप्ताह 3 नए",
+    urgentPrayersCount: "8 तत्काल प्रार्थनाएं",
+    next30Days: "अगले 30 दिन",
+    viewAll: "सभी देखें",
+    published: "प्रकाशित",
+    sundayWorship: "रविवार आराधना",
+    midweekService: "साप्ताहिक सेवा",
+    familySpecial: "परिवार विशेष",
 
     // Dashboard Overview Stats & Headings
     welcomePastor: "अनुग्रह और शांति, बिशप कुर्रा क्रिस्तु राजू जी",

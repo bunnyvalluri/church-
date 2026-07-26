@@ -8,10 +8,15 @@ import PastorHeader from "./PastorHeader";
 import { Layers, Play, Users, Heart, Settings, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
+
 export default function PastorPortalLayout({ children }: { children: React.ReactNode }) {
   const { mounted, status, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname() || "/pastor/dashboard";
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -44,11 +49,11 @@ export default function PastorPortalLayout({ children }: { children: React.React
   }
 
   const mobileBottomNavItems = [
-    { name: "Dashboard", href: "/pastor/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
-    { name: "Sermons", href: "/pastor/main/sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
-    { name: "Requests", href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
-    { name: "Prayers", href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
-    { name: "Profile", href: "/pastor/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
+    { name: t.navDashboard, href: "/pastor/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
+    { name: t.navSermons, href: "/pastor/main/sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
+    { name: t.navMemberRequests, href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
+    { name: t.navPrayerRequests, href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
+    { name: t.navProfile, href: "/pastor/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
   ];
 
   return (

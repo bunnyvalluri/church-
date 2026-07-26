@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
+import LanguageToggle from "@/components/LanguageToggle";
 import { 
   Layers, 
   Play, 
@@ -231,34 +232,43 @@ export default function PastorSidebar({
         })}
       </div>
 
-      {/* Footer Profile Card */}
-      <div className="p-3.5 border-t border-slate-200/50 dark:border-white/[0.04] bg-slate-50/50 dark:bg-[#0A0B16]/50 flex items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-          <div className="w-9 h-9 rounded-xl border border-slate-200/60 dark:border-white/10 overflow-hidden relative shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-xs">
-            {user?.name ? user.name.charAt(0) : "P"}
+      {/* Footer Profile & Language Card */}
+      <div className="p-3.5 border-t border-slate-200/50 dark:border-white/[0.04] bg-slate-50/50 dark:bg-[#0A0B16]/50 flex flex-col gap-3 shrink-0">
+        {!isCollapsed && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Language</span>
+            <LanguageToggle />
           </div>
-          {!isCollapsed && (
-            <div className="overflow-hidden min-w-0">
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                {user?.name || "Bishop K. Kristhu Raju"}
-              </h4>
-              <p className="text-[9.5px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider truncate">
-                Senior Pastor
-              </p>
+        )}
+        
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+            <div className="w-9 h-9 rounded-xl border border-slate-200/60 dark:border-white/10 overflow-hidden relative shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-xs">
+              {user?.name ? user.name.charAt(0) : "P"}
             </div>
+            {!isCollapsed && (
+              <div className="overflow-hidden min-w-0">
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  {user?.name || "Bishop K. Kristhu Raju"}
+                </h4>
+                <p className="text-[9.5px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider truncate">
+                  Senior Pastor
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!isCollapsed && (
+            <button
+              type="button"
+              onClick={logout}
+              className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-white/5 transition-colors shrink-0"
+              title="Log Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           )}
         </div>
-
-        {!isCollapsed && (
-          <button
-            type="button"
-            onClick={logout}
-            className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-white/5 transition-colors shrink-0"
-            title="Log Out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        )}
       </div>
     </div>
   );

@@ -126,6 +126,10 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
           <Menu className="w-5 h-5" />
         </button>
 
+        <span className="md:hidden text-xs font-black text-slate-900 dark:text-white tracking-tight truncate">
+          {t.pastorPortal}
+        </span>
+
         <PastorBreadcrumbs />
       </div>
 
@@ -218,7 +222,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
         </div>
 
         {/* Language Switcher */}
-        <div className="hidden sm:block shrink-0">
+        <div className="shrink-0">
           <LanguageToggle />
         </div>
 

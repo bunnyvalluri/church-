@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Search, Filter, Download, Plus, RefreshCw } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 interface PastorPageHeaderProps {
   title: string;
@@ -25,7 +27,7 @@ export default function PastorPageHeader({
   subtitle,
   badge,
   badgeColor = "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20",
-  searchPlaceholder = "Search records...",
+  searchPlaceholder,
   searchValue,
   onSearchChange,
   onRefresh,
@@ -36,6 +38,10 @@ export default function PastorPageHeader({
   onSecondaryAction,
   children
 }: PastorPageHeaderProps) {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+  const effectivePlaceholder = searchPlaceholder || t.searchRecords;
+
   return (
     <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl border border-slate-200/60 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-4 transition-all">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -52,7 +58,7 @@ export default function PastorPageHeader({
             )}
           </div>
           {subtitle && (
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 max-w-3xl leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-gray-400 font-medium leading-relaxed">
               {subtitle}
             </p>
           )}
@@ -68,7 +74,7 @@ export default function PastorPageHeader({
               title="Refresh Data"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Refresh</span>
+              <span className="hidden sm:inline">{t.refreshData}</span>
             </button>
           )}
 
@@ -79,7 +85,7 @@ export default function PastorPageHeader({
               className="px-3 py-2 text-slate-700 dark:text-gray-200 hover:text-slate-950 dark:hover:text-white bg-slate-100/80 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/[0.08] rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95"
             >
               <Download className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Export</span>
+              <span>{t.exportData}</span>
             </button>
           )}
 
@@ -114,7 +120,7 @@ export default function PastorPageHeader({
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder={searchPlaceholder}
+                placeholder={effectivePlaceholder}
                 value={searchValue || ""}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6366F1]/20 focus:border-[#6366F1] transition-all"

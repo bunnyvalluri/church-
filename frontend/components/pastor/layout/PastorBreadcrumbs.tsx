@@ -69,7 +69,7 @@ export default function PastorBreadcrumbs() {
   let currentPath = "/pastor";
 
   return (
-    <nav className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-gray-400 overflow-x-auto no-scrollbar">
+    <nav className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-gray-400 overflow-x-auto no-scrollbar">
       <Link 
         href="/pastor/dashboard" 
         className="flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"
