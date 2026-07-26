@@ -16,7 +16,7 @@ export default function SermonsContentPage() {
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const res = await fetch("/api/admin/content/data", { headers });
       const result = await res.json();
       if (res.ok && result.success) {
         setData(result);
@@ -51,6 +51,7 @@ export default function SermonsContentPage() {
         onAddAnnouncement={() => {}}
         onDeleteAnnouncement={() => {}}
         activeSubTab="sermons"
+        isLoading={loading}
       />
     </AdminPageTemplate>
   );

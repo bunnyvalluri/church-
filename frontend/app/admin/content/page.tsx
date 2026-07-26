@@ -16,7 +16,7 @@ export default function ContentOverviewPage() {
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const res = await fetch("/api/admin/content/data", { headers });
       const result = await res.json();
       if (res.ok && result.success) {
         setData(result);
@@ -50,6 +50,7 @@ export default function ContentOverviewPage() {
         onDeleteEvent={() => {}}
         onAddAnnouncement={() => {}}
         onDeleteAnnouncement={() => {}}
+        isLoading={loading}
       />
     </AdminPageTemplate>
   );

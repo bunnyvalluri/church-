@@ -36,6 +36,7 @@ interface ContentManagementProps {
   onOpenAddEvent?: () => void;
   onOpenAddAnnouncement?: () => void;
   activeSubTab?: "sermons" | "events" | "announcements" | "media" | "pages";
+  isLoading?: boolean;
 }
 
 export default function ContentManagement({
@@ -51,7 +52,8 @@ export default function ContentManagement({
   onOpenAddSermon,
   onOpenAddEvent,
   onOpenAddAnnouncement,
-  activeSubTab = "sermons"
+  activeSubTab = "sermons",
+  isLoading = false
 }: ContentManagementProps) {
   const [subView, setSubView] = useState<"sermons" | "events" | "announcements" | "media" | "pages">(activeSubTab);
   React.useEffect(() => {
@@ -170,6 +172,23 @@ export default function ContentManagement({
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-12 bg-slate-200/60 dark:bg-white/[0.05] rounded-2xl w-full max-w-xl" />
+        <div className="h-14 bg-slate-200/60 dark:bg-white/[0.05] rounded-2xl w-full" />
+        <div className="bg-slate-200/60 dark:bg-white/[0.05] border border-slate-200/50 dark:border-white/5 rounded-2xl p-6 space-y-4">
+          <div className="h-8 bg-slate-300/60 dark:bg-white/10 rounded-xl w-1/4" />
+          <div className="space-y-3 pt-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-12 bg-slate-300/40 dark:bg-white/5 rounded-xl w-full" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
