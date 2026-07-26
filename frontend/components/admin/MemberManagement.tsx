@@ -492,16 +492,84 @@ export default function MemberManagement({
       {/* ─── VIEW 2: COMPACT TABLE ROSTER VIEW ─── */}
       {viewMode === "table" && (
         <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm dark:shadow-none min-w-0">
-          <div className="overflow-x-auto custom-scrollbar">
+          
+          {/* 📱 Mobile Responsive Roster List (< sm) */}
+          <div className="block sm:hidden divide-y divide-slate-100 dark:divide-white/[0.06]">
+            {filteredUsers.map((u) => {
+              const badge = getRoleBadgeStyles(u.role || "MEMBER");
+              const RoleIcon = badge.icon;
+              return (
+                <div key={u.id} className="p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-8 h-8 bg-gradient-to-br ${badge.grad} text-white font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
+                        {(u.name || "U").substring(0, 2)}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-black text-slate-900 dark:text-white text-xs block truncate" title={u.name}>{u.name || "Member"}</span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[8px] font-extrabold uppercase tracking-wider border ${badge.badge} mt-0.5`}>
+                          <RoleIcon className="w-2 h-2 shrink-0" />
+                          {badge.label}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => onDeleteMember(u.id)}
+                      className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15 rounded-xl transition-colors shrink-0"
+                      title="Delete User"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] font-medium text-slate-600 dark:text-slate-300 space-y-1 bg-slate-50 dark:bg-[#1A1C36]/50 p-2.5 rounded-xl border border-slate-200/60 dark:border-white/[0.04]">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-slate-800 dark:text-slate-200 font-bold max-w-[210px]">{u.email || "—"}</span>
+                      {u.email && (
+                        <button 
+                          onClick={() => handleCopyText(u.email, `m_email_${u.id}`)}
+                          className="text-indigo-600 dark:text-indigo-400 text-[10px] font-extrabold shrink-0"
+                        >
+                          {copiedId === `m_email_${u.id}` ? "Copied!" : "Copy"}
+                        </button>
+                      )}
+                    </div>
+                    {u.phone && <div className="text-slate-500 dark:text-slate-400 text-[10px] font-semibold">{u.phone}</div>}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 pt-0.5">
+                    <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t.changeRole}:</span>
+                    <div className="relative max-w-[160px] flex-1">
+                      <select 
+                        value={u.role || "MEMBER"} 
+                        onChange={(e) => handleRoleChangeInternal(u.id, e.target.value)} 
+                        className="w-full py-1.5 pl-2.5 pr-6 border rounded-xl text-[10px] font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-[#1A1C36] border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer truncate"
+                      >
+                        <option value="MEMBER">{t.believerOption}</option>
+                        <option value="PASTOR">{t.shepherdOption}</option>
+                        <option value="ADMIN">{t.adminOption}</option>
+                        <option value="SUPER_ADMIN">{t.superAdminOption}</option>
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 💻 Desktop Table View (>= sm) */}
+          <div className="hidden sm:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[880px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider bg-slate-100/70 dark:bg-[#1A1C36]/80">
                   <th className="py-3.5 px-4 sm:px-5 w-56">{isTe ? "సభ్యుడు" : isHi ? "सदस्य" : "Member"}</th>
                   <th className="py-3.5 px-4 sm:px-5 w-36">{isTe ? "హోదా" : isHi ? "భూమిక" : "Platform Role"}</th>
-                  <th className="py-3.5 px-4 sm:px-5 min-w-[220px]">{isTe ? "ఈమెయిల్" : isHi ? "ईमेल" : "Email"}</th>
-                  <th className="py-3.5 px-4 sm:px-5 w-36">{isTe ? "ఫోన్" : isHi ? "फोन" : "Phone"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 min-w-[220px]">{isTe ? "ఈమెయిల్" : isHi ? "ఈమెయిల్" : "Email"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-36">{isTe ? "ఫోన్" : isHi ? "ఫోన్" : "Phone"}</th>
                   <th className="py-3.5 px-4 sm:px-5 w-32">{isTe ? "చేరిన తేదీ" : isHi ? "పंजीकृत" : "Registered"}</th>
-                  <th className="py-3.5 px-4 sm:px-5 w-44 text-center">{isTe ? "చర్యలు" : isHi ? "कार्रवाई" : "Actions"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-44 text-center">{isTe ? "చర్యలు" : isHi ? "కా కార్రవై" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.06] text-xs font-semibold text-slate-800 dark:text-slate-200">
