@@ -2,9 +2,14 @@
 
 import React, { useState } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
-import { UserCheck, CheckCircle, Clock, Mail, Phone, HeartHandshake } from "lucide-react";
+import { CheckCircle, Clock, Mail, Phone } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 export default function PastorVolunteersPage() {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const [volunteers, setVolunteers] = useState([
@@ -22,12 +27,16 @@ export default function PastorVolunteersPage() {
     return v.name.toLowerCase().includes(q) || v.ministry.toLowerCase().includes(q) || v.email.toLowerCase().includes(q);
   });
 
+  const getStatusLabel = (status: string) => {
+    return status === "Approved" ? t.approvedStatus : t.pendingStatusVal;
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <PastorPageHeader
-        title="Ministry Volunteer Roster & Applications"
-        subtitle="Manage volunteer signups for Ushering, Choir, Sound & AV, Sunday School, and Community Outreach"
-        badge={`${volunteers.filter(v => v.status === "Approved").length} Active`}
+        title={t.volunteersTitle}
+        subtitle={t.volunteersSubtitle}
+        badge={`${volunteers.filter(v => v.status === "Approved").length} ${t.activeBadge}`}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -56,7 +65,7 @@ export default function PastorVolunteersPage() {
                     ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20" 
                     : "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
                 }`}>
-                  {v.status}
+                  {getStatusLabel(v.status)}
                 </span>
               </div>
 
@@ -80,7 +89,7 @@ export default function PastorVolunteersPage() {
               <div className="pt-1 flex items-center justify-end">
                 {v.status === "Approved" ? (
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle className="w-4 h-4" /> Approved
+                    <CheckCircle className="w-4 h-4" /> {t.approvedStatus}
                   </span>
                 ) : (
                   <button
@@ -88,7 +97,7 @@ export default function PastorVolunteersPage() {
                     onClick={() => handleApprove(v.id, v.name)}
                     className="w-full py-2 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-extrabold shadow-md shadow-emerald-500/15 flex items-center justify-center gap-1.5 transition-all active:scale-95"
                   >
-                    <CheckCircle className="w-4 h-4" /> Approve Volunteer
+                    <CheckCircle className="w-4 h-4" /> {t.approveVolunteerBtn}
                   </button>
                 )}
               </div>
@@ -101,11 +110,11 @@ export default function PastorVolunteersPage() {
           <table className="w-full text-left border-collapse min-w-[650px]">
             <thead>
               <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-[10px] font-black uppercase text-slate-400">
-                <th className="py-4 px-6">Volunteer Name</th>
-                <th className="py-4 px-6">Ministry Area</th>
-                <th className="py-4 px-6">Applied Date</th>
-                <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6">{t.volunteerNameHeader}</th>
+                <th className="py-4 px-6">{t.ministryAreaHeader}</th>
+                <th className="py-4 px-6">{t.appliedDateHeader}</th>
+                <th className="py-4 px-6">{t.statusHeader}</th>
+                <th className="py-4 px-6 text-right">{t.actionsHeader}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs">
@@ -125,17 +134,17 @@ export default function PastorVolunteersPage() {
                     <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
                       v.status === "Approved" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20" : "bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
                     }`}>
-                      {v.status}
+                      {getStatusLabel(v.status)}
                     </span>
                   </td>
                   <td className="py-4 px-6 text-right">
                     {v.status === "Approved" ? (
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        <CheckCircle className="w-4 h-4" /> Approved
+                        <CheckCircle className="w-4 h-4" /> {t.approvedStatus}
                       </span>
                     ) : (
                       <button type="button" onClick={() => handleApprove(v.id, v.name)} className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all shadow-sm active:scale-95">
-                        Approve
+                        {t.approveBtn}
                       </button>
                     )}
                   </td>
@@ -148,3 +157,4 @@ export default function PastorVolunteersPage() {
     </div>
   );
 }
+

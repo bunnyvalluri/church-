@@ -245,6 +245,119 @@ export const pastorTranslations = {
     messagesBadge: "Inquiries Inbox",
     messagesPlaceholder: "Search pastoral messages...",
     noMessagesText: "Pastoral inbox messages and counseling tickets appear here.",
+
+    // Bible Study Groups Page
+    bibleStudyTitle: "Bible Study & Discipleship Groups",
+    bibleStudySubtitle: "Manage Bible study curriculum, leader assignments, group schedules, and weekly attendance logs",
+    activeGroupsBadge: "Active Groups",
+    newGroupBtn: "New Group",
+    leaderLabel: "Leader",
+    membersCountLabel: "Members",
+    group1Name: "Wednesday Evening Discipleship",
+    group1Leader: "Pastor Samuel",
+    group1Day: "Wednesdays 07:00 PM",
+    group2Name: "Women of Faith Bible Study",
+    group2Leader: "Sister Mary Grace",
+    group2Day: "Fridays 05:00 PM",
+    group3Name: "Youth Word & Life Foundations",
+    group3Leader: "Brother Timothy",
+    group3Day: "Saturdays 04:00 PM",
+
+    // Small Groups Page
+    smallGroupsTitle: "Small Groups & Cell Fellowships",
+    smallGroupsSubtitle: "Track neighborhood cell groups, house fellowships, location coverage, and attendance performance",
+    communityGroupsBadge: "Community Groups",
+    addCellGroupBtn: "Add Cell Group",
+    avgAttendeesLabel: "Avg {count} Attendees",
+    smallGroup1Name: "Jeedimetla Cell Fellowship",
+    smallGroup1Leader: "Brother Luke",
+    smallGroup1Loc: "Sector 3, Jeedimetla",
+    smallGroup2Name: "Kukatpally Grace Fellowship",
+    smallGroup2Leader: "Sister Sarah",
+    smallGroup2Loc: "KPHB Colony",
+
+    // Volunteers Page
+    volunteersTitle: "Ministry Volunteer Roster & Applications",
+    volunteersSubtitle: "Manage volunteer signups for Ushering, Choir, Sound & AV, Sunday School, and Community Outreach",
+    activeBadge: "Active",
+    volunteerNameHeader: "Volunteer Name",
+    ministryAreaHeader: "Ministry Area",
+    appliedDateHeader: "Applied Date",
+    approveVolunteerBtn: "Approve Volunteer",
+    approvedStatus: "Approved",
+    pendingStatusVal: "Pending",
+
+    // Reports Pages
+    attendanceReportTitle: "Worship Attendance Analytics & Service Reports",
+    attendanceReportSubtitle: "Weekly congregation headcount, first-time visitor stats, service breakdown, and growth trends",
+    attendanceBadge: "Attendance Analytics",
+
+    memberReportTitle: "Congregation Demographic & Membership Reports",
+    memberReportSubtitle: "Age group distributions, baptized member logs, family headcount, and area geographical maps",
+    demographicsBadge: "Demographics & Logs",
+
+    financeReportTitle: "Ministry Financial Audit & Giving Reports",
+    financeReportSubtitle: "Monthly tithes vs expenses, project fund distribution, UPI ledger exports, and tax summaries",
+    auditLedgerBadge: "Audit Ledger",
+
+    growthReportTitle: "Church Growth & Expansion Analytics",
+    growthReportSubtitle: "Year-over-year congregation growth metrics, new campus reach, and discipleship retention rates",
+    growthMetricsBadge: "Growth Metrics",
+
+    // NGO Pages
+    ngoProjectsTitle: "NGO Community Welfare & Outreach Projects",
+    ngoProjectsSubtitle: "Track food distribution drives, medical camps, orphan support, and rural education programs",
+    outreachBadge: "Outreach Initiatives",
+
+    ngoMediaTitle: "NGO Field Photos & Impact Video Media",
+    ngoMediaSubtitle: "High-resolution photos, stories of impact, and project highlight videos from service areas",
+    fieldMediaBadge: "Field Media Archives",
+
+    ngoVolunteersTitle: "NGO Field Volunteers & Outreach Team",
+    ngoVolunteersSubtitle: "Roster of dedicated volunteers serving in social relief, food distribution, and medical camps",
+    fieldVolunteersBadge: "Field Relief Team",
+
+    // Media Pages
+    galleryTitle: "Church Photo Gallery & Event Memories",
+    gallerySubtitle: "High-resolution photo albums from Sunday services, conventions, youth camps, and baptism ceremonies",
+    photoArchivesBadge: "Photo Archives",
+
+    videoArchivesTitle: "Worship Service & Sermon Video Archives",
+    videoArchivesSubtitle: "Full service video recordings, sermon clips, praise & worship sessions, and live stream archives",
+    videoLibraryBadge: "Video Library",
+
+    documentsTitle: "Pastoral Document Library & Ministry Resources",
+    documentsSubtitle: "Church bylaws, membership certificates, sermon notes, discipleship guides, and financial forms",
+    resourceLibraryBadge: "Resource Library",
+
+    // Settings & Profile Pages
+    pastorProfileTitle: "Senior Pastor Profile & Ministry Credentials",
+    pastorProfileSubtitle: "Personal bio, ordination details, contact info, pastoral role permissions, and ministry biography",
+    pastoralCredentialsBadge: "Pastoral Credentials",
+
+    generalSettingsTitle: "Church & Portal General Settings",
+    generalSettingsSubtitle: "Update church name, primary address, contact emails, hotline numbers, and portal timezone",
+    systemConfigBadge: "System Configuration",
+
+    securitySettingsTitle: "Security & Access Control Settings",
+    securitySettingsSubtitle: "Manage password credentials, two-factor authentication (2FA), session tokens, and pastoral audit logs",
+    accessControlBadge: "Access Control",
+
+    notificationsSettingsTitle: "Pastoral Notification & Alert Preferences",
+    notificationsSettingsSubtitle: "Configure instant SMS, WhatsApp alerts, and email notifications for urgent prayer requests & offerings",
+    alertsConfigBadge: "Alerts Config",
+
+    preferencesSettingsTitle: "UI Preferences & Theme Customization",
+    preferencesSettingsSubtitle: "Customize visual color scheme, dark mode toggles, font density, and default portal landing view",
+    displayPreferencesBadge: "Display Preferences",
+
+    calendarTitle: "Master Ministry & Church Calendar",
+    calendarSubtitle: "Unified master schedule for worship services, prayer meetings, youth events, and community outreaches",
+    masterScheduleBadge: "Master Schedule",
+
+    announcementsTitle: "Pastoral Announcements & Bulletin Desk",
+    announcementsSubtitle: "Broadcast official announcements, Sunday bulletin updates, and urgent prayer notices to congregation",
+    pastoralBulletinsBadge: "Pastoral Bulletins",
   },
   te: {
     // Topbar & Navigation
@@ -490,6 +603,119 @@ export const pastorTranslations = {
     messagesBadge: "సందేశాల ఇన్బాక్స్",
     messagesPlaceholder: "పాస్టరల్ సందేశాలను శోధించండి...",
     noMessagesText: "పాస్టరల్ ఇన్బాక్స్ సందేశాలు మరియు కౌన్సెలింగ్ టిక్కెట్లు ఇక్కడ కనిపిస్తాయి.",
+
+    // Bible Study Groups Page
+    bibleStudyTitle: "బైబిల్ అధ్యయన & శిష్యత్వ గ్రూపులు",
+    bibleStudySubtitle: "బైబిల్ అధ్యయన పాఠ్యాంశాలు, నాయకుల నియామకాలు, గ్రూప్ షెడ్యూల్‌లు మరియు వారపు హాజరును నిర్వహించండి",
+    activeGroupsBadge: "క్రియాశీల గ్రూపులు",
+    newGroupBtn: "కొత్త గ్రూప్",
+    leaderLabel: "నాయకులు",
+    membersCountLabel: "సభ్యులు",
+    group1Name: "బుధవారం సాయంత్రం శిష్యత్వ అధ్యయనం",
+    group1Leader: "పాస్టర్ శామ్యూల్",
+    group1Day: "బుధవారాలు సాయంత్రం 07:00 గంటలకు",
+    group2Name: "విశ్వాస స్త్రీల బైబిల్ అధ్యయనం",
+    group2Leader: "సిస్టర్ మేరీ గ్రేస్",
+    group2Day: "శుక్రవారాలు సాయంత్రం 05:00 గంటలకు",
+    group3Name: "యూత్ వాక్యము & జీవ పునాదులు",
+    group3Leader: "బ్రదర్ తిమోతి",
+    group3Day: "శనివారాలు సాయంత్రం 04:00 గంటలకు",
+
+    // Small Groups Page
+    smallGroupsTitle: "సెల్ ఫెలోషిప్‌లు & చిన్న గ్రూపులు",
+    smallGroupsSubtitle: "ఇంటింటి ప్రార్థనా కూడికలు, సెల్ గ్రూపులు, ప్రాంతీయ పరిచర్యలు మరియు హాజరు వివరాలను పర్యవేక్షించండి",
+    communityGroupsBadge: "సంఘ గ్రూపులు",
+    addCellGroupBtn: "సెల్ గ్రూప్ జోడించు",
+    avgAttendeesLabel: "సగటు హాజరు {count} మంది",
+    smallGroup1Name: "జీడిమెట్ల సెల్ ఫెలోషిప్",
+    smallGroup1Leader: "బ్రదర్ లూకా",
+    smallGroup1Loc: "సెక్టర్ 3, జీడిమెట్ల",
+    smallGroup2Name: "కూకట్‌పల్లి కృపా ఫెలోషిప్",
+    smallGroup2Leader: "సిస్టర్ షారా",
+    smallGroup2Loc: "కేపీహెచ్‌బీ కాలనీ",
+
+    // Volunteers Page
+    volunteersTitle: "పరిచర్య వాలంటీర్ల జాబితా & దరఖాస్తులు",
+    volunteersSubtitle: "క్రమశిక్షణ, గాయకుల బృందం, సౌండ్ & AV, సండే స్కూల్ మరియు సమాజ సేవల వాలంటీర్లను నిర్వహించండి",
+    activeBadge: "క్రియాశీల సేవకులు",
+    volunteerNameHeader: "వాలంటీర్ పేరు",
+    ministryAreaHeader: "పరిచర్య విభాగం",
+    appliedDateHeader: "దరఖాస్తు తేదీ",
+    approveVolunteerBtn: "వాలంటీరును ఆమోదించు",
+    approvedStatus: "ఆమోదించబడింది",
+    pendingStatusVal: "పెండింగ్‌లో ఉంది",
+
+    // Reports Pages
+    attendanceReportTitle: "ఆరాధన హాజరు విశ్లేషణ & నివేదికలు",
+    attendanceReportSubtitle: "వారపు సంఘ హాజరు, నూతన దర్శకుల వివరాలు, సేవ సమయం మరియు వృద్ధి విశ్లేషణలు",
+    attendanceBadge: "హాజరు విశ్లేషణలు",
+
+    memberReportTitle: "సంఘ సభ్యుల జనాభా & సభ్యత్వ నివేదికలు",
+    memberReportSubtitle: "వయో పరిమితి విశ్లేషణలు, బాప్తిస్మము పొందిన సభ్యుల రికార్డులు, కుటుంబాల వివరాలు",
+    demographicsBadge: "జనాభా వివరాలు & రికార్డులు",
+
+    financeReportTitle: "పరిచర్య ఆర్థిక ఆడిట్ & చందాల నివేదికలు",
+    financeReportSubtitle: "నెలవారీ దశమాంశములు మరియు ఖర్చులు, ప్రాజెక్ట్ నిధుల వివరాలు మరియు పన్ను నివేదికలు",
+    auditLedgerBadge: "ఆర్థిక ఆడిట్ బహీ",
+
+    growthReportTitle: "సంఘ అభివృద్ధి & విస్తరణ విశ్లేషణలు",
+    growthReportSubtitle: "సంవత్సరాల వారీగా సంఘ అభివృద్ధి గణాంకాలు, కొత్త బ్రాంచ్ సేవలు మరియు శిష్యత్వ వివరాలు",
+    growthMetricsBadge: "వృద్ధి విశ్లేషణలు",
+
+    // NGO Pages
+    ngoProjectsTitle: "NGO సమాజ సంక్షేమ & పరిచర్య ప్రాజెక్ట్‌లు",
+    ngoProjectsSubtitle: "ఆహార పంపిణీ, వైద్య శిబిరాలు, అనాథల సహాయము మరియు గ్రామీణ విద్యా కార్యక్రమాలను పర్యవేక్షించండి",
+    outreachBadge: "సేవా కార్యక్రమాలు",
+
+    ngoMediaTitle: "NGO క్షేత్ర స్థాయి ఫోటోలు & ప్రభావవంతమైన వీడియోలు",
+    ngoMediaSubtitle: "సేవా ప్రాంతాల నుండి క్వాలిటీ ఫోటోలు, సాక్ష్యాలు మరియు ప్రాజెక్ట్ వీడియోలు",
+    fieldMediaBadge: "సేవా మీడియా రికార్డులు",
+
+    ngoVolunteersTitle: "NGO క్షేత్ర స్థాయి వాలంటీర్లు & సేవా బృందం",
+    ngoVolunteersSubtitle: "సామాజిక సహాయం, ఉచిత భోజన పంపిణీ మరియు వైద్య శిబిరాలలో సేవలు అందిస్తున్న వాలంటీర్లు",
+    fieldVolunteersBadge: "క్షేత్ర సేవా బృందం",
+
+    // Media Pages
+    galleryTitle: "సంఘం ఫోటో గ్యాలరీ & ఆరాధనా జ్ఞాపకాలు",
+    gallerySubtitle: "ఆదివారం ఆరాధనలు, కన్వెన్షన్‌లు, యూత్ క్యాంప్‌లు మరియు బాప్తిస్మముల ఫోటో ఆల్బమ్‌లు",
+    photoArchivesBadge: "ఫోటో ఆల్బమ్‌లు",
+
+    videoArchivesTitle: "ఆరాధన సేవలు & ప్రసంగాల వీడియో ఆర్కైవ్‌లు",
+    videoArchivesSubtitle: "ఆరాధన సేవ రికార్డింగ్‌లు, వాక్య సందేశాల క్లిప్‌లు మరియు స్తుతి ఆరాధన వీడియోలు",
+    videoLibraryBadge: "వీడియో లైబ్రరీ",
+
+    documentsTitle: "పాస్టరల్ డాక్యుమెంట్ లైబ్రరీ & పరిచర్య వనరులు",
+    documentsSubtitle: "సంఘ నియమావళి, సభ్యత్వ సర్టిఫికెట్లు, వాక్య నోట్స్, శిష్యత్వ గైడ్‌లు మరియు ఫారమ్‌లు",
+    resourceLibraryBadge: "వనరుల లైబ్రరీ",
+
+    // Settings & Profile Pages
+    pastorProfileTitle: "సీనియర్ పాస్టర్ ప్రొఫైల్ & పరిచర్య ఆధారాలు",
+    pastorProfileSubtitle: "వ్యక్తిగత వివరాలు, దైవసేవార్హత పత్రాలు, సంప్రదింపు సమాచారం మరియు ప్రొఫైల్",
+    pastoralCredentialsBadge: "పాస్టర్ వివరాలు",
+
+    generalSettingsTitle: "సంఘము & పోర్టల్ సాధారణ సెట్టింగ్‌లు",
+    generalSettingsSubtitle: "సంఘం పేరు, చిరునామా, సంప్రదింపు ఈమెయిల్‌లు, హెల్ప్‌లైన్ నంబర్లు మరియు టైమ్‌జోన్ అప్‌డేట్ చేయండి",
+    systemConfigBadge: "సిస్టమ్ కాన్ఫిగరేషన్",
+
+    securitySettingsTitle: "భద్రత & ప్రవేశ నియంత్రణ సెట్టింగ్‌లు",
+    securitySettingsSubtitle: "పాస్‌వర్డ్‌లు, టూ-ఫ్యాక్టర్ ప్రామాణీకరణ (2FA), లాగిన్ సెషన్‌లు మరియు సెక్యూరిటీ లాగ్‌లు",
+    accessControlBadge: "యాక్సెస్ కంట్రోల్",
+
+    notificationsSettingsTitle: "పాస్టర్ నోటిఫికేషన్లు & హెచ్చరికల ప్రాధాన్యతలు",
+    notificationsSettingsSubtitle: "అత్యవసర ప్రార్థనలు మరియు విరాళాల కోసం తక్షణ ఎస్‌ఎమ్‌ఎస్, వాట్సాప్ మరియు ఈమెయిల్ హెచ్చరికలు కాన్ఫిగర్ చేయండి",
+    alertsConfigBadge: "హెచ్చరికల కాన్ఫిగరేషన్",
+
+    preferencesSettingsTitle: "UI ప్రాధాన్యతలు & థీమ్ సెట్టింగ్‌లు",
+    preferencesSettingsSubtitle: "రంగుల థీమ్, డార్క్ మోడ్, ఫాంట్ సైజు మరియు పోర్టల్ హోమ్ పేజీ దృశ్యాన్ని ఎంచుకోండి",
+    displayPreferencesBadge: "ప్రదర్శన ప్రాధాన్యతలు",
+
+    calendarTitle: "మాస్టర్ పరిచర్య & సంఘ క్యాలెండర్",
+    calendarSubtitle: "ఆరాధన సేవలు, ప్రార్థన కూడికలు, యూత్ కార్యక్రమాలు మరియు సమాజ సేవల సమీకృత క్యాలెండర్",
+    masterScheduleBadge: "మాస్టర్ షెడ్యూల్",
+
+    announcementsTitle: "పాస్టరల్ ప్రకటనలు & బులెటిన్ డెస్క్",
+    announcementsSubtitle: "సంఘానికి అధికారిక ప్రకటనలు, ఆదివారం బులెటిన్ విశేషాలు మరియు అత్యవసర ప్రార్థన సమాచారాన్ని పంపండి",
+    pastoralBulletinsBadge: "పాస్టరల్ ప్రకటనలు",
   },
   hi: {
     // Topbar & Navigation
@@ -735,7 +961,120 @@ export const pastorTranslations = {
     messagesBadge: "पूछताछ इनबॉक्स",
     messagesPlaceholder: "पास्टर संदेश खोजें...",
     noMessagesText: "पास्टर इनबॉक्स संदेश और परामर्श टिकट यहां दिखाई देंगे।",
-  }
+
+    // Bible Study Groups Page
+    bibleStudyTitle: "बाइबिल अध्ययन और चेलापन समूह",
+    bibleStudySubtitle: "बाइबिल अध्ययन पाठ्यक्रम, नेता असाइनमेंट, समूह कार्यक्रम और साप्ताहिक उपस्थिति लॉग प्रबंधित करें",
+    activeGroupsBadge: "सक्रिय समूह",
+    newGroupBtn: "नया समूह",
+    leaderLabel: "नेता",
+    membersCountLabel: "सदस्य",
+    group1Name: "बुधवार शाम चेलापन अध्ययन",
+    group1Leader: "पास्टर सैम्युएल",
+    group1Day: "बुधवार शाम 07:00 बजे",
+    group2Name: "विश्वास की महिला बाइबिल अध्ययन",
+    group2Leader: "सिस्टर मैरी ग्रेस",
+    group2Day: "शुक्रवार शाम 05:00 बजे",
+    group3Name: "युवा वचन एवं जीवन नींव",
+    group3Leader: "ब्रदर टिमोथी",
+    group3Day: "शनिवार शाम 04:00 बजे",
+
+    // Small Groups Page
+    smallGroupsTitle: "स्मॉल ग्रुप्स और सेल संगति",
+    smallGroupsSubtitle: "पड़ोस के सेल समूहों, घरेलू संगतियों, क्षेत्र कवरेज और उपस्थिति प्रदर्शन को ट्रैक करें",
+    communityGroupsBadge: "समुदाय समूह",
+    addCellGroupBtn: "सेल ग्रुप जोड़ें",
+    avgAttendeesLabel: "औसत उपस्थिति {count} सदस्य",
+    smallGroup1Name: "जीडीमेतला सेल संगति",
+    smallGroup1Leader: "ब्रदर लूका",
+    smallGroup1Loc: "सेक्टर 3, जीडीमेतला",
+    smallGroup2Name: "कूकटपल्ली अनुग्रह संगति",
+    smallGroup2Leader: "सिस्टर सारा",
+    smallGroup2Loc: "केपीएचबी कॉलोनी",
+
+    // Volunteers Page
+    volunteersTitle: "सेवाकाई स्वयंसेवक सूची और आवेदन",
+    volunteersSubtitle: "व्यवस्थापन, गायक दल, साउंड और एवी, संडे स्कूल और सामुदायिक आउटरीच स्वयंसेवकों को प्रबंधित करें",
+    activeBadge: "सक्रिय स्वयंसेवक",
+    volunteerNameHeader: "स्वयंसेवक नाम",
+    ministryAreaHeader: "मंत्रालय क्षेत्र",
+    appliedDateHeader: "आवेदन तिथि",
+    approveVolunteerBtn: "स्वयंसेवक स्वीकार करें",
+    approvedStatus: "स्वीकृत",
+    pendingStatusVal: "लंबित",
+
+    // Reports Pages
+    attendanceReportTitle: "आराधना उपस्थिति विश्लेषण और सेवा रिपोर्ट",
+    attendanceReportSubtitle: "साप्ताहिक कलीसिया उपस्थिति, पहली बार आए नवागंतुक आंकड़े और विकास के रुझान",
+    attendanceBadge: "उपस्थिति विश्लेषण",
+
+    memberReportTitle: "कलीसिया जनसांख्यिकी और सदस्यता रिपोर्ट",
+    memberReportSubtitle: "आयु वर्ग वितरण, बपतिस्मा प्राप्त सदस्य लॉग, और पारिवारिक जानकारी",
+    demographicsBadge: "जनसांख्यिकी और लॉग",
+
+    financeReportTitle: "सेवाकाई वित्तीय लेखा परीक्षा और दान रिपोर्ट",
+    financeReportSubtitle: "मासिक दान बनाम खर्च, परियोजना कोष वितरण, और कर सारांश",
+    auditLedgerBadge: "लेखा परीक्षा बहीखाता",
+
+    growthReportTitle: "कलीसिया विकास और विस्तार विश्लेषण",
+    growthReportSubtitle: "वर्ष-दर-वर्ष कलीसिया वृद्धि मेट्रिक्स, नए केंद्र और चेलापन दर",
+    growthMetricsBadge: "विकास मेट्रिक्स",
+
+    // NGO Pages
+    ngoProjectsTitle: "एनजीओ सामुदायिक कल्याण और आउटरीच परियोजनाएं",
+    ngoProjectsSubtitle: "भोजन वितरण अभियान, चिकित्सा शिविर, अनाथ सहायता और ग्रामीण शिक्षा कार्यक्रम",
+    outreachBadge: "आउटरीच पहल",
+
+    ngoMediaTitle: "एनजीओ फ़ील्ड फ़ोटो और प्रभाव वीडियो मीडिया",
+    ngoMediaSubtitle: "उच्च गुणवत्ता वाले फ़ोटो, प्रभाव की कहानियां और परियोजना वीडियो",
+    fieldMediaBadge: "फ़ील्ड मीडिया संग्रह",
+
+    ngoVolunteersTitle: "एनजीओ फ़ील्ड स्वयंसेवक और आउटरीच टीम",
+    ngoVolunteersSubtitle: "सामाजिक राहत, भोजन वितरण और चिकित्सा शिविरों में सेवारत स्वयंसेवक",
+    fieldVolunteersBadge: "फ़ील्ड राहत टीम",
+
+    // Media Pages
+    galleryTitle: "कलीसिया फोटो गैलरी और कार्यक्रम की यादें",
+    gallerySubtitle: "रविवार सेवाओं, सम्मेलनों, युवा शिविरों और बपतिस्मा समारोहों के फोटो एलबम",
+    photoArchivesBadge: "फोटो संग्रह",
+
+    videoArchivesTitle: "आराधना सेवा और उपदेश वीडियो संग्रह",
+    videoArchivesSubtitle: "पूर्ण सेवा वीडियो रिकॉर्डिंग, उपदेश क्लिप, और लाइव स्ट्रीम संग्रह",
+    videoLibraryBadge: "वीडियो पुस्तकालय",
+
+    documentsTitle: "पादरी दस्तावेज़ पुस्तकालय और सेवाकाई संसाधन",
+    documentsSubtitle: "कलीसिया उपनियम, सदस्यता प्रमाण पत्र, उपदेश नोट्स, और वित्तीय फॉर्म",
+    resourceLibraryBadge: "संसाधन पुस्तकालय",
+
+    // Settings & Profile Pages
+    pastorProfileTitle: "वरिष्ठ पास्टर प्रोफ़ाइल और सेवाकाई क्रेडेंशियल",
+    pastorProfileSubtitle: "व्यक्तिगत बायो, अभिषेक विवरण, संपर्क जानकारी, और पादरी बायो",
+    pastoralCredentialsBadge: "पादरी क्रेडेंशियल",
+
+    generalSettingsTitle: "कलीसिया और पोर्टल सामान्य सेटिंग्स",
+    generalSettingsSubtitle: "कलीसिया का नाम, प्राथमिक पता, संपर्क ईमेल, हेल्पलाइन नंबर और समय क्षेत्र अपडेट करें",
+    systemConfigBadge: "सिस्टम कॉन्फ़िगरेशन",
+
+    securitySettingsTitle: "सुरक्षा और पहुंच नियंत्रण सेटिंग्स",
+    securitySettingsSubtitle: "पासवर्ड क्रेडेंशियल, टू-फैक्टर प्रमाणीकरण (2FA), और सुरक्षा ऑडिट लॉग",
+    accessControlBadge: "पहुंच नियंत्रण",
+
+    notificationsSettingsTitle: "पादरी अधिसूचना और अलर्ट प्राथमिकताएं",
+    notificationsSettingsSubtitle: "तत्काल एसएमएस, व्हाट्सएप अलर्ट और ईमेल सूचनाएं कॉन्फ़िगर करें",
+    alertsConfigBadge: "अलर्ट कॉन्फ़िग",
+
+    preferencesSettingsTitle: "यूआई प्राथमिकताएं और थीम कस्टमाइज़ेशन",
+    preferencesSettingsSubtitle: "दृश्य रंग योजना, डार्क मोड टॉगल, फ़ॉन्ट आकार और डिफ़ॉल्ट दृश्य",
+    displayPreferencesBadge: "प्रदर्शन प्राथमिकताएं",
+
+    calendarTitle: "मास्टर सेवाकाई और कलीसिया कैलेंडर",
+    calendarSubtitle: "आराधना सेवाओं, प्रार्थना सभाओं, युवा कार्यक्रमों और आउटरीच का एकीकृत कैलेंडर",
+    masterScheduleBadge: "मास्टर शेड्यूल",
+
+    announcementsTitle: "पादरी घोषणाएं और बुलेटिन डेस्क",
+    announcementsSubtitle: "कलीसिया को आधिकारिक घोषणाएं, रविवार बुलेटिन और प्रार्थना नोटिस प्रसारित करें",
+    pastoralBulletinsBadge: "पादरी बुलेटिन",
+  },
 };
 
 export function getPastorTranslation(lang: string = "en") {
