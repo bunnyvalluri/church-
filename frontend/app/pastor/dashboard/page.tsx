@@ -4,26 +4,30 @@ import React, { useState } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import { Users, Play, Heart, Calendar, IndianRupee, TrendingUp, Sparkles, Plus } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 export default function PastorDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
 
   const stats = [
-    { title: "Total Sermons", value: "48", change: "4 Published this month", href: "/pastor/main/sermons", icon: Play, color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-500/20" },
-    { title: "Member Requests", value: "12", change: "3 New this week", href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-500/20" },
-    { title: "Prayer Requests", value: "27", change: "8 Urgent prayers", href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-500/20" },
-    { title: "Upcoming Events", value: "6", change: "Next 30 Days", href: "/pastor/main/events", icon: Calendar, color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/20" }
+    { title: t.navSermons, value: "48", change: "4 Published this month", href: "/pastor/main/sermons", icon: Play, color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-500/20" },
+    { title: t.navMemberRequests, value: "12", change: "3 New this week", href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-500/20" },
+    { title: t.navPrayerRequests, value: "27", change: "8 Urgent prayers", href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-500/20" },
+    { title: t.navEvents, value: "6", change: "Next 30 Days", href: "/pastor/main/events", icon: Calendar, color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/20" }
   ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <PastorPageHeader
-        title="Pastor Workspace Overview"
-        subtitle="Welcome back, Bishop Kurra Kristhu Raju! Here is what's happening in your ministry today."
-        badge="Live Metrics"
+        title={t.overviewWorkspace}
+        subtitle={t.dashboardSubtitle}
+        badge={t.pastorPortal}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        primaryActionLabel="New Sermon"
+        primaryActionLabel={t.createSermon}
         onPrimaryAction={() => alert("Upload sermon modal opened")}
         onRefresh={() => alert("Dashboard metrics refreshed")}
       />
@@ -52,8 +56,8 @@ export default function PastorDashboardPage() {
         <div className="lg:col-span-2 bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-6 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.04] pb-3">
             <div>
-              <h3 className="text-sm font-black text-slate-900 dark:text-white">Recent Sermons & Broadcasts</h3>
-              <p className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">Latest Sunday Worship & Discipleship Series</p>
+              <h3 className="text-sm font-black text-slate-900 dark:text-white">{t.navSermons}</h3>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t.recentActivity}</p>
             </div>
             <Link href="/pastor/main/sermons" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">View All</Link>
           </div>
@@ -77,20 +81,20 @@ export default function PastorDashboardPage() {
         {/* Quick Pastoral Tools Card */}
         <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-6 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm space-y-4">
           <div className="border-b border-slate-100 dark:border-white/[0.04] pb-3">
-            <h3 className="text-sm font-black text-slate-900 dark:text-white">Pastoral Quick Actions</h3>
-            <p className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">Fast shortcuts for daily tasks</p>
+            <h3 className="text-sm font-black text-slate-900 dark:text-white">{t.quickActionsTitle}</h3>
+            <p className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t.dashboardSubtitle}</p>
           </div>
           <div className="space-y-2">
             <Link href="/pastor/main/member-requests" className="w-full p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-between hover:bg-indigo-100/50 transition-colors">
-              <span>Review Member Applications</span>
+              <span>{t.navMemberRequests}</span>
               <Users className="w-4 h-4" />
             </Link>
             <Link href="/pastor/main/prayer-requests" className="w-full p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center justify-between hover:bg-rose-100/50 transition-colors">
-              <span>Pray for Urgent Requests</span>
+              <span>{t.viewPrayers}</span>
               <Heart className="w-4 h-4" />
             </Link>
             <Link href="/pastor/reports/attendance" className="w-full p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-bold flex items-center justify-between hover:bg-purple-100/50 transition-colors">
-              <span>Check Sunday Attendance</span>
+              <span>{t.navAttendanceReports}</span>
               <TrendingUp className="w-4 h-4" />
             </Link>
           </div>

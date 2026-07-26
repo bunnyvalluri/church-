@@ -25,6 +25,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import PastorBreadcrumbs from "./PastorBreadcrumbs";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 interface PastorHeaderProps {
   onToggleMobileSidebar: () => void;
@@ -32,6 +34,8 @@ interface PastorHeaderProps {
 
 export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProps) {
   const { user, logout } = useAuth();
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,8 +72,8 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
       title: "New Member Registration",
       content: "John Doe submitted membership application.",
       type: "NEW_MEMBER",
-      isRead: true,
-      time: "3h ago"
+      isRead: false,
+      time: "2h ago"
     }
   ]);
 
@@ -132,7 +136,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
           <input
             type="text"
-            placeholder="Search sermons, requests..."
+            placeholder={t.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6366F1]/20 focus:border-[#6366F1] transition-all"

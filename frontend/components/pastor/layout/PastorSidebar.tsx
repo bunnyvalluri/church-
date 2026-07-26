@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 import { 
   Layers, 
   Play, 
@@ -46,6 +48,8 @@ export default function PastorSidebar({
 }: PastorSidebarProps) {
   const pathname = usePathname() || "/pastor/dashboard";
   const { user, logout } = useAuth();
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
 
   // Collapsible section state
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -63,59 +67,59 @@ export default function PastorSidebar({
 
   const navGroups = [
     {
-      group: "MAIN",
+      group: t.groupMain,
       items: [
-        { name: "Dashboard", href: "/pastor/dashboard", icon: Layers },
-        { name: "Sermons", href: "/pastor/main/sermons", icon: Play },
-        { name: "Donations", href: "/pastor/main/donations", icon: IndianRupee },
-        { name: "Member Requests", href: "/pastor/main/member-requests", icon: Users },
-        { name: "Prayer Requests", href: "/pastor/main/prayer-requests", icon: Heart },
-        { name: "Events", href: "/pastor/main/events", icon: Calendar },
-        { name: "Messages", href: "/pastor/main/messages", icon: MessageSquare }
+        { name: t.navDashboard, href: "/pastor/dashboard", icon: Layers },
+        { name: t.navSermons, href: "/pastor/main/sermons", icon: Play },
+        { name: t.navDonations, href: "/pastor/main/donations", icon: IndianRupee },
+        { name: t.navMemberRequests, href: "/pastor/main/member-requests", icon: Users },
+        { name: t.navPrayerRequests, href: "/pastor/main/prayer-requests", icon: Heart },
+        { name: t.navEvents, href: "/pastor/main/events", icon: Calendar },
+        { name: t.navMessages, href: "/pastor/main/messages", icon: MessageSquare }
       ]
     },
     {
-      group: "MINISTRY",
+      group: t.groupMinistry,
       items: [
-        { name: "Bible Study Groups", href: "/pastor/ministry/bible-study-groups", icon: BookOpen },
-        { name: "Small Groups", href: "/pastor/ministry/small-groups", icon: Users },
-        { name: "Volunteers", href: "/pastor/ministry/volunteers", icon: UserCheck }
+        { name: t.navBibleStudy, href: "/pastor/ministry/bible-study-groups", icon: BookOpen },
+        { name: t.navSmallGroups, href: "/pastor/ministry/small-groups", icon: Users },
+        { name: t.navVolunteers, href: "/pastor/ministry/volunteers", icon: UserCheck }
       ]
     },
     {
-      group: "NGO",
+      group: t.groupNgo,
       items: [
-        { name: "NGO Projects", href: "/pastor/ngo/projects", icon: Heart },
-        { name: "NGO Media", href: "/pastor/ngo/media", icon: ImageIcon },
-        { name: "NGO Volunteers", href: "/pastor/ngo/volunteers", icon: Users }
+        { name: t.navNgoProjects, href: "/pastor/ngo/projects", icon: Heart },
+        { name: t.navNgoMedia, href: "/pastor/ngo/media", icon: ImageIcon },
+        { name: t.navNgoVolunteers, href: "/pastor/ngo/volunteers", icon: Users }
       ]
     },
     {
-      group: "REPORTS",
+      group: t.groupReports,
       items: [
-        { name: "Attendance Reports", href: "/pastor/reports/attendance", icon: Activity },
-        { name: "Member Reports", href: "/pastor/reports/members", icon: Users },
-        { name: "Financial Reports", href: "/pastor/reports/finance", icon: IndianRupee },
-        { name: "Growth Reports", href: "/pastor/reports/growth", icon: TrendingUp }
+        { name: t.navAttendanceReports, href: "/pastor/reports/attendance", icon: Activity },
+        { name: t.navMemberReports, href: "/pastor/reports/members", icon: Users },
+        { name: t.navFinanceReports, href: "/pastor/reports/finance", icon: IndianRupee },
+        { name: t.navGrowthReports, href: "/pastor/reports/growth", icon: TrendingUp }
       ]
     },
     {
-      group: "CALENDAR & MEDIA",
+      group: t.groupMedia,
       items: [
-        { name: "Calendar", href: "/pastor/calendar", icon: Calendar },
-        { name: "Photo Gallery", href: "/pastor/media/gallery", icon: ImageIcon },
-        { name: "Video Archives", href: "/pastor/media/videos", icon: Play },
-        { name: "Document Library", href: "/pastor/media/documents", icon: FileText }
+        { name: t.navCalendar, href: "/pastor/calendar", icon: Calendar },
+        { name: t.navPhotoGallery, href: "/pastor/media/gallery", icon: ImageIcon },
+        { name: t.navVideoArchives, href: "/pastor/media/videos", icon: Play },
+        { name: t.navDocumentLibrary, href: "/pastor/media/documents", icon: FileText }
       ]
     },
     {
-      group: "SETTINGS & PROFILE",
+      group: t.groupSettings,
       items: [
-        { name: "Profile", href: "/pastor/profile", icon: UserCheck },
-        { name: "General Settings", href: "/pastor/settings/general", icon: Settings },
-        { name: "Security", href: "/pastor/settings/security", icon: ShieldCheck },
-        { name: "Notifications", href: "/pastor/settings/notifications", icon: Bell },
-        { name: "Preferences", href: "/pastor/settings/preferences", icon: Settings }
+        { name: t.navProfile, href: "/pastor/profile", icon: UserCheck },
+        { name: t.navGeneralSettings, href: "/pastor/settings/general", icon: Settings },
+        { name: t.navSecurity, href: "/pastor/settings/security", icon: ShieldCheck },
+        { name: t.navNotifications, href: "/pastor/settings/notifications", icon: Bell },
+        { name: t.navPreferences, href: "/pastor/settings/preferences", icon: Settings }
       ]
     }
   ];
