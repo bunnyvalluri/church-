@@ -666,29 +666,25 @@ button:hover .lucide,
 /* 5 Column Metric Stats Grid */
 .pastor-stats-grid {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
 }
-@media (min-width: 481px) {
-  .pastor-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem;
-  }
-}
-@media (min-width: 769px) {
+@media (min-width: 640px) {
   .pastor-stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
 }
 @media (min-width: 1025px) {
   .pastor-stats-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 }
 @media (min-width: 1441px) {
   .pastor-stats-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.5rem;
   }
 }
 

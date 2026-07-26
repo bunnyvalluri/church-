@@ -1161,7 +1161,7 @@ export default function PastorDashboard() {
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-50/30 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300 pb-16 lg:pb-0">
+    <div className="min-h-screen flex bg-slate-50/30 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300 pb-28 lg:pb-0">
       {/* Ambient Premium Glow Background */}
       <div className="premium-glow-bg" />
       
@@ -1200,13 +1200,13 @@ export default function PastorDashboard() {
         {renderSidebarContent()}
       </aside>
 
-      <nav className="lg:hidden fixed bottom-5 left-4 right-4 z-30 mx-auto max-w-md bg-white/20 dark:bg-black/35 backdrop-blur-2xl border border-white/25 dark:border-white/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] flex items-center justify-around px-3 py-2.5 rounded-2xl transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-around px-2 py-2 transition-all duration-300">
         {[
-          { name: "Dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50/50 dark:bg-indigo-950/40 border-indigo-200/50 dark:border-indigo-800/30" },
-          { name: "Sermons", icon: Play, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50/50 dark:bg-pink-955/40 border-pink-200/50 dark:border-pink-800/30" },
-          { name: "Member Requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50/50 dark:bg-emerald-950/40 border-emerald-200/50 dark:border-emerald-800/30" },
-          { name: "Prayer Requests", icon: Heart, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50/50 dark:bg-rose-950/40 border-rose-200/50 dark:border-rose-800/30" },
-          { name: "Profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50/50 dark:bg-cyan-950/40 border-cyan-200/50 dark:border-cyan-800/30" }
+          { name: "Dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
+          { name: "Sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
+          { name: "Member Requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
+          { name: "Prayer Requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
+          { name: "Profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
         ].map(item => {
           const isActive = activeNav === item.name;
           return (
@@ -1214,14 +1214,14 @@ export default function PastorDashboard() {
               key={item.name}
               type="button"
               onClick={() => setActiveNav(item.name)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 border ${
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? `${item.color} ${item.bg} shadow-[0_2px_10px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.2)] scale-105`
-                  : "text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-900 dark:hover:text-white active:scale-95"
+                  ? `${item.color} font-black scale-105`
+                  : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
-              <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? `${item.color} scale-110` : ""}`} />
-              <span className={`text-[8.5px] font-black uppercase tracking-wider transition-all duration-350 ${isActive ? item.color : ""}`}>{item.name.split(" ")[0]}</span>
+              <item.icon className={`w-5 h-5 transition-all duration-200 ${isActive ? `${item.color} scale-110` : ""}`} />
+              <span className={`text-[8.5px] font-bold uppercase tracking-wider transition-all ${isActive ? item.color : ""}`}>{item.name.split(" ")[0]}</span>
             </button>
           );
         })}
@@ -1229,21 +1229,21 @@ export default function PastorDashboard() {
 
       <main className="flex-1 flex flex-col overflow-y-auto max-h-screen custom-scrollbar bg-slate-50/40 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 transition-colors duration-300 relative z-10">
         {/* Main Top Header */}
-        <header className="h-auto pt-5 pb-3 sm:h-20 sm:py-0 bg-white/40 dark:bg-[#070814]/40 backdrop-blur-xl border-b border-slate-200/40 dark:border-white/[0.04] px-3 sm:px-8 flex items-center justify-between sticky top-0 z-20 transition-all duration-300">
-          <div className="flex items-center min-w-0">
+        <header className="h-auto py-3 sm:h-20 sm:py-0 bg-white/90 dark:bg-[#070814]/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/[0.06] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-30 transition-all duration-300">
+          <div className="flex items-center min-w-0 pr-2">
             <button
               type="button"
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all mr-3 shrink-0"
+              className="lg:hidden w-9 h-9 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all mr-2.5 shrink-0 active:scale-95"
               title="Open Sidebar"
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="min-w-0">
-              <h2 className="text-sm sm:text-lg font-black text-gray-900 dark:text-white leading-tight truncate">
+              <h2 className="text-xs sm:text-lg font-black text-gray-900 dark:text-white leading-tight truncate">
                 Welcome back, <span className="sm:hidden">{user?.name?.split(" ")[0] || "Pastor"}</span><span className="hidden sm:inline">{user?.name || pastorProfile.name}</span>! 👋
               </h2>
-              <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 truncate">Here&apos;s what&apos;s happening in your ministry today.</p>
+              <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 truncate hidden xs:block">Here&apos;s what&apos;s happening in your ministry today.</p>
             </div>
           </div>
           
@@ -1461,82 +1461,82 @@ export default function PastorDashboard() {
                 {/* Total Sermons */}
                 <div 
                   onClick={() => setActiveNav("Sermons")} 
-                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(139,92,246,0.15)] dark:hover:shadow-[0_20px_40px_rgba(139,92,246,0.25)] hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-4 cursor-pointer group"
+                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(139,92,246,0.15)] dark:hover:shadow-[0_20px_40px_rgba(139,92,246,0.25)] hover:border-violet-500/30 dark:hover:border-violet-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-2.5 sm:gap-4 cursor-pointer group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-violet-500/[0.02] to-transparent pointer-events-none" />
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">Total Sermons</span>
-                    <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{sermons.length}</h3>
-                    <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 group-hover:underline block pt-1.5">View all sermons →</span>
+                  <div className="space-y-1 sm:space-y-1.5 relative z-10 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">Total Sermons</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{sermons.length}</h3>
+                    <span className="text-[8.5px] sm:text-[9px] font-black text-violet-600 dark:text-violet-400 group-hover:underline block pt-1 sm:pt-1.5 truncate">View all sermons →</span>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/10 to-indigo-500/10 text-violet-650 dark:text-violet-400 border border-violet-500/20 shadow-[0_0_15px_rgba(139,92,246,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
-                    <Play className="w-5 h-5 fill-current" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-violet-500/10 to-indigo-500/10 text-violet-650 dark:text-violet-400 border border-violet-500/20 shadow-[0_0_15px_rgba(139,92,246,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
+                    <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                   </div>
                 </div>
 
                 {/* Member Requests */}
                 <div 
                   onClick={() => setActiveNav("Member Requests")} 
-                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] dark:hover:shadow-[0_20px_40px_rgba(16,185,129,0.25)] hover:border-emerald-500/30 dark:hover:border-emerald-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-4 cursor-pointer group"
+                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] dark:hover:shadow-[0_20px_40px_rgba(16,185,129,0.25)] hover:border-emerald-500/30 dark:hover:border-emerald-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-2.5 sm:gap-4 cursor-pointer group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.02] to-transparent pointer-events-none" />
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">Member Requests</span>
-                    <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+                  <div className="space-y-1 sm:space-y-1.5 relative z-10 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">Member Requests</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
                       {memberRequests.filter(r => r.status === "New" || r.status === "Pending").length}
                     </h3>
-                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 block pt-1.5">New this week ▲</span>
+                    <span className="text-[8.5px] sm:text-[9px] font-black text-emerald-600 dark:text-emerald-400 block pt-1 sm:pt-1.5 truncate">New this week ▲</span>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
-                    <Users className="w-5 h-5" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
+                    <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </div>
 
                 {/* Prayer Requests */}
                 <div 
                   onClick={() => setActiveNav("Prayer Requests")} 
-                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(244,63,94,0.15)] dark:hover:shadow-[0_20px_40px_rgba(244,63,94,0.25)] hover:border-rose-500/30 dark:hover:border-rose-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-4 cursor-pointer group"
+                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(244,63,94,0.15)] dark:hover:shadow-[0_20px_40px_rgba(244,63,94,0.25)] hover:border-rose-500/30 dark:hover:border-rose-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-2.5 sm:gap-4 cursor-pointer group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-rose-500/[0.02] to-transparent pointer-events-none" />
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">Prayer Requests</span>
-                    <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{prayerRequests.length}</h3>
-                    <span className="text-[9px] font-black text-rose-600 dark:text-rose-400 block pt-1.5">New this week ▲</span>
+                  <div className="space-y-1 sm:space-y-1.5 relative z-10 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">Prayer Requests</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{prayerRequests.length}</h3>
+                    <span className="text-[8.5px] sm:text-[9px] font-black text-rose-600 dark:text-rose-400 block pt-1 sm:pt-1.5 truncate">New this week ▲</span>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500/10 to-pink-500/10 text-rose-600 dark:text-rose-455 border border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
-                    <Heart className="w-5 h-5" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-rose-500/10 to-pink-500/10 text-rose-600 dark:text-rose-455 border border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
+                    <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </div>
 
                 {/* Upcoming Events */}
                 <div 
                   onClick={() => setActiveNav("Events")} 
-                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)] hover:border-blue-500/30 dark:hover:border-blue-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-4 cursor-pointer group"
+                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_20px_40px_rgba(59,130,246,0.25)] hover:border-blue-500/30 dark:hover:border-blue-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-2.5 sm:gap-4 cursor-pointer group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent pointer-events-none" />
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">Upcoming Events</span>
-                    <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{events.length}</h3>
-                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 block pt-1.5">Next 30 days</span>
+                  <div className="space-y-1 sm:space-y-1.5 relative z-10 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">Upcoming Events</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{events.length}</h3>
+                    <span className="text-[8.5px] sm:text-[9px] font-black text-blue-600 dark:text-blue-400 block pt-1 sm:pt-1.5 truncate">Next 30 days</span>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
-                    <Calendar className="w-5 h-5" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
+                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </div>
 
                 {/* Total Members */}
                 <div 
                   onClick={() => setActiveNav("Volunteers")} 
-                  className="relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.15)] dark:hover:shadow-[0_20px_40px_rgba(245,158,11,0.25)] hover:border-amber-500/30 dark:hover:border-amber-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-4 cursor-pointer group"
+                  className="col-span-2 sm:col-span-1 relative overflow-hidden bg-white/60 dark:bg-[#0f1021]/45 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/50 dark:border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.15)] dark:hover:shadow-[0_20px_40px_rgba(245,158,11,0.25)] hover:border-amber-500/30 dark:hover:border-amber-500/30 hover:-translate-y-1.5 transition-all duration-350 flex items-center justify-between gap-2.5 sm:gap-4 cursor-pointer group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.02] to-transparent pointer-events-none" />
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">Total Members</span>
-                    <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{usersCount}</h3>
-                    <span className="text-[9px] font-black text-amber-655 dark:text-amber-400 group-hover:underline block pt-1.5">View all members →</span>
+                  <div className="space-y-1 sm:space-y-1.5 relative z-10 min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">Total Members</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none">{usersCount}</h3>
+                    <span className="text-[8.5px] sm:text-[9px] font-black text-amber-655 dark:text-amber-400 group-hover:underline block pt-1 sm:pt-1.5 truncate">View all members →</span>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 text-amber-655 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
-                    <Users className="w-5 h-5" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 text-amber-655 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.12)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex items-center justify-center shrink-0 relative z-10">
+                    <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 </div>
               </section>

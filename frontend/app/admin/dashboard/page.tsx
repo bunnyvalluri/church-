@@ -14,7 +14,10 @@ export default function ExecutiveDashboardPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const token = await getIdToken();
+      const token = await Promise.race([
+        getIdToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 50))
+      ]);
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch("/api/admin/dashboard-data", { headers });
       const result = await res.json();

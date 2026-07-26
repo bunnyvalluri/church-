@@ -4,7 +4,8 @@ import {
   getNotifications, 
   createNotification, 
   markNotificationsAsRead, 
-  deleteNotification 
+  deleteNotification,
+  clearAllNotifications
 } from '@/lib/notification';
 
 export async function GET(req: Request) {
@@ -65,8 +66,9 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    if (!id) {
-      return NextResponse.json({ error: 'Notification ID is required' }, { status: 400 });
+    if (id === 'all' || !id) {
+      const success = await clearAllNotifications();
+      return NextResponse.json({ success });
     }
 
     const success = await deleteNotification(id);

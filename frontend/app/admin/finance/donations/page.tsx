@@ -16,7 +16,10 @@ export default function DonationsLedgerPage() {
     try {
       let headers: HeadersInit = {};
       try {
-        const token = await getIdToken();
+        const token = await Promise.race([
+          getIdToken(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 50))
+        ]);
         if (token) headers = { Authorization: `Bearer ${token}` };
       } catch (e) {}
 

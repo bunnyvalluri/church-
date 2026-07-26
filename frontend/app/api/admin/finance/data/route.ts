@@ -82,11 +82,10 @@ export async function GET(req: Request) {
       users,
     });
   } catch (err: any) {
-    console.error('[ADMIN/FINANCE/GET] Error:', err);
+    console.error('[ADMIN/FINANCE/DATA/GET] Error:', err);
     return NextResponse.json(
       { error: err?.message || 'Database error occurred' },
       { status: 500 }
     );
   }
 }
-
