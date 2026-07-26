@@ -28,6 +28,8 @@ import {
   ExternalLink
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 interface Project {
   id: string;
@@ -64,6 +66,9 @@ interface Volunteer {
 }
 
 export default function NgoManagement({ activeSubView }: { activeSubView?: "projects" | "media" | "volunteers" }) {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+
   const [subView, setSubView] = useState<"projects" | "media" | "volunteers">(activeSubView || "projects");
   
   useEffect(() => {
@@ -287,11 +292,11 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Outreach Campaigns</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t.outreachCampaigns}</span>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">{projects.length}</h3>
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-500/20">
-                {activeProjectsCount} Active
+                {activeProjectsCount} {t.activeLabel}
               </span>
             </div>
           </div>
@@ -302,11 +307,11 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
 
         <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Media & Video Logs</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t.mediaVideoLogs}</span>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">{media.length}</h3>
               <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/20">
-                Gallery Archives
+                {t.galleryArchives}
               </span>
             </div>
           </div>
@@ -317,16 +322,16 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
 
         <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Volunteers Roster</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t.volunteersRoster}</span>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-black text-slate-900 dark:text-white">{volunteers.length}</h3>
               {pendingVolunteersCount > 0 ? (
                 <span className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-500/20 animate-pulse">
-                  {pendingVolunteersCount} Pending
+                  {pendingVolunteersCount} {t.pendingBadge}
                 </span>
               ) : (
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-slate-200 dark:border-white/10">
-                  Up to date
+                  {t.upToDate}
                 </span>
               )}
             </div>
@@ -343,9 +348,9 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
         {/* Tab Pills */}
         <div className="p-1.5 bg-slate-100 dark:bg-[#181932] border border-slate-200 dark:border-white/10 rounded-xl flex gap-1.5 items-center w-max max-w-full overflow-x-auto select-none scrollbar-none">
           {[
-            { id: "projects", label: "Projects Roster", icon: Heart },
-            { id: "media", label: "Media Library Logs", icon: ImageIcon },
-            { id: "volunteers", label: `Volunteer Requests ${pendingVolunteersCount > 0 ? `(${pendingVolunteersCount})` : ''}`, icon: Users },
+            { id: "projects", label: t.projectsRoster, icon: Heart },
+            { id: "media", label: t.mediaLibraryLogs, icon: ImageIcon },
+            { id: "volunteers", label: `${t.volunteerRequests} ${pendingVolunteersCount > 0 ? `(${pendingVolunteersCount})` : ''}`, icon: Users },
           ].map((tab) => {
             const isActive = subView === tab.id;
             const Icon = tab.icon;
@@ -372,7 +377,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder={`Filter ${subView}...`}
+              placeholder={subView === "projects" ? t.filterProjectsPlaceholder : subView === "media" ? t.filterMediaPlaceholder : t.filterVolunteersPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-[#181932] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
@@ -384,7 +389,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               onClick={handleOpenAddProject}
               className="py-2 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95 shrink-0"
             >
-              <Plus className="w-4 h-4" /> Add Project
+              <Plus className="w-4 h-4" /> {t.addProjectBtn}
             </button>
           )}
 
@@ -393,7 +398,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               onClick={handleOpenAddMedia}
               className="py-2 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95 shrink-0"
             >
-              <Plus className="w-4 h-4" /> Add Media
+              <Plus className="w-4 h-4" /> {t.addMediaBtn}
             </button>
           )}
         </div>
@@ -404,7 +409,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
       {loading ? (
         <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 rounded-2xl p-12 min-h-[300px] flex flex-col items-center justify-center space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading NGO records...</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t.loadingNgoRecords}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -418,14 +423,14 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                     <Heart className="w-7 h-7" />
                   </div>
                   <div className="space-y-1 max-w-sm mx-auto">
-                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">No NGO Projects Found</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Create your first community outreach project to track field initiatives, goals, and raised funding.</p>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">{t.noNgoProjectsFound}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t.noNgoProjectsDesc}</p>
                   </div>
                   <button
                     onClick={handleOpenAddProject}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition-all active:scale-95"
                   >
-                    <Plus className="w-4 h-4" /> Create First Project
+                    <Plus className="w-4 h-4" /> {t.createFirstProject}
                   </button>
                 </div>
               ) : (
@@ -448,7 +453,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center p-4 text-white/90 text-center space-y-1">
                                 <Heart className="w-8 h-8 text-white/80" />
-                                <span className="text-xs font-extrabold tracking-wide uppercase">Outreach Drive</span>
+                                <span className="text-xs font-extrabold tracking-wide uppercase">{t.outreachCampaigns}</span>
                               </div>
                             )}
                             
@@ -459,7 +464,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                                 ? "bg-blue-600/90 text-white border border-blue-400/30"
                                 : "bg-amber-500/90 text-white border border-amber-400/30"
                             }`}>
-                              {proj.status}
+                              {proj.status === "ACTIVE" ? t.activeStatus : proj.status === "COMPLETED" ? t.completedStatusText : t.plannedStatus}
                             </span>
                           </div>
 
@@ -484,8 +489,8 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                             {proj.targetAmount && proj.targetAmount > 0 && (
                               <div className="pt-2 space-y-1.5">
                                 <div className="flex items-center justify-between text-[11px] font-bold">
-                                  <span className="text-slate-600 dark:text-slate-300">Raised: ₹{(proj.raisedAmount || 0).toLocaleString('en-IN')}</span>
-                                  <span className="text-indigo-600 dark:text-indigo-400">Target: ₹{proj.targetAmount.toLocaleString('en-IN')} ({percentRaised}%)</span>
+                                  <span className="text-slate-600 dark:text-slate-300">{t.raisedLabel}: ₹{(proj.raisedAmount || 0).toLocaleString('en-IN')}</span>
+                                  <span className="text-indigo-600 dark:text-indigo-400">{t.targetLabel}: ₹{proj.targetAmount.toLocaleString('en-IN')} ({percentRaised}%)</span>
                                 </div>
                                 <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
                                   <div 
@@ -504,7 +509,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                             onClick={() => handleOpenEditProject(proj)}
                             className="flex-1 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-300 hover:border-indigo-200 dark:hover:border-indigo-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
                           >
-                            <Edit2 className="w-3.5 h-3.5" /> Edit
+                            <Edit2 className="w-3.5 h-3.5" /> {t.editBtn}
                           </button>
                           <button
                             disabled={actionLoading}
@@ -571,19 +576,19 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                 <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
-                      <th className="py-4 px-6">Media Title</th>
-                      <th className="py-4 px-6">Type</th>
-                      <th className="py-4 px-6">Category</th>
-                      <th className="py-4 px-6">Resource Link</th>
-                      <th className="py-4 px-6">Created At</th>
-                      <th className="py-4 px-6 text-right">Actions</th>
+                      <th className="py-4 px-6">{t.mediaTitleHeader}</th>
+                      <th className="py-4 px-6">{t.typeHeader}</th>
+                      <th className="py-4 px-6">{t.categoryHeader}</th>
+                      <th className="py-4 px-6">{t.resourceLinkHeader}</th>
+                      <th className="py-4 px-6">{t.createdAtHeader}</th>
+                      <th className="py-4 px-6 text-right">{t.actionsHeader}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {media.filter(m => (m.title || "").toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                       <tr>
                         <td colSpan={6} className="py-12 text-center text-slate-400 dark:text-slate-500 font-medium">
-                          No media logs found. Click &quot;Add Media&quot; above to link photo feeds or video playlists.
+                          {t.noMediaLogsText}
                         </td>
                       </tr>
                     ) : (
@@ -703,20 +708,20 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                 <table className="w-full text-left border-collapse whitespace-nowrap min-w-[750px]">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
-                      <th className="py-4 px-6">Volunteer Name</th>
-                      <th className="py-4 px-6">Contact Info</th>
-                      <th className="py-4 px-6">Assigned Initiative</th>
-                      <th className="py-4 px-6">Skills / Notes</th>
-                      <th className="py-4 px-6">Status</th>
-                      <th className="py-4 px-6">Applied Date</th>
-                      <th className="py-4 px-6 text-right">Actions</th>
+                      <th className="py-4 px-6">{t.volunteerNameHeader}</th>
+                      <th className="py-4 px-6">{t.contactInfoHeader}</th>
+                      <th className="py-4 px-6">{t.assignedInitiativeHeader}</th>
+                      <th className="py-4 px-6">{t.skillsNotesHeader}</th>
+                      <th className="py-4 px-6">{t.statusHeader}</th>
+                      <th className="py-4 px-6">{t.appliedDateHeader}</th>
+                      <th className="py-4 px-6 text-right">{t.actionsHeader}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {volunteers.filter(v => v.name.toLowerCase().includes(search.toLowerCase()) || v.email.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                       <tr>
                         <td colSpan={7} className="py-12 text-center text-slate-400 dark:text-slate-500 font-medium">
-                          No volunteer applications registered yet.
+                          {t.noVolunteersText}
                         </td>
                       </tr>
                     ) : (
@@ -813,7 +818,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                 <Heart className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                {editingProject ? "Update NGO Project" : "Add NGO Project"}
+                {editingProject ? t.updateNgoProjectModal : t.addNgoProjectModal}
               </h3>
               <button 
                 onClick={() => setIsProjectModalOpen(false)} 
@@ -825,7 +830,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             
             <form onSubmit={handleSaveProject} className="p-6 space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Project Title</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.projectTitleLabel}</label>
                 <input 
                   type="text" required placeholder="e.g. Gandhi Hospital Food Drive" value={projectForm.title}
                   onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
@@ -834,7 +839,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Brief Description</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.briefDescLabel}</label>
                 <input 
                   type="text" required placeholder="e.g. Distributing grocery and medical kits." value={projectForm.description}
                   onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
@@ -843,7 +848,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Full Story & Impact Details</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.fullStoryLabel}</label>
                 <textarea 
                   rows={3} required placeholder="Detailed story of the outreach campaign..." value={projectForm.details}
                   onChange={(e) => setProjectForm({ ...projectForm, details: e.target.value })}
@@ -853,7 +858,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Target Budget (INR)</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.targetBudgetLabel}</label>
                   <input 
                     type="number" placeholder="e.g. 150000" value={projectForm.targetAmount}
                     onChange={(e) => setProjectForm({ ...projectForm, targetAmount: e.target.value })}
@@ -861,21 +866,21 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Project Status</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.projectStatusLabel}</label>
                   <select
                     value={projectForm.status}
                     onChange={(e) => setProjectForm({ ...projectForm, status: e.target.value })}
                     className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                    <option value="PLANNED">PLANNED</option>
+                    <option value="ACTIVE">{t.activeStatus}</option>
+                    <option value="COMPLETED">{t.completedStatusText}</option>
+                    <option value="PLANNED">{t.plannedStatus}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Cover Image URL</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.coverImageUrlLabel}</label>
                 <input 
                   type="text" placeholder="https://images.unsplash.com/... or Cloudinary URL" value={projectForm.imageUrl}
                   onChange={(e) => setProjectForm({ ...projectForm, imageUrl: e.target.value })}
@@ -888,13 +893,13 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                   type="button" onClick={() => setIsProjectModalOpen(false)}
                   className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
                 >
-                  Cancel
+                  {t.cancelBtn}
                 </button>
                 <button
                   type="submit" disabled={actionLoading}
                   className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
                 >
-                  {actionLoading ? "Saving..." : "Save Project"}
+                  {actionLoading ? t.savingBtn : t.saveProjectBtn}
                 </button>
               </div>
             </form>
@@ -909,7 +914,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                Link Media File Log
+                {t.linkMediaModal}
               </h3>
               <button 
                 onClick={() => setIsMediaModalOpen(false)} 
@@ -921,7 +926,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             
             <form onSubmit={handleSaveMedia} className="p-6 space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Media Title</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.mediaTitleHeader}</label>
                 <input 
                   type="text" placeholder="e.g. Distribution photo log #1" value={mediaForm.title}
                   onChange={(e) => setMediaForm({ ...mediaForm, title: e.target.value })}
@@ -931,7 +936,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Media Type</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.mediaTypeLabel}</label>
                   <select
                     value={mediaForm.type}
                     onChange={(e) => setMediaForm({ ...mediaForm, type: e.target.value })}
@@ -942,13 +947,13 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Category</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.categoryHeader}</label>
                   <select
                     value={mediaForm.category}
                     onChange={(e) => setMediaForm({ ...mediaForm, category: e.target.value })}
                     className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
-                    <option value="">General Gallery</option>
+                    <option value="">{t.generalGalleryOption}</option>
                     <option value="GANDHI-HOSPITAL">GANDHI HOSPITAL</option>
                     <option value="NIMS-HOSPITAL">NIMS HOSPITAL</option>
                     <option value="GOVT-HOSPITAL">GOVT HOSPITAL</option>
@@ -959,13 +964,13 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Associated NGO Project</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.associatedProjectLabel}</label>
                 <select
                   value={mediaForm.projectId}
                   onChange={(e) => setMediaForm({ ...mediaForm, projectId: e.target.value })}
                   className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 >
-                  <option value="">None / Independent Media</option>
+                  <option value="">{t.noneIndependentOption}</option>
                   {projects.map((proj) => (
                     <option key={proj.id} value={proj.id}>{proj.title}</option>
                   ))}
@@ -973,7 +978,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Resource Link / Embed URL</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">{t.resourceLinkEmbedLabel}</label>
                 <input 
                   type="text" required placeholder="Cloudinary URL or YouTube Embed Link" value={mediaForm.url}
                   onChange={(e) => setMediaForm({ ...mediaForm, url: e.target.value })}
@@ -986,13 +991,13 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                   type="button" onClick={() => setIsMediaModalOpen(false)}
                   className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
                 >
-                  Cancel
+                  {t.cancelBtn}
                 </button>
                 <button
                   type="submit" disabled={actionLoading}
                   className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
                 >
-                  {actionLoading ? "Saving..." : "Save Media Reference"}
+                  {actionLoading ? t.savingBtn : t.saveMediaBtn}
                 </button>
               </div>
             </form>

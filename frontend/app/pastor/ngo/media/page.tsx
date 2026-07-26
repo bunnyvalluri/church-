@@ -3,16 +3,22 @@
 import React from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import NgoManagement from "@/components/admin/NgoManagement";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 export default function PastorNgoMediaPage() {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <PastorPageHeader
-        title="NGO Field Media & Beneficiary Stories"
-        subtitle="Upload photo galleries, video documentaries, and testimony articles for community outreach projects"
-        badge="Field Media"
+        title={t.ngoMediaTitle}
+        subtitle={t.ngoMediaSubtitle}
+        badge={t.fieldMediaBadge}
       />
       <NgoManagement activeSubView="media" />
     </div>
   );
 }
+
