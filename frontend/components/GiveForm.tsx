@@ -82,12 +82,12 @@ const purposeColorMap: Record<string, string> = {
 };
 
 const purposeBgMap: Record<string, string> = {
-  TITHE: "bg-violet-50 dark:bg-violet-950/20 border-violet-200 dark:border-violet-800/40",
-  OFFERING: "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/40",
-  BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40",
-  MISSIONS: "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/40",
-  BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40",
-  SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/20 border-fuchsia-200 dark:border-fuchsia-800/40",
+  TITHE: "bg-violet-50/90 dark:bg-purple-950/60 border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10",
+  OFFERING: "bg-rose-50/90 dark:bg-rose-950/60 border-rose-600 dark:border-rose-400 shadow-md shadow-rose-500/10",
+  BUILDING_FUND: "bg-amber-50/90 dark:bg-amber-950/60 border-amber-600 dark:border-amber-400 shadow-md shadow-amber-500/10",
+  MISSIONS: "bg-blue-50/90 dark:bg-blue-950/60 border-blue-600 dark:border-blue-400 shadow-md shadow-blue-500/10",
+  BENEVOLENCE: "bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-600 dark:border-emerald-400 shadow-md shadow-emerald-500/10",
+  SPECIAL: "bg-fuchsia-50/90 dark:bg-fuchsia-950/60 border-fuchsia-600 dark:border-fuchsia-400 shadow-md shadow-fuchsia-500/10",
 };
 
 export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
@@ -695,7 +695,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       {/* ── HERO SECTION ──────────────────────────────────── */}
       <section className="relative py-16 sm:py-24 md:py-28 overflow-hidden">
         {/* Layered background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d1261] to-[#0f172a]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-800 via-indigo-800 to-violet-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
         
         {/* Glowing orbs */}
@@ -752,7 +752,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-sm min-[480px]:text-base sm:text-xl text-white/90 max-w-xl mx-auto leading-relaxed px-2"
+              className="text-sm min-[480px]:text-base sm:text-xl text-purple-100 dark:text-purple-200 font-medium max-w-xl mx-auto leading-relaxed px-2"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -900,7 +900,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     } ${
                                       amount === preset && !customAmount
                                         ? "border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-[1.02]"
-                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/20"
+                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 font-extrabold hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950/40"
                                     }`}
                                   >
                                     {amount === preset && !customAmount && (
@@ -924,7 +924,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     className={`w-full py-3.5 pl-8 pr-2.5 rounded-2xl border-2 font-black text-sm sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
                                       customAmount
                                         ? "border-purple-600 dark:border-purple-400 ring-2 ring-purple-600/20 bg-purple-50/80 dark:bg-purple-950/60"
-                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 focus:border-purple-400 dark:focus:border-purple-600"
+                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400"
                                     }`}
                                   />
                                 </div>
@@ -951,17 +951,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       className={`relative p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full group overflow-hidden ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
-                                          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/30 hover:border-gray-300 dark:hover:border-gray-600"
+                                          : "border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-800/80 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                                       }`}
                                     >
                                       <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
                                         {icon}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <span className={`block font-bold text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
+                                        <span className={`block font-extrabold text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-purple-900 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
-                                        <span className="block text-gray-400 dark:text-gray-500 text-[10px] sm:text-[11px] mt-0.5 leading-snug line-clamp-2 break-words">
+                                        <span className="block text-gray-600 dark:text-gray-300 text-[10px] sm:text-[11px] mt-0.5 leading-snug font-medium line-clamp-2 break-words">
                                           {getLanguagePurposeDesc(p)}
                                         </span>
                                       </div>
@@ -984,7 +984,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <select
                                   value={selectedBranch}
                                   onChange={(e) => setSelectedBranch(e.target.value)}
-                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-xs sm:text-sm"
+                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-xs sm:text-sm"
                                 >
                                   {branches.map((b) => (
                                     <option key={b.id} value={b.id}>⛪ {b.name}</option>
@@ -1006,7 +1006,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                               <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-3">
                                 <div className="min-[480px]:col-span-2">
-                                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
                                     {t.pages.give.fullNameLabel}
                                   </label>
                                   <div className="relative">
@@ -1015,14 +1015,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.fullNamePlaceholder}
                                       value={donorName}
                                       onChange={(e) => setDonorName(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
                                     {t.pages.give.emailLabel}
                                   </label>
                                   <div className="relative">
@@ -1031,14 +1031,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.emailPlaceholder}
                                       value={donorEmail}
                                       onChange={(e) => setDonorEmail(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
                                     {t.pages.give.phoneLabel}
                                   </label>
                                   <div className="relative">
@@ -1047,9 +1047,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.phonePlaceholder}
                                       value={donorPhone}
                                       onChange={(e) => setDonorPhone(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
-                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
                                   </div>
                                 </div>
                               </div>
