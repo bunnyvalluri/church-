@@ -1428,57 +1428,65 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               <div className="lg:col-span-5 space-y-4 sm:space-y-5">
 
                 {/* Giving Summary Card */}
-                <div className="relative bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-950 rounded-3xl shadow-xl overflow-hidden">
-                  {/* Background decoration */}
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full filter blur-3xl transform translate-x-16 -translate-y-16" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-400/10 rounded-full filter blur-2xl transform -translate-x-8 translate-y-8" />
+                <div className="relative bg-gradient-to-br from-[#0f1123] via-[#161836] to-[#0c0d1b] rounded-3xl shadow-2xl border border-indigo-500/20 overflow-hidden">
+                  {/* Subtle Background Glow */}
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
                   
-                  <div className="relative px-4 py-5 sm:px-5 sm:py-6 lg:p-8">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Receipt className="w-5 h-5 text-purple-200" />
-                      <h3 className="font-bold text-base uppercase tracking-widest text-white">
+                  <div className="relative px-5 py-6 sm:px-6 sm:py-7 lg:p-8 space-y-6">
+                    {/* Header */}
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-white/10">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300">
+                        <Receipt className="w-4 h-4" />
+                      </div>
+                      <h3 className="font-black text-xs uppercase tracking-[0.2em] text-indigo-200">
                         {t.pages.give.summaryTitle}
                       </h3>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white text-sm font-medium">{t.pages.give.summaryType}</span>
-                        <span className="font-bold text-xs bg-white/20 px-3 py-1.5 rounded-full uppercase tracking-wider text-white">
+                    {/* Details Rows */}
+                    <div className="space-y-3.5">
+                      <div className="flex items-center justify-between py-1 text-xs">
+                        <span className="text-gray-300 font-bold">{t.pages.give.summaryType}</span>
+                        <span className="font-black text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white text-sm font-medium">{t.pages.give.summaryMethod}</span>
-                        <span className="font-semibold flex items-center gap-1.5 text-white text-sm">
-                          <QrCode className="w-4 h-4 text-purple-200" />
+
+                      <div className="flex items-center justify-between py-1 text-xs">
+                        <span className="text-gray-300 font-bold">{t.pages.give.summaryMethod}</span>
+                        <span className="font-extrabold text-xs text-white flex items-center gap-1.5 bg-white/10 border border-white/10 px-2.5 py-1 rounded-xl shadow-sm">
+                          <QrCode className="w-3.5 h-3.5 text-indigo-300" />
                           {language === 'te' ? 'డైనమిక్ UPI QR' : language === 'hi' ? 'डायनेमिक यूपीआई' : 'Dynamic UPI QR'}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between py-3 border-b border-white/15">
-                        <span className="text-white text-sm font-medium">{t.pages.give.summaryTax}</span>
-                        <span className="font-bold text-emerald-300 flex items-center gap-1">
-                          <CheckCircle className="w-3.5 h-3.5" />
+
+                      <div className="flex items-center justify-between py-1 text-xs">
+                        <span className="text-gray-300 font-bold">{t.pages.give.summaryTax}</span>
+                        <span className="font-black text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                           {t.pages.give.summaryTaxValue}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between pt-3">
-                        <span className="text-xl font-semibold text-white">{t.pages.give.summaryTotal}</span>
-                        <div className="text-right">
-                          <AnimatePresence mode="wait">
-                            <motion.span
-                              key={displayAmount}
-                              initial={{ y: -8, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: 8, opacity: 0 }}
-                              transition={{ duration: 0.15 }}
-                              className="text-3xl font-extrabold flex items-center gap-1 text-white"
-                            >
-                              <IndianRupee className="w-6 h-6 stroke-[2.5]" />
-                              {displayAmount.toLocaleString("en-IN")}
-                            </motion.span>
-                          </AnimatePresence>
-                        </div>
+                    </div>
+
+                    {/* Total Amount Row */}
+                    <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-gray-300">{t.pages.give.summaryTotal}</span>
+                      <div className="text-right">
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={displayAmount}
+                            initial={{ y: -8, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 8, opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="text-2xl sm:text-3xl font-black flex items-center gap-1 text-white tracking-tight"
+                          >
+                            <IndianRupee className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5] text-indigo-300" />
+                            {displayAmount.toLocaleString("en-IN")}
+                          </motion.span>
+                        </AnimatePresence>
                       </div>
                     </div>
                   </div>
