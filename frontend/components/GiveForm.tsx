@@ -857,13 +857,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <IndianRupee className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.presetsTitle}
                               </label>
-                              <div className="grid grid-cols-2 min-[480px]:grid-cols-3 gap-2 sm:gap-2.5">
+                              <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
                                 {["500", "1000", "2500", "5000", "10000"].map((preset) => (
                                   <button
                                     key={preset}
                                     type="button"
                                     onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-3.5 px-1.5 sm:px-2 rounded-2xl border-2 text-center font-bold text-sm sm:text-base transition-all duration-200 overflow-hidden group ${
+                                    className={`relative py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl border-2 text-center font-extrabold text-xs sm:text-base transition-all duration-200 overflow-hidden group ${
                                       preset === "10000" ? "col-span-1" : ""
                                     } ${
                                       amount === preset && !customAmount
@@ -883,13 +883,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 ))}
                                 {/* Custom amount */}
                                 <div className="relative col-span-1">
-                                  <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
+                                  <span className={`absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 font-black text-xs sm:text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
                                   <input
                                     type="number"
                                     placeholder={t.pages.give.customPlaceholder}
                                     value={customAmount}
                                     onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-3.5 pl-8 pr-2.5 rounded-2xl border-2 font-black text-sm sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
+                                    className={`w-full py-2.5 sm:py-3.5 pl-6 sm:pl-8 pr-1.5 rounded-xl sm:rounded-2xl border-2 font-black text-xs sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
                                       customAmount
                                         ? "border-purple-600 dark:border-purple-400 ring-2 ring-purple-600/20 bg-purple-50/80 dark:bg-purple-950/60"
                                         : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400"
@@ -916,29 +916,29 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-2.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between w-full group overflow-hidden min-h-[76px] sm:min-h-[96px] ${
+                                      className={`relative p-3 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between w-full group overflow-hidden min-h-[84px] sm:min-h-[104px] ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
                                       }`}
                                     >
                                       {isSelected && (
-                                        <div className="absolute top-2 right-2 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                          <Check className="w-2.5 h-2.5 text-white" />
+                                        <div className="absolute top-2.5 right-2.5 w-4.5 h-4.5 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                                          <Check className="w-3 h-3 text-white" />
                                         </div>
                                       )}
-                                      <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                          <div className={`w-7 h-7 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-80"}`}>
-                                            {icon}
-                                          </div>
-                                          <span className={`block font-black text-[11px] sm:text-sm leading-tight transition-colors break-words line-clamp-1 ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                      <div className="flex flex-col items-start gap-1.5 w-full">
+                                        <div className={`w-7.5 h-7.5 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-80"}`}>
+                                          {icon}
+                                        </div>
+                                        <div className="w-full">
+                                          <span className={`block font-black text-xs sm:text-sm leading-tight transition-colors tracking-tight ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
                                             {getLanguagePurposeName(p)}
                                           </span>
+                                          <span className="hidden sm:block text-gray-500 dark:text-gray-400 text-[11px] mt-1 leading-snug font-medium line-clamp-1">
+                                            {getLanguagePurposeDesc(p)}
+                                          </span>
                                         </div>
-                                        <span className="hidden min-[400px]:block text-gray-500 dark:text-gray-400 text-[10px] sm:text-[11px] mt-1 leading-snug font-medium line-clamp-1">
-                                          {getLanguagePurposeDesc(p)}
-                                        </span>
                                       </div>
                                     </button>
                                   );
