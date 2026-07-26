@@ -16,7 +16,7 @@ export default function AttendanceRecordsPage() {
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const res = await fetch("/api/admin/attendance/data", { headers });
       const result = await res.json();
       if (res.ok && result.success) {
         setData(result);
@@ -44,9 +44,11 @@ export default function AttendanceRecordsPage() {
         events={data?.events || []}
         users={data?.users || []}
         records={data?.records || []}
-        onAddAttendance={() => {}}
+        initialCheckins={data?.checkins}
+        onRefresh={loadData}
         activeSubTab="records"
       />
     </AdminPageTemplate>
   );
 }
+
