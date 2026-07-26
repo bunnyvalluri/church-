@@ -321,62 +321,7 @@ async function main() {
   // ──────────────────────────────────────────────
   // 8. PRAYER REQUESTS
   // ──────────────────────────────────────────────
-  const prayerRequests = [
-    {
-      id: 'pr_001',
-      userId: 'user_member_004',
-      title: 'Healing for my mother',
-      description: 'My mother has been diagnosed with diabetes and is struggling with her health. Please pray for her complete healing and for our family to trust in God during this difficult time.',
-      category: 'HEALTH',
-      isAnonymous: false,
-      status: 'PRAYING',
-    },
-    {
-      id: 'pr_002',
-      userId: 'user_member_005',
-      title: 'Financial breakthrough needed',
-      description: 'Our family is going through financial difficulties after my husband lost his job. Please intercede for employment and provision from the Lord.',
-      category: 'FINANCIAL',
-      isAnonymous: false,
-      status: 'PRAYING',
-    },
-    {
-      id: 'pr_003',
-      userId: 'user_member_006',
-      title: 'Guidance for career decision',
-      description: 'I have received two job offers and need God\'s wisdom to make the right choice. Please pray that I follow the path God has for my life.',
-      category: 'GUIDANCE',
-      isAnonymous: false,
-      status: 'PENDING',
-    },
-    {
-      id: 'pr_004',
-      userId: 'user_member_007',
-      title: 'Marriage restoration',
-      description: 'Please pray for my marriage. We are going through a very difficult season and need God to intervene and restore our relationship.',
-      category: 'FAMILY',
-      isAnonymous: true,
-      status: 'PRAYING',
-    },
-    {
-      id: 'pr_005',
-      userId: 'user_member_008',
-      title: 'Thanksgiving — Child born healthy!',
-      description: 'Praise God! Our baby boy was born healthy after a complicated pregnancy. We thank the entire church for praying with us. To God be the glory!',
-      category: 'THANKSGIVING',
-      isAnonymous: false,
-      status: 'ANSWERED',
-    },
-    {
-      id: 'pr_006',
-      userId: 'user_member_004',
-      title: 'Spiritual growth and consistency',
-      description: 'Please pray that I remain consistent in my prayer and Bible study. I want to grow deeper in my faith and be a better witness to my colleagues.',
-      category: 'SPIRITUAL',
-      isAnonymous: false,
-      status: 'PENDING',
-    },
-  ];
+  const prayerRequests = [];
 
   for (const pr of prayerRequests) {
     await prisma.prayerRequest.upsert({
@@ -385,7 +330,7 @@ async function main() {
       create: pr,
     });
   }
-  ok(`${prayerRequests.length} Prayer Requests seeded`);
+  ok(`0 Prayer Requests seeded (Waiting for real believer submissions)`);
 
   // ──────────────────────────────────────────────
   // 9. DONATIONS

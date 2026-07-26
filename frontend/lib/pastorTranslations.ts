@@ -55,9 +55,9 @@ export const pastorTranslations = {
     mobileProfile: "Profile",
 
     // Subtitles & Badges
-    publishedThisMonth: "4 Published this month",
-    newThisWeek: "3 New this week",
-    urgentPrayersCount: "8 Urgent prayers",
+    publishedThisMonth: "Published this month",
+    newThisWeek: "New this week",
+    urgentPrayersCount: "Urgent prayers",
     next30Days: "Next 30 Days",
     viewAll: "View All",
     published: "Published",
@@ -534,9 +534,9 @@ export const pastorTranslations = {
     mobileProfile: "ప్రొఫైల్",
 
     // Subtitles & Badges
-    publishedThisMonth: "ఈ నెలలో 4 ప్రచురించబడ్డాయి",
-    newThisWeek: "ఈ వారంలో 3 కొత్తవి",
-    urgentPrayersCount: "8 అత్యవసర ప్రార్థనలు",
+    publishedThisMonth: "ఈ నెలలో ప్రచురించబడ్డాయి",
+    newThisWeek: "ఈ వారంలో కొత్తవి",
+    urgentPrayersCount: "అత్యవసర ప్రార్థనలు",
     next30Days: "రాబోయే 30 రోజులు",
     viewAll: "అన్నీ చూడండి",
     published: "ప్రచురించబడింది",
@@ -1013,9 +1013,9 @@ export const pastorTranslations = {
     mobileProfile: "प्रोफ़ाइल",
 
     // Subtitles & Badges
-    publishedThisMonth: "इस महीने 4 प्रकाशित",
-    newThisWeek: "इस सप्ताह 3 नए",
-    urgentPrayersCount: "8 तत्काल प्रार्थनाएं",
+    publishedThisMonth: "इस महीने प्रकाशित",
+    newThisWeek: "इस सप्ताह नए",
+    urgentPrayersCount: "तत्काल प्रार्थनाएं",
     next30Days: "अगले 30 दिन",
     viewAll: "सभी देखें",
     published: "प्रकाशित",

@@ -67,53 +67,6 @@ const BIBLE_VERSES: Record<string, string[]> = {
   ]
 };
 
-const INITIAL_MOCK_PRAYERS: PrayerRequestItem[] = [
-  {
-    id: "pr_seed_1",
-    userId: "u_101",
-    title: "Spiritual growth and consistency",
-    description: "Please pray that I remain consistent in my prayer and Bible study. I want to grow deeper in faith and serve God wholeheartedly.",
-    category: "SPIRITUAL",
-    isAnonymous: false,
-    status: "PRAYING",
-    createdAt: new Date().toISOString(),
-    user: { id: "u_101", name: "John Babu", email: "john@example.com" }
-  },
-  {
-    id: "pr_seed_2",
-    userId: "u_102",
-    title: "Thanksgiving — Child born healthy!",
-    description: "Praise God! Our baby boy was born healthy after a complicated pregnancy. We thank God for answered prayers and pastoral support.",
-    category: "THANKSGIVING",
-    isAnonymous: false,
-    status: "ANSWERED",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    user: { id: "u_102", name: "Daniel Rao", email: "daniel@example.com" }
-  },
-  {
-    id: "pr_seed_3",
-    userId: "u_103",
-    title: "Marriage restoration",
-    description: "Please pray for my marriage. We are going through a very difficult season and need God's healing touch and wisdom.",
-    category: "FAMILY",
-    isAnonymous: true,
-    status: "PRAYING",
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    user: { id: "u_103", name: "Anonymous Believer", email: "anonymous@example.com" }
-  },
-  {
-    id: "pr_seed_4",
-    userId: "u_104",
-    title: "Guidance for career decision",
-    description: "I am facing job relocation choices and need wisdom to know where the Lord is leading my family in this new season.",
-    category: "GUIDANCE",
-    isAnonymous: false,
-    status: "PENDING",
-    createdAt: new Date(Date.now() - 259200000).toISOString(),
-    user: { id: "u_104", name: "Grace Mary", email: "grace@example.com" }
-  }
-];
-
 export default function PastorPrayerRequestsPage() {
   const { language } = useLanguage();
   const t = getPastorTranslation(language);
@@ -131,16 +84,16 @@ export default function PastorPrayerRequestsPage() {
     try {
       const res = await fetch("/api/pastor/prayer-requests");
       const data = await res.json();
-      if (data.success && Array.isArray(data.prayers) && data.prayers.length > 0) {
+      if (data.success && Array.isArray(data.prayers)) {
         setPrayers(data.prayers);
-        setSelectedPrayer(data.prayers[0]);
+        setSelectedPrayer(data.prayers.length > 0 ? data.prayers[0] : null);
       } else {
-        setPrayers(INITIAL_MOCK_PRAYERS);
-        setSelectedPrayer(INITIAL_MOCK_PRAYERS[0]);
+        setPrayers([]);
+        setSelectedPrayer(null);
       }
     } catch {
-      setPrayers(INITIAL_MOCK_PRAYERS);
-      setSelectedPrayer(INITIAL_MOCK_PRAYERS[0]);
+      setPrayers([]);
+      setSelectedPrayer(null);
     } finally {
       setLoading(false);
     }

@@ -1252,7 +1252,7 @@ export default function PastorDashboard() {
     );
   };
 
-  if (status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100/20 dark:bg-gray-950">
         <div className="text-center space-y-3">

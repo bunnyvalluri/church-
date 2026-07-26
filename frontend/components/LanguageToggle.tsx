@@ -75,9 +75,10 @@ export default function LanguageToggle({ align = "auto", className = "" }: Langu
         className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-200/80 dark:bg-white/10 hover:bg-slate-300/80 dark:hover:bg-white/15 text-slate-800 dark:text-white rounded-xl border border-slate-300/80 dark:border-white/15 text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 cursor-pointer"
         aria-label="Select Language"
         aria-expanded={isOpen}
+        suppressHydrationWarning
       >
         <Globe className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-        <span className="font-extrabold uppercase">{currentLang.short}</span>
+        <span className="font-extrabold uppercase" suppressHydrationWarning>{currentLang.short}</span>
         <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 

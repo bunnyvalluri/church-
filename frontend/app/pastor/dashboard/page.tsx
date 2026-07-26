@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
-import { Users, Play, Heart, Calendar, IndianRupee, TrendingUp, Sparkles, Plus } from "lucide-react";
+import { Users, Play, Heart, Calendar, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
@@ -12,25 +12,87 @@ export default function PastorDashboardPage() {
   const { language } = useLanguage();
   const t = getPastorTranslation(language);
 
-  const stats = [
-    { title: t.navSermons, value: "48", change: t.publishedThisMonth, href: "/pastor/main/sermons", icon: Play, color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-500/20" },
-    { title: t.navMemberRequests, value: "12", change: t.newThisWeek, href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-500/20" },
-    { title: t.navPrayerRequests, value: "27", change: t.urgentPrayersCount, href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-500/20" },
-    { title: t.navEvents, value: "6", change: t.next30Days, href: "/pastor/main/events", icon: Calendar, color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/20" }
-  ];
-
+  const [sermonsCount, setSermonsCount] = useState<number>(0);
+  const [publishedSermonsCount, setPublishedSermonsCount] = useState<number>(0);
+  const [memberRequestsCount, setMemberRequestsCount] = useState<number>(0);
+  const [newMemberRequestsCount, setNewMemberRequestsCount] = useState<number>(0);
+  const [prayerRequestsCount, setPrayerRequestsCount] = useState<number>(0);
+  const [urgentPrayersCount, setUrgentPrayersCount] = useState<number>(0);
+  const [eventsCount, setEventsCount] = useState<number>(0);
   const [recentSermons, setRecentSermons] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchMetrics = () => {
+    setIsLoading(true);
+    Promise.allSettled([
+      fetch("/api/pastor/sermons").then((res) => res.json()),
+      fetch("/api/pastor/member-requests").then((res) => res.json()),
+      fetch("/api/pastor/prayer-requests").then((res) => res.json()),
+      fetch("/api/pastor/events").then((res) => res.json()),
+    ]).then(([sermonsRes, memberReqsRes, prayersRes, eventsRes]) => {
+      if (sermonsRes.status === "fulfilled" && sermonsRes.value?.success && Array.isArray(sermonsRes.value.sermons)) {
+        const list = sermonsRes.value.sermons;
+        setSermonsCount(list.length);
+        setPublishedSermonsCount(list.filter((s: any) => s.status === "Published").length);
+        setRecentSermons(list.slice(0, 3));
+      }
+      if (memberReqsRes.status === "fulfilled" && memberReqsRes.value?.success && Array.isArray(memberReqsRes.value.requests)) {
+        const list = memberReqsRes.value.requests;
+        setMemberRequestsCount(list.length);
+        setNewMemberRequestsCount(list.filter((r: any) => r.status === "New" || r.status === "Pending").length);
+      }
+      if (prayersRes.status === "fulfilled" && prayersRes.value?.success && Array.isArray(prayersRes.value.prayers)) {
+        const list = prayersRes.value.prayers;
+        setPrayerRequestsCount(list.length);
+        setUrgentPrayersCount(list.filter((p: any) => p.category === "HEALTH" || p.priority === "Urgent" || p.status === "PENDING").length);
+      }
+      if (eventsRes.status === "fulfilled" && eventsRes.value?.success && Array.isArray(eventsRes.value.events)) {
+        setEventsCount(eventsRes.value.events.length);
+      }
+      setIsLoading(false);
+    }).catch(() => {
+      setIsLoading(false);
+    });
+  };
 
   useEffect(() => {
-    fetch("/api/pastor/sermons")
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && Array.isArray(data.sermons)) {
-          setRecentSermons(data.sermons.slice(0, 3));
-        }
-      })
-      .catch(() => {});
+    fetchMetrics();
   }, []);
+
+  const stats = [
+    {
+      title: t.navSermons,
+      value: sermonsCount.toString(),
+      change: `${publishedSermonsCount} Published`,
+      href: "/pastor/main/sermons",
+      icon: Play,
+      color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-500/20"
+    },
+    {
+      title: t.navMemberRequests,
+      value: memberRequestsCount.toString(),
+      change: `${newMemberRequestsCount} New / Pending`,
+      href: "/pastor/main/member-requests",
+      icon: Users,
+      color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-500/20"
+    },
+    {
+      title: t.navPrayerRequests,
+      value: prayerRequestsCount.toString(),
+      change: `${urgentPrayersCount} Urgent / Pending`,
+      href: "/pastor/main/prayer-requests",
+      icon: Heart,
+      color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-500/20"
+    },
+    {
+      title: t.navEvents,
+      value: eventsCount.toString(),
+      change: t.next30Days,
+      href: "/pastor/main/events",
+      icon: Calendar,
+      color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/20"
+    }
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
@@ -43,7 +105,7 @@ export default function PastorDashboardPage() {
         searchPlaceholder={t.searchRecords}
         primaryActionLabel={t.createSermon}
         onPrimaryAction={() => alert("Upload sermon modal opened")}
-        onRefresh={() => alert("Dashboard metrics refreshed")}
+        onRefresh={fetchMetrics}
       />
 
       {/* Key Metrics Cards */}
@@ -57,7 +119,9 @@ export default function PastorDashboardPage() {
                   <item.icon className="w-5 h-5" />
                 </div>
               </div>
-              <h3 className="text-3xl font-black text-slate-900 dark:text-white mt-2">{item.value}</h3>
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white mt-2">
+                {isLoading ? "..." : item.value}
+              </h3>
               <p className="text-[10px] font-bold text-slate-500 dark:text-gray-400 mt-1">{item.change}</p>
             </div>
           </Link>
@@ -76,7 +140,9 @@ export default function PastorDashboardPage() {
             <Link href="/pastor/main/sermons" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">{t.viewAll}</Link>
           </div>
           <div className="space-y-3">
-            {recentSermons.length === 0 ? (
+            {isLoading ? (
+              <div className="p-4 text-center text-xs font-bold text-slate-400">Loading sermons...</div>
+            ) : recentSermons.length === 0 ? (
               <div className="p-4 text-center text-xs font-bold text-slate-400">
                 {t.noSermonsFound || "No sermons found"}
               </div>

@@ -37,7 +37,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
     }
   }, [mounted, status, user, router]);
 
-  if (status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!mounted || status === "loading" || (user && user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-[#05060e]">
         <div className="text-center space-y-3">
