@@ -46,13 +46,13 @@ export default function PastorPageHeader({
     <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl border border-slate-200/60 dark:border-white/[0.06] rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-4 transition-all">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Title & Badge */}
-        <div className="space-y-1 min-w-0">
+        <div className="space-y-1 min-w-0 flex-1">
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug truncate">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug break-words">
               {title}
             </h1>
             {badge && (
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${badgeColor}`}>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shrink-0 ${badgeColor}`}>
                 {badge}
               </span>
             )}

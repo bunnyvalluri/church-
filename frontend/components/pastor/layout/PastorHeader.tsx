@@ -111,8 +111,8 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
 
   return (
     <header className="sticky top-0 z-30 shrink-0 h-16 sm:h-20 bg-white/90 dark:bg-[#070814]/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/[0.06] px-3.5 sm:px-8 flex items-center justify-between transition-all duration-300">
-      {/* Left: Mobile Toggle & Breadcrumbs */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      {/* Left: Mobile Toggle & Header Title */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <button
           type="button"
           onClick={onToggleMobileSidebar}
@@ -122,15 +122,17 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
           <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
-        <span className="md:hidden text-xs font-black text-slate-900 dark:text-white tracking-tight shrink-0 whitespace-nowrap">
+        <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight shrink-0 whitespace-nowrap">
           {t.pastorPortal}
         </span>
 
-        <PastorBreadcrumbs />
+        <div className="hidden md:block">
+          <PastorBreadcrumbs />
+        </div>
       </div>
 
       {/* Right: Search, Notifications, Theme, Language, Quick Create & Profile */}
-      <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
         {/* Global Search Input */}
         <div className="relative hidden md:block w-48 lg:w-64">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
@@ -231,7 +233,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
         </div>
 
         {/* Quick Create Dropdown */}
-        <div className="relative hidden xs:block" ref={quickRef}>
+        <div className="relative hidden sm:block" ref={quickRef}>
           <button
             type="button"
             onClick={() => setIsQuickCreateOpen(!isQuickCreateOpen)}

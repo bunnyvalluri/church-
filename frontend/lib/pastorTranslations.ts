@@ -150,6 +150,25 @@ export const pastorTranslations = {
     purposeOther: "OTHER",
     purposeGeneral: "GENERAL",
     purposeYouth: "YOUTH",
+
+    // Member Requests Page
+    memberRequestsTitle: "Member Applications & Transfer Requests",
+    memberRequestsSubtitle: "Review, approve, and assign pastoral follow-ups for new believer registrations and membership transfers",
+    pendingBadge: "Pending",
+    applicantNameHeader: "Applicant Name",
+    requestTypeHeader: "Request Type",
+    submissionDateHeader: "Submission Date",
+    pastoralActionHeader: "Pastoral Action",
+    typeMembershipApp: "Membership Application",
+    typeBaptismReq: "Baptism Request",
+    typeTransferCert: "Transfer Certificate",
+    approveApplication: "Approve Application",
+    approved: "Approved",
+    pending: "Pending",
+    todayAt: "Today",
+    yesterday: "Yesterday",
+    daysAgo: "days ago",
+    memberApplicationsExported: "Member applications exported successfully",
   },
   te: {
     // Topbar & Navigation
@@ -300,6 +319,25 @@ export const pastorTranslations = {
     purposeOther: "ఇతరములు",
     purposeGeneral: "సాధారణ నిధి",
     purposeYouth: "యూత్ పరిచర్య",
+
+    // Member Requests Page
+    memberRequestsTitle: "సభ్యత్వ దరఖాస్తులు & బదిలీ అభ్యర్థనలు",
+    memberRequestsSubtitle: "కొత్త విశ్వాసుల రిజిస్ట్రేషన్లు మరియు సభ్యత్వ బదిలీలను పరిశీలించండి, ఆమోదించండి మరియు పాస్టరల్ ఫాలో-అప్‌లను కేటాయించండి",
+    pendingBadge: "పెండింగ్‌లో ఉన్నాయి",
+    applicantNameHeader: "దరఖాస్తుదారు పేరు",
+    requestTypeHeader: "అభ్యర్థన రకం",
+    submissionDateHeader: "సమర్పించిన తేదీ",
+    pastoralActionHeader: "పాస్టరల్ చర్య",
+    typeMembershipApp: "సంఘ సభ్యత్వ దరఖాస్తు",
+    typeBaptismReq: "బాప్తిస్మము అభ్యర్థన",
+    typeTransferCert: "బదిలీ సర్టిఫికెట్",
+    approveApplication: "దరఖాస్తును ఆమోదించు",
+    approved: "ఆమోదించబడింది",
+    pending: "పెండింగ్‌లో ఉంది",
+    todayAt: "ఈరోజు",
+    yesterday: "నిన్న",
+    daysAgo: "రోజుల క్రితం",
+    memberApplicationsExported: "సభ్యుల దరఖాస్తులు విజయవంతంగా ఎగుమతి చేయబడ్డాయి",
   },
   hi: {
     // Topbar & Navigation
@@ -450,6 +488,25 @@ export const pastorTranslations = {
     purposeOther: "अन्य",
     purposeGeneral: "सामान्य कोष",
     purposeYouth: "युवा मंत्रालय",
+
+    // Member Requests Page
+    memberRequestsTitle: "सदस्यता आवेदन और स्थानांतरण अनुरोध",
+    memberRequestsSubtitle: "नए विश्वासी पंजीकरण और सदस्यता स्थानांतरण की समीक्षा करें, स्वीकार करें और पादरी अनुवर्ती कार्रवाई सौंपें",
+    pendingBadge: "लंबित",
+    applicantNameHeader: "आवेदक का नाम",
+    requestTypeHeader: "अनुरोध प्रकार",
+    submissionDateHeader: "जमा करने की तिथि",
+    pastoralActionHeader: "पादरी कार्रवाई",
+    typeMembershipApp: "सदस्यता आवेदन",
+    typeBaptismReq: "बपतिस्मा अनुरोध",
+    typeTransferCert: "स्थानांतरण प्रमाण पत्र",
+    approveApplication: "आवेदन स्वीकार करें",
+    approved: "स्वीकृत",
+    pending: "लंबित",
+    todayAt: "आज",
+    yesterday: "कल",
+    daysAgo: "दिन पहले",
+    memberApplicationsExported: "सदस्य आवेदन सफलतापूर्वक निर्यात किए गए",
   }
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import { Users, Play, Heart, Calendar, IndianRupee, TrendingUp, Sparkles, Plus } from "lucide-react";
 import Link from "next/link";
