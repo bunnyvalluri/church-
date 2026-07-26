@@ -730,7 +730,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl"
+              className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl font-bold"
             >
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               <Heart className="h-4 w-4 text-pink-300" />
@@ -752,7 +752,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-sm min-[480px]:text-base sm:text-xl text-purple-100 dark:text-purple-200 font-semibold max-w-xl mx-auto leading-relaxed px-2 opacity-95"
+              className="text-sm min-[480px]:text-base sm:text-xl text-white dark:text-white font-extrabold max-w-xl mx-auto leading-relaxed px-2 shadow-sm"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -769,7 +769,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 { icon: <Zap className="w-3.5 h-3.5" />, label: "Instant UPI" },
                 { icon: <Receipt className="w-3.5 h-3.5" />, label: "80G Tax Exempt" },
               ].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs font-medium">
+                <div key={badge.label} className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs font-extrabold shadow-md">
                   {badge.icon}
                   {badge.label}
                 </div>
