@@ -40,7 +40,7 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
         />
 
         {/* Right Shell: Header + Content + Footer */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden bg-slate-100/80 dark:bg-[#080914] transition-colors">
+        <div className="flex-1 flex flex-col min-w-0 bg-slate-100/80 dark:bg-[#080914] transition-colors">
           {/* Top Header */}
           <AdminHeader
             onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
