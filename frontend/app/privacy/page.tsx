@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -29,6 +29,20 @@ import BackToHome from "@/components/ui/BackToHome";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { legalTranslations } from "@/lib/legalTranslations";
 
+// Lift static icon mapping outside component body for instantaneous execution
+const PRIVACY_SECTION_ICONS: Record<string, any> = {
+  overview: ShieldCheck,
+  collection: FileText,
+  usage: Eye,
+  security: Lock,
+  sharing: Server,
+  cookies: Bell,
+  rights: UserCheck,
+  children: Heart,
+  updates: Clock,
+  contact: Mail,
+};
+
 export default function PrivacyPolicyPage() {
   const { language } = useLanguage();
   const content = legalTranslations[(language as "en" | "te" | "hi") || "en"] || legalTranslations.en;
@@ -37,23 +51,12 @@ export default function PrivacyPolicyPage() {
   const [activeSection, setActiveSection] = useState("overview");
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
 
-  const sectionIcons: Record<string, any> = {
-    overview: ShieldCheck,
-    collection: FileText,
-    usage: Eye,
-    security: Lock,
-    sharing: Server,
-    cookies: Bell,
-    rights: UserCheck,
-    children: Heart,
-    updates: Clock,
-    contact: Mail,
-  };
-
-  const sections = p.sections.map((sec) => ({
-    ...sec,
-    icon: sectionIcons[sec.id] || ShieldCheck,
-  }));
+  const sections = useMemo(() => {
+    return p.sections.map((sec) => ({
+      ...sec,
+      icon: PRIVACY_SECTION_ICONS[sec.id] || ShieldCheck,
+    }));
+  }, [p.sections]);
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {

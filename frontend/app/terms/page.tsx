@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Scale,
@@ -30,6 +30,20 @@ import BackToHome from "@/components/ui/BackToHome";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { legalTranslations } from "@/lib/legalTranslations";
 
+// Lift static icon mapping outside component body for instantaneous execution
+const TERMS_SECTION_ICONS: Record<string, any> = {
+  acceptance: Scale,
+  services: ScrollText,
+  accounts: UserCheck,
+  conduct: Heart,
+  ip: Sparkles,
+  giving: DollarSign,
+  events: Calendar,
+  liability: AlertTriangle,
+  governing: Gavel,
+  changes: Mail,
+};
+
 export default function TermsOfServicePage() {
   const { language } = useLanguage();
   const content = legalTranslations[(language as "en" | "te" | "hi") || "en"] || legalTranslations.en;
@@ -38,23 +52,12 @@ export default function TermsOfServicePage() {
   const [activeSection, setActiveSection] = useState("acceptance");
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
 
-  const sectionIcons: Record<string, any> = {
-    acceptance: Scale,
-    services: ScrollText,
-    accounts: UserCheck,
-    conduct: Heart,
-    ip: Sparkles,
-    giving: DollarSign,
-    events: Calendar,
-    liability: AlertTriangle,
-    governing: Gavel,
-    changes: Mail,
-  };
-
-  const sections = t.sections.map((sec) => ({
-    ...sec,
-    icon: sectionIcons[sec.id] || Scale,
-  }));
+  const sections = useMemo(() => {
+    return t.sections.map((sec) => ({
+      ...sec,
+      icon: TERMS_SECTION_ICONS[sec.id] || Scale,
+    }));
+  }, [t.sections]);
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
