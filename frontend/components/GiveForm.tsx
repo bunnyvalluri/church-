@@ -693,101 +693,69 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </AnimatePresence>
 
       {/* ── HERO SECTION ──────────────────────────────────── */}
-      <section className="relative py-16 sm:py-24 md:py-28 overflow-hidden">
-        {/* Layered background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
-        
-        {/* Glowing orbs */}
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full filter blur-[100px] animate-pulse pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/15 rounded-full filter blur-[80px] animate-pulse pointer-events-none" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-violet-500/10 rounded-full filter blur-[120px] pointer-events-none" />
-
-        {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 bg-purple-400/40 rounded-full"
-            style={{
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-            }}
-            animate={{
-              y: [-10, 10, -10],
-              opacity: [0.3, 0.7, 0.3],
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.4,
-            }}
-          />
-        ))}
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.div 
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl font-bold"
-            >
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <Heart className="h-4 w-4 text-pink-300" />
-              <span className="font-medium tracking-wide">
+      {isPortalRoute ? (
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-4">
+          <div className="relative overflow-hidden p-4 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
+            <div className="absolute right-0 top-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40 text-[10px] font-extrabold uppercase tracking-wider">
+                <Heart className="w-3.5 h-3.5 text-pink-500" />
                 {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
-              </span>
-            </motion.div>
-
-            <motion.h1 
-              initial={{ y: 24, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl min-[480px]:text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-4 sm:mb-6 tracking-tight font-heading leading-[1.05]"
-            >
-              {t.pages.give.title}
-            </motion.h1>
-
-            <motion.p 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-sm min-[480px]:text-base sm:text-xl text-white dark:text-white font-extrabold max-w-xl mx-auto leading-relaxed px-2 shadow-sm"
-            >
-              {t.pages.give.subtitle}
-            </motion.p>
-
-            {/* Trust badges */}
-            <motion.div
-              initial={{ y: 16, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.35 }}
-              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-8 sm:mt-10 px-2"
-            >
-              {[
-                { icon: <Lock className="w-3.5 h-3.5" />, label: "Bank-Grade Security" },
-                { icon: <Zap className="w-3.5 h-3.5" />, label: "Instant UPI" },
-                { icon: <Receipt className="w-3.5 h-3.5" />, label: "80G Tax Exempt" },
-              ].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs font-extrabold shadow-md">
-                  {badge.icon}
-                  {badge.label}
-                </div>
-              ))}
-            </motion.div>
+              </div>
+              <h1 className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+                {t.pages.give.title}
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium italic border-l-2 border-purple-500 pl-3 py-0.5">
+                {t.pages.give.subtitle}
+              </p>
+            </div>
           </div>
         </div>
+      ) : (
+        <section className="relative py-12 sm:py-20 md:py-24 overflow-hidden">
+          {/* Layered background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-3xl mx-auto text-center">
+              <motion.div 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl font-bold"
+              >
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <Heart className="h-4 w-4 text-pink-300" />
+                <span className="font-medium tracking-wide">
+                  {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
+                </span>
+              </motion.div>
 
-        {/* Wave bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden">
-          <svg viewBox="0 0 1440 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute bottom-0 w-full" preserveAspectRatio="none">
-            <path d="M0 64L1440 64L1440 0C1440 0 1080 64 720 64C360 64 0 0 0 0L0 64Z" className="fill-[hsl(var(--background))]" />
-          </svg>
-        </div>
-      </section>
+              <motion.h1 
+                initial={{ y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-3xl min-[480px]:text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-4 sm:mb-6 tracking-tight font-heading leading-[1.05]"
+              >
+                {t.pages.give.title}
+              </motion.h1>
+
+              <motion.p 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-sm min-[480px]:text-base sm:text-xl text-white dark:text-white font-extrabold max-w-xl mx-auto leading-relaxed px-2 shadow-sm"
+              >
+                {t.pages.give.subtitle}
+              </motion.p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
-      <section className="pt-8 sm:pt-12 pb-16 sm:pb-24 -mt-4 relative z-20">
+      <section className="pt-4 sm:pt-8 pb-12 sm:pb-20 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {loadingLists ? (
@@ -937,7 +905,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <Gift className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.purposeLabel}
                               </label>
-                              <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-2.5">
+                              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-3">
                                 {purposes.map((p) => {
                                   const isSelected = selectedPurpose === p.code;
                                   const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
@@ -1633,7 +1601,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </motion.div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
               {t.pages.give.whyItems.map((item, index) => (
                 <motion.div
                   key={index}
