@@ -49,33 +49,26 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
   const quickRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Notifications mock state
-  const [notifications, setNotifications] = useState([
-    {
-      id: "1",
-      title: "New Prayer Request",
-      content: "Sister Mary requested prayers for healing.",
-      type: "PRAYER_REQUEST",
-      isRead: false,
-      time: "10m ago"
-    },
-    {
-      id: "2",
-      title: "New Sunday Donation",
-      content: "Brother David contributed ₹5,000 to building fund.",
-      type: "DONATION",
-      isRead: false,
-      time: "1h ago"
-    },
-    {
-      id: "3",
-      title: "New Member Registration",
-      content: "John Doe submitted membership application.",
-      type: "NEW_MEMBER",
-      isRead: false,
-      time: "2h ago"
+  // Notifications state initialized to empty (no fake notifications)
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch('/api/pastor/notifications');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.notifications)) {
+        setNotifications(data.notifications);
+      } else {
+        setNotifications([]);
+      }
+    } catch {
+      setNotifications([]);
     }
-  ]);
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -96,8 +89,11 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    try {
+      await fetch('/api/pastor/notifications', { method: 'PATCH' });
+    } catch {}
   };
 
   const getNotifIcon = (type: string) => {
@@ -191,25 +187,33 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                 </div>
 
                 <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.03] custom-scrollbar">
-                  {notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      className={`p-3.5 flex items-start gap-3 transition-colors ${
-                        !n.isRead ? "bg-indigo-50/20 dark:bg-indigo-500/5" : ""
-                      }`}
-                    >
-                      <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center shrink-0">
-                        {getNotifIcon(n.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{n.title}</h4>
-                          <span className="text-[9px] text-slate-400">{n.time}</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 leading-snug">{n.content}</p>
-                      </div>
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center space-y-2">
+                      <Bell className="w-8 h-8 text-slate-300 dark:text-gray-600 mx-auto" />
+                      <p className="text-xs font-bold text-slate-500 dark:text-gray-400">No new notifications</p>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500">You're all caught up!</p>
                     </div>
-                  ))}
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`p-3.5 flex items-start gap-3 transition-colors ${
+                          !n.isRead ? "bg-indigo-50/20 dark:bg-indigo-500/5" : ""
+                        }`}
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center shrink-0">
+                          {getNotifIcon(n.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{n.title}</h4>
+                            <span className="text-[9px] text-slate-400">{n.time}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 leading-snug">{n.content}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </motion.div>
             )}
