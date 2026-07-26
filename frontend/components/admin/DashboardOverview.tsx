@@ -287,14 +287,14 @@ export default function DashboardOverview({
     <div className="space-y-8 animate-in fade-in duration-200">
       
       {/* ─── KPI Metric Cards Grid ─── */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2.5 sm:gap-6">
 
         {/* Loading skeletons */}
         {statsLoading && Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)}
 
         {/* Error state */}
         {statsError && !statsLoading && (
-          <div className="col-span-5 flex items-center gap-3 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-xs text-rose-600 dark:text-rose-400">
+          <div className="col-span-2 sm:col-span-2 md:col-span-3 xl:col-span-5 flex items-center gap-3 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl text-xs text-rose-600 dark:text-rose-400">
             <span className="font-bold">⚠ Failed to load stats.</span>
             <button onClick={() => reloadStats()} className="underline hover:no-underline flex items-center gap-1">
               <RefreshCw className="w-3 h-3" /> Retry
@@ -303,98 +303,98 @@ export default function DashboardOverview({
         )}
 
         {/* Card 1: Members */}
-        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
-          <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider">{t.totalMembers}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalMembers.toLocaleString('en-IN')}</h3>
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
-              <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>+{newUsersCount} {t.thisWeek}</span>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:-translate-y-1 hover:border-emerald-300/60 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer min-w-0" onClick={() => onNavigate("members")}>
+          <div className="space-y-1.5 sm:space-y-2.5 min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-gray-550 uppercase tracking-wider block truncate">{t.totalMembers}</span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none truncate">{totalMembers.toLocaleString('en-IN')}</h3>
+            <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 truncate">
+              <ArrowUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" />
+              <span className="truncate">+{newUsersCount} {t.thisWeek}</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
-            <Users className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>}
 
         {/* Card 2: Donations */}
-        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-amber-300/60 dark:hover:border-amber-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("donations")}>
-          <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.totalDonations}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{formatCurrency(totalDonations)}</h3>
+        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:-translate-y-1 hover:border-amber-300/60 dark:hover:border-amber-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer min-w-0" onClick={() => onNavigate("donations")}>
+          <div className="space-y-1.5 sm:space-y-2.5 min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">{t.totalDonations}</span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none truncate">{formatCurrency(totalDonations)}</h3>
             {donWeeklyPercentChange === null ? (
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
-                <Sparkles className="w-3 h-3" />
+              <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 truncate">
+                <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                 <span>New</span>
               </div>
             ) : (
-              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+              <div className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold border truncate ${
                 donWeeklyPercentChange >= 0
                   ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
                   : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
               }`}>
-                {donWeeklyPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
-                <span>{donWeeklyPercentChange >= 0 ? `+${donWeeklyPercentChange}` : donWeeklyPercentChange}% {t.thisWeek}</span>
+                {donWeeklyPercentChange >= 0 ? <ArrowUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" /> : <ArrowDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" />}
+                <span className="truncate">{donWeeklyPercentChange >= 0 ? `+${donWeeklyPercentChange}` : donWeeklyPercentChange}% {t.thisWeek}</span>
               </div>
             )}
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
-            <DollarSign className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
+            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 3: Attendance */}
-        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("reports")}>
-          <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.attendanceWeek}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{latestAttendance.toLocaleString('en-IN')}</h3>
+        <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:-translate-y-1 hover:border-blue-300/60 dark:hover:border-blue-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer min-w-0" onClick={() => onNavigate("reports")}>
+          <div className="space-y-1.5 sm:space-y-2.5 min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider block truncate">{t.attendanceWeek}</span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none truncate">{latestAttendance.toLocaleString('en-IN')}</h3>
             {attPercentChange === null ? (
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
-                <Sparkles className="w-3 h-3" />
+              <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 truncate">
+                <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                 <span>New</span>
               </div>
             ) : (
-              <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+              <div className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold border truncate ${
                 attPercentChange >= 0
                   ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
                   : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
               }`}>
-                {attPercentChange >= 0 ? <ArrowUp className="w-3 h-3 stroke-[2.5]" /> : <ArrowDown className="w-3 h-3 stroke-[2.5]" />}
-                <span>{attPercentChange >= 0 ? `+${attPercentChange}` : attPercentChange}% {t.thisWeek}</span>
+                {attPercentChange >= 0 ? <ArrowUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" /> : <ArrowDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" />}
+                <span className="truncate">{attPercentChange >= 0 ? `+${attPercentChange}` : attPercentChange}% {t.thisWeek}</span>
               </div>
             )}
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
-            <UserCheck className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
+            <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 4: Events */}
-        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-pink-300/60 dark:hover:border-pink-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("events")}>
-          <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider">{t.activeEvents}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{totalEvents}</h3>
-            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 border border-slate-150 dark:border-white/[0.08] uppercase tracking-wider">
-              <span>{t.upcomingEvents}</span>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:-translate-y-1 hover:border-pink-300/60 dark:hover:border-pink-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer min-w-0" onClick={() => onNavigate("events")}>
+          <div className="space-y-1.5 sm:space-y-2.5 min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-gray-555 uppercase tracking-wider block truncate">{t.activeEvents}</span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none truncate">{totalEvents}</h3>
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-bold bg-slate-50 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 border border-slate-150 dark:border-white/[0.08] uppercase tracking-wider truncate">
+              <span className="truncate">{t.upcomingEvents}</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 text-pink-600 dark:text-pink-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
-            <Calendar className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 text-pink-600 dark:text-pink-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>}
 
         {/* Card 5: New Members */}
-        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-6 rounded-2xl flex items-center justify-between gap-4 hover:-translate-y-1 hover:border-teal-300/60 dark:hover:border-teal-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer" onClick={() => onNavigate("members")}>
-          <div className="space-y-2.5">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{t.newMembers}</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{newUsersCount}</h3>
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
-              <ArrowUp className="w-3 h-3 stroke-[2.5]" />
-              <span>+{newUsersCount} {t.thisWeek}</span>
+        {!statsLoading && <div className="group bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-lg dark:shadow-black/20 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl flex items-center justify-between gap-2 sm:gap-4 hover:-translate-y-1 hover:border-teal-300/60 dark:hover:border-teal-500/30 hover:shadow-xl hover:shadow-slate-100 dark:hover:shadow-black/40 transition-all duration-300 cursor-pointer min-w-0 col-span-2 sm:col-span-1" onClick={() => onNavigate("members")}>
+          <div className="space-y-1.5 sm:space-y-2.5 min-w-0">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider block truncate">{t.newMembers}</span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none truncate">{newUsersCount}</h3>
+            <div className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 truncate">
+              <ArrowUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5] shrink-0" />
+              <span className="truncate">+{newUsersCount} {t.thisWeek}</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
-            <UserPlus className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110">
+            <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>}
       </section>

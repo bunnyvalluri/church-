@@ -47,7 +47,7 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
           />
 
           {/* Main Content Area */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1920px] w-full mx-auto bg-slate-100/90 dark:bg-[#070812] transition-colors">
+          <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-[1920px] w-full mx-auto bg-slate-100/90 dark:bg-[#070812] transition-colors">
             {children}
           </main>
 
