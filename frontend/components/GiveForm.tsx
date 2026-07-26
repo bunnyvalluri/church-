@@ -62,13 +62,24 @@ interface GiveFormProps {
   initialBranches?: BranchItem[];
 }
 
+const DEFAULT_PURPOSES: PurposeItem[] = [
+  { id: "1", code: "TITHE", nameEn: "Tithe", nameTe: "దశమ భాగము (Tithe)", nameHi: "दशमांश (Tithe)", descEn: "10% of monthly income to support the ministry.", descTe: null, descHi: null },
+  { id: "2", code: "OFFERING", nameEn: "Online Offering", nameTe: "ఆరాధన కానుక (Offering)", nameHi: "पूजा की भेंट (Offering)", descEn: "General offerings to support church operations and worship.", descTe: null, descHi: null },
+  { id: "3", code: "BUILDING", nameEn: "Building Fund", nameTe: "భవన నిర్మాణ నిధి (Building Fund)", nameHi: "भवन निर्माण निधि (Building Fund)", descEn: "For church construction, expansion, and facilities maintenance.", descTe: null, descHi: null },
+  { id: "4", code: "MISSIONS", nameEn: "Missions", nameTe: "సువార్త సేవ నిధి (Missions)", nameHi: "मिशनरी सेवा (Missions)", descEn: "Supporting local evangelism and global outreach missions.", descTe: null, descHi: null },
+  { id: "5", code: "CHARITY", nameEn: "Benevolence", nameTe: "ధర్మకార్యములు (Charity)", nameHi: "परोपकार (Charity)", descEn: "Assisting widows, orphans, and families in financial distress.", descTe: null, descHi: null },
+  { id: "6", code: "SPECIAL", nameEn: "Special Offering", nameTe: "ప్రత్యేక కానుక (Special)", nameHi: "विशेष भेंट (Special)", descEn: "Vows, thanksgiving offerings, or special pledge gifts.", descTe: null, descHi: null },
+];
+
 // Purpose icon map
 const purposeIconMap: Record<string, React.ReactNode> = {
   TITHE: <IndianRupee className="w-5 h-5" />,
   OFFERING: <Gift className="w-5 h-5" />,
   BUILDING_FUND: <Building className="w-5 h-5" />,
+  BUILDING: <Building className="w-5 h-5" />,
   MISSIONS: <Globe className="w-5 h-5" />,
   BENEVOLENCE: <Heart className="w-5 h-5" />,
+  CHARITY: <Heart className="w-5 h-5" />,
   SPECIAL: <Star className="w-5 h-5" />,
 };
 
@@ -76,8 +87,10 @@ const purposeColorMap: Record<string, string> = {
   TITHE: "from-violet-500 to-purple-600",
   OFFERING: "from-rose-500 to-pink-600",
   BUILDING_FUND: "from-amber-500 to-orange-600",
+  BUILDING: "from-amber-500 to-orange-600",
   MISSIONS: "from-blue-500 to-cyan-600",
   BENEVOLENCE: "from-emerald-500 to-teal-600",
+  CHARITY: "from-emerald-500 to-teal-600",
   SPECIAL: "from-fuchsia-500 to-violet-600",
 };
 
@@ -85,8 +98,10 @@ const purposeBgMap: Record<string, string> = {
   TITHE: "bg-purple-50 dark:bg-purple-950/70 border-purple-500 dark:border-purple-400 shadow-sm",
   OFFERING: "bg-rose-50 dark:bg-rose-950/70 border-rose-500 dark:border-rose-400 shadow-sm",
   BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/70 border-amber-500 dark:border-amber-400 shadow-sm",
+  BUILDING: "bg-amber-50 dark:bg-amber-950/70 border-amber-500 dark:border-amber-400 shadow-sm",
   MISSIONS: "bg-blue-50 dark:bg-blue-950/70 border-blue-500 dark:border-blue-400 shadow-sm",
   BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500 dark:border-emerald-400 shadow-sm",
+  CHARITY: "bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500 dark:border-emerald-400 shadow-sm",
   SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/70 border-fuchsia-500 dark:border-fuchsia-400 shadow-sm",
 };
 
@@ -100,7 +115,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [step, setStep] = useState(1);
   
   // Dynamic Lists loaded from DB
-  const [purposes, setPurposes] = useState<PurposeItem[]>(initialPurposes);
+  const [purposes, setPurposes] = useState<PurposeItem[]>(
+    initialPurposes.length > 0 ? initialPurposes : DEFAULT_PURPOSES
+  );
   const [branches, setBranches] = useState<BranchItem[]>(initialBranches);
   const [loadingLists, setLoadingLists] = useState(initialPurposes.length === 0 || initialBranches.length === 0);
 
@@ -145,6 +162,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [toast, setToast] = useState<{ msg: string; type?: "success" | "error" } | null>(null);
   
   const [mounted, setMounted] = useState(false);
+  const hasFetchedMetadataRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -174,14 +192,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     setTimeout(() => setToast(null), 4000);
   };
 
-  // 1. Fetch Purposes and Branches on Mount
+  // 1. Fetch Purposes and Branches on Mount (once)
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || hasFetchedMetadataRef.current) return;
 
     if (initialPurposes.length > 0 && initialBranches.length > 0) {
       setLoadingLists(false);
       return;
     }
+
+    hasFetchedMetadataRef.current = true;
 
     async function loadFormMetadata() {
       try {
@@ -192,21 +212,23 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
         if (purposesRes.ok) {
           const purposesData = await purposesRes.json();
-          if (purposesData.success) {
+          if (purposesData.success && Array.isArray(purposesData.purposes) && purposesData.purposes.length > 0) {
             setPurposes(purposesData.purposes);
-            if (purposesData.purposes.length > 0) {
-              setSelectedPurpose(purposesData.purposes[0].code);
-            }
+            setSelectedPurpose((prev) => prev || (purposesData.purposes[0].code || "TITHE"));
+          } else {
+            setPurposes(DEFAULT_PURPOSES);
+            setSelectedPurpose((prev) => prev || "TITHE");
           }
+        } else {
+          setPurposes(DEFAULT_PURPOSES);
+          setSelectedPurpose((prev) => prev || "TITHE");
         }
 
         if (branchesRes.ok) {
           const branchesData = await branchesRes.json();
-          if (branchesData.success) {
+          if (branchesData.success && Array.isArray(branchesData.branches) && branchesData.branches.length > 0) {
             setBranches(branchesData.branches);
-            if (branchesData.branches.length > 0) {
-              setSelectedBranch(branchesData.branches[0].id);
-            }
+            setSelectedBranch((prev) => prev || branchesData.branches[0].id);
           }
         }
       } catch (err) {
@@ -899,41 +921,49 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                               </div>
                             </div>
 
-                            {/* ── PURPOSE SELECTOR ────────────── */}
+                             {/* ── PURPOSE SELECTOR ────────────── */}
                             <div>
                               <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
                                 <Gift className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.purposeLabel}
                               </label>
-                              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                                 {purposes.map((p) => {
-                                  const isSelected = selectedPurpose === p.code;
-                                  const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
-                                  const bgStyle = purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800/40";
-                                  const icon = purposeIconMap[p.code] || <IndianRupee className="w-4 h-4 sm:w-5 sm:h-5" />;
+                                  const codeKey = p.code || p.id;
+                                  const isSelected = selectedPurpose === p.code || selectedPurpose === p.id || selectedPurpose === codeKey;
+                                  const gradient = purposeColorMap[codeKey] || purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
+                                  const bgStyle = purposeBgMap[codeKey] || purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/70 border-purple-500 dark:border-purple-400 shadow-sm";
+                                  const icon = purposeIconMap[codeKey] || purposeIconMap[p.code] || <IndianRupee className="w-5 h-5" />;
+                                  const desc = getLanguagePurposeDesc(p);
+
                                   return (
                                     <button
-                                      key={p.id}
+                                      key={p.id || p.code}
                                       type="button"
-                                      onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative px-2.5 py-2 sm:px-3 sm:py-2.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-2 w-full group overflow-hidden h-[62px] sm:h-[68px] ${
+                                      onClick={() => setSelectedPurpose(codeKey)}
+                                      className={`relative p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-3 w-full overflow-hidden min-h-[76px] sm:min-h-[84px] cursor-pointer touch-manipulation select-none active:scale-[0.98] ${
                                         isSelected
-                                          ? `${bgStyle} shadow-md scale-[1.01]`
+                                          ? `${bgStyle} shadow-md scale-[1.01] ring-2 ring-purple-500/20`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
                                       }`}
                                     >
-                                      <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
+                                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 mt-0.5 pointer-events-none ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
                                         {icon}
                                       </div>
-                                      <div className="min-w-0 flex-1 flex flex-col justify-center">
-                                        <span className={`block font-extrabold text-[11px] sm:text-xs leading-tight tracking-tight line-clamp-2 ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                      <div className="min-w-0 flex-1 flex flex-col justify-center pointer-events-none">
+                                        <span className={`block font-extrabold text-xs sm:text-sm leading-tight tracking-tight ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
+                                        {desc && (
+                                          <span className="block text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5 line-clamp-2">
+                                            {desc}
+                                          </span>
+                                        )}
                                       </div>
-                                      <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center ml-auto">
+                                      <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center ml-auto mt-0.5 pointer-events-none">
                                         {isSelected ? (
-                                          <div className="w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                            <Check className="w-2.5 h-2.5 text-white" />
+                                          <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                                            <Check className="w-3 h-3 text-white" />
                                           </div>
                                         ) : null}
                                       </div>
