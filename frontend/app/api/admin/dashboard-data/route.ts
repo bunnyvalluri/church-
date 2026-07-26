@@ -35,35 +35,43 @@ export async function GET(req: Request) {
     ] = await Promise.all([
       prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
+        take: 50,
         select: USER_SELECT,
       }),
       prisma.donation.findMany({
         orderBy: { createdAt: 'desc' },
-        take: 50,
+        take: 30,
         include: {
           user: { select: { name: true, email: true } },
         },
       }),
       prisma.sermon.findMany({
         orderBy: { date: 'desc' },
+        take: 20,
       }),
       prisma.announcement.findMany({
         orderBy: { createdAt: 'desc' },
+        take: 20,
       }),
       prisma.event.findMany({
         orderBy: { date: 'asc' },
+        take: 20,
       }),
       prisma.attendanceRecord.findMany({
         orderBy: { date: 'desc' },
+        take: 30,
       }),
       prisma.pledge.findMany({
         orderBy: { createdAt: 'desc' },
+        take: 20,
       }),
       prisma.transaction.findMany({
         orderBy: { date: 'desc' },
+        take: 30,
       }),
       prisma.account.findMany({
         orderBy: { name: 'asc' },
+        take: 20,
       }),
     ]);
 
