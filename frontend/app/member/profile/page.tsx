@@ -239,28 +239,26 @@ export default function MemberProfile() {
     if (!user?.uid) return;
     if (!silent) setSyncing(true);
     try {
-      const res = await fetch(`/api/admin/users`);
+      const res = await fetch(`/api/member/profile?userId=${user.uid}&email=${encodeURIComponent(user.email || "")}`);
       const data = await res.json();
-      if (res.ok && data.success) {
-        const p = data.users.find((u: any) => u.id === user?.uid);
-        if (p) {
-          const snap: ProfileSnapshot = {
-            name: p.name || user?.name || "",
-            phone: p.phone || "",
-            address: p.address || "",
-            role: p.role || "MEMBER",
-            joinedAt: p.createdAt || "",
-            image: p.image || user?.image || "",
-          };
-          setName(snap.name);
-          setPhone(snap.phone);
-          setAddress(snap.address);
-          setRole(snap.role);
-          setJoinedAt(snap.joinedAt);
-          setImage(snap.image);
-          original.current = snap;
-          setHasChanges(false);
-        }
+      if (res.ok && data.success && data.user) {
+        const p = data.user;
+        const snap: ProfileSnapshot = {
+          name: p.name || user?.name || "",
+          phone: p.phone || "",
+          address: p.address || "",
+          role: p.role || "MEMBER",
+          joinedAt: p.createdAt || "",
+          image: p.image || user?.image || "",
+        };
+        setName(snap.name);
+        setPhone(snap.phone);
+        setAddress(snap.address);
+        setRole(snap.role);
+        setJoinedAt(snap.joinedAt);
+        setImage(snap.image);
+        original.current = snap;
+        setHasChanges(false);
       }
       setLastSynced(new Date());
     } catch {
@@ -268,7 +266,7 @@ export default function MemberProfile() {
     } finally {
       setSyncing(false);
     }
-  }, [user?.uid, user?.name, user?.image, pt.toastError]);
+  }, [user?.uid, user?.email, user?.name, user?.image, pt.toastError]);
 
   const handleSave = useCallback(async (e?: React.FormEvent, currentImage?: string) => {
     if (e) e.preventDefault();
@@ -280,7 +278,7 @@ export default function MemberProfile() {
       const res = await fetch("/api/member/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.uid, name, phone, address, image: imageToSave }),
+        body: JSON.stringify({ userId: user?.uid, email: user?.email, name, phone, address, image: imageToSave }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
