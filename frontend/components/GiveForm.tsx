@@ -1042,7 +1042,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 ) : (
                                   <>
                                     <Sparkles className="w-5 h-5" />
-                                    {language === 'te' ? 'డైనమిక్ UPI QR కోడ్‌ను రూపొందించండి' : language === 'hi' ? 'डायनेमिक यूपीआई क्यूआर कोड जनरेट करें' : 'Generate Dynamic UPI QR Code'}
+                                    {language === 'te' ? 'QR కోడ్ పొంది చెల్లించండి' : language === 'hi' ? 'क्यूआर कोड प्राप्त करें' : 'Generate QR & Pay'}
                                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                   </>
                                 )}
