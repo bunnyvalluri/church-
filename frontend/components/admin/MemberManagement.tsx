@@ -50,6 +50,7 @@ export default function MemberManagement({
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [roleUpdatingId, setRoleUpdatingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   // Add Member Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -262,21 +263,58 @@ export default function MemberManagement({
               </button>
             </div>
 
-            {/* Role Filter dropdown */}
-            <div className="relative flex-1 sm:flex-initial flex items-center min-w-0">
-              <Filter className="absolute left-3 w-3.5 h-3.5 text-slate-400 dark:text-slate-400 pointer-events-none" />
-              <select 
-                value={roleFilter} 
-                onChange={(e) => setRoleFilter(e.target.value)} 
-                className="w-full sm:w-auto pl-8 pr-7 py-2 text-xs bg-slate-50 dark:bg-[#1A1C36] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold appearance-none cursor-pointer truncate"
+            {/* Role Filter Custom Dropdown */}
+            <div className="relative flex-1 sm:flex-initial min-w-0">
+              <button
+                type="button"
+                onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                className="w-full sm:w-auto pl-8 pr-7 py-2 text-xs bg-slate-50 dark:bg-[#1A1C36] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold flex items-center justify-between gap-2 truncate"
               >
-                <option value="ALL">{t.filterAll}</option>
-                <option value="SUPER_ADMIN">{t.superAdmins}</option>
-                <option value="ADMIN">{t.admins}</option>
-                <option value="PASTOR">{t.pastors}</option>
-                <option value="MEMBER">{t.believers}</option>
-              </select>
-              <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 dark:text-slate-400 pointer-events-none" />
+                <Filter className="absolute left-2.5 w-3.5 h-3.5 text-slate-400 dark:text-slate-400 pointer-events-none" />
+                <span className="truncate">
+                  {roleFilter === "ALL" ? t.filterAll :
+                   roleFilter === "SUPER_ADMIN" ? t.superAdmins :
+                   roleFilter === "ADMIN" ? t.admins :
+                   roleFilter === "PASTOR" ? t.pastors : t.believers}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isFilterDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {isFilterDropdownOpen && (
+                <>
+                  {/* Backdrop overlay to close dropdown when clicking outside */}
+                  <div 
+                    className="fixed inset-0 z-20" 
+                    onClick={() => setIsFilterDropdownOpen(false)} 
+                  />
+                  <div className="absolute right-0 sm:right-0 mt-1.5 w-52 py-1.5 bg-white dark:bg-[#161832] border border-slate-200 dark:border-white/15 rounded-xl shadow-xl z-30 animate-in fade-in zoom-in-95 duration-150">
+                    {[
+                      { value: "ALL", label: t.filterAll },
+                      { value: "SUPER_ADMIN", label: t.superAdmins },
+                      { value: "ADMIN", label: t.admins },
+                      { value: "PASTOR", label: t.pastors },
+                      { value: "MEMBER", label: t.believers },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => {
+                          setRoleFilter(opt.value);
+                          setIsFilterDropdownOpen(false);
+                        }}
+                        className={`w-full px-3.5 py-2 text-xs font-semibold flex items-center justify-between transition-colors ${
+                          roleFilter === opt.value
+                            ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold"
+                            : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        <span>{opt.label}</span>
+                        {roleFilter === opt.value && <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
