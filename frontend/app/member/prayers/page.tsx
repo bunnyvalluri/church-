@@ -444,8 +444,8 @@ export default function MemberPrayers() {
           transition={{ delay: 0.05 }}
           className="lg:col-span-3 space-y-3.5 w-full min-w-0"
         >
-          {/* Responsive Segmented Control Filter Tabs — 4 Equal Columns on Mobile with ZERO Text Cutoffs */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1 shadow-sm grid grid-cols-4 gap-1 w-full">
+          {/* Responsive Filter Tab Bar — Full Text Visibility with Zero Truncation */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
             {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => {
               const count = f === "ALL" ? stats.total : f === "PRAYING" ? stats.praying : f === "ANSWERED" ? stats.answered : prayers.filter(p => p.status === "PENDING").length;
               const label = f === "ALL" ? pt.tabAll : f === "PRAYING" ? pt.tabPraying : f === "ANSWERED" ? pt.tabAnswered : pt.tabPending;
@@ -453,14 +453,14 @@ export default function MemberPrayers() {
                 <button
                   key={f}
                   onClick={() => setFilterStatus(f)}
-                  className={`w-full py-2 px-1 rounded-xl text-[11px] sm:text-xs font-black transition-all flex items-center justify-center gap-1 text-center truncate ${
+                  className={`px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
                     filterStatus === f
                       ? "bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-md"
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
-                  <span className="truncate">{label}</span>
-                  <span className={`px-1.5 py-0.2 text-[9px] sm:text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
+                  <span className="whitespace-nowrap font-black">{label}</span>
+                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
                     {count}
                   </span>
                 </button>
