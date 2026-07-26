@@ -41,7 +41,7 @@ export default function AdminPageTemplate({
   const refreshLabel = t?.common?.refreshData || "Refresh Data";
 
   return (
-    <div className="space-y-6 pb-12 animate-fade-in text-slate-900 dark:text-white">
+    <div className="space-y-6 pb-12 text-slate-900 dark:text-white">
       {/* ── Top Bar: Breadcrumb + Refresh ── */}
       <div className="flex items-center justify-between gap-4">
         <AdminBreadcrumb />

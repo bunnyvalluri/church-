@@ -203,7 +203,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6">
       
       {/* ─── Top Overview Metric Bar ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
