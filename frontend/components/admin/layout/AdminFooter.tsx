@@ -13,7 +13,15 @@ export default function AdminFooter() {
             Kingdom of Christ Ministries
           </span>
           <span>&copy; {new Date().getFullYear()} All Rights Reserved.</span>
-          <span className="hidden md:inline text-indigo-600 dark:text-indigo-400 font-semibold">• Enterprise Portal v2.6</span>
+          <a
+            href="https://valluri-rahul-portfolio.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-xs tracking-wide text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors"
+          >
+            ✦ Developed by VALLURI RAHUL. ✦
+          </a>
+          <span className="hidden md:inline text-gray-400 dark:text-gray-500">• Enterprise Portal v2.6</span>
         </div>
 
         <div className="flex items-center gap-4 text-[11px] font-medium">
