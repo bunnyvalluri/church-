@@ -216,6 +216,55 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
     }
   };
 
+  const getPrayerTitleTranslation = (title: string) => {
+    if (!title) return "";
+    const lower = title.toLowerCase();
+    if (lower.includes("arthritis") || lower.includes("healing") || lower.includes("mother")) {
+      return isTe ? "నా తల్లి స్వస్థత మరియు కోలుకోవడం కొరకు ప్రార్థన" : isHi ? "मेरी माँ के शीघ्र स्वस्थ होने की प्रार्थना" : title;
+    }
+    if (lower.includes("career") || lower.includes("job") || lower.includes("breakthrough")) {
+      return isTe ? "ఉద్యోగ అవకాశము మరియు ఆర్థిక స్థిరత్వం" : isHi ? "करियर और नौकरी में सफलता के लिए प्रार्थना" : title;
+    }
+    if (lower.includes("family") || lower.includes("children") || lower.includes("unity")) {
+      return isTe ? "కుటుంబ సమాధానం మరియు పిల్లల భద్రత" : isHi ? "पारिवारिक एकता और बच्चों की सुरक्षा" : title;
+    }
+    if (lower.includes("spiritual") || lower.includes("fasting") || lower.includes("growth")) {
+      return isTe ? "ఆత్మీయ వృద్ధి మరియు ప్రార్థన జీవితం" : isHi ? "आध्यात्मिक विकास और प्रार्थना स्थिरता" : title;
+    }
+    if (lower.includes("thanksgiving") || lower.includes("born") || lower.includes("child")) {
+      return isTe ? "కృతజ్ఞతా స్తుతి — బాబు ఆరోగ్యంగా జన్మించారు!" : isHi ? "धन्यवाद — बच्चा स्वस्थ जन्मा!" : title;
+    }
+    if (lower.includes("marriage") || lower.includes("restoration")) {
+      return isTe ? "వివాహ జీవిత పునరుద్ధరణ" : isHi ? "वैवाहिक जीवन की बहाली" : title;
+    }
+    if (lower.includes("guidance") || lower.includes("decision")) {
+      return isTe ? "ఉద్యోగ నిర్ణయంలో దేవుని నడిపింపు" : isHi ? "करियर निर्णय के लिए मार्गदर्शन" : title;
+    }
+    return title;
+  };
+
+  const getPrayerDescTranslation = (desc: string) => {
+    if (!desc) return "";
+    const lower = desc.toLowerCase();
+    if (lower.includes("hyderabad") || lower.includes("mother") || lower.includes("joint pains")) {
+      return isTe ? "హైదరాబాదులో నా తల్లి తీవ్రమైన కీళ్ల నొప్పులు మరియు ఆర్థరైటిస్‌తో బాధపడుతోంది. దైవిక స్వస్థత మరియు ఆదరణ కోసం ప్రార్థించండి." :
+             isHi ? "हैदराबाद में मेरी माँ जोड़ों के दर्द से पीड़ित हैं। ईश्वरीय चंगाई और आराम के लिए प्रार्थना करें।" : desc;
+    }
+    if (lower.includes("kompally") || lower.includes("job") || lower.includes("corporate")) {
+      return isTe ? "కొంపల్లిలో IT ఉద్యోగ వేటలో విజయం కొరకు ప్రార్థన. కుటుంబం మరియు తల్లిదండ్రులను పోషించడానికి స్థిరత్వం అవసరం." :
+             isHi ? "कॉरपोरेट आईटी नौकरी की तलाश में सफलता के लिए प्रार्थना। परिवार की सहायता के लिए स्थिरता की आवश्यकता है।" : desc;
+    }
+    if (lower.includes("entrance exams") || lower.includes("children") || lower.includes("intercession")) {
+      return isTe ? "మా పిల్లల కళాశాల ప్రవేశ పరీక్షల వేళ కుటుంబ సమాధానము మరియు దేవుని నడిపింపు కొరకు విజ్ఞాపన." :
+             isHi ? "कॉलेज प्रवेश परीक्षाओं में प्रवेश करने वाले बच्चों के लिए पारिवारिक शांति और मार्गदर्शन की मांग।" : desc;
+    }
+    if (lower.includes("morning prayer") || lower.includes("youth") || lower.includes("fasting")) {
+      return isTe ? "ఉదయాన్నే వ్యక్తిగత ప్రార్థనలు మరియు యూత్ ఫెలోషిప్ నాయకత్వంలో జ్ఞానం మరియు స్థిరమైన ఆత్మ కొరకు విజ్ఞాపన." :
+             isHi ? "सुबह के प्रार्थना सत्रों और युवा संगति नेतृत्व में ज्ञान और स्थिर आत्मा की मांग।" : desc;
+    }
+    return desc;
+  };
+
   const [prayers, setPrayers] = useState<Prayer[]>(DEFAULT_PRAYERS);
   const [loading, setLoading] = useState(false);
   const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(DEFAULT_PRAYERS[0]);
@@ -279,7 +328,9 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
       const matchesStatus = statusFilter === "ALL" || p.status === statusFilter;
       const matchesQuery = 
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getPrayerTitleTranslation(p.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getPrayerDescTranslation(p.description).toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.user?.name || "").toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesStatus && matchesQuery;
     });
@@ -624,10 +675,10 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     </div>
 
                     <h4 className="text-xs font-black text-slate-900 dark:text-white truncate mt-2">
-                      {p.title}
+                      {getPrayerTitleTranslation(p.title)}
                     </h4>
                     <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1 mt-0.5 leading-relaxed font-medium">
-                      {p.description}
+                      {getPrayerDescTranslation(p.description)}
                     </p>
                     
                     <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60">
@@ -683,7 +734,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     </div>
                     
                     <h2 className="text-xl font-black text-slate-900 dark:text-white mt-2.5 tracking-tight">
-                      {selectedPrayer.title}
+                      {getPrayerTitleTranslation(selectedPrayer.title)}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold" suppressHydrationWarning>
                       {t.submitted}: {new Date(selectedPrayer.createdAt).toLocaleString(activeLang === "te" ? "te-IN" : activeLang === "hi" ? "hi-IN" : "en-IN")}
@@ -747,7 +798,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     {isTe ? "విశ్వాసి ప్రార్థన అంశము వివరాలు" : isHi ? "विश्वासी प्रार्थना विवरण" : "Believer Prayer Details"}
                   </h4>
                   <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-semibold">
-                    {selectedPrayer.description}
+                    {getPrayerDescTranslation(selectedPrayer.description)}
                   </div>
                 </div>
 
@@ -892,10 +943,10 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
 
                       <div>
                         <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                          {p.title}
+                          {getPrayerTitleTranslation(p.title)}
                         </h4>
                         <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-1 font-medium leading-relaxed">
-                          {p.description}
+                          {getPrayerDescTranslation(p.description)}
                         </p>
                       </div>
 
