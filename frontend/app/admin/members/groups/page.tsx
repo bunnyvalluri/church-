@@ -9,10 +9,9 @@ import { useAuth } from "@/components/providers/AuthProvider";
 export default function MemberGroupsPage() {
   const { getIdToken } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadData = async () => {
-    setLoading(true);
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
@@ -23,8 +22,6 @@ export default function MemberGroupsPage() {
       }
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
