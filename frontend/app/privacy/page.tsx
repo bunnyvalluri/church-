@@ -1,0 +1,448 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  ShieldCheck,
+  Lock,
+  Eye,
+  FileText,
+  Server,
+  UserCheck,
+  Bell,
+  Heart,
+  Mail,
+  CheckCircle2,
+  ChevronRight,
+  Printer,
+  Sparkles,
+  HelpCircle,
+  Phone,
+  MapPin,
+  Clock,
+  ExternalLink,
+} from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import BackToHome from "@/components/ui/BackToHome";
+
+export default function PrivacyPolicyPage() {
+  const [activeSection, setActiveSection] = useState("overview");
+
+  const lastUpdated = "July 26, 2026";
+
+  const sections = [
+    { id: "overview", label: "1. Overview & Commitment", icon: ShieldCheck },
+    { id: "collection", label: "2. Information We Collect", icon: FileText },
+    { id: "usage", label: "3. How We Use Information", icon: Eye },
+    { id: "security", label: "4. Security & Data Protection", icon: Lock },
+    { id: "sharing", label: "5. Information Sharing", icon: Server },
+    { id: "cookies", label: "6. Cookies & Technologies", icon: Bell },
+    { id: "rights", label: "7. Your Rights & Control", icon: UserCheck },
+    { id: "children", label: "8. Children's Privacy", icon: Heart },
+    { id: "updates", label: "9. Updates to Policy", icon: Clock },
+    { id: "contact", label: "10. Contact Privacy Officer", icon: Mail },
+  ];
+
+  const handlePrint = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-purple-500/30 selection:text-purple-200">
+      <Navbar />
+
+      {/* Hero Header Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-b from-slate-900 via-purple-950/40 to-slate-950 border-b border-white/10">
+        {/* Glow Effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-indigo-600/15 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <BackToHome />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 backdrop-blur-md transition-all shadow-sm active:scale-95"
+              >
+                <Printer className="w-4 h-4 text-purple-400" />
+                Print / Save PDF
+              </button>
+            </div>
+          </div>
+
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-semibold tracking-wide uppercase mb-4">
+              <Sparkles className="w-3.5 h-3.5" /> Legal & Privacy Assurance
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight mb-4">
+              Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-300 to-purple-200">Policy</span>
+            </h1>
+
+            <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+              Kingdom of Christ Ministries (KCM) is committed to protecting your personal data, prayer requests, donation records, and privacy with the highest standards of trust and integrity.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/5 border border-white/10">
+                <Clock className="w-3.5 h-3.5 text-purple-400" />
+                Last Updated: <strong className="text-slate-200">{lastUpdated}</strong>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/5 border border-white/10">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                GDPR & IT Act Compliant Framework
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <main className="flex-1 py-16 bg-slate-950">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* Sidebar Navigation */}
+            <aside className="lg:col-span-4 xl:col-span-3">
+              <div className="sticky top-28 space-y-4 p-5 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-xl">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 px-3 pb-2 border-b border-white/10 flex items-center justify-between">
+                  <span>Table of Contents</span>
+                  <FileText className="w-4 h-4 text-purple-400" />
+                </h3>
+
+                <nav className="space-y-1">
+                  {sections.map(({ id, label, icon: Icon }) => (
+                    <a
+                      key={id}
+                      href={`#${id}`}
+                      onClick={() => setActiveSection(id)}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                        activeSection === id
+                          ? "bg-purple-600 text-white shadow-md shadow-purple-600/30"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Icon className={`w-4 h-4 shrink-0 ${activeSection === id ? "text-white" : "text-purple-400 group-hover:text-purple-300"}`} />
+                        <span className="truncate">{label}</span>
+                      </div>
+                      <ChevronRight className={`w-3.5 h-3.5 shrink-0 ${activeSection === id ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
+                    </a>
+                  ))}
+                </nav>
+
+                <div className="pt-4 border-t border-white/10 mt-4 space-y-3">
+                  <div className="p-3.5 rounded-xl bg-purple-950/40 border border-purple-800/40 text-xs text-purple-200">
+                    <p className="font-semibold mb-1 flex items-center gap-1.5 text-purple-300">
+                      <HelpCircle className="w-3.5 h-3.5" /> Have Privacy Questions?
+                    </p>
+                    <p className="text-[11px] text-purple-300/80 leading-relaxed mb-2">
+                      Our Data Privacy Officer is available to assist you with any privacy inquiry.
+                    </p>
+                    <a
+                      href="mailto:privacy@kcmministries.org"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:underline"
+                    >
+                      privacy@kcmministries.org <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            {/* Privacy Document Body */}
+            <div className="lg:col-span-8 xl:col-span-9 space-y-12">
+              {/* Section 1: Overview */}
+              <section id="overview" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">1. Overview & Our Sacred Commitment</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  Welcome to <strong>Kingdom of Christ Ministries (&quot;KCM&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;)</strong>. Located in Jeedimetla, Hyderabad, KCM is dedicated to spreading the Gospel, supporting our congregation, providing prayer support, and facilitating charitable community programs.
+                </p>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We consider the personal data and spiritual prayer requests shared with us to be sacred responsibilities. This Privacy Policy details how we collect, store, safeguard, process, and respect your personal information across our website (<code>kcm-portal.vercel.app</code>), mobile-responsive platforms, member portals, and event check-in systems.
+                </p>
+
+                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-emerald-200 text-xs sm:text-sm flex gap-3 items-start">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-white block mb-0.5">Strict Non-Commercial Guarantee</strong>
+                    We do <strong>NEVER</strong> sell, rent, trade, or monetize your personal details or prayer requests to commercial advertisers or data brokers under any circumstances.
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 2: Information We Collect */}
+              <section id="collection" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">2. Information We Collect</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We collect information directly from you when you interact with our portal, register for membership, submit prayer requests, contribute tithes or offerings, or volunteer.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                    <h3 className="font-semibold text-white text-sm flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-purple-400" /> Member Registration Data
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Full name, email address, phone number, physical address, family member details, baptism records, and communication preferences.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                    <h3 className="font-semibold text-white text-sm flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-rose-400" /> Prayer Requests & Pastoral Care
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Prayer request descriptions, spiritual care notes, and counseling request topics (which can be submitted anonymously if desired).
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                    <h3 className="font-semibold text-white text-sm flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-amber-400" /> Tithes, Offerings & Donations
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Transaction IDs, donation amounts, tax receipt information, and payment gateway references (processed via secure PCI-DSS compliant providers like Razorpay).
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                    <h3 className="font-semibold text-white text-sm flex items-center gap-2">
+                      <Server className="w-4 h-4 text-blue-400" /> Technical & Device Information
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      IP address, browser type, device identifiers, operating system, language preferences, and portal usage analytics for performance optimization.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 3: How We Use Information */}
+              <section id="usage" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Eye className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">3. How We Use Your Information</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  Your information is utilized solely for ministry purposes, spiritual care, and operational integrity:
+                </p>
+
+                <ul className="space-y-3 text-sm text-slate-300">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span><strong>Pastoral Care & Prayer Support:</strong> Enabling Senior Pastors and designated intercessors to pray for your requests and provide spiritual guidance.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span><strong>Church Communication:</strong> Sending service updates, Sunday timings, event invitations, newsletter devotionals, and urgent ministry announcements.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span><strong>Financial Accounting & Receipts:</strong> Issuing official tax-exempt donation receipts, tracking 80G documentation, and accounting compliance.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span><strong>Volunteer & Group Coordination:</strong> Managing Sunday school teachers, choir members, event volunteers, and small group leaders.</span>
+                  </li>
+                </ul>
+              </section>
+
+              {/* Section 4: Security & Protection */}
+              <section id="security" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">4. Security & Data Protection Measures</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We employ enterprise-grade physical, administrative, and technical safeguards to keep your data secure against unauthorized access, loss, or alteration.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-2">
+                  <div className="p-4 rounded-xl bg-purple-950/30 border border-purple-800/30 text-slate-200 text-center space-y-1.5">
+                    <Lock className="w-6 h-6 text-purple-400 mx-auto" />
+                    <strong className="block text-white text-sm">TLS 1.3 Encryption</strong>
+                    <span>All web traffic and API endpoints are encrypted in transit via SSL/TLS.</span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-purple-950/30 border border-purple-800/30 text-slate-200 text-center space-y-1.5">
+                    <Server className="w-6 h-6 text-indigo-400 mx-auto" />
+                    <strong className="block text-white text-sm">Encrypted Storage</strong>
+                    <span>Databases & Firebase authentication servers use AES-256 encryption at rest.</span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-purple-950/30 border border-purple-800/30 text-slate-200 text-center space-y-1.5">
+                    <UserCheck className="w-6 h-6 text-emerald-400 mx-auto" />
+                    <strong className="block text-white text-sm">Role-Based Access</strong>
+                    <span>Strict pastoral role permissions prevent unauthorized staff from viewing sensitive data.</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 5: Information Sharing */}
+              <section id="sharing" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Server className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">5. Information Sharing & Third Parties</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We only share your information with essential infrastructure partners under strict confidentiality agreements:
+                </p>
+
+                <div className="space-y-3 text-xs sm:text-sm text-slate-300">
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <strong className="text-white">Hosting & Cloud Infrastructure:</strong> Vercel (Web Hosting) & Google Firebase (Authentication & Realtime Storage).
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <strong className="text-white">Payment Processing:</strong> Razorpay / Stripe (PCI-DSS Level 1 compliant financial gateways). We never store raw debit/credit card credentials.
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <strong className="text-white">Legal Requirements:</strong> We may disclose information if required by law or in good-faith belief that such action is necessary to comply with judicial proceedings or protect personal safety.
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 6: Cookies */}
+              <section id="cookies" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Bell className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">6. Cookies & Tracking Technologies</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We use essential session cookies and local storage to remember your authentication session, language selection (English, Telugu, Hindi), and theme preference (dark/light mode). You can control cookie preferences in your browser settings.
+                </p>
+              </section>
+
+              {/* Section 7: Rights */}
+              <section id="rights" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <UserCheck className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">7. Your Privacy Rights & Choices</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  You hold full control over your personal data:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                    <strong className="text-white block">Right to Access & Export</strong>
+                    <span className="text-slate-400">Request a copy of all personal details held in your member profile.</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                    <strong className="text-white block">Right to Rectification</strong>
+                    <span className="text-slate-400">Update inaccurate phone numbers, addresses, or family information.</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                    <strong className="text-white block">Right to Erasure (&quot;Right to be Forgotten&quot;)</strong>
+                    <span className="text-slate-400">Request permanent deletion of your account and non-financial records.</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                    <strong className="text-white block">Opt-Out of Broadcast SMS / Email</strong>
+                    <span className="text-slate-400">Unsubscribe from non-essential church broadcast communications anytime.</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 8: Children's Privacy */}
+              <section id="children" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-rose-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">8. Children&apos;s Privacy</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We prioritize protecting minors in Sunday School and Youth Ministry programs. Registration of children under 18 years of age requires explicit parental or legal guardian consent. We do not collect personal data from minors directly without parental knowledge.
+                </p>
+              </section>
+
+              {/* Section 9: Updates */}
+              <section id="updates" className="p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white font-heading">9. Updates to This Privacy Policy</h2>
+                </div>
+
+                <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                  We may periodically update this policy to reflect enhancements in portal features or legal compliance requirements. Material changes will be highlighted via a banner on the portal home page or direct email notice.
+                </p>
+              </section>
+
+              {/* Section 10: Contact */}
+              <section id="contact" className="p-8 rounded-2xl bg-gradient-to-br from-purple-900/40 via-slate-900 to-indigo-950/40 border border-purple-500/30 space-y-6 shadow-xl">
+                <div className="flex items-center gap-3 text-purple-300">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center">
+                    <Mail className="w-5 h-5 text-purple-200" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white font-heading">10. Contacting Our Data Privacy Team</h2>
+                    <p className="text-xs text-purple-200/80">Kingdom of Christ Ministries — Data Protection & Privacy Office</p>
+                  </div>
+                </div>
+
+                <p className="text-slate-200 text-sm sm:text-base leading-relaxed">
+                  If you have questions, data access requests, or privacy concerns, please contact our Data Protection Officer:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-1">
+                    <MapPin className="w-4 h-4 text-purple-400 mb-1" />
+                    <strong className="text-white block">Church Office Address</strong>
+                    <span className="text-slate-300">Jeedimetla, Hyderabad, Telangana 500055, India</span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-1">
+                    <Mail className="w-4 h-4 text-purple-400 mb-1" />
+                    <strong className="text-white block">Email Privacy Desk</strong>
+                    <a href="mailto:privacy@kcmministries.org" className="text-purple-300 hover:underline">privacy@kcmministries.org</a>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-1">
+                    <Phone className="w-4 h-4 text-purple-400 mb-1" />
+                    <strong className="text-white block">Phone Support</strong>
+                    <a href="tel:+919876543210" className="text-slate-300 hover:underline">+91 98765 43210</a>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

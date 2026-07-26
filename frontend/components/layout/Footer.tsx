@@ -260,11 +260,17 @@ export default function Footer() {
                 ✦ Developed by VALLURI RAHUL. ✦
               </a>
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link href="/privacy" className="hover:text-[hsl(var(--primary))] transition-colors">
+            <div className="flex gap-6 text-sm font-medium">
+              <Link
+                href="/privacy"
+                className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-[hsl(var(--primary))] transition-colors">
+              <Link
+                href="/terms"
+                className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
+              >
                 Terms of Service
               </Link>
             </div>
