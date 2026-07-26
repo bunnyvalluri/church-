@@ -15,7 +15,7 @@ export default function NgoMediaPage() {
       icon={Camera}
       isLoading={loading}
     >
-      <NgoManagement />
+      <NgoManagement activeSubView="media" />
     </AdminPageTemplate>
   );
 }

@@ -15,7 +15,7 @@ export default function NgoProjectsPage() {
       icon={FolderKanban}
       isLoading={loading}
     >
-      <NgoManagement />
+      <NgoManagement activeSubView="projects" />
     </AdminPageTemplate>
   );
 }

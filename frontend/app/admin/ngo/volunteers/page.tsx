@@ -15,7 +15,7 @@ export default function NgoVolunteersPage() {
       icon={UserCog}
       isLoading={loading}
     >
-      <NgoManagement />
+      <NgoManagement activeSubView="volunteers" />
     </AdminPageTemplate>
   );
 }

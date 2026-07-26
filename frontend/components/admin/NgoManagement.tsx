@@ -16,7 +16,16 @@ import {
   Phone, 
   Mail, 
   Award,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Search,
+  Sparkles,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  ExternalLink
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -69,6 +78,10 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
   
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Search & Filter
+  const [search, setSearch] = useState("");
+  const [volunteerStatusFilter, setVolunteerStatusFilter] = useState<string>("ALL");
 
   // Form modals / fields
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -263,180 +276,311 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
     }
   };
 
+  // Derived metrics
+  const activeProjectsCount = projects.filter(p => p.status === "ACTIVE").length;
+  const pendingVolunteersCount = volunteers.filter(v => v.status === "PENDING").length;
+
   return (
-    <div className="space-y-6 text-slate-800 dark:text-slate-100">
+    <div className="space-y-6 text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
       
-      {/* 1. Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#121324] p-6 rounded-3xl border border-slate-100 dark:border-white/[0.04] shadow-sm">
-        <div className="text-left">
-          <h2 className="text-xl font-extrabold flex items-center gap-2">
-            <Heart className="w-5 h-5 text-indigo-500 fill-current" />
-            KCM NGO Administration
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Manage your physical outreaches, YouTube/Cloudinary media feeds, and volunteer rosters.
-          </p>
+      {/* ─── 1. Summary Stats Bar ─── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Outreach Campaigns</span>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{projects.length}</h3>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-500/20">
+                {activeProjectsCount} Active
+              </span>
+            </div>
+          </div>
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 rounded-xl">
+            <Heart className="w-5 h-5" />
+          </div>
         </div>
 
-        {/* Create Buttons */}
-        <div className="flex gap-2">
+        <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Media & Video Logs</span>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{media.length}</h3>
+              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/20">
+                Gallery Archives
+              </span>
+            </div>
+          </div>
+          <div className="p-3 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20 rounded-xl">
+            <ImageIcon className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Volunteers Roster</span>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{volunteers.length}</h3>
+              {pendingVolunteersCount > 0 ? (
+                <span className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-500/20 animate-pulse">
+                  {pendingVolunteersCount} Pending
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-slate-200 dark:border-white/10">
+                  Up to date
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="p-3 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 rounded-xl">
+            <Users className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+
+      {/* ─── 2. Controls & Tab Navigation Bar ─── */}
+      <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        {/* Tab Pills */}
+        <div className="p-1.5 bg-slate-100 dark:bg-[#181932] border border-slate-200 dark:border-white/10 rounded-xl flex gap-1.5 items-center w-max max-w-full overflow-x-auto select-none scrollbar-none">
+          {[
+            { id: "projects", label: "Projects Roster", icon: Heart },
+            { id: "media", label: "Media Library Logs", icon: ImageIcon },
+            { id: "volunteers", label: `Volunteer Requests ${pendingVolunteersCount > 0 ? `(${pendingVolunteersCount})` : ''}`, icon: Users },
+          ].map((tab) => {
+            const isActive = subView === tab.id;
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setSubView(tab.id as any)}
+                className={`py-2 px-4 rounded-lg flex items-center gap-2 text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 border border-indigo-500"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search & Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder={`Filter ${subView}...`}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-[#181932] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
+            />
+          </div>
+
           {subView === "projects" && (
             <button
               onClick={handleOpenAddProject}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+              className="py-2 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4" /> Add Project
             </button>
           )}
+
           {subView === "media" && (
             <button
               onClick={handleOpenAddMedia}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+              className="py-2 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4" /> Add Media
             </button>
           )}
         </div>
+
       </div>
 
-      {/* 2. Sub-Tabs switching */}
-      <div className="flex border-b border-slate-100 dark:border-white/[0.05] gap-4">
-        {[
-          { id: "projects", label: "Projects Roster", icon: Heart },
-          { id: "media", label: "Media Library Logs", icon: ImageIcon },
-          { id: "volunteers", label: "Volunteer Requests", icon: Users },
-        ].map((tab) => {
-          const isActive = subView === tab.id;
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setSubView(tab.id as any)}
-              className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-                isActive
-                  ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
-                  : "border-transparent text-gray-400 hover:text-slate-700 dark:hover:text-white"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 3. Main Data Panel Rendering */}
+      {/* ─── 3. Main Data View Panel ─── */}
       {loading ? (
-        <div className="min-h-[200px] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <div className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 rounded-2xl p-12 min-h-[300px] flex flex-col items-center justify-center space-y-3">
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading NGO records...</p>
         </div>
       ) : (
         <div className="space-y-6">
           
-          {/* A. PROJECTS TAB */}
+          {/* ────────────────── A. PROJECTS TAB ────────────────── */}
           {subView === "projects" && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.length === 0 ? (
-                <div className="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-3xl border-slate-200 dark:border-white/10">
-                  No NGO projects added yet. Click &quot;Add Project&quot; above to create one.
+            <div className="space-y-6">
+              {projects.filter(p => p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
+                <div className="bg-white dark:bg-[#121324] border border-dashed border-slate-300 dark:border-white/10 rounded-2xl p-12 text-center space-y-4 shadow-sm">
+                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto border border-indigo-200 dark:border-indigo-500/20">
+                    <Heart className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1 max-w-sm mx-auto">
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">No NGO Projects Found</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Create your first community outreach project to track field initiatives, goals, and raised funding.</p>
+                  </div>
+                  <button
+                    onClick={handleOpenAddProject}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition-all active:scale-95"
+                  >
+                    <Plus className="w-4 h-4" /> Create First Project
+                  </button>
                 </div>
               ) : (
-                projects.map((proj) => (
-                  <div
-                    key={proj.id}
-                    className="bg-white dark:bg-[#121324] border border-slate-100 dark:border-white/[0.04] rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between"
-                  >
-                    <div>
-                      {proj.imageUrl && (
-                        <div className="relative aspect-video w-full">
-                          <img src={proj.imageUrl} alt={proj.title} className="object-cover w-full h-full" />
-                        </div>
-                      )}
-                      <div className="p-5 space-y-3 text-left">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-mono font-black bg-indigo-500/10 text-indigo-500 px-2 py-0.5 rounded-full uppercase">
-                            {proj.status}
-                          </span>
-                          <span className="text-[10px] text-gray-400 font-mono">
-                            {formatDate(proj.createdAt)}
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-base text-slate-900 dark:text-white line-clamp-1">{proj.title}</h4>
-                        <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{proj.description}</p>
-                      </div>
-                    </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {projects.filter(p => p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase())).map((proj) => {
+                    const percentRaised = proj.targetAmount && proj.targetAmount > 0 
+                      ? Math.min(100, Math.round(((proj.raisedAmount || 0) / proj.targetAmount) * 100))
+                      : null;
 
-                    <div className="p-5 pt-0 flex gap-2">
-                      <button
-                        onClick={() => handleOpenEditProject(proj)}
-                        className="flex-1 py-2 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1"
+                    return (
+                      <div
+                        key={proj.id}
+                        className="bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:shadow-md transition-all flex flex-col justify-between group"
                       >
-                        <Edit2 className="w-3.5 h-3.5" /> Edit
-                      </button>
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleDeleteProject(proj.id)}
-                        className="flex-1 py-2 border border-red-200 dark:border-red-500/20 hover:bg-red-550/10 text-red-600 dark:text-red-400 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
+                        <div>
+                          {/* Image or Gradient Header */}
+                          <div className="relative h-44 w-full bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 overflow-hidden">
+                            {proj.imageUrl ? (
+                              <img src={proj.imageUrl} alt={proj.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center p-4 text-white/90 text-center space-y-1">
+                                <Heart className="w-8 h-8 text-white/80" />
+                                <span className="text-xs font-extrabold tracking-wide uppercase">Outreach Drive</span>
+                              </div>
+                            )}
+                            
+                            <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm backdrop-blur-md ${
+                              proj.status === "ACTIVE" 
+                                ? "bg-emerald-500/90 text-white border border-emerald-400/30"
+                                : proj.status === "COMPLETED"
+                                ? "bg-blue-600/90 text-white border border-blue-400/30"
+                                : "bg-amber-500/90 text-white border border-amber-400/30"
+                            }`}>
+                              {proj.status}
+                            </span>
+                          </div>
+
+                          {/* Content Body */}
+                          <div className="p-5 space-y-3">
+                            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                                {formatDate(proj.createdAt)}
+                              </span>
+                            </div>
+
+                            <h4 className="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                              {proj.title}
+                            </h4>
+
+                            <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-medium">
+                              {proj.description}
+                            </p>
+
+                            {/* Funding Goal Bar if set */}
+                            {proj.targetAmount && proj.targetAmount > 0 && (
+                              <div className="pt-2 space-y-1.5">
+                                <div className="flex items-center justify-between text-[11px] font-bold">
+                                  <span className="text-slate-600 dark:text-slate-300">Raised: ₹{(proj.raisedAmount || 0).toLocaleString('en-IN')}</span>
+                                  <span className="text-indigo-600 dark:text-indigo-400">Target: ₹{proj.targetAmount.toLocaleString('en-IN')} ({percentRaised}%)</span>
+                                </div>
+                                <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full transition-all duration-500"
+                                    style={{ width: `${percentRaised}%` }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Footer Action Buttons */}
+                        <div className="p-5 pt-0 flex gap-2">
+                          <button
+                            onClick={() => handleOpenEditProject(proj)}
+                            className="flex-1 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-300 hover:border-indigo-200 dark:hover:border-indigo-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" /> Edit
+                          </button>
+                          <button
+                            disabled={actionLoading}
+                            onClick={() => handleDeleteProject(proj.id)}
+                            className="py-2 px-3 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 dark:hover:border-rose-500/30 rounded-xl text-xs font-bold flex items-center justify-center transition-all"
+                            title="Delete Project"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
 
-          {/* B. MEDIA TAB */}
+          {/* ────────────────── B. MEDIA TAB ────────────────── */}
           {subView === "media" && (
-            <div className="bg-white dark:bg-[#121324] border border-slate-100 dark:border-white/[0.04] rounded-3xl overflow-hidden shadow-sm">
+            <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 dark:bg-white/[0.02] text-[10px] font-bold text-gray-400 dark:text-gray-550 uppercase border-b border-slate-100 dark:border-white/[0.04]">
-                    <tr>
-                      <th className="px-6 py-4">Title</th>
-                      <th className="px-6 py-4">Type</th>
-                      <th className="px-6 py-4">Category</th>
-                      <th className="px-6 py-4">URL</th>
-                      <th className="px-6 py-4">Created At</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
+                <table className="w-full text-left border-collapse min-w-[700px]">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
+                      <th className="py-4 px-6">Media Title</th>
+                      <th className="py-4 px-6">Type</th>
+                      <th className="py-4 px-6">Category</th>
+                      <th className="py-4 px-6">Resource Link</th>
+                      <th className="py-4 px-6">Created At</th>
+                      <th className="py-4 px-6 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                    {media.length === 0 ? (
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {media.filter(m => (m.title || "").toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
-                          No media logs found. Click &quot;Add Media&quot; above to link pictures or video playlists.
+                        <td colSpan={6} className="py-12 text-center text-slate-400 dark:text-slate-500 font-medium">
+                          No media logs found. Click &quot;Add Media&quot; above to link photo feeds or video playlists.
                         </td>
                       </tr>
                     ) : (
-                      media.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01]">
-                          <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                            {item.title || "Untitled"}
+                      media.filter(m => (m.title || "").toLowerCase().includes(search.toLowerCase())).map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                          <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">
+                            {item.title || "Untitled Media"}
                           </td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold font-mono ${
+                          <td className="py-4 px-6">
+                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
                               item.type === "IMAGE" 
-                                ? "bg-emerald-500/10 text-emerald-500"
-                                : "bg-red-500/10 text-red-500"
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20"
+                                : "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-500/20"
                             }`}>
                               {item.type}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-gray-500">{item.category || "General"}</td>
-                          <td className="px-6 py-4 max-w-[200px] truncate text-slate-400 font-mono text-[10px]">
-                            {item.url}
+                          <td className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">{item.category || "General Gallery"}</td>
+                          <td className="py-4 px-6 max-w-[220px]">
+                            <a 
+                              href={item.url} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 hover:underline truncate max-w-full"
+                            >
+                              <ExternalLink className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{item.url}</span>
+                            </a>
                           </td>
-                          <td className="px-6 py-4 text-gray-450">{formatDate(item.createdAt)}</td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="py-4 px-6 text-slate-500 dark:text-slate-400">{formatDate(item.createdAt)}</td>
+                          <td className="py-4 px-6 text-right">
                             <button
                               disabled={actionLoading}
                               onClick={() => handleDeleteMedia(item.id)}
-                              className="p-1.5 hover:text-red-500 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-slate-400"
-                              title="Delete media reference"
+                              className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                              title="Delete media log"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </td>
                         </tr>
@@ -448,91 +592,99 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
             </div>
           )}
 
-          {/* C. VOLUNTEERS TAB */}
+          {/* ────────────────── C. VOLUNTEERS TAB ────────────────── */}
           {subView === "volunteers" && (
-            <div className="bg-white dark:bg-[#121324] border border-slate-100 dark:border-white/[0.04] rounded-3xl overflow-hidden shadow-sm">
+            <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 dark:bg-white/[0.02] text-[10px] font-bold text-gray-400 dark:text-gray-550 uppercase border-b border-slate-100 dark:border-white/[0.04]">
-                    <tr>
-                      <th className="px-6 py-4">Name</th>
-                      <th className="px-6 py-4">Contact Info</th>
-                      <th className="px-6 py-4">Assigned Initiative</th>
-                      <th className="px-6 py-4">Experience / Skills</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Applied Date</th>
-                      <th className="px-6 py-4 text-right">Review Action</th>
+                <table className="w-full text-left border-collapse min-w-[750px]">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
+                      <th className="py-4 px-6">Volunteer Name</th>
+                      <th className="py-4 px-6">Contact Info</th>
+                      <th className="py-4 px-6">Assigned Initiative</th>
+                      <th className="py-4 px-6">Skills / Notes</th>
+                      <th className="py-4 px-6">Status</th>
+                      <th className="py-4 px-6">Applied Date</th>
+                      <th className="py-4 px-6 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                    {volunteers.length === 0 ? (
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {volunteers.filter(v => v.name.toLowerCase().includes(search.toLowerCase()) || v.email.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                        <td colSpan={7} className="py-12 text-center text-slate-400 dark:text-slate-500 font-medium">
                           No volunteer applications registered yet.
                         </td>
                       </tr>
                     ) : (
-                      volunteers.map((vol) => (
-                        <tr key={vol.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01]">
-                          <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                            {vol.name}
+                      volunteers.filter(v => v.name.toLowerCase().includes(search.toLowerCase()) || v.email.toLowerCase().includes(search.toLowerCase())).map((vol) => (
+                        <tr key={vol.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 text-white font-extrabold text-xs flex items-center justify-center uppercase shrink-0 shadow-sm">
+                                {(vol.name || "V").substring(0, 2)}
+                              </div>
+                              <span className="font-extrabold text-slate-900 dark:text-white">{vol.name}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4 space-y-0.5">
-                            <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                              <Mail className="w-3 h-3" /> {vol.email}
+                          <td className="py-4 px-6 space-y-1">
+                            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                              <Mail className="w-3.5 h-3.5 text-slate-400" /> {vol.email}
                             </div>
                             {vol.phone && (
-                              <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                                <Phone className="w-3 h-3" /> {vol.phone}
+                              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                                <Phone className="w-3.5 h-3.5 text-slate-400" /> {vol.phone}
                               </div>
                             )}
                           </td>
-                          <td className="px-6 py-4 font-semibold text-indigo-500">
-                            {vol.project?.title || "General / Any Project"}
+                          <td className="py-4 px-6 font-bold text-indigo-600 dark:text-indigo-400">
+                            {vol.project?.title || "General Outreach"}
                           </td>
-                          <td className="px-6 py-4 max-w-[200px] truncate text-slate-400 leading-normal" title={vol.skills || ""}>
-                            {vol.skills || "None provided"}
+                          <td className="py-4 px-6 max-w-[200px] truncate text-slate-500 dark:text-slate-400 font-medium" title={vol.skills || ""}>
+                            {vol.skills || "General volunteer"}
                           </td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold font-mono ${
+                          <td className="py-4 px-6">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border inline-flex items-center gap-1 ${
                               vol.status === "APPROVED" 
-                                ? "bg-emerald-500/10 text-emerald-500"
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20"
                                 : vol.status === "REJECTED"
-                                ? "bg-rose-500/10 text-rose-550"
-                                : "bg-amber-500/10 text-amber-500"
+                                ? "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/20"
+                                : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
                             }`}>
+                              {vol.status === "APPROVED" && <CheckCircle2 className="w-3 h-3" />}
+                              {vol.status === "PENDING" && <Clock className="w-3 h-3" />}
+                              {vol.status === "REJECTED" && <XCircle className="w-3 h-3" />}
                               {vol.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-gray-450">{formatDate(vol.createdAt)}</td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="py-4 px-6 text-slate-500 dark:text-slate-400">{formatDate(vol.createdAt)}</td>
+                          <td className="py-4 px-6 text-right">
                             {vol.status === "PENDING" ? (
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   disabled={actionLoading}
                                   onClick={() => handleUpdateVolunteerStatus(vol.id, "APPROVED")}
-                                  className="p-1 hover:bg-emerald-500/20 text-emerald-500 rounded border border-emerald-500/20"
-                                  title="Approve volunteer"
+                                  className="p-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-500/20 transition-all"
+                                  title="Approve volunteer application"
                                 >
-                                  <Check className="w-3.5 h-3.5" />
+                                  <Check className="w-4 h-4" />
                                 </button>
                                 <button
                                   disabled={actionLoading}
                                   onClick={() => handleUpdateVolunteerStatus(vol.id, "REJECTED")}
-                                  className="p-1 hover:bg-rose-500/20 text-rose-550 rounded border border-rose-550/20"
-                                  title="Decline volunteer"
+                                  className="p-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 text-rose-600 dark:text-rose-400 rounded-lg border border-rose-200 dark:border-rose-500/20 transition-all"
+                                  title="Decline application"
                                 >
-                                  <X className="w-3.5 h-3.5" />
+                                  <X className="w-4 h-4" />
                                 </button>
                               </div>
                             ) : (
                               <button
                                 disabled={actionLoading}
                                 onClick={() => handleDeleteVolunteer(vol.id)}
-                                className="p-1.5 hover:text-red-500 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-slate-400"
+                                className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                                 title="Delete application record"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             )}
                           </td>
@@ -548,66 +700,67 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
         </div>
       )}
 
-      {/* 4. MODALS FOR FORMS */}
-      {/* Project modal */}
+      {/* ─── 4. MODALS FOR FORMS ─── */}
+      {/* Project Modal */}
       {isProjectModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden text-slate-800 dark:text-slate-100 text-left">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+          <div className="bg-white dark:bg-[#121324] rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-slate-800 dark:text-slate-100 text-left animate-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                <Heart className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 {editingProject ? "Update NGO Project" : "Add NGO Project"}
               </h3>
               <button 
                 onClick={() => setIsProjectModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg border border-slate-200 dark:border-white/[0.08]"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg transition-colors"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
             
             <form onSubmit={handleSaveProject} className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-550 uppercase mb-1.5">Project Title</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Project Title</label>
                 <input 
                   type="text" required placeholder="e.g. Gandhi Hospital Food Drive" value={projectForm.title}
                   onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Brief Description</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Brief Description</label>
                 <input 
                   type="text" required placeholder="e.g. Distributing grocery and medical kits." value={projectForm.description}
                   onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Full Details Story</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Full Story & Impact Details</label>
                 <textarea 
-                  rows={4} required placeholder="Detailed story of the outreach campaign..." value={projectForm.details}
+                  rows={3} required placeholder="Detailed story of the outreach campaign..." value={projectForm.details}
                   onChange={(e) => setProjectForm({ ...projectForm, details: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Target Amount (INR)</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Target Budget (INR)</label>
                   <input 
                     type="number" placeholder="e.g. 150000" value={projectForm.targetAmount}
                     onChange={(e) => setProjectForm({ ...projectForm, targetAmount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Project Status</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Project Status</label>
                   <select
                     value={projectForm.status}
                     onChange={(e) => setProjectForm({ ...projectForm, status: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="COMPLETED">COMPLETED</option>
@@ -617,24 +770,24 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Cover Image URL</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Cover Image URL</label>
                 <input 
                   type="text" placeholder="https://images.unsplash.com/... or Cloudinary URL" value={projectForm.imageUrl}
                   onChange={(e) => setProjectForm({ ...projectForm, imageUrl: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
-              <div className="flex gap-4 pt-2">
+              <div className="flex gap-3 pt-3">
                 <button
                   type="button" onClick={() => setIsProjectModalOpen(false)}
-                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-xs font-bold transition-all"
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit" disabled={actionLoading}
-                  className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                  className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
                 >
                   {actionLoading ? "Saving..." : "Save Project"}
                 </button>
@@ -644,76 +797,68 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
         </div>
       )}
 
-      {/* Media modal */}
+      {/* Media Modal */}
       {isMediaModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden text-slate-800 dark:text-slate-100 text-left">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
-                Link Media File
+          <div className="bg-white dark:bg-[#121324] rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-slate-800 dark:text-slate-100 text-left animate-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02]">
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                Link Media File Log
               </h3>
               <button 
                 onClick={() => setIsMediaModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg border border-slate-200 dark:border-white/[0.08]"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg transition-colors"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
             
             <form onSubmit={handleSaveMedia} className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-550 uppercase mb-1.5">Media Title (Optional)</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Media Title</label>
                 <input 
                   type="text" placeholder="e.g. Distribution photo log #1" value={mediaForm.title}
                   onChange={(e) => setMediaForm({ ...mediaForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-550 uppercase mb-1.5">Description (Optional)</label>
-                <input 
-                  type="text" placeholder="e.g. Packing medical aid packets." value={mediaForm.description}
-                  onChange={(e) => setMediaForm({ ...mediaForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Media Type</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Media Type</label>
                   <select
                     value={mediaForm.type}
                     onChange={(e) => setMediaForm({ ...mediaForm, type: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
                     <option value="IMAGE">IMAGE</option>
                     <option value="VIDEO_YOUTUBE">VIDEO (YOUTUBE)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Category</label>
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Category</label>
                   <select
                     value={mediaForm.category}
                     onChange={(e) => setMediaForm({ ...mediaForm, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                   >
                     <option value="">General Gallery</option>
                     <option value="GANDHI-HOSPITAL">GANDHI HOSPITAL</option>
                     <option value="NIMS-HOSPITAL">NIMS HOSPITAL</option>
                     <option value="GOVT-HOSPITAL">GOVT HOSPITAL</option>
                     <option value="ASHRAMAM">ASHRAMAMS</option>
-                    <option value="DISABLED-AASHRAMAM">DISABLED CARE</option>
+                    <option value="DISABLED-CARE">DISABLED CARE</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Associated NGO Project</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Associated NGO Project</label>
                 <select
                   value={mediaForm.projectId}
                   onChange={(e) => setMediaForm({ ...mediaForm, projectId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 >
                   <option value="">None / Independent Media</option>
                   {projects.map((proj) => (
@@ -723,24 +868,24 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-555 uppercase mb-1.5">Resource Link / Embed URL</label>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Resource Link / Embed URL</label>
                 <input 
                   type="text" required placeholder="Cloudinary URL or YouTube Embed Link" value={mediaForm.url}
                   onChange={(e) => setMediaForm({ ...mediaForm, url: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-xs bg-slate-50 dark:bg-[#181932] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold"
                 />
               </div>
 
-              <div className="flex gap-4 pt-2">
+              <div className="flex gap-3 pt-3">
                 <button
                   type="button" onClick={() => setIsMediaModalOpen(false)}
-                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-xs font-bold transition-all"
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit" disabled={actionLoading}
-                  className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                  className="flex-[2] py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
                 >
                   {actionLoading ? "Saving..." : "Save Media Reference"}
                 </button>
