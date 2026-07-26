@@ -82,12 +82,12 @@ const purposeColorMap: Record<string, string> = {
 };
 
 const purposeBgMap: Record<string, string> = {
-  TITHE: "bg-violet-50/90 dark:bg-purple-950/60 border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10",
-  OFFERING: "bg-rose-50/90 dark:bg-rose-950/60 border-rose-600 dark:border-rose-400 shadow-md shadow-rose-500/10",
-  BUILDING_FUND: "bg-amber-50/90 dark:bg-amber-950/60 border-amber-600 dark:border-amber-400 shadow-md shadow-amber-500/10",
-  MISSIONS: "bg-blue-50/90 dark:bg-blue-950/60 border-blue-600 dark:border-blue-400 shadow-md shadow-blue-500/10",
-  BENEVOLENCE: "bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-600 dark:border-emerald-400 shadow-md shadow-emerald-500/10",
-  SPECIAL: "bg-fuchsia-50/90 dark:bg-fuchsia-950/60 border-fuchsia-600 dark:border-fuchsia-400 shadow-md shadow-fuchsia-500/10",
+  TITHE: "bg-purple-50 dark:bg-purple-950/70 border-purple-500 dark:border-purple-400 shadow-sm",
+  OFFERING: "bg-rose-50 dark:bg-rose-950/70 border-rose-500 dark:border-rose-400 shadow-sm",
+  BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/70 border-amber-500 dark:border-amber-400 shadow-sm",
+  MISSIONS: "bg-blue-50 dark:bg-blue-950/70 border-blue-500 dark:border-blue-400 shadow-sm",
+  BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500 dark:border-emerald-400 shadow-sm",
+  SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/70 border-fuchsia-500 dark:border-fuchsia-400 shadow-sm",
 };
 
 export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
@@ -695,7 +695,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       {/* ── HERO SECTION ──────────────────────────────────── */}
       <section className="relative py-16 sm:py-24 md:py-28 overflow-hidden">
         {/* Layered background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-800 via-indigo-800 to-violet-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
         
         {/* Glowing orbs */}
@@ -752,7 +752,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-sm min-[480px]:text-base sm:text-xl text-purple-100 dark:text-purple-200 font-medium max-w-xl mx-auto leading-relaxed px-2"
+              className="text-sm min-[480px]:text-base sm:text-xl text-purple-100 dark:text-purple-200 font-semibold max-w-xl mx-auto leading-relaxed px-2 opacity-95"
             >
               {t.pages.give.subtitle}
             </motion.p>
@@ -900,7 +900,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                     } ${
                                       amount === preset && !customAmount
                                         ? "border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-[1.02]"
-                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 font-extrabold hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950/40"
+                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950/40"
                                     }`}
                                   >
                                     {amount === preset && !customAmount && (
@@ -958,10 +958,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                         {icon}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <span className={`block font-extrabold text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-purple-900 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                        <span className={`block font-black text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
-                                        <span className="block text-gray-600 dark:text-gray-300 text-[10px] sm:text-[11px] mt-0.5 leading-snug font-medium line-clamp-2 break-words">
+                                        <span className="block text-gray-600 dark:text-gray-300 text-[10px] sm:text-[11px] mt-0.5 leading-snug font-semibold line-clamp-2 break-words">
                                           {getLanguagePurposeDesc(p)}
                                         </span>
                                       </div>
@@ -984,7 +984,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <select
                                   value={selectedBranch}
                                   onChange={(e) => setSelectedBranch(e.target.value)}
-                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none font-semibold appearance-none transition-all text-xs sm:text-sm"
+                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none appearance-none transition-all text-xs sm:text-sm"
                                 >
                                   {branches.map((b) => (
                                     <option key={b.id} value={b.id}>⛪ {b.name}</option>
@@ -1015,7 +1015,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       placeholder={t.pages.give.fullNamePlaceholder}
                                       value={donorName}
                                       onChange={(e) => setDonorName(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
                                     />
                                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
                                   </div>
@@ -1428,7 +1428,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               <div className="lg:col-span-5 space-y-4 sm:space-y-5">
 
                 {/* Giving Summary Card */}
-                <div className="relative bg-gradient-to-br from-[#2d1261] via-[#3d1f8a] to-[#1e1065] rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+                <div className="relative bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-950 rounded-3xl shadow-xl overflow-hidden">
                   {/* Background decoration */}
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full filter blur-3xl transform translate-x-16 -translate-y-16" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-400/10 rounded-full filter blur-2xl transform -translate-x-8 translate-y-8" />
@@ -1566,14 +1566,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                 )}
 
                 {/* Scripture Card */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 rounded-3xl px-5 py-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] border border-amber-100 dark:border-amber-800/20">
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-amber-900/30 rounded-3xl px-5 py-6 sm:p-8 shadow-sm border border-amber-200 dark:border-amber-800/50">
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
                       <BookOpen className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-amber-900 dark:text-amber-300 text-sm mb-1">{t.pages.give.malachiTitle}</h4>
-                      <p className="text-amber-800/80 dark:text-amber-400/80 text-xs leading-relaxed italic">{t.pages.give.malachiDesc}</p>
+                      <h4 className="font-extrabold text-amber-950 dark:text-amber-200 text-sm mb-1">{t.pages.give.malachiTitle}</h4>
+                      <p className="text-amber-900/90 dark:text-amber-300 text-xs leading-relaxed italic font-medium">{t.pages.give.malachiDesc}</p>
                     </div>
                   </div>
                 </div>
@@ -1638,7 +1638,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md shadow-purple-600/20 group-hover:scale-110 transition-transform">
                     <Check className="h-4 w-4 text-white stroke-[2.5]" />
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300 font-medium text-sm sm:text-base leading-relaxed">{item}</p>
+                  <p className="text-gray-800 dark:text-gray-200 font-extrabold text-sm sm:text-base leading-relaxed">{item}</p>
                 </motion.div>
               ))}
             </div>
