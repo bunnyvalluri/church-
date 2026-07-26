@@ -76,8 +76,7 @@ export default function PastorSidebar({
         { name: t.navMemberRequests, href: "/pastor/main/member-requests", icon: Users, iconColor: "text-sky-500", activeBg: "bg-sky-500/10 dark:bg-sky-500/20", activeText: "text-sky-600 dark:text-sky-400", activeBar: "bg-sky-500" },
         { name: t.navPrayerRequests, href: "/pastor/main/prayer-requests", icon: Heart, iconColor: "text-rose-500", activeBg: "bg-rose-500/10 dark:bg-rose-500/20", activeText: "text-rose-600 dark:text-rose-400", activeBar: "bg-rose-500" },
         { name: t.navEvents, href: "/pastor/main/events", icon: Calendar, iconColor: "text-amber-500", activeBg: "bg-amber-500/10 dark:bg-amber-500/20", activeText: "text-amber-600 dark:text-amber-400", activeBar: "bg-amber-500" },
-        { name: t.navMessages, href: "/pastor/main/messages", icon: MessageSquare, iconColor: "text-purple-500", activeBg: "bg-purple-500/10 dark:bg-purple-500/20", activeText: "text-purple-600 dark:text-purple-400", activeBar: "bg-purple-500" },
-        { name: t.navChurchServices || "Church Services", href: "/event-manager", icon: Sparkles, iconColor: "text-red-500", activeBg: "bg-red-500/10 dark:bg-red-500/20", activeText: "text-red-600 dark:text-red-400", activeBar: "bg-red-500" }
+        { name: t.navMessages, href: "/pastor/main/messages", icon: MessageSquare, iconColor: "text-purple-500", activeBg: "bg-purple-500/10 dark:bg-purple-500/20", activeText: "text-purple-600 dark:text-purple-400", activeBar: "bg-purple-500" }
       ]
     },
     {
