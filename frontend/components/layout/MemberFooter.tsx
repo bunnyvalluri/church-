@@ -13,7 +13,7 @@ export default function MemberFooter() {
   }, []);
 
   return (
-    <footer className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md py-4 px-4 sm:px-6 mt-8 select-none transition-colors">
+    <footer className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md py-4 pb-20 sm:pb-4 px-4 sm:px-6 mt-8 select-none transition-colors">
       <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
         
         {/* Copyright & Developer Info */}

@@ -355,7 +355,7 @@ export default function MemberProfile() {
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto">
+    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -378,7 +378,7 @@ export default function MemberProfile() {
       {/* â”€â”€ PAGE HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex items-start sm:items-center justify-between gap-3 mb-5 sm:mb-6 flex-wrap">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+          <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -464,7 +464,7 @@ export default function MemberProfile() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.email}</p>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "â€”"}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "-"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -473,7 +473,7 @@ export default function MemberProfile() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.phone}</p>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{phone || "â€”"}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{phone || "-"}</p>
                 </div>
               </div>
               {joinedAt && (
