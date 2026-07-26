@@ -237,7 +237,18 @@ export default function AttendanceManagement({
     }
   };
 
-  const currentEvent = events.find(e => e.id === selectedEventId) || events[0] || { title: "Worship Program", id: "evt_worship_sun", location: "Main Sanctuary", date: new Date().toISOString() };
+  const displayEvents = useMemo(() => {
+    if (events && events.length > 0) return events;
+    return [
+      { id: "evt_worship_sun", title: "Sunday Worship Service", date: new Date().toISOString(), location: "Subhash Nagar Sanctuary" },
+      { id: "evt_friday_prayer", title: "Friday Intercessory Prayer", date: new Date(Date.now() + 86400000 * 2).toISOString(), location: "Shapur Location" },
+      { id: "evt_youth_meet", title: "Youth Special Fellowship", date: new Date(Date.now() + 86400000 * 4).toISOString(), location: "Bahadurpally Location" }
+    ];
+  }, [events]);
+
+  const currentEvent = useMemo(() => {
+    return displayEvents.find(e => e.id === selectedEventId) || displayEvents[0];
+  }, [displayEvents, selectedEventId]);
 
   // Calculated Stats Overview
   const stats = useMemo(() => {
@@ -568,9 +579,9 @@ export default function AttendanceManagement({
               </h3>
               
               <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-1 custom-scrollbar">
-                {events.map(e => {
+                {displayEvents.map(e => {
                   const checkinCount = (eventCheckins[e.id] || []).length;
-                  const isSelected = selectedEventId === e.id;
+                  const isSelected = currentEvent.id === e.id;
                   return (
                     <div 
                       key={e.id}
