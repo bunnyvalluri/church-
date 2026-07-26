@@ -1089,7 +1089,7 @@ export default function AdminDashboard() {
       <main className="flex-1 flex flex-col overflow-y-auto max-h-screen custom-scrollbar relative z-10 w-full min-w-0">
         
         {/* Top Header */}
-        <header className="admin-header h-auto pt-4 pb-3 sm:h-20 sm:py-0 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 shadow-sm transition-all">
+        <header className="admin-header h-auto pt-5 pb-3 sm:h-20 sm:py-0 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-4">
             <button
               type="button"

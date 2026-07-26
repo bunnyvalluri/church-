@@ -41,7 +41,7 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
 
   return (
     <>
-      <header className="sticky top-0 z-40 h-16 bg-white/95 dark:bg-[#0D0E1A]/95 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 px-2.5 sm:px-4 lg:px-6 flex items-center justify-between transition-colors shadow-sm min-w-0">
+      <header className="sticky top-0 z-20 h-16 bg-white/90 dark:bg-[#0D0E1A]/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-white/10 px-2.5 sm:px-4 lg:px-6 flex items-center justify-between transition-colors shadow-sm dark:shadow-none min-w-0">
         {/* ── Left Section: Mobile Menu Trigger & Search Trigger ── */}
         <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink-0">
           <button

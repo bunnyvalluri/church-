@@ -237,31 +237,31 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
     userEmail: ""
   });
 
-  // Load backend prayers, fallback to DEFAULT_PRAYERS if empty
+  // Load backend prayers in background without blocking initial instant render
   useEffect(() => {
+    let isMounted = true;
     const loadAllPrayers = async () => {
-      setLoading(true);
       try {
         const res = await fetch("/api/member/prayers?userId=all_admin_peek");
         const data = await res.json();
+        if (!isMounted) return;
         
         let list = data.prayers || [];
-        const mapped = list.map((p: any) => {
-          const user = p.user || users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
-          return { ...p, user, assignedPartners: p.assignedPartners || [] };
-        });
-        const finalPrayers = mapped.length > 0 ? mapped : DEFAULT_PRAYERS;
-        setPrayers(finalPrayers);
-        setSelectedPrayer(finalPrayers[0]);
+        if (list.length > 0) {
+          const mapped = list.map((p: any) => {
+            const user = p.user || users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
+            return { ...p, user, assignedPartners: p.assignedPartners || [] };
+          });
+          setPrayers(mapped);
+          setSelectedPrayer(prev => prev || mapped[0]);
+        }
       } catch (e) {
-        setPrayers(DEFAULT_PRAYERS);
-        setSelectedPrayer(DEFAULT_PRAYERS[0]);
-      } finally {
-        setLoading(false);
+        // Retain initial DEFAULT_PRAYERS
       }
     };
 
     loadAllPrayers();
+    return () => { isMounted = false; };
   }, [users]);
 
   // Calculations

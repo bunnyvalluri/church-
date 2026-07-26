@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -11,6 +14,7 @@ export async function GET(req: Request) {
 
     const prayers = await prisma.prayerRequest.findMany({
       where,
+      take: 100,
       orderBy: { createdAt: 'desc' },
       include: {
         user: {
