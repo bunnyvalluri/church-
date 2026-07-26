@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 import {
   IndianRupee,
   Download,
@@ -77,10 +79,38 @@ const METHOD_ICON = (method: string) => {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function DonationsView({ triggerToast }: DonationsViewProps) {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+
   const [donations, setDonations] = useState<Donation[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
+
+  // Purpose & Status Translator Helpers
+  const getPurposeLabel = (p: string) => {
+    const map: Record<string, string> = {
+      TITHE: t.purposeTithe,
+      OFFERING: t.purposeOffering,
+      BUILDING: t.purposeBuilding,
+      MISSIONS: t.purposeMissions,
+      CHARITY: t.purposeCharity,
+      OTHER: t.purposeOther,
+      GENERAL: t.purposeGeneral,
+      YOUTH: t.purposeYouth,
+    };
+    return map[p] || p;
+  };
+
+  const getStatusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      COMPLETED: t.completedStatus,
+      PENDING: t.pendingStatus,
+      FAILED: t.failedStatus,
+      REFUNDED: t.refundedStatus,
+    };
+    return map[s] || s;
+  };
 
   // Filters
   const [filterStatus, setFilterStatus] = useState("");
@@ -144,15 +174,15 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
         ));
         triggerToast(
           action === "APPROVE"
-            ? "✅ UPI donation approved & marked COMPLETED"
-            : "❌ UPI donation rejected & marked FAILED",
+            ? t.upiApproveSuccess
+            : t.upiRejectSuccess,
           action === "APPROVE" ? "success" : "error"
         );
       } else {
         throw new Error(data.error);
       }
     } catch (err: any) {
-      triggerToast(err.message || "Verification failed", "error");
+      triggerToast(err.message || t.verificationFailed, "error");
     } finally {
       setVerifyingId(null);
     }
@@ -160,16 +190,16 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
 
   // ── CSV Export ──────────────────────────────────────────────────────────────
   const exportCSV = () => {
-    const headers = ["ID", "Donor", "Email", "Phone", "Amount (₹)", "Purpose", "Method", "Status", "Tx Ref", "Date"];
+    const headers = ["ID", t.donorHeader, "Email", "Phone", `${t.amountHeader} (₹)`, t.purposeHeader, t.methodHeader, t.statusHeader, t.txRefHeader, t.dateHeader];
     const rows = donations.map(d => [
       d.id,
-      d.donorName || "Anonymous",
+      d.donorName || t.anonymousDonor,
       d.donorEmail || "",
       d.donorPhone || "",
       d.amount.toFixed(2),
-      d.purpose,
+      getPurposeLabel(d.purpose),
       d.paymentMethod,
-      d.status,
+      getStatusLabel(d.status),
       d.razorpayPaymentId || "",
       new Date(d.createdAt).toLocaleDateString("en-IN"),
     ]);
@@ -181,7 +211,7 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
     a.download = `kcm-donations-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    triggerToast("CSV export downloaded", "success");
+    triggerToast(t.csvExportSuccess, "success");
   };
 
   // ── Filter / Search ─────────────────────────────────────────────────────────
@@ -199,283 +229,385 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
   const formatINR = (n: number) => `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 0 })}`;
 
   const handlePurgeFake = async () => {
-    if (!confirm("Are you sure you want to remove all fake and test transactions from the database?")) return;
+    if (!confirm(t.confirmPurgeFake)) return;
     try {
       setLoading(true);
       const res = await fetch("/api/admin/donations?cleanAllFake=true", { method: "DELETE" });
       const data = await res.json();
       if (res.ok && data.success) {
-        triggerToast(data.message || "All fake transactions removed!", "success");
+        triggerToast(data.message || t.purgeFakeSuccess, "success");
         fetchDonations();
       } else {
-        triggerToast(data.error || "Failed to purge transactions", "error");
+        triggerToast(data.error || t.purgeFakeError, "error");
       }
     } catch (err) {
-      triggerToast("Error removing transactions", "error");
+      triggerToast(t.purgeFakeError, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-5 sm:space-y-6 animate-in fade-in duration-200">
 
-      {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* ── Header Bar ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="admin-title text-base flex items-center gap-2">
+          <h2 className="admin-title text-base sm:text-lg flex items-center gap-2">
             <IndianRupee className="w-5 h-5 text-[#6366F1]" />
-            Donations & Giving
+            {t.donationsAndGiving}
           </h2>
-          <p className="admin-subtitle mt-0.5">{totalCount} records • Real-time from database</p>
+          <p className="admin-subtitle text-xs mt-0.5">{totalCount} {t.recordsRealtime}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => fetchDonations()}
             disabled={loading}
-            className="p-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-500 hover:text-[#6366F1] transition-all"
-            title="Refresh"
+            className="p-2 sm:p-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-500 hover:text-[#6366F1] transition-all"
+            title={t.refreshData}
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={handlePurgeFake}
-            className="px-3 py-2 bg-rose-600/10 hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 text-xs font-bold rounded-xl transition-all"
-            title="Purge all test/fake records"
+            className="flex-1 sm:flex-none px-3 py-2 bg-rose-600/10 hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 text-xs font-bold rounded-xl transition-all text-center"
+            title={t.clearTestRecords}
           >
-            Clear Test Records
+            {t.clearTestRecords}
           </button>
           <button
             onClick={exportCSV}
-            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
           >
             <Download className="w-3.5 h-3.5" />
-            Export CSV
+            {t.exportCSV}
           </button>
         </div>
       </div>
 
-      {/* ── Summary Cards ── */}
+      {/* ── Summary Cards Grid ── */}
       {summary && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           {[
-            { label: "Total Collected", value: formatINR(summary.totalCollected), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
-            { label: "Pending Amount", value: formatINR(summary.pendingAmount), icon: Clock, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/20" },
-            { label: "UPI Payments",   value: String(summary.upiCount),         icon: QrCode,   color: "text-blue-600",   bg: "bg-blue-50 dark:bg-blue-900/20" },
-            { label: "Pending UPI",    value: String(summary.pendingCount),      icon: AlertCircle, color: "text-rose-600", bg: "bg-rose-50 dark:bg-rose-900/20" },
+            { label: t.totalCollected, value: formatINR(summary.totalCollected), icon: TrendingUp, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+            { label: t.pendingAmount,  value: formatINR(summary.pendingAmount),   icon: Clock,      color: "text-amber-600 dark:text-amber-400",   bg: "bg-amber-50 dark:bg-amber-900/20" },
+            { label: t.upiPayments,    value: String(summary.upiCount),           icon: QrCode,     color: "text-blue-600 dark:text-blue-400",    bg: "bg-blue-50 dark:bg-blue-900/20" },
+            { label: t.pendingUPI,     value: String(summary.pendingCount),       icon: AlertCircle,color: "text-rose-600 dark:text-rose-400",    bg: "bg-rose-50 dark:bg-rose-900/20" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
-            <div key={label} className={`admin-card p-4 flex items-center gap-3 ${bg} border-0`}>
-              <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center`}>
-                <Icon className={`w-4 h-4 ${color}`} />
+            <div key={label} className={`admin-card p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 ${bg} border-0`}>
+              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${color}`} />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
-                <p className={`text-lg font-black ${color}`}>{value}</p>
+              <div className="min-w-0">
+                <p className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">{label}</p>
+                <p className={`text-base sm:text-lg font-black ${color} truncate`}>{value}</p>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── Filters ── */}
-      <div className="admin-card p-4">
-        <div className="flex flex-wrap gap-3 items-end">
+      {/* ── Filters Grid ── */}
+      <div className="admin-card p-3.5 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
           {/* Search */}
-          <div className="relative flex-1 min-w-[180px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search name, email, UTR..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="admin-input pl-8 w-full text-xs"
-            />
+          <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-1">
+            <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.searchDonationsPlaceholder}</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder={t.searchDonationsPlaceholder}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="admin-input !pl-9 w-full text-xs py-2"
+              />
+            </div>
           </div>
+
           {/* Status */}
-          <div className="min-w-[120px]">
-            <label className="admin-modal-label mb-1">Status</label>
-            <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }} className="admin-select w-full text-xs">
-              <option value="">All</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="PENDING">Pending</option>
-              <option value="FAILED">Failed</option>
+          <div className="col-span-1 space-y-1">
+            <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.filterStatus}</label>
+            <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }} className="admin-select w-full text-xs py-2">
+              <option value="">{t.allOptions}</option>
+              <option value="COMPLETED">{t.completedStatus}</option>
+              <option value="PENDING">{t.pendingStatus}</option>
+              <option value="FAILED">{t.failedStatus}</option>
             </select>
           </div>
+
           {/* Purpose */}
-          <div className="min-w-[130px]">
-            <label className="admin-modal-label mb-1">Purpose</label>
-            <select value={filterPurpose} onChange={e => { setFilterPurpose(e.target.value); setPage(1); }} className="admin-select w-full text-xs">
-              <option value="">All</option>
+          <div className="col-span-1 space-y-1">
+            <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.filterPurpose}</label>
+            <select value={filterPurpose} onChange={e => { setFilterPurpose(e.target.value); setPage(1); }} className="admin-select w-full text-xs py-2">
+              <option value="">{t.allOptions}</option>
               {["TITHE","OFFERING","BUILDING","MISSIONS","CHARITY","OTHER","GENERAL","YOUTH"].map(p =>
-                <option key={p} value={p}>{p}</option>
+                <option key={p} value={p}>{getPurposeLabel(p)}</option>
               )}
             </select>
           </div>
+
           {/* Method */}
-          <div className="min-w-[110px]">
-            <label className="admin-modal-label mb-1">Method</label>
-            <select value={filterMethod} onChange={e => { setFilterMethod(e.target.value); setPage(1); }} className="admin-select w-full text-xs">
-              <option value="">All</option>
+          <div className="col-span-1 space-y-1">
+            <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.filterMethod}</label>
+            <select value={filterMethod} onChange={e => { setFilterMethod(e.target.value); setPage(1); }} className="admin-select w-full text-xs py-2">
+              <option value="">{t.allOptions}</option>
               <option value="UPI">UPI</option>
               <option value="RAZORPAY">Razorpay</option>
               <option value="CASH">Cash</option>
             </select>
           </div>
-          {/* Date Range */}
-          <div className="min-w-[120px]">
-            <label className="admin-modal-label mb-1">From</label>
-            <input type="date" value={filterFrom} onChange={e => { setFilterFrom(e.target.value); setPage(1); }} className="admin-input w-full text-xs" />
+
+          {/* Date Range: From & To */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-1 grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.filterFrom}</label>
+              <input type="date" value={filterFrom} onChange={e => { setFilterFrom(e.target.value); setPage(1); }} className="admin-input w-full text-xs py-2 px-2" />
+            </div>
+            <div className="space-y-1">
+              <label className="admin-modal-label text-[11px] font-bold text-gray-600 dark:text-gray-300 block">{t.filterTo}</label>
+              <input type="date" value={filterTo} onChange={e => { setFilterTo(e.target.value); setPage(1); }} className="admin-input w-full text-xs py-2 px-2" />
+            </div>
           </div>
-          <div className="min-w-[120px]">
-            <label className="admin-modal-label mb-1">To</label>
-            <input type="date" value={filterTo} onChange={e => { setFilterTo(e.target.value); setPage(1); }} className="admin-input w-full text-xs" />
-          </div>
-          {/* Clear */}
-          {(filterStatus || filterPurpose || filterMethod || filterFrom || filterTo) && (
-            <button
-              onClick={() => { setFilterStatus(""); setFilterPurpose(""); setFilterMethod(""); setFilterFrom(""); setFilterTo(""); setPage(1); }}
-              className="px-3 py-2 text-xs font-bold text-gray-500 hover:text-rose-600 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
-            >
-              Clear Filters
-            </button>
+
+          {/* Clear Filters */}
+          {(filterStatus || filterPurpose || filterMethod || filterFrom || filterTo || search) && (
+            <div className="col-span-1 sm:col-span-2 lg:col-span-6 flex justify-end pt-1">
+              <button
+                onClick={() => { setSearch(""); setFilterStatus(""); setFilterPurpose(""); setFilterMethod(""); setFilterFrom(""); setFilterTo(""); setPage(1); }}
+                className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-rose-600 border border-gray-200 dark:border-white/10 rounded-xl transition-all"
+              >
+                {t.clearFilters}
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── Table ── */}
+      {/* ── Main Records Content ── */}
       <div className="admin-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-6 h-6 text-[#6366F1] animate-spin" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-16 px-4">
             <Receipt className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-sm font-bold text-gray-400">No donations found</p>
-            <p className="text-xs text-gray-400 mt-1">Try adjusting your filters</p>
+            <p className="text-sm font-bold text-gray-400">{t.noDonationsFound}</p>
+            <p className="text-xs text-gray-400 mt-1">{t.tryAdjustingFilters}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-gray-100 dark:border-white/10 bg-gray-50/60 dark:bg-white/[0.02]">
-                  {["Donor", "Amount", "Purpose", "Method", "Status", "Tx Ref", "Date", "Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider text-[10px] whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                <AnimatePresence>
-                  {filtered.map((d, idx) => (
-                    <motion.tr
-                      key={d.id}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.02 }}
-                      className="hover:bg-indigo-50/30 dark:hover:bg-white/[0.02] transition-colors"
-                    >
-                      {/* Donor */}
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-bold text-gray-900 dark:text-white truncate max-w-[140px]">
-                            {d.donorName || "Anonymous"}
-                          </p>
-                          <p className="text-[10px] text-gray-400 truncate max-w-[140px]">{d.donorEmail || "—"}</p>
-                        </div>
-                      </td>
-
-                      {/* Amount */}
-                      <td className="px-4 py-3 font-black text-gray-900 dark:text-white whitespace-nowrap">
+          <>
+            {/* MOBILE CARD VIEW (xs / sm screens) */}
+            <div className="block md:hidden divide-y divide-gray-100 dark:divide-white/[0.05]">
+              <AnimatePresence>
+                {filtered.map((d, idx) => (
+                  <motion.div
+                    key={d.id}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.02 }}
+                    className="p-4 space-y-3 hover:bg-indigo-50/20 dark:hover:bg-white/[0.02] transition-colors"
+                  >
+                    {/* Header: Donor & Amount */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-xs text-gray-900 dark:text-white truncate">
+                          {d.donorName || t.anonymousDonor}
+                        </p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{d.donorEmail || "—"}</p>
+                      </div>
+                      <span className="font-black text-sm text-emerald-600 dark:text-emerald-400 shrink-0">
                         ₹{d.amount.toLocaleString("en-IN")}
-                      </td>
+                      </span>
+                    </div>
 
-                      {/* Purpose */}
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${PURPOSE_COLORS[d.purpose] || PURPOSE_COLORS.OTHER}`}>
-                          {d.purpose}
+                    {/* Badges: Purpose, Status, Method */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${PURPOSE_COLORS[d.purpose] || PURPOSE_COLORS.OTHER}`}>
+                        {getPurposeLabel(d.purpose)}
+                      </span>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_STYLES[d.status] || STATUS_STYLES.FAILED}`}>
+                        {getStatusLabel(d.status)}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                        {METHOD_ICON(d.paymentMethod)}
+                        {d.paymentMethod}
+                      </span>
+                    </div>
+
+                    {/* Footer: Date, UTR & Actions */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100 dark:border-white/[0.05] text-[11px]">
+                      <div className="min-w-0">
+                        <span className="text-gray-500 dark:text-gray-400 block text-[10px]">
+                          {new Date(d.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })}
                         </span>
-                      </td>
+                        {d.razorpayPaymentId && (
+                          <span className="font-mono text-[10px] text-indigo-600 dark:text-indigo-400 truncate block max-w-[140px]">
+                            {d.razorpayPaymentId}
+                          </span>
+                        )}
+                      </div>
 
-                      {/* Method */}
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-1 font-semibold text-gray-700 dark:text-gray-300">
-                          {METHOD_ICON(d.paymentMethod)}
-                          {d.paymentMethod}
-                        </span>
-                      </td>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={`/give/receipt/${d.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-lg text-gray-500 hover:text-[#6366F1] bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 transition-all"
+                          title={t.viewReceipt}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
 
-                      {/* Status */}
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_STYLES[d.status] || STATUS_STYLES.FAILED}`}>
-                          {d.status}
-                        </span>
-                      </td>
+                        {d.status === "PENDING" && d.paymentMethod === "UPI" && (
+                          <>
+                            <button
+                              onClick={() => handleVerify(d.id, "APPROVE")}
+                              disabled={verifyingId === d.id}
+                              className="flex items-center gap-1 px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[10px] font-bold transition-all"
+                            >
+                              {verifyingId === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                              {t.approveBtn}
+                            </button>
+                            <button
+                              onClick={() => handleVerify(d.id, "REJECT")}
+                              disabled={verifyingId === d.id}
+                              className="flex items-center gap-1 px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold transition-all"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              {t.rejectBtn}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
 
-                      {/* Tx Ref */}
-                      <td className="px-4 py-3">
-                        <span className="font-mono text-[10px] text-indigo-700 dark:text-indigo-300 truncate max-w-[120px] block">
-                          {d.razorpayPaymentId || "—"}
-                        </span>
-                      </td>
+            {/* DESKTOP TABLE VIEW (md screens & above) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-gray-100 dark:border-white/10 bg-gray-50/60 dark:bg-white/[0.02]">
+                    {[t.donorHeader, t.amountHeader, t.purposeHeader, t.methodHeader, t.statusHeader, t.txRefHeader, t.dateHeader, t.actionsHeader].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider text-[10px] whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+                  <AnimatePresence>
+                    {filtered.map((d, idx) => (
+                      <motion.tr
+                        key={d.id}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.02 }}
+                        className="hover:bg-indigo-50/30 dark:hover:bg-white/[0.02] transition-colors"
+                      >
+                        {/* Donor */}
+                        <td className="px-4 py-3">
+                          <div>
+                            <p className="font-bold text-gray-900 dark:text-white truncate max-w-[140px]">
+                              {d.donorName || t.anonymousDonor}
+                            </p>
+                            <p className="text-[10px] text-gray-400 truncate max-w-[140px]">{d.donorEmail || "—"}</p>
+                          </div>
+                        </td>
 
-                      {/* Date */}
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                        {new Date(d.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })}
-                      </td>
+                        {/* Amount */}
+                        <td className="px-4 py-3 font-black text-gray-900 dark:text-white whitespace-nowrap">
+                          ₹{d.amount.toLocaleString("en-IN")}
+                        </td>
 
-                      {/* Actions */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          {/* Receipt Link */}
-                          <a
-                            href={`/give/receipt/${d.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-[#6366F1] hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
-                            title="View Receipt"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
+                        {/* Purpose */}
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${PURPOSE_COLORS[d.purpose] || PURPOSE_COLORS.OTHER}`}>
+                            {getPurposeLabel(d.purpose)}
+                          </span>
+                        </td>
 
-                          {/* Manual UPI Verify (only for PENDING UPI donations) */}
-                          {d.status === "PENDING" && d.paymentMethod === "UPI" && (
-                            <>
-                              <button
-                                onClick={() => handleVerify(d.id, "APPROVE")}
-                                disabled={verifyingId === d.id}
-                                className="flex items-center gap-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
-                                title="Approve UPI Payment"
-                              >
-                                {verifyingId === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleVerify(d.id, "REJECT")}
-                                disabled={verifyingId === d.id}
-                                className="flex items-center gap-1 px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
-                                title="Reject UPI Payment"
-                              >
-                                <XCircle className="w-3 h-3" />
-                                Reject
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </div>
+                        {/* Method */}
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center gap-1 font-semibold text-gray-700 dark:text-gray-300">
+                            {METHOD_ICON(d.paymentMethod)}
+                            {d.paymentMethod}
+                          </span>
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_STYLES[d.status] || STATUS_STYLES.FAILED}`}>
+                            {getStatusLabel(d.status)}
+                          </span>
+                        </td>
+
+                        {/* Tx Ref */}
+                        <td className="px-4 py-3">
+                          <span className="font-mono text-[10px] text-indigo-700 dark:text-indigo-300 truncate max-w-[120px] block">
+                            {d.razorpayPaymentId || "—"}
+                          </span>
+                        </td>
+
+                        {/* Date */}
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                          {new Date(d.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-1.5">
+                            <a
+                              href={`/give/receipt/${d.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-[#6366F1] hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
+                              title={t.viewReceipt}
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+
+                            {d.status === "PENDING" && d.paymentMethod === "UPI" && (
+                              <>
+                                <button
+                                  onClick={() => handleVerify(d.id, "APPROVE")}
+                                  disabled={verifyingId === d.id}
+                                  className="flex items-center gap-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
+                                  title={t.approveBtn}
+                                >
+                                  {verifyingId === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                  {t.approveBtn}
+                                </button>
+                                <button
+                                  onClick={() => handleVerify(d.id, "REJECT")}
+                                  disabled={verifyingId === d.id}
+                                  className="flex items-center gap-1 px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold transition-all disabled:opacity-50"
+                                  title={t.rejectBtn}
+                                >
+                                  <XCircle className="w-3 h-3" />
+                                  {t.rejectBtn}
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Page {page} of {totalPages} • {totalCount} total records
+            {t.pageInfo.replace("{page}", String(page)).replace("{totalPages}", String(totalPages)).replace("{totalCount}", String(totalCount))}
           </p>
           <div className="flex items-center gap-2">
             <button

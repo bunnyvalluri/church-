@@ -112,17 +112,17 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
   return (
     <header className="sticky top-0 z-30 shrink-0 h-16 sm:h-20 bg-white/90 dark:bg-[#070814]/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/[0.06] px-3.5 sm:px-8 flex items-center justify-between transition-all duration-300">
       {/* Left: Mobile Toggle & Breadcrumbs */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           type="button"
           onClick={onToggleMobileSidebar}
-          className="lg:hidden w-9 h-9 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all shrink-0 active:scale-95"
+          className="lg:hidden w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/[0.08] rounded-xl transition-all shrink-0 active:scale-95"
           title="Open Navigation"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
-        <span className="md:hidden text-xs font-black text-slate-900 dark:text-white tracking-tight truncate">
+        <span className="md:hidden text-xs font-black text-slate-900 dark:text-white tracking-tight shrink-0 whitespace-nowrap">
           {t.pastorPortal}
         </span>
 
@@ -130,7 +130,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
       </div>
 
       {/* Right: Search, Notifications, Theme, Language, Quick Create & Profile */}
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-3 shrink-0">
         {/* Global Search Input */}
         <div className="relative hidden md:block w-48 lg:w-64">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
@@ -148,10 +148,10 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
           <button
             type="button"
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="w-9 h-9 flex items-center justify-center bg-slate-100/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] rounded-xl text-slate-600 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition-colors relative"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-slate-100/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.08] rounded-xl text-slate-600 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition-colors relative"
             title="Notifications"
           >
-            <Bell className="w-4.5 h-4.5" />
+            <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-[#6366F1] text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white dark:border-[#070814] animate-pulse">
                 {unreadCount}
@@ -166,27 +166,27 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="absolute -right-12 sm:right-0 mt-2.5 w-80 sm:w-96 bg-white/95 dark:bg-[#0E0F24]/95 backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-xl z-50 overflow-hidden"
+                className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 mt-2.5 sm:w-96 bg-white dark:bg-[#070814] border border-slate-200 dark:border-white/[0.12] rounded-2xl shadow-2xl z-50 overflow-hidden"
               >
-                <div className="px-4 py-3 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-[#0A0B16]/50">
+                <div className="px-4 py-3 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-slate-50 dark:bg-white/[0.03]">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-slate-900 dark:text-white">Notifications</span>
                     {unreadCount > 0 && (
-                      <span className="text-[10px] text-indigo-600 font-extrabold">({unreadCount} new)</span>
+                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-extrabold">({unreadCount} new)</span>
                     )}
                   </div>
                   {unreadCount > 0 && (
                     <button
                       type="button"
                       onClick={markAllRead}
-                      className="text-[10px] font-bold text-indigo-600 hover:underline flex items-center gap-1"
+                      className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
                     >
                       <CheckCircle className="w-3.5 h-3.5" /> Mark all read
                     </button>
                   )}
                 </div>
 
-                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.03] custom-scrollbar">
+                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.05] custom-scrollbar bg-white dark:bg-[#070814]">
                   {notifications.length === 0 ? (
                     <div className="p-8 text-center space-y-2">
                       <Bell className="w-8 h-8 text-slate-300 dark:text-gray-600 mx-auto" />
@@ -198,7 +198,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                       <div
                         key={n.id}
                         className={`p-3.5 flex items-start gap-3 transition-colors ${
-                          !n.isRead ? "bg-indigo-50/20 dark:bg-indigo-500/5" : ""
+                          !n.isRead ? "bg-indigo-50/40 dark:bg-indigo-500/10" : ""
                         }`}
                       >
                         <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 flex items-center justify-center shrink-0">
@@ -221,7 +221,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
         </div>
 
         {/* Theme Toggle */}
-        <div className="shrink-0">
+        <div className="shrink-0 scale-90 sm:scale-100">
           <ThemeToggle />
         </div>
 
@@ -231,7 +231,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
         </div>
 
         {/* Quick Create Dropdown */}
-        <div className="relative" ref={quickRef}>
+        <div className="relative hidden xs:block" ref={quickRef}>
           <button
             type="button"
             onClick={() => setIsQuickCreateOpen(!isQuickCreateOpen)}
@@ -248,7 +248,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2.5 w-56 bg-white/95 dark:bg-[#0E0F24]/95 backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
+                className="absolute right-0 mt-2.5 w-56 bg-white dark:bg-[#070814] border border-slate-200 dark:border-white/[0.12] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
               >
                 <div className="px-4 py-1.5 border-b border-slate-100 dark:border-white/[0.03] mb-1">
                   <span className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest block">
@@ -299,7 +299,7 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2.5 w-60 bg-white/95 dark:bg-[#0E0F24]/95 backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
+                className="absolute right-0 mt-2.5 w-60 bg-white dark:bg-[#070814] border border-slate-200 dark:border-white/[0.12] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
               >
                 <div className="px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
                   <p className="text-xs font-black text-slate-900 dark:text-white truncate">
