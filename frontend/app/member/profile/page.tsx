@@ -373,21 +373,22 @@ export default function MemberProfile() {
 
   return (
     <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-      {/* Toast Notification */}
+      {/* Toast Notification Pop-up */}
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold border max-w-[90vw] sm:max-w-xs backdrop-blur-xl ${
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className={`fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
               toast.type === "success"
-                ? "bg-green-500 text-white border-green-400/30"
-                : "bg-red-500 text-white border-red-400/30"
+                ? "bg-emerald-600 text-white border-emerald-400/40 shadow-emerald-600/30"
+                : "bg-red-600 text-white border-red-400/40 shadow-red-600/30"
             }`}
           >
-            {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
-            <span className="truncate">{toast.msg}</span>
+            {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-white" /> : <AlertCircle className="w-4 h-4 flex-shrink-0 text-white" />}
+            <span className="leading-snug whitespace-normal">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
