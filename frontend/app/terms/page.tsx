@@ -81,7 +81,7 @@ export default function TermsOfServicePage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight mb-4">
-              Terms of <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200 dark:from-purple-400 dark:via-indigo-300 dark:to-purple-200">Service</span>
+              Terms of Service
             </h1>
 
             <p className="text-purple-100 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
