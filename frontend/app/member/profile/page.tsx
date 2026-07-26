@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Phone, MapPin, Check, Loader2, Save,
   RefreshCw, Shield, Star, Camera, Wifi, WifiOff,
-  Mail, Bell, Edit3, CheckCircle2, AlertCircle
+  Mail, Edit3, CheckCircle2, AlertCircle, Copy, Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -144,8 +144,8 @@ const compressImage = (file: File): Promise<string> => {
       img.src = event.target?.result as string;
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 250;
-        const MAX_HEIGHT = 250;
+        const MAX_WIDTH = 300;
+        const MAX_HEIGHT = 300;
         let width = img.width;
         let height = img.height;
 
@@ -165,7 +165,7 @@ const compressImage = (file: File): Promise<string> => {
         const ctx = canvas.getContext("2d");
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // 70% quality jpeg
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
           resolve(dataUrl);
         } else {
           resolve(event.target?.result as string);
@@ -191,6 +191,7 @@ export default function MemberProfile() {
   const [joinedAt, setJoinedAt] = useState("");
   const [image, setImage] = useState("");
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -213,6 +214,18 @@ export default function MemberProfile() {
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
+
+  // Pre-fill name/image from auth user if state is empty
+  useEffect(() => {
+    if (user) {
+      if (!name && user.name && !original.current.name) {
+        setName(user.name);
+      }
+      if (!image && user.image && !original.current.image) {
+        setImage(user.image);
+      }
+    }
+  }, [user, name, image]);
 
   useEffect(() => {
     const on = () => setIsOnline(true);
@@ -237,7 +250,7 @@ export default function MemberProfile() {
             address: p.address || "",
             role: p.role || "MEMBER",
             joinedAt: p.createdAt || "",
-            image: p.image || "",
+            image: p.image || user?.image || "",
           };
           setName(snap.name);
           setPhone(snap.phone);
@@ -255,7 +268,7 @@ export default function MemberProfile() {
     } finally {
       setSyncing(false);
     }
-  }, [user?.uid, user?.name, pt.toastError]);
+  }, [user?.uid, user?.name, user?.image, pt.toastError]);
 
   const handleSave = useCallback(async (e?: React.FormEvent, currentImage?: string) => {
     if (e) e.preventDefault();
@@ -295,7 +308,6 @@ export default function MemberProfile() {
     }
   }, [user?.uid, name, phone, address, image, refreshUser, updateUser, pt.toastSuccess, pt.toastSaveError]);
 
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -309,6 +321,14 @@ export default function MemberProfile() {
       showToast(pt.photoFailed, "error");
     } finally {
       setPhotoUploading(false);
+    }
+  };
+
+  const copyEmail = () => {
+    if (user?.email) {
+      navigator.clipboard.writeText(user.email);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
     }
   };
 
@@ -329,16 +349,15 @@ export default function MemberProfile() {
     setHasChanges(changed);
     if (changed) {
       if (saveState === "saved") setSaveState("idle");
-      
-      // Debounce auto-save for 10s
+
       const timer = setTimeout(() => {
         if (isOnline) {
           handleSave();
         }
       }, 10000);
-      
+
       autoSaveTimer.current = timer;
-      
+
       return () => {
         clearTimeout(timer);
       };
@@ -346,9 +365,9 @@ export default function MemberProfile() {
   }, [name, phone, address, image, isOnline, saveState, handleSave]);
 
   const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
-    ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/30" },
-    PASTOR: { label: pt.avatarRole.PASTOR, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/30" },
-    MEMBER: { label: pt.avatarRole.MEMBER, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/30" },
+    ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/40" },
+    PASTOR: { label: pt.avatarRole.PASTOR, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-900/40" },
+    MEMBER: { label: pt.avatarRole.MEMBER, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/40" },
   };
   const rc = roleConfig[role] || roleConfig.MEMBER;
 
@@ -356,14 +375,14 @@ export default function MemberProfile() {
 
   return (
     <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-      {/* Toast */}
+      {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-sm font-semibold border max-w-[90vw] sm:max-w-xs backdrop-blur-xl ${
+            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold border max-w-[90vw] sm:max-w-xs backdrop-blur-xl ${
               toast.type === "success"
                 ? "bg-green-500 text-white border-green-400/30"
                 : "bg-red-500 text-white border-red-400/30"
@@ -375,10 +394,15 @@ export default function MemberProfile() {
         )}
       </AnimatePresence>
 
-      {/* â”€â”€ PAGE HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="flex items-start sm:items-center justify-between gap-3 mb-5 sm:mb-6 flex-wrap">
+      {/* PAGE HEADER */}
+      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+              <Shield className="w-3 h-3" /> Member Portal
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -390,139 +414,155 @@ export default function MemberProfile() {
           <button
             onClick={() => loadProfile(false)}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary))]/20 dark:hover:border-[hsl(var(--primary))]/30 transition-all text-xs font-semibold shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:border-purple-300 dark:hover:border-purple-700 transition-all text-xs font-semibold shadow-sm active:scale-95"
+            title="Refresh profile data"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin text-purple-600" : ""}`} />
             <span className="hidden sm:inline">{pt.refresh}</span>
           </button>
         </div>
       </div>
 
-      {/* â”€â”€ MAIN GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 items-start">
+      {/* MAIN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
-        {/* â”€â”€ LEFT COLUMN: Profile Identity â”€â”€ */}
-        <div className="md:col-span-1 xl:col-span-1 space-y-4">
-
-          {/* Avatar Hero Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
-          >
-            {/* Gradient banner */}
-            <div className="h-20 sm:h-24 bg-gradient-to-br from-gradient-start via-purple-500 to-gradient-end relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3C/g%3E%3C/svg%3E\")" }} />
-              <div className="absolute bottom-0 right-0 w-20 h-20 bg-white/10 rounded-full translate-x-6 translate-y-6" />
+        {/* LEFT COLUMN: Unified Profile Hero & Details Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-4 space-y-4"
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl">
+            {/* Banner Cover */}
+            <div className="h-24 sm:h-28 bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-700 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             </div>
-            <div className="px-4 sm:px-5 pb-5">
-              <div className="relative -mt-8 mb-3 w-fit">
-                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-                <button
-                  type="button"
-                  disabled={photoUploading}
-                  onClick={() => fileInputRef.current?.click()}
-                  className="group relative w-16 h-16 bg-gradient-to-br from-gradient-start to-gradient-end rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden cursor-pointer focus:outline-none transition-transform active:scale-95 disabled:opacity-50"
-                  title="Upload profile picture"
-                >
-                  {photoUploading ? (
-                    <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : image && typeof image === "string" && image.length > 0 ? (
-                    <Image src={image} alt={name || "Member"} fill unoptimized className="object-cover" />
-                  ) : (
-                    <User className="w-8 h-8 text-white" />
-                  )}
-                  {!photoUploading && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Camera className="w-4 h-4 text-white" />
+
+            {/* Profile Avatar & Primary Info */}
+            <div className="px-5 pb-5">
+              <div className="relative -mt-10 mb-3 flex items-end justify-between">
+                <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border-4 border-white dark:border-gray-900 shadow-2xl overflow-hidden group">
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                  <button
+                    type="button"
+                    disabled={photoUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-full flex items-center justify-center cursor-pointer focus:outline-none disabled:opacity-50"
+                    title="Upload profile photo"
+                  >
+                    {photoUploading ? (
+                      <Loader2 className="w-6 h-6 text-white animate-spin" />
+                    ) : image && typeof image === "string" && image.length > 0 ? (
+                      <Image src={image} alt={name || user?.name || "Member"} fill unoptimized className="object-cover" />
+                    ) : (
+                      <User className="w-10 h-10 text-white" />
+                    )}
+                    {!photoUploading && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-5 h-5 text-white" />
+                      </div>
+                    )}
+                  </button>
+                  <div className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+                </div>
+
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border shadow-sm ${rc.bg} ${rc.color}`}>
+                  <Shield className="w-3.5 h-3.5" />
+                  {rc.label}
+                </div>
+              </div>
+
+              <h2 className="font-black text-gray-900 dark:text-white text-base sm:text-lg leading-tight truncate">
+                {name || user?.name || "Member"}
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
+
+              {/* Quick Details List */}
+              <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800/80 space-y-3">
+                <div className="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 bg-purple-100 dark:bg-purple-950/50 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                      <Mail className="w-3.5 h-3.5" />
                     </div>
-                  )}
-                </button>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-400 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <h2 className="font-black text-gray-900 dark:text-white text-base sm:text-lg leading-tight">{name || user?.name || "Member"}</h2>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
-              <div className={`inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full text-xs font-bold border ${rc.bg} ${rc.color}`}>
-                <Shield className="w-3 h-3" />
-                {rc.label}
-              </div>
-            </div>
-          </motion.div>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{pt.email}</p>
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-[180px]">{user?.email || "-"}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={copyEmail}
+                    className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex-shrink-0"
+                    title="Copy email"
+                  >
+                    {copiedEmail ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
 
-          {/* Account Info Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-5 space-y-3"
-          >
-            <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{pt.accountInfo}</h3>
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.email}</p>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.email || "-"}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 bg-[hsl(var(--accent))] dark:bg-[hsl(var(--accent))]/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.phone}</p>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{phone || "-"}</p>
-                </div>
-              </div>
-              {joinedAt && (
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 bg-amber-50 dark:bg-amber-950/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Star className="w-3.5 h-3.5 text-amber-500" />
+                <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                  <div className="w-7 h-7 bg-indigo-100 dark:bg-indigo-950/50 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                    <Phone className="w-3.5 h-3.5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">{pt.memberSince}</p>
-                    <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
-                      {new Date(joinedAt).toLocaleDateString(language === "en" ? "en-US" : "en-IN", { month: "long", year: "numeric" })}
-                    </p>
+                    <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{pt.phone}</p>
+                    <p className="text-xs font-semibold text-gray-900 dark:text-white">{phone || "-"}</p>
                   </div>
                 </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
 
-        {/* â”€â”€ RIGHT COLUMN: Edit Form â”€â”€ */}
+                {joinedAt && (
+                  <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                    <div className="w-7 h-7 bg-amber-100 dark:bg-amber-950/50 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
+                      <Star className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">{pt.memberSince}</p>
+                      <p className="text-xs font-bold text-gray-900 dark:text-white">
+                        {new Date(joinedAt).toLocaleDateString(language === "en" ? "en-US" : "en-IN", { month: "long", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* RIGHT COLUMN: Edit Settings Form */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="md:col-span-2 xl:col-span-3"
+          transition={{ delay: 0.08 }}
+          className="lg:col-span-8"
         >
-          <form onSubmit={handleSave} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-            {/* Form header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-[hsl(var(--primary))]" />
-                <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white">{pt.editProfile}</h3>
+          <form onSubmit={handleSave} className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl">
+            {/* Form Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/40 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white">{pt.editProfile}</h3>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 hidden sm:block">Update your details & contact preferences</p>
+                </div>
               </div>
               {hasChanges && (
-                <span className="flex items-center gap-1.5 text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 font-semibold">
-                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-                  <span className="hidden sm:inline">{pt.unsavedChanges}</span>
-                  <span className="sm:hidden">Unsaved</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 font-bold animate-pulse">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                  {pt.unsavedChanges}
                 </span>
               )}
             </div>
 
-            {/* Form fields */}
-            <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
-              {/* Name + Email â€” side-by-side on lg+ */}
+            {/* Form Fields */}
+            <div className="p-5 space-y-4 sm:space-y-5">
+              {/* Full Name + Locked Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.fullName}</label>
+                  <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+                    {pt.fullName}
+                  </label>
                   <div className="relative">
                     <input
                       type="text"
@@ -530,81 +570,93 @@ export default function MemberProfile() {
                       onChange={(e) => setName(e.target.value)}
                       required
                       placeholder={pt.fullNamePlaceholder}
-                      className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
+                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
                     />
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   </div>
                 </div>
-                {/* Email (Read-only) */}
+
+                {/* Email (Read-Only) */}
                 <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.emailAddress}</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                      {pt.emailAddress}
+                    </label>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700">
+                      <Lock className="w-2.5 h-2.5" /> {pt.locked}
+                    </span>
+                  </div>
                   <div className="relative">
                     <input
                       type="email"
                       value={user?.email || ""}
                       disabled
-                      className="w-full py-2.5 sm:py-3 px-4 pl-9 pr-16 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed text-sm truncate"
+                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-100/70 dark:bg-gray-800/30 text-gray-400 dark:text-gray-500 cursor-not-allowed text-xs sm:text-sm font-medium truncate"
                     />
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">{pt.locked}</span>
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400/60" />
                   </div>
                 </div>
               </div>
 
-              {/* Phone */}
+              {/* Mobile Phone Number */}
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.mobileNumber}</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+                  {pt.mobileNumber}
+                </label>
                 <div className="relative">
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 XXXXX XXXXX"
-                    className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all text-sm"
+                    className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
                   />
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
               </div>
 
-              {/* Address */}
+              {/* Home Address */}
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.homeAddress}</label>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+                  {pt.homeAddress}
+                </label>
                 <div className="relative">
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder={pt.homeAddressPlaceholder}
                     rows={3}
-                    className="w-full py-2.5 sm:py-3 px-4 pl-9 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent focus:outline-none transition-all resize-none text-sm"
+                    className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium"
                   />
-                  <MapPin className="absolute left-3 top-3 w-3.5 h-3.5 text-gray-400" />
+                  <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
 
             {/* Save Footer */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center flex-wrap gap-3 text-xs text-gray-400">
+            <div className="px-5 py-4 bg-gray-50/80 dark:bg-gray-800/60 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="flex items-center justify-between sm:justify-start gap-4 text-xs text-gray-400">
                 {isOnline
-                  ? <div className="flex items-center gap-1.5"><Wifi className="w-3.5 h-3.5 text-green-500" /> {pt.connected}</div>
-                  : <div className="flex items-center gap-1.5"><WifiOff className="w-3.5 h-3.5 text-red-500" /> {pt.offline}</div>
+                  ? <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 font-semibold"><Wifi className="w-3.5 h-3.5 text-green-500" /> {pt.connected}</div>
+                  : <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 font-semibold"><WifiOff className="w-3.5 h-3.5 text-red-500" /> {pt.offline}</div>
                 }
-                <div className="flex items-center gap-1.5 text-[hsl(var(--primary))] dark:text-purple-400 font-bold uppercase tracking-wider text-[10px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary))] animate-pulse" />
+                <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-black uppercase tracking-wider text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
                   {pt.autoSave}
                 </div>
               </div>
+
               <button
                 type="submit"
                 disabled={saving || !hasChanges}
-                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all shadow-md active:scale-[0.98] ${
                   saveState === "saved"
                     ? "bg-green-500 text-white"
                     : saveState === "error"
                     ? "bg-red-500 text-white"
                     : hasChanges
-                    ? "bg-gradient-to-r from-gradient-start to-gradient-end hover:opacity-90 text-white shadow-lg shadow-[hsl(var(--primary))]/20 hover:shadow-xl active:scale-[0.98]"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-500/25 hover:shadow-lg"
+                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed shadow-none"
                 }`}
               >
                 {saveState === "saving" ? (
@@ -624,4 +676,3 @@ export default function MemberProfile() {
     </div>
   );
 }
-

@@ -31,7 +31,7 @@ export default function BackToTop() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={scrollToTop}
-          className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg flex items-center justify-center border border-gray-800 dark:border-gray-200"
+          className="fixed bottom-24 right-4 sm:bottom-28 sm:right-6 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gray-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-gray-900 shadow-xl flex items-center justify-center border border-gray-700/50 dark:border-gray-200/50 active:scale-95 transition-all"
           aria-label="Back to top"
         >
           <ArrowUp className="w-4 h-4" />
