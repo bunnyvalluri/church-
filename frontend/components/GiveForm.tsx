@@ -1603,7 +1603,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </motion.div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {t.pages.give.whyItems.map((item, index) => (
                 <motion.div
                   key={index}
@@ -1611,12 +1611,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
-                  className="flex items-start gap-4 bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md hover:border-purple-200 dark:hover:border-purple-800/40 transition-all duration-300 group"
+                  className="flex items-center gap-3 sm:gap-4 bg-white dark:bg-gray-900 rounded-2xl p-3.5 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md hover:border-purple-200 dark:hover:border-purple-800/40 transition-all duration-300 group"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md shadow-purple-600/20 group-hover:scale-110 transition-transform">
-                    <Check className="h-4 w-4 text-white stroke-[2.5]" />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-600/20 group-hover:scale-110 transition-transform">
+                    <Check className="h-3.5 w-3.5 text-white stroke-[2.5]" />
                   </div>
-                  <p className="text-gray-800 dark:text-gray-200 font-extrabold text-sm sm:text-base leading-relaxed">{item}</p>
+                  <p className="text-gray-800 dark:text-gray-200 font-extrabold text-xs sm:text-sm leading-snug">{item}</p>
                 </motion.div>
               ))}
             </div>
