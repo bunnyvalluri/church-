@@ -74,6 +74,12 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div className="max-w-3xl">
+            {/* Featured Glowing Hero Icon Emblem */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-2xl shadow-purple-900/40 mb-4 relative group">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-purple-400 to-indigo-300 opacity-30 blur-md group-hover:opacity-60 transition-opacity" />
+              <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10 drop-shadow-md" />
+            </div>
+
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 dark:bg-purple-500/20 border border-white/25 dark:border-purple-500/40 text-white dark:text-purple-300 text-[11px] sm:text-xs font-semibold tracking-wide uppercase mb-3 shadow-xs">
               <Sparkles className="w-3 h-3" /> Legal & Privacy Assurance
             </div>
