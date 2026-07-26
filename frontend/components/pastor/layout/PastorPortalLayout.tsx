@@ -49,11 +49,11 @@ export default function PastorPortalLayout({ children }: { children: React.React
   }
 
   const mobileBottomNavItems = [
-    { name: t.navDashboard, href: "/pastor/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
-    { name: t.navSermons, href: "/pastor/main/sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
-    { name: t.navMemberRequests, href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
-    { name: t.navPrayerRequests, href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
-    { name: t.navProfile, href: "/pastor/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
+    { name: t.mobileDashboard || "Dashboard", href: "/pastor/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
+    { name: t.mobileSermons || "Sermons", href: "/pastor/main/sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
+    { name: t.mobileMembers || "Members", href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
+    { name: t.mobilePrayers || "Prayers", href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
+    { name: t.mobileProfile || "Profile", href: "/pastor/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
   ];
 
   return (
@@ -70,21 +70,23 @@ export default function PastorPortalLayout({ children }: { children: React.React
       />
 
       {/* Mobile Fixed Bottom Navigation Bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-around px-2 py-2 transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-between px-1.5 py-2 transition-all duration-300">
         {mobileBottomNavItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/pastor/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 px-1 py-1 rounded-xl transition-all duration-200 ${
                 isActive
                   ? `${item.color} font-black scale-105`
                   : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
               <item.icon className={`w-5 h-5 transition-all duration-200 ${isActive ? `${item.color} scale-110` : ""}`} />
-              <span className={`text-[8.5px] font-bold uppercase tracking-wider transition-all ${isActive ? item.color : ""}`}>{item.name}</span>
+              <span className={`text-[9.5px] font-extrabold uppercase tracking-wider transition-all whitespace-nowrap text-center ${isActive ? item.color : ""}`}>
+                {item.name}
+              </span>
             </Link>
           );
         })}

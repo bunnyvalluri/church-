@@ -46,6 +46,13 @@ export const pastorTranslations = {
     navNotifications: "Notification Alerts",
     navPreferences: "UI Preferences",
 
+    // Mobile Bottom Nav Short Labels
+    mobileDashboard: "Dashboard",
+    mobileSermons: "Sermons",
+    mobileMembers: "Members",
+    mobilePrayers: "Prayers",
+    mobileProfile: "Profile",
+
     // Subtitles & Badges
     publishedThisMonth: "4 Published this month",
     newThisWeek: "3 New this week",
@@ -118,6 +125,13 @@ export const pastorTranslations = {
     navNotifications: "నోటిఫికేషన్ హెచ్చరికలు",
     navPreferences: "భాషా ప్రాధాన్యతలు",
 
+    // Mobile Bottom Nav Short Labels
+    mobileDashboard: "డాష్‌బోర్డ్",
+    mobileSermons: "ప్రసంగాలు",
+    mobileMembers: "సభ్యులు",
+    mobilePrayers: "ప్రార్థనలు",
+    mobileProfile: "ప్రొఫైల్",
+
     // Subtitles & Badges
     publishedThisMonth: "ఈ నెలలో 4 ప్రచురించబడ్డాయి",
     newThisWeek: "ఈ వారంలో 3 కొత్తవి",
@@ -189,6 +203,13 @@ export const pastorTranslations = {
     navSecurity: "सुरक्षा और पहुंच",
     navNotifications: "सूचना अलर्ट",
     navPreferences: "भाषा प्राथमिकताएं",
+
+    // Mobile Bottom Nav Short Labels
+    mobileDashboard: "डैशबोर्ड",
+    mobileSermons: "उपदेश",
+    mobileMembers: "सदस्य",
+    mobilePrayers: "प्रार्थनाएं",
+    mobileProfile: "प्रोफ़ाइल",
 
     // Subtitles & Badges
     publishedThisMonth: "इस महीने 4 प्रकाशित",

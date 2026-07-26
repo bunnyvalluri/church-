@@ -1303,13 +1303,13 @@ export default function PastorDashboard() {
         {renderSidebarContent()}
       </aside>
 
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-around px-2 py-2 transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-between px-1.5 py-2 transition-all duration-300">
         {[
-          { name: "Dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
-          { name: "Sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
-          { name: "Member Requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
-          { name: "Prayer Requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
-          { name: "Profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
+          { name: "Dashboard", label: "Dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
+          { name: "Sermons", label: "Sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
+          { name: "Member Requests", label: "Members", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
+          { name: "Prayer Requests", label: "Prayers", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
+          { name: "Profile", label: "Profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
         ].map(item => {
           const isActive = activeNav === item.name;
           return (
@@ -1317,14 +1317,16 @@ export default function PastorDashboard() {
               key={item.name}
               type="button"
               onClick={() => setActiveNav(item.name)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 px-1 py-1 rounded-xl transition-all duration-200 ${
                 isActive
                   ? `${item.color} font-black scale-105`
                   : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white active:scale-95"
               }`}
             >
               <item.icon className={`w-5 h-5 transition-all duration-200 ${isActive ? `${item.color} scale-110` : ""}`} />
-              <span className={`text-[8.5px] font-bold uppercase tracking-wider transition-all ${isActive ? item.color : ""}`}>{item.name.split(" ")[0]}</span>
+              <span className={`text-[9.5px] font-extrabold uppercase tracking-wider transition-all whitespace-nowrap text-center ${isActive ? item.color : ""}`}>
+                {item.label}
+              </span>
             </button>
           );
         })}
@@ -2891,7 +2893,7 @@ export default function PastorDashboard() {
                   <h2 className="admin-title text-base">{activeNav}</h2>
                   <p className="admin-subtitle mt-1">Manage public and internal ministry media resources</p>
                 </div>
-                <button type="button" onClick={() => triggerToast("Media upload opened", "info")} className="px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
+                <button type="button" onClick={() => triggerToast("Media upload opened", "success")} className="px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
                   <Plus className="w-4 h-4" /> Upload Resource
                 </button>
               </div>
