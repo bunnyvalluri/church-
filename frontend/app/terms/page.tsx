@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Scale,
@@ -46,7 +46,28 @@ const TERMS_SECTION_ICONS: Record<string, any> = {
 
 export default function TermsOfServicePage() {
   const { language } = useLanguage();
-  const content = legalTranslations[(language as "en" | "te" | "hi") || "en"] || legalTranslations.en;
+  const [lang, setLang] = useState<"en" | "te" | "hi">((language as any) || "en");
+
+  // Sync language with context state
+  useEffect(() => {
+    if (language) {
+      setLang(language as "en" | "te" | "hi");
+    }
+  }, [language]);
+
+  // Listen directly for global language change custom event
+  useEffect(() => {
+    const handleLangEvent = (e: Event) => {
+      const customEvt = e as CustomEvent<"en" | "te" | "hi">;
+      if (customEvt.detail) {
+        setLang(customEvt.detail);
+      }
+    };
+    window.addEventListener("kcm-language-change", handleLangEvent);
+    return () => window.removeEventListener("kcm-language-change", handleLangEvent);
+  }, []);
+
+  const content = legalTranslations[lang] || legalTranslations.en;
   const t = content.terms;
 
   const [activeSection, setActiveSection] = useState("acceptance");
@@ -57,7 +78,7 @@ export default function TermsOfServicePage() {
       ...sec,
       icon: TERMS_SECTION_ICONS[sec.id] || Scale,
     }));
-  }, [t.sections]);
+  }, [t.sections, lang]);
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
