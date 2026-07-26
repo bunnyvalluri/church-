@@ -59,19 +59,19 @@ export default function AdminPageTemplate({
       </div>
 
       {/* ── Page Title Header & Actions Row ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-white dark:bg-[#0F1021]/80 backdrop-blur-md border border-gray-200/80 dark:border-white/10 p-3.5 sm:p-5 rounded-2xl shadow-sm dark:shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-white dark:bg-[#121428] backdrop-blur-md border border-slate-200 dark:border-white/10 p-3.5 sm:p-5 rounded-2xl shadow-sm dark:shadow-none">
         <div className="flex items-start sm:items-center gap-2.5 sm:gap-3.5">
           {Icon && (
-            <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+            <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
               <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
           )}
           <div>
-            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-snug">
+            <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
               {displayTitle}
             </h1>
             {displayDescription && (
-              <p className="text-[11px] sm:text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5 leading-normal">
+              <p className="text-[11px] sm:text-sm text-slate-600 dark:text-slate-300 font-medium mt-0.5 leading-normal">
                 {displayDescription}
               </p>
             )}
