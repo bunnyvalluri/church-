@@ -916,30 +916,28 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-3 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between w-full group overflow-hidden min-h-[84px] sm:min-h-[104px] ${
+                                      className={`relative p-2.5 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-2.5 sm:gap-3 w-full group overflow-hidden ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
                                       }`}
                                     >
+                                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
+                                        {icon}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <span className={`block font-black text-xs sm:text-sm tracking-tight truncate ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                          {getLanguagePurposeName(p)}
+                                        </span>
+                                        <span className="hidden sm:block text-gray-500 dark:text-gray-400 text-[11px] mt-0.5 leading-snug font-medium truncate">
+                                          {getLanguagePurposeDesc(p)}
+                                        </span>
+                                      </div>
                                       {isSelected && (
-                                        <div className="absolute top-2.5 right-2.5 w-4.5 h-4.5 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                          <Check className="w-3 h-3 text-white" />
+                                        <div className="w-4 h-4 sm:w-5 sm:h-5 bg-purple-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 ml-auto">
+                                          <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                                         </div>
                                       )}
-                                      <div className="flex flex-col items-start gap-1.5 w-full">
-                                        <div className={`w-7.5 h-7.5 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-80"}`}>
-                                          {icon}
-                                        </div>
-                                        <div className="w-full">
-                                          <span className={`block font-black text-xs sm:text-sm leading-tight transition-colors tracking-tight ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
-                                            {getLanguagePurposeName(p)}
-                                          </span>
-                                          <span className="hidden sm:block text-gray-500 dark:text-gray-400 text-[11px] mt-1 leading-snug font-medium line-clamp-1">
-                                            {getLanguagePurposeDesc(p)}
-                                          </span>
-                                        </div>
-                                      </div>
                                     </button>
                                   );
                                 })}
