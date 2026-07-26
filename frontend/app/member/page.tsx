@@ -37,6 +37,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PaletteToggle from "@/components/PaletteToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import ChurchFeedbackWidget from "@/components/ChurchFeedbackWidget";
+import MemberFooter from "@/components/layout/MemberFooter";
 
 /* ────────────────────────── Types ────────────────────────── */
 interface DashboardStats {
@@ -556,18 +557,18 @@ export default function MemberDashboard() {
       {/* ══════════════════════════════════════════════════
           MAIN CONTENT
       ══════════════════════════════════════════════════ */}
-      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        <div className="grid xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+      <main className="max-w-screen-xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 lg:py-10 pb-28 sm:pb-12">
+        <div className="grid xl:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
 
           {/* ══════════════ LEFT / MAIN COL ══════════════ */}
-          <div className="xl:col-span-8 space-y-6">
+          <div className="xl:col-span-8 space-y-5 sm:space-y-6">
 
             {/* ── Hero Welcome Card ───────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 sm:p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
+              className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-4 sm:p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
             >
               {/* Decorative blobs */}
               <div className="pointer-events-none absolute inset-0">
@@ -577,43 +578,43 @@ export default function MemberDashboard() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-                <div className="space-y-3 flex-1">
+              <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
+                <div className="space-y-2.5 sm:space-y-3 flex-1">
                   <div className="flex items-center gap-2">
-                    <activeGreeting.icon className="w-4 h-4 text-yellow-300" />
-                    <span className="text-xs font-bold text-violet-200 uppercase tracking-widest">
+                    <activeGreeting.icon className="w-4 h-4 text-yellow-300 flex-shrink-0" />
+                    <span className="text-[10px] sm:text-xs font-bold text-violet-200 uppercase tracking-widest">
                       {activeGreeting.text}
                     </span>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
                     {dt.greetings.welcome}, <br />
                     <span className="text-yellow-300">{firstName}! 🙏</span>
                   </h2>
-                  <p className="text-violet-100/80 text-sm leading-relaxed max-w-md">
+                  <p className="text-violet-100/80 text-xs sm:text-sm leading-relaxed max-w-md">
                     {dt.greetings.sub}
                   </p>
 
                   {mounted && lastSynced && (
-                    <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-3 py-1 rounded-full">
-                      <Wifi className="w-3 h-3" />
+                    <div className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-2.5 py-1 rounded-full">
+                      <Wifi className="w-3 h-3 flex-shrink-0" />
                       {dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                     </div>
                   )}
                 </div>
 
                 {/* Quick greeting stats */}
-                <div className="flex sm:flex-col gap-3 sm:gap-2 flex-shrink-0">
+                <div className="grid grid-cols-2 sm:flex sm:flex-col gap-2 sm:gap-2.5 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
                   {[
                     { label: dt.stats.events.label, value: stats.events, icon: Calendar },
                     { label: dt.stats.prayers.label, value: stats.prayers, icon: Heart },
                   ].map(({ label, value, icon: Icon }) => (
-                    <div key={label} className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-2xl px-2.5 py-1.5 sm:px-4 sm:py-2.5">
+                    <div key={label} className="flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5">
                       <Icon className="w-4 h-4 text-white flex-shrink-0" />
-                      <div>
-                        <p className="text-lg font-black leading-none text-white">
+                      <div className="min-w-0">
+                        <p className="text-base sm:text-lg font-black leading-none text-white">
                           {loadingFeeds ? <span className="inline-block w-5 h-4 bg-white/20 rounded animate-pulse" /> : value}
                         </p>
-                        <p className="text-[10px] text-white/80 font-semibold">{label}</p>
+                        <p className="text-[9px] sm:text-[10px] text-white/80 font-semibold truncate">{label}</p>
                       </div>
                     </div>
                   ))}
@@ -626,23 +627,23 @@ export default function MemberDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 }}
-              className="group relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-200/60 dark:border-amber-800/20 rounded-2xl p-5 md:p-6 overflow-hidden"
+              className="group relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-200/60 dark:border-amber-800/20 rounded-2xl p-4 sm:p-5 md:p-6 overflow-hidden"
             >
-              <div className="absolute right-4 top-4 text-amber-300/20 dark:text-amber-700/20">
-                <BookOpen className="w-20 h-20" />
+              <div className="absolute right-3 top-3 sm:right-4 sm:top-4 text-amber-300/15 dark:text-amber-700/15 pointer-events-none">
+                <BookOpen className="w-14 h-14 sm:w-20 sm:h-20" />
               </div>
-              <div className="relative flex items-start gap-4">
-                <div className="p-2.5 bg-amber-100 dark:bg-amber-950/40 rounded-xl flex-shrink-0">
-                  <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <div className="relative flex items-start gap-3 sm:gap-4">
+                <div className="p-2 sm:p-2.5 bg-amber-100 dark:bg-amber-950/40 rounded-xl flex-shrink-0">
+                  <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-600 dark:text-amber-400 block mb-2">
+                  <span className="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-widest text-amber-600 dark:text-amber-400 block mb-1 sm:mb-2">
                     {dt.scriptureHeading}
                   </span>
-                  <p className="text-sm font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">
+                  <p className="text-xs sm:text-sm font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">
                     &ldquo;{scripture.text}&rdquo;
                   </p>
-                  <span className="inline-block mt-2 text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30 px-3 py-1 rounded-full border border-violet-100 dark:border-violet-900/30">
+                  <span className="inline-block mt-2 text-[10px] sm:text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-violet-100 dark:border-violet-900/30">
                     — {scripture.ref}
                   </span>
                 </div>
@@ -654,7 +655,7 @@ export default function MemberDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.14 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4"
             >
               {[
                 {
@@ -701,24 +702,24 @@ export default function MemberDashboard() {
                 <Link
                   key={i}
                   href={href}
-                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-3.5 sm:p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
+                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-3 sm:p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
                 >
-                  <div className="absolute top-3 right-3 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                  <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-5 h-5 ${iconColor}`} />
+                  <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-pulse" />
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
                   </div>
-                  <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider block leading-tight">{label}</span>
+                  <span className="text-[9px] sm:text-[10px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block leading-tight truncate">{label}</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={value}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`text-3xl md:text-4xl font-black ${iconColor} block mt-1.5 tracking-tight`}
+                      className={`text-2xl sm:text-3xl md:text-4xl font-black ${iconColor} block mt-1 tracking-tight`}
                     >
-                      {loadingFeeds ? <span className="inline-block w-9 h-8 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
+                      {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
                     </motion.span>
                   </AnimatePresence>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-1 block">{badge}</span>
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 font-semibold mt-1 block truncate">{badge}</span>
                 </Link>
               ))}
             </motion.div>
@@ -729,9 +730,9 @@ export default function MemberDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3.5">
                 <Sparkles className="w-4 h-4 text-violet-500" />
-                <h3 className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                <h3 className="text-[11px] sm:text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                   {dt.directoryHeading}
                 </h3>
               </div>
@@ -748,24 +749,24 @@ export default function MemberDashboard() {
                     >
                       <Link
                         href={card.href}
-                        className={`group flex items-center gap-4 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-5 hover:shadow-xl ${card.glow} hover:border-gray-300 dark:hover:border-white/20 hover:scale-[1.015] transition-all duration-300`}
+                        className={`group flex items-center gap-3 sm:gap-4 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 md:p-5 hover:shadow-xl ${card.glow} hover:border-gray-300 dark:hover:border-white/20 hover:scale-[1.015] transition-all duration-300`}
                       >
-                        <div className={`w-12 h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <Icon className="w-5 h-5 text-white" />
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${card.gradient} rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm md:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">
+                          <h4 className="text-xs sm:text-sm md:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">
                             {card.title}
                           </h4>
-                          <p className="text-[11px] md:text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed truncate">
+                          <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug line-clamp-2">
                             {card.desc}
                           </p>
                         </div>
                         <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
-                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
+                          <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full whitespace-nowrap ${card.badgeColor}`}>
                             {card.badge}
                           </span>
-                          <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
+                          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
                         </div>
                       </Link>
                     </motion.div>
@@ -939,6 +940,7 @@ export default function MemberDashboard() {
           </div>
         </div>
       </main>
+      <MemberFooter />
     </div>
   );
 }

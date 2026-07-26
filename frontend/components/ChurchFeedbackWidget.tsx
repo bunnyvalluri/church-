@@ -515,13 +515,13 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
               {/* Quick emoji reactions */}
               <div className="space-y-1.5">
                 <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{ft.quickReactionLabel}</p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {QUICK_EMOJIS.map(e => (
                     <button
                       type="button"
                       key={e}
                       onClick={() => setSelectedEmoji(selectedEmoji === e ? "" : e)}
-                      className={`w-9 h-9 rounded-xl border text-lg flex items-center justify-center transition-all hover:scale-110 ${
+                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl border text-base sm:text-lg flex items-center justify-center transition-all hover:scale-110 ${
                         selectedEmoji === e
                           ? "bg-violet-50 dark:bg-violet-950/40 border-violet-400 shadow-sm"
                           : "bg-gray-50 dark:bg-gray-800/40 border-gray-200 dark:border-white/10"
@@ -548,7 +548,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
               </div>
 
               {/* Anonymous toggle + submit */}
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <div
                     onClick={() => setIsAnonymous(a => !a)}
@@ -568,7 +568,7 @@ export default function ChurchFeedbackWidget({ userId, userName }: Props) {
                 <button
                   type="submit"
                   disabled={submitting || !rating || !category}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-br from-violet-600 to-purple-700 text-white text-xs font-bold rounded-xl shadow hover:shadow-lg hover:shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 bg-gradient-to-br from-violet-600 to-purple-700 text-white text-xs font-bold rounded-xl shadow hover:shadow-lg hover:shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
                 >
                   {submitting ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />

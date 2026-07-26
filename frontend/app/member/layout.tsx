@@ -15,6 +15,7 @@ import {
   Home, Activity, Star, Shield, Sparkles, TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import MemberFooter from "@/components/layout/MemberFooter";
 
 const layoutTranslations = {
   en: {
@@ -501,6 +502,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             {children}
           </motion.div>
         </main>
+        <MemberFooter />
       </div>
     </div>
   );

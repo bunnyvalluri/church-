@@ -117,19 +117,19 @@ export default function AIChat() {
   // Floating trigger button when closed
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50 group">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 group">
         <button
           onClick={() => setIsOpen(true)}
-          className="relative p-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-white/20 dark:border-gray-800"
+          className="relative p-2.5 sm:p-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-white/20 dark:border-gray-800"
           aria-label="Open KCM Assistant"
         >
           {/* Animated pulsing status ring */}
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-gray-900"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 bg-emerald-500 border-2 border-white dark:border-gray-900"></span>
           </span>
 
-          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm">
             <Image
               src="/chatbot-bird-logo.png"
               alt="KCM AI Assistant"
@@ -141,7 +141,7 @@ export default function AIChat() {
         </button>
 
         {/* Hover Tooltip */}
-        <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none border border-gray-700">
+        <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none border border-gray-700 hidden sm:block">
           Chat with KCM Assistant ✨
         </div>
       </div>
@@ -176,8 +176,8 @@ export default function AIChat() {
       className={cn(
         "fixed z-50 transition-all duration-300 ease-in-out shadow-2xl rounded-2xl overflow-hidden border border-gray-200/80 dark:border-gray-800",
         isMinimized
-          ? "bottom-6 right-6 w-80 h-[64px]"
-          : "bottom-6 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[420px] h-[620px] max-h-[88vh]"
+          ? "bottom-4 right-4 sm:bottom-6 sm:right-6 w-72 sm:w-80 h-[64px]"
+          : "bottom-4 right-2 left-2 sm:left-auto sm:right-6 w-auto sm:w-[420px] h-[560px] sm:h-[620px] max-h-[85vh]"
       )}
     >
       <div className="relative w-full h-full bg-white dark:bg-gray-950 flex flex-col">
