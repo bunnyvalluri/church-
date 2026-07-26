@@ -6,13 +6,21 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-    }
+    const isAll = !userId || userId === 'all' || userId === 'all_admin_peek' || userId === 'admin';
+    const where = isAll ? {} : { userId };
 
     const prayers = await prisma.prayerRequest.findMany({
-      where: { userId },
+      where,
       orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({ success: true, prayers });
@@ -28,10 +36,15 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, title, description, category, isAnonymous } = body;
+    let { userId, title, description, category, isAnonymous } = body;
 
-    if (!userId || !title || !description || !category) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+    if (!title || !description || !category) {
+      return NextResponse.json({ error: 'Title, description, and category are required' }, { status: 400 });
+    }
+
+    if (!userId) {
+      const firstUser = await prisma.user.findFirst();
+      userId = firstUser?.id || 'admin_offline_user';
     }
 
     const prayerData = {
@@ -45,6 +58,15 @@ export async function POST(req: Request) {
 
     const newPrayer = await prisma.prayerRequest.create({
       data: prayerData,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     // Trigger notification
@@ -69,4 +91,67 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, status, category, title, description } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
+    }
+
+    const updateData: any = {};
+    if (status) updateData.status = status;
+    if (category) updateData.category = category;
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
+
+    const updatedPrayer = await prisma.prayerRequest.update({
+      where: { id },
+      data: updateData,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ success: true, prayer: updatedPrayer });
+  } catch (err: any) {
+    console.error('[PRAYERS/PATCH] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Failed to update prayer request' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
+    }
+
+    await prisma.prayerRequest.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true, id });
+  } catch (err: any) {
+    console.error('[PRAYERS/DELETE] Error:', err);
+    return NextResponse.json(
+      { error: err?.message || 'Failed to delete prayer request' },
+      { status: 500 }
+    );
+  }
+}
+
 

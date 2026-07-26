@@ -506,7 +506,7 @@ export default function ReceiptPage() {
             </div>
             <div className="text-center sm:text-right text-xs text-gray-400 space-y-0.5">
               <p>✉ kingofchristministries23@gmail.com</p>
-              <p>Generated: {new Date().toLocaleString("en-IN")}</p>
+              <p suppressHydrationWarning>Generated: {new Date().toLocaleString("en-IN")}</p>
             </div>
           </div>
 

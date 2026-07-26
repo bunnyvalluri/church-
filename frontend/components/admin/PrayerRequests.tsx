@@ -8,16 +8,13 @@ import {
   Clock, 
   BookOpen, 
   UserPlus, 
-  Filter, 
   ChevronDown, 
   Search, 
   Plus, 
   X, 
   Copy, 
-  Sparkles, 
   Check, 
   Trash2,
-  Award,
   ShieldCheck
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -49,7 +46,7 @@ const DEFAULT_PRAYERS: Prayer[] = [
     category: "HEALTH",
     isAnonymous: false,
     status: "PRAYING",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: "2026-07-24T10:00:00.000Z",
     user: { name: "Mary Sunitha", email: "mary.sunitha@gmail.com" },
     assignedPartners: ["Sister Sarah Thomas", "Pastor David Raju"]
   },
@@ -60,7 +57,7 @@ const DEFAULT_PRAYERS: Prayer[] = [
     category: "FINANCIAL",
     isAnonymous: false,
     status: "PENDING",
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: "2026-07-21T10:00:00.000Z",
     user: { name: "John Babu", email: "john.babu@gmail.com" },
     assignedPartners: []
   },
@@ -71,7 +68,7 @@ const DEFAULT_PRAYERS: Prayer[] = [
     category: "FAMILY",
     isAnonymous: true,
     status: "ANSWERED",
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: "2026-07-16T10:00:00.000Z",
     user: { name: "Anonymous Believer", email: "hidden@kcm.org" },
     assignedPartners: ["Pastor Samuel Valluri"]
   },
@@ -82,7 +79,7 @@ const DEFAULT_PRAYERS: Prayer[] = [
     category: "SPIRITUAL",
     isAnonymous: false,
     status: "PRAYING",
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: "2026-07-25T10:00:00.000Z",
     user: { name: "Emmanuel Reddy", email: "emmanuel.reddy@gmail.com" },
     assignedPartners: ["Brother Daniel Rao"]
   }
@@ -227,6 +224,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [assignedPartnerInput, setAssignedPartnerInput] = useState("");
   const [copiedVerse, setCopiedVerse] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"list" | "detail">("list");
 
   // Modal State
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
@@ -249,18 +247,15 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
         
         let list = data.prayers || [];
         const mapped = list.map((p: any) => {
-          const user = users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
+          const user = p.user || users.find(u => u.id === p.userId || u.uid === p.userId) || { name: p.donorName || "Congregation Believer", email: p.donorEmail || "believer@gmail.com" };
           return { ...p, user, assignedPartners: p.assignedPartners || [] };
         });
-        setPrayers(mapped);
-        if (mapped.length > 0) {
-          setSelectedPrayer(mapped[0]);
-        } else {
-          setSelectedPrayer(null);
-        }
+        const finalPrayers = mapped.length > 0 ? mapped : DEFAULT_PRAYERS;
+        setPrayers(finalPrayers);
+        setSelectedPrayer(finalPrayers[0]);
       } catch (e) {
-        setPrayers([]);
-        setSelectedPrayer(null);
+        setPrayers(DEFAULT_PRAYERS);
+        setSelectedPrayer(DEFAULT_PRAYERS[0]);
       } finally {
         setLoading(false);
       }
@@ -290,7 +285,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
     });
   }, [prayers, categoryFilter, statusFilter, searchQuery]);
 
-  const handleStatusChange = (prayerId: string, newStatus: "PENDING" | "PRAYING" | "ANSWERED") => {
+  const handleStatusChange = async (prayerId: string, newStatus: "PENDING" | "PRAYING" | "ANSWERED") => {
     setPrayers(prev => prev.map(p => {
       if (p.id === prayerId) {
         const updated = { ...p, status: newStatus };
@@ -301,6 +296,16 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
       }
       return p;
     }));
+
+    try {
+      await fetch("/api/member/prayers", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: prayerId, status: newStatus }),
+      });
+    } catch (err) {
+      console.warn("Failed to update status on server:", err);
+    }
   };
 
   const handleAssignPartner = (e: React.FormEvent) => {
@@ -334,34 +339,79 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
     }));
   };
 
-  const handleDeletePrayer = (prayerId: string) => {
+  const handleDeletePrayer = async (prayerId: string) => {
     if (confirm(isTe ? "మీరు ఖచ్చితంగా ఈ ప్రార్థన అభ్యర్థనను తొలగించాలనుకుంటున్నారా?" : isHi ? "क्या आप वाकई इस प्रार्थना अनुरोध को हटाना चाहते हैं?" : "Are you sure you want to delete this prayer request?")) {
       setPrayers(prev => prev.filter(p => p.id !== prayerId));
       if (selectedPrayer?.id === prayerId) {
         const remaining = prayers.filter(p => p.id !== prayerId);
         setSelectedPrayer(remaining.length > 0 ? remaining[0] : null);
       }
+      try {
+        await fetch(`/api/member/prayers?id=${prayerId}`, { method: "DELETE" });
+      } catch (err) {
+        console.warn("Failed to delete prayer request on server:", err);
+      }
     }
   };
 
-  const handleCreatePrayer = (e: React.FormEvent) => {
+  const handleCreatePrayer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPrayer.title) return;
-    
-    const created: Prayer = {
-      id: `pr_${Date.now()}`,
-      title: newPrayer.title,
-      description: newPrayer.description || "Believer prayer intercession request.",
-      category: newPrayer.category,
-      isAnonymous: newPrayer.isAnonymous,
-      status: "PENDING",
-      createdAt: new Date().toISOString(),
-      user: {
-        name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
-        email: newPrayer.userEmail || "member@kcm.org"
-      },
-      assignedPartners: []
-    };
+
+    let created: Prayer;
+    try {
+      const res = await fetch("/api/member/prayers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newPrayer.title,
+          description: newPrayer.description || "Believer prayer intercession request.",
+          category: newPrayer.category,
+          isAnonymous: newPrayer.isAnonymous,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.prayer) {
+        created = {
+          ...data.prayer,
+          user: data.prayer.user || {
+            name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
+            email: newPrayer.userEmail || "member@kcm.org"
+          },
+          assignedPartners: []
+        };
+      } else {
+        created = {
+          id: `pr_${Date.now()}`,
+          title: newPrayer.title,
+          description: newPrayer.description || "Believer prayer intercession request.",
+          category: newPrayer.category,
+          isAnonymous: newPrayer.isAnonymous,
+          status: "PENDING",
+          createdAt: new Date().toISOString(),
+          user: {
+            name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
+            email: newPrayer.userEmail || "member@kcm.org"
+          },
+          assignedPartners: []
+        };
+      }
+    } catch (err) {
+      created = {
+        id: `pr_${Date.now()}`,
+        title: newPrayer.title,
+        description: newPrayer.description || "Believer prayer intercession request.",
+        category: newPrayer.category,
+        isAnonymous: newPrayer.isAnonymous,
+        status: "PENDING",
+        createdAt: new Date().toISOString(),
+        user: {
+          name: newPrayer.isAnonymous ? "Anonymous Believer" : (newPrayer.userName || "Congregation Member"),
+          email: newPrayer.userEmail || "member@kcm.org"
+        },
+        assignedPartners: []
+      };
+    }
 
     setPrayers(prev => [created, ...prev]);
     setSelectedPrayer(created);
@@ -386,89 +436,121 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
 
       {/* ─── Top Metric Stats Bar ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        
+        {/* Total Requests */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {isTe ? "మొత్తం ప్రార్థనలు" : isHi ? "कुल प्रार्थनाएँ" : "Total Requests"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{stats.total}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.total}</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800 rounded-xl">
             <MessageSquare className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        {/* Pending Review */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
               {isTe ? "పరిశీలనలో ఉన్నవి" : isHi ? "समीक्षा लंबित" : "Pending Review"}
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.pending}</h3>
           </div>
-          <div className="p-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 rounded-2xl">
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800 rounded-xl">
             <Clock className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        {/* Actively Praying */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+            <span className="text-[11px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
               {isTe ? "ప్రార్థన జరుగుతున్నవి" : isHi ? "प्रार्थना जारी है" : "Actively Praying"}
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.praying}</h3>
           </div>
-          <div className="p-3 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 rounded-2xl">
+          <div className="p-3 bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-800 rounded-xl">
             <Heart className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
+        {/* Answered Praise */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
               {isTe ? "జవాబు పొందినవి" : isHi ? "उत्तरित प्रार्थनाएँ" : "Answered Praise"}
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.answered}</h3>
           </div>
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800 rounded-xl">
             <CheckCircle className="w-5 h-5" />
           </div>
         </div>
+
       </div>
 
-      {/* ─── Main Content Grid: Sidebar List + Right Detail/Dashboard Pane ─── */}
+      {/* Mobile View Segmented Switcher */}
+      <div className="lg:hidden flex bg-slate-200/80 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-300/60 dark:border-slate-700">
+        <button
+          onClick={() => setMobileTab("list")}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black uppercase transition-all flex items-center justify-center gap-2 ${
+            mobileTab === "list"
+              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold"
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          {isTe ? "అభ్యర్థనల జాబితా" : isHi ? "अनुरोध सूची" : "Requests List"} ({filteredPrayers.length})
+        </button>
+        <button
+          onClick={() => setMobileTab("detail")}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black uppercase transition-all flex items-center justify-center gap-2 ${
+            mobileTab === "detail"
+              ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold"
+          }`}
+        >
+          <Heart className="w-4 h-4" />
+          {isTe ? "వివరాలు" : isHi ? "विवरण" : "Request Details"}
+        </button>
+      </div>
+
+      {/* ─── Main Content Grid ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
-        {/* ─── Left Column: Prayer Requests Index ─── */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
+        {/* ─── Left Column: Prayer Requests List ─── */}
+        <div className={`lg:col-span-1 space-y-4 ${mobileTab === "list" ? "block" : "hidden lg:block"}`}>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
             
-            {/* Header & Log Action */}
+            {/* Header & New Action */}
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                  {isTe ? "ప్రార్థన అభ్యర్థనలు" : isHi ? "प्रार्थना अनुरोध" : "Prayer Requests"}
+                  {isTe ? "ప్రార్థన అభ్యర్థనలు" : isHi ? "ప్రార్థన अनुरोध" : "Prayer Requests"}
                 </h2>
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold mt-0.5">
-                  {filteredPrayers.length} {isTe ? "రికార్డులు అందుబాటులో ఉన్నాయి" : isHi ? "रिकॉर्ड उपलब्ध हैं" : "active intercession items"}
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                  {filteredPrayers.length} {isTe ? "అభ్యర్థనలు" : isHi ? "अनुरोध" : "active items"}
                 </p>
               </div>
               <button 
                 onClick={() => setIsLogModalOpen(true)}
-                className="py-2 px-3 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/10 transition-all active:scale-95"
+                className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all active:scale-95"
               >
-                <Plus className="w-4 h-4" /> {isTe ? "క్రొత్తది" : isHi ? "नया" : "New"}
+                <Plus className="w-4 h-4" /> {isTe ? "క్రొత్తది" : isHi ? "నయా" : "New"}
               </button>
             </div>
 
-            {/* Search Bar */}
+            {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
               <input 
                 type="text" 
-                placeholder={isTe ? "ప్రార్థనల శోధన..." : isHi ? "प्रार्थना खोजें..." : "Filter requests..."}
+                placeholder={isTe ? "ప్రార్థనల శోధన..." : isHi ? "ప్రార్థన खोजें..." : "Filter requests..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all font-semibold"
+                className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium"
               />
             </div>
 
@@ -478,7 +560,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full py-2 pl-3 pr-7 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-gray-300 rounded-xl text-[10px] font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/15"
+                  className="w-full py-2 pl-3 pr-7 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-[11px] font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="ALL">{t.allCategories}</option>
                   <option value="HEALTH">{getCategoryTranslation("HEALTH")}</option>
@@ -487,53 +569,56 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                   <option value="SPIRITUAL">{getCategoryTranslation("SPIRITUAL")}</option>
                   <option value="GUIDANCE">{getCategoryTranslation("GUIDANCE")}</option>
                 </select>
-                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none" />
               </div>
 
               <div className="relative">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full py-2 pl-3 pr-7 bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-gray-300 rounded-xl text-[10px] font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/15"
+                  className="w-full py-2 pl-3 pr-7 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-[11px] font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="ALL">{t.allStatuses}</option>
                   <option value="PENDING">{getStatusTranslation("PENDING")}</option>
                   <option value="PRAYING">{getStatusTranslation("PRAYING")}</option>
                   <option value="ANSWERED">{getStatusTranslation("ANSWERED")}</option>
                 </select>
-                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pointer-events-none" />
               </div>
             </div>
 
             {/* List */}
-            <div className="space-y-2.5 max-h-[540px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-2.5 max-h-[560px] overflow-y-auto pr-1 custom-scrollbar">
               {filteredPrayers.map(p => {
                 const isSelected = selectedPrayer?.id === p.id;
                 return (
                   <div 
                     key={p.id}
-                    onClick={() => setSelectedPrayer(p)}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all relative overflow-hidden group hover:-translate-y-0.5 ${
+                    onClick={() => {
+                      setSelectedPrayer(p);
+                      setMobileTab("detail");
+                    }}
+                    className={`p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden group ${
                       isSelected 
-                        ? "bg-white dark:bg-[#16172D] border-indigo-500/60 dark:border-indigo-500/50 shadow-md shadow-indigo-500/5" 
-                        : "bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border-slate-200/60 dark:border-white/[0.04]"
+                        ? "bg-indigo-50/80 dark:bg-indigo-950/50 border-2 border-indigo-500 dark:border-indigo-500 shadow-md" 
+                        : "bg-slate-50/80 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/70 hover:border-indigo-300 dark:hover:border-indigo-500/40"
                     }`}
                   >
                     {isSelected && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-indigo-500 to-violet-600" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600 dark:bg-indigo-400" />
                     )}
 
-                    <div className="flex items-center justify-between">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border ${
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
                         p.status === "ANSWERED" 
-                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-500/20" 
+                          ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800" 
                           : p.status === "PRAYING" 
-                          ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200/60 dark:border-purple-500/20" 
-                          : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200/60 dark:border-amber-500/20"
+                          ? "bg-purple-100 dark:bg-purple-950/80 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-800" 
+                          : "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-800"
                       }`}>
                         {getStatusTranslation(p.status)}
                       </span>
-                      <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500" suppressHydrationWarning>
                         {formatDate(p.createdAt)}
                       </span>
                     </div>
@@ -541,15 +626,15 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     <h4 className="text-xs font-black text-slate-900 dark:text-white truncate mt-2">
                       {p.title}
                     </h4>
-                    <p className="text-[10px] text-slate-450 dark:text-gray-400 line-clamp-1 mt-0.5 leading-relaxed font-medium">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1 mt-0.5 leading-relaxed font-medium">
                       {p.description}
                     </p>
                     
-                    <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.04]">
-                      <span className="inline-block text-[9px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                    <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold uppercase tracking-wide">
                         {getCategoryTranslation(p.category)}
                       </span>
-                      <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500">
+                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
                         {p.isAnonymous ? t.anonymousRequest : (p.user?.name || "Believer")}
                       </span>
                     </div>
@@ -558,7 +643,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
               })}
 
               {filteredPrayers.length === 0 && (
-                <div className="py-10 text-center text-xs text-slate-400 dark:text-gray-500 font-semibold bg-slate-50/50 dark:bg-white/[0.01] rounded-2xl border border-dashed border-slate-200 dark:border-white/[0.05] p-4">
+                <div className="py-10 text-center text-xs text-slate-500 dark:text-slate-400 font-semibold bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-4">
                   {isTe ? "అభ్యర్థనలు ఏవీ కనుగొనబడలేదు" : isHi ? "कोई अनुरोध नहीं मिला" : "No matching prayer requests found."}
                 </div>
               )}
@@ -567,24 +652,31 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
           </div>
         </div>
 
-        {/* ─── Right Column: Selected Prayer Details or Interactive Hub ─── */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* ─── Right Column: Selected Prayer Details ─── */}
+        <div className={`lg:col-span-2 space-y-6 ${mobileTab === "detail" ? "block" : "hidden lg:block"}`}>
           {selectedPrayer ? (
-            /* SELECTED PRAYER DETAIL VIEW */
             <div className="space-y-6">
               
+              {/* Mobile Back Button */}
+              <button
+                onClick={() => setMobileTab("list")}
+                className="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-extrabold transition-all active:scale-95"
+              >
+                ← {isTe ? "జాబితాకు తిరిగి వెళ్లు" : isHi ? "सूची पर वापस जाएं" : "Back to Requests List"}
+              </button>
+
               {/* Main Details Card */}
-              <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-5">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-5">
                 
                 {/* Header Info & Status Controls */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full text-[9px] font-black uppercase tracking-wider border border-indigo-200/60 dark:border-indigo-500/20">
+                      <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-200 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">
                         {getCategoryTranslation(selectedPrayer.category)}
                       </span>
                       {selectedPrayer.isAnonymous && (
-                        <span className="px-3 py-1 bg-slate-100 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 rounded-full text-[9px] font-bold border border-slate-200/60 dark:border-white/[0.04]">
+                        <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-[10px] font-bold border border-slate-200 dark:border-slate-700">
                           {t.anonymousRequest}
                         </span>
                       )}
@@ -593,73 +685,75 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     <h2 className="text-xl font-black text-slate-900 dark:text-white mt-2.5 tracking-tight">
                       {selectedPrayer.title}
                     </h2>
-                    <p className="text-[11px] text-slate-400 dark:text-gray-500 mt-1 font-semibold">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold" suppressHydrationWarning>
                       {t.submitted}: {new Date(selectedPrayer.createdAt).toLocaleString(activeLang === "te" ? "te-IN" : activeLang === "hi" ? "hi-IN" : "en-IN")}
                     </p>
                   </div>
 
-                  {/* Interactive Status Selector Buttons */}
-                  <div className="p-1 bg-slate-100 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.04] rounded-2xl flex gap-1 items-center shrink-0">
+                  {/* Interactive Status Selector Segmented Controls */}
+                  <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-1.5 w-full md:w-auto shrink-0">
                     <button 
                       onClick={() => handleStatusChange(selectedPrayer.id, "PENDING")}
-                      className={`py-2 px-3 rounded-xl flex items-center gap-1.5 text-[10px] font-black uppercase transition-all ${
+                      className={`py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs font-black uppercase transition-all w-full text-center ${
                         selectedPrayer.status === "PENDING"
-                          ? "bg-white dark:bg-white/[0.08] text-amber-600 dark:text-amber-400 shadow-sm border border-slate-200/50 dark:border-white/[0.04]"
-                          : "text-slate-400 hover:text-slate-700 dark:hover:text-gray-300"
+                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/25"
+                          : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-slate-700/80 font-bold"
                       }`}
                     >
-                      <Clock className="w-3.5 h-3.5" />
-                      {getStatusTranslation("PENDING")}
+                      <Clock className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{getStatusTranslation("PENDING")}</span>
                     </button>
+
                     <button 
                       onClick={() => handleStatusChange(selectedPrayer.id, "PRAYING")}
-                      className={`py-2 px-3 rounded-xl flex items-center gap-1.5 text-[10px] font-black uppercase transition-all ${
+                      className={`py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs font-black uppercase transition-all w-full text-center ${
                         selectedPrayer.status === "PRAYING"
-                          ? "bg-white dark:bg-white/[0.08] text-purple-600 dark:text-purple-400 shadow-sm border border-slate-200/50 dark:border-white/[0.04]"
-                          : "text-slate-400 hover:text-slate-700 dark:hover:text-gray-300"
+                          ? "bg-purple-600 text-white shadow-md shadow-purple-600/25"
+                          : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-slate-700/80 font-bold"
                       }`}
                     >
-                      <Heart className="w-3.5 h-3.5" />
-                      {getStatusTranslation("PRAYING")}
+                      <Heart className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{getStatusTranslation("PRAYING")}</span>
                     </button>
+
                     <button 
                       onClick={() => handleStatusChange(selectedPrayer.id, "ANSWERED")}
-                      className={`py-2 px-3 rounded-xl flex items-center gap-1.5 text-[10px] font-black uppercase transition-all ${
+                      className={`py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs font-black uppercase transition-all w-full text-center ${
                         selectedPrayer.status === "ANSWERED"
-                          ? "bg-white dark:bg-white/[0.08] text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/50 dark:border-white/[0.04]"
-                          : "text-slate-400 hover:text-slate-700 dark:hover:text-gray-300"
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
+                          : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/80 dark:hover:bg-slate-700/80 font-bold"
                       }`}
                     >
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      {getStatusTranslation("ANSWERED")}
+                      <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{getStatusTranslation("ANSWERED")}</span>
                     </button>
                   </div>
                 </div>
 
-                <hr className="border-t border-slate-100 dark:border-white/[0.04]" />
+                <hr className="border-t border-slate-200 dark:border-slate-800" />
 
                 {/* Request Description Box */}
                 <div className="space-y-2">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {isTe ? "విశ్వాసి ప్రార్థన అంశము వివరాలు" : isHi ? "विश्वासी प्रार्थना विवरण" : "Believer Prayer Details"}
                   </h4>
-                  <div className="p-4 bg-slate-50/60 dark:bg-[#16172D]/30 border border-slate-200/60 dark:border-white/[0.04] rounded-2xl text-xs text-slate-800 dark:text-gray-200 leading-relaxed font-semibold">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-semibold">
                     {selectedPrayer.description}
                   </div>
                 </div>
 
                 {/* Believer Info Bar & Delete Action */}
-                <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase">{t.believer}:</span>
-                    <span className="font-bold text-slate-900 dark:text-white">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs pt-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase">{t.believer}:</span>
+                    <span className="font-bold text-slate-900 dark:text-white break-all">
                       {selectedPrayer.isAnonymous ? "Anonymous Believer" : `${selectedPrayer.user?.name || "Member"} (${selectedPrayer.user?.email || "believer@kcm.org"})`}
                     </span>
                   </div>
 
                   <button 
                     onClick={() => handleDeletePrayer(selectedPrayer.id)}
-                    className="py-1.5 px-3 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 text-rose-600 dark:text-rose-400 rounded-xl text-[10px] font-extrabold uppercase flex items-center gap-1 transition-all"
+                    className="py-1.5 px-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-all w-full sm:w-auto shrink-0"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     {isTe ? "తొలగించు" : isHi ? "हटाएं" : "Delete Request"}
@@ -669,10 +763,10 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
               </div>
 
               {/* Smart Scripture Support Box */}
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900/10 via-purple-900/5 to-slate-900/5 dark:from-indigo-500/10 dark:via-purple-500/5 dark:to-transparent border border-indigo-100 dark:border-white/[0.06] space-y-3 relative overflow-hidden">
-                <div className="flex items-center justify-between">
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-slate-50 dark:from-indigo-950/40 dark:via-purple-950/30 dark:to-slate-900/90 border border-indigo-200/80 dark:border-indigo-800/60 space-y-3 relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-indigo-500" />
+                    <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                     <h3 className="font-black text-sm text-slate-900 dark:text-white">
                       {t.suggestedScripture}
                     </h3>
@@ -680,41 +774,41 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                   
                   <button 
                     onClick={() => handleCopyVerse(getVerseSuggestion(selectedPrayer.category))}
-                    className="py-1.5 px-3 bg-white dark:bg-white/[0.06] hover:bg-slate-100 text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-white/[0.08] rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95"
+                    className="py-1.5 px-3.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 w-full sm:w-auto"
                   >
                     {copiedVerse ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copiedVerse ? (isTe ? "కాపీ చేయబడింది!" : isHi ? "कॉपी किया गया!" : "Copied!") : (isTe ? "వాక్యాన్ని కాపీ చేయండి" : isHi ? "वचन कॉपी करें" : "Copy Verse")}
+                    {copiedVerse ? (isTe ? "కాపీ చేయబడింది!" : isHi ? "कॉपी किया गया!" : "Copied!") : (isTe ? "వాక్యాన్ని కాపీ చేయండి" : isHi ? "వచన కాపీ کریں" : "Copy Verse")}
                   </button>
                 </div>
 
-                <p className="text-xs leading-relaxed italic font-bold text-slate-800 dark:text-indigo-200">
+                <p className="text-sm leading-relaxed italic font-semibold text-slate-900 dark:text-indigo-100">
                   "{getVerseSuggestion(selectedPrayer.category)}"
                 </p>
 
-                <p className="text-[10px] text-slate-400 dark:text-gray-400 font-semibold">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                   {t.suggestedTip}
                 </p>
               </div>
 
               {/* Intercessory Partner Assignment Box */}
-              <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <UserPlus className="w-4.5 h-4.5 text-indigo-500" />
+                  <UserPlus className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
                   {t.partnerAssignment}
                 </h3>
                 
                 {/* Form to add intercessor */}
-                <form onSubmit={handleAssignPartner} className="flex gap-2">
+                <form onSubmit={handleAssignPartner} className="flex flex-col sm:flex-row gap-2">
                   <input 
                     type="text" 
-                    placeholder={isTe ? "పాస్టర్, నాయకుడు లేదా ప్రార్థన యోధుల పేరు..." : isHi ? "पास्टर या प्रार्थना योद्धा का नाम..." : "Assign pastor, leader, or prayer warrior..."} 
+                    placeholder={isTe ? "పాస్టర్, నాయకుడు లేదా ప్రార్థన యోధుల పేరు..." : isHi ? "పాస్టర్ या प्रार्थना योद्धा का नाम..." : "Assign pastor, leader, or prayer warrior..."} 
                     value={assignedPartnerInput}
                     onChange={(e) => setAssignedPartnerInput(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all font-semibold"
+                    className="flex-1 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-semibold"
                   />
                   <button 
                     type="submit" 
-                    className="py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-1 shadow-md shadow-indigo-500/10 transition-all active:scale-95 shrink-0"
+                    className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-md shadow-indigo-600/20 transition-all active:scale-95 shrink-0 w-full sm:w-auto"
                   >
                     <Plus className="w-4 h-4" />
                     {isTe ? "కేటాయించు" : isHi ? "आवंटित करें" : "Assign"}
@@ -727,84 +821,97 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     {selectedPrayer.assignedPartners.map(partner => (
                       <span 
                         key={partner}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-500/20 rounded-full text-[10px] font-bold"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-bold"
                       >
-                        <ShieldCheck className="w-3 h-3 text-indigo-500" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                         {partner}
                         <button 
                           onClick={() => handleRemovePartner(partner)}
                           className="hover:text-rose-500 ml-1 transition-colors"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
                       </span>
                     ))}
                   </div>
                 )}
 
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                   {t.assignTip}
                 </p>
               </div>
 
             </div>
           ) : (
-            /* INTERACTIVE DISPATCHER SHOWCASE (When no request is selected) */
-            <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-8 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-150/60 dark:border-white/[0.04]">
+            /* Interactive Dispatcher Showcase when nothing is selected */
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-2xl shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
                   <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                    {isTe ? "ప్రార్థన విజ్ఞాపన కేంద్రం" : isHi ? "प्रार्थना केंद्र" : "Prayer Dispatcher Command Hub"}
+                    {isTe ? "ప్రార్థన విజ్ఞాపన కేంద్రం" : isHi ? "ప్రార్థన केंद्र" : "Prayer Dispatcher Command Hub"}
                   </h3>
-                  <p className="text-xs text-slate-400 dark:text-gray-400 font-semibold mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
                     {isTe ? "అభ్యర్థనను ఎంచుకోండి లేదా క్రొత్త రికార్డును జోడించండి" : isHi ? "अनुरोध चुनें या नया प्रार्थना अनुरोध जोड़ें" : "Inspect believer prayer items, assign intercessors, or log offline requests"}
                   </p>
                 </div>
                 
                 <button 
                   onClick={() => setIsLogModalOpen(true)}
-                  className="py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-500/10 transition-all active:scale-95 shrink-0"
+                  className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all active:scale-95 shrink-0"
                 >
                   <Plus className="w-4 h-4" />
-                  {isTe ? "క్రొత్త ప్రార్థన అభ్యర్థన" : isHi ? "नया प्रार्थना अनुरोध" : "Log Prayer Request"}
+                  {isTe ? "క్రొత్త ప్రార్థన అభ్యర్థన" : isHi ? "నయా प्रार्थना अनुरोध" : "Log Prayer Request"}
                 </button>
               </div>
 
-              {/* Cards Grid */}
-              <div className="grid md:grid-cols-2 gap-4">
-                {prayers.map(p => (
-                  <div 
-                    key={p.id}
-                    onClick={() => setSelectedPrayer(p)}
-                    className="p-5 bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border border-slate-200/60 dark:border-white/[0.04] hover:border-indigo-300 dark:hover:border-indigo-500/30 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg space-y-3 group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 rounded-full text-[8px] font-black uppercase">
-                        {getCategoryTranslation(p.category)}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-400">
-                        {formatDate(p.createdAt)}
-                      </span>
-                    </div>
+              {filteredPrayers.length > 0 ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {filteredPrayers.map(p => (
+                    <div 
+                      key={p.id}
+                      onClick={() => setSelectedPrayer(p)}
+                      className="p-5 bg-slate-50 hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-2xl cursor-pointer transition-all space-y-3 group shadow-sm hover:shadow-md"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="px-2.5 py-0.5 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 rounded-full text-[10px] font-extrabold uppercase">
+                          {getCategoryTranslation(p.category)}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500" suppressHydrationWarning>
+                          {formatDate(p.createdAt)}
+                        </span>
+                      </div>
 
-                    <div>
-                      <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                        {p.title}
-                      </h4>
-                      <p className="text-xs text-slate-450 dark:text-gray-400 line-clamp-2 mt-1 font-medium leading-relaxed">
-                        {p.description}
-                      </p>
-                    </div>
+                      <div>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          {p.title}
+                        </h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-1 font-medium leading-relaxed">
+                          {p.description}
+                        </p>
+                      </div>
 
-                    <div className="pt-2 flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                      <span>{p.isAnonymous ? "Anonymous Believer" : (p.user?.name || "Member")}</span>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/[0.04] border">
-                        {getStatusTranslation(p.status)}
-                      </span>
+                      <div className="pt-2 flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                        <span>{p.isAnonymous ? t.anonymousRequest : (p.user?.name || "Member")}</span>
+                        <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-lg bg-slate-200/60 dark:bg-slate-700/60 border border-slate-300/60 dark:border-slate-600 text-slate-800 dark:text-slate-200">
+                          {getStatusTranslation(p.status)}
+                        </span>
+                      </div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center space-y-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
+                    <Heart className="w-6 h-6" />
                   </div>
-                ))}
-              </div>
+                  <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                    {isTe ? "అభ్యర్థనలు ఏవీ లభించలేదు" : isHi ? "कोई प्रार्थना अनुरोध नहीं मिला" : "No Prayer Requests Available"}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium">
+                    {t.selectRequestDesc}
+                  </p>
+                </div>
+              )}
 
             </div>
           )}
@@ -814,15 +921,15 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
 
       {/* ─── MODAL: LOG NEW PRAYER REQUEST ─── */}
       {isLogModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
               <h3 className="font-black text-slate-900 dark:text-white text-base">
                 {isTe ? "క్రొత్త ప్రార్థన అభ్యర్థన నమోదు" : isHi ? "नया प्रार्थना अनुरोध दर्ज करें" : "Log Prayer Request"}
               </h3>
               <button 
                 onClick={() => setIsLogModalOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
               >
                 ✕
               </button>
@@ -830,7 +937,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
             
             <form onSubmit={handleCreatePrayer} className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                   {isTe ? "ప్రార్థన అంశము శీర్షిక" : isHi ? "प्रार्थना शीर्षक" : "Prayer Title"} *
                 </label>
                 <input 
@@ -839,19 +946,19 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                   placeholder="e.g. Prayer for Healing and Recovery" 
                   value={newPrayer.title}
                   onChange={(e) => setNewPrayer({ ...newPrayer, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                   {isTe ? "విభాగం" : isHi ? "श्रेणी" : "Category"}
                 </label>
                 <div className="relative flex items-center">
                   <select 
                     value={newPrayer.category}
                     onChange={(e) => setNewPrayer({ ...newPrayer, category: e.target.value as any })}
-                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 appearance-none cursor-pointer"
+                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none cursor-pointer"
                   >
                     <option value="HEALTH">{getCategoryTranslation("HEALTH")}</option>
                     <option value="FAMILY">{getCategoryTranslation("FAMILY")}</option>
@@ -860,12 +967,12 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                     <option value="GUIDANCE">{getCategoryTranslation("GUIDANCE")}</option>
                     <option value="OTHER">Other</option>
                   </select>
-                  <ChevronDown className="absolute right-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3.5 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase mb-1.5">
                   {isTe ? "వివరణ" : isHi ? "विवरण" : "Description"}
                 </label>
                 <textarea 
@@ -873,7 +980,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                   value={newPrayer.description}
                   onChange={(e) => setNewPrayer({ ...newPrayer, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 resize-none font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 resize-none font-semibold"
                 />
               </div>
 
@@ -885,7 +992,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                   onChange={(e) => setNewPrayer({ ...newPrayer, isAnonymous: e.target.checked })}
                   className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
                 />
-                <label htmlFor="anonCheck" className="text-xs font-semibold text-slate-700 dark:text-gray-300 cursor-pointer">
+                <label htmlFor="anonCheck" className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
                   {isTe ? "అనామకంగా నమోదు చేయండి (పేరు దాచబడుతుంది)" : isHi ? "गुमनाम रूप से दर्ज करें" : "Log as Anonymous Request"}
                 </label>
               </div>
@@ -893,7 +1000,7 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
               {!newPrayer.isAnonymous && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1">
+                    <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
                       {isTe ? "విశ్వాసి పేరు" : isHi ? "विश्वासी का नाम" : "Believer Name"}
                     </label>
                     <input 
@@ -901,19 +1008,19 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                       placeholder="e.g. Mary Sunitha" 
                       value={newPrayer.userName}
                       onChange={(e) => setNewPrayer({ ...newPrayer, userName: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1">
-                      {isTe ? "ఈమెయిల్" : isHi ? "ईमेल" : "Email"}
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                      {isTe ? "ఈమెయిల్" : isHi ? "ఈమెయిల్" : "Email"}
                     </label>
                     <input 
                       type="email" 
                       placeholder="e.g. mary@gmail.com" 
                       value={newPrayer.userEmail}
                       onChange={(e) => setNewPrayer({ ...newPrayer, userEmail: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold"
                     />
                   </div>
                 </div>
@@ -923,13 +1030,13 @@ export default function PrayerRequests({ users = [] }: PrayerRequestsProps) {
                 <button 
                   type="button" 
                   onClick={() => setIsLogModalOpen(false)} 
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
+                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
                 >
-                  {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
+                  {isTe ? "రద్దు" : isHi ? "రద్దు" : "Cancel"}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-500/10 active:scale-95"
+                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-600/20 active:scale-95"
                 >
                   {isTe ? "నమోదు చేయండి" : isHi ? "दर्ज करें" : "Log Request"}
                 </button>

@@ -12,7 +12,7 @@ export default function AdminFooter() {
           <span className="font-bold text-gray-900 dark:text-white">
             Kingdom of Christ Ministries
           </span>
-          <span>&copy; {new Date().getFullYear()} All Rights Reserved.</span>
+          <span suppressHydrationWarning>&copy; {new Date().getFullYear()} All Rights Reserved.</span>
           <a
             href="https://valluri-rahul-portfolio.vercel.app/"
             target="_blank"
