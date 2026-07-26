@@ -2,7 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
-import { Heart, BookOpen, Clock, CheckCircle, Sparkles, Filter, Loader2, User, Search, RefreshCw } from "lucide-react";
+import { 
+  Heart, 
+  BookOpen, 
+  Clock, 
+  CheckCircle, 
+  Sparkles, 
+  Loader2, 
+  MessageSquare,
+  ArrowLeft,
+  Users,
+  CheckCircle2,
+  TrendingUp,
+  ShieldCheck,
+  Plus
+} from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
 
@@ -53,13 +67,12 @@ const BIBLE_VERSES: Record<string, string[]> = {
   ]
 };
 
-// Fallback seed data when database prayer table is empty
 const INITIAL_MOCK_PRAYERS: PrayerRequestItem[] = [
   {
     id: "pr_seed_1",
     userId: "u_101",
     title: "Spiritual growth and consistency",
-    description: "Please pray that I remain consistent in my prayer and Bible study. I want to grow deeper in faith.",
+    description: "Please pray that I remain consistent in my prayer and Bible study. I want to grow deeper in faith and serve God wholeheartedly.",
     category: "SPIRITUAL",
     isAnonymous: false,
     status: "PRAYING",
@@ -70,7 +83,7 @@ const INITIAL_MOCK_PRAYERS: PrayerRequestItem[] = [
     id: "pr_seed_2",
     userId: "u_102",
     title: "Thanksgiving — Child born healthy!",
-    description: "Praise God! Our baby boy was born healthy after a complicated pregnancy. We thank God for answered prayers.",
+    description: "Praise God! Our baby boy was born healthy after a complicated pregnancy. We thank God for answered prayers and pastoral support.",
     category: "THANKSGIVING",
     isAnonymous: false,
     status: "ANSWERED",
@@ -81,7 +94,7 @@ const INITIAL_MOCK_PRAYERS: PrayerRequestItem[] = [
     id: "pr_seed_3",
     userId: "u_103",
     title: "Marriage restoration",
-    description: "Please pray for my marriage. We are going through a very difficult season and need God's healing touch.",
+    description: "Please pray for my marriage. We are going through a very difficult season and need God's healing touch and wisdom.",
     category: "FAMILY",
     isAnonymous: true,
     status: "PRAYING",
@@ -92,7 +105,7 @@ const INITIAL_MOCK_PRAYERS: PrayerRequestItem[] = [
     id: "pr_seed_4",
     userId: "u_104",
     title: "Guidance for career decision",
-    description: "I am facing job relocation choices and need wisdom to know where the Lord is leading my family.",
+    description: "I am facing job relocation choices and need wisdom to know where the Lord is leading my family in this new season.",
     category: "GUIDANCE",
     isAnonymous: false,
     status: "PENDING",
@@ -111,6 +124,7 @@ export default function PastorPrayerRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedPrayer, setSelectedPrayer] = useState<PrayerRequestItem | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
+  const [mobileTab, setMobileTab] = useState<"list" | "detail">("list");
 
   const fetchPrayers = async () => {
     setLoading(true);
@@ -121,7 +135,6 @@ export default function PastorPrayerRequestsPage() {
         setPrayers(data.prayers);
         setSelectedPrayer(data.prayers[0]);
       } else {
-        // Fall back to seed data if empty
         setPrayers(INITIAL_MOCK_PRAYERS);
         setSelectedPrayer(INITIAL_MOCK_PRAYERS[0]);
       }
@@ -137,13 +150,18 @@ export default function PastorPrayerRequestsPage() {
     fetchPrayers();
   }, []);
 
+  const handleSelectPrayer = (prayer: PrayerRequestItem) => {
+    setSelectedPrayer(prayer);
+    setMobileTab("detail");
+  };
+
   const handleUpdateStatus = async (id: string, newStatus: "PENDING" | "PRAYING" | "ANSWERED") => {
     setPrayers(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     if (selectedPrayer && selectedPrayer.id === id) {
       setSelectedPrayer(prev => prev ? { ...prev, status: newStatus } : null);
     }
 
-    setSuccessMsg(`Prayer request status updated to ${newStatus}`);
+    setSuccessMsg(`Status updated to ${newStatus}`);
     setTimeout(() => setSuccessMsg(""), 3000);
 
     try {
@@ -153,7 +171,7 @@ export default function PastorPrayerRequestsPage() {
         body: JSON.stringify({ id, status: newStatus })
       });
     } catch {
-      // Optimistic update retained
+      // Optimistic state retained
     }
   };
 
@@ -173,27 +191,85 @@ export default function PastorPrayerRequestsPage() {
     return matchesSearch && matchesStatus;
   });
 
+  // Key metrics
+  const totalCount = prayers.length;
+  const pendingCount = prayers.filter(p => p.status === "PENDING").length;
+  const prayingCount = prayers.filter(p => p.status === "PRAYING").length;
+  const answeredCount = prayers.filter(p => p.status === "ANSWERED").length;
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
+      
+      {/* Top Header */}
       <PastorPageHeader
         title={t.navPrayerRequests || "Prayer Requests"}
-        subtitle="Review, intercede, and mark answered prayer requests from the congregation."
-        badge={`${prayers.filter(p => p.status === "PENDING").length} Pending`}
+        subtitle="Intercede for members, track requests, and share testimonies."
+        badge={`${pendingCount} Pending`}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search prayer requests..."
         onRefresh={fetchPrayers}
       />
 
+      {/* Success Toast */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-2xl flex items-center gap-2 animate-scale-in shadow-sm">
+        <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-2xl flex items-center gap-2 shadow-sm animate-scale-in">
           <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+      {/* Compact Stat Cards Row (2-col grid on mobile for clean screen layout) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        
+        {/* Stat 1: Total */}
+        <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-3 sm:p-5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block">Total</span>
+            <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5 block">{totalCount}</span>
+          </div>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-500/20 flex items-center justify-center shrink-0">
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+        </div>
+
+        {/* Stat 2: Pending */}
+        <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-3 sm:p-5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block">Pending</span>
+            <span className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5 block">{pendingCount}</span>
+          </div>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center shrink-0">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+        </div>
+
+        {/* Stat 3: Praying */}
+        <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-3 sm:p-5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block">Praying</span>
+            <span className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 mt-0.5 block">{prayingCount}</span>
+          </div>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+        </div>
+
+        {/* Stat 4: Answered */}
+        <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-3 sm:p-5 rounded-2xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[9px] sm:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider block">Answered</span>
+            <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5 block">{answeredCount}</span>
+          </div>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+        </div>
+
+      </div>
+
+      {/* Filter Status Chips (Horizontal Carousel) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as const).map((st) => (
           <button
             key={st}
@@ -210,6 +286,35 @@ export default function PastorPrayerRequestsPage() {
         ))}
       </div>
 
+      {/* Mobile Tab Switcher: [ List View | Details View ] (only visible on mobile screens) */}
+      <div className="lg:hidden flex bg-slate-200/70 dark:bg-[#0E0F24]/80 p-1 rounded-2xl border border-slate-300/60 dark:border-white/10">
+        <button
+          type="button"
+          onClick={() => setMobileTab("list")}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+            mobileTab === "list"
+              ? "bg-white dark:bg-[#141632] text-[#6366F1] dark:text-indigo-400 shadow-sm"
+              : "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
+          }`}
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          List ({filteredPrayers.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("detail")}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+            mobileTab === "detail"
+              ? "bg-white dark:bg-[#141632] text-[#6366F1] dark:text-indigo-400 shadow-sm"
+              : "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
+          }`}
+        >
+          <Heart className="w-3.5 h-3.5" />
+          Details
+        </button>
+      </div>
+
+      {/* Main Content Layout */}
       {loading ? (
         <div className="py-16 flex flex-col items-center justify-center space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-[#6366F1]" />
@@ -226,14 +331,16 @@ export default function PastorPrayerRequestsPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           
-          {/* Left Column: List */}
-          <div className="lg:col-span-1 space-y-3 max-h-[700px] overflow-y-auto pr-1 custom-scrollbar">
+          {/* Left Column: List (Hidden on mobile when detail tab is selected) */}
+          <div className={`lg:col-span-1 space-y-3 max-h-[700px] overflow-y-auto pr-1 custom-scrollbar ${
+            mobileTab === "list" ? "block" : "hidden lg:block"
+          }`}>
             {filteredPrayers.map((p) => {
               const isSelected = selectedPrayer?.id === p.id;
               return (
                 <div
                   key={p.id}
-                  onClick={() => setSelectedPrayer(p)}
+                  onClick={() => handleSelectPrayer(p)}
                   className={`p-4 rounded-2xl border cursor-pointer transition-all hover:scale-[1.01] ${
                     isSelected
                       ? "bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-500/50 dark:border-indigo-500/60 shadow-md"
@@ -269,10 +376,23 @@ export default function PastorPrayerRequestsPage() {
             })}
           </div>
 
-          {/* Right Column: Selected Detail */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* Right Column: Selected Detail (Hidden on mobile when list tab is selected) */}
+          <div className={`lg:col-span-2 space-y-6 ${
+            mobileTab === "detail" ? "block" : "hidden lg:block"
+          }`}>
+            {/* Mobile Back Button */}
+            <div className="lg:hidden mb-3">
+              <button
+                type="button"
+                onClick={() => setMobileTab("list")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Requests List
+              </button>
+            </div>
+
             {selectedPrayer ? (
-              <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-6 rounded-3xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm space-y-6">
+              <div className="bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-slate-200/60 dark:border-white/[0.06] shadow-sm space-y-6">
                 
                 {/* Header Actions */}
                 <div className="flex flex-wrap justify-between items-start gap-4">
@@ -296,11 +416,11 @@ export default function PastorPrayerRequestsPage() {
                   </div>
 
                   {/* Status Toggle Buttons */}
-                  <div className="p-1 bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl flex items-center gap-1">
+                  <div className="p-1 bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl flex items-center gap-1 w-full sm:w-auto overflow-x-auto no-scrollbar">
                     <button
                       type="button"
                       onClick={() => handleUpdateStatus(selectedPrayer.id, "PENDING")}
-                      className={`py-1.5 px-3 rounded-lg flex items-center gap-1 text-[10px] font-bold transition-all ${
+                      className={`flex-1 sm:flex-none py-1.5 px-3 rounded-lg flex items-center justify-center gap-1 text-[10px] font-bold transition-all ${
                         selectedPrayer.status === "PENDING"
                           ? "bg-white dark:bg-[#141632] text-amber-600 shadow-sm border border-slate-200 dark:border-white/10"
                           : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
@@ -312,7 +432,7 @@ export default function PastorPrayerRequestsPage() {
                     <button
                       type="button"
                       onClick={() => handleUpdateStatus(selectedPrayer.id, "PRAYING")}
-                      className={`py-1.5 px-3 rounded-lg flex items-center gap-1 text-[10px] font-bold transition-all ${
+                      className={`flex-1 sm:flex-none py-1.5 px-3 rounded-lg flex items-center justify-center gap-1 text-[10px] font-bold transition-all ${
                         selectedPrayer.status === "PRAYING"
                           ? "bg-white dark:bg-[#141632] text-blue-600 shadow-sm border border-slate-200 dark:border-white/10"
                           : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
@@ -324,7 +444,7 @@ export default function PastorPrayerRequestsPage() {
                     <button
                       type="button"
                       onClick={() => handleUpdateStatus(selectedPrayer.id, "ANSWERED")}
-                      className={`py-1.5 px-3 rounded-lg flex items-center gap-1 text-[10px] font-bold transition-all ${
+                      className={`flex-1 sm:flex-none py-1.5 px-3 rounded-lg flex items-center justify-center gap-1 text-[10px] font-bold transition-all ${
                         selectedPrayer.status === "ANSWERED"
                           ? "bg-white dark:bg-[#141632] text-emerald-600 shadow-sm border border-slate-200 dark:border-white/10"
                           : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
