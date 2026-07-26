@@ -346,18 +346,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                   <div className={`w-6 h-6 bg-gradient-to-br ${activeLink.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
                     <activeLink.icon className="w-3 h-3 text-white" />
                   </div>
-                  <span className="font-bold text-gray-900 dark:text-white truncate">{activeLink.label}</span>
+                  <span className="font-bold text-gray-900 dark:text-white whitespace-nowrap">{activeLink.label}</span>
                 </div>
               )}
             </div>
 
             {/* Right: online + bell */}
             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
-              {/* Language Toggle on Mobile */}
-              <div className="md:hidden flex items-center shrink-0 scale-90">
-                <LanguageToggle align="right" />
-              </div>
-
               {/* Unified Toggles Capsule for Desktop */}
               <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
                 <LanguageToggle />
