@@ -44,12 +44,6 @@ export default function ContentOverviewPage() {
         sermons={data?.sermons || []}
         events={data?.events || []}
         announcements={data?.announcements || []}
-        onAddSermon={() => {}}
-        onDeleteSermon={() => {}}
-        onAddEvent={() => {}}
-        onDeleteEvent={() => {}}
-        onAddAnnouncement={() => {}}
-        onDeleteAnnouncement={() => {}}
         isLoading={loading}
       />
     </AdminPageTemplate>
