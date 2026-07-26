@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Heart, Send, Check, Clock, EyeOff, Sparkles, Loader2,
-  RefreshCw, Bell, MessageCircle, CheckCircle2, AlertCircle, Shield
+  RefreshCw, Bell, MessageCircle, CheckCircle2, AlertCircle, Plus, ChevronDown, ChevronUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -74,8 +74,8 @@ const prayersTranslations = {
     subtitle: '"Where two or three gather in My name, there am I." — Matthew 18:20',
     updated: "Updated",
     refresh: "Refresh",
-    totalSubmitted: "Total Submitted",
-    beingPrayed: "Being Prayed",
+    totalSubmitted: "Total",
+    beingPrayed: "Praying",
     answered: "Answered",
     formTitle: "New Prayer Request",
     inputTitle: "Title *",
@@ -109,9 +109,9 @@ const prayersTranslations = {
     subtitle: '"ఇద్దరు లేక ముగ్గురు నా నామమున ఎక్కడ కూడియుందురో అక్కడ నేను వారి మధ్యన ఉందును." — మత్తయి 18:20',
     updated: "సమకాలీకరించబడింది",
     refresh: "రిఫ్రెష్",
-    totalSubmitted: "మొత్తం విన్నపాలు",
+    totalSubmitted: "మొత్తం",
     beingPrayed: "ప్రార్థిస్తున్నవి",
-    answered: "జవాబు లభించినవి",
+    answered: "జవాబులు",
     formTitle: "కొత్త ప్రార్థన విన్నపం",
     inputTitle: "అంశం *",
     inputCategory: "విభాగం",
@@ -127,7 +127,7 @@ const prayersTranslations = {
     notifyAnswered: "🙌 మీ ప్రార్థనలలో ఒకదానికి దేవుడు జవాబిచ్చాడు!",
     notifyPraying: "🙏 పాస్టర్లు ఇప్పుడు మీ ప్రార్థన విన్నపం కొరకు ప్రార్థిస్తున్నారు",
     tabAll: "అన్నీ",
-    tabPraying: "ప్రార్థిస్తున్నవి",
+    tabPraying: "ప్రార్థనలు",
     tabAnswered: "జవాబులు",
     tabPending: "పరిశీలనలో",
     noPrayersAll: "ఇంకా ప్రార్థన విన్నపాలు ఏవీ లేవు — మీ విన్నపాన్ని పంచుకోండి!",
@@ -144,8 +144,8 @@ const prayersTranslations = {
     subtitle: '"जहाँ दो या तीन मेरे नाम पर इकट्ठा होते हैं, वहाँ मैं उनके बीच में हूँ।" — मत्ती 18:20',
     updated: "अपडेट किया गया",
     refresh: "रिफ्रेश",
-    totalSubmitted: "कुल अनुरोध",
-    beingPrayed: "प्रार्थना जारी",
+    totalSubmitted: "कुल",
+    beingPrayed: "प्रार्थना",
     answered: "उत्तर मिला",
     formTitle: "नया प्रार्थना अनुरोध",
     inputTitle: "शीर्षक *",
@@ -162,7 +162,7 @@ const prayersTranslations = {
     notifyAnswered: "🙌 आपकी एक प्रार्थना का उत्तर मिल गया है!",
     notifyPraying: "🙏 पादरी अब आपके अनुरोध के लिए प्रार्थना कर रहे हैं",
     tabAll: "सभी",
-    tabPraying: "प्रार्थना जारी",
+    tabPraying: "प्रार्थना",
     tabAnswered: "उत्तर मिला",
     tabPending: "लंबित",
     noPrayersAll: "अभी तक कोई प्रार्थना अनुरोध नहीं है — अपना दिल साझा करें!",
@@ -189,6 +189,7 @@ export default function MemberPrayers() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("ALL");
+  const [isFormOpenMobile, setIsFormOpenMobile] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -262,6 +263,7 @@ export default function MemberPrayers() {
       if (res.ok && data.success) {
         showToast(pt.successSubmit, "success");
         setTitle(""); setDescription(""); setIsAnonymous(false);
+        setIsFormOpenMobile(false);
         load(true);
       } else {
         setPrayers(prev => prev.filter(p => p.id !== temp.id));
@@ -338,7 +340,7 @@ export default function MemberPrayers() {
       </div>
 
       {/* STATS ROW — 3-Column Compact Grid on Mobile */}
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { label: pt.totalSubmitted, value: stats.total, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/40", icon: Heart },
           { label: pt.beingPrayed,   value: stats.praying, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/40", icon: Sparkles },
@@ -348,8 +350,8 @@ export default function MemberPrayers() {
             key={label}
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-md p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1.5 sm:gap-3.5 transition-transform active:scale-[0.98]"
           >
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
-              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
+            <div className={`w-7 h-7 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
+              <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${color}`} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-base sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
@@ -364,62 +366,75 @@ export default function MemberPrayers() {
       </div>
 
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 sm:gap-6 items-start">
-        {/* SUBMIT FORM */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 items-start">
+        {/* SUBMIT FORM — Collapsible Accordion Header on Mobile, Fixed Sidebar on Desktop */}
         <motion.div
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl"
         >
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-rose-50/50 dark:bg-rose-950/20">
-            <div className="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
-              <Heart className="w-4 h-4 fill-rose-500/20" />
-            </div>
-            <h3 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base">{pt.formTitle}</h3>
-          </div>
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
-              <input
-                type="text" value={title} onChange={e => setTitle(e.target.value)} required
-                placeholder={pt.placeholderTitle}
-                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
-              <select value={category} onChange={e => setCategory(e.target.value)}
-                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
-                {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
-              <textarea
-                value={description} onChange={e => setDescription(e.target.value)} required
-                placeholder={pt.placeholderPrayer}
-                rows={4}
-                className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
-              />
-            </div>
-            <label className="flex items-center gap-2.5 cursor-pointer select-none">
-              <div
-                onClick={() => setIsAnonymous(!isAnonymous)}
-                className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-rose-600 border-rose-600" : "border-gray-300 dark:border-gray-600"}`}
-              >
-                {isAnonymous && <Check className="w-3.5 h-3.5 text-white" />}
+          <button
+            type="button"
+            onClick={() => setIsFormOpenMobile(!isFormOpenMobile)}
+            className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-rose-50/50 dark:bg-rose-950/20 cursor-pointer lg:cursor-default"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                <Heart className="w-4 h-4 fill-rose-500/20" />
               </div>
-              <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
-                <EyeOff className="w-3.5 h-3.5 text-gray-400" /> {pt.anonymousLabel}
-              </span>
-            </label>
-            <button
-              type="submit" disabled={submitting}
-              className="w-full py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50"
-            >
-              {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
-            </button>
-          </form>
+              <h3 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base">{pt.formTitle}</h3>
+            </div>
+            <div className="flex items-center gap-1 lg:hidden text-rose-600 dark:text-rose-400 font-bold text-xs">
+              <span className="text-[10px] uppercase tracking-wider">{isFormOpenMobile ? "Close" : "New"}</span>
+              {isFormOpenMobile ? <ChevronUp className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            </div>
+          </button>
+
+          <div className={`${isFormOpenMobile ? "block" : "hidden lg:block"}`}>
+            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+              <div>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
+                <input
+                  type="text" value={title} onChange={e => setTitle(e.target.value)} required
+                  placeholder={pt.placeholderTitle}
+                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
+                <select value={category} onChange={e => setCategory(e.target.value)}
+                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
+                  {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
+                <textarea
+                  value={description} onChange={e => setDescription(e.target.value)} required
+                  placeholder={pt.placeholderPrayer}
+                  rows={4}
+                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
+                />
+              </div>
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <div
+                  onClick={() => setIsAnonymous(!isAnonymous)}
+                  className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-rose-600 border-rose-600" : "border-gray-300 dark:border-gray-600"}`}
+                >
+                  {isAnonymous && <Check className="w-3.5 h-3.5 text-white" />}
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
+                  <EyeOff className="w-3.5 h-3.5 text-gray-400" /> {pt.anonymousLabel}
+                </span>
+              </label>
+              <button
+                type="submit" disabled={submitting}
+                className="w-full py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50"
+              >
+                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
+              </button>
+            </form>
+          </div>
         </motion.div>
 
         {/* PRAYER LIST & FILTERS */}
@@ -429,8 +444,8 @@ export default function MemberPrayers() {
           transition={{ delay: 0.05 }}
           className="lg:col-span-3 space-y-3.5 w-full min-w-0"
         >
-          {/* Responsive Filter Tab Bar — Smooth Horizontal Scroll with No Text Cutoffs */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1 min-w-0">
+          {/* Responsive Segmented Control Filter Tabs — 4 Equal Columns on Mobile with ZERO Text Cutoffs */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1 shadow-sm grid grid-cols-4 gap-1 w-full">
             {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => {
               const count = f === "ALL" ? stats.total : f === "PRAYING" ? stats.praying : f === "ANSWERED" ? stats.answered : prayers.filter(p => p.status === "PENDING").length;
               const label = f === "ALL" ? pt.tabAll : f === "PRAYING" ? pt.tabPraying : f === "ANSWERED" ? pt.tabAnswered : pt.tabPending;
@@ -438,14 +453,14 @@ export default function MemberPrayers() {
                 <button
                   key={f}
                   onClick={() => setFilterStatus(f)}
-                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 ${
+                  className={`w-full py-2 px-1 rounded-xl text-[11px] sm:text-xs font-black transition-all flex items-center justify-center gap-1 text-center truncate ${
                     filterStatus === f
                       ? "bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-md"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
-                  <span>{label}</span>
-                  <span className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${filterStatus === f ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
+                  <span className="truncate">{label}</span>
+                  <span className={`px-1.5 py-0.2 text-[9px] sm:text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
                     {count}
                   </span>
                 </button>
