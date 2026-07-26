@@ -130,28 +130,28 @@ export default function MemberManagement({
     switch (role) {
       case "SUPER_ADMIN":
         return {
-          badge: "bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-700/50",
+          badge: "bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-100 border-purple-300 dark:border-purple-600 font-bold",
           grad: "from-indigo-600 via-purple-600 to-violet-700",
           icon: Crown,
           label: isTe ? "రూట్ అడ్మిన్" : isHi ? "सुपर एडमिन" : "Super Admin"
         };
       case "ADMIN":
         return {
-          badge: "bg-indigo-100 dark:bg-indigo-950/70 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700/50",
+          badge: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-100 border-indigo-300 dark:border-indigo-600 font-bold",
           grad: "from-indigo-500 to-blue-600",
           icon: Shield,
           label: isTe ? "అడ్మిన్" : isHi ? "एडमिन" : "Admin"
         };
       case "PASTOR":
         return {
-          badge: "bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700/50",
+          badge: "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-100 border-emerald-300 dark:border-emerald-600 font-bold",
           grad: "from-emerald-500 to-teal-600",
           icon: Star,
           label: isTe ? "పాస్టర్" : isHi ? "पास्टर" : "Pastor"
         };
       default:
         return {
-          badge: "bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+          badge: "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 font-bold",
           grad: "from-slate-600 to-slate-800",
           icon: User,
           label: isTe ? "విశ్వాసి" : isHi ? "विश्वासी" : "Believer"

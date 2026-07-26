@@ -17,7 +17,7 @@ export default function UserAccountsSettingsPage() {
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
+      const res = await fetch("/api/admin/users", { headers });
       const result = await res.json();
       if (res.ok && result.success) {
         setUsers(result.users || []);

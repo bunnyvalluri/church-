@@ -144,7 +144,7 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
                   <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
                     {user?.email || "admin@kcmchurch.org"}
                   </p>
-                  <span className="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 rounded-md">
+                  <span className="inline-block mt-1.5 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white border border-indigo-300 dark:border-indigo-500 rounded-md shadow-sm">
                     {user?.role || "SUPER_ADMIN"} Access
                   </span>
                 </div>
