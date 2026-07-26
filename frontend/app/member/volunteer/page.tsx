@@ -6,7 +6,8 @@ import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Briefcase, Send, Loader2, Check, Bell, Users, Gift, Lock, Info,
-  Music, Tv, Heart, Star, Megaphone, Settings, Compass, ClipboardList
+  Music, Tv, Heart, Star, Megaphone, Settings, Compass, ClipboardList,
+  AlertCircle, CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,52 +16,52 @@ const MINISTRIES = [
     id: "WORSHIP",
     icon: Music,
     gradient: "from-purple-500 to-violet-600",
-    badgeBg: "bg-purple-50 dark:bg-purple-950/30",
+    badgeBg: "bg-purple-50 dark:bg-purple-950/40",
     badgeText: "text-purple-700 dark:text-purple-300",
-    badgeBorder: "border-purple-200 dark:border-purple-900/30",
+    badgeBorder: "border-purple-200 dark:border-purple-800/40",
     slots: 5,
   },
   {
     id: "TECH",
     icon: Tv,
     gradient: "from-blue-500 to-indigo-600",
-    badgeBg: "bg-blue-50 dark:bg-blue-950/30",
+    badgeBg: "bg-blue-50 dark:bg-blue-950/40",
     badgeText: "text-blue-700 dark:text-blue-300",
-    badgeBorder: "border-blue-200 dark:border-blue-900/30",
+    badgeBorder: "border-blue-200 dark:border-blue-800/40",
     slots: 3,
   },
   {
     id: "KIDS",
     icon: Heart,
     gradient: "from-rose-500 to-pink-600",
-    badgeBg: "bg-rose-50 dark:bg-rose-950/30",
+    badgeBg: "bg-rose-50 dark:bg-rose-950/40",
     badgeText: "text-rose-700 dark:text-rose-300",
-    badgeBorder: "border-rose-200 dark:border-rose-900/30",
+    badgeBorder: "border-rose-200 dark:border-rose-800/40",
     slots: 8,
   },
   {
     id: "HOSPITALITY",
     icon: Star,
     gradient: "from-amber-500 to-orange-500",
-    badgeBg: "bg-amber-50 dark:bg-amber-950/30",
+    badgeBg: "bg-amber-50 dark:bg-amber-950/40",
     badgeText: "text-amber-700 dark:text-amber-300",
-    badgeBorder: "border-amber-200 dark:border-amber-900/30",
+    badgeBorder: "border-amber-200 dark:border-amber-800/40",
     slots: 10,
   },
   {
     id: "OUTREACH",
     icon: Megaphone,
-    gradient: "from-green-500 to-emerald-600",
-    badgeBg: "bg-green-50 dark:bg-green-950/30",
-    badgeText: "text-green-700 dark:text-green-300",
-    badgeBorder: "border-green-200 dark:border-green-900/30",
+    gradient: "from-emerald-500 to-teal-600",
+    badgeBg: "bg-emerald-50 dark:bg-emerald-950/40",
+    badgeText: "text-emerald-700 dark:text-emerald-300",
+    badgeBorder: "border-emerald-200 dark:border-emerald-800/40",
     slots: 15,
   },
   {
     id: "FACILITIES",
     icon: Settings,
     gradient: "from-slate-500 to-gray-600",
-    badgeBg: "bg-gray-50 dark:bg-gray-800",
+    badgeBg: "bg-gray-100 dark:bg-gray-800",
     badgeText: "text-gray-700 dark:text-gray-300",
     badgeBorder: "border-gray-200 dark:border-gray-700",
     slots: 4,
@@ -92,27 +93,27 @@ const volunteerTranslations = {
     ministries: {
       WORSHIP: {
         name: "Worship Ministry",
-        desc: "Choir, singers, instrumentalists & worship leaders. Lead the congregation in Spirit-filled praise."
+        desc: "Choir, singers, instrumentalists & worship leaders."
       },
       TECH: {
         name: "Technical & Media",
-        desc: "Audio, video production, live streaming, social media management & graphics."
+        desc: "Audio, video production, live streaming & graphics."
       },
       KIDS: {
         name: "Children's Ministry",
-        desc: "Sunday school, vacation bible school, childcare & youth discipleship programs."
+        desc: "Sunday school, childcare & youth discipleship."
       },
       HOSPITALITY: {
         name: "Hospitality Team",
-        desc: "Greeters, ushers, welcome crew, refreshments & guest services for all services."
+        desc: "Greeters, ushers, welcome crew & guest services."
       },
       OUTREACH: {
         name: "Charitable Outreach",
-        desc: "Food distribution, medical camps, evangelism teams, village ministry & social welfare."
+        desc: "Food distribution, medical camps & social welfare."
       },
       FACILITIES: {
         name: "Facilities & Security",
-        desc: "Church maintenance, security, setup/teardown, property management & event logistics."
+        desc: "Church maintenance, security & event logistics."
       }
     }
   },
@@ -130,7 +131,7 @@ const volunteerTranslations = {
     btnSubmit: "దరఖాస్తు సమర్పించు",
     btnSubmitting: "సమర్పించబడుతోంది...",
     characters: "అక్షరాలు నమోదయ్యాయి",
-    promptSelect: "మీ దరఖాస్తును ప్రారంభించడానికి కుడి వైపు గ్రిడ్ నుండి ఒక పరిచర్య విభాగాన్ని ఎంచుకోండి",
+    promptSelect: "మీ దరఖాస్తును ప్రారంభించడానికి గ్రిడ్ నుండి ఒక పరిచర్య విభాగాన్ని ఎంచుకోండి",
     successTitle: "దరఖాస్తు విజయవంతంగా సమర్పించబడింది!",
     successDesc: "{name} కోసం వాలంటీర్ చేసినందుకు ధన్యవాదాలు. ఒక పరిచర్య సమన్వయకర్త 2-3 పనిదినాల్లో మిమ్మల్ని సంప్రదిస్తారు.",
     btnApplyAnother: "మరో పరిచర్యకు దరఖాస్తు చేయండి",
@@ -140,27 +141,27 @@ const volunteerTranslations = {
     ministries: {
       WORSHIP: {
         name: "ఆరాధన పరిచర్య",
-        desc: "గాయక బృందం, వాయిద్యకారులు & ఆరాధన నాయకులు. ఆరాధనలో సంఘాన్ని నడిపించడం."
+        desc: "గాయక బృందం, వాయిద్యకారులు & ఆరాధన నాయకులు."
       },
       TECH: {
         name: "టెక్నికల్ & మీడియా",
-        desc: "ఆడియో, వీడియో ప్రొడక్షన్, లైవ్ స్ట్రీమింగ్, సోషల్ మీడియా మరియు గ్రాఫిక్స్."
+        desc: "ఆడియో, వీడియో ప్రొడక్షన్, లైవ్ స్ట్రీమింగ్ & గ్రాఫిక్స్."
       },
       KIDS: {
         name: "చిన్నపిల్లల పరిచర్య",
-        desc: "సండే స్కూల్, బైబిల్ స్కూల్, పిల్లల సంరక్షణ & యవ్వనస్థుల శిక్షణా కార్యక్రమాలు."
+        desc: "సండే స్కూల్, పిల్లల సంరక్షణ & శిక్షణా కార్యక్రమాలు."
       },
       HOSPITALITY: {
         name: "ఆతిథ్య బృందం",
-        desc: "ఆహ్వానించే వారు, ద్వారపాలకులు, స్వచ్ఛంద సేవకులు మరియు అతిథి సేవలు."
+        desc: "ఆహ్వానించే వారు, ద్వారపాలకులు & అతిథి సేవలు."
       },
       OUTREACH: {
         name: "ధర్మకార్యాల పరిచర్య",
-        desc: "ఆహార పంపిణీ, వైద్య శిబిరాలు, సువార్త బృందాలు & గ్రామీణ పరిచర్యలు."
+        desc: "ఆహార పంపిణీ, వైద్య శిబిరాలు & గ్రామీణ పరిచర్యలు."
       },
       FACILITIES: {
         name: "నిర్వహణ & భద్రత",
-        desc: "చర్చి నిర్వహణ, భద్రత, అమరికలు మరియు కార్యక్రమ లాజిస్టిక్స్."
+        desc: "చర్చి నిర్వహణ, భద్రత & లాజిస్టిక్స్."
       }
     }
   },
@@ -188,27 +189,27 @@ const volunteerTranslations = {
     ministries: {
       WORSHIP: {
         name: "आराधना मंत्रालय",
-        desc: "गायक दल, गायक, वादक और आराधना नेता। आराधना में कलीसिया का नेतृत्व करना।"
+        desc: "गायक दल, गायक, वादक और आराधना नेता।"
       },
       TECH: {
         name: "तकनीकी और मीडिया",
-        desc: "ऑडियो, वीडियो उत्पादन, लाइव स्ट्रीमिंग, सोशल media प्रबंधन और ग्राफिक्स।"
+        desc: "ऑडियो, वीडियो उत्पादन, लाइव स्ट्रीमिंग और ग्राफिक्स।"
       },
       KIDS: {
         name: "बच्चों का मंत्रालय",
-        desc: "संडे स्कूल, वेकेशन बाइबल स्कूल, बच्चों की देखभाल और युवा शिष्यता कार्यक्रम।"
+        desc: "संडे स्कूल, बच्चों की देखभाल और शिष्यता कार्यक्रम।"
       },
       HOSPITALITY: {
         name: "अतिथि सत्कार टीम",
-        desc: "अतिथियों का स्वागत करने वाले, सेवादार, जलपान और अतिथि सेवाएं।"
+        desc: "अतिथियों का स्वागत करने वाले, सेवादार और सेवाएं।"
       },
       OUTREACH: {
         name: "धर्मार्थ आउटरीच",
-        desc: "खाद्य वितरण, चिकित्सा शिविर, सुसमाचार प्रचार दल, ग्रामीण मंत्रालय और कल्याण कार्य।"
+        desc: "खाद्य वितरण, चिकित्सा शिविर और कल्याण कार्य।"
       },
       FACILITIES: {
         name: "सुविधाएं और सुरक्षा",
-        desc: "चर्च रखरखाव, सुरक्षा, सेटअप/टीयरडाउन और आयोजन रसद।"
+        desc: "चर्च रखरखाव, सुरक्षा और आयोजन रसद।"
       }
     }
   }
@@ -226,14 +227,13 @@ export default function MemberVolunteer() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
-  
+
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (mounted && status === "unauthenticated") router.replace("/login");
   }, [mounted, status, router]);
 
-  // Smooth scroll to form on mobile when selection happens
   useEffect(() => {
     if (selected && typeof window !== "undefined" && window.innerWidth < 1024) {
       setTimeout(() => {
@@ -275,35 +275,36 @@ export default function MemberVolunteer() {
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Toast Alert */}
+    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-300">
+      {/* Floating Bottom Pop-Up Toast */}
       <AnimatePresence>
         {toast && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20, scale: 0.95 }} 
-            animate={{ opacity: 1, y: 0, scale: 1 }} 
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`fixed top-20 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 z-50 flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-bold border max-w-[90vw] sm:max-w-xs ${
-              toast.type === "success" 
-                ? "bg-emerald-500 text-white border-emerald-400/20 shadow-emerald-500/10" 
-                : "bg-rose-500 text-white border-rose-400/20 shadow-rose-500/10"
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className={`fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
+              toast.type === "success"
+                ? "bg-emerald-600 text-white border-emerald-400/40 shadow-emerald-600/30"
+                : "bg-rose-600 text-white border-rose-400/40 shadow-rose-600/30"
             }`}
           >
-            <Bell className="w-4.5 h-4.5 flex-shrink-0 animate-bounce" />
-            <span className="truncate">{toast.msg}</span>
+            {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-white" /> : <AlertCircle className="w-4 h-4 flex-shrink-0 text-white" />}
+            <span className="leading-snug whitespace-normal">{toast.msg}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header Profile Section */}
-      <div className="relative overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
+      {/* Header Section */}
+      <div className="relative overflow-hidden p-4 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
         <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative space-y-2 max-w-3xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/30 text-[#6366F1] border border-indigo-100 dark:border-indigo-900/30 text-[10px] font-extrabold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/40 text-[10px] font-extrabold uppercase tracking-wider">
             <Gift className="w-3.5 h-3.5" />
             {language === "te" ? "పరిచర్య పిలుపు" : language === "hi" ? "मंत्रालय सेवा" : "Ministry Calling"}
           </div>
-          <h1 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+          <h1 className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
             {vt.title}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium italic border-l-2 border-indigo-500 pl-3 py-0.5">
@@ -313,23 +314,23 @@ export default function MemberVolunteer() {
       </div>
 
       {/* Total Open Slots Indicator Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-purple-950/40 border border-indigo-200/20 dark:border-indigo-900/20 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5">
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-950/60 dark:via-violet-950/60 dark:to-purple-950/60 border border-indigo-200/20 dark:border-indigo-900/20 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-5 text-center sm:text-left">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-4">
-          <div className="w-12 h-12 bg-white/10 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg text-white">
-            <Compass className="w-6 h-6 animate-pulse" />
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 dark:bg-white/[0.04] border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg text-white shrink-0">
+            <Compass className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
           </div>
           <div>
-            <p className="font-black text-xl leading-none text-white tracking-tight">
+            <p className="font-black text-lg sm:text-xl leading-none text-white tracking-tight">
               {MINISTRIES.reduce((s, m) => s + m.slots, 0)} {vt.openPositions}
             </p>
-            <p className="text-indigo-100 dark:text-indigo-300 text-xs mt-1.5 font-bold">
+            <p className="text-indigo-100 dark:text-indigo-300 text-xs mt-1 font-bold">
               {vt.acrossDepts.replace("{count}", MINISTRIES.length.toString())}
             </p>
           </div>
         </div>
-        <span className="flex items-center gap-2 text-xs font-black bg-white/20 dark:bg-white/[0.06] border border-white/30 dark:border-white/[0.1] px-5 py-2.5 rounded-full text-white shadow-sm shrink-0 uppercase tracking-wider">
-          <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
+        <span className="flex items-center gap-2 text-[10px] sm:text-xs font-black bg-white/20 dark:bg-white/[0.06] border border-white/30 px-4 py-2 rounded-full text-white shadow-sm shrink-0 uppercase tracking-wider">
+          <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
           {vt.nowAccepting}
         </span>
       </div>
@@ -338,34 +339,32 @@ export default function MemberVolunteer() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-xl p-6 sm:p-12 text-center relative overflow-hidden"
+          className="bg-white dark:bg-[#121324] rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-xl p-6 sm:p-12 text-center relative overflow-hidden"
         >
-          <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="w-20 h-20 bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20 animate-bounce">
-            <Check className="w-10 h-10 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20 animate-bounce">
+            <Check className="w-8 h-8 text-white" />
           </div>
           
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{vt.successTitle}</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-md mx-auto mb-8 font-medium">
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white mb-2">{vt.successTitle}</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto mb-6 font-medium">
             {vt.successDesc.replace("{name}", selectedDetails?.name || "")}
           </p>
           
           <button
             onClick={() => { setSubmitted(false); setSelected(null); setSkills(""); }}
-            className="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-650 hover:from-indigo-500 hover:to-violet-500 text-white rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/25 hover:scale-[1.02]"
+            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-indigo-500/20 active:scale-95"
           >
             {vt.btnApplyAnother}
           </button>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 sm:gap-6 lg:gap-8 items-start">
-          {/* Ministry Cards Grid */}
-          <div className="lg:col-span-3 space-y-4 w-full">
-            <h2 className="text-xs font-black text-gray-400 dark:text-gray-555 uppercase tracking-widest pl-1">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 items-start">
+          {/* Ministry Cards Grid — 2 Columns on Mobile */}
+          <div className="lg:col-span-3 space-y-3 w-full">
+            <h2 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
               {vt.step1}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
               {MINISTRIES.map((m, i) => {
                 const Icon = m.icon;
                 const isSelected = selected === m.id;
@@ -377,31 +376,31 @@ export default function MemberVolunteer() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
                     onClick={() => setSelected(m.id)}
-                    className={`relative text-left p-5 rounded-2xl sm:rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between ${
+                    className={`relative text-left p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between ${
                       isSelected
                         ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-lg shadow-indigo-500/10"
-                        : "border-gray-100 dark:border-white/[0.04] bg-white dark:bg-[#121324] hover:border-gray-250 dark:hover:border-white/[0.1] hover:shadow-xl hover:-translate-y-0.5"
+                        : "border-gray-100 dark:border-white/[0.04] bg-white dark:bg-[#121324] hover:border-gray-250 dark:hover:border-white/[0.1] hover:shadow-md"
                     }`}
                   >
                     {isSelected && (
-                      <div className="absolute top-4 right-4 w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center shadow-md shadow-indigo-500/30">
+                      <div className="absolute top-3 right-3 w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center shadow-md shadow-indigo-500/30">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     )}
                     <div>
-                      <div className={`w-11 h-11 bg-gradient-to-br ${m.gradient} rounded-2xl flex items-center justify-center mb-3.5 shadow-md group-hover:scale-105 transition-transform duration-300`}>
-                        <Icon className="w-5.5 h-5.5 text-white" />
+                      <div className={`w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br ${m.gradient} rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3.5 shadow-md group-hover:scale-105 transition-transform`}>
+                        <Icon className="w-4 h-4 sm:w-5.5 sm:h-5.5 text-white" />
                       </div>
-                      <h3 className="font-black text-gray-900 dark:text-white text-sm tracking-tight mb-1">{localDetails.name}</h3>
-                      <p className="text-xs text-gray-550 dark:text-gray-455 leading-relaxed line-clamp-3 mb-5 font-medium">{localDetails.desc}</p>
+                      <h3 className="font-extrabold text-gray-900 dark:text-white text-xs sm:text-sm tracking-tight mb-1 leading-tight">{localDetails.name}</h3>
+                      <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 sm:line-clamp-3 mb-3 font-medium">{localDetails.desc}</p>
                     </div>
                     
-                    <div className="flex items-center justify-between w-full mt-auto pt-2">
-                      <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${m.badgeBg} ${m.badgeText} ${m.badgeBorder}`}>
+                    <div className="flex items-center justify-between w-full mt-auto pt-2 border-t border-gray-100 dark:border-gray-800/60">
+                      <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${m.badgeBg} ${m.badgeText} ${m.badgeBorder}`}>
                         {m.id}
                       </span>
-                      <span className="text-[10px] font-extrabold text-emerald-650 dark:text-emerald-400 flex items-center gap-1 shrink-0">
-                        <Users className="w-3.5 h-3.5" />
+                      <span className="text-[9px] sm:text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
+                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         {m.slots} {vt.slotsSuffix}
                       </span>
                     </div>
@@ -412,7 +411,7 @@ export default function MemberVolunteer() {
           </div>
 
           {/* Dynamic Form Panel */}
-          <div ref={formRef} className="lg:col-span-2 w-full">
+          <div ref={formRef} className="lg:col-span-2 w-full pt-2 lg:pt-0">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -421,16 +420,16 @@ export default function MemberVolunteer() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-white/[0.04] shadow-sm overflow-hidden lg:sticky lg:top-24"
+                  className="bg-white dark:bg-[#121324] rounded-3xl border border-gray-100 dark:border-white/[0.04] shadow-xl overflow-hidden lg:sticky lg:top-24 backdrop-blur-xl"
                 >
-                  <div className="flex items-center gap-2 px-6 py-4.5 border-b border-gray-100 dark:border-white/[0.04] bg-indigo-50/20 dark:bg-indigo-950/10">
-                    <Briefcase className="w-4.5 h-4.5 text-[#6366F1]" />
-                    <h3 className="font-black text-gray-900 dark:text-white text-xs uppercase tracking-wider">{vt.step2}</h3>
+                  <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-white/[0.04] bg-indigo-50/20 dark:bg-indigo-950/10">
+                    <Briefcase className="w-4 h-4 text-indigo-500" />
+                    <h3 className="font-extrabold text-gray-900 dark:text-white text-xs uppercase tracking-wider">{vt.step2}</h3>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                  <form onSubmit={handleSubmit} className="p-5 space-y-4">
                     {/* Active Selection Display Banner */}
-                    <div className={`flex items-center gap-3 p-3.5 rounded-2xl border ${selectedData?.badgeBg} ${selectedData?.badgeBorder}`}>
+                    <div className={`flex items-center gap-3 p-3 rounded-2xl border ${selectedData?.badgeBg} ${selectedData?.badgeBorder}`}>
                       {selectedData && <selectedData.icon className={`w-5 h-5 ${selectedData.badgeText} flex-shrink-0`} />}
                       <div className="min-w-0">
                         <p className={`text-xs font-black ${selectedData?.badgeText} tracking-tight`}>{selectedDetails?.name}</p>
@@ -439,42 +438,42 @@ export default function MemberVolunteer() {
 
                     {/* Disabled Name Field */}
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-555 uppercase tracking-wider">{vt.fullName}</label>
+                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.fullName}</label>
                       <div className="relative">
                         <input 
                           type="text" 
                           value={user?.name || ""} 
                           disabled
-                          className="w-full py-2.5 pl-10 pr-3.5 rounded-xl border border-gray-150 dark:border-white/[0.06] bg-gray-100 dark:bg-white/[0.02] text-gray-400 dark:text-gray-555 cursor-not-allowed text-xs font-bold"
+                          className="w-full py-2.5 pl-10 pr-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-gray-100 dark:bg-white/[0.02] text-gray-400 dark:text-gray-500 cursor-not-allowed text-xs font-bold"
                         />
-                        <Lock className="w-3.5 h-3.5 text-gray-455 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Lock className="w-3.5 h-3.5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       </div>
                     </div>
 
                     {/* Testimony TextArea */}
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-555 uppercase tracking-wider">{vt.skillsLabel}</label>
+                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.skillsLabel}</label>
                       <textarea
                         value={skills} 
                         onChange={e => setSkills(e.target.value)} 
                         required 
-                        rows={6}
+                        rows={5}
                         placeholder={vt.skillsPlaceholder.replace("{name}", selectedDetails?.name || "")}
-                        className="w-full py-2.5 px-3.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.01] text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all resize-none text-xs leading-relaxed font-medium"
+                        className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/50 dark:bg-white/[0.01] text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all resize-none text-xs leading-relaxed font-medium"
                       />
                       <div className="flex justify-between items-center px-1">
                         <span className="text-[9px] text-gray-400 flex items-center gap-1 font-semibold">
-                          <Info className="w-3.5 h-3.5" />
-                          {language === "te" ? "వివరాలు అత్యవసరం" : language === "hi" ? "विवरण आवश्यक है" : "Details are mandatory"}
+                          <Info className="w-3.5 h-3.5 text-indigo-500" />
+                          {language === "te" ? "వివరాలు అత్యవసరం" : language === "hi" ? "विवरण आवश्यक है" : "Details mandatory"}
                         </span>
-                        <p className="text-[9px] font-bold text-gray-450 uppercase">{skills.length} {vt.characters}</p>
+                        <p className="text-[9px] font-bold text-gray-400 uppercase">{skills.length} {vt.characters}</p>
                       </div>
                     </div>
 
                     <button 
                       type="submit" 
                       disabled={loading || !skills.trim()}
-                      className="w-full py-3 bg-gradient-to-r from-indigo-650 to-violet-650 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-indigo-500/15 transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <>
@@ -496,16 +495,16 @@ export default function MemberVolunteer() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="bg-white dark:bg-[#121324] rounded-2xl sm:rounded-3xl border border-dashed border-gray-200 dark:border-white/[0.08] p-8 text-center flex flex-col items-center justify-center min-h-[340px] gap-4"
+                  className="bg-white dark:bg-[#121324] rounded-3xl border border-dashed border-gray-200 dark:border-white/[0.08] p-6 sm:p-8 text-center flex flex-col items-center justify-center min-h-[260px] gap-3"
                 >
-                  <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shadow-md">
-                    <ClipboardList className="w-8 h-8 animate-float" />
+                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shadow-md border border-indigo-200 dark:border-indigo-900/40">
+                    <ClipboardList className="w-7 h-7 animate-pulse" />
                   </div>
-                  <div className="space-y-1.5 max-w-xs">
-                    <h4 className="font-black text-sm text-gray-900 dark:text-white">
+                  <div className="space-y-1 max-w-xs">
+                    <h4 className="font-extrabold text-sm text-gray-900 dark:text-white">
                       {language === "te" ? "పరిచర్యను ఎంచుకోండి" : language === "hi" ? "मंत्रालय चुनें" : "No Department Configured"}
                     </h4>
-                    <p className="text-xs text-gray-550 dark:text-gray-400 leading-relaxed font-semibold">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                       {vt.promptSelect}
                     </p>
                   </div>
