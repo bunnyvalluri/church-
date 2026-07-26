@@ -38,7 +38,7 @@ const eventsTranslations = {
     subtitle: "Browse upcoming programs and secure your seat",
     updated: "Updated",
     refresh: "Refresh",
-    totalEvents: "Total Events",
+    totalEvents: "Total",
     upcoming: "Upcoming",
     myRsvps: "My RSVPs",
     searchPlaceholder: "Search events or location...",
@@ -64,13 +64,13 @@ const eventsTranslations = {
     subtitle: "రాబోయే కార్యక్రమాలను బ్రౌజ్ చేయండి మరియు మీ సీటును భద్రపరుచుకోండి",
     updated: "సమకాలీకరించబడింది",
     refresh: "రిఫ్రెష్",
-    totalEvents: "మొత్తం ఈవెంట్స్",
+    totalEvents: "మొత్తం",
     upcoming: "రాబోయేవి",
-    myRsvps: "నా రిజిస్ట్రేషన్లు",
+    myRsvps: "నా సీట్లు",
     searchPlaceholder: "కార్యక్రమాలు లేదా స్థలాల కోసం వెతకండి...",
     tabAll: "అన్నీ",
     tabUpcoming: "రాబోయేవి",
-    tabRegistered: "నా రిజిస్ట్రేషన్లు",
+    tabRegistered: "నా సీట్లు",
     newEventAlert: "షెడ్యూల్‌లో కొత్త కార్యక్రమం జోడించబడింది!",
     loadError: "కార్యక్రమాలను లోడ్ చేయడం వీలుపడలేదు",
     successRsvp: "విజయవంతంగా నమోదైంది! అక్కడ కలుద్దాం 🙏",
@@ -90,13 +90,13 @@ const eventsTranslations = {
     subtitle: "आगामी कार्यक्रमों को देखें और अपनी सीट सुरक्षित करें",
     updated: "अपडेट किया गया",
     refresh: "रिफ्रेश",
-    totalEvents: "कुल कार्यक्रम",
+    totalEvents: "कुल",
     upcoming: "आगामी",
-    myRsvps: "मेरे पंजीकरण",
+    myRsvps: "मेरी सीटें",
     searchPlaceholder: "कार्यक्रम या स्थान खोजें...",
     tabAll: "सभी",
     tabUpcoming: "आगामी",
-    tabRegistered: "मेरे पंजीकरण",
+    tabRegistered: "मेरी सीटें",
     newEventAlert: "शेड्यूल में नया कार्यक्रम जोड़ा गया!",
     loadError: "कार्यक्रम लोड नहीं किए जा सके",
     successRsvp: "सफलतापूर्वक पंजीकृत! वहाँ मिलते हैं 🙏",
@@ -226,7 +226,7 @@ export default function MemberEvents() {
             className={`fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-[92vw] sm:max-w-md backdrop-blur-xl transition-all ${
               toast.type === "success" ? "bg-emerald-600 text-white border-emerald-400/40 shadow-emerald-600/30" :
               toast.type === "error"   ? "bg-red-600 text-white border-red-400/40 shadow-red-600/30" :
-                                         "bg-purple-600 text-white border-purple-400/40 shadow-purple-600/30"
+                                         "bg-indigo-600 text-white border-indigo-400/40 shadow-indigo-600/30"
             }`}
           >
             {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-white" /> :
@@ -267,7 +267,7 @@ export default function MemberEvents() {
       </div>
 
       {/* STATS ROW — 3-Column Compact Grid on Mobile */}
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { label: et.totalEvents, value: stats.total, icon: Activity, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/40" },
           { label: et.upcoming,     value: stats.upcoming, icon: TrendingUp, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/40" },
@@ -277,14 +277,14 @@ export default function MemberEvents() {
             key={label}
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-md p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1.5 sm:gap-3.5 transition-transform active:scale-[0.98]"
           >
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
-              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
+            <div className={`w-7 h-7 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
+              <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${color}`} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-base sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
                 {loading ? "—" : value}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 truncate">
+              <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 whitespace-nowrap">
                 {label}
               </p>
             </div>
@@ -304,12 +304,12 @@ export default function MemberEvents() {
             className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium shadow-sm"
           />
         </div>
-        <div className="flex bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-1 shadow-sm overflow-x-auto scrollbar-none flex-nowrap justify-between sm:justify-start">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-1 shadow-sm grid grid-cols-3 gap-1 w-full sm:w-auto min-w-[280px]">
           {(["ALL", "UPCOMING", "REGISTERED"] as FilterTab[]).map(tab => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 text-center ${
+              className={`w-full py-2 px-2 rounded-xl text-xs font-black transition-all text-center whitespace-nowrap flex items-center justify-center ${
                 filter === tab
                   ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
