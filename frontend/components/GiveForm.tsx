@@ -1435,11 +1435,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                   
                   <div className="relative px-5 py-6 sm:px-6 sm:py-7 lg:p-8 space-y-6">
                     {/* Header */}
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-white/10">
-                      <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300">
-                        <Receipt className="w-4 h-4" />
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-white/15">
+                      <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-white">
+                        <Receipt className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-black text-xs uppercase tracking-[0.2em] text-indigo-200">
+                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-[0.2em] text-white">
                         {t.pages.give.summaryTitle}
                       </h3>
                     </div>
@@ -1447,32 +1447,32 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                     {/* Details Rows */}
                     <div className="space-y-3.5">
                       <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-300 font-bold">{t.pages.give.summaryType}</span>
-                        <span className="font-black text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        <span className="text-white font-extrabold">{t.pages.give.summaryType}</span>
+                        <span className="font-black text-xs bg-purple-500/30 text-white border border-purple-400/40 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-300 font-bold">{t.pages.give.summaryMethod}</span>
-                        <span className="font-extrabold text-xs text-white flex items-center gap-1.5 bg-white/10 border border-white/10 px-2.5 py-1 rounded-xl shadow-sm">
-                          <QrCode className="w-3.5 h-3.5 text-indigo-300" />
+                        <span className="text-white font-extrabold">{t.pages.give.summaryMethod}</span>
+                        <span className="font-extrabold text-xs text-white flex items-center gap-1.5 bg-white/20 border border-white/25 px-2.5 py-1 rounded-xl shadow-sm">
+                          <QrCode className="w-3.5 h-3.5 text-purple-200" />
                           {language === 'te' ? 'డైనమిక్ UPI QR' : language === 'hi' ? 'डायनेमिक यूपीआई' : 'Dynamic UPI QR'}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-300 font-bold">{t.pages.give.summaryTax}</span>
-                        <span className="font-black text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-white font-extrabold">{t.pages.give.summaryTax}</span>
+                        <span className="font-black text-xs text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-300" />
                           {t.pages.give.summaryTaxValue}
                         </span>
                       </div>
                     </div>
 
                     {/* Total Amount Row */}
-                    <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                      <span className="text-xs font-black uppercase tracking-wider text-gray-300">{t.pages.give.summaryTotal}</span>
+                    <div className="pt-4 border-t border-white/15 flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-white">{t.pages.give.summaryTotal}</span>
                       <div className="text-right">
                         <AnimatePresence mode="wait">
                           <motion.span
@@ -1483,7 +1483,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                             transition={{ duration: 0.15 }}
                             className="text-2xl sm:text-3xl font-black flex items-center gap-1 text-white tracking-tight"
                           >
-                            <IndianRupee className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5] text-indigo-300" />
+                            <IndianRupee className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5] text-purple-200" />
                             {displayAmount.toLocaleString("en-IN")}
                           </motion.span>
                         </AnimatePresence>
