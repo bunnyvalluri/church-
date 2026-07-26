@@ -24,7 +24,6 @@ import {
   Crown
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { adminTranslations } from "@/components/admin/adminTranslations";
 
 interface MemberGroupsProps {
   users?: any[];
@@ -88,53 +87,48 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     return desc;
   };
 
-  // Category visual configurations
+  // Category visual configurations with vibrant, high-contrast themes
   const getCategoryTheme = (category: string) => {
     switch (category.toUpperCase()) {
       case "YOUTH":
         return {
           icon: Sparkles,
-          badge: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/40",
-          cardBg: "from-indigo-500/10 via-purple-500/5 to-transparent",
-          glow: "border-indigo-500/50 shadow-indigo-500/10",
-          iconBg: "bg-indigo-600 text-white"
+          badge: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/60 font-bold",
+          glow: "border-indigo-500 shadow-lg shadow-indigo-500/10",
+          iconBg: "bg-indigo-600 text-white shadow-sm"
         };
       case "CHILDREN":
         return {
           icon: Smile,
-          badge: "bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/40",
-          cardBg: "from-sky-500/10 via-blue-500/5 to-transparent",
-          glow: "border-sky-500/50 shadow-sky-500/10",
-          iconBg: "bg-sky-600 text-white"
+          badge: "bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border border-sky-200 dark:border-sky-700/60 font-bold",
+          glow: "border-sky-500 shadow-lg shadow-sky-500/10",
+          iconBg: "bg-sky-600 text-white shadow-sm"
         };
       case "WOMEN":
         return {
           icon: Heart,
-          badge: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/40",
-          cardBg: "from-rose-500/10 via-pink-500/5 to-transparent",
-          glow: "border-rose-500/50 shadow-rose-500/10",
-          iconBg: "bg-rose-600 text-white"
+          badge: "bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-700/60 font-bold",
+          glow: "border-rose-500 shadow-lg shadow-rose-500/10",
+          iconBg: "bg-rose-600 text-white shadow-sm"
         };
       case "MEN":
         return {
           icon: Users,
-          badge: "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/40",
-          cardBg: "from-blue-500/10 via-indigo-500/5 to-transparent",
-          glow: "border-blue-500/50 shadow-blue-500/10",
-          iconBg: "bg-blue-600 text-white"
+          badge: "bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/60 font-bold",
+          glow: "border-blue-500 shadow-lg shadow-blue-500/10",
+          iconBg: "bg-blue-600 text-white shadow-sm"
         };
       default:
         return {
           icon: Shield,
-          badge: "bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border-violet-200/60 dark:border-violet-800/40",
-          cardBg: "from-violet-500/10 via-purple-500/5 to-transparent",
-          glow: "border-violet-500/50 shadow-violet-500/10",
-          iconBg: "bg-violet-600 text-white"
+          badge: "bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-700/60 font-bold",
+          glow: "border-purple-500 shadow-lg shadow-purple-500/10",
+          iconBg: "bg-purple-600 text-white shadow-sm"
         };
     }
   };
 
-  // State
+  // Initial State
   const [groups, setGroups] = useState<Group[]>([
     { 
       id: "grp_1", 
@@ -259,61 +253,65 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
       
       {/* ─── Top Overview Metric Bar ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+        {/* Metric 1: Total Groups */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-between min-w-0">
           <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
               {isTe ? "మొత్తం సమూహాలు" : isHi ? "कुल समूह" : "Total Groups"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{groups.length}</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{groups.length}</h3>
           </div>
-          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
-            <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 rounded-2xl shrink-0 shadow-sm">
+            <Layers className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+        {/* Metric 2: Enrolled Believers */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-between min-w-0">
           <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
               {isTe ? "చేరిన విశ్వాసులు" : isHi ? "नामांकित विश्वासी" : "Enrolled Believers"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
           </div>
-          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
-            <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl shrink-0 shadow-sm">
+            <UserCheck className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+        {/* Metric 3: Fellowship Units */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-between min-w-0">
           <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
               {isTe ? "విభాగాల సంఖ్య" : isHi ? "इकाइयाँ" : "Fellowship Units"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">5</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">5</h3>
           </div>
-          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
-            <Award className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="p-3 bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 rounded-2xl shrink-0 shadow-sm">
+            <Award className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+        {/* Metric 4: Registered Members */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all flex items-center justify-between min-w-0">
           <div className="min-w-0 pr-2">
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block truncate">
               {isTe ? "నమోదైన సభ్యులు" : isHi ? "कुल सदस्य" : "Registered Members"}
             </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{users.length}</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{users.length}</h3>
           </div>
-          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
-            <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 rounded-2xl shrink-0 shadow-sm">
+            <Users className="w-5 h-5" />
           </div>
         </div>
       </div>
 
-      {/* ─── Main Content Grid: Sidebar List + Right Detail/Dashboard Pane ─── */}
+      {/* ─── Main Content Grid: Sidebar List + Right Detail Pane ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         {/* ─── Left Column: Groups List ─── */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
             
             {/* Header & Create Button */}
             <div className="flex items-center justify-between">
@@ -321,13 +319,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                 <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
                   {isTe ? "విశ్వాస సమూహాలు" : isHi ? "विश्वासी समूह" : "Believer Groups"}
                 </h2>
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                   {groups.length} {isTe ? "సమూహాలు అందుబాటులో ఉన్నాయి" : isHi ? "समूह उपलब्ध हैं" : "active fellowship units"}
                 </p>
               </div>
               <button 
                 onClick={() => setIsCreateOpen(true)} 
-                className="py-2 px-3 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/10 transition-all active:scale-95"
+                className="py-2 px-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition-all active:scale-95"
               >
                 <Plus className="w-4 h-4" /> {isTe ? "కొత్తది" : isHi ? "नया" : "New"}
               </button>
@@ -335,13 +333,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
                 type="text"
                 placeholder={isTe ? "సమూహాల శోధన..." : isHi ? "समूह खोजें..." : "Search groups..."}
                 value={groupSearchQuery}
                 onChange={(e) => setGroupSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all font-semibold"
+                className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all font-medium"
               />
             </div>
 
@@ -351,10 +349,10 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase transition-all shrink-0 ${
+                  className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all shrink-0 ${
                     categoryFilter === cat
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-slate-50 dark:bg-white/[0.02] text-slate-450 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05]"
+                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                   }`}
                 >
                   {cat === "ALL" ? (isTe ? "అన్నీ" : isHi ? "सभी" : "All") : cat}
@@ -363,7 +361,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
             </div>
 
             {/* Group Cards List */}
-            <div className="space-y-2.5 max-h-[580px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-3 max-h-[580px] overflow-y-auto pr-1 custom-scrollbar">
               {filteredGroups.map(group => {
                 const isSelected = selectedGroup?.id === group.id;
                 const theme = getCategoryTheme(group.category);
@@ -375,28 +373,28 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                     onClick={() => setSelectedGroup(group)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group hover:-translate-y-0.5 ${
                       isSelected 
-                        ? `bg-white dark:bg-[#16172D] border-indigo-500/60 dark:border-indigo-500/50 shadow-md ${theme.glow}` 
-                        : "bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border-slate-200/60 dark:border-white/[0.04]"
+                        ? `bg-indigo-50/70 dark:bg-slate-800 border-2 border-indigo-500 shadow-md` 
+                        : "bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700/60"
                     }`}
                   >
-                    {/* Selected Left Accent Bar */}
+                    {/* Selected Accent Bar */}
                     {isSelected && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-indigo-500 to-violet-600" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600" />
                     )}
 
                     <div className="flex justify-between items-start gap-3">
                       <div className="flex items-start gap-3 overflow-hidden">
-                        <div className={`p-2.5 rounded-xl shrink-0 ${theme.badge}`}>
+                        <div className={`p-2.5 rounded-xl shrink-0 ${theme.iconBg}`}>
                           <IconComponent className="w-4 h-4" />
                         </div>
                         <div className="overflow-hidden">
-                          <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${theme.badge}`}>
+                          <span className={`inline-block px-2 py-0.5 rounded-md text-[9px] uppercase tracking-wider mb-1 ${theme.badge}`}>
                             {getCategoryTranslation(group.category)}
                           </span>
-                          <h4 className="text-xs font-black text-slate-900 dark:text-white truncate mt-1">
+                          <h4 className="text-xs font-black text-slate-900 dark:text-white truncate">
                             {getGroupNameTranslation(group.name)}
                           </h4>
-                          <p className="text-[10px] text-slate-450 dark:text-gray-400 line-clamp-1 mt-0.5 font-medium">
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1 mt-0.5 font-medium">
                             {getGroupDescTranslation(group.description)}
                           </p>
                         </div>
@@ -406,13 +404,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                       <div className="flex flex-col items-end justify-between self-stretch shrink-0">
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleRemoveGroup(group.id); }}
-                          className="text-slate-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors p-1"
+                          className="text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors p-1"
                           title="Delete Group"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-4 h-4" />
                         </button>
-                        <span className="text-[10px] font-extrabold text-slate-600 dark:text-gray-300 flex items-center gap-1 bg-slate-100 dark:bg-white/[0.04] px-2 py-0.5 rounded-lg border border-slate-200/50 dark:border-white/[0.04]">
-                          <Users className="w-3 h-3 text-indigo-500" />
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                          <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                           <span>{group.members.length}</span>
                         </span>
                       </div>
@@ -422,7 +420,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
               })}
 
               {filteredGroups.length === 0 && (
-                <div className="py-10 text-center text-xs text-slate-400 dark:text-gray-500 font-semibold bg-slate-50/50 dark:bg-white/[0.01] rounded-2xl border border-dashed border-slate-200 dark:border-white/[0.05] p-4">
+                <div className="py-10 text-center text-xs text-slate-500 dark:text-slate-400 font-semibold bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-4">
                   {isTe ? "సమూహాలు ఏవీ కనుగొనబడలేదు" : isHi ? "कोई समूह नहीं मिला" : "No matching groups found."}
                 </div>
               )}
@@ -431,34 +429,34 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
           </div>
         </div>
 
-        {/* ─── Right Column: Selected Group Roster or Interactive Dashboard Showcase ─── */}
+        {/* ─── Right Column: Selected Group Roster or Directory Grid ─── */}
         <div className="lg:col-span-2 space-y-6">
           {selectedGroup ? (
             /* ACTIVE GROUP DETAIL VIEW */
-            <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-6">
               
               {/* Header Banner */}
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900/10 via-purple-900/5 to-slate-900/5 dark:from-indigo-500/10 dark:via-purple-500/5 dark:to-transparent border border-indigo-100 dark:border-white/[0.06] relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-white dark:from-slate-800 dark:via-indigo-950/40 dark:to-slate-900 border border-indigo-100 dark:border-slate-700 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
                 <div className="space-y-2">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getCategoryTheme(selectedGroup.category).badge}`}>
-                    <Sparkles className="w-3 h-3" />
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] tracking-wider uppercase ${getCategoryTheme(selectedGroup.category).badge}`}>
+                    <Sparkles className="w-3.5 h-3.5" />
                     {getCategoryTranslation(selectedGroup.category)}
                   </span>
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                     {getGroupNameTranslation(selectedGroup.name)}
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-lg leading-relaxed font-medium">
                     {getGroupDescTranslation(selectedGroup.description)}
                   </p>
 
                   {/* Schedule & Location details */}
-                  <div className="flex flex-wrap gap-4 pt-2 text-[11px] text-slate-600 dark:text-gray-300 font-semibold">
-                    <span className="flex items-center gap-1.5 bg-white/80 dark:bg-white/[0.04] px-3 py-1 rounded-xl border border-slate-200/60 dark:border-white/[0.04]">
-                      <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                  <div className="flex flex-wrap gap-3 pt-2 text-xs text-slate-700 dark:text-slate-200 font-semibold">
+                    <span className="flex items-center gap-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                      <Calendar className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                       {selectedGroup.meetingTime || "Sundays 10:00 AM"}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-white/80 dark:bg-white/[0.04] px-3 py-1 rounded-xl border border-slate-200/60 dark:border-white/[0.04]">
-                      <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                    <span className="flex items-center gap-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                      <MapPin className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                       {selectedGroup.location || "Sanctuary Hall"}
                     </span>
                   </div>
@@ -466,7 +464,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
                 <button 
                   onClick={() => setIsAddMemberOpen(true)}
-                  className="py-3 px-5 bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-650 hover:from-indigo-600 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95 shrink-0"
+                  className="py-3 px-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95 shrink-0"
                 >
                   <UserPlus className="w-4 h-4" />
                   {isTe ? "విశ్వాసులను చేర్చండి" : isHi ? "विश्वासियों को जोड़ें" : "+ Assign Believers"}
@@ -476,20 +474,20 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
               {/* Roster Controls */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-gray-500">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {isTe ? "సమూహ రికార్డు సభ్యులు" : isHi ? "समूह सदस्य नामावली" : "Group Roster"} ({selectedGroup.members.length})
                   </h3>
                 </div>
 
                 {selectedGroup.members.length > 0 && (
                   <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input 
                       type="text" 
                       placeholder={isTe ? "సభ్యుల శోధన..." : isHi ? "सदस्य खोजें..." : "Filter roster..."}
                       value={rosterSearchQuery}
                       onChange={(e) => setRosterSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all font-semibold"
+                      className="w-full pl-10 pr-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all font-medium"
                     />
                   </div>
                 )}
@@ -506,10 +504,10 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   .map((member, idx) => (
                     <div 
                       key={member.id} 
-                      className="p-4 bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border border-slate-200/60 dark:border-white/[0.04] hover:border-indigo-200 dark:hover:border-indigo-500/20 rounded-2xl flex items-center justify-between gap-3 transition-all group shadow-sm"
+                      className="p-4 bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-800/50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 rounded-2xl flex items-center justify-between gap-3 transition-all group shadow-sm"
                     >
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-extrabold rounded-2xl flex items-center justify-center uppercase text-xs shadow-md shadow-indigo-500/10 shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-md shadow-indigo-500/20 shrink-0">
                           {(member.name || "M").substring(0, 2)}
                         </div>
                         <div className="overflow-hidden">
@@ -518,13 +516,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                               {member.name}
                             </h4>
                             {idx === 0 && (
-                              <span className="inline-flex items-center gap-1 text-[8px] font-black uppercase px-2 py-0.5 bg-amber-50 dark:bg-amber-500/10 text-amber-600 border border-amber-200/60 dark:border-amber-500/20 rounded-md">
-                                <Crown className="w-2.5 h-2.5" />
+                              <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50 rounded-md">
+                                <Crown className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                 {isTe ? "నాయకుడు" : isHi ? "नेता" : "Leader"}
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-slate-450 dark:text-gray-400 truncate mt-0.5 font-medium">
+                          <p className="text-xs text-slate-600 dark:text-slate-400 truncate mt-0.5 font-medium">
                             {member.email}
                           </p>
                         </div>
@@ -532,7 +530,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
                       <button 
                         onClick={() => handleAddMemberToGroup(member.id)}
-                        className="text-slate-300 dark:text-gray-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors p-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-500/10 shrink-0"
+                        className="text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 transition-colors p-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0"
                         title="Remove member"
                       >
                         <X className="w-4 h-4" />
@@ -541,21 +539,21 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   ))}
 
                 {selectedGroup.members.length === 0 && (
-                  <div className="col-span-full py-16 text-center bg-slate-50/40 dark:bg-[#16172D]/20 border border-dashed border-slate-200 dark:border-white/[0.05] rounded-3xl flex flex-col items-center justify-center gap-3 p-6">
-                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+                  <div className="col-span-full py-16 text-center bg-slate-50/50 dark:bg-slate-800/30 border border-dashed border-slate-300 dark:border-slate-700 rounded-3xl flex flex-col items-center justify-center gap-3 p-6">
+                    <div className="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200 dark:border-indigo-800/60 shadow-sm">
                       <Users className="w-7 h-7" />
                     </div>
                     <div>
                       <h4 className="text-sm font-black text-slate-900 dark:text-white">
                         {isTe ? "ఈ సమూహంలో ఇంకా సభ్యులు లేరు" : isHi ? "इस समूह में अभी कोई सदस्य नहीं है" : "No members assigned to this group yet"}
                       </h4>
-                      <p className="text-xs text-slate-400 dark:text-gray-500 max-w-sm mt-1 font-medium">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm mt-1 font-medium">
                         {isTe ? "సమృద్ధిగా ఉన్న చర్చి విశ్వాసుల డైరెక్టరీ నుండి సభ్యులను సులభంగా అసైన్ చేయండి." : isHi ? "मंडली निर्देशिका से सदस्यों को आसानी से इस समूह में जोड़ें।" : "Assign congregation believers to this group to track attendance and fellowship growth."}
                       </p>
                     </div>
                     <button 
                       onClick={() => setIsAddMemberOpen(true)}
-                      className="mt-2 py-2.5 px-5 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md shadow-indigo-500/15 transition-all active:scale-95"
+                      className="mt-2 py-2.5 px-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md shadow-indigo-500/20 transition-all active:scale-95"
                     >
                       <UserPlus className="w-4 h-4" />
                       {isTe ? "సభ్యులను జతచేయండి" : isHi ? "सदस्य जोड़ें" : "Assign Members Now"}
@@ -567,22 +565,22 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
             </div>
           ) : (
             /* INTERACTIVE DASHBOARD SHOWCASE (When no group is explicitly selected) */
-            <div className="bg-white dark:bg-[#121324]/60 border border-slate-100 dark:border-white/[0.05] p-8 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.015)] backdrop-blur-xl space-y-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
               
               {/* Header Intro */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-150/60 dark:border-white/[0.04]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
                   <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                     {isTe ? "విశ్వాసుల సహవాస కేంద్రం" : isHi ? "विश्वासी संगति केंद्र" : "Believer Fellowship Directory"}
                   </h3>
-                  <p className="text-xs text-slate-400 dark:text-gray-400 font-semibold mt-1">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-1">
                     {isTe ? "విభాగాన్ని ఎంచుకోండి లేదా క్రొత్త కూడికను సృష్టించండి" : isHi ? "किसी समूह का चयन करें या नया संगति समूह बनाएं" : "Select any fellowship group to inspect roster or build new ministry units"}
                   </p>
                 </div>
                 
                 <button 
                   onClick={() => setIsCreateOpen(true)}
-                  className="py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-500/10 transition-all active:scale-95 shrink-0"
+                  className="py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition-all active:scale-95 shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   {isTe ? "క్రొత్త సమూహాన్ని సృష్టించండి" : isHi ? "नया समूह बनाएं" : "Create New Group"}
@@ -598,15 +596,15 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                     <div 
                       key={group.id}
                       onClick={() => setSelectedGroup(group)}
-                      className="p-5 bg-slate-50/50 hover:bg-white dark:bg-[#16172D]/30 dark:hover:bg-[#16172D]/60 border border-slate-200/60 dark:border-white/[0.04] hover:border-indigo-300 dark:hover:border-indigo-500/30 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg space-y-3 group"
+                      className="p-5 bg-slate-50 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-500/50 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg space-y-3 group"
                     >
                       <div className="flex items-center justify-between">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${theme.badge}`}>
-                          <IconComponent className="w-3 h-3" />
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] tracking-wider uppercase ${theme.badge}`}>
+                          <IconComponent className="w-3.5 h-3.5" />
                           {getCategoryTranslation(group.category)}
                         </span>
-                        <span className="text-[10px] font-extrabold text-slate-500 dark:text-gray-400 flex items-center gap-1">
-                          <Users className="w-3 h-3 text-indigo-500" />
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                           {group.members.length} {isTe ? "సభ్యులు" : isHi ? "सदस्य" : "members"}
                         </span>
                       </div>
@@ -615,7 +613,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                         <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {getGroupNameTranslation(group.name)}
                         </h4>
-                        <p className="text-xs text-slate-450 dark:text-gray-400 line-clamp-2 mt-1 font-medium leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-1 font-medium leading-relaxed">
                           {getGroupDescTranslation(group.description)}
                         </p>
                       </div>
@@ -637,23 +635,23 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
       {/* ─── MODAL: CREATE GROUP ─── */}
       {isCreateOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <h3 className="font-black text-slate-900 dark:text-white text-base">
                 {isTe ? "క్రొత్త విశ్వాస సమూహాన్ని సృష్టించండి" : isHi ? "नया विश्वासी समूह बनाएं" : "Create Believer Group"}
               </h3>
               <button 
                 onClick={() => setIsCreateOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
             <form onSubmit={handleCreateGroup} className="p-6 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   {isTe ? "సమూహం పేరు" : isHi ? "समूह का नाम" : "Group Name"} *
                 </label>
                 <input 
@@ -662,19 +660,19 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   placeholder="e.g. Young Couples Fellowship" 
                   value={newGroup.name}
                   onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   {isTe ? "విభాగం" : isHi ? "श्रेणी" : "Category"}
                 </label>
                 <div className="relative flex items-center">
                   <select 
                     value={newGroup.category}
                     onChange={(e) => setNewGroup({ ...newGroup, category: e.target.value as any })}
-                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-slate-50 dark:bg-[#16172D]/60 border-slate-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                    className="w-full py-2.5 pl-3.5 pr-8 border rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
                   >
                     <option value="YOUTH">{getCategoryTranslation("YOUTH")}</option>
                     <option value="CHILDREN">{getCategoryTranslation("CHILDREN")}</option>
@@ -687,7 +685,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   {isTe ? "వివరణ" : isHi ? "विवरण" : "Description"}
                 </label>
                 <textarea 
@@ -695,13 +693,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   value={newGroup.description}
                   onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white placeholder-slate-400 resize-none font-semibold"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 resize-none font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     {isTe ? "సమయం" : isHi ? "समय" : "Meeting Time"}
                   </label>
                   <input 
@@ -709,11 +707,11 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                     placeholder="e.g. Sundays 5 PM" 
                     value={newGroup.meetingTime}
                     onChange={(e) => setNewGroup({ ...newGroup, meetingTime: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-450 dark:text-gray-500 uppercase mb-1.5">
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     {isTe ? "స్థలం" : isHi ? "स्थान" : "Location"}
                   </label>
                   <input 
@@ -721,7 +719,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                     placeholder="e.g. Room 102" 
                     value={newGroup.location}
                     onChange={(e) => setNewGroup({ ...newGroup, location: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all bg-slate-50/50 dark:bg-[#16172D]/60 text-slate-900 dark:text-white font-semibold"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                   />
                 </div>
               </div>
@@ -730,13 +728,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                 <button 
                   type="button" 
                   onClick={() => setIsCreateOpen(false)} 
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.08] text-slate-500 hover:text-slate-800 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
+                  className="flex-1 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-xl font-bold text-xs uppercase transition-colors"
                 >
                   {isTe ? "రద్దు" : isHi ? "रद्द करें" : "Cancel"}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-500/10 active:scale-95"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase transition-all shadow-md shadow-indigo-500/20 active:scale-95"
                 >
                   {isTe ? "సృష్టించండి" : isHi ? "बनाएं" : "Create Group"}
                 </button>
@@ -748,22 +746,22 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
 
       {/* ─── MODAL: MANAGE GROUP MEMBERS ─── */}
       {isAddMemberOpen && selectedGroup && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121324] rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 dark:border-white/[0.06] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between bg-slate-50/50 dark:bg-white/[0.01]">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div>
                 <h3 className="font-black text-slate-900 dark:text-white text-base">
                   {isTe ? "సభ్యుల కేటాయింపు" : isHi ? "सदस्य आवंटन" : "Assign Believers"}
                 </h3>
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
                   {getGroupNameTranslation(selectedGroup.name)}
                 </p>
               </div>
               <button 
                 onClick={() => setIsAddMemberOpen(false)} 
-                className="text-slate-400 hover:text-slate-700 p-1.5 bg-white dark:bg-[#121324] border border-slate-200 dark:border-white/[0.08] rounded-xl"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             
@@ -775,7 +773,7 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   placeholder={isTe ? "పేరు లేదా ఈమెయిల్ శోధించండి..." : isHi ? "नाम या ईमेल खोजें..." : "Filter members directory..."}
                   value={searchMemberModal}
                   onChange={(e) => setSearchMemberModal(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-slate-50 dark:bg-[#16172D]/60 border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-500 transition-all font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all font-semibold"
                 />
               </div>
 
@@ -793,26 +791,26 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                         onClick={() => handleAddMemberToGroup(member.id)}
                         className={`p-3 rounded-2xl border cursor-pointer flex items-center justify-between transition-all ${
                           isAdded 
-                            ? "bg-indigo-50/40 dark:bg-indigo-500/10 border-indigo-300 dark:border-indigo-500/30 shadow-sm" 
-                            : "bg-white dark:bg-[#121324] hover:bg-slate-50 dark:hover:bg-white/[0.01] border-slate-200/60 dark:border-white/[0.04]"
+                            ? "bg-indigo-50 dark:bg-indigo-900/40 border-indigo-300 dark:border-indigo-700/60 shadow-sm" 
+                            : "bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700/60"
                         }`}
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs uppercase shrink-0 border transition-all ${
                             isAdded 
                               ? "bg-indigo-600 border-indigo-600 text-white" 
-                              : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.04] text-slate-500 dark:text-gray-400"
+                              : "bg-slate-100 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300"
                           }`}>
                             {(member.name || "M").substring(0, 2)}
                           </div>
                           <div className="overflow-hidden">
                             <h4 className="text-xs font-black text-slate-900 dark:text-white truncate">{member.name}</h4>
-                            <p className="text-[10px] text-slate-400 dark:text-gray-500 truncate mt-0.5 font-medium">{member.email}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">{member.email}</p>
                           </div>
                         </div>
 
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                          isAdded ? "bg-indigo-600 text-white" : "border border-slate-300 dark:border-white/[0.1]"
+                          isAdded ? "bg-indigo-600 text-white" : "border border-slate-300 dark:border-slate-600"
                         }`}>
                           {isAdded && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                         </div>
@@ -821,10 +819,10 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                   })}
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-white/[0.04] flex justify-end">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
                 <button 
                   onClick={() => setIsAddMemberOpen(false)} 
-                  className="py-2.5 px-6 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-md shadow-indigo-500/10 active:scale-95"
+                  className="py-2.5 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-md shadow-indigo-500/20 active:scale-95"
                 >
                   {isTe ? "పూర్తయింది" : isHi ? "सहेजें" : "Done"}
                 </button>
