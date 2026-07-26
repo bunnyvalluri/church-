@@ -175,6 +175,76 @@ export const pastorTranslations = {
     prayerRequestsTitle: "Intercessory Prayer Desk",
     prayerRequestsSubtitle: "Confidential prayer requests submitted by congregation members for pastoral intercession & team follow-up",
     activePrayersBadge: "Active Intercessions",
+
+    // Events Page
+    eventsPageTitle: "Church Event Calendar & Scheduling",
+    eventsPageSubtitle: "Manage upcoming worship services, prayer conventions, youth retreats, and ministry gatherings",
+    upcomingEventsCountBadge: "Upcoming Events",
+    scheduleNewEventBtn: "Schedule Event",
+    searchEventsPlaceholder: "Search events by title, location or category...",
+    attendingLabel: "Attending",
+    atLabel: "at",
+    noEventsFoundText: "No events found matching your search",
+    scheduleModalTitle: "Schedule New Event",
+    scheduleModalSubtitle: "Fill in the details to publish a new church event to the calendar",
+    eventTitleLabel: "Event Title",
+    eventCategoryLabel: "Category",
+    eventDateLabel: "Date",
+    eventTimeLabel: "Time / Duration",
+    eventLocationLabel: "Location / Venue",
+    eventDescriptionLabel: "Description",
+    cancelBtn: "Cancel",
+    saveEventBtn: "Schedule Event",
+    schedulingEventBtn: "Scheduling Event...",
+    deleteEventBtn: "Delete Event",
+    eventCreatedSuccess: "Event scheduled successfully!",
+    eventDeletedSuccess: "Event deleted successfully!",
+
+    // Event Categories
+    catWorship: "Worship",
+    catPrayer: "Prayer",
+    catYouth: "Youth",
+    catSpecial: "Special Service",
+    catFestival: "Festival",
+    catFellowship: "Fellowship",
+
+    // Default Events Translations
+    event1Title: "Grand Sunday Worship Service",
+    event1Date: "Sunday, Jul 27",
+    event1Time: "10:00 AM",
+    event1Location: "KCM Main Sanctuary",
+    
+    event2Title: "Midweek Fasting & Prayer",
+    event2Date: "Wednesday, Jul 30",
+    event2Time: "06:30 PM",
+    event2Location: "Prayer Tower Hall",
+
+    event3Title: "Youth Discipleship & Music Night",
+    event3Date: "Saturday, Aug 02",
+    event3Time: "05:00 PM",
+    event3Location: "KCM Youth Center",
+
+    event4Title: "Women's Grace & Prayer Fellowship",
+    event4Date: "Tuesday, Aug 05",
+    event4Time: "10:30 AM",
+    event4Location: "Fellowship Hall, Shapur",
+
+    event5Title: "All Night Miracle & Healing Prayer",
+    event5Date: "Friday, Aug 08",
+    event5Time: "09:00 PM",
+    event5Location: "KCM Main Sanctuary",
+
+    event6Title: "Children Bible Adventure & Quiz",
+    event6Date: "Sunday, Aug 10",
+    event6Time: "04:00 PM",
+    event6Location: "Subhash Nagar Hall",
+
+    // Messages Page
+    messagesTitle: "Pastoral Messages & Helpline Inquiries",
+    messagesSubtitle: "Direct communication inbox for church member inquiries, pastoral counseling, and guidance messages",
+    messagesBadge: "Inquiries Inbox",
+    messagesPlaceholder: "Search pastoral messages...",
+    noMessagesText: "Pastoral inbox messages and counseling tickets appear here.",
   },
   te: {
     // Topbar & Navigation
@@ -350,6 +420,76 @@ export const pastorTranslations = {
     prayerRequestsTitle: "విజ్ఞాపన ప్రార్థనల విభాగం",
     prayerRequestsSubtitle: "సంఘ విశ్వాసుల నుండి వచ్చిన గోప్యమైన ప్రార్థన అభ్యర్థనలు మరియు పాస్టరల్ విజ్ఞాపనల వివరాలు",
     activePrayersBadge: "క్రియాశీల ప్రార్థనలు",
+
+    // Events Page
+    eventsPageTitle: "సంఘ కార్యక్రమాల క్యాలెండర్ & షెడ్యూలింగ్",
+    eventsPageSubtitle: "రాబోయే ఆరాధన సేవలు, ప్రార్థన కూడికలు, యూత్ రిట్రీట్‌లు మరియు పరిచర్య సమూహాలను నిర్వహించండి",
+    upcomingEventsCountBadge: "రాబోయే కార్యక్రమాలు",
+    scheduleNewEventBtn: "కార్యక్రమాన్ని షెడ్యూల్ చేయండి",
+    searchEventsPlaceholder: "శీర్షిక, స్థలం లేదా వర్గం ద్వారా కార్యక్రమాలను శోధించండి...",
+    attendingLabel: "హాజరవుతున్నారు",
+    atLabel: "సమయానికి",
+    noEventsFoundText: "మీ శోధనకు తగిన కార్యక్రమాలు ఏవీ కనుగొనబడలేదు",
+    scheduleModalTitle: "కొత్త కార్యక్రమాన్ని షెడ్యూల్ చేయండి",
+    scheduleModalSubtitle: "క్యాలెండర్‌కు కొత్త సంఘ కార్యక్రమాన్ని జోడించడానికి వివరాలను నమోదు చేయండి",
+    eventTitleLabel: "కార్యక్రమ శీర్షిక",
+    eventCategoryLabel: "విభాగం / వర్గం",
+    eventDateLabel: "తేదీ",
+    eventTimeLabel: "సమయం / వ్యవధి",
+    eventLocationLabel: "స్థలము / ప్రాంతము",
+    eventDescriptionLabel: "వివరాలు",
+    cancelBtn: "రద్దు చేయి",
+    saveEventBtn: "షెడ్యూల్ చేయి",
+    schedulingEventBtn: "షెడ్యూల్ అవుతోంది...",
+    deleteEventBtn: "తొలగించు",
+    eventCreatedSuccess: "కార్యక్రమం విజయవంతంగా షెడ్యూల్ చేయబడింది!",
+    eventDeletedSuccess: "కార్యక్రమం విజయవంతంగా తొలగించబడింది!",
+
+    // Event Categories
+    catWorship: "ఆరాధన",
+    catPrayer: "ప్రార్థన",
+    catYouth: "యువజనులు",
+    catSpecial: "ప్రత్యేక సభ",
+    catFestival: "పండుగ కూడిక",
+    catFellowship: "సహవాసము",
+
+    // Default Events Translations
+    event1Title: "మహా ఆదివారం ఆరాధన మహోత్సవం",
+    event1Date: "ఆదివారం, జులై 27",
+    event1Time: "ఉదయం 10:00 గంటలకు",
+    event1Location: "కేసిఎమ్ ప్రధాన ఆలయం",
+    
+    event2Title: "వారపు ఉపవాస ప్రార్థన కూడిక",
+    event2Date: "బుధవారం, జులై 30",
+    event2Time: "సాయంత్రం 06:30 గంటలకు",
+    event2Location: "ప్రార్థనా గోపురం హాల్",
+
+    event3Title: "యూత్ శిష్యత్వ & సంగీత రాత్రి",
+    event3Date: "శనివారం, ఆగస్టు 02",
+    event3Time: "సాయంత్రం 05:00 గంటలకు",
+    event3Location: "కేసిఎమ్ యూత్ సెంటర్",
+
+    event4Title: "స్త్రీల కృపా ప్రార్థన సహవాసము",
+    event4Date: "మంగళవారం, ఆగస్టు 05",
+    event4Time: "ఉదయం 10:30 గంటలకు",
+    event4Location: "ఫెలోషిప్ హాల్, షాపూర్",
+
+    event5Title: "రాత్రంతా స్వస్థత & అద్భుతాల ప్రార్థన",
+    event5Date: "శుక్రవారం, ఆగస్టు 08",
+    event5Time: "రాత్రి 09:00 గంటలకు",
+    event5Location: "కేసిఎమ్ ప్రధాన ఆలయం",
+
+    event6Title: "చిన్నారుల బైబిల్ క్విజ్ & పోటీలు",
+    event6Date: "ఆదివారం, ఆగస్టు 10",
+    event6Time: "సాయంత్రం 04:00 గంటలకు",
+    event6Location: "సుభాష్ నగర్ హాల్",
+
+    // Messages Page
+    messagesTitle: "పాస్టరల్ సందేశాలు & హెల్ప్‌లైన్ విచారణలు",
+    messagesSubtitle: "సంఘ సభ్యుల విచారణలు, పాస్టరల్ కౌన్సెలింగ్ మరియు మార్గదర్శక సందేశాల ఇన్బాక్స్",
+    messagesBadge: "సందేశాల ఇన్బాక్స్",
+    messagesPlaceholder: "పాస్టరల్ సందేశాలను శోధించండి...",
+    noMessagesText: "పాస్టరల్ ఇన్బాక్స్ సందేశాలు మరియు కౌన్సెలింగ్ టిక్కెట్లు ఇక్కడ కనిపిస్తాయి.",
   },
   hi: {
     // Topbar & Navigation
@@ -525,6 +665,76 @@ export const pastorTranslations = {
     prayerRequestsTitle: "मध्यस्थता प्रार्थना डेस्क",
     prayerRequestsSubtitle: "कलीसिया सदस्यों द्वारा सबमिट किए गए गोपनीय प्रार्थना अनुरोध और चरवाहाई मध्यस्थता विवरण",
     activePrayersBadge: "सक्रिय प्रार्थनाएँ",
+
+    // Events Page
+    eventsPageTitle: "कलीसिया कार्यक्रम कैलेंडर और निर्धारण",
+    eventsPageSubtitle: "आगामी आराधना सेवाओं, प्रार्थना सम्मेलनों, युवा शिविरों और सेवकाई सभाओं का प्रबंधन करें",
+    upcomingEventsCountBadge: "आगामी कार्यक्रम",
+    scheduleNewEventBtn: "कार्यक्रम निर्धारित करें",
+    searchEventsPlaceholder: "शीर्षक, स्थान या श्रेणी के आधार पर कार्यक्रम खोजें...",
+    attendingLabel: "उपस्थित हो रहे हैं",
+    atLabel: "बजे",
+    noEventsFoundText: "आपकी खोज से मेल खाता कोई कार्यक्रम नहीं मिला",
+    scheduleModalTitle: "नया कार्यक्रम निर्धारित करें",
+    scheduleModalSubtitle: "कैलेंडर में नया कार्यक्रम जोड़ने के लिए विवरण भरें",
+    eventTitleLabel: "कार्यक्रम शीर्षक",
+    eventCategoryLabel: "श्रेणी",
+    eventDateLabel: "तिथि",
+    eventTimeLabel: "समय / अवधि",
+    eventLocationLabel: "स्थान / स्थल",
+    eventDescriptionLabel: "विवरण",
+    cancelBtn: "रद्द करें",
+    saveEventBtn: "कार्यक्रम निर्धारित करें",
+    schedulingEventBtn: "निर्धारित किया जा रहा है...",
+    deleteEventBtn: "हटाएं",
+    eventCreatedSuccess: "कार्यक्रम सफलतापूर्वक निर्धारित किया गया!",
+    eventDeletedSuccess: "कार्यक्रम सफलतापूर्वक हटा दिया गया!",
+
+    // Event Categories
+    catWorship: "आराधना",
+    catPrayer: "प्रार्थना",
+    catYouth: "युवा",
+    catSpecial: "विशेष सेवा",
+    catFestival: "उत्सव",
+    catFellowship: "संगति",
+
+    // Default Events Translations
+    event1Title: "भव्य रविवार आराधना सेवा",
+    event1Date: "रविवार, 27 जुलाई",
+    event1Time: "सुबह 10:00 बजे",
+    event1Location: "KCM मुख्य मन्दिर",
+    
+    event2Title: "साप्ताहिक उपवास और प्रार्थना",
+    event2Date: "बुधवार, 30 जुलाई",
+    event2Time: "शाम 06:30 बजे",
+    event2Location: "प्रार्थना टॉवर हॉल",
+
+    event3Title: "युवा चेलापन और संगीत रात्रि",
+    event3Date: "शनिवार, 02 अगस्त",
+    event3Time: "शाम 05:00 बजे",
+    event3Location: "KCM युवा केंद्र",
+
+    event4Title: "महिला अनुग्रह एवं प्रार्थना संगति",
+    event4Date: "मंगलवार, 05 अगस्त",
+    event4Time: "सुबह 10:30 बजे",
+    event4Location: "फैलोशिप हॉल, शापुर",
+
+    event5Title: "रात्रि भर चंगाई एवं चमत्कार प्रार्थना",
+    event5Date: "शुक्रवार, 08 अगस्त",
+    event5Time: "रात 09:00 बजे",
+    event5Location: "KCM मुख्य मन्दिर",
+
+    event6Title: "बच्चों की बाइबिल प्रश्नोत्तरी एवं साहसिक कार्य",
+    event6Date: "रविवार, 10 अगस्त",
+    event6Time: "शाम 04:00 बजे",
+    event6Location: "सुभाष नगर हॉल",
+
+    // Messages Page
+    messagesTitle: "पास्टर संदेश और हेल्पलाइन पूछताछ",
+    messagesSubtitle: "कलीसिया सदस्यों की पूछताछ, पादरी परामर्श और मार्गदर्शन संदेशों के लिए प्रत्यक्ष इनबॉक्स",
+    messagesBadge: "पूछताछ इनबॉक्स",
+    messagesPlaceholder: "पास्टर संदेश खोजें...",
+    noMessagesText: "पास्टर इनबॉक्स संदेश और परामर्श टिकट यहां दिखाई देंगे।",
   }
 };
 

@@ -3,6 +3,18 @@ import { prisma } from '@/lib/prisma';
 import { requireAdminOrDev } from '@/lib/authMiddleware';
 
 
+export async function GET() {
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: { date: 'asc' },
+    });
+    return NextResponse.json({ success: true, events });
+  } catch (err: any) {
+    console.error('[PASTOR/EVENTS/GET] Error:', err);
+    return NextResponse.json({ success: false, events: [], error: err.message }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
