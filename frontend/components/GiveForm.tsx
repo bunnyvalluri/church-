@@ -916,28 +916,27 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-2 sm:p-3 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-1.5 sm:gap-2.5 w-full group overflow-hidden min-h-[58px] sm:min-h-[64px] ${
+                                      className={`relative px-2.5 py-2 sm:px-3 sm:py-2.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-center gap-2 w-full group overflow-hidden h-[62px] sm:h-[68px] ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
                                           : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
                                       }`}
                                     >
-                                      <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
+                                      <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
                                         {icon}
                                       </div>
-                                      <div className="min-w-0 flex-1">
-                                        <span className={`block font-black text-[11px] sm:text-xs leading-tight tracking-tight whitespace-normal break-words ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                      <div className="min-w-0 flex-1 flex flex-col justify-center">
+                                        <span className={`block font-extrabold text-[11px] sm:text-xs leading-tight tracking-tight line-clamp-2 ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
                                           {getLanguagePurposeName(p)}
                                         </span>
-                                        <span className="hidden sm:block text-gray-500 dark:text-gray-400 text-[10px] mt-0.5 leading-snug font-medium truncate">
-                                          {getLanguagePurposeDesc(p)}
-                                        </span>
                                       </div>
-                                      {isSelected && (
-                                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-purple-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 ml-auto">
-                                          <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
-                                        </div>
-                                      )}
+                                      <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center ml-auto">
+                                        {isSelected ? (
+                                          <div className="w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                                            <Check className="w-2.5 h-2.5 text-white" />
+                                          </div>
+                                        ) : null}
+                                      </div>
                                     </button>
                                   );
                                 })}
