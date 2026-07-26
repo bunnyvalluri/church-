@@ -9,20 +9,31 @@ import { useAuth } from "@/components/providers/AuthProvider";
 export default function FamilyManagementPage() {
   const { getIdToken } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadData = async () => {
-    setLoading(true);
     try {
       const token = await getIdToken();
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/dashboard-data", { headers });
-      const result = await res.json();
-      if (res.ok && result.success) {
-        setUsers(result.users || []);
+      
+      // Fast fetch focused users endpoint instead of heavy multi-table dashboard query
+      const res = await fetch("/api/admin/users", { headers });
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success && Array.isArray(result.users)) {
+          setUsers(result.users);
+          return;
+        }
+      }
+
+      // Fallback if /api/admin/users returns empty/fails
+      const fallbackRes = await fetch("/api/admin/dashboard-data", { headers });
+      const fallbackResult = await fallbackRes.json();
+      if (fallbackRes.ok && fallbackResult.success) {
+        setUsers(fallbackResult.users || []);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error loading family management users:", err);
     } finally {
       setLoading(false);
     }
