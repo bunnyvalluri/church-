@@ -1428,18 +1428,18 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               <div className="lg:col-span-5 space-y-4 sm:space-y-5">
 
                 {/* Giving Summary Card */}
-                <div className="relative bg-gradient-to-br from-[#0f1123] via-[#161836] to-[#0c0d1b] rounded-3xl shadow-2xl border border-indigo-500/20 overflow-hidden">
-                  {/* Subtle Background Glow */}
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative bg-white dark:bg-gradient-to-br dark:from-[#0f1123] dark:via-[#161836] dark:to-[#0c0d1b] rounded-3xl shadow-xl dark:shadow-2xl border border-gray-100 dark:border-indigo-500/20 overflow-hidden">
+                  {/* Subtle Background Glow (Dark Mode only) */}
+                  <div className="hidden dark:block absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="hidden dark:block absolute bottom-0 left-0 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
                   
                   <div className="relative px-5 py-6 sm:px-6 sm:py-7 lg:p-8 space-y-6">
                     {/* Header */}
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-white/15">
-                      <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-white">
-                        <Receipt className="w-4 h-4 text-white" />
+                    <div className="flex items-center gap-2.5 pb-4 border-b border-gray-100 dark:border-white/15">
+                      <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-white/15 border border-purple-100 dark:border-white/25 flex items-center justify-center text-purple-600 dark:text-white">
+                        <Receipt className="w-4 h-4 text-purple-600 dark:text-white" />
                       </div>
-                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-[0.2em] text-white">
+                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-[0.2em] text-gray-900 dark:text-white">
                         {t.pages.give.summaryTitle}
                       </h3>
                     </div>
@@ -1447,8 +1447,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                     {/* Details Rows */}
                     <div className="space-y-3.5">
                       <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-white font-extrabold">{t.pages.give.summaryType}</span>
-                        <span className="font-black text-xs bg-purple-500/30 text-white border border-purple-400/40 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        <span className="text-gray-600 dark:text-white font-extrabold">{t.pages.give.summaryType}</span>
+                        <span className="font-black text-xs bg-purple-100 dark:bg-purple-500/30 text-purple-800 dark:text-white border border-purple-200 dark:border-purple-400/40 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
