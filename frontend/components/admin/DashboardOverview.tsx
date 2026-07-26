@@ -682,163 +682,271 @@ export default function DashboardOverview({
           </div>
 
           {/* Table contents with beautiful empty state */}
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1">
             {activeContentTab === "Sermons" && (
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
-                    <th className="py-4 px-6">{t.tableTitle}</th>
-                    <th className="py-4 px-6">{t.tableSpeaker}</th>
-                    <th className="py-4 px-6">{t.tableDate}</th>
-                    <th className="py-4 px-6">{t.tableCategory}</th>
-                    <th className="py-4 px-6">{t.tableViews}</th>
-                    <th className="py-4 px-6 text-right">{t.tableActions}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+              <>
+                {/* Mobile Card View (< sm) */}
+                <div className="block sm:hidden p-3 space-y-3">
                   {filteredSermons.slice(0, 4).map((sermon) => (
-                    <tr key={sermon.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                      <td className="py-4 px-6 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md border border-white/10">
-                          {(sermon.title || "SR").substring(0, 2).toUpperCase()}
+                    <div key={sermon.id} className="p-3.5 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/70 dark:border-white/10 rounded-xl space-y-2.5 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md">
+                            {(sermon.title || "SR").substring(0, 2).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="font-extrabold text-xs text-slate-900 dark:text-white truncate">{sermon.title}</h4>
+                            <p className="text-[10px] text-slate-500 dark:text-gray-400">{sermon.pastor || sermon.speaker || "Speaker"}</p>
+                          </div>
                         </div>
-                        <span className="font-extrabold text-slate-900 dark:text-white truncate max-w-[200px]">{sermon.title}</span>
-                      </td>
-                      <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{sermon.pastor || sermon.speaker || (language === "te" ? "ప్రసంగకర్త" : language === "hi" ? "प्रचारक" : "Speaker")}</td>
-                      <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{new Date(sermon.date).toLocaleDateString("en-IN")}</td>
-                      <td className="py-4 px-6">
-                        <span className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.04] text-slate-750 dark:text-gray-300 border border-slate-200 dark:border-white/[0.06] rounded-lg text-[10px] font-bold">{sermon.category}</span>
-                      </td>
-                      <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{sermon.views || 0}</td>
-                      <td className="py-4 px-6 text-right space-x-1 shrink-0 whitespace-nowrap">
-                        <button onClick={() => onNavigate("sermons")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
-                        <button onClick={() => onDeleteSermon(sermon.id)} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/15 inline-flex items-center"><Trash2 className="w-4 h-4" /></button>
-                      </td>
-                    </tr>
+                        <span className="px-2 py-0.5 bg-slate-100 dark:bg-white/[0.04] text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/[0.06] rounded text-[9px] font-bold uppercase shrink-0">
+                          {sermon.category}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-white/5 text-xs text-slate-500">
+                        <span className="text-[10px] font-mono">{new Date(sermon.date).toLocaleDateString("en-IN")} • {sermon.views || 0} views</span>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => onNavigate("sermons")} className="p-1 text-slate-400 hover:text-indigo-600 rounded"><Eye className="w-4 h-4" /></button>
+                          <button onClick={() => onDeleteSermon(sermon.id)} className="p-1 text-slate-400 hover:text-rose-600 rounded"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    </div>
                   ))}
                   {filteredSermons.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="py-4 px-6">
-                        <div className="flex flex-col items-center justify-center py-16 text-center">
-                          <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
-                            <FileText className="w-8 h-8 animate-pulse" />
-                          </div>
-                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">{t.noSermons}</h3>
-                          <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
-                            {language === "te" 
-                              ? "ప్రసంగాలను జోడించడానికి పైన ఉన్న బటన్‌ను క్లిక్ చేయండి." 
-                              : language === "hi" 
-                              ? "उपदेश जोड़ने के लिए ऊपर दिए गए बटन पर क्लिक करें।" 
-                              : "Upload recorded video or audio files of church sermons to build your digital archive."}
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      <FileText className="w-8 h-8 text-indigo-500 mb-2 animate-pulse" />
+                      <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">{t.noSermons}</h3>
+                    </div>
                   )}
-                </tbody>
-              </table>
+                </div>
+
+                {/* Desktop Table View (>= sm) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
+                        <th className="py-4 px-6">{t.tableTitle}</th>
+                        <th className="py-4 px-6">{t.tableSpeaker}</th>
+                        <th className="py-4 px-6">{t.tableDate}</th>
+                        <th className="py-4 px-6">{t.tableCategory}</th>
+                        <th className="py-4 px-6">{t.tableViews}</th>
+                        <th className="py-4 px-6 text-right">{t.tableActions}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+                      {filteredSermons.slice(0, 4).map((sermon) => (
+                        <tr key={sermon.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                          <td className="py-4 px-6 flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold uppercase shrink-0 shadow-md border border-white/10">
+                              {(sermon.title || "SR").substring(0, 2).toUpperCase()}
+                            </div>
+                            <span className="font-extrabold text-slate-900 dark:text-white truncate max-w-[200px]">{sermon.title}</span>
+                          </td>
+                          <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{sermon.pastor || sermon.speaker || (language === "te" ? "ప్రసంగకర్త" : language === "hi" ? "प्रचारक" : "Speaker")}</td>
+                          <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{new Date(sermon.date).toLocaleDateString("en-IN")}</td>
+                          <td className="py-4 px-6">
+                            <span className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.04] text-slate-750 dark:text-gray-300 border border-slate-200 dark:border-white/[0.06] rounded-lg text-[10px] font-bold">{sermon.category}</span>
+                          </td>
+                          <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{sermon.views || 0}</td>
+                          <td className="py-4 px-6 text-right space-x-1 shrink-0 whitespace-nowrap">
+                            <button onClick={() => onNavigate("sermons")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
+                            <button onClick={() => onDeleteSermon(sermon.id)} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/15 inline-flex items-center"><Trash2 className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredSermons.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="py-4 px-6">
+                            <div className="flex flex-col items-center justify-center py-16 text-center">
+                              <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+                                <FileText className="w-8 h-8 animate-pulse" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">{t.noSermons}</h3>
+                              <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
+                                {language === "te" 
+                                  ? "ప్రసంగాలను జోడించడానికి పైన ఉన్న బటన్‌ను క్లిక్ చేయండి." 
+                                  : language === "hi" 
+                                  ? "उपदेश जोड़ने के लिए ऊपर दिए गए बटन पर क्लिक करें।" 
+                                  : "Upload recorded video or audio files of church sermons to build your digital archive."}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
 
             {activeContentTab === "Events" && (
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
-                    <th className="py-4 px-6">{t.tableTitle}</th>
-                    <th className="py-4 px-6">{t.tableLocation}</th>
-                    <th className="py-4 px-6">{t.tableTime}</th>
-                    <th className="py-4 px-6">{t.tableCategory}</th>
-                    <th className="py-4 px-6 text-right">{t.tableActions}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+              <>
+                {/* Mobile Card View (< sm) */}
+                <div className="block sm:hidden p-3 space-y-3">
                   {displayEvents.slice(0, 4).map((evt) => (
-                    <tr key={evt.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                      <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{evt.title}</td>
-                      <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{evt.location}</td>
-                      <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{evt.time}</td>
-                      <td className="py-4 px-6">
-                        <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-750 dark:text-amber-300 rounded-lg text-[10px] font-bold border border-amber-200/50 dark:border-amber-500/20">{evt.category}</span>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <button onClick={() => onNavigate("events")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
-                      </td>
-                    </tr>
+                    <div key={evt.id} className="p-3.5 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/70 dark:border-white/10 rounded-xl space-y-2 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-extrabold text-xs text-slate-900 dark:text-white truncate">{evt.title}</h4>
+                        <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200/50 rounded text-[9px] font-bold uppercase shrink-0">
+                          {evt.category}
+                        </span>
+                      </div>
+
+                      <div className="text-[10px] text-slate-500 dark:text-gray-400 space-y-0.5">
+                        <p>Location: {evt.location}</p>
+                        <p className="font-mono">Time: {evt.time}</p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex justify-end">
+                        <button onClick={() => onNavigate("events")} className="p-1 text-slate-400 hover:text-indigo-600 rounded"><Eye className="w-4 h-4" /></button>
+                      </div>
+                    </div>
                   ))}
                   {displayEvents.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="py-4 px-6">
-                        <div className="flex flex-col items-center justify-center py-16 text-center">
-                          <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4 border border-amber-100 dark:border-amber-500/20 shadow-sm">
-                            <Calendar className="w-8 h-8 animate-pulse" />
-                          </div>
-                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
-                            {language === "te" ? "కార్యక్రమాలు లేవు" : language === "hi" ? "कोई कार्यक्रम नहीं" : "No Events Found"}
-                          </h3>
-                          <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
-                            {language === "te" 
-                              ? "నూతన చర్చి క్యాలెండర్ ఈవెంట్లను షెడ్యూల్ చేయండి." 
-                              : language === "hi" 
-                              ? "नए चर्च कैलेंडर कार्यक्रमों को शेड्यूल करें।" 
-                              : "Schedule upcoming special services, youth events, and community activities."}
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      <Calendar className="w-8 h-8 text-amber-500 mb-2 animate-pulse" />
+                      <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">No Events Found</h3>
+                    </div>
                   )}
-                </tbody>
-              </table>
+                </div>
+
+                {/* Desktop Table View (>= sm) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
+                        <th className="py-4 px-6">{t.tableTitle}</th>
+                        <th className="py-4 px-6">{t.tableLocation}</th>
+                        <th className="py-4 px-6">{t.tableTime}</th>
+                        <th className="py-4 px-6">{t.tableCategory}</th>
+                        <th className="py-4 px-6 text-right">{t.tableActions}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+                      {displayEvents.slice(0, 4).map((evt) => (
+                        <tr key={evt.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                          <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{evt.title}</td>
+                          <td className="py-4 px-6 text-slate-650 dark:text-gray-400">{evt.location}</td>
+                          <td className="py-4 px-6 text-slate-500 dark:text-gray-400">{evt.time}</td>
+                          <td className="py-4 px-6">
+                            <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-750 dark:text-amber-300 rounded-lg text-[10px] font-bold border border-amber-200/50 dark:border-amber-500/20">{evt.category}</span>
+                          </td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => onNavigate("events")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                      {displayEvents.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="py-4 px-6">
+                            <div className="flex flex-col items-center justify-center py-16 text-center">
+                              <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4 border border-amber-100 dark:border-amber-500/20 shadow-sm">
+                                <Calendar className="w-8 h-8 animate-pulse" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                                {language === "te" ? "కార్యక్రమాలు లేవు" : language === "hi" ? "कोई कार्यक्रम नहीं" : "No Events Found"}
+                              </h3>
+                              <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
+                                {language === "te" 
+                                  ? "నూతన చర్చి క్యాలెండర్ ఈవెంట్లను షెడ్యూల్ చేయండి." 
+                                  : language === "hi" 
+                                  ? "नए चर्च कैलेंडर कार्यक्रमों को शेड्यूल करें।" 
+                                  : "Schedule upcoming special services, youth events, and community activities."}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
 
             {activeContentTab === "Announcements" && (
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
-                    <th className="py-4 px-6">{t.tableTitle}</th>
-                    <th className="py-4 px-6">{t.tableContent}</th>
-                    <th className="py-4 px-6">{t.tablePriority}</th>
-                    <th className="py-4 px-6 text-right">{t.tableActions}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+              <>
+                {/* Mobile Card View (< sm) */}
+                <div className="block sm:hidden p-3 space-y-3">
                   {announcements.slice(0, 4).map((anc) => (
-                    <tr key={anc.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                      <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{anc.title}</td>
-                      <td className="py-4 px-6 text-slate-650 dark:text-gray-400 truncate max-w-[200px]">{anc.content}</td>
-                      <td className="py-4 px-6">
-                        <span className={`px-2 py-0.5 rounded text-[8px] font-bold border ${
+                    <div key={anc.id} className="p-3.5 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/70 dark:border-white/10 rounded-xl space-y-2 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-extrabold text-xs text-slate-900 dark:text-white truncate">{anc.title}</h4>
+                        <span className={`px-2 py-0.5 rounded text-[8px] font-bold border shrink-0 ${
                           anc.priority === "HIGH" || anc.priority === "URGENT" 
-                            ? "bg-rose-50 dark:bg-rose-500/10 text-rose-750 dark:text-rose-450 border-rose-100 dark:border-rose-500/20" 
-                            : "bg-slate-50 dark:bg-white/[0.04] text-slate-600 dark:text-gray-400 border-slate-150 dark:border-white/[0.08]"
+                            ? "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-100" 
+                            : "bg-slate-50 dark:bg-white/[0.04] text-slate-600 dark:text-gray-400 border-slate-150"
                         }`}>{anc.priority}</span>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <button onClick={() => onNavigate("announcements")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
-                      </td>
-                    </tr>
+                      </div>
+
+                      <p className="text-xs text-slate-600 dark:text-gray-300 line-clamp-2">{anc.content}</p>
+
+                      <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex justify-end">
+                        <button onClick={() => onNavigate("announcements")} className="p-1 text-slate-400 hover:text-indigo-600 rounded"><Eye className="w-4 h-4" /></button>
+                      </div>
+                    </div>
                   ))}
                   {announcements.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="py-4 px-6">
-                        <div className="flex flex-col items-center justify-center py-16 text-center">
-                          <div className="w-16 h-16 rounded-2xl bg-pink-50 dark:bg-pink-500/10 text-pink-500 flex items-center justify-center mb-4 border border-pink-100 dark:border-pink-500/20 shadow-sm">
-                            <Megaphone className="w-8 h-8 animate-pulse" />
-                          </div>
-                          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
-                            {language === "te" ? "ప్రకటనలు లేవు" : language === "hi" ? "कोई घोषणा नहीं" : "No Announcements Found"}
-                          </h3>
-                          <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
-                            {language === "te" 
-                              ? "నూతన సమాచార ప్రసారాలను ఇక్కడ పోస్ట్ చేయండి." 
-                              : language === "hi" 
-                              ? "नया सूचना प्रसारण यहाँ पोस्ट करें।" 
-                              : "Broadcast important updates, prayer alerts, or general news to all church members."}
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      <Megaphone className="w-8 h-8 text-pink-500 mb-2 animate-pulse" />
+                      <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">No Announcements Found</h3>
+                    </div>
                   )}
-                </tbody>
-              </table>
+                </div>
+
+                {/* Desktop Table View (>= sm) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-white/[0.04] text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
+                        <th className="py-4 px-6">{t.tableTitle}</th>
+                        <th className="py-4 px-6">{t.tableContent}</th>
+                        <th className="py-4 px-6">{t.tablePriority}</th>
+                        <th className="py-4 px-6 text-right">{t.tableActions}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02] text-xs font-semibold text-slate-700 dark:text-gray-300">
+                      {announcements.slice(0, 4).map((anc) => (
+                        <tr key={anc.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                          <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{anc.title}</td>
+                          <td className="py-4 px-6 text-slate-650 dark:text-gray-400 truncate max-w-[200px]">{anc.content}</td>
+                          <td className="py-4 px-6">
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-bold border ${
+                              anc.priority === "HIGH" || anc.priority === "URGENT" 
+                                ? "bg-rose-50 dark:bg-rose-500/10 text-rose-750 dark:text-rose-450 border-rose-100 dark:border-rose-500/20" 
+                                : "bg-slate-50 dark:bg-white/[0.04] text-slate-600 dark:text-gray-400 border-slate-150 dark:border-white/[0.08]"
+                            }`}>{anc.priority}</span>
+                          </td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => onNavigate("announcements")} className="p-1.5 text-slate-450 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.04] inline-flex items-center"><Eye className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                      {announcements.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="py-4 px-6">
+                            <div className="flex flex-col items-center justify-center py-16 text-center">
+                              <div className="w-16 h-16 rounded-2xl bg-pink-50 dark:bg-pink-500/10 text-pink-500 flex items-center justify-center mb-4 border border-pink-100 dark:border-pink-500/20 shadow-sm">
+                                <Megaphone className="w-8 h-8 animate-pulse" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                                {language === "te" ? "ప్రకటనలు లేవు" : language === "hi" ? "कोई घोषणा नहीं" : "No Announcements Found"}
+                              </h3>
+                              <p className="text-xs text-slate-400 dark:text-gray-500 max-w-xs mt-1 leading-relaxed">
+                                {language === "te" 
+                                  ? "నూతన సమాచార ప్రసారాలను ఇక్కడ పోస్ట్ చేయండి." 
+                                  : language === "hi" 
+                                  ? "नया सूचना प्रसारण यहाँ पोस्ट करें।" 
+                                  : "Broadcast important updates, prayer alerts, or general news to all church members."}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
