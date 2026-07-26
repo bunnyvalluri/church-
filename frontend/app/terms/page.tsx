@@ -27,25 +27,34 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { legalTranslations } from "@/lib/legalTranslations";
 
 export default function TermsOfServicePage() {
+  const { language } = useLanguage();
+  const content = legalTranslations[(language as "en" | "te" | "hi") || "en"] || legalTranslations.en;
+  const t = content.terms;
+
   const [activeSection, setActiveSection] = useState("acceptance");
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
 
-  const lastUpdated = "July 26, 2026";
+  const sectionIcons: Record<string, any> = {
+    acceptance: Scale,
+    services: ScrollText,
+    accounts: UserCheck,
+    conduct: Heart,
+    ip: Sparkles,
+    giving: DollarSign,
+    events: Calendar,
+    liability: AlertTriangle,
+    governing: Gavel,
+    changes: Mail,
+  };
 
-  const sections = [
-    { id: "acceptance", label: "1. Acceptance of Terms", icon: Scale },
-    { id: "services", label: "2. Ministry Portal & Services", icon: ScrollText },
-    { id: "accounts", label: "3. User Registration & Security", icon: UserCheck },
-    { id: "conduct", label: "4. Community Guidelines & Conduct", icon: Heart },
-    { id: "ip", label: "5. Intellectual Property & Media", icon: Sparkles },
-    { id: "giving", label: "6. Online Giving & Tithes", icon: DollarSign },
-    { id: "events", label: "7. Events & Registrations", icon: Calendar },
-    { id: "liability", label: "8. Disclaimers & Liability", icon: AlertTriangle },
-    { id: "governing", label: "9. Governing Law & Disputes", icon: Gavel },
-    { id: "changes", label: "10. Changes to Terms & Contact", icon: Mail },
-  ];
+  const sections = t.sections.map((sec) => ({
+    ...sec,
+    icon: sectionIcons[sec.id] || Scale,
+  }));
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
@@ -70,31 +79,31 @@ export default function TermsOfServicePage() {
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 dark:bg-white/10 dark:hover:bg-white/20 text-white text-xs font-semibold border border-white/25 backdrop-blur-md transition-all shadow-sm active:scale-95 cursor-pointer"
             >
               <Printer className="w-4 h-4 text-white shrink-0" />
-              <span>Print / Save PDF</span>
+              <span>{t.printBtn}</span>
             </button>
           </div>
 
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 dark:bg-purple-500/20 border border-white/25 dark:border-purple-500/40 text-white dark:text-purple-300 text-[11px] sm:text-xs font-semibold tracking-wide uppercase mb-3 shadow-xs">
-              <Scale className="w-3.5 h-3.5 text-white shrink-0" /> Governance & Agreement
+              <Scale className="w-3.5 h-3.5 text-white shrink-0" /> {t.heroBadge}
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight mb-3">
-              Terms of Service
+              {t.title}
             </h1>
 
             <p className="text-purple-100 dark:text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed mb-5">
-              Welcome to Kingdom of Christ Ministries. These Terms govern your access to and use of our web portal, mobile features, online giving, prayer requests, and church events.
+              {t.subtitle}
             </p>
 
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-[11px] sm:text-xs text-purple-100 dark:text-slate-400">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white dark:text-slate-200 font-medium">
                 <Clock className="w-3.5 h-3.5 text-white shrink-0" />
-                Effective Date: <strong className="text-white dark:text-slate-100 ml-1">{lastUpdated}</strong>
+                {t.effectiveDate} <strong className="text-white dark:text-slate-100 ml-1">{t.effectiveDateVal}</strong>
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white dark:text-slate-200 font-medium">
                 <Gavel className="w-3.5 h-3.5 text-indigo-200 dark:text-indigo-400 shrink-0" />
-                Legally Binding Agreement
+                {t.bindingBadge}
               </span>
             </div>
           </div>
@@ -112,7 +121,7 @@ export default function TermsOfServicePage() {
             >
               <div className="flex items-center gap-2.5">
                 <ScrollText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <span>Jump to Section ({sections.length} Topics)</span>
+                <span>{t.jumpToSection} ({sections.length} {t.topicsCount})</span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isMobileTocOpen ? "rotate-180" : ""}`} />
             </button>
@@ -149,7 +158,7 @@ export default function TermsOfServicePage() {
             <aside className="hidden lg:block lg:col-span-4 xl:col-span-3">
               <div className="sticky top-28 space-y-4 p-5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 backdrop-blur-xl shadow-xl dark:shadow-2xl">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-3 pb-2 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-                  <span>Table of Contents</span>
+                  <span>{t.tocTitle}</span>
                   <ScrollText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 </h3>
 
@@ -177,16 +186,16 @@ export default function TermsOfServicePage() {
                 <div className="pt-4 border-t border-slate-200 dark:border-white/10 mt-4 space-y-3">
                   <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40 text-xs text-purple-900 dark:text-purple-200">
                     <p className="font-semibold mb-1 flex items-center gap-1.5 text-purple-800 dark:text-purple-300">
-                      <HelpCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Need Legal Clarification?
+                      <HelpCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> {t.questionsTitle}
                     </p>
                     <p className="text-[11px] text-purple-700 dark:text-purple-300/80 leading-relaxed mb-2">
-                      Reach out to our administration team regarding terms or agreements.
+                      {t.questionsDesc}
                     </p>
                     <a
-                      href="mailto:legal@kcmministries.org"
+                      href={`mailto:${t.emailDesk}`}
                       className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-white hover:underline"
                     >
-                      legal@kcmministries.org <ExternalLink className="w-3 h-3" />
+                      {t.emailDesk} <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
                 </div>
@@ -201,15 +210,15 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <Scale className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">1. Acceptance of Terms</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec1Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  By accessing, browsing, or registering an account on the <strong>Kingdom of Christ Ministries (&quot;KCM&quot;)</strong> platform (including <code>kcm-portal.vercel.app</code> and associated subdomains), you confirm that you have read, understood, and agree to be bound by these Terms of Service, along with our <Link href="/privacy" className="text-purple-600 dark:text-purple-400 underline font-medium">Privacy Policy</Link>.
+                  {t.sec1Text1}
                 </p>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  If you do not agree to these Terms, please do not use our website or portal services.
+                  {t.sec1Text2}
                 </p>
               </section>
 
@@ -219,29 +228,29 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <ScrollText className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">2. Ministry Portal Scope & Services</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec2Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  KCM provides digital services for church members, visitors, and volunteers, including but not limited to:
+                  {t.sec2Intro}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>Church membership portal & member directory access</span>
+                    <span>{t.sec2Item1}</span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>Sunday service timings, live stream links & sermon archives</span>
+                    <span>{t.sec2Item2}</span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>Online prayer request submission & pastoral care tracking</span>
+                    <span>{t.sec2Item3}</span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>Online tithes, offerings, building fund & NGO donations</span>
+                    <span>{t.sec2Item4}</span>
                   </div>
                 </div>
               </section>
@@ -252,25 +261,25 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">3. User Registration & Security Responsibilities</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec3Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  When creating an account on the KCM Portal:
+                  {t.sec3Intro}
                 </p>
 
                 <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>You agree to provide accurate, current, and truthful registration information.</span>
+                    <span>{t.sec3Item1}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>You are solely responsible for keeping your login password confidential and secure.</span>
+                    <span>{t.sec3Item2}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                    <span>You must immediately notify KCM administration of any unauthorized account access or security breach.</span>
+                    <span>{t.sec3Item3}</span>
                   </li>
                 </ul>
               </section>
@@ -281,22 +290,22 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 dark:text-rose-400" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">4. Community Guidelines & Conduct</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec4Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  KCM is a house of prayer and spiritual growth. All users agree to treat fellow members, pastors, and leaders with Christ-like love, dignity, and respect.
+                  {t.sec4Intro}
                 </p>
 
                 <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40 text-rose-900 dark:text-rose-200 text-xs sm:text-sm space-y-2">
-                  <strong className="text-rose-950 dark:text-white block font-semibold flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Prohibited Portal Conduct:
+                  <strong className="text-rose-950 dark:text-white font-semibold flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400" /> {t.sec4BadgeTitle}
                   </strong>
                   <ul className="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300 text-xs">
-                    <li>Posting profane, hateful, harassing, or discriminatory content.</li>
-                    <li>Submitting false or malicious prayer requests intended to deceive.</li>
-                    <li>Attempting unauthorized administrative access to member records or pastor dashboards.</li>
-                    <li>Using the portal directory for unsolicited commercial advertising or spamming.</li>
+                    <li>{t.sec4Item1}</li>
+                    <li>{t.sec4Item2}</li>
+                    <li>{t.sec4Item3}</li>
+                    <li>{t.sec4Item4}</li>
                   </ul>
                 </div>
               </section>
@@ -307,15 +316,15 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">5. Intellectual Property & Media</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec5Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  All logos, sermon videos, audio recordings, devotionals, photography, text, graphics, and software code on this website are the intellectual property of <strong>Kingdom of Christ Ministries</strong>.
+                  {t.sec5Text1}
                 </p>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
-                  You may view, listen to, and share sermon content for personal, non-commercial, and devotional use. Commercial reproduction, broadcast, or modification without prior written authorization from KCM is strictly prohibited.
+                  {t.sec5Text2}
                 </p>
               </section>
 
@@ -325,22 +334,22 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">6. Online Giving, Tithes & Donation Policy</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec6Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  Kingdom of Christ Ministries accepts tithes, free-will offerings, building fund contributions, and charitable NGO donations through verified payment partners (e.g., Razorpay / Stripe).
+                  {t.sec6Intro}
                 </p>
 
                 <div className="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
-                    <strong className="text-slate-900 dark:text-white">Voluntary Contributions:</strong> All donations are voluntary acts of worship and charitable support.
+                    <strong className="text-slate-900 dark:text-white">{t.sec6Box1Title}</strong> {t.sec6Box1Text}
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
-                    <strong className="text-slate-900 dark:text-white">Tax Receipts & 80G:</strong> Official receipts for tax deductions are issued electronically following successful payment confirmation.
+                    <strong className="text-slate-900 dark:text-white">{t.sec6Box2Title}</strong> {t.sec6Box2Text}
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
-                    <strong className="text-slate-900 dark:text-white">Refund Policy:</strong> Tithes and offerings are generally non-refundable once processed. In the event of a technical duplicate charge, please contact <a href="mailto:finance@kcmministries.org" className="text-purple-600 dark:text-purple-300 font-medium underline">finance@kcmministries.org</a> within 7 days.
+                    <strong className="text-slate-900 dark:text-white">{t.sec6Box3Title}</strong> {t.sec6Box3Text}
                   </div>
                 </div>
               </section>
@@ -351,11 +360,11 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">7. Church Events & Registrations</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec7Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  When registering for special church conventions, youth retreats, or baptism services, attendees are expected to adhere to event venue safety rules, check-in procedures, and volunteer guidance.
+                  {t.sec7Text}
                 </p>
               </section>
 
@@ -365,11 +374,11 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">8. Disclaimers & Limitation of Liability</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec8Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  The KCM Portal is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis without warranties of any kind. While we strive for 100% uptime and data accuracy, KCM is not liable for temporary service interruptions, network delays, or third-party payment gateway failures.
+                  {t.sec8Text}
                 </p>
               </section>
 
@@ -379,11 +388,11 @@ export default function TermsOfServicePage() {
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 flex items-center justify-center shrink-0">
                     <Gavel className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">9. Governing Law & Jurisdiction</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec9Title}</h2>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-base">
-                  These Terms of Service are governed by and construed in accordance with the laws of <strong>India</strong> (Telangana jurisdiction). Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the courts in Hyderabad, Telangana.
+                  {t.sec9Text}
                 </p>
               </section>
 
@@ -394,32 +403,32 @@ export default function TermsOfServicePage() {
                     <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-200" />
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">10. Modifications & Contact Details</h2>
-                    <p className="text-[11px] sm:text-xs text-purple-700 dark:text-purple-200/80 font-medium">Kingdom of Christ Ministries — Legal & Pastoral Administration</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">{t.sec10Title}</h2>
+                    <p className="text-[11px] sm:text-xs text-purple-700 dark:text-purple-200/80 font-medium">{t.sec10Subtitle}</p>
                   </div>
                 </div>
 
                 <p className="text-slate-700 dark:text-slate-200 text-xs sm:text-base leading-relaxed">
-                  KCM reserves the right to modify these Terms at any time. Continued usage of the platform following updates constitutes acceptance of the modified Terms.
+                  {t.sec10Intro}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs">
                   <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-white/10 space-y-1 shadow-xs">
                     <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 mb-1" />
-                    <strong className="text-slate-900 dark:text-white block font-semibold">Church Office Address</strong>
-                    <span className="text-slate-600 dark:text-slate-300">Jeedimetla, Hyderabad, Telangana 500055, India</span>
+                    <strong className="text-slate-900 dark:text-white block font-semibold">{t.sec10Box1Title}</strong>
+                    <span className="text-slate-600 dark:text-slate-300">{t.sec10Box1Text}</span>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-white/10 space-y-1 shadow-xs">
                     <Mail className="w-4 h-4 text-purple-600 dark:text-purple-400 mb-1" />
-                    <strong className="text-slate-900 dark:text-white block font-semibold">Legal Enquiries</strong>
-                    <a href="mailto:legal@kcmministries.org" className="text-purple-600 dark:text-purple-300 font-medium hover:underline">legal@kcmministries.org</a>
+                    <strong className="text-slate-900 dark:text-white block font-semibold">{t.sec10Box2Title}</strong>
+                    <a href={`mailto:${t.emailDesk}`} className="text-purple-600 dark:text-purple-300 font-medium hover:underline">{t.emailDesk}</a>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-white/10 space-y-1 shadow-xs">
                     <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 mb-1" />
-                    <strong className="text-slate-900 dark:text-white block font-semibold">Administration Office</strong>
-                    <a href="tel:+919876543210" className="text-slate-600 dark:text-slate-300 hover:underline">+91 98765 43210</a>
+                    <strong className="text-slate-900 dark:text-white block font-semibold">{t.sec10Box3Title}</strong>
+                    <a href={`tel:${t.phone.replace(/\s+/g, '')}`} className="text-slate-600 dark:text-slate-300 hover:underline">{t.phone}</a>
                   </div>
                 </div>
               </section>
