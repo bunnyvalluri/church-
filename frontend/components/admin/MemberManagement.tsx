@@ -160,7 +160,7 @@ export default function MemberManagement({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300 min-w-0 w-full">
+    <div className="space-y-4 sm:space-y-6 min-w-0 w-full">
       
       {/* ─── Top Overview Metric Bar ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

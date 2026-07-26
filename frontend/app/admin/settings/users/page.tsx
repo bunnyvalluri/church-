@@ -15,7 +15,8 @@ export default function UserAccountsSettingsPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const token = await getIdToken();
+      const tokenPromise = getIdToken();
+      const token = await tokenPromise;
       const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await fetch("/api/admin/users", { headers });
       const result = await res.json();
