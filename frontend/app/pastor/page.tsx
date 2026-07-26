@@ -1,6 +1,5 @@
-import PastorDashboard from "@/components/pastor/PastorDashboard";
+import PastorDashboardPage from "./dashboard/page";
 
-export default function PastorDashboardPage() {
-  return <PastorDashboard />;
+export default function PastorRootPage() {
+  return <PastorDashboardPage />;
 }
-

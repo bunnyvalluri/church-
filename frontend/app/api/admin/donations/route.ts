@@ -170,7 +170,7 @@ export async function PATCH(req: Request) {
   }
 }
 
-// ─── DELETE: Remove a donation record ────────────────────────────────────────
+// ─── DELETE: Remove a donation record or purge all fake/test transactions ─────
 export async function DELETE(req: Request) {
   const auth = await requireAdminOrDev(req);
   if (auth instanceof NextResponse) return auth;
@@ -178,6 +178,39 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const donationId = searchParams.get('id');
+    const cleanAllFake = searchParams.get('cleanAllFake') === 'true' || searchParams.get('purge') === 'true';
+
+    if (cleanAllFake) {
+      const deletedDonations = await prisma.donation.deleteMany({
+        where: {
+          OR: [
+            { amount: { lte: 10 } },
+            { status: 'PENDING' },
+            { status: 'FAILED' },
+            { id: { startsWith: 'don_' } },
+            { donorName: { in: ['Church Member', 'Emmanuel Reddy', 'Anonymous Donor', 'Mary Sunitha', 'John Babu', 'Grace Priya', 'Anonymous Giver', 'Test User', 'Bunny', 'Rahul Gamer', 'valluri Rahul'] } }
+          ]
+        }
+      });
+
+      // Also clean associated donation sessions
+      try {
+        await prisma.donationSession.deleteMany({
+          where: {
+            OR: [
+              { amount: { lte: 10 } },
+              { status: { in: ['PENDING', 'FAILED', 'EXPIRED'] } }
+            ]
+          }
+        });
+      } catch (e) {}
+
+      return NextResponse.json({
+        success: true,
+        message: `Successfully purged ${deletedDonations.count} test/fake donation records.`,
+        deletedCount: deletedDonations.count
+      });
+    }
 
     if (!donationId) {
       return NextResponse.json({ error: 'Donation ID is required' }, { status: 400 });

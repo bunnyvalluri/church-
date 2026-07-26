@@ -198,6 +198,25 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
 
   const formatINR = (n: number) => `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 0 })}`;
 
+  const handlePurgeFake = async () => {
+    if (!confirm("Are you sure you want to remove all fake and test transactions from the database?")) return;
+    try {
+      setLoading(true);
+      const res = await fetch("/api/admin/donations?cleanAllFake=true", { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        triggerToast(data.message || "All fake transactions removed!", "success");
+        fetchDonations();
+      } else {
+        triggerToast(data.error || "Failed to purge transactions", "error");
+      }
+    } catch (err) {
+      triggerToast("Error removing transactions", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
 
@@ -215,8 +234,16 @@ export default function DonationsView({ triggerToast }: DonationsViewProps) {
             onClick={() => fetchDonations()}
             disabled={loading}
             className="p-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-500 hover:text-[#6366F1] transition-all"
+            title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          </button>
+          <button
+            onClick={handlePurgeFake}
+            className="px-3 py-2 bg-rose-600/10 hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 text-xs font-bold rounded-xl transition-all"
+            title="Purge all test/fake records"
+          >
+            Clear Test Records
           </button>
           <button
             onClick={exportCSV}

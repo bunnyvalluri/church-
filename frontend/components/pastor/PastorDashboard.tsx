@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { 
   Users, 
@@ -235,6 +235,7 @@ export default function PastorDashboard() {
   const { user, status, logout } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname() || "";
 
   // Active navigation tab
   const [activeNav, setActiveNav] = useState("Dashboard");
@@ -331,7 +332,7 @@ export default function PastorDashboard() {
   });
 
   useEffect(() => {
-    // Parse URL queries for tabs
+    // Parse URL queries or pathname for tabs
     const tab = searchParams.get("tab");
     if (tab) {
       if (tab.startsWith("ngo-")) {
@@ -342,8 +343,45 @@ export default function PastorDashboard() {
         const formatted = tab.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
         setActiveNav(formatted);
       }
+    } else if (pathname && pathname !== "/pastor") {
+      const path = pathname.replace(/^\/pastor\/?/, "");
+      const segments = path.split("/").filter(Boolean);
+      const lastSegment = segments[segments.length - 1];
+
+      const pathToNavMap: Record<string, string> = {
+        "dashboard": "Dashboard",
+        "sermons": "Sermons",
+        "donations": "Donations",
+        "member-requests": "Member Requests",
+        "prayer-requests": "Prayer Requests",
+        "events": "Events",
+        "messages": "Messages",
+        "bible-study-groups": "Bible Study Groups",
+        "small-groups": "Small Groups",
+        "volunteers": "Volunteers",
+        "projects": "NGO Projects",
+        "media": "NGO Media",
+        "ngo-volunteers": "NGO Volunteers",
+        "attendance": "Attendance Reports",
+        "members": "Member Reports",
+        "finance": "Financial Reports",
+        "growth": "Growth Reports",
+        "calendar": "Calendar",
+        "gallery": "Photo Gallery",
+        "videos": "Video Archives",
+        "documents": "Document Library",
+        "profile": "Profile",
+        "general": "General Settings",
+        "security": "Security",
+        "notifications": "Notifications",
+        "preferences": "Preferences"
+      };
+
+      if (lastSegment && pathToNavMap[lastSegment]) {
+        setActiveNav(pathToNavMap[lastSegment]);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, pathname]);
 
   // Handle clicking outside the "+ New" dropdown to close it
   useEffect(() => {
@@ -1083,12 +1121,77 @@ export default function PastorDashboard() {
             ))}
           </div>
 
-          {/* SETTINGS SECTION */}
+          {/* REPORTS SECTION */}
           <div className="space-y-1">
-            <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">SETTINGS</h4>
+            <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">REPORTS</h4>
             {[
-              { name: "Profile", icon: Settings },
-              { name: "Church Settings", icon: Settings }
+              { name: "Attendance Reports", icon: Activity },
+              { name: "Member Reports", icon: Users },
+              { name: "Financial Reports", icon: IndianRupee },
+              { name: "Growth Reports", icon: TrendingUp }
+            ].map(item => (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => {
+                  setActiveNav(item.name);
+                  if (onLinkClick) onLinkClick();
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
+                  activeNav === item.name 
+                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
+                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
+                }`}
+              >
+                {activeNav === item.name && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
+                )}
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                {item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* CALENDAR & MEDIA */}
+          <div className="space-y-1">
+            <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">CALENDAR & MEDIA</h4>
+            {[
+              { name: "Calendar", icon: Calendar },
+              { name: "Photo Gallery", icon: ImageIcon },
+              { name: "Video Archives", icon: Play },
+              { name: "Document Library", icon: FileText }
+            ].map(item => (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => {
+                  setActiveNav(item.name);
+                  if (onLinkClick) onLinkClick();
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden group ${
+                  activeNav === item.name 
+                    ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/15 dark:to-purple-500/15 text-[#6366F1] dark:text-indigo-400 border border-indigo-500/20 dark:border-indigo-500/30 font-black shadow-sm" 
+                    : "hover:bg-indigo-50/50 dark:hover:bg-white/5 text-slate-650 dark:text-gray-400 hover:text-[#6366F1] dark:hover:text-white"
+                }`}
+              >
+                {activeNav === item.name && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-[#6366F1] dark:bg-indigo-400 rounded-r-full" />
+                )}
+                <item.icon className="w-4.5 h-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110" strokeWidth={activeNav === item.name ? 1.85 : 1.5} />
+                {item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* SETTINGS & PROFILE */}
+          <div className="space-y-1">
+            <h4 className="text-[10px] font-bold text-gray-500 tracking-wider uppercase px-4 mb-2">SETTINGS & PROFILE</h4>
+            {[
+              { name: "Profile", icon: UserCheck },
+              { name: "General Settings", icon: Settings },
+              { name: "Security", icon: ShieldCheck },
+              { name: "Notifications", icon: Bell },
+              { name: "Preferences", icon: Settings }
             ].map(item => (
               <button
                 key={item.name}
@@ -1161,7 +1264,7 @@ export default function PastorDashboard() {
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-50/30 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300 pb-28 lg:pb-0">
+    <div className="h-screen max-h-screen flex bg-slate-50/30 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300">
       {/* Ambient Premium Glow Background */}
       <div className="premium-glow-bg" />
       
@@ -1227,9 +1330,9 @@ export default function PastorDashboard() {
         })}
       </nav>
 
-      <main className="flex-1 flex flex-col overflow-y-auto max-h-screen custom-scrollbar bg-slate-50/40 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 transition-colors duration-300 relative z-10">
+      <main className="flex-1 flex flex-col min-h-0 overflow-y-auto custom-scrollbar bg-slate-50/40 dark:bg-[#05060e] text-[#1E293B] dark:text-gray-200 transition-colors duration-300 relative z-10">
         {/* Main Top Header */}
-        <header className="h-auto py-3 sm:h-20 sm:py-0 bg-white/90 dark:bg-[#070814]/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/[0.06] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-30 transition-all duration-300">
+        <header className="h-auto py-3 sm:h-20 sm:py-0 bg-white/90 dark:bg-[#070814]/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/[0.06] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0 transition-all duration-300">
           <div className="flex items-center min-w-0 pr-2">
             <button
               type="button"
@@ -1451,7 +1554,7 @@ export default function PastorDashboard() {
         </div>
 
         {/* Dynamic Views Switcher */}
-        <div className="pastor-body-padding space-y-6 sm:space-y-8 flex-1">
+        <div className="pastor-body-padding space-y-6 sm:space-y-8 flex-1 pb-28 lg:pb-8">
           
           {/* TAB 1: DASHBOARD VIEW */}
           {activeNav === "Dashboard" && (
@@ -2744,6 +2847,98 @@ export default function PastorDashboard() {
                   <Save className="w-4 h-4" /> Save Configurations
                 </button>
               </form>
+            </div>
+          )}
+
+          {/* REPORTS VIEWS */}
+          {(activeNav === "Attendance Reports" || activeNav === "Member Reports" || activeNav === "Financial Reports" || activeNav === "Growth Reports") && (
+            <div className="admin-card p-6 space-y-6 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between border-b admin-divider pb-4">
+                <div>
+                  <h2 className="admin-title text-base">{activeNav}</h2>
+                  <p className="admin-subtitle mt-1">Ministry metrics, trends, and analytical insights</p>
+                </div>
+                <button type="button" onClick={() => triggerToast("Report exported successfully!", "success")} className="admin-btn-ghost flex items-center gap-1.5 text-xs font-bold">
+                  <Download className="w-4 h-4" /> Export Report
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-4 rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-500/10">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Average Weekly Metric</span>
+                  <h4 className="text-xl font-black text-slate-800 dark:text-white mt-1">845 Active</h4>
+                  <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">▲ +12.4% vs last month</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-500/10">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Retention Rate</span>
+                  <h4 className="text-xl font-black text-slate-800 dark:text-white mt-1">94.2%</h4>
+                  <span className="text-[10px] text-purple-500 font-bold block mt-0.5">Consistent engagement</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-500/10">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Growth Index</span>
+                  <h4 className="text-xl font-black text-slate-800 dark:text-white mt-1">High Growth</h4>
+                  <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">Top tier performance</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MEDIA VIEWS */}
+          {(activeNav === "Photo Gallery" || activeNav === "Video Archives" || activeNav === "Document Library") && (
+            <div className="admin-card p-6 space-y-6 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between border-b admin-divider pb-4">
+                <div>
+                  <h2 className="admin-title text-base">{activeNav}</h2>
+                  <p className="admin-subtitle mt-1">Manage public and internal ministry media resources</p>
+                </div>
+                <button type="button" onClick={() => triggerToast("Media upload opened", "info")} className="px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
+                  <Plus className="w-4 h-4" /> Upload Resource
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 space-y-3">
+                    <div className="h-32 rounded-xl bg-slate-200 dark:bg-white/5 flex items-center justify-center text-slate-400">
+                      <ImageIcon className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-800 dark:text-white">Ministry Resource #{i}</h4>
+                      <p className="text-[10px] text-gray-400 mt-0.5">Uploaded recently • 12.4 MB</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SETTINGS SUB VIEWS */}
+          {(activeNav === "General Settings" || activeNav === "Security" || activeNav === "Notifications" || activeNav === "Preferences") && (
+            <div className="admin-card p-6 space-y-6 max-w-2xl mx-auto animate-in fade-in duration-200">
+              <div className="border-b admin-divider pb-4">
+                <h2 className="admin-title text-base">{activeNav}</h2>
+                <p className="admin-subtitle mt-1">Configure your personal and security preferences</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">Two-Factor Authentication</h4>
+                    <p className="text-[10px] text-gray-400 mt-0.5">Secure your pastor account credentials</p>
+                  </div>
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#6366F1]" />
+                </div>
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">Email Notification Digest</h4>
+                    <p className="text-[10px] text-gray-400 mt-0.5">Receive daily summaries of member requests</p>
+                  </div>
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#6366F1]" />
+                </div>
+                <button type="button" onClick={() => triggerToast("Preferences updated!", "success")} className="px-5 py-2.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl text-xs font-bold">
+                  Save Changes
+                </button>
+              </div>
             </div>
           )}
 
