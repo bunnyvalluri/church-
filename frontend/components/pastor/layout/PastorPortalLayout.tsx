@@ -57,7 +57,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
   ];
 
   return (
-    <div className="h-screen max-h-screen flex bg-slate-50/40 dark:bg-[#05060e] text-slate-900 dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300">
+    <div className="h-[100dvh] max-h-[100dvh] flex bg-slate-50/40 dark:bg-[#05060e] text-slate-900 dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300">
       {/* Background Glow */}
       <div className="premium-glow-bg pointer-events-none" />
 
@@ -70,7 +70,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
       />
 
       {/* Mobile Fixed Bottom Navigation Bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-between px-1.5 py-2 transition-all duration-300">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#070814]/95 backdrop-blur-2xl border-t border-slate-200/80 dark:border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.12)] flex items-center justify-between px-1.5 py-2 transition-all duration-300 pb-[env(safe-area-inset-bottom,8px)]">
         {mobileBottomNavItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/pastor/dashboard" && pathname.startsWith(item.href));
           return (
@@ -98,7 +98,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
         <PastorHeader onToggleMobileSidebar={() => setIsMobileOpen(true)} />
 
         {/* Page Content Container with bottom padding for mobile bar */}
-        <div className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-[1920px] w-full mx-auto space-y-6 pb-28 lg:pb-8">
+        <div className="flex-1 p-3 sm:p-6 lg:p-8 max-w-[1920px] w-full mx-auto space-y-6 pb-28 lg:pb-8">
           {children}
         </div>
       </main>

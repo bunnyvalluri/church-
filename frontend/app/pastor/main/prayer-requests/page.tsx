@@ -472,12 +472,12 @@ export default function PastorPrayerRequestsPage() {
                 </div>
 
                 {/* Suggested Scripture */}
-                <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-500/10 dark:border-indigo-500/20 text-indigo-950 dark:text-indigo-200 p-5 rounded-2xl space-y-2">
+                <div className="bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-indigo-500/15 dark:from-indigo-950/60 dark:to-purple-950/60 border border-indigo-500/20 dark:border-indigo-500/30 text-indigo-950 dark:text-indigo-100 p-5 rounded-2xl space-y-2 shadow-sm">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#6366F1] dark:text-indigo-400 shrink-0" />
-                    <h3 className="font-extrabold text-xs">Suggested Intercession Scripture</h3>
+                    <BookOpen className="w-4.5 h-4.5 text-[#6366F1] dark:text-indigo-400 shrink-0" />
+                    <h3 className="font-black text-xs text-indigo-950 dark:text-indigo-100">Suggested Intercession Scripture</h3>
                   </div>
-                  <p className="text-xs leading-relaxed italic font-bold">
+                  <p className="text-xs leading-relaxed italic font-bold text-indigo-900 dark:text-indigo-200">
                     &quot;{getVerseSuggestion(selectedPrayer.category)}&quot;
                   </p>
                 </div>
