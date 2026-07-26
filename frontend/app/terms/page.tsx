@@ -69,20 +69,14 @@ export default function TermsOfServicePage() {
               onClick={handlePrint}
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 dark:bg-white/10 dark:hover:bg-white/20 text-white text-xs font-semibold border border-white/25 backdrop-blur-md transition-all shadow-sm active:scale-95 cursor-pointer"
             >
-              <Printer className="w-3.5 h-3.5 text-purple-200 dark:text-purple-400" />
+              <Printer className="w-4 h-4 text-white shrink-0" />
               <span>Print / Save PDF</span>
             </button>
           </div>
 
           <div className="max-w-3xl">
-            {/* Featured Glowing Hero Icon Emblem */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-2xl shadow-purple-900/40 mb-4 relative group">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-purple-400 to-indigo-300 opacity-30 blur-md group-hover:opacity-60 transition-opacity" />
-              <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10 drop-shadow-md" />
-            </div>
-
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 dark:bg-purple-500/20 border border-white/25 dark:border-purple-500/40 text-white dark:text-purple-300 text-[11px] sm:text-xs font-semibold tracking-wide uppercase mb-3 shadow-xs">
-              <Scale className="w-3 h-3" /> Governance & Agreement
+              <Scale className="w-3.5 h-3.5 text-white shrink-0" /> Governance & Agreement
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight mb-3">
@@ -95,7 +89,7 @@ export default function TermsOfServicePage() {
 
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 text-[11px] sm:text-xs text-purple-100 dark:text-slate-400">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white dark:text-slate-200 font-medium">
-                <Clock className="w-3.5 h-3.5 text-purple-200 dark:text-purple-400 shrink-0" />
+                <Clock className="w-3.5 h-3.5 text-white shrink-0" />
                 Effective Date: <strong className="text-white dark:text-slate-100 ml-1">{lastUpdated}</strong>
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white dark:text-slate-200 font-medium">
