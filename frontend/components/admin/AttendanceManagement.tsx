@@ -500,7 +500,7 @@ export default function AttendanceManagement({
           {/* Desktop Table View (Hidden on mobile) */}
           <div className="hidden md:block border border-slate-200/70 dark:border-white/[0.06] bg-white dark:bg-[#121324]/60 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[750px]">
+              <table className="w-full text-left border-collapse whitespace-nowrap min-w-[750px]">
                 <thead>
                   <tr className="border-b border-slate-200/70 dark:border-white/[0.06] text-[11px] font-extrabold text-slate-500 dark:text-gray-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                     <th className="py-4 px-6">{t.attendance.serviceDate}</th>

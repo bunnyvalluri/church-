@@ -266,8 +266,48 @@ export default function ContentManagement({
       {/* ────────────────── SUB-VIEW: SERMONS ────────────────── */}
       {subView === "sermons" && (
         <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+          {/* Mobile Card View (< sm) */}
+          <div className="block sm:hidden divide-y divide-slate-100 dark:divide-white/[0.04] p-3 space-y-3">
+            {sermons.filter(s => s.title.toLowerCase().includes(search.toLowerCase())).map((sermon) => (
+              <div key={sermon.id} className="p-4 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center shrink-0">
+                      <Play className="w-4 h-4 fill-current" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1">{sermon.title}</h4>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">{formatDate(sermon.date)}</span>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 rounded text-[9px] font-bold border border-indigo-200 dark:border-indigo-500/20 uppercase shrink-0">
+                    {getSermonCategoryTranslation(sermon.category)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-white/5 text-xs">
+                  <div className="flex items-center gap-2">
+                    {getPreacherAvatar(sermon.pastor || sermon.speaker || "Pastor John")}
+                    <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">{getPreacherTranslation(sermon.pastor || sermon.speaker || "Pastor John")}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] font-semibold text-slate-500">{sermon.views || 0} views</span>
+                    <button 
+                      onClick={() => onDeleteSermon(sermon.id)} 
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                      title="Delete Sermon"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (>= sm) */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                   <th className="py-4 px-6">{t.content?.tableTitle || "Title"}</th>
@@ -322,8 +362,42 @@ export default function ContentManagement({
       {/* ────────────────── SUB-VIEW: EVENTS ────────────────── */}
       {subView === "events" && (
         <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+          {/* Mobile Card View (< sm) */}
+          <div className="block sm:hidden p-3 space-y-3">
+            {events.filter(e => e.title.toLowerCase().includes(search.toLowerCase())).map((evt) => (
+              <div key={evt.id} className="p-4 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl space-y-2.5 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <h4 className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1">{evt.title}</h4>
+                  <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded text-[9px] font-bold border border-amber-200 dark:border-amber-500/20 uppercase shrink-0">
+                    {getEventCategoryTranslation(evt.category)}
+                  </span>
+                </div>
+
+                <div className="space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
+                  <p><strong className="text-slate-500">Location:</strong> {getLocationTranslation(evt.location)}</p>
+                  <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 font-mono">
+                    <span>{formatDate(evt.date)}</span>
+                    <span>•</span>
+                    <span>{evt.time}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex justify-end">
+                  <button 
+                    onClick={() => onDeleteEvent(evt.id)} 
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                    title="Delete Event"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (>= sm) */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                   <th className="py-4 px-6">{t.content?.tableTitle || "Title"}</th>
@@ -366,8 +440,38 @@ export default function ContentManagement({
       {/* ────────────────── SUB-VIEW: ANNOUNCEMENTS ────────────────── */}
       {subView === "announcements" && (
         <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+          {/* Mobile Card View (< sm) */}
+          <div className="block sm:hidden p-3 space-y-3">
+            {announcements.filter(a => a.title.toLowerCase().includes(search.toLowerCase())).map((anc) => (
+              <div key={anc.id} className="p-4 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl space-y-2.5 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <h4 className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1">{anc.title}</h4>
+                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold uppercase border shrink-0 ${
+                    anc.priority === "HIGH" || anc.priority === "URGENT" 
+                      ? "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30" 
+                      : "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10"
+                  }`}>{getPriorityTranslation(anc.priority)}</span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">{anc.content}</p>
+
+                <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                  <span>{formatDate(anc.createdAt)}</span>
+                  <button 
+                    onClick={() => onDeleteAnnouncement(anc.id)} 
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                    title="Delete Announcement"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (>= sm) */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                   <th className="py-4 px-6">{t.content?.tableTitle || "Title"}</th>
@@ -406,6 +510,7 @@ export default function ContentManagement({
           </div>
         </div>
       )}
+
 
       {/* ────────────────── SUB-VIEW: MEDIA LIBRARY ────────────────── */}
       {subView === "media" && (

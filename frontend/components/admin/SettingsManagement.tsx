@@ -527,7 +527,7 @@ export default function SettingsManagement({ onSaveConfig, activeSubTab = "setti
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
               <thead>
                 <tr className="border-b border-slate-150 dark:border-white/[0.04] text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-wider bg-slate-50/50 dark:bg-white/[0.01]">
                   <th className="py-4 px-6 pl-8">{isTe ? "యాక్సెస్ మాడ్యూల్" : isHi ? "पहुंच मॉड्यूल" : "Access Module"}</th>

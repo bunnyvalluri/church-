@@ -359,7 +359,7 @@ export default function FinanceManagement({
 
           <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700">
-              <table className="w-full text-left border-collapse min-w-[700px]">
+              <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider bg-slate-100/90 dark:bg-slate-800/80">
                     <th className="py-4 px-6">{t.tableDonor}</th>
@@ -540,7 +540,7 @@ export default function FinanceManagement({
 
           <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700">
-              <table className="w-full text-left border-collapse min-w-[700px]">
+              <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider bg-slate-100/90 dark:bg-slate-800/80">
                     <th className="py-4 px-6">{isTe ? "లావాదేవీ ID" : isHi ? "लेनदेन ID" : "Transaction ID"}</th>

@@ -526,8 +526,49 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
           {/* ────────────────── B. MEDIA TAB ────────────────── */}
           {subView === "media" && (
             <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[700px]">
+              {/* Mobile Card View (< sm) */}
+              <div className="block sm:hidden p-3 space-y-3">
+                {media.filter(m => (m.title || "").toLowerCase().includes(search.toLowerCase())).map((item) => (
+                  <div key={item.id} className="p-4 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl space-y-2.5 shadow-sm">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1">{item.title || "Untitled Media"}</h4>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase border shrink-0 ${
+                        item.type === "IMAGE" 
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20"
+                          : "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-500/20"
+                      }`}>{item.type}</span>
+                    </div>
+                    
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300"><strong>Category:</strong> {item.category || "General Gallery"}</p>
+
+                    <a 
+                      href={item.url} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 hover:underline truncate max-w-full"
+                    >
+                      <ExternalLink className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{item.url}</span>
+                    </a>
+
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                      <span>{formatDate(item.createdAt)}</span>
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => handleDeleteMedia(item.id)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                        title="Delete media log"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View (>= sm) */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                       <th className="py-4 px-6">Media Title</th>
@@ -595,8 +636,71 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
           {/* ────────────────── C. VOLUNTEERS TAB ────────────────── */}
           {subView === "volunteers" && (
             <div className="border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121324] backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[750px]">
+              {/* Mobile Card View (< sm) */}
+              <div className="block sm:hidden p-3 space-y-3">
+                {volunteers.filter(v => v.name.toLowerCase().includes(search.toLowerCase()) || v.email.toLowerCase().includes(search.toLowerCase())).map((vol) => (
+                  <div key={vol.id} className="p-4 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 text-white font-extrabold text-xs flex items-center justify-center uppercase shrink-0 shadow-sm">
+                          {(vol.name || "V").substring(0, 2)}
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-xs text-slate-900 dark:text-white line-clamp-1">{vol.name}</h4>
+                          <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">{vol.project?.title || "General Outreach"}</span>
+                        </div>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border shrink-0 ${
+                        vol.status === "APPROVED" 
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/20"
+                          : vol.status === "REJECTED"
+                          ? "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/20"
+                          : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
+                      }`}>{vol.status}</span>
+                    </div>
+
+                    <div className="space-y-1 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                      <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-slate-400" /> {vol.email}</div>
+                      {vol.phone && <div className="flex items-center gap-1.5 font-mono"><Phone className="w-3.5 h-3.5 text-slate-400" /> {vol.phone}</div>}
+                      <p className="text-[10px] text-slate-500 pt-1">Skills: {vol.skills || "General volunteer"}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500">
+                      <span>{formatDate(vol.createdAt)}</span>
+                      {vol.status === "PENDING" ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            disabled={actionLoading}
+                            onClick={() => handleUpdateVolunteerStatus(vol.id, "APPROVED")}
+                            className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg font-bold flex items-center gap-1"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Approve
+                          </button>
+                          <button
+                            disabled={actionLoading}
+                            onClick={() => handleUpdateVolunteerStatus(vol.id, "REJECTED")}
+                            className="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg font-bold flex items-center gap-1"
+                          >
+                            <X className="w-3.5 h-3.5" /> Decline
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => handleDeleteVolunteer(vol.id)}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View (>= sm) */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap min-w-[750px]">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-white/[0.02]">
                       <th className="py-4 px-6">Volunteer Name</th>
@@ -696,6 +800,7 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
               </div>
             </div>
           )}
+
 
         </div>
       )}

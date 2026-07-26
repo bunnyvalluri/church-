@@ -561,7 +561,7 @@ export default function MemberManagement({
 
           {/* 💻 Desktop Table View (>= sm) */}
           <div className="hidden sm:block overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[880px]">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[880px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider bg-slate-100/70 dark:bg-[#1A1C36]/80">
                   <th className="py-3.5 px-4 sm:px-5 w-56">{isTe ? "సభ్యుడు" : isHi ? "सदस्य" : "Member"}</th>
