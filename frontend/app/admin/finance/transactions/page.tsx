@@ -14,8 +14,12 @@ export default function TransactionsPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const token = await getIdToken();
-      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      let headers: HeadersInit = {};
+      try {
+        const token = await getIdToken();
+        if (token) headers = { Authorization: `Bearer ${token}` };
+      } catch (e) {}
+
       const res = await fetch("/api/admin/finance", { headers });
       const result = await res.json();
       if (res.ok && result.success) {

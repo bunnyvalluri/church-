@@ -43,12 +43,44 @@ function extractToken(req: Request): string | null {
   return null;
 }
 
-// ── Internal: Look up user role from DB ───────────────────────
-async function resolveRole(uid: string, email: string): Promise<AuthenticatedUser['role']> {
-  const user = await prisma.user.findUnique({ where: { id: uid }, select: { role: true } })
-    ?? await prisma.user.findUnique({ where: { email }, select: { role: true } });
-  if (user) return user.role as AuthenticatedUser['role'];
-  return 'MEMBER'; // Safest default
+// ── Internal: Single-query user role lookup & DB sync ─────────────────────────
+async function resolveAndSyncUser(uid: string, email: string, name?: string): Promise<AuthenticatedUser['role']> {
+  if (!uid && !email) return 'MEMBER';
+
+  try {
+    const userInDb = await prisma.user.findFirst({
+      where: {
+        OR: [
+          ...(uid ? [{ id: uid }] : []),
+          ...(email ? [{ email }] : [])
+        ]
+      },
+      select: { id: true, email: true, role: true }
+    });
+
+    if (userInDb) {
+      if (userInDb.id !== uid && userInDb.email === email) {
+        // Asynchronous non-blocking UID alignment
+        prisma.user.update({ where: { email }, data: { id: uid } }).catch(() => {});
+      }
+      return userInDb.role as AuthenticatedUser['role'];
+    }
+
+    // Create user in DB if missing
+    const created = await prisma.user.create({
+      data: {
+        id: uid,
+        email: email || `${uid}@kcm.local`,
+        name: name || 'Member',
+        password: 'firebase-authenticated-sync',
+        role: 'MEMBER',
+      },
+      select: { role: true }
+    });
+    return created.role as AuthenticatedUser['role'];
+  } catch (e) {
+    return 'MEMBER';
+  }
 }
 
 // ── Public: Soft token extraction (no auto-response) ──────────────────────────
@@ -61,61 +93,27 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
   let authenticatedUser: AuthenticatedUser | null = null;
 
   // 1. Always try the real Bearer token first (highest priority).
-  //    This ensures that real Firebase users are correctly identified even in dev mode.
   const token = extractToken(req);
   if (token) {
     const decoded = await verifyFirebaseToken(token);
     if (decoded) {
-      const role = await resolveRole(decoded.uid, decoded.email ?? '');
+      const email = decoded.email ?? '';
+      const name = decoded.name ?? (email ? email.split('@')[0] : 'Member');
+      const role = await resolveAndSyncUser(decoded.uid, email, name);
       authenticatedUser = {
         uid: decoded.uid,
-        email: decoded.email ?? '',
-        name: decoded.name ?? (decoded.email ? decoded.email.split('@')[0] : 'Member'),
+        email,
+        name,
         role,
       };
     }
   }
 
   // 2. Dev bypass fallback — only used when no real token is in the request.
-  //    This prevents UID mismatch errors where the dev mock UID differs from the
-  //    real Firebase UID stored in session records.
   if (!authenticatedUser && process.env.NODE_ENV !== 'production') {
     const devUser = getDevBypassUser();
     if (devUser) {
       authenticatedUser = devUser;
-    }
-  }
-
-  // 3. Self-healing DB synchronization
-  if (authenticatedUser) {
-    const { uid, email, name, role } = authenticatedUser;
-    try {
-      let userInDb = await prisma.user.findUnique({ where: { id: uid } });
-      if (!userInDb && email) {
-        userInDb = await prisma.user.findUnique({ where: { email } });
-        if (userInDb) {
-          // Align user ID with Firebase UID if email matches
-          userInDb = await prisma.user.update({
-            where: { email },
-            data: { id: uid }
-          });
-        }
-      }
-
-      if (!userInDb) {
-        await prisma.user.create({
-          data: {
-            id: uid,
-            email,
-            name: name || 'Member',
-            password: 'firebase-authenticated-sync',
-            role,
-          }
-        });
-        console.info(`[AUTH_MIDDLEWARE] Dynamic sync: Created user record for ${email} (${uid}) in database.`);
-      }
-    } catch (dbErr) {
-      console.warn('[AUTH_MIDDLEWARE] Failed to dynamically sync user to database:', dbErr);
     }
   }
 
