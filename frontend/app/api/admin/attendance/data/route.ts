@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const [events, users, records, registrations] = await Promise.all([
+    const [events, users, records] = await Promise.all([
       prisma.event.findMany({
         orderBy: { date: 'desc' },
         take: 50,
@@ -34,10 +34,15 @@ export async function GET(req: Request) {
         orderBy: { date: 'desc' },
         take: 50,
       }),
-      prisma.eventRegistration.findMany({
-        select: { eventId: true, userId: true },
-      }),
     ]);
+
+    const eventIds = events.map((e) => e.id);
+    const registrations = eventIds.length > 0
+      ? await prisma.eventRegistration.findMany({
+          where: { eventId: { in: eventIds } },
+          select: { eventId: true, userId: true },
+        })
+      : [];
 
     const checkins: Record<string, string[]> = {};
     for (const reg of registrations) {
@@ -64,3 +69,4 @@ export async function GET(req: Request) {
     );
   }
 }
+

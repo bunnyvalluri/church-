@@ -47,6 +47,7 @@ export default function EventAttendancePage() {
         initialCheckins={data?.checkins}
         onRefresh={loadData}
         activeSubTab="event-attendance"
+        isLoading={loading}
       />
     </AdminPageTemplate>
   );

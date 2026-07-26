@@ -47,6 +47,7 @@ export default function AttendanceReportsPage() {
         initialCheckins={data?.checkins}
         onRefresh={loadData}
         activeSubTab="reports"
+        isLoading={loading}
       />
     </AdminPageTemplate>
   );

@@ -34,6 +34,7 @@ interface AttendanceManagementProps {
   onOpenAddAttendance?: () => void;
   onRefresh?: () => void;
   activeSubTab?: "records" | "event-attendance" | "reports";
+  isLoading?: boolean;
 }
 
 interface AttendanceRecord {
@@ -54,7 +55,8 @@ export default function AttendanceManagement({
   onAddAttendance,
   onOpenAddAttendance,
   onRefresh,
-  activeSubTab = "records" 
+  activeSubTab = "records",
+  isLoading = false
 }: AttendanceManagementProps) {
   const [subView, setSubView] = useState<"records" | "event-attendance" | "reports">(activeSubTab);
   React.useEffect(() => {
@@ -196,10 +198,8 @@ export default function AttendanceManagement({
   };
 
   useEffect(() => {
-    if (initialCheckins) {
+    if (initialCheckins !== undefined) {
       setEventCheckins(initialCheckins);
-    } else {
-      fetchCheckins();
     }
   }, [initialCheckins]);
 
@@ -303,6 +303,27 @@ export default function AttendanceManagement({
 
   const activeCheckedInCount = (eventCheckins[currentEvent.id] || []).length;
   const checkinPercentage = users.length > 0 ? Math.round((activeCheckedInCount / users.length) * 100) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 bg-slate-200/60 dark:bg-white/[0.05] rounded-2xl p-5 border border-slate-200/50 dark:border-white/5 flex flex-col justify-between" />
+          ))}
+        </div>
+        <div className="h-12 bg-slate-200/60 dark:bg-white/[0.05] rounded-2xl w-full" />
+        <div className="bg-slate-200/60 dark:bg-white/[0.05] border border-slate-200/50 dark:border-white/5 rounded-2xl p-6 space-y-4">
+          <div className="h-8 bg-slate-300/60 dark:bg-white/10 rounded-xl w-1/3" />
+          <div className="space-y-3 pt-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-12 bg-slate-300/40 dark:bg-white/5 rounded-xl w-full" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
