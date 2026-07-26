@@ -491,17 +491,17 @@ export default function MemberManagement({
 
       {/* ─── VIEW 2: COMPACT TABLE ROSTER VIEW ─── */}
       {viewMode === "table" && (
-        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm dark:shadow-none">
+        <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/[0.08] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm dark:shadow-none min-w-0">
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[650px]">
+            <table className="w-full text-left border-collapse min-w-[880px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-white/10 text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider bg-slate-100/70 dark:bg-[#1A1C36]/80">
-                  <th className="py-3.5 px-4 sm:px-6">{isTe ? "సభ్యుడు" : isHi ? "सदस्य" : "Member"}</th>
-                  <th className="py-3.5 px-4 sm:px-6">{isTe ? "హోదా" : isHi ? "भूमिका" : "Platform Role"}</th>
-                  <th className="py-3.5 px-4 sm:px-6">{isTe ? "ఈమెయిల్" : isHi ? "ईमेल" : "Email"}</th>
-                  <th className="py-3.5 px-4 sm:px-6">{isTe ? "ఫోన్" : isHi ? "फोन" : "Phone"}</th>
-                  <th className="py-3.5 px-4 sm:px-6">{isTe ? "చేరిన తేదీ" : isHi ? "పंजीकृत" : "Registered"}</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-center">{isTe ? "చర్యలు" : isHi ? "कार्रवाई" : "Actions"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-56">{isTe ? "సభ్యుడు" : isHi ? "सदस्य" : "Member"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-36">{isTe ? "హోదా" : isHi ? "భూమిక" : "Platform Role"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 min-w-[220px]">{isTe ? "ఈమెయిల్" : isHi ? "ईमेल" : "Email"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-36">{isTe ? "ఫోన్" : isHi ? "फोन" : "Phone"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-32">{isTe ? "చేరిన తేదీ" : isHi ? "పंजीकृत" : "Registered"}</th>
+                  <th className="py-3.5 px-4 sm:px-5 w-44 text-center">{isTe ? "చర్యలు" : isHi ? "कार्रवाई" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.06] text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -510,36 +510,58 @@ export default function MemberManagement({
                   const RoleIcon = badge.icon;
                   return (
                     <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors">
-                      <td className="py-3 px-4 sm:px-6">
-                        <div className="flex items-center gap-3">
+                      {/* Member Name */}
+                      <td className="py-3.5 px-4 sm:px-5">
+                        <div className="flex items-center gap-3 min-w-0">
                           <div className={`w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br ${badge.grad} text-white font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
                             {(u.name || "U").substring(0, 2)}
                           </div>
-                          <span className="font-black text-slate-900 dark:text-white block truncate">{u.name || "Member"}</span>
+                          <span className="font-black text-slate-900 dark:text-white block truncate max-w-[170px]" title={u.name}>{u.name || "Member"}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 sm:px-6">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${badge.badge}`}>
-                          <RoleIcon className="w-2.5 h-2.5" />
+
+                      {/* Role Badge */}
+                      <td className="py-3.5 px-4 sm:px-5">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border whitespace-nowrap ${badge.badge}`}>
+                          <RoleIcon className="w-2.5 h-2.5 shrink-0" />
                           {badge.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 sm:px-6 font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
-                        {u.email}
+
+                      {/* Email */}
+                      <td className="py-3.5 px-4 sm:px-5">
+                        <div className="flex items-center justify-between gap-2 max-w-[240px]">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200 truncate" title={u.email}>{u.email || "—"}</span>
+                          {u.email && (
+                            <button 
+                              onClick={() => handleCopyText(u.email, `email_tbl_${u.id}`)}
+                              className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1 shrink-0"
+                              title="Copy Email"
+                            >
+                              {copiedId === `email_tbl_${u.id}` ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3 h-3 text-slate-400" />}
+                            </button>
+                          )}
+                        </div>
                       </td>
-                      <td className="py-3 px-4 sm:px-6 text-slate-600 dark:text-slate-400 font-medium">
+
+                      {/* Phone */}
+                      <td className="py-3.5 px-4 sm:px-5 text-slate-600 dark:text-slate-400 font-medium whitespace-nowrap">
                         {u.phone || "—"}
                       </td>
-                      <td className="py-3 px-4 sm:px-6 text-slate-500 dark:text-slate-400 text-[11px]">
+
+                      {/* Registered Date */}
+                      <td className="py-3.5 px-4 sm:px-5 text-slate-500 dark:text-slate-400 text-[11px] whitespace-nowrap">
                         {u.createdAt ? new Date(u.createdAt).toLocaleDateString("en-IN") : "Recent"}
                       </td>
-                      <td className="py-3 px-4 sm:px-6 text-center">
+
+                      {/* Actions */}
+                      <td className="py-3.5 px-4 sm:px-5 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="relative">
+                          <div className="relative max-w-[140px] flex-1">
                             <select 
                               value={u.role || "MEMBER"} 
                               onChange={(e) => handleRoleChangeInternal(u.id, e.target.value)} 
-                              className="py-1 pl-2.5 pr-6 border rounded-lg text-[10px] font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-[#1A1C36] border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer"
+                              className="w-full py-1.5 pl-2.5 pr-6 border rounded-xl text-[10px] font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-[#1A1C36] border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer truncate"
                             >
                               <option value="MEMBER">{t.believerOption}</option>
                               <option value="PASTOR">{t.shepherdOption}</option>
@@ -551,7 +573,7 @@ export default function MemberManagement({
 
                           <button 
                             onClick={() => onDeleteMember(u.id)}
-                            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15 rounded-xl transition-colors shrink-0"
                             title="Delete User"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
