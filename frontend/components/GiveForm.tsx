@@ -773,7 +773,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
               {/* ── LEFT: FORM CARD ───────────────────────── */}
               <div className="lg:col-span-7">
-                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-sm sm:shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                   
                   {/* Card header strip */}
                   <div className="px-4 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-5 border-b border-gray-100 dark:border-gray-800">
@@ -910,32 +910,36 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                   const isSelected = selectedPurpose === p.code;
                                   const gradient = purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
                                   const bgStyle = purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800/40";
-                                  const icon = purposeIconMap[p.code] || <IndianRupee className="w-5 h-5" />;
+                                  const icon = purposeIconMap[p.code] || <IndianRupee className="w-4 h-4 sm:w-5 sm:h-5" />;
                                   return (
                                     <button
                                       key={p.id}
                                       type="button"
                                       onClick={() => setSelectedPurpose(p.code)}
-                                      className={`relative p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full group overflow-hidden ${
+                                      className={`relative p-2.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between w-full group overflow-hidden min-h-[76px] sm:min-h-[96px] ${
                                         isSelected
                                           ? `${bgStyle} shadow-md scale-[1.01]`
-                                          : "border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-800/80 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
                                       }`}
                                     >
-                                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-90 opacity-70 group-hover:scale-95 group-hover:opacity-90"}`}>
-                                        {icon}
-                                      </div>
-                                      <div className="min-w-0 flex-1">
-                                        <span className={`block font-black text-xs sm:text-sm transition-colors break-words ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
-                                          {getLanguagePurposeName(p)}
-                                        </span>
-                                        <span className="block text-gray-600 dark:text-gray-300 text-[10px] sm:text-[11px] mt-0.5 leading-snug font-semibold line-clamp-2 break-words">
+                                      {isSelected && (
+                                        <div className="absolute top-2 right-2 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                                          <Check className="w-2.5 h-2.5 text-white" />
+                                        </div>
+                                      )}
+                                      <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                          <div className={`w-7 h-7 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 ${isSelected ? "scale-100" : "scale-95 opacity-80"}`}>
+                                            {icon}
+                                          </div>
+                                          <span className={`block font-black text-[11px] sm:text-sm leading-tight transition-colors break-words line-clamp-1 ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
+                                            {getLanguagePurposeName(p)}
+                                          </span>
+                                        </div>
+                                        <span className="hidden min-[400px]:block text-gray-500 dark:text-gray-400 text-[10px] sm:text-[11px] mt-1 leading-snug font-medium line-clamp-1">
                                           {getLanguagePurposeDesc(p)}
                                         </span>
                                       </div>
-                                      {isSelected && (
-                                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0 ml-auto mt-0.5" />
-                                      )}
                                     </button>
                                   );
                                 })}
