@@ -4,8 +4,13 @@ import React, { useState, useEffect } from "react";
 import PastorPageHeader from "@/components/pastor/layout/PastorPageHeader";
 import { Play, Plus, Search, Filter, Clock, BookOpen, Tag, Loader2, Sparkles } from "lucide-react";
 import SermonInlineForm from "@/components/SermonInlineForm";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 export default function PastorSermonsPage() {
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sermons, setSermons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,21 +25,11 @@ export default function PastorSermonsPage() {
       if (data.success && Array.isArray(data.sermons)) {
         setSermons(data.sermons);
       } else {
-        // Fallback default list if DB is empty
-        setSermons([
-          { id: "1", title: "Walking in Divine Favor & Overflow", scripture: "Psalm 23:1-6", duration: "42:15", date: "Sunday, Jul 20", status: "Published", category: "Sunday Worship" },
-          { id: "2", title: "The Power of Persistent Prayer", scripture: "Luke 18:1-8", duration: "38:00", date: "Wednesday, Jul 16", status: "Published", category: "Midweek Service" },
-          { id: "3", title: "Building Strong Faithful Families", scripture: "Joshua 24:15", duration: "45:30", date: "Sunday, Jul 13", status: "Published", category: "Family Ministry" },
-          { id: "4", title: "Overcoming Trials Through Faith", scripture: "James 1:2-4", duration: "35:10", date: "Sunday, Jul 06", status: "Published", category: "Youth Service" }
-        ]);
+        setSermons([]);
       }
     } catch (err) {
-      setSermons([
-        { id: "1", title: "Walking in Divine Favor & Overflow", scripture: "Psalm 23:1-6", duration: "42:15", date: "Sunday, Jul 20", status: "Published", category: "Sunday Worship" },
-        { id: "2", title: "The Power of Persistent Prayer", scripture: "Luke 18:1-8", duration: "38:00", date: "Wednesday, Jul 16", status: "Published", category: "Midweek Service" },
-        { id: "3", title: "Building Strong Faithful Families", scripture: "Joshua 24:15", duration: "45:30", date: "Sunday, Jul 13", status: "Published", category: "Family Ministry" },
-        { id: "4", title: "Overcoming Trials Through Faith", scripture: "James 1:2-4", duration: "35:10", date: "Sunday, Jul 06", status: "Published", category: "Youth Service" }
-      ]);
+      console.error("Error fetching sermons:", err);
+      setSermons([]);
     } finally {
       setLoading(false);
     }
@@ -60,13 +55,13 @@ export default function PastorSermonsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <PastorPageHeader
-        title="Sermon Management Library"
-        subtitle="Upload, manage, tag, and publish Sunday Worship messages and Bible Study series"
-        badge={`${sermons.length} Messages`}
+        title={t.sermonLibraryTitle}
+        subtitle={t.sermonLibrarySubtitle}
+        badge={`${sermons.length} ${t.messagesCount}`}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search sermon title, scripture reference, category..."
-        primaryActionLabel="Upload Sermon"
+        searchPlaceholder={t.searchSermonsPlaceholder}
+        primaryActionLabel={t.uploadSermon}
         onPrimaryAction={() => setIsModalOpen(true)}
         onRefresh={fetchSermons}
       />
@@ -81,7 +76,23 @@ export default function PastorSermonsPage() {
       {loading ? (
         <div className="py-12 flex flex-col items-center justify-center space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-[#6366F1]" />
-          <p className="text-xs font-bold text-slate-400">Loading Sermon Records...</p>
+          <p className="text-xs font-bold text-slate-400">{t.loadingSermons}</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center bg-white/70 dark:bg-[#0E0F24]/70 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-white/[0.06] p-8 space-y-3 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto border border-indigo-100 dark:border-indigo-500/20">
+            <Play className="w-6 h-6" />
+          </div>
+          <h4 className="text-sm font-black text-slate-800 dark:text-white">{t.noSermonsFound}</h4>
+          <p className="text-xs text-slate-400 dark:text-gray-500 max-w-sm mx-auto">{t.sermonLibrarySubtitle}</p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-bold text-xs rounded-xl shadow-sm hover:from-[#5053E4] hover:to-[#7C3AED] transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{t.uploadSermon}</span>
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -96,16 +107,16 @@ export default function PastorSermonsPage() {
                 <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-bold">{sermon.duration || "40:00"}</span>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{sermon.category || "Sunday Worship"}</span>
+                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{sermon.category || t.sundayWorship}</span>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white leading-snug mt-0.5">{sermon.title}</h3>
                 <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 flex items-center gap-1">
                   <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
-                  {sermon.scripture || "Scripture Reference"}
+                  {sermon.scripture || t.scriptureRef}
                 </p>
               </div>
               <div className="pt-2 border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-between text-xs text-slate-400">
                 <span>{sermon.date ? String(sermon.date).split("T")[0] : "Recent"}</span>
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">{sermon.status || "Published"}</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">{sermon.status === "Published" ? t.sermonPublished : (sermon.status || t.sermonPublished)}</span>
               </div>
             </div>
           ))}
@@ -116,7 +127,7 @@ export default function PastorSermonsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0E0F24] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4">Upload New Sermon</h3>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4">{t.uploadNewSermon}</h3>
             <SermonInlineForm
               onClose={() => setIsModalOpen(false)}
               onSuccess={handleSermonSuccess}

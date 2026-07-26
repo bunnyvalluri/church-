@@ -54,6 +54,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import DonationsView from "@/components/pastor/views/DonationsView";
 import NgoManagement from "@/components/admin/NgoManagement";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { getPastorTranslation } from "@/lib/pastorTranslations";
 
 // Types
 interface RecentSermon {
@@ -233,6 +235,8 @@ const getNotifIconBg = (type: string) => {
 
 export default function PastorDashboard() {
   const { user, status, logout } = useAuth();
+  const { language } = useLanguage();
+  const t = getPastorTranslation(language);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname() || "";
@@ -518,88 +522,84 @@ export default function PastorDashboard() {
     }
   }, [status]);
 
-  // Fetch all database resources on load
+  // Fetch all database resources on load in parallel
   const loadDashboardResources = useCallback(async () => {
-    setLoading(true);
     try {
-      // Fetch initial notifications
       fetchNotifications();
 
-      // 1. Fetch Users Count (via pastor-accessible members endpoint)
-      const usersRes = await fetch("/api/pastor/members");
-      const usersData = await usersRes.json();
-      if (usersRes.ok && usersData.success) {
+      const results = await Promise.allSettled([
+        fetch("/api/pastor/members").then(r => r.ok ? r.json() : null),
+        fetch(`/api/pastor/sermons?t=${Date.now()}`).then(r => r.ok ? r.json() : null),
+        fetch("/api/member/prayers?userId=all_admin_peek").then(r => r.ok ? r.json() : null),
+        fetch("/api/member/events").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/announcements").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/member-requests").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/volunteers").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/bible-studies").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/small-groups").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/church-settings").then(r => r.ok ? r.json() : null),
+        fetch("/api/pastor/profile").then(r => r.ok ? r.json() : null)
+      ]);
+
+      const [
+        usersData,
+        srmData,
+        pryData,
+        evtData,
+        ancData,
+        memData,
+        volData,
+        bsData,
+        sgData,
+        setData,
+        profData
+      ] = results.map(r => r.status === "fulfilled" ? r.value : null);
+
+      if (usersData?.success) {
         setUsersCount(usersData.total || usersData.users?.length || 0);
       }
-
-      // 2. Fetch Sermons
-      const srmRes = await fetch(`/api/pastor/sermons?t=${Date.now()}`);
-      const srmData = await srmRes.json();
-      const sermonList = srmData.sermons || [];
-      setSermons(sermonList);
-
-      // 3. Fetch Prayer Requests
-      const pryRes = await fetch("/api/member/prayers?userId=all_admin_peek");
-      const pryData = await pryRes.json();
-      let prayerList = pryData.prayers || [];
-      if (prayerList.length > 0) {
-        const allUsers = usersData.users || [];
-        prayerList = prayerList.map((p: any) => {
-          const userObj = allUsers.find((u: any) => u.id === p.userId || u.uid === p.userId) || { name: "Congregation Believer", email: "believer@gmail.com" };
-          return {
-            ...p,
-            priority: p.category === "HEALTH" ? "Urgent" : p.category === "FINANCIAL" ? "Medium" : "Low",
-            user: userObj
-          };
-        });
+      if (srmData?.sermons) {
+        setSermons(srmData.sermons);
       }
-      setPrayerRequests(prayerList);
-
-      // 4. Fetch Events
-      const evtRes = await fetch("/api/member/events");
-      const evtData = await evtRes.json();
-      const eventList = evtData.events || [];
-      setEvents(eventList);
-
-      // 5. Fetch Announcements
-      const ancRes = await fetch("/api/pastor/announcements");
-      const ancData = await ancRes.json();
-      setAnnouncements(ancData.announcements || []);
-
-      // Fetch Member Requests from API
-      const memRes = await fetch("/api/pastor/member-requests");
-      const memData = await memRes.json();
-      setMemberRequests(memData.requests || []);
-
-      // Fetch Volunteers from API
-      const volRes = await fetch("/api/pastor/volunteers");
-      const volData = await volRes.json();
-      setVolunteers(volData.volunteers || []);
-
-      // Fetch Bible Study Groups from API
-      const bsRes = await fetch("/api/pastor/bible-studies");
-      const bsData = await bsRes.json();
-      setBibleStudyGroups(bsData.groups || []);
-
-      // Fetch Small Groups from API
-      const sgRes = await fetch("/api/pastor/small-groups");
-      const sgData = await sgRes.json();
-      setSmallGroups(sgData.groups || []);
-
-      // Fetch Church Settings from API
-      const setRes = await fetch("/api/pastor/church-settings");
-      const setData = await setRes.json();
-      if (setData.success && setData.settings) {
+      if (pryData?.prayers) {
+        let prayerList = pryData.prayers || [];
+        if (prayerList.length > 0 && usersData?.users) {
+          const allUsers = usersData.users || [];
+          prayerList = prayerList.map((p: any) => {
+            const userObj = allUsers.find((u: any) => u.id === p.userId || u.uid === p.userId) || { name: "Congregation Believer", email: "believer@gmail.com" };
+            return {
+              ...p,
+              priority: p.category === "HEALTH" ? "Urgent" : p.category === "FINANCIAL" ? "Medium" : "Low",
+              user: userObj
+            };
+          });
+        }
+        setPrayerRequests(prayerList);
+      }
+      if (evtData?.events) {
+        setEvents(evtData.events);
+      }
+      if (ancData?.announcements) {
+        setAnnouncements(ancData.announcements);
+      }
+      if (memData?.requests) {
+        setMemberRequests(memData.requests);
+      }
+      if (volData?.volunteers) {
+        setVolunteers(volData.volunteers);
+      }
+      if (bsData?.groups) {
+        setBibleStudyGroups(bsData.groups);
+      }
+      if (sgData?.groups) {
+        setSmallGroups(sgData.groups);
+      }
+      if (setData?.success && setData.settings) {
         setChurchSettings(setData.settings);
       }
-
-      // Fetch Pastor Profile from API
-      const profRes = await fetch("/api/pastor/profile");
-      const profData = await profRes.json();
-      if (profData.success && profData.profile) {
+      if (profData?.success && profData.profile) {
         setPastorProfile(profData.profile);
       }
-
     } catch (err) {
       console.error("Error loading pastor resources:", err);
     } finally {

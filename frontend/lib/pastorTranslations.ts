@@ -78,7 +78,21 @@ export const pastorTranslations = {
     recentActivity: "Recent Ministry Activity",
     activeGroupRoster: "Active Cell Fellowships",
     exportData: "Export",
-    refreshData: "Refresh"
+    refreshData: "Refresh",
+    sermonLibraryTitle: "Sermon Management Library",
+    sermonLibrarySubtitle: "Upload, manage, tag, and publish Sunday Worship messages and Bible Study series",
+    messagesCount: "Messages",
+    searchSermonsPlaceholder: "Search sermon title, scripture reference, category...",
+    uploadSermon: "Upload Sermon",
+    loadingSermons: "Loading Sermon Records...",
+    noSermonsFound: "No sermons found",
+    scriptureRef: "Scripture Reference",
+    sermonPublished: "Published",
+    sermonDraft: "Draft",
+    uploadNewSermon: "Upload New Sermon",
+    deleteSermon: "Delete Sermon",
+    sermonArchiveTitle: "Sermon & Teachings Archive",
+    sermonArchiveSubtitle: "Upload and manage church bible study records and video feeds"
   },
   te: {
     // Topbar & Navigation
@@ -157,7 +171,21 @@ export const pastorTranslations = {
     recentActivity: "ఇటీవలి పరిచర్య సమాచారం",
     activeGroupRoster: "క్రియాశీల సెల్ గ్రూపులు",
     exportData: "ఎగుమతి",
-    refreshData: "రిఫ్రెష్"
+    refreshData: "రిఫ్రెష్",
+    sermonLibraryTitle: "వాక్య ప్రసంగాల లైబ్రరీ",
+    sermonLibrarySubtitle: "ఆదివారం ఆరాధనా వాక్యాలు మరియు బైబిల్ అధ్యయన సిరీస్‌లను మేనేజ్ చేయండి మరియు ప్రచురించండి",
+    messagesCount: "సందేశాలు",
+    searchSermonsPlaceholder: "ప్రసంగం శీర్షిక, లేఖన భాగం, వర్గం శోధించండి...",
+    uploadSermon: "ప్రసంగం అప్‌లోడ్",
+    loadingSermons: "ప్రసంగాల రికార్డులు లోడ్ అవుతున్నాయి...",
+    noSermonsFound: "ఎటువంటి ప్రసంగాలు కనుగొనబడలేదు",
+    scriptureRef: "లేఖన భాగం",
+    sermonPublished: "ప్రచురించబడింది",
+    sermonDraft: "డ్రాఫ్ట్",
+    uploadNewSermon: "కొత్త ప్రసంగం అప్‌లోడ్ చేయండి",
+    deleteSermon: "ప్రసంగం తొలగించు",
+    sermonArchiveTitle: "ప్రసంగాలు & బోధనల ఆర్కైవ్",
+    sermonArchiveSubtitle: "సంఘం బైబిల్ అధ్యయన రికార్డులు మరియు వీడియోలను అప్‌లోడ్ చేయండి మరియు నిర్వహించండి"
   },
   hi: {
     // Topbar & Navigation
@@ -236,7 +264,21 @@ export const pastorTranslations = {
     recentActivity: "हाल की सेवकाई गतिविधियां",
     activeGroupRoster: "सक्रिय सेल समूह",
     exportData: "निर्यात",
-    refreshData: "रीफ्रेश"
+    refreshData: "रीफ्रेश",
+    sermonLibraryTitle: "उपदेश प्रबंधन पुस्तकालय",
+    sermonLibrarySubtitle: "रविवार आराधना संदेश और बाइबिल अध्ययन श्रृंखला अपलोड, टैग और प्रकाशित करें",
+    messagesCount: "संदेश",
+    searchSermonsPlaceholder: "उपदेश शीर्षक, शास्त्र संदर्भ, श्रेणी खोजें...",
+    uploadSermon: "उपदेश अपलोड करें",
+    loadingSermons: "उपदेश रिकॉर्ड लोड हो रहे हैं...",
+    noSermonsFound: "कोई उपदेश नहीं मिला",
+    scriptureRef: "शास्त्र संदर्भ",
+    sermonPublished: "प्रकाशित",
+    sermonDraft: "ड्राफ्ट",
+    uploadNewSermon: "नया उपदेश अपलोड करें",
+    deleteSermon: "उपदेश हटाएं",
+    sermonArchiveTitle: "उपदेश और शिक्षा संग्रह",
+    sermonArchiveSubtitle: "कलीसिया बाइबिल अध्ययन रिकॉर्ड और वीडियो फ़ीड अपलोड और प्रबंधित करें"
   }
 };
 
