@@ -247,14 +247,49 @@ export default function FinanceManagement({
         </div>
       </div>
 
-      {/* ─── Sub Navigation Tabs Bar ─── */}
+      {/* ─── Sub Navigation Tabs Bar (5 Distinct Color Themes) ─── */}
       <div className="p-1.5 bg-slate-100/90 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex gap-1.5 items-center w-max max-w-full overflow-x-auto select-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] shadow-sm">
         {[
-          { id: "donations", label: t.donations, icon: DollarSign },
-          { id: "pledges", label: t.pledges, icon: Heart },
-          { id: "transactions", label: t.transactions, icon: CreditCard },
-          { id: "accounts", label: t.accounts, icon: Layers },
-          { id: "config", label: "Donation CMS", icon: Settings }
+          { 
+            id: "donations", 
+            label: t.donations, 
+            icon: DollarSign,
+            activeStyle: "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/25",
+            inactiveStyle: "text-slate-700 dark:text-slate-200 hover:bg-violet-50 dark:hover:bg-violet-950/50 hover:text-violet-600 dark:hover:text-violet-300",
+            iconColor: "text-violet-600 dark:text-violet-400"
+          },
+          { 
+            id: "pledges", 
+            label: t.pledges, 
+            icon: Heart,
+            activeStyle: "bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-md shadow-rose-500/25",
+            inactiveStyle: "text-slate-700 dark:text-slate-200 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-300",
+            iconColor: "text-rose-600 dark:text-rose-400"
+          },
+          { 
+            id: "transactions", 
+            label: t.transactions, 
+            icon: CreditCard,
+            activeStyle: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25",
+            inactiveStyle: "text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 dark:hover:text-emerald-300",
+            iconColor: "text-emerald-600 dark:text-emerald-400"
+          },
+          { 
+            id: "accounts", 
+            label: t.accounts, 
+            icon: Layers,
+            activeStyle: "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/25",
+            inactiveStyle: "text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-300",
+            iconColor: "text-blue-600 dark:text-blue-400"
+          },
+          { 
+            id: "config", 
+            label: "Donation CMS", 
+            icon: Settings,
+            activeStyle: "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md shadow-amber-500/25",
+            inactiveStyle: "text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-600 dark:hover:text-amber-300",
+            iconColor: "text-amber-600 dark:text-amber-400"
+          }
         ].map((tab) => {
           const isSelected = subView === tab.id;
           return (
@@ -263,11 +298,11 @@ export default function FinanceManagement({
               onClick={() => setSubView(tab.id as any)}
               className={`py-2 px-4 rounded-xl flex items-center gap-2 text-xs font-black transition-all ${
                 isSelected
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/60"
+                  ? tab.activeStyle
+                  : tab.inactiveStyle
               }`}
             >
-              <tab.icon className="w-4 h-4" />
+              <tab.icon className={`w-4 h-4 ${isSelected ? "text-white" : tab.iconColor}`} />
               {tab.label}
             </button>
           );
