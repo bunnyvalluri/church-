@@ -89,41 +89,41 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     return desc;
   };
 
-  // Category visual configurations with vibrant, high-contrast themes
+  // Category visual configurations with vibrant, ultra-high-contrast themes for light & dark mode
   const getCategoryTheme = (category: string) => {
     switch (category.toUpperCase()) {
       case "YOUTH":
         return {
           icon: Sparkles,
-          badge: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/60 font-bold",
+          badge: "bg-indigo-100 dark:bg-indigo-600 text-indigo-950 dark:text-white border border-indigo-300 dark:border-indigo-400 font-black shadow-sm",
           glow: "border-indigo-500 shadow-lg shadow-indigo-500/10",
           iconBg: "bg-indigo-600 text-white shadow-sm"
         };
       case "CHILDREN":
         return {
           icon: Smile,
-          badge: "bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border border-sky-200 dark:border-sky-700/60 font-bold",
+          badge: "bg-sky-100 dark:bg-sky-600 text-sky-950 dark:text-white border border-sky-300 dark:border-sky-400 font-black shadow-sm",
           glow: "border-sky-500 shadow-lg shadow-sky-500/10",
           iconBg: "bg-sky-600 text-white shadow-sm"
         };
       case "WOMEN":
         return {
           icon: Heart,
-          badge: "bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-700/60 font-bold",
+          badge: "bg-rose-100 dark:bg-rose-600 text-rose-950 dark:text-white border border-rose-300 dark:border-rose-400 font-black shadow-sm",
           glow: "border-rose-500 shadow-lg shadow-rose-500/10",
           iconBg: "bg-rose-600 text-white shadow-sm"
         };
       case "MEN":
         return {
           icon: Users,
-          badge: "bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/60 font-bold",
+          badge: "bg-blue-100 dark:bg-blue-600 text-blue-950 dark:text-white border border-blue-300 dark:border-blue-400 font-black shadow-sm",
           glow: "border-blue-500 shadow-lg shadow-blue-500/10",
           iconBg: "bg-blue-600 text-white shadow-sm"
         };
       default:
         return {
           icon: Shield,
-          badge: "bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-700/60 font-bold",
+          badge: "bg-purple-100 dark:bg-purple-600 text-purple-950 dark:text-white border border-purple-300 dark:border-purple-400 font-black shadow-sm",
           glow: "border-purple-500 shadow-lg shadow-purple-500/10",
           iconBg: "bg-purple-600 text-white shadow-sm"
         };
