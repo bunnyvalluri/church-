@@ -14,6 +14,8 @@ import {
   Command
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { adminTranslations } from "@/components/admin/adminTranslations";
 import { useNotifications } from "@/hooks/useNotifications";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -27,11 +29,15 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   const { user, logout } = useAuth();
+  const { language } = useLanguage();
+  const t = adminTranslations[language || "en"] as any;
   const { unreadCount } = useNotifications();
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const searchPlaceholderText = t?.common?.searchPlaceholder || "Search resources, members...";
 
   return (
     <>
@@ -64,7 +70,7 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
             className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10 transition-all text-xs sm:w-48 md:w-80 group shadow-inner dark:shadow-none shrink-0"
           >
             <Search className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0" />
-            <span className="flex-1 text-left truncate">Search resources, members...</span>
+            <span className="flex-1 text-left truncate">{searchPlaceholderText}</span>
             <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-[#070812] border border-gray-200 dark:border-white/10 rounded-md text-gray-400 shadow-sm shrink-0">
               <Command className="w-3 h-3" /> K
             </kbd>

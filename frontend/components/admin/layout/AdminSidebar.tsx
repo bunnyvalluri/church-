@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { adminTranslations } from "@/components/admin/adminTranslations";
 import { 
   LayoutDashboard, 
   Users, 
@@ -364,6 +366,8 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const pathname = usePathname() || "/admin/dashboard";
   const { user, logout } = useAuth();
+  const { language } = useLanguage();
+  const t = adminTranslations[language || "en"] as any;
   const [searchQuery, setSearchQuery] = useState("");
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
@@ -376,25 +380,40 @@ export default function AdminSidebar({
     }));
   };
 
-  // Filter menu items by search & user role permissions
+  // Filter menu items by search & user role permissions + translate category & item names
   const filteredGroups = useMemo(() => {
+    const sidebarDict = t?.sidebar || {};
+    const catDict = sidebarDict.categories || {};
+    const itemDict = sidebarDict.items || {};
+
     return menuGroups.map((group) => {
-      const allowedItems = group.items.filter((item) => {
-        if (item.roles && !item.roles.includes(userRole)) {
-          return false;
-        }
-        if (!searchQuery.trim()) return true;
-        return (
-          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          group.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      });
+      const translatedTitle = catDict[group.title] || group.title;
+      const allowedItems = group.items
+        .filter((item) => {
+          if (item.roles && !item.roles.includes(userRole)) {
+            return false;
+          }
+          if (!searchQuery.trim()) return true;
+          const translatedName = itemDict[item.name] || item.name;
+          return (
+            translatedName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            translatedTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            group.title.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        })
+        .map((item) => ({
+          ...item,
+          name: itemDict[item.name] || item.name,
+        }));
+
       return {
         ...group,
+        title: translatedTitle,
         items: allowedItems,
       };
     }).filter((group) => group.items.length > 0);
-  }, [searchQuery, userRole]);
+  }, [searchQuery, userRole, t]);
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-[#0B0C16] text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-white/10 select-none transition-colors">
@@ -453,7 +472,7 @@ export default function AdminSidebar({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search menu items..."
+              placeholder={t?.sidebar?.searchPlaceholder || "Search menu items..."}
               className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
             />
             {searchQuery && (

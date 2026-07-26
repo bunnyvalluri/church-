@@ -3,6 +3,8 @@
 import React from "react";
 import AdminBreadcrumb from "./AdminBreadcrumb";
 import { Search, Filter, RefreshCw } from "lucide-react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { adminTranslations } from "@/components/admin/adminTranslations";
 
 interface AdminPageTemplateProps {
   title: string;
@@ -31,6 +33,13 @@ export default function AdminPageTemplate({
   isLoading = false,
   children,
 }: AdminPageTemplateProps) {
+  const { language } = useLanguage();
+  const t = adminTranslations[language || "en"] as any;
+
+  const displayTitle = t?.pageTitles?.[title] || title;
+  const displayDescription = description ? (t?.pageDescriptions?.[description] || description) : undefined;
+  const refreshLabel = t?.common?.refreshData || "Refresh Data";
+
   return (
     <div className="space-y-6 pb-12 animate-fade-in text-slate-900 dark:text-white">
       {/* ── Top Bar: Breadcrumb + Refresh ── */}
@@ -44,7 +53,7 @@ export default function AdminPageTemplate({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-indigo-600 dark:text-indigo-400" : ""}`} />
-            <span className="hidden sm:inline">Refresh Data</span>
+            <span className="hidden sm:inline">{refreshLabel}</span>
           </button>
         )}
       </div>
@@ -59,11 +68,11 @@ export default function AdminPageTemplate({
           )}
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-              {title}
+              {displayTitle}
             </h1>
-            {description && (
+            {displayDescription && (
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">
-                {description}
+                {displayDescription}
               </p>
             )}
           </div>
