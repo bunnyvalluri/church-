@@ -84,15 +84,14 @@ export default function MembersOverviewPage() {
       icon={Users}
       onRefresh={loadData}
       isLoading={loading}
-      searchPlaceholder="Search member name, email, or phone..."
-      searchValue={search}
-      onSearchChange={setSearch}
     >
       <MemberManagement
-        users={filteredUsers}
+        users={users}
         onRoleChange={handleRoleChange}
         onDeleteMember={handleDeleteMember}
-        onAddMember={() => {}}
+        onAddMember={(newMember) => {
+          setUsers((prev) => [newMember, ...prev]);
+        }}
       />
     </AdminPageTemplate>
   );

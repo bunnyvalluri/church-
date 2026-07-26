@@ -81,15 +81,14 @@ export default function MemberRegistryPage() {
       icon={UserCheck}
       onRefresh={loadData}
       isLoading={loading}
-      searchPlaceholder="Filter registry records..."
-      searchValue={search}
-      onSearchChange={setSearch}
     >
       <MemberManagement
-        users={filteredUsers}
+        users={users}
         onRoleChange={handleRoleChange}
         onDeleteMember={handleDeleteMember}
-        onAddMember={() => {}}
+        onAddMember={(newMember) => {
+          setUsers((prev) => [newMember, ...prev]);
+        }}
       />
     </AdminPageTemplate>
   );

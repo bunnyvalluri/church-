@@ -258,52 +258,52 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* ─── Top Overview Metric Bar ─── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
               {isTe ? "మొత్తం సమూహాలు" : isHi ? "कुल समूह" : "Total Groups"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{groups.length}</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{groups.length}</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
-            <Layers className="w-5 h-5" />
+          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
+            <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
               {isTe ? "చేరిన విశ్వాసులు" : isHi ? "नामांकित विश्वासी" : "Enrolled Believers"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{totalEnrolledBelievers}</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
-            <UserCheck className="w-5 h-5" />
+          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
+            <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
               {isTe ? "విభాగాల సంఖ్య" : isHi ? "इकाइयाँ" : "Fellowship Units"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">5</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">5</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
-            <Award className="w-5 h-5" />
+          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
+            <Award className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm backdrop-blur-xl flex items-center justify-between hover:-translate-y-0.5 transition-all min-w-0">
+          <div className="min-w-0 pr-2">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-400 block truncate">
               {isTe ? "నమోదైన సభ్యులు" : isHi ? "कुल सदस्य" : "Registered Members"}
             </span>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{users.length}</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1 tracking-tight">{users.length}</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
-            <Users className="w-5 h-5" />
+          <div className="p-2 sm:p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-xl sm:rounded-2xl shrink-0">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
       </div>
