@@ -625,29 +625,30 @@ export default function LoginPage() {
           <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
         </div>
 
-        {/* Language Selection */}
-        <div className="absolute top-6 right-6 z-20">
+        {/* Top Controls Bar (Desktop Language Toggle & Mobile Header) */}
+        <div className="hidden lg:block absolute top-6 right-6 z-20">
           <LanguageToggle />
         </div>
 
-        {/* Mobile Header / Back Button */}
-        <div className="absolute top-6 left-6 lg:hidden z-20">
-          <Link href="/" className="flex items-center gap-2 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md">
+        {/* Mobile Header Bar */}
+        <div className="w-full max-w-md flex items-center justify-between pt-2 px-1 mb-2 lg:hidden z-20">
+          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
             <ChevronLeft className="w-4 h-4" />
             <span className="text-xs font-semibold tracking-wide">{loginT.backToHome}</span>
           </Link>
+          <LanguageToggle />
         </div>
 
         {/* Form Container */}
         <motion.div 
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-md mt-20 mb-6 lg:mt-0 lg:mb-0 bg-white/80 dark:bg-gray-950/80 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-md my-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 mb-20 lg:mb-0"
         >
-          {/* Mobile Branding (Visible only on smaller screens) */}
-          <div className="lg:hidden flex flex-col items-center mb-6 text-center animate-fade-in-up">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-3 shadow-md bg-white dark:bg-gray-900 p-0.5">
+          {/* Mobile Branding Header */}
+          <div className="lg:hidden flex flex-col items-center mb-5 text-center">
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-2 shadow-md bg-white dark:bg-gray-900 p-0.5">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -658,30 +659,20 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
-            <p className={`text-gray-500 dark:text-gray-400 font-bold mt-0.5 leading-normal ${
-              language === "en" ? "text-[10px] uppercase tracking-widest" : "text-xs tracking-normal"
+            <p className={`text-gray-400 font-semibold mt-0.5 ${
+              language === "en" ? "text-[9px] uppercase tracking-widest" : "text-xs tracking-normal"
             }`}>{loginT.ministries}</p>
-            
-            {/* Glassmorphic Mobile Scripture Quote */}
-            <div className="mt-4 px-5 py-3.5 rounded-2xl bg-white/50 dark:bg-white/[0.02] border border-black/5 dark:border-white/10 backdrop-blur-sm max-w-sm mx-auto shadow-sm">
-              <p className="text-xs italic text-gray-600 dark:text-gray-300 font-light leading-relaxed">
-                "{loginT.quote}"
-              </p>
-              <p className="text-[10px] text-[hsl(var(--primary))] font-semibold mt-1.5 text-right uppercase tracking-wider">
-                {loginT.author}
-              </p>
-            </div>
           </div>
 
           {/* Header */}
-          <div className="mb-6 text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+          <div className="mb-5 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
               {loginT.title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
               {loginT.subtitle}
             </p>
           </div>
