@@ -95,37 +95,37 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
       case "YOUTH":
         return {
           icon: Sparkles,
-          badge: "bg-indigo-100 dark:bg-indigo-600 text-indigo-950 dark:text-white border border-indigo-300 dark:border-indigo-400 font-black shadow-sm",
-          glow: "border-indigo-500 shadow-lg shadow-indigo-500/10",
-          iconBg: "bg-indigo-600 text-white shadow-sm"
+          badge: "bg-fuchsia-100 dark:bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300 border border-fuchsia-200 dark:border-fuchsia-500/30 font-black shadow-sm",
+          glow: "border-fuchsia-500 shadow-lg shadow-fuchsia-500/10",
+          iconBg: "bg-fuchsia-500 text-white shadow-sm"
         };
       case "CHILDREN":
         return {
           icon: Smile,
-          badge: "bg-sky-100 dark:bg-sky-600 text-sky-950 dark:text-white border border-sky-300 dark:border-sky-400 font-black shadow-sm",
+          badge: "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30 font-black shadow-sm",
           glow: "border-sky-500 shadow-lg shadow-sky-500/10",
-          iconBg: "bg-sky-600 text-white shadow-sm"
+          iconBg: "bg-sky-500 text-white shadow-sm"
         };
       case "WOMEN":
         return {
           icon: Heart,
-          badge: "bg-rose-100 dark:bg-rose-600 text-rose-950 dark:text-white border border-rose-300 dark:border-rose-400 font-black shadow-sm",
+          badge: "bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 font-black shadow-sm",
           glow: "border-rose-500 shadow-lg shadow-rose-500/10",
-          iconBg: "bg-rose-600 text-white shadow-sm"
+          iconBg: "bg-rose-500 text-white shadow-sm"
         };
       case "MEN":
         return {
           icon: Users,
-          badge: "bg-blue-100 dark:bg-blue-600 text-blue-950 dark:text-white border border-blue-300 dark:border-blue-400 font-black shadow-sm",
+          badge: "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 font-black shadow-sm",
           glow: "border-blue-500 shadow-lg shadow-blue-500/10",
-          iconBg: "bg-blue-600 text-white shadow-sm"
+          iconBg: "bg-blue-500 text-white shadow-sm"
         };
       default:
         return {
           icon: Shield,
-          badge: "bg-purple-100 dark:bg-purple-600 text-purple-950 dark:text-white border border-purple-300 dark:border-purple-400 font-black shadow-sm",
-          glow: "border-purple-500 shadow-lg shadow-purple-500/10",
-          iconBg: "bg-purple-600 text-white shadow-sm"
+          badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-black shadow-sm",
+          glow: "border-emerald-500 shadow-lg shadow-emerald-500/10",
+          iconBg: "bg-emerald-500 text-white shadow-sm"
         };
     }
   };
@@ -356,14 +356,14 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
             </div>
 
             {/* Category Filter Pills */}
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1 py-0.5">
+            <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-1 py-0.5">
               {["ALL", "YOUTH", "CHILDREN", "WOMEN", "SERVICE"].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
                   className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all shrink-0 ${
                     categoryFilter === cat
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                      ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -385,13 +385,13 @@ export default function MemberGroups({ users = [] }: MemberGroupsProps) {
                     onClick={() => handleSelectGroup(group)}
                     className={`p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group hover:-translate-y-0.5 ${
                       isSelected 
-                        ? `bg-indigo-50/70 dark:bg-slate-800 border-2 border-indigo-500 shadow-md` 
+                        ? `bg-primary/5 dark:bg-slate-800/80 border-2 border-primary shadow-md` 
                         : "bg-slate-50 hover:bg-slate-100/80 dark:bg-slate-800/40 dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-700/60"
                     }`}
                   >
                     {/* Selected Accent Bar */}
                     {isSelected && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary" />
                     )}
 
                     <div className="flex justify-between items-start gap-2.5">

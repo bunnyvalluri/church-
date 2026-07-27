@@ -6,7 +6,11 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
 import { queueReport } from "@/lib/offlineSync";
-import CameraCapture from "@/components/CameraCapture";
+import dynamic from "next/dynamic";
+
+const CameraCapture = dynamic(() => import("@/components/CameraCapture"), {
+  ssr: false,
+});
 import { 
   Camera, 
   MapPin, 
@@ -540,7 +544,7 @@ function FieldReportFormContent() {
         {/* Left Side Info Card */}
         <div className="md:col-span-5 space-y-5 order-2 md:order-1">
           
-          <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-5 shadow-sm transition-all duration-200 group">
+          <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-4 sm:p-5 shadow-sm transition-all duration-200 group">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-indigo-600 to-emerald-500" />
 
             <div className="relative space-y-5 pt-1">
@@ -696,7 +700,7 @@ function FieldReportFormContent() {
             )}
 
             {/* Core Identification */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5">
               <div className="border-b border-slate-100 dark:border-white/5 pb-3">
                 <h3 className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                   <Church className="w-4.5 h-4.5" />
@@ -719,7 +723,7 @@ function FieldReportFormContent() {
                         required
                         value={selectedBranchId}
                         onChange={(e) => setSelectedBranchId(e.target.value)}
-                        className="w-full h-11 pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 w-full appearance-none cursor-pointer"
+                        className="w-full h-10 sm:h-11 pl-9 sm:pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 w-full appearance-none cursor-pointer"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id} className="dark:bg-slate-900">{b.name} {t.eventManager?.branchText || "Branch"}</option>
@@ -763,7 +767,7 @@ function FieldReportFormContent() {
                     placeholder="e.g. Sunday Worship Service, Youth Fellowship"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
+                    className="w-full h-10 sm:h-11 pl-9 sm:pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
                   />
                 </div>
               </div>
@@ -780,14 +784,14 @@ function FieldReportFormContent() {
                     required
                     value={reportDate}
                     onChange={(e) => setReportDate(e.target.value)}
-                    className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
+                    className="w-full h-10 sm:h-11 pl-9 sm:pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Outcomes & Volunteer Attendance */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5">
               <div className="border-b border-slate-100 dark:border-white/5 pb-3">
                 <h3 className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                   <Activity className="w-4.5 h-4.5" />
@@ -806,7 +810,7 @@ function FieldReportFormContent() {
                   placeholder="Provide a detailed report of the ministry outcome..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3.5 rounded-xl bg-slate-55 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 resize-none shadow-sm"
+                  className="w-full p-3 sm:p-3.5 rounded-xl bg-slate-55 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 resize-none shadow-sm"
                 />
               </div>
 
@@ -815,7 +819,7 @@ function FieldReportFormContent() {
                 <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest block">
                   {t.eventManager?.volunteersLabel || "Volunteers Attended"}
                 </label>
-                <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 focus-within:ring-2 focus-within:ring-violet-500/20 focus-within:border-violet-500 transition-all min-h-[44px]">
+                <div className="flex flex-wrap items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-950/80 dark:border-white/10 focus-within:ring-2 focus-within:ring-violet-500/20 focus-within:border-violet-500 transition-all min-h-[40px] sm:min-h-[44px]">
                   <UserPlus className="w-4 h-4 text-slate-400 ml-1 mr-0.5 shrink-0" />
                   
                   {volunteers.map((name) => (
@@ -855,7 +859,7 @@ function FieldReportFormContent() {
             </div>
 
             {/* Media Uploader */}
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5">
               <div className="border-b border-slate-100 dark:border-white/5 pb-3 flex items-center justify-between">
                 <h3 className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-2">
                   <UploadCloud className="w-4.5 h-4.5" />
@@ -882,7 +886,7 @@ function FieldReportFormContent() {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[140px] ${
+                className={`relative border-2 border-dashed rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[120px] sm:min-h-[140px] ${
                   isDragging 
                     ? "border-violet-500 bg-violet-500/5" 
                     : "border-slate-200 hover:border-violet-450 dark:border-white/10 dark:hover:border-violet-500/30"
@@ -907,7 +911,7 @@ function FieldReportFormContent() {
                   </p>
                 </div>
 
-                <div className="mt-4 flex items-center justify-center gap-2 w-full max-w-[240px]">
+                <div className="mt-3 sm:mt-4 flex items-center justify-center gap-2 w-full max-w-[280px]">
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}

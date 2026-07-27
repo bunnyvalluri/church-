@@ -415,6 +415,14 @@ export default function AdminSidebar({
     }).filter((group) => group.items.length > 0);
   }, [searchQuery, userRole, t]);
 
+  const bestMatchHref = useMemo(() => {
+    const allHrefs = menuGroups.flatMap((g) => g.items.map((i) => i.href));
+    const matches = allHrefs.filter(
+      (href) => pathname === href || pathname.startsWith(href + "/")
+    );
+    return matches.sort((a, b) => b.length - a.length)[0] || "";
+  }, [pathname]);
+
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-[#0B0C16] text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-white/10 select-none transition-colors">
       {/* ── Brand Header ── */}
@@ -489,7 +497,7 @@ export default function AdminSidebar({
       )}
 
       {/* ── Navigation Items List ── */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-6">
+      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-3 space-y-6">
         {filteredGroups.map((group) => {
           const isGroupCollapsed = !!collapsedGroups[group.title] && !searchQuery;
 
@@ -521,9 +529,7 @@ export default function AdminSidebar({
               {!isGroupCollapsed && (
                 <div className="space-y-0.5">
                   {group.items.map((item) => {
-                    const isActive =
-                      pathname === item.href ||
-                      (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+                    const isActive = item.href === bestMatchHref;
                     const Icon = item.icon;
 
                     return (
@@ -532,16 +538,19 @@ export default function AdminSidebar({
                         href={item.href}
                         onClick={onMobileClose}
                         title={isCollapsed ? item.name : undefined}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 group ${
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group relative overflow-hidden ${
                           isActive
-                            ? `bg-gradient-to-r ${item.activeGradient} text-white shadow-md shadow-indigo-500/20`
-                            : "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
+                            ? "bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm"
+                            : "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5"
                         }`}
                       >
+                        {isActive && (
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-indigo-600 dark:bg-indigo-400 rounded-r-full" />
+                        )}
                         <div
-                          className={`p-1 rounded-lg flex items-center justify-center transition-all ${
+                          className={`p-1.5 rounded-lg flex items-center justify-center transition-all ${
                             isActive
-                              ? "bg-white/20 text-white"
+                              ? `bg-white dark:bg-black/20 shadow-sm ${item.color}`
                               : `${item.iconBg} group-hover:scale-110`
                           }`}
                         >

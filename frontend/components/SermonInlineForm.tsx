@@ -172,7 +172,7 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
       </div>
 
       {/* Scripture + Category row */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5">
             <BookOpen className="w-3.5 h-3.5" /> Scripture
@@ -232,7 +232,7 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
           <button
             type="button"
             onClick={() => setVideoMode("URL")}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${
               videoMode === "URL"
                 ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm"
                 : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
@@ -244,7 +244,7 @@ export default function SermonInlineForm({ onClose, onSuccess, isEditMode = fals
           <button
             type="button"
             onClick={() => setVideoMode("FILE")}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all ${
               videoMode === "FILE"
                 ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm"
                 : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"

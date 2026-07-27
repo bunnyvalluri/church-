@@ -258,14 +258,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
-  const [pendingLogoutResolve, setPendingLogoutResolve] = useState<(() => void) | null>(null);
+  const [pendingLogoutResolve, setPendingLogoutResolve] = useState<((confirmed: boolean) => void) | null>(null);
 
   const logout = async () => {
-    // Suspend execution until the user clicks OK on the custom confirmation modal
-    await new Promise<void>((resolve) => {
+    // Suspend execution until the user clicks OK or Cancel
+    const confirmed = await new Promise<boolean>((resolve) => {
       setPendingLogoutResolve(() => resolve);
       setShowLogoutAlert(true);
     });
+
+    if (!confirmed) {
+      throw new Error("CANCELLED_BY_USER");
+    }
 
     try {
       if (auth && typeof signOut === "function") {
@@ -285,7 +289,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleConfirmLogoutAlert = () => {
     setShowLogoutAlert(false);
     if (pendingLogoutResolve) {
-      pendingLogoutResolve();
+      pendingLogoutResolve(true);
+      setPendingLogoutResolve(null);
+    }
+  };
+
+  const handleCancelLogoutAlert = () => {
+    setShowLogoutAlert(false);
+    if (pendingLogoutResolve) {
+      pendingLogoutResolve(false);
       setPendingLogoutResolve(null);
     }
   };
@@ -307,7 +319,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             <p className="text-stone-300 text-[13px] mb-6 leading-normal font-normal">
               Logging out...
             </p>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleCancelLogoutAlert}
+                className="px-6 py-1.5 rounded-full bg-transparent hover:bg-white/5 text-stone-300 font-semibold text-[13px] transition-all"
+              >
+                Cancel
+              </button>
               <button
                 onClick={handleConfirmLogoutAlert}
                 className="px-6 py-1.5 rounded-full bg-[#fca595] hover:bg-[#fdbeb2] text-black font-semibold text-[13px] border-[1.5px] border-black outline outline-[1.5px] outline-[#fca595] outline-offset-[1.5px] hover:outline-[#fdbeb2] active:scale-95 transition-all shadow-sm"

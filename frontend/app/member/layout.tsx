@@ -177,48 +177,55 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     return null;
   }
 
-  if (isMainDashboard) return <>{children}</>;
-
-  const Sidebar = () => (
-    <aside className="flex flex-col h-full">
-      {/* Brand */}
-      <div className="p-6 border-b border-gray-100 dark:border-white/5">
-        <Link href="/member" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-purple-300/40 group-hover:border-purple-400/70 shadow-lg group-hover:scale-105 transition-transform bg-white flex items-center justify-center">
+  const Sidebar = ({ onClose }: { onClose?: () => void }) => (
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-white/5 overflow-hidden">
+      {/* Brand Header */}
+      <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between gap-3 shrink-0">
+        <Link href="/member" onClick={onClose} className="flex items-center gap-3 group min-w-0">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-purple-300/40 group-hover:border-purple-400/70 shadow-md group-hover:scale-105 transition-transform bg-white flex items-center justify-center shrink-0">
             <Image src="/logo.png" alt="KCM Logo" fill className="object-contain p-0.5" priority />
           </div>
-          <div>
-            <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight">{lt.portalName}</p>
-            <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{lt.memberArea}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight truncate">{lt.portalName}</p>
+            <p className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest truncate">{lt.memberArea}</p>
           </div>
         </Link>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors shrink-0"
+            title="Close Drawer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Profile Card */}
-      <div className="p-4">
-        <div className="relative bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-4 text-white overflow-hidden">
-          <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-lg" />
+      <div className="p-3.5 sm:p-4 shrink-0">
+        <div className="relative bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 rounded-2xl p-3.5 sm:p-4 text-white overflow-hidden shadow-lg shadow-purple-500/10">
+          <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-lg pointer-events-none" />
           <div className="relative flex items-center gap-3">
-            <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 flex-shrink-0 overflow-hidden">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 shrink-0 overflow-hidden shadow-xs">
               {user?.image && typeof user.image === 'string' && user.image.length > 0 ? (
                 <Image src={user.image} alt={user.name || "Member"} width={44} height={44} unoptimized className="w-full h-full object-cover" />
               ) : (
                 <User className="w-5 h-5 text-white" />
               )}
             </div>
-            <div className="min-w-0">
-              <p className="font-bold text-sm truncate">{user?.name || "Member"}</p>
-              <p className="text-purple-200 text-[10px] truncate">{user?.email}</p>
+            <div className="min-w-0 flex-1">
+              <p className="font-extrabold text-sm truncate leading-tight text-white">{user?.name || "Member"}</p>
+              <p className="text-purple-100 text-[11px] truncate mt-0.5 leading-none font-medium">{user?.email}</p>
             </div>
           </div>
-          <div className="relative flex items-center flex-wrap justify-between gap-1.5 mt-3">
-            <div className="flex items-center gap-1.5">
-              <Shield className="w-3 h-3 text-purple-200" />
-              <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider">{lt.verifiedMember}</span>
+          <div className="relative flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-white/15">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/15 backdrop-blur-md rounded-full border border-white/20">
+              <Shield className="w-3 h-3 text-amber-300" />
+              <span className="text-[9.5px] font-extrabold text-white uppercase tracking-wider">{lt.verifiedMember}</span>
             </div>
-            <div className="flex items-center gap-1">
-              {isOnline ? <Wifi className="w-3 h-3 text-green-300" /> : <WifiOff className="w-3 h-3 text-red-300" />}
-              <span className={`text-[9px] font-bold ${isOnline ? "text-green-300" : "text-red-300"}`}>
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 backdrop-blur-md rounded-full border border-emerald-400/30">
+              <Wifi className="w-3 h-3 text-emerald-300 animate-pulse" />
+              <span className="text-[9.5px] font-extrabold text-emerald-300 uppercase tracking-wider">
                 {isOnline ? lt.live : lt.offline}
               </span>
             </div>
@@ -226,73 +233,83 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-        <Link
-          href="/member"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-semibold group ${
-            pathname === "/member"
-              ? "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400"
-              : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-          }`}
-        >
-          <Home className="w-4 h-4 flex-shrink-0" />
-          {lt.dashboard}
-        </Link>
+      {/* Nav & Preferences List (Single scroll container) */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
+        {/* Navigation Section */}
+        <div className="space-y-1">
+          <Link
+            href="/member"
+            onClick={onClose}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-xs sm:text-sm font-bold group ${
+              pathname === "/member"
+                ? "bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 shadow-xs"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+            }`}
+          >
+            <Home className="w-4 h-4 shrink-0" />
+            <span>{lt.dashboard}</span>
+          </Link>
 
-        <p className="text-[10px] font-extrabold text-gray-300 dark:text-gray-600 uppercase tracking-widest px-3 pt-3 pb-1">{lt.servicesHeader}</p>
+          <p className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-3 pt-3 pb-1">{lt.servicesHeader}</p>
 
-        {translatedLinks.map((link) => {
-          const Icon = link.icon;
-          const isActive = pathname.startsWith(link.href);
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-                isActive
-                  ? `${link.bg} ${link.text} font-bold`
-                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white font-semibold"
-              }`}
-            >
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
-                isActive
-                  ? `bg-gradient-to-br ${link.color} shadow-md`
-                  : "bg-gray-100 dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
-              }`}>
-                <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"}`} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm leading-none truncate">{link.label}</p>
-                <p className={`text-[10px] mt-0.5 truncate ${isActive ? "opacity-70" : "text-gray-400 dark:text-gray-500"}`}>{link.desc}</p>
-              </div>
-              {isActive && <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 opacity-60" />}
-            </Link>
-          );
-        })}
-      </nav>
+          {translatedLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+                  isActive
+                    ? `${link.bg} ${link.text} font-extrabold shadow-xs`
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white font-semibold"
+                }`}
+              >
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                  isActive
+                    ? `bg-gradient-to-br ${link.color} shadow-md`
+                    : "bg-gray-100 dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
+                }`}>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"}`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm leading-tight truncate">{link.label}</p>
+                  <p className={`text-[10px] truncate mt-0.5 ${isActive ? "opacity-80" : "text-gray-400 dark:text-gray-500"}`}>{link.desc}</p>
+                </div>
+                {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 opacity-70" />}
+              </Link>
+            );
+          })}
+        </div>
 
-      {/* Settings & Preferences Toggles for Mobile/Tablet */}
-      <div className="p-4 lg:hidden border-t border-gray-100 dark:border-white/5">
-        <p className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">Preferences</p>
-        <div className="flex items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1.5 rounded-2xl shadow-sm backdrop-blur-md w-full justify-around scale-95">
-          <LanguageToggle />
-          <ThemeToggle />
-          <PaletteToggle />
+        {/* Preferences Toggles inside mobile drawer */}
+        <div className="p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200/80 dark:border-white/5 rounded-2xl space-y-2 lg:hidden">
+          <p className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">
+            {lt.preferences}
+          </p>
+          <div className="flex items-center justify-around gap-2 bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-white/10 p-2 rounded-xl shadow-xs">
+            <LanguageToggle />
+            <ThemeToggle />
+            <PaletteToggle />
+          </div>
         </div>
       </div>
 
-      {/* Bottom: Sign Out */}
-      <div className="p-4 border-t border-gray-100 dark:border-white/5">
+      {/* Footer / Sign Out */}
+      <div className="p-3.5 sm:p-4 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50/50 dark:bg-gray-900/50">
         <button
-          onClick={logout}
-          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
+          onClick={() => {
+            if (onClose) onClose();
+            logout();
+          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 border border-red-200/80 dark:border-red-900/40 transition-all active:scale-[0.98]"
         >
           <LogOut className="w-4 h-4" />
-          {lt.signOut}
+          <span>{lt.signOut}</span>
         </button>
       </div>
-    </aside>
+    </div>
   );
 
   return (
@@ -311,24 +328,16 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSidebarOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] lg:hidden"
             />
             <motion.aside
-              initial={{ x: -300 }}
+              initial={{ x: "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-900 z-50 lg:hidden shadow-2xl flex flex-col"
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 280 }}
+              className="fixed top-0 left-0 bottom-0 w-[280px] sm:w-[320px] bg-white dark:bg-gray-900 z-[100] lg:hidden shadow-2xl overflow-hidden flex flex-col"
             >
-              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
-                <span className="font-black text-gray-900 dark:text-white">{lt.menu}</span>
-                <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="flex-1 overflow-auto">
-                <Sidebar />
-              </div>
+              <Sidebar onClose={() => setSidebarOpen(false)} />
             </motion.aside>
           </>
         )}
@@ -338,32 +347,32 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       <div className="flex-1 min-w-0 max-w-full overflow-x-hidden lg:ml-64 xl:ml-72 flex flex-col min-h-screen">
         {/* Top Bar */}
         <header className={`sticky top-0 z-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 transition-shadow ${scrolled ? "shadow-md" : ""}`}>
-          <div className="flex items-center gap-4 px-4 sm:px-6 h-14">
+          <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 h-14">
             {/* Mobile Hamburger */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-all"
+              className="lg:hidden p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-all"
             >
               <Menu className="w-5 h-5" />
             </button>
 
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-sm min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-sm min-w-0 flex-1">
               <Link href="/member" className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap font-medium hidden sm:block">
                 {lt.dashboard}
               </Link>
               <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0 hidden sm:block" />
               {activeLink && (
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <div className={`w-6 h-6 bg-gradient-to-br ${activeLink.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
                     <activeLink.icon className="w-3 h-3 text-white" />
                   </div>
-                  <span className="font-bold text-gray-900 dark:text-white whitespace-nowrap">{activeLink.label}</span>
+                  <span className="font-extrabold text-xs sm:text-sm text-gray-900 dark:text-white truncate">{activeLink.label}</span>
                 </div>
               )}
             </div>
 
-            {/* Right: online + bell */}
+            {/* Right: online + profile */}
             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
               {/* Unified Toggles Capsule for Desktop */}
               <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
@@ -372,13 +381,13 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <PaletteToggle />
               </div>
 
-              <div className={`flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
+              <div className={`hidden sm:flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
                 isOnline
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
-              } p-1 sm:px-2.5 sm:py-1 gap-0 sm:gap-1.5`}>
+              } px-2.5 py-1 gap-1.5`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
-                <span className="hidden sm:inline">{isOnline ? lt.live : lt.offline}</span>
+                <span>{isOnline ? lt.live : lt.offline}</span>
               </div>
 
               {/* Profile Dropdown Container */}
@@ -568,7 +577,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8">
+        <main className="flex-1 p-2 sm:p-5 md:p-6 lg:p-8">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 8 }}

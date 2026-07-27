@@ -13,26 +13,26 @@ export default function MemberFooter() {
   }, []);
 
   return (
-    <footer className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md py-4 pb-20 sm:pb-4 px-4 sm:px-6 mt-8 select-none transition-colors">
-      <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
+    <footer className="w-full border-t border-gray-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0a0a12]/80 backdrop-blur-md py-3 sm:py-4 pb-24 sm:pb-4 px-3 sm:px-6 mt-6 select-none transition-colors">
+      <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left text-xs text-gray-500 dark:text-gray-400">
         
         {/* Copyright & Developer Info */}
-        <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start text-center sm:text-left">
-          <span className="font-semibold text-gray-700 dark:text-gray-300" suppressHydrationWarning>
-            © {mounted ? currentYear : 2026} Kingdom of Christ Ministries. All rights reserved.
+        <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center sm:text-left">
+          <span className="font-semibold text-[11px] sm:text-xs text-gray-700 dark:text-gray-300" suppressHydrationWarning>
+            © {mounted ? currentYear : 2026} Kingdom of Christ Ministries.
           </span>
           <a
             href="https://valluri-rahul-portfolio.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-xs tracking-wide text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors inline-flex items-center gap-1"
+            className="font-bold text-[10px] sm:text-xs tracking-wide text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors inline-flex items-center gap-1"
           >
-            ✦ Developed by VALLURI RAHUL. ✦
+            ✦ Developed by VALLURI RAHUL ✦
           </a>
         </div>
 
         {/* Footer Links */}
-        <div className="flex items-center gap-4 text-[11px] font-medium flex-wrap justify-center">
+        <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-medium justify-center">
           <Link
             href="/privacy"
             className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"

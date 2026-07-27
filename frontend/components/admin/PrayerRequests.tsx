@@ -503,7 +503,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.total}</h3>
           </div>
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800 rounded-xl">
+          <div className="p-3 bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/30 rounded-xl">
             <MessageSquare className="w-5 h-5" />
           </div>
         </div>
@@ -516,7 +516,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.pending}</h3>
           </div>
-          <div className="p-3 bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800 rounded-xl">
+          <div className="p-3 bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/30 rounded-xl">
             <Clock className="w-5 h-5" />
           </div>
         </div>
@@ -529,7 +529,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.praying}</h3>
           </div>
-          <div className="p-3 bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-800 rounded-xl">
+          <div className="p-3 bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-500/30 rounded-xl">
             <Heart className="w-5 h-5" />
           </div>
         </div>
@@ -542,7 +542,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
             </span>
             <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">{stats.answered}</h3>
           </div>
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800 rounded-xl">
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30 rounded-xl">
             <CheckCircle className="w-5 h-5" />
           </div>
         </div>
@@ -646,7 +646,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
             </div>
 
             {/* List */}
-            <div className="space-y-2.5 max-h-[560px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-2.5 max-h-[560px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {filteredPrayers.map(p => {
                 const isSelected = selectedPrayer?.id === p.id;
                 return (
@@ -656,10 +656,10 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                       setSelectedPrayer(p);
                       setMobileTab("detail");
                     }}
-                    className={`p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden group ${
+                    className={`p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden group border ${
                       isSelected 
-                        ? "bg-indigo-50/80 dark:bg-indigo-950/50 border-2 border-indigo-500 dark:border-indigo-500 shadow-md" 
-                        : "bg-slate-50/80 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/70 hover:border-indigo-300 dark:hover:border-indigo-500/40"
+                        ? "bg-indigo-50/80 dark:bg-indigo-950/50 border-indigo-300 dark:border-indigo-500/50 shadow-md" 
+                        : "bg-slate-50/80 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border-slate-200/80 dark:border-slate-700/70 hover:border-indigo-300 dark:hover:border-indigo-500/40"
                     }`}
                   >
                     {isSelected && (
@@ -669,10 +669,10 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                     <div className="flex items-center justify-between gap-2">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
                         p.status === "ANSWERED" 
-                          ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800" 
+                          ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30" 
                           : p.status === "PRAYING" 
-                          ? "bg-purple-100 dark:bg-purple-950/80 text-purple-900 dark:text-purple-200 border-purple-300 dark:border-purple-800" 
-                          : "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-800"
+                          ? "bg-purple-100 dark:bg-purple-500/20 text-purple-900 dark:text-purple-300 border-purple-300 dark:border-purple-500/30" 
+                          : "bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border-amber-300 dark:border-amber-500/30"
                       }`}>
                         {getStatusTranslation(p.status)}
                       </span>
@@ -730,7 +730,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-200 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">
+                      <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-900 dark:text-slate-200 rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-indigo-200 dark:border-indigo-500/30">
                         {getCategoryTranslation(selectedPrayer.category)}
                       </span>
                       {selectedPrayer.isAnonymous && (
@@ -820,7 +820,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
 
                   <button 
                     onClick={() => handleDeletePrayer(selectedPrayer.id)}
-                    className="py-1.5 px-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-all w-full sm:w-auto shrink-0"
+                    className="py-1.5 px-3 bg-rose-50 dark:bg-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-all w-full sm:w-auto shrink-0"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     {isTe ? "తొలగించు" : isHi ? "हटाएं" : "Delete Request"}
@@ -841,14 +841,14 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                   
                   <button 
                     onClick={() => handleCopyVerse(getVerseSuggestion(selectedPrayer.category))}
-                    className="py-1.5 px-3.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 w-full sm:w-auto"
+                    className="py-1.5 px-3.5 bg-white dark:bg-indigo-500/20 hover:bg-slate-50 dark:hover:bg-indigo-500/30 text-indigo-700 dark:text-slate-200 border border-indigo-200 dark:border-indigo-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 w-full sm:w-auto"
                   >
                     {copiedVerse ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedVerse ? (isTe ? "కాపీ చేయబడింది!" : isHi ? "कॉपी किया गया!" : "Copied!") : (isTe ? "వాక్యాన్ని కాపీ చేయండి" : isHi ? "వచన కాపీ کریں" : "Copy Verse")}
                   </button>
                 </div>
 
-                <p className="text-sm leading-relaxed italic font-semibold text-slate-900 dark:text-indigo-100">
+                <p className="text-sm leading-relaxed italic font-semibold text-slate-700 dark:text-white">
                   "{getVerseSuggestion(selectedPrayer.category)}"
                 </p>
 
@@ -888,7 +888,7 @@ export default function PrayerRequests({ users = [], externalSearchQuery }: Pray
                     {selectedPrayer.assignedPartners.map(partner => (
                       <span 
                         key={partner}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 rounded-full text-xs font-bold"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-900 dark:text-slate-200 border border-indigo-200 dark:border-indigo-500/30 rounded-full text-xs font-bold"
                       >
                         <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                         {partner}

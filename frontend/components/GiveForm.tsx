@@ -777,8 +777,8 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       )}
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
-      <section className="pt-4 sm:pt-8 pb-12 sm:pb-20 relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="pt-2 sm:pt-6 pb-10 sm:pb-20 relative z-20">
+        <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8">
           
           {loadingLists ? (
             <div className="py-24 flex flex-col items-center justify-center space-y-5">
@@ -791,14 +791,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </p>
             </div>
           ) : (
-            <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-12 max-w-6xl mx-auto items-start">
+            <div className="grid lg:grid-cols-12 gap-5 lg:gap-8 xl:gap-12 max-w-6xl mx-auto items-start">
 
               {/* ── LEFT: FORM CARD ───────────────────────── */}
               <div className="lg:col-span-7">
                 <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-sm sm:shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                   
                   {/* Card header strip */}
-                  <div className="px-4 sm:px-8 pt-5 sm:pt-8 pb-4 sm:pb-5 border-b border-gray-100 dark:border-gray-800">
+                  <div className="px-3.5 sm:px-8 pt-4 sm:pt-8 pb-3.5 sm:pb-5 border-b border-gray-100 dark:border-gray-800">
                     <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-3 min-[480px]:gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-600/25">
@@ -820,7 +820,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                     </div>
 
                     {/* Step progress bar */}
-                    <div className="flex items-center gap-3 mt-5">
+                    <div className="flex items-center gap-3 mt-4 sm:mt-5">
                       {[1, 2].map((s) => (
                         <div key={s} className="flex-1 flex items-center gap-3">
                           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all duration-300 ${
@@ -850,10 +850,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mx-5 sm:mx-8 mt-4 overflow-hidden"
+                        className="mx-3.5 sm:mx-8 mt-3.5 overflow-hidden"
                       >
-                        <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-sm rounded-2xl flex items-start gap-3">
-                          <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-xs sm:text-sm rounded-2xl flex items-start gap-3">
+                          <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" />
                           <span>{errorMessage}</span>
                         </div>
                       </motion.div>
@@ -1306,7 +1306,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                             >
                                               {app.initial}
                                             </span>
-                                            <span className="text-[7px] sm:text-[8px] font-bold tracking-tight leading-tight text-center" style={{ color: app.color }}>{app.name}</span>
+                                            <span className="text-[8px] sm:text-[9px] font-extrabold tracking-tighter leading-none text-center truncate w-full block max-w-full" style={{ color: app.color }}>{app.name}</span>
                                           </button>
                                         ))}
                                       </div>

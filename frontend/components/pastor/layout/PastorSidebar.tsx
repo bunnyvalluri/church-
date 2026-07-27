@@ -30,7 +30,8 @@ import {
   Shield, 
   ChevronLeft, 
   ChevronRight,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 

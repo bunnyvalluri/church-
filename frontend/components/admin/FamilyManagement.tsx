@@ -422,7 +422,7 @@ export default function FamilyManagement({ users = [] }: FamilyManagementProps) 
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* ─── Top Overview Metric Cards (Refined Color Scheme) ─── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Metric 1 */}
         <div className="bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 p-5 rounded-2xl shadow-sm flex items-center justify-between hover:-translate-y-0.5 transition-all group">

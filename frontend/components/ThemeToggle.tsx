@@ -16,33 +16,19 @@ export default function ThemeToggle() {
   // This prevents the server/client DOM mismatch (hydration error)
   return (
     <button
+      type="button"
       onClick={() => mounted && setTheme(theme === "dark" ? "light" : "dark")}
-      className="relative w-16 h-8 flex items-center bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-full p-1 transition-all duration-500 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 group overflow-hidden"
+      className="p-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors shrink-0"
       aria-label="Toggle theme"
       suppressHydrationWarning
     >
-      {/* Background Track Icons */}
-      <div className="absolute inset-0 flex items-center justify-between px-2 text-black/40 dark:text-white/40 z-0">
-        <Sun className="w-3.5 h-3.5 transition-transform duration-500 group-hover:rotate-45" />
-        <Moon className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-rotate-12" />
-      </div>
-
-      {/* Toggle Thumb — always same structure, content changes after mount */}
-      <div
-        suppressHydrationWarning
-        className={`relative z-10 w-6 h-6 bg-white dark:bg-[#0a0a0f] rounded-full shadow-sm border border-black/10 dark:border-white/20 flex items-center justify-center transform transition-all duration-500 ${
-          mounted && theme === "dark" ? "translate-x-8" : "translate-x-0"
-        }`}
-      >
-        {/* Show sun by default on server; swap after mount */}
-        <span suppressHydrationWarning>
-          {mounted && theme === "dark" ? (
-            <Moon className="w-3.5 h-3.5 text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
-          ) : (
-            <Sun className="w-3.5 h-3.5 text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-          )}
-        </span>
-      </div>
+      <span suppressHydrationWarning className="flex items-center justify-center">
+        {mounted && theme === "dark" ? (
+          <Moon className="w-5 h-5 text-indigo-400" />
+        ) : (
+          <Sun className="w-5 h-5 text-amber-500" />
+        )}
+      </span>
     </button>
   );
 }

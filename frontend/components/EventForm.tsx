@@ -281,7 +281,7 @@ export default function EventForm({
     }`;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Global Error Banner */}
       {errors._global && (
         <div className="flex items-start gap-2.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/30 rounded-2xl p-4 text-rose-700 dark:text-rose-400">

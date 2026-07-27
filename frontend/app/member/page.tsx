@@ -385,8 +385,7 @@ export default function MemberDashboard() {
      RENDER
   ═════════════════════════════════════════════════════════ */
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gray-50 dark:bg-[#0a0a12] text-gray-900 dark:text-gray-100">
-
+    <div className="w-full space-y-6 sm:space-y-8 pb-12">
       {/* ── Toast ─────────────────────────────────────────── */}
       <AnimatePresence>
         {toast && (
@@ -406,622 +405,356 @@ export default function MemberDashboard() {
         )}
       </AnimatePresence>
 
-      {/* ══════════════════════════════════════════════════
-          HEADER
-      ══════════════════════════════════════════════════ */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0a0a12]/80 backdrop-blur-xl border-b border-gray-200/60 dark:border-white/5 shadow-sm">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-violet-300/40 group-hover:border-violet-500/60 shadow-lg transition-all bg-white flex items-center justify-center">
-              <Image src="/logo.png" alt="KCM" fill className="object-contain p-0.5" priority />
+      {/* ── Refresh & Header Utility Bar ─────────────────── */}
+      <div className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-purple-200/60 dark:border-purple-800/40">
+            <activeGreeting.icon className="w-4 h-4 text-amber-500 flex-shrink-0" />
+            <span>{activeGreeting.text}</span>
+          </div>
+          {mounted && lastSynced && (
+            <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+              <Wifi className="w-3.5 h-3.5 text-emerald-500" />
+              <span>{dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
             </div>
-            <div className="block">
-              <p className="text-sm font-black bg-gradient-to-r from-violet-600 to-purple-500 bg-clip-text text-transparent leading-none">
-                KCM Portal
-              </p>
-              <p className="text-[9px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">
-                Believer Member
-              </p>
+          )}
+        </div>
+        <button
+          onClick={() => loadFeeds(false)}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 transition-all active:scale-95 cursor-pointer"
+          title="Refresh Data"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-purple-600" : ""}`} />
+          <span className="hidden sm:inline">Refresh</span>
+        </button>
+      </div>
+
+      {/* ── Hero Welcome Banner ──────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-6 sm:p-8 md:p-10 text-white shadow-xl shadow-purple-500/10 border border-white/10"
+      >
+        {/* Ambient Glows */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-16 -right-16 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-indigo-400/20 rounded-full blur-2xl" />
+        </div>
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+              {dt.greetings.welcome},{" "}
+              <span className="text-amber-300">{firstName}! 🙏</span>
+            </h2>
+            <p className="text-violet-100/90 text-sm sm:text-base leading-relaxed font-medium">
+              {dt.greetings.sub}
+            </p>
+          </div>
+
+          {/* Stat chips on desktop hero */}
+          <div className="grid grid-cols-2 gap-3 shrink-0">
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3">
+              <Calendar className="w-5 h-5 text-amber-300 flex-shrink-0" />
+              <div>
+                <p className="text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
+                <p className="text-[10px] text-white/80 font-bold uppercase tracking-wider mt-1">{dt.stats.events.label}</p>
+              </div>
             </div>
-          </Link>
-
-          {/* Right Controls */}
-          <div className="flex items-center gap-2 sm:gap-3">
-
-            {/* Online badge */}
-            <div className={`flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
-              isOnline
-                ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400"
-            } p-1 sm:px-2.5 sm:py-1 gap-0 sm:gap-1.5`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
-              <span className="hidden sm:inline">{isOnline ? "Live" : "Offline"}</span>
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3">
+              <Heart className="w-5 h-5 text-rose-300 flex-shrink-0" />
+              <div>
+                <p className="text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
+                <p className="text-[10px] text-white/80 font-bold uppercase tracking-wider mt-1">{dt.stats.prayers.label}</p>
+              </div>
             </div>
-
-            {/* Toggles capsule */}
-            <div className="hidden md:flex items-center gap-1.5 bg-gray-100/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl backdrop-blur-md">
-              <LanguageToggle />
-              <ThemeToggle />
-              <PaletteToggle />
-            </div>
-
-            {/* Refresh */}
-            <button
-              onClick={() => loadFeeds(false)}
-              disabled={isRefreshing}
-              className="hidden lg:flex w-9 h-9 items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-violet-400/50 text-gray-400 hover:text-violet-600 transition-all"
-              title="Refresh"
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            </button>
-
-            {/* Profile dropdown */}
-            <div className="relative flex-shrink-0" ref={profileMenuRef}>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-gray-100/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-violet-400/50 transition-all"
-                aria-label="Profile menu"
-              >
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-violet-500/50 shadow-sm flex-shrink-0">
-                  {user?.image && typeof user.image === "string" && user.image.length > 0 ? (
-                    <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center">
-                      <User className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                    </div>
-                  )}
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900" />
-                </div>
-                <span className="hidden lg:block text-xs font-semibold text-gray-700 dark:text-gray-300 max-w-[80px] truncate">
-                  {firstName}
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {isProfileOpen && (
-                  <>
-                    {/* Mobile Backdrop Overlay */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      onClick={() => setIsProfileOpen(false)}
-                      className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 sm:hidden"
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      transition={{ duration: 0.18, ease: "easeOut" }}
-                      className="fixed top-14 right-3 sm:absolute sm:top-full sm:right-0 sm:mt-2 w-[calc(100vw-1.5rem)] sm:w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl p-4 sm:p-5 space-y-4 z-50 origin-top-right overflow-hidden text-left"
-                    >
-                      {/* User Profile Header Card */}
-                      <div className="relative bg-purple-50/80 dark:bg-purple-950/60 p-3.5 rounded-2xl border border-purple-100/80 dark:border-purple-800/60 flex items-center gap-3">
-                        <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-purple-500/70 shadow-sm flex-shrink-0">
-                          {user?.image && typeof user.image === "string" && user.image.length > 0 ? (
-                            <Image src={user.image} alt={user.name || "Member"} fill unoptimized className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                              <User className="w-5 h-5 text-purple-600 dark:text-purple-200" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
-                          <p className="text-[11px] text-gray-500 dark:text-gray-300 truncate leading-none mt-0.5">{user?.email}</p>
-                          <span className="inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-purple-900 dark:text-white mt-1.5 px-2.5 py-0.5 bg-purple-100/90 dark:bg-purple-600/40 rounded-full border border-purple-300 dark:border-purple-400/60 shadow-xs">
-                            <Shield className="w-2.5 h-2.5 text-purple-700 dark:text-purple-200" />
-                            {dt.memberTag}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Quick Navigation Links */}
-                      <div className="space-y-1.5">
-                        <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1 block">
-                          Quick Navigation
-                        </span>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <Link
-                            href="/member/profile"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-purple-200 dark:hover:border-purple-900/40 transition-all"
-                          >
-                            <div className="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center text-purple-600 dark:text-purple-300 flex-shrink-0">
-                              <User className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="truncate">{dt.userMenu.viewProfile}</span>
-                          </Link>
-
-                          <Link
-                            href="/member/give"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-900/40 transition-all"
-                          >
-                            <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-300 flex-shrink-0">
-                              <Gift className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="truncate">Online Giving</span>
-                          </Link>
-
-                          <Link
-                            href="/member/prayers"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-rose-200 dark:hover:border-rose-900/40 transition-all"
-                          >
-                            <div className="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-950/80 flex items-center justify-center text-rose-600 dark:text-rose-300 flex-shrink-0">
-                              <Heart className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="truncate">{dt.stats.prayers.label}</span>
-                          </Link>
-
-                          <Link
-                            href="/member/sermons"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-2 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-900/40 transition-all"
-                          >
-                            <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-950/80 flex items-center justify-center text-blue-600 dark:text-blue-300 flex-shrink-0">
-                              <BookOpen className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="truncate">Sermons</span>
-                          </Link>
-                        </div>
-                      </div>
-
-                      <div className="h-px bg-gray-100 dark:bg-gray-800" />
-
-                      {/* Display Preferences Section */}
-                      <div className="space-y-2">
-                        <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1 flex items-center gap-1.5">
-                          <Sliders className="w-3 h-3 text-gray-400" />
-                          Preferences & Theme
-                        </span>
-                        <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-800 rounded-2xl space-y-3">
-                          {/* Language */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                              Language
-                            </span>
-                            <LanguageToggle />
-                          </div>
-
-                          <div className="h-px bg-gray-200/60 dark:bg-gray-700/60" />
-
-                          {/* Appearance Controls */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                              Appearance
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <ThemeToggle />
-                              <PaletteToggle />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="h-px bg-gray-100 dark:bg-gray-800" />
-
-                      {/* Sign Out Button */}
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          logout();
-                        }}
-                        className="w-full py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-900/40 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-xs"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>{dt.userMenu.logOut}</span>
-                      </button>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Direct logout */}
-            <button
-              onClick={logout}
-              className="hidden sm:flex h-9 items-center gap-1.5 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-200/40 dark:border-red-900/30 hover:scale-[1.02] active:scale-95 transition-all flex-shrink-0 text-xs font-bold shadow-sm"
-              title={dt.userMenu.logOut}
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>{dt.userMenu.logOut}</span>
-            </button>
           </div>
         </div>
-      </header>
+      </motion.div>
 
-      {/* ══════════════════════════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════════════════════════ */}
-      <main className="max-w-screen-xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 lg:py-10 pb-28 sm:pb-12">
-        <div className="grid xl:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
+      {/* ── Daily Scripture Promise ──────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="relative bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-amber-50/80 dark:from-amber-950/30 dark:via-amber-900/10 dark:to-amber-950/30 border border-amber-200/70 dark:border-amber-800/30 rounded-2xl p-5 sm:p-6 overflow-hidden shadow-xs"
+      >
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-500/10 dark:text-amber-500/10 pointer-events-none">
+          <BookOpen className="w-24 h-24" />
+        </div>
+        <div className="relative flex items-start gap-4">
+          <div className="p-3 bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex-shrink-0 shadow-xs border border-amber-200/50 dark:border-amber-700/40">
+            <Flame className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-700 dark:text-amber-400 block mb-1">
+              {dt.scriptureHeading}
+            </span>
+            <p className="text-sm sm:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
+              &ldquo;{scripture.text}&rdquo;
+            </p>
+            <span className="inline-block mt-2.5 text-xs font-extrabold text-purple-700 dark:text-purple-300 bg-purple-100/70 dark:bg-purple-950/50 px-3 py-1 rounded-full border border-purple-200/80 dark:border-purple-800/50">
+              — {scripture.ref}
+            </span>
+          </div>
+        </div>
+      </motion.div>
 
-          {/* ══════════════ LEFT / MAIN COL ══════════════ */}
-          <div className="xl:col-span-8 space-y-5 sm:space-y-6">
-
-            {/* ── Hero Welcome Card ───────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-4 sm:p-7 md:p-10 text-white shadow-2xl shadow-violet-500/20"
-            >
-              {/* Decorative blobs */}
-              <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -top-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-20 -left-10 w-56 h-56 bg-indigo-400/20 rounded-full blur-2xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl" />
+      {/* ── Fellowship Overview Stats Grid ──────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {[
+          {
+            label: dt.stats.events.label,
+            value: stats.events,
+            icon: Calendar,
+            iconColor: "text-purple-600 dark:text-purple-400",
+            iconBg: "bg-purple-50 dark:bg-purple-950/40",
+            border: "border-purple-200/80 dark:border-purple-900/30",
+            badge: stats.events > 0 ? `${stats.events} ${dt.stats.events.badgeRSVP}` : dt.stats.events.badgeDefault,
+            href: "/member/events",
+          },
+          {
+            label: dt.stats.prayers.label,
+            value: stats.prayers,
+            icon: Heart,
+            iconColor: "text-rose-600 dark:text-rose-400",
+            iconBg: "bg-rose-50 dark:bg-rose-950/40",
+            border: "border-rose-200/80 dark:border-rose-900/30",
+            badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${dt.stats.prayers.badgeAnswered}` : dt.stats.prayers.badgeDefault,
+            href: "/member/prayers",
+          },
+          {
+            label: dt.stats.sermons.label,
+            value: stats.sermons,
+            icon: BookOpen,
+            iconColor: "text-indigo-600 dark:text-indigo-400",
+            iconBg: "bg-indigo-50 dark:bg-indigo-950/40",
+            border: "border-indigo-200/80 dark:border-indigo-900/30",
+            badge: dt.stats.sermons.badgeDefault,
+            href: "/member/sermons",
+          },
+          {
+            label: dt.stats.announcements.label,
+            value: stats.announcements.length,
+            icon: Bell,
+            iconColor: "text-amber-600 dark:text-amber-400",
+            iconBg: "bg-amber-50 dark:bg-amber-950/40",
+            border: "border-amber-200/80 dark:border-amber-900/30",
+            badge: stats.announcements.some(a => a.priority === "URGENT") ? dt.stats.announcements.badgeUrgent : dt.stats.announcements.badgeDefault,
+            href: "#announcements",
+          },
+        ].map(({ label, value, icon: Icon, iconColor, iconBg, border, badge, href }, i) => (
+          <Link
+            key={i}
+            href={href}
+            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
               </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                {badge}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block">{label}</span>
+            <span className={`text-3xl font-black ${iconColor} block mt-1 tracking-tight`}>
+              {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
+            </span>
+          </Link>
+        ))}
+      </motion.div>
 
-              {/* Content */}
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
-                <div className="space-y-2.5 sm:space-y-3 flex-1">
-                  <div className="flex items-center gap-2">
-                    <activeGreeting.icon className="w-4 h-4 text-yellow-300 flex-shrink-0" />
-                    <span className="text-[10px] sm:text-xs font-bold text-violet-200 uppercase tracking-widest">
-                      {activeGreeting.text}
+      {/* ── Believer Services Directory ─────────────────── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.16 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-purple-500" />
+          <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+            {dt.directoryHeading}
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {dt.cards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={card.href}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 + i * 0.03 }}
+              >
+                <Link
+                  href={card.href}
+                  className={`group h-full flex flex-col justify-between bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-5 hover:shadow-xl ${card.glow} hover:border-purple-300 dark:hover:border-purple-800/50 hover:-translate-y-1 transition-all duration-300`}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full ${card.badgeColor}`}>
+                      {card.badge}
                     </span>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                    {dt.greetings.welcome}, <br />
-                    <span className="text-yellow-300">{firstName}! 🙏</span>
-                  </h2>
-                  <p className="text-violet-100/80 text-xs sm:text-sm leading-relaxed max-w-md">
-                    {dt.greetings.sub}
-                  </p>
 
-                  {mounted && lastSynced && (
-                    <div className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-semibold text-white/90 bg-white/15 border border-white/20 px-2.5 py-1 rounded-full">
-                      <Wifi className="w-3 h-3 flex-shrink-0" />
-                      {dt.syncText} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-                    </div>
-                  )}
+                  <div>
+                    <h4 className="text-base font-extrabold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center justify-between">
+                      <span>{card.title}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                    </h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                      {card.desc}
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.section>
+
+      {/* ── 2-Column Section for Secondary Content ──────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Col (Announcements & Activity) */}
+        <div className="lg:col-span-7 xl:col-span-7 space-y-6">
+          {/* Announcements Card */}
+          <motion.div
+            id="announcements"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl shadow-xs overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-purple-50 dark:bg-purple-950/40 rounded-xl flex items-center justify-center">
+                  <Bell className="w-4.5 h-4.5 text-purple-600 dark:text-purple-400" />
                 </div>
+                <h3 className="text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                {dt.live}
+              </div>
+            </div>
 
-                {/* Quick greeting stats */}
-                <div className="grid grid-cols-2 sm:flex sm:flex-col gap-2 sm:gap-2.5 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
-                  {[
-                    { label: dt.stats.events.label, value: stats.events, icon: Calendar },
-                    { label: dt.stats.prayers.label, value: stats.prayers, icon: Heart },
-                  ].map(({ label, value, icon: Icon }) => (
-                    <div key={label} className="flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5">
-                      <Icon className="w-4 h-4 text-white flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-base sm:text-lg font-black leading-none text-white">
-                          {loadingFeeds ? <span className="inline-block w-5 h-4 bg-white/20 rounded animate-pulse" /> : value}
-                        </p>
-                        <p className="text-[9px] sm:text-[10px] text-white/80 font-semibold truncate">{label}</p>
-                      </div>
-                    </div>
+            <div className="divide-y divide-gray-100 dark:divide-white/5 max-h-[360px] overflow-y-auto">
+              {loadingFeeds ? (
+                <div className="space-y-3 p-4">
+                  {[1, 2].map(i => (
+                    <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
                   ))}
                 </div>
-              </div>
-            </motion.div>
-
-            {/* ── Scripture of the Day ─────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="group relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-200/60 dark:border-amber-800/20 rounded-2xl p-4 sm:p-5 md:p-6 overflow-hidden"
-            >
-              <div className="absolute right-3 top-3 sm:right-4 sm:top-4 text-amber-300/15 dark:text-amber-700/15 pointer-events-none">
-                <BookOpen className="w-14 h-14 sm:w-20 sm:h-20" />
-              </div>
-              <div className="relative flex items-start gap-3 sm:gap-4">
-                <div className="p-2 sm:p-2.5 bg-amber-100 dark:bg-amber-950/40 rounded-xl flex-shrink-0">
-                  <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+              ) : stats.announcements.length === 0 ? (
+                <div className="text-center py-10">
+                  <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-xs text-gray-400 font-medium">{dt.noAnnouncements}</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-widest text-amber-600 dark:text-amber-400 block mb-1 sm:mb-2">
-                    {dt.scriptureHeading}
-                  </span>
-                  <p className="text-xs sm:text-sm font-semibold italic text-gray-800 dark:text-gray-200 leading-relaxed">
-                    &ldquo;{scripture.text}&rdquo;
-                  </p>
-                  <span className="inline-block mt-2 text-[10px] sm:text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-violet-100 dark:border-violet-900/30">
-                    — {scripture.ref}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
+              ) : (
+                stats.announcements.map((anc) => {
+                  const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
+                  return (
+                    <div key={anc.id} className="p-4 hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{anc.title}</span>
+                        {isUrgent && (
+                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white">
+                            Urgent
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{anc.content}</p>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </motion.div>
 
-            {/* ── Stats Grid ──────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.14 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4"
-            >
+          {/* Activity Progress */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.24 }}
+            className="bg-white dark:bg-gray-900/60 border border-gray-200/80 dark:border-white/5 rounded-2xl p-5 shadow-xs"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-emerald-500" />
+                <h4 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{dt.activityTitle}</h4>
+              </div>
+            </div>
+            <div className="space-y-4">
               {[
-                {
-                  label: dt.stats.events.label,
-                  value: stats.events,
-                  icon: Calendar,
-                  iconColor: "text-violet-600 dark:text-violet-400",
-                  iconBg: "bg-violet-50 dark:bg-violet-950/30",
-                  accent: "border-violet-200 dark:border-violet-900/20",
-                  badge: stats.events > 0 ? `${stats.events} ${dt.stats.events.badgeRSVP}` : dt.stats.events.badgeDefault,
-                  href: "/member/events",
-                },
-                {
-                  label: dt.stats.prayers.label,
-                  value: stats.prayers,
-                  icon: Heart,
-                  iconColor: "text-rose-600 dark:text-rose-400",
-                  iconBg: "bg-rose-50 dark:bg-rose-950/30",
-                  accent: "border-rose-200 dark:border-rose-900/20",
-                  badge: stats.prayersAnswered > 0 ? `${stats.prayersAnswered} ${dt.stats.prayers.badgeAnswered}` : dt.stats.prayers.badgeDefault,
-                  href: "/member/prayers",
-                },
-                {
-                  label: dt.stats.sermons.label,
-                  value: stats.sermons,
-                  icon: BookOpen,
-                  iconColor: "text-indigo-600 dark:text-indigo-400",
-                  iconBg: "bg-indigo-50 dark:bg-indigo-950/30",
-                  accent: "border-indigo-200 dark:border-indigo-900/20",
-                  badge: dt.stats.sermons.badgeDefault,
-                  href: "/member/sermons",
-                },
-                {
-                  label: dt.stats.announcements.label,
-                  value: stats.announcements.length,
-                  icon: Bell,
-                  iconColor: "text-amber-600 dark:text-amber-400",
-                  iconBg: "bg-amber-50 dark:bg-amber-950/30",
-                  accent: "border-amber-200 dark:border-amber-900/20",
-                  badge: stats.announcements.some(a => a.priority === "URGENT") ? dt.stats.announcements.badgeUrgent : dt.stats.announcements.badgeDefault,
-                  href: "#announcements",
-                },
-              ].map(({ label, value, icon: Icon, iconColor, iconBg, accent, badge, href }, i) => (
-                <Link
-                  key={i}
-                  href={href}
-                  className={`group relative bg-white dark:bg-gray-800/80 border ${accent} rounded-2xl p-3 sm:p-4 md:p-5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 overflow-hidden`}
-                >
-                  <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-pulse" />
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
+                { label: dt.activityLabels.events, value: stats.events, color: "bg-purple-500" },
+                { label: dt.activityLabels.prayers, value: stats.prayers, color: "bg-rose-500" },
+                { label: dt.activityLabels.answered, value: stats.prayersAnswered, color: "bg-emerald-500" },
+                { label: dt.activityLabels.sermons, value: stats.sermons, color: "bg-indigo-500" },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-semibold">
+                    <span className="text-gray-700 dark:text-gray-300">{label}</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{loadingFeeds ? "..." : value}</span>
                   </div>
-                  <span className="text-[9px] sm:text-[10px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block leading-tight truncate">{label}</span>
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={value}
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`text-2xl sm:text-3xl md:text-4xl font-black ${iconColor} block mt-1 tracking-tight`}
-                    >
-                      {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
-                    </motion.span>
-                  </AnimatePresence>
-                  <span className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 font-semibold mt-1 block truncate">{badge}</span>
+                  <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                    <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min(100, (value / 5) * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Col (Quick Actions & Feedback) */}
+        <div className="lg:col-span-5 xl:col-span-5 space-y-6">
+          {/* Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 p-5 text-white shadow-lg border border-white/10"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="w-4 h-4 text-amber-300" />
+              <h4 className="text-sm font-black">{dt.quickActionsTitle}</h4>
+            </div>
+            <div className="space-y-2.5">
+              {dt.quickActions.map(({ label, href, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="group flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-xl border border-white/15 transition-all text-xs font-bold"
+                >
+                  <Icon className="w-4 h-4 text-purple-200 flex-shrink-0" />
+                  <span className="flex-1">{label}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-purple-200 group-hover:translate-x-1 transition-transform" />
                 </Link>
               ))}
-            </motion.div>
+            </div>
+          </motion.div>
 
-            {/* ── Services Navigation Grid ─────────────── */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="flex items-center gap-2 mb-3.5">
-                <Sparkles className="w-4 h-4 text-violet-500" />
-                <h3 className="text-[11px] sm:text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                  {dt.directoryHeading}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {dt.cards.map((card, i) => {
-                  const Icon = card.icon;
-                  return (
-                    <motion.div
-                      key={card.href}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.22 + i * 0.04 }}
-                    >
-                      <Link
-                        href={card.href}
-                        className={`group flex items-center gap-3 sm:gap-4 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 md:p-5 hover:shadow-xl ${card.glow} hover:border-gray-300 dark:hover:border-white/20 hover:scale-[1.015] transition-all duration-300`}
-                      >
-                        <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${card.gradient} rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs sm:text-sm md:text-base font-extrabold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">
-                            {card.title}
-                          </h4>
-                          <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug line-clamp-2">
-                            {card.desc}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
-                          <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full whitespace-nowrap ${card.badgeColor}`}>
-                            {card.badge}
-                          </span>
-                          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.section>
-
-          </div>
-
-          {/* ══════════════ RIGHT / SIDEBAR ══════════════ */}
-          <div className="xl:col-span-4 space-y-5">
-
-            {/* ── Announcements Feed ───────────────────── */}
-            <motion.div
-              id="announcements"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.25 }}
-              className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-white/5 rounded-2xl shadow-lg overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-violet-50 dark:bg-violet-950/30 rounded-xl flex items-center justify-center">
-                    <Bell className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                  </div>
-                  <h3 className="text-sm font-black text-gray-900 dark:text-white">{dt.announcementsTitle}</h3>
-                </div>
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  {dt.live}
-                </div>
-              </div>
-
-              {/* Feed */}
-              <div className="divide-y divide-gray-50 dark:divide-white/5 max-h-[400px] overflow-y-auto scrollbar-thin">
-                {loadingFeeds ? (
-                  <div className="space-y-3 p-4">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="h-16 bg-gray-50 dark:bg-gray-800/30 animate-pulse rounded-xl" />
-                    ))}
-                  </div>
-                ) : stats.announcements.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Bookmark className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">{dt.noAnnouncements}</p>
-                  </div>
-                ) : (
-                  stats.announcements.map((anc) => {
-                    const isUrgent = anc.priority === "URGENT" || anc.priority === "HIGH";
-                    return (
-                      <div
-                        key={anc.id}
-                        className={`px-5 py-4 hover:bg-gray-50 dark:hover:bg-white/3 transition-colors ${
-                          isUrgent ? "border-l-2 border-red-400" : ""
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight flex-1">
-                            {anc.priority === "URGENT" && <span className="text-amber-500">⚡ </span>}
-                            {anc.priority === "HIGH" && <span className="text-violet-500">🔔 </span>}
-                            {anc.title}
-                          </span>
-                          {isUrgent && (
-                            <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${
-                              anc.priority === "URGENT"
-                                ? "bg-red-500 text-white animate-pulse"
-                                : "bg-amber-500 text-white"
-                            }`}>
-                              {anc.priority === "URGENT" ? "Urgent" : "Hot"}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
-                          {anc.content}
-                        </p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <Clock className="w-3 h-3 text-violet-400" />
-                          <span className="text-[9px] text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wide">
-                            {new Date(anc.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </motion.div>
-
-            {/* ── Quick Actions ────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.32 }}
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 text-white shadow-xl shadow-violet-500/20"
-            >
-              <div className="absolute -top-8 -right-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap className="w-4 h-4 text-yellow-300" />
-                  <h4 className="text-sm font-black">{dt.quickActionsTitle}</h4>
-                </div>
-                <div className="space-y-2">
-                  {dt.quickActions.map(({ label, href, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      className="group flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-xl border border-white/10 hover:border-white/25 transition-all"
-                    >
-                      <Icon className="w-4 h-4 text-violet-200 flex-shrink-0" />
-                      <span className="text-sm font-semibold flex-1">{label}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-violet-300 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* ── Your Activity ────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.38 }}
-              className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-white/5 rounded-2xl p-5 shadow-sm"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-emerald-500" />
-                  <h4 className="text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{dt.activityTitle}</h4>
-                </div>
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              </div>
-              <div className="space-y-3">
-                {[
-                  { label: dt.activityLabels.events, value: stats.events, color: "bg-violet-500", bar: "bg-violet-100 dark:bg-violet-900/40" },
-                  { label: dt.activityLabels.prayers, value: stats.prayers, color: "bg-rose-500", bar: "bg-rose-100 dark:bg-rose-900/40" },
-                  { label: dt.activityLabels.answered, value: stats.prayersAnswered, color: "bg-emerald-500", bar: "bg-emerald-100 dark:bg-emerald-900/40" },
-                  { label: dt.activityLabels.sermons, value: stats.sermons, color: "bg-indigo-500", bar: "bg-indigo-100 dark:bg-indigo-900/40" },
-                ].map(({ label, value, color, bar }) => (
-                  <div key={label} className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{label}</span>
-                      <span className="text-xs font-bold text-gray-900 dark:text-white">
-                        {loadingFeeds ? "..." : value}
-                      </span>
-                    </div>
-                    <div className={`h-1.5 rounded-full ${bar} overflow-hidden`}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.min(100, (value / Math.max(stats.events + stats.prayers + stats.sermons + 1, 1)) * 400)}%` }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className={`h-full rounded-full ${color}`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* ── Church Platform Feedback ─────────────── */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.42 }}
-            >
-              <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
-            </motion.div>
-
-
-          </div>
+          {/* Feedback Widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.26 }}
+          >
+            <ChurchFeedbackWidget userId={user?.uid} userName={user?.name || undefined} />
+          </motion.div>
         </div>
-      </main>
-      <MemberFooter />
+      </div>
     </div>
   );
 }

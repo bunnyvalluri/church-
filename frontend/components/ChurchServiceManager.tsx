@@ -408,13 +408,13 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
 
   // ── Rendered ──────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-[100] flex justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-y-auto py-6 sm:py-10 items-start">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.25 }}
-        className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[96vh] sm:max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 dark:border-white/[0.08]"
+        className="bg-white dark:bg-[#0f0f1a] rounded-3xl shadow-2xl w-full max-w-5xl flex flex-col overflow-hidden border border-slate-200 dark:border-white/[0.08]"
       >
         {/* ── Header ───────────────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
@@ -496,7 +496,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
         </div>
 
         {/* ── Service List ──────────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
               <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
@@ -525,13 +525,13 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                     <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:px-6 sm:py-4 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors ${isViewing ? "bg-violet-50 dark:bg-violet-500/5" : ""}`}>
                       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                         {/* Reorder */}
-                        <div className="flex sm:flex-col items-center gap-1 sm:gap-0.5 flex-shrink-0">
-                          <button onClick={() => moveService(service.id, "up")} disabled={idx === 0} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
-                            <ChevronUp className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-400" />
+                        <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+                          <button onClick={() => moveService(service.id, "up")} disabled={idx === 0} className="p-1 sm:p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
+                            <ChevronUp className="w-4 h-4 sm:w-3 sm:h-3 text-slate-400" />
                           </button>
                           <GripVertical className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-300 dark:text-white/20 mx-auto hidden sm:block" />
-                          <button onClick={() => moveService(service.id, "down")} disabled={idx === services.length - 1} className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
-                            <ChevronDown className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-400" />
+                          <button onClick={() => moveService(service.id, "down")} disabled={idx === services.length - 1} className="p-1 sm:p-0.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 disabled:opacity-30">
+                            <ChevronDown className="w-4 h-4 sm:w-3 sm:h-3 text-slate-400" />
                           </button>
                         </div>
 
@@ -562,7 +562,7 @@ export default function ChurchServiceManager({ onClose, token }: Props) {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap border-t border-slate-100 dark:border-white/[0.04] sm:border-0 pt-3 sm:pt-0 justify-end w-full sm:w-auto">
+                      <div className="flex items-center gap-2 sm:gap-1 flex-wrap sm:flex-nowrap border-t border-slate-100 dark:border-white/[0.04] sm:border-0 pt-3 sm:pt-0 justify-center sm:justify-end w-full sm:w-auto">
                         {/* View */}
                         <button
                           onClick={() => setViewingService(isViewing ? null : service)}

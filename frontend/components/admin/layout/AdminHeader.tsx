@@ -47,7 +47,7 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
           <button
             type="button"
             onClick={onToggleMobileSidebar}
-            className="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors shrink-0"
+            className="lg:hidden p-2 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors shrink-0"
             aria-label="Open Navigation Sidebar"
           >
             <Menu className="w-5 h-5" />
@@ -57,17 +57,17 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="sm:hidden p-2 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors shrink-0"
+            className="sm:hidden p-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors shrink-0"
             aria-label="Search"
           >
-            <Search className="w-4.5 h-4.5" />
+            <Search className="w-5 h-5" />
           </button>
 
           {/* Quick Search Bar / Trigger — Desktop Bar (>= sm) */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10 transition-all text-xs sm:w-48 md:w-80 group shadow-inner dark:shadow-none shrink-0"
+            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-white/10 transition-all text-xs sm:w-48 md:w-80 group shadow-inner dark:shadow-none shrink-0"
           >
             <Search className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0" />
             <span className="flex-1 text-left truncate">{searchPlaceholderText}</span>
@@ -84,10 +84,10 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
             <button
               type="button"
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="relative p-2 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors"
+              className="relative p-2 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors"
               aria-label="Notifications"
             >
-              <Bell className="w-4.5 h-4.5" />
+              <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse shadow-sm">
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -115,9 +115,9 @@ export default function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps)
             <button
               type="button"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-2.5 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors group"
+              className="flex items-center gap-2.5 p-1 sm:px-3 sm:py-1.5 rounded-full bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 hover:bg-gray-200/80 dark:hover:bg-white/10 transition-colors group"
             >
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                 {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
               </div>
               <div className="hidden md:flex flex-col text-left">

@@ -42,6 +42,7 @@ const nextConfig = {
   ],
 
   experimental: {
+    optimizePackageImports: ['lucide-react'],
     serverComponentsExternalPackages: [
       'prisma', '@prisma/client', 'firebase-admin', '@google-cloud/storage', 'cloudinary'
     ],
