@@ -9,12 +9,6 @@ import { BranchProvider } from "./BranchProvider";
 import RealtimePopupProvider from "./RealtimePopupProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-console.log("DEBUG PROVIDERS TYPES:");
-console.log("  ThemeProvider:", typeof ThemeProvider);
-console.log("  ColorThemeProvider:", typeof ColorThemeProvider);
-console.log("  LanguageProvider:", typeof LanguageProvider);
-console.log("  AuthProvider:", typeof AuthProvider);
-console.log("  BranchProvider:", typeof BranchProvider);
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(

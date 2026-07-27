@@ -322,7 +322,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleCancelLogoutAlert}
-                className="px-6 py-1.5 rounded-full bg-transparent hover:bg-white/5 text-stone-300 font-semibold text-[13px] transition-all"
+                className="px-6 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-[13px] border border-white/20 hover:border-white/40 active:scale-95 transition-all"
               >
                 Cancel
               </button>

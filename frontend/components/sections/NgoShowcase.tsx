@@ -29,8 +29,8 @@ const NgoImageCard = memo(function NgoImageCard({
         fill
         sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 320px"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="eager"
-        quality={75}
+        loading="lazy"
+        quality={60}
       />
       {badgeText && (
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 group-hover:opacity-100">

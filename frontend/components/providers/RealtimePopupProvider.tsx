@@ -1,21 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { useEffect, useRef, useState } from "react";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
 import { requestFCMToken } from "@/lib/firebase";
 
 export default function RealtimePopupProvider({ children }: { children: React.ReactNode }) {
   const [activeNotification, setActiveNotification] = useState<NotificationData | null>(null);
+  const socketRef = useRef<any>(null);
 
   useEffect(() => {
-    // 1. Initialize Socket.io connection to backend companion server
+    // ── Defer all realtime connections until after first paint (3 s idle) ──────
+    // This prevents Socket.io + FCM from competing with critical rendering.
+    const timer = setTimeout(async () => {
+    // 1. Dynamically import socket.io-client to avoid blocking the initial JS bundle
+    const { default: io } = await import("socket.io-client");
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
     const socket = io(socketUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 10,
     });
+    socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("[SOCKET] Connected to realtime companion server:", socket.id);
@@ -104,9 +109,11 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
         }
       }).catch((err) => console.warn("[FCM] Token request bypassed:", err));
     }
+    }, 3000); // wait 3s after mount — well after first paint
 
     return () => {
-      socket.disconnect();
+      clearTimeout(timer);
+      socketRef.current?.disconnect();
     };
   }, []);
 

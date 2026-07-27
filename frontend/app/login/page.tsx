@@ -608,7 +608,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-10 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Subtle grid pattern background (visible on desktop) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
         
@@ -643,10 +643,10 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-md mt-10 lg:mt-0 bg-white/80 dark:bg-gray-950/80 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10"
+          className="w-full max-w-md mt-20 mb-6 lg:mt-0 lg:mb-0 bg-white/80 dark:bg-gray-950/80 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10"
         >
           {/* Mobile Branding (Visible only on smaller screens) */}
-          <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
+          <div className="lg:hidden flex flex-col items-center mb-6 text-center animate-fade-in-up">
             <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-3 shadow-md bg-white dark:bg-gray-900 p-0.5">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
@@ -677,7 +677,7 @@ export default function LoginPage() {
           </div>
 
           {/* Header */}
-          <div className="mb-8 text-center lg:text-left">
+          <div className="mb-6 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
               {loginT.title}
             </h2>

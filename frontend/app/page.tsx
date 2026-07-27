@@ -3,12 +3,19 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
-import Events from "@/components/sections/Events";
-import Sermons from "@/components/sections/Sermons";
-import Contact from "@/components/sections/Contact";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import NgoShowcase from "@/components/sections/NgoShowcase";
 import ScrollToTopOnMount from "@/components/ui/ScrollToTopOnMount";
+import dynamic from "next/dynamic";
+
+// ── Lazy-load below-the-fold and heavy sections ───────────────────────────────
+// NgoShowcase imports a 48KB image manifest — must not be in the critical bundle
+const NgoShowcase = dynamic(() => import("@/components/sections/NgoShowcase"), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-slate-50/50 dark:bg-slate-950/20" />,
+});
+const Events = dynamic(() => import("@/components/sections/Events"), { ssr: true });
+const Sermons = dynamic(() => import("@/components/sections/Sermons"), { ssr: true });
+const Contact = dynamic(() => import("@/components/sections/Contact"), { ssr: true });
 
 import {
   getHeroContent,

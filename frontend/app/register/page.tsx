@@ -254,7 +254,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
@@ -277,7 +277,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <div className="w-full max-w-lg mt-12 lg:mt-0 pb-10 lg:pb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
+        <div className="w-full max-w-lg mt-20 mb-8 lg:mt-0 lg:mb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
             <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-850 mb-3 shadow-sm bg-white dark:bg-gray-900">
