@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kcm-backend-socket
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-socket
+    app.kubernetes.io/name: kcm-backend-socket
+    app.kubernetes.io/component: socket
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: kcm-backend-socket
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-socket
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: socket
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "socket.js"]
+          ports:
+            - containerPort: 3001
+              name: websocket
+          env:
+            - name: PROCESS_TYPE
+              value: "socket"
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-socket-service
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-socket
+    app.kubernetes.io/name: kcm-backend-socket
+spec:
+  type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+    - port: 3001
+      targetPort: 3001
+      name: websocket
+  selector:
+    app: kcm-backend-socket

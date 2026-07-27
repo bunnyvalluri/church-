@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kcm-backend-cron
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-cron
+    app.kubernetes.io/name: kcm-backend-cron
+    app.kubernetes.io/component: cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kcm-backend-cron
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-cron
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: cron
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "cron.js"]
+          env:
+            - name: PROCESS_TYPE
+              value: "cron"
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

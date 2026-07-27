@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kcm-backend-api
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    app.kubernetes.io/name: kcm-backend-api
+    app.kubernetes.io/component: api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: kcm-backend-api
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "api.js"]
+          ports:
+            - containerPort: 3001
+              name: http-api
+          env:
+            - name: PROCESS_TYPE
+              value: "api"
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 800m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-service
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    app.kubernetes.io/name: kcm-backend-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+      targetPort: 3001
+      name: http-api
+  selector:
+    app: kcm-backend-api

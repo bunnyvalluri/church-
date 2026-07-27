@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kcm-configmap
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-portal
+    app.kubernetes.io/component: config
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  SOCKET_PORT: "3001"
+  NEXT_PUBLIC_API_URL: "http://kcm-portal.local/api"
+  NEXT_PUBLIC_SOCKET_URL: "ws://kcm-portal.local"
+  REDIS_URL: "redis://redis-service.kcm-system.svc.cluster.local:6379"

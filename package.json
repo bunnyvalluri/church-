@@ -17,7 +17,14 @@
     "db:check": "npm run db:check -w backend",
     "db:push": "npm run db:push -w backend",
     "db:generate": "npm run db:generate -w backend",
-    "db:studio": "npm run db:studio -w backend"
+    "db:studio": "npm run db:studio -w backend",
+    "docker:dev": "docker compose -f docker/docker-compose.yml up --build",
+    "docker:dev:down": "docker compose -f docker/docker-compose.yml down",
+    "docker:prod": "docker compose -f docker/docker-compose.prod.yml up --build",
+    "docker:prod:down": "docker compose -f docker/docker-compose.prod.yml down",
+    "k8s:apply": "kubectl apply -k k8s/",
+    "k8s:delete": "kubectl delete -k k8s/",
+    "k8s:status": "kubectl get all -n kcm-system"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

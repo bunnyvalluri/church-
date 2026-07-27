@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kcm-backend-worker
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-worker
+    app.kubernetes.io/name: kcm-backend-worker
+    app.kubernetes.io/component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kcm-backend-worker
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: worker
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "worker.js"]
+          env:
+            - name: PROCESS_TYPE
+              value: "worker"
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

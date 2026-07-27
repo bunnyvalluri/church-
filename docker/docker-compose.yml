@@ -3,7 +3,7 @@ version: '3.8'
 services:
   nginx:
     build: 
-      context: ./nginx
+      context: ../nginx
       dockerfile: Dockerfile
     ports:
       - "80:80"
@@ -16,7 +16,7 @@ services:
     image: node:20-alpine
     working_dir: /app
     volumes:
-      - ./:/app
+      - ../:/app
       # Anonymous volume for node_modules to avoid host OS mismatch
       - /app/node_modules
     environment:
@@ -24,8 +24,6 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost/api
       - NEXT_PUBLIC_SOCKET_URL=http://localhost
     command: sh -c "npm install && npm run dev -w frontend"
-    # Port is not exposed to host directly since Nginx proxies it, 
-    # but useful for direct debugging if needed.
     expose:
       - "3000"
 
@@ -33,7 +31,7 @@ services:
     image: node:20-alpine
     working_dir: /app
     volumes:
-      - ./:/app
+      - ../:/app
       - /app/node_modules
     environment:
       - PROCESS_TYPE=api
@@ -53,7 +51,7 @@ services:
     image: node:20-alpine
     working_dir: /app
     volumes:
-      - ./:/app
+      - ../:/app
       - /app/node_modules
     environment:
       - PROCESS_TYPE=socket
@@ -70,7 +68,7 @@ services:
     image: node:20-alpine
     working_dir: /app
     volumes:
-      - ./:/app
+      - ../:/app
       - /app/node_modules
     environment:
       - PROCESS_TYPE=worker
@@ -92,3 +90,4 @@ services:
 
 volumes:
   redis_data:
+

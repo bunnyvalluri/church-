@@ -1,0 +1,89 @@
+name: Deploy to Kubernetes Cluster
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: bunnyvalluri
+
+jobs:
+  build-scan-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ==== BUILD FRONTEND ====
+      - name: Build Frontend Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:${{ github.sha }}
+
+      # ==== BUILD BACKEND ====
+      - name: Build Backend Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-backend:${{ github.sha }}
+
+      # ==== TRIVY VULNERABILITY SCAN ====
+      - name: Run Trivy vulnerability scanner on Frontend
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # ==== KUSTOMIZE VALIDATION ====
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Validate Kubernetes Manifests
+        run: |
+          kustomize build k8s/ > deployment-manifest.yaml
+          cat deployment-manifest.yaml
+
+      # ==== DEPLOY TO CLUSTER ====
+      - name: Set Kubernetes Context & Deploy
+        if: ${{ secrets.KUBE_CONFIG != '' }}
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Deploy Manifests to Kubernetes
+        if: ${{ secrets.KUBE_CONFIG != '' }}
+        run: |
+          kubectl apply -k k8s/
+          kubectl rollout status deployment/kcm-frontend -n kcm-system --timeout=180s
+          kubectl rollout status deployment/kcm-backend-api -n kcm-system --timeout=180s
