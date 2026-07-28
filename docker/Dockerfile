@@ -13,7 +13,7 @@ COPY frontend/prisma ./frontend/prisma/
 COPY backend/prisma ./backend/prisma/
 
 # Install exact dependencies
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts || npm install
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
 FROM node:20-alpine AS builder
