@@ -1,0 +1,113 @@
+{
+  "annotations": { "list": [] },
+  "editable": false,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Argo CD Applications Count",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(argocd_app_info)",
+          "legendFormat": "Applications",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Synced Applications",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(argocd_app_info{sync_status='Synced'})",
+          "legendFormat": "Synced",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "fixedColor": "green", "mode": "fixed" } }
+      }
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "title": "OutOfSync Applications",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(argocd_app_info{sync_status='OutOfSync'})",
+          "legendFormat": "OutOfSync",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "title": "GitHub Actions CI Executions / hour",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(increase(github_actions_workflow_job_total[1h]))",
+          "legendFormat": "Jobs/hr",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 4 },
+      "id": 5,
+      "title": "Argo CD Sync Status by Application",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "argocd_app_info",
+          "legendFormat": "{{ name }} ({{ sync_status }})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 4 },
+      "id": 6,
+      "title": "GitHub Actions Workflow Execution Duration",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "github_actions_workflow_execution_duration_seconds",
+          "legendFormat": "{{ workflow_name }}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["argocd", "gitops", "github-actions", "cicd"],
+  "title": "Argo CD GitOps & GitHub Actions CI/CD",
+  "uid": "kcm-argocd-gitops"
+}

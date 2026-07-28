@@ -1,0 +1,150 @@
+# Official Grafana Helm Chart Production HA Value Overrides
+# Chart: grafana/grafana
+
+replicas: 2
+
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+image:
+  repository: grafana/grafana
+  tag: 10.4.1
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: grafana-sa
+
+rbac:
+  create: true
+  pspEnabled: false
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+podSecurityContext:
+  fsGroup: 472
+
+env:
+  GF_SECURITY_ADMIN_USER: "kcm_admin"
+  GF_USERS_ALLOW_SIGN_UP: "false"
+
+envFromSecret: "grafana-secrets"
+
+admin:
+  existingSecret: "grafana-admin-credentials"
+  userKey: admin-user
+  passwordKey: admin-password
+
+persistence:
+  type: pvc
+  enabled: true
+  storageClassName: "gp3"
+  accessModes:
+    - ReadWriteOnce
+  size: 20Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  hosts:
+    - grafana.kcmchurch.org
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.kcmchurch.org
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector:
+  node-role.kubernetes.io/worker: "true"
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - grafana
+          topologyKey: kubernetes.io/hostname
+
+plugins:
+  - grafana-piechart-panel
+  - grafana-worldmap-panel
+  - grafana-clock-panel
+  - redis-datasource
+  - alexanderzobnin-zabbix-datasource
+
+sidecar:
+  dashboards:
+    enabled: true
+    SCProvider: true
+    label: grafana_dashboard
+    folderAnnotation: grafana_folder
+    searchNamespace: ALL
+  datasources:
+    enabled: true
+    defaultDatasourceEnabled: true
+    label: grafana_datasource
+    searchNamespace: ALL
+  alerts:
+    enabled: true
+    label: grafana_alert
+    searchNamespace: ALL
+
+provisioning:
+  enabled: true
+  datasources:
+    enabled: true
+  dashboards:
+    enabled: true
+  alerting:
+    enabled: true
+
+grafana.ini:
+  paths:
+    data: /var/lib/grafana/data
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+  server:
+    domain: grafana.kcmchurch.org
+    root_url: https://grafana.kcmchurch.org/
+  security:
+    allow_embedding: false
+    cookie_secure: true
+    strict_transport_security: true

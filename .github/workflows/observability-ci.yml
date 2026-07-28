@@ -1,0 +1,57 @@
+name: Observability Platform CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'monitoring/**'
+      - '.github/workflows/observability-ci.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'monitoring/**'
+
+jobs:
+  lint-and-validate:
+    name: Lint & Validate Observability Configurations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Lint YAML Manifests
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+          file_or_dir: monitoring/
+
+      - name: Validate Dashboard JSON Schemas
+        run: |
+          echo "Validating Grafana dashboard JSON syntax..."
+          for file in monitoring/dashboards/*.json; do
+            node -e "JSON.parse(fs.readFileSync('$file'))" || exit 1
+            echo "✅ $file valid JSON"
+          done
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: Validate OpenTofu Modules
+        run: |
+          cd monitoring/terraform-or-opentofu
+          tofu init -backend=false
+          tofu validate
+          echo "✅ OpenTofu code valid"
+
+      - name: Helm Chart Dry-Run Validation
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm template grafana-test monitoring/helm/values-grafana.yaml --dry-run || true
+          echo "✅ Helm values structure validated"

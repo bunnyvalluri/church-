@@ -1,0 +1,62 @@
+groups:
+  - name: KCM_Infrastructure_Alerts
+    rules:
+      - alert: KubernetesNodeNotReady
+        expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: infrastructure
+        annotations:
+          summary: "Node {{ $labels.node }} is Not Ready"
+          description: "Kubernetes node {{ $labels.node }} has been in NotReady state for more than 2 minutes."
+
+      - alert: HighClusterCPUUsage
+        expr: (100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: compute
+        annotations:
+          summary: "Cluster CPU Usage > 85%"
+          description: "Average cluster CPU utilization is {{ $value | printf \"%.2f\" }}% over the last 5 minutes."
+
+      - alert: HighClusterMemoryUsage
+        expr: (100 * (1 - (sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)))) > 90
+        for: 5m
+        labels:
+          severity: critical
+          category: memory
+        annotations:
+          summary: "Cluster Memory Usage > 90%"
+          description: "Total cluster memory utilization is {{ $value | printf \"%.2f\" }}% over the last 5 minutes."
+
+      - alert: KubernetesDiskSpaceCritical
+        expr: (100 * (1 - (node_filesystem_free_bytes{mountpoint="/"}/node_filesystem_size_bytes{mountpoint="/"}))) > 85
+        for: 5m
+        labels:
+          severity: critical
+          category: storage
+        annotations:
+          summary: "Disk Space Critical on {{ $labels.instance }}"
+          description: "Disk usage on mount / of {{ $labels.instance }} is at {{ $value | printf \"%.2f\" }}%."
+
+      - alert: PodCrashLoopBackOff
+        expr: rate(kube_pod_container_status_restarts_total[5m]) * 300 > 2
+        for: 2m
+        labels:
+          severity: critical
+          category: workload
+        annotations:
+          summary: "Pod {{ $labels.pod }} in CrashLoopBackOff"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting rapidly."
+
+      - alert: SSLCertificateExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
+        for: 12h
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "TLS Certificate for {{ $labels.instance }} expiring in < 14 days"
+          description: "SSL Certificate expires in {{ $value | printf \"%.1f\" }} days."

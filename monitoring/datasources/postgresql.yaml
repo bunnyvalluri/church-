@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    orgId: 1
+    url: kcm-postgresql.monitoring.svc.cluster.local:5432
+    user: kcm_read_only
+    database: kcm_db
+    secureJsonData:
+      password: "${POSTGRES_READONLY_PASSWORD}"
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 50
+      maxIdleConns: 5
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: false

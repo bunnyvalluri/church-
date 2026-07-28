@@ -15,6 +15,15 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const app = express();
 app.use(express.json());
 
+// Prometheus Metrics Instrumentation
+let metrics;
+try {
+  metrics = require('./src/metrics');
+  app.use(metrics.metricsMiddleware);
+} catch (e) {
+  console.warn('[METRICS] Metrics module loading note:', e.message);
+}
+
 // Enable CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -136,6 +145,15 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
 
   app.get('/health', (req, res) => {
     return res.json({ status: "OK", time: new Date(), type: PROCESS_TYPE });
+  });
+
+  app.get('/metrics', async (req, res) => {
+    try {
+      res.set('Content-Type', metrics ? metrics.register.contentType : 'text/plain');
+      res.end(metrics ? await metrics.register.metrics() : '# Metrics unavailable');
+    } catch (ex) {
+      res.status(500).end(ex.message);
+    }
   });
 }
 

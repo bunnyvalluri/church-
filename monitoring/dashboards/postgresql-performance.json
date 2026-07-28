@@ -1,0 +1,104 @@
+{
+  "annotations": { "list": [] },
+  "editable": false,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "PostgreSQL Active Connections",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(pg_stat_activity_count{state='active'})",
+          "legendFormat": "Active Connections",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Buffer Cache Hit Ratio",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(sum(rate(pg_stat_database_blks_hit[5m])) / (sum(rate(pg_stat_database_blks_hit[5m])) + sum(rate(pg_stat_database_blks_read[5m])))) * 100",
+          "legendFormat": "Hit Ratio",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent" } }
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "title": "Transactions Committed / sec",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(pg_stat_database_xact_commit[5m]))",
+          "legendFormat": "Commits/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "title": "Deadlocks Counter",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(increase(pg_stat_database_deadlocks[5m]))",
+          "legendFormat": "Deadlocks",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 4 },
+      "id": 5,
+      "title": "PostgreSQL Database Size Trends",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "pg_database_size_bytes",
+          "legendFormat": "{{ datname }}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 4 },
+      "id": 6,
+      "title": "Locks Waiting vs Granted",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(pg_locks_count{granted='true'})",
+          "legendFormat": "Locks Granted",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(pg_locks_count{granted='false'})",
+          "legendFormat": "Locks Waiting",
+          "refId": "B"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["postgresql", "database", "prisma"],
+  "title": "PostgreSQL Database Performance",
+  "uid": "kcm-postgresql-performance"
+}

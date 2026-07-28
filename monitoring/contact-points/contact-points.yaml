@@ -1,0 +1,48 @@
+apiVersion: 1
+
+contactPoints:
+  - name: Email-OnCall-SRE
+    receivers:
+      - uid: email-sre-team
+        type: email
+        settings:
+          addresses: sre-team@kcmchurch.org
+          singleEmail: true
+
+  - name: Slack-Critical-Alerts
+    receivers:
+      - uid: slack-critical
+        type: slack
+        settings:
+          url: "${SLACK_WEBHOOK_CRITICAL_URL}"
+          channel: "#alerts-critical"
+          sendResolved: true
+          title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
+          text: |
+            *Alert:* {{ .CommonAnnotations.summary }}
+            *Severity:* {{ .CommonLabels.severity }}
+            *Description:* {{ .CommonAnnotations.description }}
+
+  - name: MS-Teams-Ops
+    receivers:
+      - uid: msteams-ops
+        type: teams
+        settings:
+          url: "${MSTEAMS_WEBHOOK_URL}"
+          sendResolved: true
+
+  - name: Discord-Devops
+    receivers:
+      - uid: discord-devops
+        type: discord
+        settings:
+          url: "${DISCORD_WEBHOOK_URL}"
+          title: '🚨 {{ .CommonAnnotations.summary }}'
+
+  - name: Alertmanager-Webhook
+    receivers:
+      - uid: alertmanager-webhook
+        type: webhook
+        settings:
+          url: "http://alertmanager-k8s.monitoring.svc.cluster.local:9093/api/v2/alerts"
+          httpMethod: POST
