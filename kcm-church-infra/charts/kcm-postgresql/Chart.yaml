@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kcm-postgresql
+description: Enterprise Production PostgreSQL Chart for KCM Church Relational Database
+type: application
+version: 1.0.0
+appVersion: "16.1"

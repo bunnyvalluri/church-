@@ -1,0 +1,11 @@
+apiVersion: v2
+name: kcm-backend
+description: Enterprise Production Helm Chart for KCM Church Node.js Backend Microservices (API, Socket, Worker, Cron)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - nodejs
+  - express
+  - backend
+  - microservices

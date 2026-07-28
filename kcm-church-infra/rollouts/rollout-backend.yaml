@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: kcm-backend-rollout
+  namespace: kcm-prod
+  labels:
+    app.kubernetes.io/name: kcm-backend
+spec:
+  replicas: 4
+  strategy:
+    blueGreen:
+      activeService: kcm-backend-active
+      previewService: kcm-backend-preview
+      autoPromotionEnabled: true
+      autoPromotionSeconds: 300
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          weight: 100
+  selector:
+    matchLabels:
+      app: kcm-backend-api
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          ports:
+            - containerPort: 3001
+              name: http

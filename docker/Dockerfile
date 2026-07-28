@@ -46,11 +46,11 @@ ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
 # Setup secure, non-root user execution context
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
 # Copy static public folders
-COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/public ./frontend/public
 
 # Leverage Next.js standalone tracing output
 COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./
@@ -59,6 +59,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./frontend/
 USER nextjs
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # In a monorepo, standalone output is usually placed under the package path
 CMD ["node", "frontend/server.js"]

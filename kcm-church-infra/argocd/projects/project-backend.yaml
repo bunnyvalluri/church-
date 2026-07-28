@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: backend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: KCM Church Backend Microservices (Express API, Socket, Worker, Cron)
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: 'kcm-dev'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-staging'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-prod'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: backend-developer
+      description: Read and sync permissions for backend team
+      policies:
+        - p, proj:backend:backend-developer, applications, get, backend/*, allow
+        - p, proj:backend:backend-developer, applications, sync, backend/*, allow

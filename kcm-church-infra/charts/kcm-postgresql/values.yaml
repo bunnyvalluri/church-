@@ -1,0 +1,25 @@
+image:
+  repository: postgres
+  tag: "16.1-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5432
+
+postgres:
+  database: "kcm_db"
+  user: "kcm_user"
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1500m
+    memory: 2Gi
+
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: "standard"

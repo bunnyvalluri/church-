@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: prod-sync-windows
+  namespace: argocd
+spec:
+  description: Production Sync Windows and Deployment Constraints
+  syncWindows:
+    - kind: deny
+      schedule: "0 8 * * 0"   # Sunday 08:00 AM UTC
+      duration: 6h            # Blackout during Sunday morning church services
+      applications:
+        - "kcm-*"
+      namespaces:
+        - "kcm-prod"
+      manualSync: true
+    - kind: allow
+      schedule: "0 2 * * *"   # Nightly maintenance window
+      duration: 2h
+      applications:
+        - "kcm-*"
+      namespaces:
+        - "kcm-prod"

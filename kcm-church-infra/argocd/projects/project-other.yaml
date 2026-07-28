@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: database
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: KCM Church Persistence & Caching Services (PostgreSQL HA, Redis HA)
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: 'kcm-dev'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-staging'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-prod'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Core Infrastructure Operators (Ingress NGINX, Cert-Manager, Argo Rollouts, SealedSecrets)
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: '*'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: monitoring
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Observability & Alerting Stack (Prometheus, Grafana, Loki, Alertmanager)
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: 'monitoring'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shared-services
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Shared Cluster Services and Utilities
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: '*'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

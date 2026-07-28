@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: KCM Church Frontend Web Applications (Next.js)
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: 'kcm-dev'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-staging'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'kcm-prod'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: developer
+      description: Read and sync permissions for developers
+      policies:
+        - p, proj:frontend:developer, applications, get, frontend/*, allow
+        - p, proj:frontend:developer, applications, sync, frontend/*, allow

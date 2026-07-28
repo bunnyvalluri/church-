@@ -1,0 +1,14 @@
+apiVersion: v2
+name: kcm-frontend
+description: Enterprise Production Helm Chart for KCM Church Next.js Frontend Application
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - nextjs
+  - react
+  - frontend
+  - gitops
+maintainers:
+  - name: KCM DevOps Team
+    email: devops@kcmchurch.org

@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: kcm-frontend-rollout
+  namespace: kcm-prod
+  labels:
+    app.kubernetes.io/name: kcm-frontend
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      canaryService: kcm-frontend-canary
+      stableService: kcm-frontend-stable
+      trafficRouting:
+        nginx:
+          stableIngress: kcm-frontend-ingress
+      steps:
+        - setWeight: 10
+        - pause: { duration: 5m }
+        - setWeight: 25
+        - pause: { duration: 10m }
+        - setWeight: 50
+        - pause: { duration: 15m }
+      analysis:
+        templates:
+          - templateName: success-rate-check
+        args:
+          - name: service-name
+            value: kcm-frontend-canary
+  selector:
+    matchLabels:
+      app: kcm-frontend
+  template:
+    metadata:
+      labels:
+        app: kcm-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/bunnyvalluri/kcm-frontend:latest
+          ports:
+            - containerPort: 3000
+              name: http
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate-check
+  namespace: kcm-prod
+spec:
+  metrics:
+    - name: success-rate
+      interval: 1m
+      successCondition: result[0] >= 0.99
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc:9090
+          query: |
+            sum(rate(http_requests_total{status!~"5.*"}[2m])) 
+            / 
+            sum(rate(http_requests_total[2m]))

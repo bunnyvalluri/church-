@@ -1,0 +1,104 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-frontend-prod
+  namespace: argocd
+  labels:
+    environment: prod
+    component: frontend
+spec:
+  project: frontend
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+    targetRevision: main
+    path: kcm-church-infra/environments/prod/frontend
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kcm-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-backend-prod
+  namespace: argocd
+  labels:
+    environment: prod
+    component: backend
+spec:
+  project: backend
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+    targetRevision: main
+    path: kcm-church-infra/environments/prod/backend
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kcm-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-database-prod
+  namespace: argocd
+  labels:
+    environment: prod
+    component: database
+spec:
+  project: database
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+    targetRevision: main
+    path: kcm-church-infra/environments/prod/database
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kcm-prod
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-monitoring-prod
+  namespace: argocd
+  labels:
+    environment: prod
+    component: monitoring
+spec:
+  project: monitoring
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+    targetRevision: main
+    path: kcm-church-infra/observability
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

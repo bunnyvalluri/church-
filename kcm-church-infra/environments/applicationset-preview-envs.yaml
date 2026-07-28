@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kcm-preview-environments
+  namespace: argocd
+spec:
+  generators:
+    - pullRequest:
+        github:
+          owner: bunnyvalluri
+          repo: kcm-church-app
+          tokenRef:
+            secretName: github-token-secret
+            key: token
+        labels:
+          - preview
+  template:
+    metadata:
+      name: 'kcm-preview-{{number}}'
+    spec:
+      project: frontend
+      source:
+        repoURL: 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+        targetRevision: HEAD
+        path: kcm-church-infra/charts/kcm-frontend
+        helm:
+          parameters:
+            - name: "image.tag"
+              value: 'pr-{{number}}'
+            - name: "ingress.hosts[0].host"
+              value: 'pr-{{number}}.preview.kcmchurch.org'
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: 'kcm-preview-{{number}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  # General Configuration
+  url: https://argocd.kcmchurch.org
+  admin.enabled: "true"
+
+  # Resource Customizations
+  resource.exclusions: |
+    - apiGroups:
+      - cilium.io
+      kinds:
+      - CiliumNode
+      clusters:
+      - "*"
+
+  # Resource Tracking Strategy
+  application.resourceTrackingMethod: annotation
+
+  # Git Repositories Configuration
+  repositories: |
+    - url: https://github.com/bunnyvalluri/kcm-church-infra.git
+      type: git
+      name: kcm-church-infra
+    - url: https://github.com/bunnyvalluri/kcm-church-app.git
+      type: git
+      name: kcm-church-app
