@@ -129,7 +129,7 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
           className="max-w-3xl mx-auto text-center mb-10 sm:mb-16 lg:mb-20"
         >
           <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-3 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
-            {t.sermons.badge || t.sermons.latest || "Latest Sermons"}
+            {t.sermons.badge || "Latest Sermons"}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">
             {t.sermons.title.split(" ")[0]}{" "}
