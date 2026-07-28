@@ -20,14 +20,6 @@ spec:
       previewService: backend-api-preview-service
       autoPromotionEnabled: false
       scaleDownDelaySeconds: 30
-      # ── Gateway API Traffic Routing ───────────────────────────────────────────
-      # Envoy Gateway manages the HTTPRoute backendRefs weights during blue/green.
-      # Preview traffic is accessible via preview service directly (not Gateway).
-      trafficRouting:
-        plugins:
-          argoproj-labs/gatewayAPI:
-            httpRoute: kcm-backend-api-route
-            namespace: kcm-system
       prePromotionAnalysis:
         templates:
           - templateName: db-redis-health
