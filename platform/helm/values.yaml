@@ -1,0 +1,60 @@
+replicaCount: 3
+
+image:
+  repository: ghcr.io/bunnyvalluri/kcm-frontend
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+strategy:
+  type: canary # canary or blueGreen
+  canary:
+    steps:
+      - setWeight: 10
+      - pause: { duration: 5m }
+      - setWeight: 25
+      - pause: { duration: 10m }
+      - setWeight: 50
+      - pause: {} # Manual gate
+      - setWeight: 75
+      - pause: { duration: 5m }
+      - setWeight: 100
+  blueGreen:
+    autoPromotionEnabled: false
+    scaleDownDelaySeconds: 30
+
+analysis:
+  enabled: true
+  templates:
+    - name: http-success-rate
+    - name: http-latency
+
+ingress:
+  enabled: true
+  className: nginx
+  host: kcmchurch.org
+  tls: true
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+probes:
+  startup:
+    path: /
+    port: 3000
+  liveness:
+    path: /
+    port: 3000
+  readiness:
+    path: /
+    port: 3000
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80

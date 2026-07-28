@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: argo-rollouts-alerts
+  namespace: kcm-system
+  labels:
+    role: alert-rules
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  groups:
+    - name: argo-rollouts.rules
+      rules:
+        - alert: RolloutDegraded
+          expr: argo_rollout_info{phase="Degraded"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Argo Rollout {{ $labels.name }} in namespace {{ $labels.namespace }} is Degraded"
+            description: "Rollout {{ $labels.name }} failed metrics analysis or probes and entered Degraded status."
+
+        - alert: RolloutPaused
+          expr: argo_rollout_info{phase="Paused"} == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Argo Rollout {{ $labels.name }} has been paused for more than 15 minutes"
+            description: "Rollout {{ $labels.name }} is waiting for manual promotion approval."
+
+        - alert: AnalysisRunFailed
+          expr: argo_rollout_analysis_run_metric_phase{phase="Failed"} == 1
+          for: 30s
+          labels:
+            severity: critical
+          annotations:
+            summary: "AnalysisRun {{ $labels.name }} failed metric check"
+            description: "Automated analysis metric threshold was breached, triggering rollout abort."
+
+        - alert: ArgoRolloutsControllerDown
+          expr: absent(up{job="argo-rollouts-metrics"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Argo Rollouts Controller is unreachable"
+            description: "No metrics scraped from Argo Rollouts controller for 5 minutes."

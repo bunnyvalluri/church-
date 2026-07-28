@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kcm-progressive-delivery
+description: Production Helm chart for Kingdom of Christ Ministries Progressive Delivery platform using Argo Rollouts
+type: application
+version: 1.0.0
+appVersion: 1.7.2
+keywords:
+  - argo-rollouts
+  - canary
+  - bluegreen
+  - progressive-delivery
+  - kcm-church
+maintainers:
+  - name: Platform SRE Team
+    email: sre@kcmchurch.org

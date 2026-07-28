@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-stable-service
+  namespace: kcm-system
+  labels:
+    app: kcm-frontend
+    role: stable
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http
+  selector:
+    app: kcm-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-canary-service
+  namespace: kcm-system
+  labels:
+    app: kcm-frontend
+    role: canary
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http
+  selector:
+    app: kcm-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-active-service
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    role: active
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+      targetPort: 3001
+      name: http-api
+  selector:
+    app: kcm-backend-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-preview-service
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    role: preview
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+      targetPort: 3001
+      name: http-api
+  selector:
+    app: kcm-backend-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kcm-frontend-ingress
+  namespace: kcm-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "kcm-canary-affinity"
+spec:
+  rules:
+    - host: kcmchurch.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-stable-service
+                port:
+                  number: 3000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-frontend-gateway-route
+  namespace: kcm-system
+  labels:
+    app: kcm-frontend
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: default
+  hostnames:
+    - "kcmchurch.org"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+        - name: frontend-canary-service
+          port: 3000
+          weight: 0

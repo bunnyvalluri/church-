@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "kcm-progressive-delivery.fullname" . }}
+  namespace: {{ .Release.Namespace | default "kcm-system" }}
+  labels:
+    {{- include "kcm-progressive-delivery.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      {{- include "kcm-progressive-delivery.selectorLabels" . | nindent 6 }}
+  strategy:
+    {{- if eq .Values.strategy.type "canary" }}
+    canary:
+      canaryService: {{ include "kcm-progressive-delivery.fullname" . }}-canary
+      stableService: {{ include "kcm-progressive-delivery.fullname" . }}-stable
+      {{- if .Values.ingress.enabled }}
+      trafficRouting:
+        nginx:
+          stableIngress: {{ include "kcm-progressive-delivery.fullname" . }}-ingress
+      {{- end }}
+      steps:
+        {{- toYaml .Values.strategy.canary.steps | nindent 8 }}
+      {{- if .Values.analysis.enabled }}
+      analysis:
+        templates:
+          {{- range .Values.analysis.templates }}
+          - templateName: {{ .name }}
+          {{- end }}
+      {{- end }}
+    {{- else if eq .Values.strategy.type "blueGreen" }}
+    blueGreen:
+      activeService: {{ include "kcm-progressive-delivery.fullname" . }}-active
+      previewService: {{ include "kcm-progressive-delivery.fullname" . }}-preview
+      autoPromotionEnabled: {{ .Values.strategy.blueGreen.autoPromotionEnabled }}
+      scaleDownDelaySeconds: {{ .Values.strategy.blueGreen.scaleDownDelaySeconds }}
+      {{- if .Values.analysis.enabled }}
+      prePromotionAnalysis:
+        templates:
+          {{- range .Values.analysis.templates }}
+          - templateName: {{ .name }}
+          {{- end }}
+      {{- end }}
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "kcm-progressive-delivery.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.probes.liveness.port }}
+              name: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.probes.liveness.port }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.probes.readiness.port }}

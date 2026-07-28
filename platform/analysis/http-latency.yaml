@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: http-latency
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: http-latency
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+      value: kcm-system
+  metrics:
+    - name: p95-latency
+      interval: 30s
+      successCondition: result[0] <= 0.200
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace="{{args.namespace}}",service="{{args.service-name}}"}[2m])) by (le))
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: http-error-rate
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: http-error-rate
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+      value: kcm-system
+  metrics:
+    - name: error-rate
+      interval: 30s
+      successCondition: result[0] <= 0.005
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(http_requests_total{namespace="{{args.namespace}}",service="{{args.service-name}}",status=~"5.*"}[2m]))
+            /
+            (sum(rate(http_requests_total{namespace="{{args.namespace}}",service="{{args.service-name}}"}[2m])) + 0.0001)

@@ -1,0 +1,114 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: pod-health-metrics
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: pod-health-metrics
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: app-label
+    - name: namespace
+      value: kcm-system
+  metrics:
+    - name: container-restarts
+      interval: 30s
+      successCondition: result[0] == 0
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            sum(increase(kube_pod_container_status_restarts_total{namespace="{{args.namespace}}",pod=~"{{args.app-label}}.*"}[3m]))
+    - name: cpu-utilization
+      interval: 30s
+      successCondition: result[0] <= 0.80
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace="{{args.namespace}}",pod=~"{{args.app-label}}.*"})
+            /
+            sum(kube_pod_container_resource_limits{namespace="{{args.namespace}}",pod=~"{{args.app-label}}.*",resource="cpu"})
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: db-redis-health
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: db-redis-health
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: namespace
+      value: kcm-system
+  metrics:
+    - name: postgresql-connection-health
+      interval: 20s
+      successCondition: result[0] >= 1
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            pg_up{namespace="{{args.namespace}}"} default 1
+    - name: redis-latency
+      interval: 20s
+      successCondition: result[0] <= 0.050
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            redis_command_call_duration_seconds_sum{cmd="ping"} default 0.001
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: smoke-test-analysis
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: smoke-test-analysis
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: preview-url
+  metrics:
+    - name: preview-endpoint-check
+      provider:
+        web:
+          url: "{{args.preview-url}}/health"
+          timeoutSeconds: 5
+          headers:
+            - key: User-Agent
+              value: ArgoRollouts-SmokeTest/1.0
+          jsonPath: "{$.status}"
+      successCondition: result == 'OK' || result == 'healthy' || result == 'pass'
+      failureLimit: 1
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ClusterAnalysisTemplate
+metadata:
+  name: global-http-success-rate
+  labels:
+    app.kubernetes.io/name: global-http-success-rate
+    app.kubernetes.io/part-of: kcm-progressive-delivery
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+  metrics:
+    - name: global-success-rate
+      interval: 30s
+      successCondition: result[0] >= 0.99
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(http_requests_total{namespace="{{args.namespace}}",service="{{args.service-name}}",status!~"5.*"}[2m]))
+            /
+            sum(rate(http_requests_total{namespace="{{args.namespace}}",service="{{args.service-name}}"}[2m]))

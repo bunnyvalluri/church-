@@ -12,6 +12,33 @@ data:
   admin.enabled: "true"
 
   # Resource Customizations
+  resource.customifications.health.argoproj.io_Rollout: |
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status.phase ~= nil then
+        if obj.status.phase == "Healthy" or obj.status.phase == "Completed" then
+          hs.status = "Healthy"
+          hs.message = obj.status.phase
+          return hs
+        elseif obj.status.phase == "Paused" then
+          hs.status = "Suspended"
+          hs.message = "Rollout is paused"
+          return hs
+        elseif obj.status.phase == "Progressing" then
+          hs.status = "Progressing"
+          hs.message = "Rollout in progress"
+          return hs
+        elseif obj.status.phase == "Degraded" then
+          hs.status = "Degraded"
+          hs.message = "Rollout degraded"
+          return hs
+        end
+      end
+    end
+    hs.status = "Progressing"
+    hs.message = "Waiting for rollout status"
+    return hs
+
   resource.exclusions: |
     - apiGroups:
       - cilium.io
@@ -31,3 +58,4 @@ data:
     - url: https://github.com/bunnyvalluri/kcm-church-app.git
       type: git
       name: kcm-church-app
+

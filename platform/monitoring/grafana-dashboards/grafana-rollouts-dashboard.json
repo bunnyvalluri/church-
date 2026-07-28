@@ -1,0 +1,67 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Rollout Status Overview",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "argo_rollout_info",
+          "legendFormat": "{{name}} ({{phase}})"
+        }
+      ]
+    },
+    {
+      "title": "Canary Weight Progression",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "argo_rollout_info_weight",
+          "legendFormat": "{{name}} Weight"
+        }
+      ]
+    },
+    {
+      "title": "Active vs Preview Replicas",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "argo_rollout_info_replicas_available",
+          "legendFormat": "{{name}} Available Replicas"
+        }
+      ]
+    },
+    {
+      "title": "AnalysisRun Metric Results",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "argo_rollout_analysis_run_metric_phase",
+          "legendFormat": "{{name}} metric {{metric}} phase"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["argo-rollouts", "kcm-church", "progressive-delivery"],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "title": "KCM Church - Argo Rollouts Progressive Delivery Dashboard",
+  "uid": "kcm-argo-rollouts-dashboard"
+}

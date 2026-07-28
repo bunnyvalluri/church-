@@ -1,0 +1,46 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-rollouts-developer
+  namespace: kcm-system
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - rollouts
+      - rollouts/status
+      - experiments
+      - analysisruns
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - rollouts/scale
+      - rollouts/promote
+      - rollouts/pause
+      - rollouts/resume
+      - rollouts/retry
+      - rollouts/abort
+    verbs:
+      - create
+      - update
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-rollouts-developer-binding
+  namespace: kcm-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argo-rollouts-developer
+subjects:
+  - kind: Group
+    name: system:authenticated
+    apiGroup: rbac.authorization.k8s.io

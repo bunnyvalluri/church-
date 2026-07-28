@@ -1,0 +1,46 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-rollout-best-practices
+  annotations:
+    policies.kyverno.io/title: Enforce Argo Rollout Best Practices
+    policies.kyverno.io/category: Argo Rollouts Security & Reliability
+    policies.kyverno.io/severity: high
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-rollout-probes
+      match:
+        any:
+          - resources:
+              kinds:
+                - argoproj.io/v1alpha1/Rollout
+      validate:
+        message: "All containers in an Argo Rollout must define startup, liveness, and readiness probes."
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - startupProbe:
+                      httpGet: {}
+                    livenessProbe:
+                      httpGet: {}
+                    readinessProbe:
+                      httpGet: {}
+    - name: require-rollout-analysis
+      match:
+        any:
+          - resources:
+              kinds:
+                - argoproj.io/v1alpha1/Rollout
+      validate:
+        message: "Argo Rollout must configure automated metrics analysis step or pre/post promotion analysis."
+        pattern:
+          spec:
+            strategy:
+              =(canary):
+                analysis: {}
+              =(blueGreen):
+                prePromotionAnalysis: {}

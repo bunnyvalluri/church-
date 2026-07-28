@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-rollouts-system
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/bunnyvalluri/kcm-church-infra.git
+    targetRevision: HEAD
+    path: platform/rollouts/install
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo-rollouts
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-rollouts-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: rollouts-project
+  source:
+    repoURL: https://github.com/bunnyvalluri/kcm-church-infra.git
+    targetRevision: HEAD
+    path: platform/helm
+    helm:
+      valueFiles:
+        - values-canary.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kcm-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: rollouts-project
+  namespace: argocd
+spec:
+  description: Argo CD project for KCM Church Rollouts
+  sourceRepos:
+    - 'https://github.com/bunnyvalluri/kcm-church-infra.git'
+  destinations:
+    - namespace: kcm-system
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+    - group: 'argoproj.io'
+      kind: ClusterAnalysisTemplate
+  namespaceResourceWhitelist:
+    - group: 'argoproj.io'
+      kind: Rollout
+    - group: 'argoproj.io'
+      kind: AnalysisTemplate
+    - group: ''
+      kind: Service
+    - group: 'networking.k8s.io'
+      kind: Ingress
+    - group: 'gateway.networking.k8s.io'
+      kind: HTTPRoute

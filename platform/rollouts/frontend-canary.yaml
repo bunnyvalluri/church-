@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: kcm-frontend
+  namespace: kcm-system
+  labels:
+    app: kcm-frontend
+    app.kubernetes.io/name: kcm-frontend
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  replicas: 4
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: kcm-frontend
+  strategy:
+    canary:
+      canaryService: frontend-canary-service
+      stableService: frontend-stable-service
+      trafficRouting:
+        nginx:
+          stableIngress: kcm-frontend-ingress
+      analysis:
+        templates:
+          - templateName: http-success-rate
+          - templateName: http-latency
+        args:
+          - name: service-name
+            value: frontend-canary-service
+          - name: namespace
+            value: kcm-system
+      steps:
+        - setWeight: 10
+        - pause:
+            duration: 5m
+        - setWeight: 25
+        - pause:
+            duration: 10m
+        - setWeight: 50
+        - pause: {} # Manual gate step requiring manual promotion approval
+        - setWeight: 75
+        - pause:
+            duration: 5m
+        - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: kcm-frontend
+        app.kubernetes.io/name: kcm-frontend
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - kcm-frontend
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: frontend
+          image: ghcr.io/bunnyvalluri/kcm-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2

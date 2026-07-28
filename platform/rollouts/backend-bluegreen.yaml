@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: kcm-backend-api
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    app.kubernetes.io/name: kcm-backend-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: kcm-backend-api
+  strategy:
+    blueGreen:
+      activeService: backend-api-active-service
+      previewService: backend-api-preview-service
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 30
+      prePromotionAnalysis:
+        templates:
+          - templateName: db-redis-health
+          - templateName: smoke-test-analysis
+        args:
+          - name: namespace
+            value: kcm-system
+          - name: preview-url
+            value: "http://backend-api-preview-service.kcm-system.svc.cluster.local:3001"
+      postPromotionAnalysis:
+        templates:
+          - templateName: http-success-rate
+          - templateName: http-latency
+        args:
+          - name: service-name
+            value: backend-api-active-service
+          - name: namespace
+            value: kcm-system
+  template:
+    metadata:
+      labels:
+        app: kcm-backend-api
+        app.kubernetes.io/name: kcm-backend-api
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - kcm-backend-api
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: api
+          image: ghcr.io/bunnyvalluri/kcm-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "api.js"]
+          ports:
+            - containerPort: 3001
+              name: http-api
+          env:
+            - name: PROCESS_TYPE
+              value: "api"
+          envFrom:
+            - configMapRef:
+                name: kcm-configmap
+            - secretRef:
+                name: kcm-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 800m
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2
