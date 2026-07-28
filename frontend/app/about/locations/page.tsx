@@ -72,11 +72,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-amber-500",
-        badgeBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+        badgeBg: "bg-amber-600 text-white border border-amber-500 font-black shadow-sm",
         btnColor: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-600/30",
         isMain: true,
         Icon: Church,
-        iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400 ring-2 ring-amber-400/30",
+        iconBg: "bg-amber-600 border border-amber-500 text-white shadow-md",
       },
       {
         id: "subhash",
@@ -112,11 +112,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-orange-500",
-        badgeBg: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+        badgeBg: "bg-orange-600 text-white border border-orange-500 font-black shadow-sm",
         btnColor: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-600/30",
         isMain: false,
         Icon: Sunrise,
-        iconBg: "bg-orange-500/15 text-orange-600 dark:text-orange-400 ring-2 ring-orange-400/30",
+        iconBg: "bg-orange-600 border border-orange-500 text-white shadow-md",
       },
       {
         id: "bahadur",
@@ -147,11 +147,11 @@ export default function LocationsPage() {
           },
         ],
         serviceBorder: "border-l-rose-500",
-        badgeBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+        badgeBg: "bg-purple-600 text-white border border-purple-500 font-black shadow-sm",
         btnColor: "bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-600 hover:to-fuchsia-700 text-white shadow-lg shadow-pink-600/30",
         isMain: false,
         Icon: Heart,
-        iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400 ring-2 ring-rose-400/30",
+        iconBg: "bg-purple-600 border border-purple-500 text-white shadow-md",
       },
     ];
 
@@ -204,9 +204,9 @@ export default function LocationsPage() {
             <BackToHome label={t?.nav?.home || "Home"} />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-xs sm:text-sm mb-6 shadow-md">
-            <MapPin className="w-4 h-4 text-purple-300" />
-            <span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/70 border border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-white mb-6 backdrop-blur-md shadow-md">
+            <MapPin className="w-4 h-4 text-amber-300 fill-amber-300/30" />
+            <span className="text-white font-extrabold tracking-wider">
               {isTelugu
                 ? "హైదరాబాద్‌లోని 3 బ్రాంచ్ ప్రాంతాలు"
                 : isHindi
@@ -252,7 +252,7 @@ export default function LocationsPage() {
                       </div>
                     </div>
                     {branch.isMain && (
-                      <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold border border-amber-500/20 uppercase tracking-wider">
+                      <span className="px-3 py-1 rounded-full bg-amber-600 text-white text-[10px] font-black border border-amber-500 uppercase tracking-wider shadow-sm">
                         {isTelugu ? "ప్రధాన మందిరం" : isHindi ? "मुख्य Sanctuary" : "Main Hub"}
                       </span>
                     )}
@@ -272,50 +272,42 @@ export default function LocationsPage() {
                       {branch.services.map((srv: any, idx: number) => {
                         const serviceColors = [
                           {
-                            border: "border-l-violet-400",
-                            bg: "bg-violet-50 dark:bg-violet-500/10",
-                            borderFull: "border border-violet-200/60 dark:border-violet-500/30",
-                            dayText: "text-violet-700 dark:text-violet-300",
-                            typeText: "text-slate-800 dark:text-violet-100",
-                            timeText: "text-slate-500 dark:text-violet-300/70",
+                            border: "border-l-purple-500",
+                            badgeBg: "bg-purple-600 text-white",
+                            typeText: "text-slate-900 dark:text-white font-black",
+                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
                           },
                           {
-                            border: "border-l-rose-400",
-                            bg: "bg-rose-50 dark:bg-rose-500/10",
-                            borderFull: "border border-rose-200/60 dark:border-rose-500/30",
-                            dayText: "text-rose-700 dark:text-rose-300",
-                            typeText: "text-slate-800 dark:text-rose-100",
-                            timeText: "text-slate-500 dark:text-rose-300/70",
+                            border: "border-l-indigo-500",
+                            badgeBg: "bg-indigo-600 text-white",
+                            typeText: "text-slate-900 dark:text-white font-black",
+                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
                           },
                           {
-                            border: "border-l-amber-400",
-                            bg: "bg-amber-50 dark:bg-amber-500/10",
-                            borderFull: "border border-amber-200/60 dark:border-amber-500/30",
-                            dayText: "text-amber-700 dark:text-amber-300",
-                            typeText: "text-slate-800 dark:text-amber-100",
-                            timeText: "text-slate-500 dark:text-amber-300/70",
+                            border: "border-l-violet-500",
+                            badgeBg: "bg-violet-600 text-white",
+                            typeText: "text-slate-900 dark:text-white font-black",
+                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
                           },
                           {
-                            border: "border-l-teal-400",
-                            bg: "bg-teal-50 dark:bg-teal-500/10",
-                            borderFull: "border border-teal-200/60 dark:border-teal-500/30",
-                            dayText: "text-teal-700 dark:text-teal-300",
-                            typeText: "text-slate-800 dark:text-teal-100",
-                            timeText: "text-slate-500 dark:text-teal-300/70",
+                            border: "border-l-purple-600",
+                            badgeBg: "bg-purple-700 text-white",
+                            typeText: "text-slate-900 dark:text-white font-black",
+                            timeText: "text-slate-700 dark:text-slate-200 font-extrabold",
                           },
                         ];
                         const color = serviceColors[idx % serviceColors.length];
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl ${color.bg} ${color.borderFull} border-l-4 ${color.border} flex items-center justify-between text-xs`}
+                            className={`p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 border-l-4 ${color.border} flex items-center justify-between text-xs shadow-sm`}
                           >
-                            <span className={`font-bold ${color.dayText}`}>
+                            <span className={`px-3 py-1 rounded-xl font-black text-xs text-white ${color.badgeBg} shadow-sm border border-white/10 shrink-0`}>
                               {srv.day}
                             </span>
-                            <div className="text-right">
-                              <div className={`font-semibold ${color.typeText}`}>{srv.type}</div>
-                              <div className={`text-[11px] ${color.timeText}`}>{srv.time}</div>
+                            <div className="text-right pl-2">
+                              <div className={`text-xs sm:text-sm font-black ${color.typeText}`}>{srv.type}</div>
+                              <div className={`text-[11px] font-extrabold ${color.timeText}`}>{srv.time}</div>
                             </div>
                           </div>
                         );
@@ -325,13 +317,13 @@ export default function LocationsPage() {
 
                   {/* Address & Contacts */}
                   <div className="mb-6 text-xs sm:text-sm space-y-2">
-                    <div className="flex items-start gap-2.5 text-slate-600 dark:text-slate-400">
+                    <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-200 font-medium">
                       <MapPin className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
                       <span className="leading-relaxed">{branch.address}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-semibold pt-1">
+                    <div className="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 font-extrabold pt-1">
                       <Phone className="w-4 h-4 text-purple-500 shrink-0" />
-                      <a href="tel:+919704090069" className="hover:text-purple-600 transition-colors">
+                      <a href="tel:+919704090069" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                         +91 97040 90069 (Senior Pastor)
                       </a>
                     </div>
@@ -357,8 +349,8 @@ export default function LocationsPage() {
 
         {/* 📺 Live Streaming Banner */}
         <div className="max-w-4xl mx-auto mt-16 bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 text-center shadow-2xl relative">
-          <div className="w-14 h-14 bg-red-600/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Youtube className="w-7 h-7" />
+          <div className="w-14 h-14 bg-red-600 text-white border border-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-600/30">
+            <Youtube className="w-7 h-7 text-white" />
           </div>
           <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-2 font-serif">
             {isTelugu ? "లైవ్ ఆరాధన కూడా అందుబాటులో ఉంది" : isHindi ? "लाइव आराधना भी उपलब्ध है" : "Live Streaming Available"}

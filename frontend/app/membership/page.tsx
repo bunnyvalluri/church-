@@ -62,25 +62,25 @@ export default function MembershipPage() {
       title: m.belongingTitle || "Spiritual Belonging",
       desc: m.belongingDesc || "Be part of a caring, authentic spiritual family where you are known, loved, and supported.",
       icon: Users,
-      colorBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+      colorBg: "bg-purple-600 text-white border-purple-500 shadow-md",
     },
     {
       title: m.growthTitle || "Discipleship & Growth",
       desc: m.growthDesc || "Access deeper leadership training, ministry mentorship, and structured spiritual growth classes.",
       icon: Award,
-      colorBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+      colorBg: "bg-indigo-600 text-white border-indigo-500 shadow-md",
     },
     {
       title: m.serviceTitle || "Kingdom Service",
       desc: m.serviceDesc || "Discover your spiritual gifts and play a vital role in leading teams and blessing the community.",
       icon: Heart,
-      colorBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+      colorBg: "bg-pink-600 text-white border-pink-500 shadow-md",
     },
     {
       title: m.coveringTitle || "Pastoral Covering",
       desc: m.coveringDesc || "Receive dedicated pastoral care, prayer intercession, home visits, and spiritual guidance.",
       icon: Shield,
-      colorBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+      colorBg: "bg-emerald-600 text-white border-emerald-500 shadow-md",
     },
   ];
 
@@ -244,7 +244,7 @@ export default function MembershipPage() {
                         {item.title}
                       </h3>
                     </div>
-                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[11px] font-semibold mb-3">
+                    <span className="inline-block px-2.5 py-1 rounded-md bg-purple-600 text-white text-[11px] font-extrabold mb-3 shadow-sm">
                       {item.duration}
                     </span>
                     <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
@@ -262,8 +262,8 @@ export default function MembershipPage() {
       <section className="py-20 relative z-10 bg-slate-950 text-white border-t border-slate-800">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
-            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 text-purple-300 flex items-center justify-center mx-auto mb-6">
-              <FileCheck className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-purple-600 border border-purple-500 text-white flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-600/30">
+              <FileCheck className="w-7 h-7 text-white" />
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-serif text-white">

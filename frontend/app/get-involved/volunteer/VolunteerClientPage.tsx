@@ -57,7 +57,7 @@ export default function VolunteerClientPage() {
         : "Worship Team",
       areas: !mounted ? ["Singers", "Musicians", "Sound technicians", "Media team"] : t.pages.volunteer.worshipAreas,
       icon: Music,
-      colorBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+      colorBg: "bg-purple-600 text-white shadow-md",
     },
     {
       id: "children",
@@ -70,21 +70,21 @@ export default function VolunteerClientPage() {
         : "Children's Ministry",
       areas: !mounted ? ["Sunday School teachers", "Nursery helpers", "VBS volunteers", "Kids camp staff"] : t.pages.volunteer.childrenAreas,
       icon: Baby,
-      colorBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+      colorBg: "bg-pink-600 text-white shadow-md",
     },
     {
       id: "hospitality",
       title: !mounted ? "Hospitality" : t.pages.volunteer.hospitalityTitle,
       areas: !mounted ? ["Greeters", "Ushers", "Coffee team", "Setup crew"] : t.pages.volunteer.hospitalityAreas,
       icon: Coffee,
-      colorBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      colorBg: "bg-amber-600 text-white shadow-md",
     },
     {
       id: "tech",
       title: !mounted ? "Technical Team" : t.pages.volunteer.techTitle,
       areas: !mounted ? ["Audio/Visual", "Live streaming", "Social media", "Photography"] : t.pages.volunteer.techAreas,
       icon: Camera,
-      colorBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+      colorBg: "bg-indigo-600 text-white shadow-md",
     },
     {
       id: "outreach",
@@ -97,14 +97,14 @@ export default function VolunteerClientPage() {
         : "Outreach",
       areas: !mounted ? ["Community events", "Food distribution", "Medical camps", "Evangelism teams"] : t.pages.volunteer.outreachAreas,
       icon: Heart,
-      colorBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      colorBg: "bg-emerald-600 text-white shadow-md",
     },
     {
       id: "facilities",
       title: !mounted ? "Facilities" : t.pages.volunteer.facilitiesTitle,
       areas: !mounted ? ["Maintenance", "Cleaning", "Setup/Teardown", "Security"] : t.pages.volunteer.facilitiesAreas,
       icon: Wrench,
-      colorBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+      colorBg: "bg-blue-600 text-white shadow-md",
     },
   ];
 
@@ -303,8 +303,8 @@ export default function VolunteerClientPage() {
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-purple-500/5">
             <div className="text-center max-w-xl mx-auto mb-10">
-              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center mx-auto mb-4 shadow-sm">
-                <HeartHandshake className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-purple-600 text-white border border-purple-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-600/30">
+                <HeartHandshake className="w-7 h-7 text-white" />
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-3 font-serif tracking-tight">

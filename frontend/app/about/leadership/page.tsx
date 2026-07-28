@@ -45,10 +45,10 @@ export default function LeadershipPage() {
 
   // Stats Data
   const stats = [
-    { value: "20+", label: pageT.statYears || "Years of Leadership", icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10 dark:bg-purple-500/20" },
-    { value: "6+", label: pageT.statMinistries || "Active Ministries", icon: Award, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 dark:bg-indigo-500/20" },
-    { value: "100+", label: pageT.statServants || "Servant Leaders", icon: Users, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10 dark:bg-pink-500/20" },
-    { value: "24/7", label: pageT.statPrayer || "Prayer Support", icon: Flame, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-400/20" },
+    { value: "20+", label: pageT.statYears || "Years of Leadership", icon: Calendar, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
+    { value: "6+", label: pageT.statMinistries || "Active Ministries", icon: Award, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
+    { value: "100+", label: pageT.statServants || "Servant Leaders", icon: Users, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
+    { value: "24/7", label: pageT.statPrayer || "Prayer Support", icon: Flame, color: "text-white", bg: "bg-amber-600 shadow-md shadow-amber-600/30" },
   ];
 
   // Core Pillars of Leadership
@@ -58,7 +58,8 @@ export default function LeadershipPage() {
       desc: pageT.pillar1Desc || "Leading with humility, putting the needs of God's people first.",
       verse: "Mark 10:45",
       icon: HeartHandshake,
-      color: "text-purple-600 dark:text-purple-400",
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/20",
       border: "border-purple-500/20 dark:border-purple-500/30",
       accent: "from-purple-500 to-indigo-500"
     },
@@ -67,7 +68,8 @@ export default function LeadershipPage() {
       desc: pageT.pillar2Desc || "Preaching and teaching the uncompromised Word of God.",
       verse: "2 Timothy 4:2",
       icon: BookOpen,
-      color: "text-indigo-600 dark:text-indigo-400",
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/20",
       border: "border-indigo-500/20 dark:border-indigo-500/30",
       accent: "from-indigo-500 to-cyan-500"
     },
@@ -76,7 +78,8 @@ export default function LeadershipPage() {
       desc: pageT.pillar3Desc || "Anchoring every decision and ministry step in fervent prayer.",
       verse: "1 Thess 5:17",
       icon: Flame,
-      color: "text-amber-600 dark:text-amber-400",
+      color: "text-white",
+      bg: "bg-amber-600 shadow-md shadow-amber-600/20",
       border: "border-amber-500/20 dark:border-amber-500/30",
       accent: "from-amber-500 to-orange-500"
     },
@@ -85,7 +88,8 @@ export default function LeadershipPage() {
       desc: pageT.pillar4Desc || "Shepherding families and individuals with Christ-like love.",
       verse: "1 Peter 5:2",
       icon: ShieldCheck,
-      color: "text-pink-600 dark:text-pink-400",
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/20",
       border: "border-pink-500/20 dark:border-pink-500/30",
       accent: "from-pink-500 to-rose-500"
     }
@@ -100,8 +104,8 @@ export default function LeadershipPage() {
       icon: Music,
       category: "worship",
       tag: "Worship & Praise",
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-100 dark:bg-purple-900/40",
+      color: "text-white",
+      bgColor: "bg-purple-600 shadow-md shadow-purple-600/30",
       borderColor: "border-purple-200 dark:border-purple-800/50",
       accent: "from-purple-500 to-indigo-500",
       focusAreas: [
@@ -120,8 +124,8 @@ export default function LeadershipPage() {
       icon: Sparkles,
       category: "youth",
       tag: "NextGen Generation",
-      color: "text-indigo-600 dark:text-indigo-400",
-      bgColor: "bg-indigo-100 dark:bg-indigo-900/40",
+      color: "text-white",
+      bgColor: "bg-indigo-600 shadow-md shadow-indigo-600/30",
       borderColor: "border-indigo-200 dark:border-indigo-800/50",
       accent: "from-indigo-500 to-cyan-500",
       focusAreas: [
@@ -140,8 +144,8 @@ export default function LeadershipPage() {
       icon: Heart,
       category: "care",
       tag: "Fellowship & Prayer",
-      color: "text-pink-600 dark:text-pink-400",
-      bgColor: "bg-pink-100 dark:bg-pink-900/40",
+      color: "text-white",
+      bgColor: "bg-pink-600 shadow-md shadow-pink-600/30",
       borderColor: "border-pink-200 dark:border-pink-800/50",
       accent: "from-pink-500 to-rose-500",
       focusAreas: [
@@ -160,8 +164,8 @@ export default function LeadershipPage() {
       icon: ShieldCheck,
       category: "care",
       tag: "Spiritual Leadership",
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-100 dark:bg-blue-900/40",
+      color: "text-white",
+      bgColor: "bg-blue-600 shadow-md shadow-blue-600/30",
       borderColor: "border-blue-200 dark:border-blue-800/50",
       accent: "from-blue-500 to-indigo-500",
       focusAreas: [
@@ -180,8 +184,8 @@ export default function LeadershipPage() {
       icon: Baby,
       category: "youth",
       tag: "Sunday School",
-      color: "text-emerald-600 dark:text-emerald-400",
-      bgColor: "bg-emerald-100 dark:bg-emerald-900/40",
+      color: "text-white",
+      bgColor: "bg-emerald-600 shadow-md shadow-emerald-600/30",
       borderColor: "border-emerald-200 dark:border-emerald-800/50",
       accent: "from-emerald-500 to-teal-500",
       focusAreas: [
@@ -200,8 +204,8 @@ export default function LeadershipPage() {
       icon: Flame,
       category: "care",
       tag: "24/7 Intercession",
-      color: "text-amber-600 dark:text-amber-400",
-      bgColor: "bg-amber-100 dark:bg-amber-900/40",
+      color: "text-white",
+      bgColor: "bg-amber-600 shadow-md shadow-amber-600/30",
       borderColor: "border-amber-200 dark:border-amber-800/50",
       accent: "from-amber-500 to-orange-500",
       focusAreas: [
@@ -241,7 +245,7 @@ export default function LeadershipPage() {
               <BackToHome label={pageT.badge || "Our Leaders"} />
             </div>
 
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-lg animate-bounce-in">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
               <Users className="h-4 w-4 text-purple-300" />
               <span>{pageT.badge || "Our Leaders"}</span>
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
@@ -274,7 +278,7 @@ export default function LeadershipPage() {
                 <div className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-1">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-200">
                   {stat.label}
                 </div>
               </div>
@@ -288,8 +292,8 @@ export default function LeadershipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-black uppercase tracking-widest mb-4 border border-purple-200 dark:border-purple-800">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-black uppercase tracking-widest mb-4 border border-purple-500 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
               <span>{pageT.senior}</span>
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
@@ -317,7 +321,7 @@ export default function LeadershipPage() {
                   <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent pointer-events-none" />
                   
                   <div className="absolute bottom-4 left-4 right-4 text-center z-10">
-                    <span className="px-3 py-1 bg-amber-500/90 text-slate-950 text-xs font-black rounded-full uppercase tracking-wider shadow-lg">
+                    <span className="px-3 py-1 bg-amber-500 text-slate-950 text-xs font-black rounded-full uppercase tracking-wider shadow-lg">
                       {pageT.role || "Senior Pastor & Founder"}
                     </span>
                   </div>
@@ -327,7 +331,7 @@ export default function LeadershipPage() {
                   <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                     Bishop Kurra Kristhu Raju
                   </h3>
-                  <p className="text-purple-600 dark:text-purple-400 font-semibold text-base sm:text-lg mt-1">
+                  <p className="text-purple-600 dark:text-purple-300 font-bold text-base sm:text-lg mt-1">
                     {pageT.role}
                   </p>
                 </div>
@@ -343,7 +347,7 @@ export default function LeadershipPage() {
                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
                       activePastorTab === "bio"
                         ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30"
-                        : "bg-white/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {pageT.tabBio || "About Pastor"}
@@ -354,7 +358,7 @@ export default function LeadershipPage() {
                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
                       activePastorTab === "vision"
                         ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30"
-                        : "bg-white/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {pageT.tabVision || "Pastoral Vision"}
@@ -365,7 +369,7 @@ export default function LeadershipPage() {
                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
                       activePastorTab === "message"
                         ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30"
-                        : "bg-white/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {pageT.tabMessage || "Message to Church"}
@@ -376,15 +380,15 @@ export default function LeadershipPage() {
                 <div className="min-h-[160px]">
                   {activePastorTab === "bio" && (
                     <div className="space-y-4 animate-fade-in">
-                      <p className="text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed font-normal">
+                      <p className="text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed font-medium">
                         {pageT.bio}
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
                           <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                           <span>Dedicated Pastoral Leadership</span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
                           <CheckCircle2 className="h-4 w-4 text-purple-500 flex-shrink-0" />
                           <span>Visionary Church Founder</span>
                         </div>
@@ -394,11 +398,11 @@ export default function LeadershipPage() {
 
                   {activePastorTab === "vision" && (
                     <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-md border border-purple-100 dark:border-purple-900/50 animate-fade-in">
-                      <Quote className="h-8 w-8 text-purple-600/40 dark:text-purple-400/40 mb-2" />
-                      <h4 className="text-base font-bold text-purple-600 dark:text-purple-400 mb-2">
+                      <Quote className="h-8 w-8 text-purple-600 dark:text-purple-400 mb-2" />
+                      <h4 className="text-base font-bold text-purple-600 dark:text-purple-300 mb-2">
                         {pageT.visionTitle}
                       </h4>
-                      <p className="text-slate-800 dark:text-slate-100 italic text-base sm:text-lg leading-relaxed font-medium">
+                      <p className="text-slate-800 dark:text-slate-100 italic text-base sm:text-lg leading-relaxed font-semibold">
                         "{pageT.visionQuote}"
                       </p>
                     </div>
@@ -406,11 +410,11 @@ export default function LeadershipPage() {
 
                   {activePastorTab === "message" && (
                     <div className="p-6 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-md space-y-3 animate-fade-in">
-                      <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-sm">
+                      <div className="flex items-center gap-2 text-purple-600 dark:text-purple-300 font-bold text-sm">
                         <MessageSquare className="h-4 w-4" />
                         <span>Pastoral Heart</span>
                       </div>
-                      <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-base leading-relaxed italic">
+                      <p className="text-slate-800 dark:text-slate-100 text-sm sm:text-base leading-relaxed italic font-medium">
                         "{pageT.messageText || "Welcome to Kingdom of Christ Ministries. Our heart is to see every individual walk in the fullness of God's love, purpose, and grace. We invite you to grow, worship, and serve together with us."}"
                       </p>
                     </div>
@@ -452,7 +456,7 @@ export default function LeadershipPage() {
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.pillarsTitle || "Guiding Principles of Leadership"}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg mb-6">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg mb-6 font-medium">
               {pageT.pillarsSubtitle || "Rooted in Scripture, committed to servant leadership"}
             </p>
             <div className="w-16 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full" />
@@ -470,10 +474,10 @@ export default function LeadershipPage() {
                   
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className={`w-12 h-12 rounded-2xl ${pillar.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <Icon className={`h-6 w-6 ${pillar.color}`} />
                       </div>
-                      <span className="text-xs font-black uppercase tracking-wider px-2.5 py-1 bg-purple-100 dark:bg-purple-500/30 text-purple-700 dark:text-white rounded-full border border-purple-200 dark:border-purple-400/40">
+                      <span className="text-xs font-black uppercase tracking-wider px-2.5 py-1 bg-purple-600 text-white rounded-full border border-purple-500 shadow-sm">
                         {pillar.verse}
                       </span>
                     </div>
@@ -482,7 +486,7 @@ export default function LeadershipPage() {
                       {pillar.title}
                     </h3>
 
-                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                       {pillar.desc}
                     </p>
                   </div>
@@ -502,7 +506,7 @@ export default function LeadershipPage() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.teamTitle}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-lg">
+            <p className="text-slate-600 dark:text-slate-300 text-lg font-medium">
               {pageT.teamSubtitle}
             </p>
           </div>
@@ -524,7 +528,7 @@ export default function LeadershipPage() {
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 ${
                     selectedFilter === tab.id
                       ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30 scale-105"
-                      : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-purple-300 dark:hover:border-purple-800"
+                      : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-purple-400 dark:hover:border-purple-600"
                   }`}
                 >
                   {tab.label}
@@ -540,7 +544,7 @@ export default function LeadershipPage() {
                 placeholder="Search ministry or leadership department..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold shadow-sm"
               />
               {searchQuery && (
                 <button 
@@ -572,7 +576,7 @@ export default function LeadershipPage() {
                         <div className={`w-14 h-14 ${item.bgColor} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                           <Icon className={`h-7 w-7 ${item.color}`} />
                         </div>
-                        <span className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-200/60 dark:border-slate-700">
+                        <span className="text-xs font-extrabold uppercase tracking-wider px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-full border border-slate-300 dark:border-slate-700">
                           {item.tag}
                         </span>
                       </div>
@@ -581,21 +585,21 @@ export default function LeadershipPage() {
                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                         {item.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                      <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-6 font-medium">
                         {item.desc}
                       </p>
                     </div>
 
                     <div>
                       <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-300">
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                           {item.roleTitle}
                         </span>
                         <button
                           onClick={() => setSelectedMinistry(item)}
-                          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white transition-colors group/btn"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-black rounded-xl shadow-sm transition-all duration-300 hover:scale-105 cursor-pointer group/btn"
                         >
-                          <span className="underline underline-offset-2 decoration-purple-400 dark:decoration-purple-500">{pageT.viewDetails || "View Focus & Details"}</span>
+                          <span>{pageT.viewDetails || "View Focus & Details"}</span>
                           <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                         </button>
                       </div>

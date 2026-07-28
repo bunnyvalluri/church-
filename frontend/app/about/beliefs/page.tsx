@@ -43,10 +43,10 @@ export default function BeliefsPage() {
 
   // Stats Data
   const stats = [
-    { value: "66", label: pageT.statBooks || "Inspired Books", icon: BookOpen, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10 dark:bg-purple-500/20" },
-    { value: "1", label: pageT.statGod || "Eternal Trinity", icon: Cross, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 dark:bg-indigo-500/20" },
-    { value: "100%", label: pageT.statGrace || "Grace by Faith", icon: Heart, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10 dark:bg-pink-500/20" },
-    { value: "6", label: pageT.statValues || "Kingdom Core Values", icon: Sparkles, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-400/20" },
+    { value: "66", label: pageT.statBooks || "Inspired Books", icon: BookOpen, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
+    { value: "1", label: pageT.statGod || "Eternal Trinity", icon: Cross, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
+    { value: "100%", label: pageT.statGrace || "Grace by Faith", icon: Heart, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
+    { value: "6", label: pageT.statValues || "Kingdom Core Values", icon: Sparkles, color: "text-white", bg: "bg-amber-600 shadow-md shadow-amber-600/30" },
   ];
 
   // Doctrines List
@@ -62,8 +62,8 @@ export default function BeliefsPage() {
       deep: pageT.d1Deep || "The Holy Bible is God's written revelation to mankind. It provides divine direction, spiritual nourishment, and absolute truth for every generation.",
       icon: BookOpen,
       accent: "from-purple-500 to-indigo-500",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20"
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30"
     },
     {
       id: "d2",
@@ -76,8 +76,8 @@ export default function BeliefsPage() {
       deep: pageT.d2Deep || "God is one in essence yet distinct in three divine persons. Father is the Creator; Son is the Redeemer; Holy Spirit is the Sanctifier.",
       icon: Cross,
       accent: "from-indigo-500 to-cyan-500",
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-500/10 dark:bg-indigo-500/20"
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30"
     },
     {
       id: "d3",
@@ -90,8 +90,8 @@ export default function BeliefsPage() {
       deep: pageT.d3Deep || "Jesus Christ is the eternal Son of God who humbled Himself to ransom humanity from sin through His sacrificial death and triumphant resurrection.",
       icon: Crown,
       accent: "from-amber-500 to-orange-500",
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-500/10 dark:bg-amber-500/20"
+      color: "text-white",
+      bg: "bg-amber-600 shadow-md shadow-amber-600/30"
     },
     {
       id: "d4",
@@ -104,8 +104,8 @@ export default function BeliefsPage() {
       deep: pageT.d4Deep || "Salvation brings forgiveness, spiritual rebirth, justification, and eternal life for anyone who repents and puts trust in Jesus Christ.",
       icon: Heart,
       accent: "from-pink-500 to-rose-500",
-      color: "text-pink-600 dark:text-pink-400",
-      bg: "bg-pink-500/10 dark:bg-pink-500/20"
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/30"
     },
     {
       id: "d5",
@@ -118,8 +118,8 @@ export default function BeliefsPage() {
       deep: pageT.d5Deep || "The Holy Spirit convicts the world of sin, regenerates believers, and imparts spiritual gifts for edifying the Church and operating in divine signs and wonders.",
       icon: Flame,
       accent: "from-red-500 to-amber-500",
-      color: "text-red-600 dark:text-red-400",
-      bg: "bg-red-500/10 dark:bg-red-500/20"
+      color: "text-white",
+      bg: "bg-red-600 shadow-md shadow-red-600/30"
     },
     {
       id: "d6",
@@ -132,8 +132,8 @@ export default function BeliefsPage() {
       deep: pageT.d6Deep || "The local church is a lighthouse of prayer, healing, and fellowship. Through baptism and Holy Communion, we celebrate Christ's victory.",
       icon: Church,
       accent: "from-emerald-500 to-teal-500",
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-500/10 dark:bg-emerald-500/20"
+      color: "text-white",
+      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30"
     },
     {
       id: "d7",
@@ -146,8 +146,8 @@ export default function BeliefsPage() {
       deep: pageT.d7Deep || "Prayer is the engine of Kingdom of Christ Ministries. We believe in 24/7 intercession and trusting God for miracles in every situation.",
       icon: ShieldCheck,
       accent: "from-blue-500 to-indigo-500",
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-500/10 dark:bg-blue-500/20"
+      color: "text-white",
+      bg: "bg-blue-600 shadow-md shadow-blue-600/30"
     },
     {
       id: "d8",
@@ -160,19 +160,19 @@ export default function BeliefsPage() {
       deep: pageT.d8Deep || "Our ultimate anchor is the blessed hope of Christ's return, inspiring us to live holy, purposeful lives sharing the Gospel with love.",
       icon: Sparkles,
       accent: "from-purple-500 to-pink-500",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20"
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30"
     }
   ], [pageT]);
 
   // Core Values Data
   const values = [
-    { name: pageT.v1Name || "Faith", desc: pageT.v1Desc || "Trusting God unconditionally in all circumstances and stepping out in bold obedience.", verse: pageT.v1Verse || "Hebrews 11:1", icon: ShieldCheck, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10 dark:bg-purple-500/20" },
-    { name: pageT.v2Name || "Love", desc: pageT.v2Desc || "Demonstrating the sacrificial, unconditional love of Christ to every individual.", verse: pageT.v2Verse || "1 Corinthians 13:13", icon: Heart, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10 dark:bg-pink-500/20" },
-    { name: pageT.v3Name || "Prayer", desc: pageT.v3Desc || "Seeking God's presence continually through personal and corporate intercession.", verse: pageT.v3Verse || "1 Thess 5:17", icon: Flame, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-500/20" },
-    { name: pageT.v4Name || "Scripture", desc: pageT.v4Desc || "Living, teaching, and anchoring every decision in the uncompromised Word of God.", verse: pageT.v4Verse || "Psalm 119:105", icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 dark:bg-indigo-500/20" },
-    { name: pageT.v5Name || "Community", desc: pageT.v5Desc || "Building a warm, inclusive spiritual family where everyone belongs and flourishes.", verse: pageT.v5Verse || "Acts 2:42", icon: Users, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 dark:bg-emerald-500/20" },
-    { name: pageT.v6Name || "Mission", desc: pageT.v6Desc || "Reaching the lost, serving the needy, and making disciples locally and globally.", verse: pageT.v6Verse || "Mark 16:15", icon: Globe, color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-500/10 dark:bg-cyan-500/20" },
+    { name: pageT.v1Name || "Faith", desc: pageT.v1Desc || "Trusting God unconditionally in all circumstances and stepping out in bold obedience.", verse: pageT.v1Verse || "Hebrews 11:1", icon: ShieldCheck, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/20" },
+    { name: pageT.v2Name || "Love", desc: pageT.v2Desc || "Demonstrating the sacrificial, unconditional love of Christ to every individual.", verse: pageT.v2Verse || "1 Corinthians 13:13", icon: Heart, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/20" },
+    { name: pageT.v3Name || "Prayer", desc: pageT.v3Desc || "Seeking God's presence continually through personal and corporate intercession.", verse: pageT.v3Verse || "1 Thess 5:17", icon: Flame, color: "text-white", bg: "bg-amber-600 shadow-md shadow-amber-600/20" },
+    { name: pageT.v4Name || "Scripture", desc: pageT.v4Desc || "Living, teaching, and anchoring every decision in the uncompromised Word of God.", verse: pageT.v4Verse || "Psalm 119:105", icon: BookOpen, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/20" },
+    { name: pageT.v5Name || "Community", desc: pageT.v5Desc || "Building a warm, inclusive spiritual family where everyone belongs and flourishes.", verse: pageT.v5Verse || "Acts 2:42", icon: Users, color: "text-white", bg: "bg-emerald-600 shadow-md shadow-emerald-600/20" },
+    { name: pageT.v6Name || "Mission", desc: pageT.v6Desc || "Reaching the lost, serving the needy, and making disciples locally and globally.", verse: pageT.v6Verse || "Mark 16:15", icon: Globe, color: "text-white", bg: "bg-cyan-600 shadow-md shadow-cyan-600/20" },
   ];
 
   // Filtering Logic
@@ -215,7 +215,7 @@ export default function BeliefsPage() {
             </div>
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-lg animate-bounce-in">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
               <BookOpen className="h-4 w-4 text-purple-300" />
               <span>{pageT.badge || "Statement of Faith"}</span>
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
@@ -271,7 +271,7 @@ export default function BeliefsPage() {
                 <div className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-1">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-200">
                   {stat.label}
                 </div>
               </div>
@@ -285,14 +285,14 @@ export default function BeliefsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
-              <Cross className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-extrabold uppercase tracking-widest mb-4 border border-purple-500 shadow-sm">
+              <Cross className="h-3.5 w-3.5 text-white" />
               <span>Doctrinal Pillars</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
               {pageT.doctrinesTitle || "Core Biblical Doctrines"}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg font-medium">
               {pageT.doctrinesSubtitle || "The timeless truths that govern our faith, worship, and daily ministry"}
             </p>
           </div>
@@ -311,7 +311,7 @@ export default function BeliefsPage() {
                 className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ${
                   selectedCategory === tab.id
                     ? "bg-purple-600 text-white shadow-lg shadow-purple-600/25 scale-105"
-                    : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                    : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                 }`}
               >
                 {tab.label}
@@ -353,7 +353,7 @@ export default function BeliefsPage() {
                         <div className={`w-14 h-14 ${doctrine.bg} border border-slate-200/50 dark:border-slate-700/50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                           <Icon className={`h-7 w-7 ${doctrine.color}`} />
                         </div>
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 dark:bg-purple-600/70 text-purple-700 dark:text-white border border-purple-200 dark:border-purple-500/60 rounded-full text-xs font-bold tracking-wide">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-600 text-white border border-purple-500/60 rounded-full text-xs font-black tracking-wide shadow-sm">
                           <BookOpen className="h-3.5 w-3.5" />
                           {doctrine.verse}
                         </span>
@@ -365,13 +365,13 @@ export default function BeliefsPage() {
                       </h3>
 
                       {/* Description */}
-                      <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-6">
+                      <p className="text-slate-600 dark:text-slate-200 text-base leading-relaxed mb-6 font-medium">
                         {doctrine.desc}
                       </p>
 
                       {/* Key Quote Callout Box */}
                       <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border-l-4 border-purple-600 dark:border-purple-500 mb-6">
-                        <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 italic font-medium">
+                        <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 italic font-semibold">
                           "{doctrine.quote}"
                         </p>
                       </div>
@@ -380,7 +380,7 @@ export default function BeliefsPage() {
                     {/* Bottom Action Button */}
                     <button
                       onClick={() => setSelectedDoctrine(doctrine)}
-                      className="w-full py-3 px-4 bg-slate-100 dark:bg-slate-800/60 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm"
+                      className="w-full py-3 px-4 bg-slate-100 dark:bg-slate-800/80 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 text-slate-800 dark:text-slate-200 font-extrabold rounded-xl text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm"
                     >
                       <span>{pageT.readScripture || "Deep Dive & Verses"}</span>
                       <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -397,14 +397,14 @@ export default function BeliefsPage() {
       <section className="py-20 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-500 text-slate-950 rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-slate-950" />
               <span>Living the Gospel</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.valuesTitle || "Our Kingdom Core Values"}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg font-medium">
               {pageT.valuesSubtitle || "Guiding principles shaping our spiritual walk and community life"}
             </p>
           </div>
@@ -422,7 +422,7 @@ export default function BeliefsPage() {
                       <div className={`w-12 h-12 ${val.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <Icon className={`h-6 w-6 ${val.color}`} />
                       </div>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-3 py-1 rounded-full">
                         {val.verse}
                       </span>
                     </div>
@@ -430,7 +430,7 @@ export default function BeliefsPage() {
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                       {val.name}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                       {val.desc}
                     </p>
                   </div>

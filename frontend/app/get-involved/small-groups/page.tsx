@@ -235,37 +235,37 @@ export default function SmallGroupsPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-6">
-                <Heart className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center justify-center mb-6">
+                <Heart className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
                 {sg.connectTitle || "Genuine Connection"}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                 {sg.connectDesc || "Build authentic relationships with people who share your values and support you in everyday life."}
               </p>
             </div>
 
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-6">
-                <BookOpen className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 flex items-center justify-center mb-6">
+                <BookOpen className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
                 {sg.growTitle || "Spiritual Growth"}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                 {sg.growDesc || "Deepen your understanding of God's Word in an open, conversational, and encouraging setting."}
               </p>
             </div>
 
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-pink-500/10 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400 flex items-center justify-center mb-6">
-                <Coffee className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-pink-600 text-white shadow-lg shadow-pink-600/30 flex items-center justify-center mb-6">
+                <Coffee className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 font-serif">
                 {sg.supportTitle || "Prayer & Care"}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                 {sg.supportDesc || "Walk through life's celebrations and trials together with a caring family of faith."}
               </p>
             </div>
@@ -358,15 +358,15 @@ export default function SmallGroupsPage() {
                     {/* Header Banner - Elegant Deep Slate Accent */}
                     <div className="bg-slate-900 dark:bg-slate-900 p-6 text-white border-b border-slate-800 flex items-center justify-between">
                       <div>
-                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30 text-[11px] font-semibold uppercase tracking-wider mb-2">
+                        <span className="inline-block px-3 py-1 rounded-full bg-purple-600 text-white border border-purple-500 text-[11px] font-black uppercase tracking-wider mb-2 shadow-sm">
                           {group.category}
                         </span>
                         <h3 className="text-xl font-bold font-serif text-white leading-tight">
                           {group.title}
                         </h3>
                       </div>
-                      <div className="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center shrink-0">
-                        <IconComponent className="w-5 h-5 text-purple-300" />
+                      <div className="w-11 h-11 rounded-xl bg-indigo-600 border border-indigo-500 flex items-center justify-center shrink-0 shadow-sm">
+                        <IconComponent className="w-5 h-5 text-white" />
                       </div>
                     </div>
 
@@ -439,8 +439,8 @@ export default function SmallGroupsPage() {
       <section className="py-20 relative z-10 bg-slate-950 text-white border-t border-slate-800">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
-            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 text-purple-300 flex items-center justify-center mx-auto mb-6">
-              <PlusCircle className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-purple-600 border border-purple-500 text-white shadow-lg shadow-purple-600/30 flex items-center justify-center mx-auto mb-6">
+              <PlusCircle className="w-7 h-7 text-white" />
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-serif text-white">
@@ -453,17 +453,17 @@ export default function SmallGroupsPage() {
 
             <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-10 text-left">
               <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                <div className="text-purple-400 text-xs font-bold uppercase mb-1">Step 1</div>
+                <div className="text-purple-300 text-xs font-black uppercase mb-1">Step 1</div>
                 <div className="font-semibold text-sm text-white">Express Interest</div>
-                <div className="text-xs text-slate-400">Submit a quick leader form</div>
+                <div className="text-xs text-slate-300">Submit a quick leader form</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                <div className="text-purple-400 text-xs font-bold uppercase mb-1">Step 2</div>
+                <div className="text-purple-300 text-xs font-black uppercase mb-1">Step 2</div>
                 <div className="font-semibold text-sm text-white">Orientation</div>
-                <div className="text-xs text-slate-400">Receive study guides & support</div>
+                <div className="text-xs text-slate-300">Receive study guides & support</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                <div className="text-purple-400 text-xs font-bold uppercase mb-1">Step 3</div>
+                <div className="text-purple-300 text-xs font-black uppercase mb-1">Step 3</div>
                 <div className="font-semibold text-sm text-white">Launch Your Group</div>
                 <div className="text-xs text-slate-400">Gather friends & neighbors</div>
               </div>

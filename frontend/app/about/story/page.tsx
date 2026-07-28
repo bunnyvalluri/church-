@@ -13,10 +13,10 @@ export default function OurStoryPage() {
   const pageT = t.pages.story;
 
   const stats = [
-    { value: "20+", label: pageT.statYears || "Years of Faith", icon: Calendar, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10 dark:bg-purple-500/20" },
-    { value: "3", label: pageT.statLocations || "Church Locations", icon: MapPin, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 dark:bg-indigo-500/20" },
-    { value: "1000+", label: pageT.statMembers || "Active Believers", icon: Users, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10 dark:bg-pink-500/20" },
-    { value: "50+", label: pageT.statOutreaches || "Annual Outreaches", icon: Globe, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 dark:bg-emerald-500/20" },
+    { value: "20+", label: pageT.statYears || "Years of Faith", icon: Calendar, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
+    { value: "3", label: pageT.statLocations || "Church Locations", icon: MapPin, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
+    { value: "1000+", label: pageT.statMembers || "Active Believers", icon: Users, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
+    { value: "50+", label: pageT.statOutreaches || "Annual Outreaches", icon: Globe, color: "text-white", bg: "bg-emerald-600 shadow-md shadow-emerald-600/30" },
   ];
 
   const journeySteps = [
@@ -25,8 +25,8 @@ export default function OurStoryPage() {
       title: pageT.foundationTitle,
       desc: pageT.foundationDesc,
       icon: Church,
-      color: "text-purple-600 dark:text-purple-300",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20 border-purple-500/20 dark:border-purple-400/30",
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
       accent: "from-purple-500 to-indigo-500"
     },
     {
@@ -34,8 +34,8 @@ export default function OurStoryPage() {
       title: pageT.growthTitle,
       desc: pageT.growthDesc,
       icon: MapPin,
-      color: "text-indigo-600 dark:text-indigo-300",
-      bg: "bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-500/20 dark:border-indigo-400/30",
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
       accent: "from-indigo-500 to-cyan-500"
     },
     {
@@ -43,8 +43,8 @@ export default function OurStoryPage() {
       title: pageT.communityTitle,
       desc: pageT.communityDesc,
       icon: Users,
-      color: "text-pink-600 dark:text-pink-300",
-      bg: "bg-pink-500/10 dark:bg-pink-500/20 border-pink-500/20 dark:border-pink-400/30",
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
       accent: "from-pink-500 to-rose-500"
     },
     {
@@ -52,8 +52,8 @@ export default function OurStoryPage() {
       title: pageT.missionTitle,
       desc: pageT.missionDesc,
       icon: Heart,
-      color: "text-emerald-600 dark:text-emerald-300",
-      bg: "bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/20 dark:border-emerald-400/30",
+      color: "text-white",
+      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
       accent: "from-emerald-500 to-teal-500"
     }
   ];
@@ -74,7 +74,7 @@ export default function OurStoryPage() {
               <BackToHome label={pageT.backToHome || t.nav.home} />
             </div>
             
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-lg animate-bounce-in">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
               <Church className="h-4 w-4 text-purple-300" />
               <span>{pageT.journey}</span>
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
@@ -107,7 +107,7 @@ export default function OurStoryPage() {
                 <div className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-1">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-200">
                   {stat.label}
                 </div>
               </div>
@@ -156,11 +156,11 @@ export default function OurStoryPage() {
 
               {/* Leadership Vision Quote Box */}
               <div className="relative bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-purple-900/5 dark:shadow-black/40 overflow-hidden border border-purple-100 dark:border-purple-900/50">
-                <Quote className="h-8 w-8 text-purple-600/40 dark:text-purple-400/40 mb-3" />
-                <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-white bg-purple-600 dark:bg-purple-500 px-3 py-1 rounded-full mb-3 border border-purple-500 dark:border-purple-400">
+                <Quote className="h-8 w-8 text-purple-600 dark:text-purple-400 mb-3" />
+                <span className="inline-block text-xs font-black uppercase tracking-widest text-white bg-purple-600 border border-purple-500 px-3.5 py-1 rounded-full mb-3 shadow-sm">
                   {pageT.quoteTitle || "Leadership Vision"}
                 </span>
-                <p className="text-sm sm:text-base text-slate-800 dark:text-white italic leading-relaxed font-medium">
+                <p className="text-sm sm:text-base text-slate-800 dark:text-white italic leading-relaxed font-semibold">
                   "{pageT.quoteText || "God called us with a vision to build a prayer-filled, loving community that reflects Christ's light across Hyderabad."}"
                 </p>
               </div>
@@ -169,8 +169,8 @@ export default function OurStoryPage() {
 
             {/* Right Column: Detailed Story Narrative */}
             <div className="lg:col-span-7 animate-fade-in-up animate-delay-200">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 dark:bg-purple-500 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4" style={{ color: '#ffffff' }}>
-                <Award className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm border border-purple-500">
+                <Award className="h-3.5 w-3.5 text-white" />
                 <span>Our Heritage</span>
               </div>
 
@@ -178,11 +178,11 @@ export default function OurStoryPage() {
                 {pageT.began}
               </h2>
 
-              <div className="space-y-6 text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
+              <div className="space-y-6 text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed font-normal">
                 <div className="p-6 bg-white dark:bg-slate-900/60 rounded-2xl border-l-4 border-purple-600 dark:border-purple-500 shadow-sm border border-slate-200/60 dark:border-slate-800">
                   <p>
                     {pageT.beganP1Part1}
-                    <strong className="text-purple-700 dark:text-purple-300 font-bold">{pageT.beganPastor}</strong>
+                    <strong className="text-purple-700 dark:text-purple-300 font-black">{pageT.beganPastor}</strong>
                     {pageT.beganP1Part2}
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export default function OurStoryPage() {
                       <div className={`w-14 h-14 ${item.bg} border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <Icon className={`h-7 w-7 ${item.color}`} />
                       </div>
-                      <span className="text-4xl font-black text-slate-200 dark:text-slate-800 tracking-tighter">
+                      <span className="text-4xl font-black text-slate-300 dark:text-slate-600 tracking-tighter">
                         {item.step}
                       </span>
                     </div>
@@ -233,7 +233,7 @@ export default function OurStoryPage() {
                       {item.title}
                     </h3>
 
-                    <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-200 text-base leading-relaxed font-medium">
                       {item.desc}
                     </p>
                   </div>
@@ -255,29 +255,29 @@ export default function OurStoryPage() {
                 {pageT.today}
               </h2>
 
-              <p className="text-slate-700 dark:text-slate-200 leading-relaxed text-lg sm:text-xl mb-6">
+              <p className="text-slate-700 dark:text-slate-100 leading-relaxed text-lg sm:text-xl mb-6 font-medium">
                 {pageT.todayP1Part1}
-                <strong className="font-extrabold px-2.5 py-1 bg-purple-500/20 rounded-md border border-purple-400/30 text-purple-700 dark:text-purple-300" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                <strong className="font-black px-3 py-1 bg-purple-600 text-white rounded-lg border border-purple-500 shadow-sm mx-1.5 inline-block">
                   "{pageT.todayMissionQuote}"
                 </strong>
                 {pageT.todayP1Part2}
               </p>
 
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-base sm:text-lg mb-8">
+              <p className="text-slate-600 dark:text-slate-200 leading-relaxed text-base sm:text-lg mb-8 font-medium">
                 {pageT.todayP2}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-purple-200/50 dark:border-purple-800/40">
-                <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                <div className="flex items-center gap-2.5 text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
                   <span>24/7 Prayer Support</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                  <CheckCircle2 className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                <div className="flex items-center gap-2.5 text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                  <CheckCircle2 className="h-5 w-5 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
                   <span>3 Hyderabad Campuses</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                  <CheckCircle2 className="h-5 w-5 text-purple-500 flex-shrink-0" />
+                <div className="flex items-center gap-2.5 text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                  <CheckCircle2 className="h-5 w-5 text-purple-500 dark:text-purple-400 flex-shrink-0" />
                   <span>50+ Yearly Events</span>
                 </div>
               </div>

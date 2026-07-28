@@ -63,32 +63,32 @@ export default function MissionPage() {
       label: pageT.statFocus || "Core Calling",
       subtext: "To Know Christ & Make Him Known",
       icon: Target,
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20",
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
     },
     {
       value: "4",
       label: pageT.statPillars || "Mission Pillars",
       subtext: "Worship • Grow • Serve • Reach",
       icon: Layers,
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
     },
     {
       value: "5",
       label: pageT.statVision || "Vision Objectives",
       subtext: "Transforming Lives Across Hyderabad",
       icon: Eye,
-      color: "text-pink-600 dark:text-pink-400",
-      bg: "bg-pink-500/10 dark:bg-pink-500/20",
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
     },
     {
       value: "6",
       label: pageT.statValues || "Kingdom Core Values",
       subtext: "Anchored in Eternal Truth",
       icon: Sparkles,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-500/10 dark:bg-amber-400/20",
+      color: "text-white",
+      bg: "bg-amber-600 shadow-md shadow-amber-600/30",
     },
   ];
 
@@ -108,10 +108,10 @@ export default function MissionPage() {
       ],
       icon: Flame,
       accent: "from-purple-500 to-indigo-500",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20",
-      badgeBg: "bg-purple-100 dark:bg-purple-950/60",
-      badgeText: "text-purple-700 dark:text-purple-300",
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
+      badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
       borderHover: "hover:border-purple-500/50",
       btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
       quoteBg: "bg-purple-50 dark:bg-purple-950/40",
@@ -132,10 +132,10 @@ export default function MissionPage() {
       ],
       icon: BookOpen,
       accent: "from-indigo-500 to-cyan-500",
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
-      badgeBg: "bg-indigo-100 dark:bg-indigo-950/60",
-      badgeText: "text-indigo-700 dark:text-indigo-300",
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
+      badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
       borderHover: "hover:border-indigo-500/50",
       btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
       quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
@@ -156,10 +156,10 @@ export default function MissionPage() {
       ],
       icon: HeartHandshake,
       accent: "from-pink-500 to-rose-500",
-      color: "text-pink-600 dark:text-pink-400",
-      bg: "bg-pink-500/10 dark:bg-pink-500/20",
-      badgeBg: "bg-pink-100 dark:bg-pink-950/60",
-      badgeText: "text-pink-700 dark:text-pink-300",
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
+      badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
       borderHover: "hover:border-pink-500/50",
       btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
       quoteBg: "bg-pink-50 dark:bg-pink-950/40",
@@ -180,10 +180,10 @@ export default function MissionPage() {
       ],
       icon: Globe,
       accent: "from-emerald-500 to-teal-500",
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
-      badgeBg: "bg-emerald-100 dark:bg-emerald-950/60",
-      badgeText: "text-emerald-700 dark:text-emerald-300",
+      color: "text-white",
+      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
+      badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
       borderHover: "hover:border-emerald-500/50",
       btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
       quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -201,11 +201,11 @@ export default function MissionPage() {
       verse: "Romans 12:5",
       icon: Users,
       accent: "from-purple-500 to-indigo-500",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-500/10 dark:bg-purple-500/20",
-      badgeBg: "bg-purple-50 dark:bg-purple-950/60",
-      badgeText: "text-purple-700 dark:text-purple-300",
-      badgeBorder: "border-purple-200/60 dark:border-purple-800/40",
+      color: "text-white",
+      bg: "bg-purple-600 shadow-md shadow-purple-600/30",
+      badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
+      badgeBorder: "border-purple-500",
       borderHover: "hover:border-purple-500/50",
     },
     {
@@ -215,11 +215,11 @@ export default function MissionPage() {
       verse: "Ephesians 4:14-15",
       icon: BookOpen,
       accent: "from-indigo-500 to-cyan-500",
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
-      badgeBg: "bg-indigo-50 dark:bg-indigo-950/60",
-      badgeText: "text-indigo-700 dark:text-indigo-300",
-      badgeBorder: "border-indigo-200/60 dark:border-indigo-800/40",
+      color: "text-white",
+      bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
+      badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
+      badgeBorder: "border-indigo-500",
       borderHover: "hover:border-indigo-500/50",
     },
     {
@@ -229,11 +229,11 @@ export default function MissionPage() {
       verse: "Joshua 24:15",
       icon: Heart,
       accent: "from-pink-500 to-rose-500",
-      color: "text-pink-600 dark:text-pink-400",
-      bg: "bg-pink-500/10 dark:bg-pink-500/20",
-      badgeBg: "bg-pink-50 dark:bg-pink-950/60",
-      badgeText: "text-pink-700 dark:text-pink-300",
-      badgeBorder: "border-pink-200/60 dark:border-pink-800/40",
+      color: "text-white",
+      bg: "bg-pink-600 shadow-md shadow-pink-600/30",
+      badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
+      badgeBorder: "border-pink-500",
       borderHover: "hover:border-pink-500/50",
     },
     {
@@ -243,11 +243,11 @@ export default function MissionPage() {
       verse: "2 Corinthians 5:17",
       icon: Sparkles,
       accent: "from-amber-500 to-orange-500",
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-500/10 dark:bg-amber-500/20",
-      badgeBg: "bg-amber-50 dark:bg-amber-950/60",
-      badgeText: "text-amber-700 dark:text-amber-300",
-      badgeBorder: "border-amber-200/60 dark:border-amber-800/40",
+      color: "text-white",
+      bg: "bg-amber-600 shadow-md shadow-amber-600/30",
+      badgeBg: "bg-amber-600 border border-amber-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
+      badgeBorder: "border-amber-500",
       borderHover: "hover:border-amber-500/50",
     },
     {
@@ -257,11 +257,11 @@ export default function MissionPage() {
       verse: "Matthew 28:19-20",
       icon: Globe,
       accent: "from-emerald-500 to-teal-500",
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
-      badgeBg: "bg-emerald-50 dark:bg-emerald-950/60",
-      badgeText: "text-emerald-700 dark:text-emerald-300",
-      badgeBorder: "border-emerald-200/60 dark:border-emerald-800/40",
+      color: "text-white",
+      bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
+      badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
+      badgeText: "text-white font-extrabold",
+      badgeBorder: "border-emerald-500",
       borderHover: "hover:border-emerald-500/50",
     },
   ];
@@ -283,10 +283,10 @@ export default function MissionPage() {
         ],
         icon: Flame,
         accent: "from-purple-500 to-indigo-500",
-        color: "text-purple-600 dark:text-purple-400",
-        bg: "bg-purple-500/10 dark:bg-purple-500/20",
-        badgeBg: "bg-purple-100 dark:bg-purple-950/60",
-        badgeText: "text-purple-700 dark:text-purple-300",
+        color: "text-white",
+        bg: "bg-purple-600 shadow-md shadow-purple-600/30",
+        badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-purple-500/50",
         btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
         quoteBg: "bg-purple-50 dark:bg-purple-950/40",
@@ -307,10 +307,10 @@ export default function MissionPage() {
         ],
         icon: BookOpen,
         accent: "from-indigo-500 to-cyan-500",
-        color: "text-indigo-600 dark:text-indigo-400",
-        bg: "bg-indigo-500/10 dark:bg-indigo-500/20",
-        badgeBg: "bg-indigo-100 dark:bg-indigo-950/60",
-        badgeText: "text-indigo-700 dark:text-indigo-300",
+        color: "text-white",
+        bg: "bg-indigo-600 shadow-md shadow-indigo-600/30",
+        badgeBg: "bg-indigo-600 border border-indigo-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-indigo-500/50",
         btnHover: "hover:bg-indigo-600 dark:hover:bg-indigo-600",
         quoteBg: "bg-indigo-50 dark:bg-indigo-950/40",
@@ -331,10 +331,10 @@ export default function MissionPage() {
         ],
         icon: Heart,
         accent: "from-pink-500 to-rose-500",
-        color: "text-pink-600 dark:text-pink-400",
-        bg: "bg-pink-500/10 dark:bg-pink-500/20",
-        badgeBg: "bg-pink-100 dark:bg-pink-950/60",
-        badgeText: "text-pink-700 dark:text-pink-300",
+        color: "text-white",
+        bg: "bg-pink-600 shadow-md shadow-pink-600/30",
+        badgeBg: "bg-pink-600 border border-pink-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-pink-500/50",
         btnHover: "hover:bg-pink-600 dark:hover:bg-pink-600",
         quoteBg: "bg-pink-50 dark:bg-pink-950/40",
@@ -355,10 +355,10 @@ export default function MissionPage() {
         ],
         icon: Users,
         accent: "from-emerald-500 to-teal-500",
-        color: "text-emerald-600 dark:text-emerald-400",
-        bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
-        badgeBg: "bg-emerald-100 dark:bg-emerald-950/60",
-        badgeText: "text-emerald-700 dark:text-emerald-300",
+        color: "text-white",
+        bg: "bg-emerald-600 shadow-md shadow-emerald-600/30",
+        badgeBg: "bg-emerald-600 border border-emerald-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-emerald-500/50",
         btnHover: "hover:bg-emerald-600 dark:hover:bg-emerald-600",
         quoteBg: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -379,10 +379,10 @@ export default function MissionPage() {
         ],
         icon: Globe,
         accent: "from-amber-500 to-orange-500",
-        color: "text-amber-600 dark:text-amber-400",
-        bg: "bg-amber-500/10 dark:bg-amber-500/20",
-        badgeBg: "bg-amber-100 dark:bg-amber-950/60",
-        badgeText: "text-amber-700 dark:text-amber-300",
+        color: "text-white",
+        bg: "bg-amber-600 shadow-md shadow-amber-600/30",
+        badgeBg: "bg-amber-600 border border-amber-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-amber-500/50",
         btnHover: "hover:bg-amber-600 dark:hover:bg-amber-600",
         quoteBg: "bg-amber-50 dark:bg-amber-950/40",
@@ -403,10 +403,10 @@ export default function MissionPage() {
         ],
         icon: Sparkles,
         accent: "from-purple-500 to-pink-500",
-        color: "text-purple-600 dark:text-purple-400",
-        bg: "bg-purple-500/10 dark:bg-purple-500/20",
-        badgeBg: "bg-purple-100 dark:bg-purple-950/60",
-        badgeText: "text-purple-700 dark:text-purple-300",
+        color: "text-white",
+        bg: "bg-purple-600 shadow-md shadow-purple-600/30",
+        badgeBg: "bg-purple-600 border border-purple-500 shadow-sm",
+        badgeText: "text-white font-extrabold",
         borderHover: "hover:border-purple-500/50",
         btnHover: "hover:bg-purple-600 dark:hover:bg-purple-600",
         quoteBg: "bg-purple-50 dark:bg-purple-950/40",
@@ -464,7 +464,7 @@ export default function MissionPage() {
             </div>
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-lg animate-bounce-in">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
               <Target className="h-4 w-4 text-purple-300" />
               <span>{pageT.badge || "Mission, Vision & Core Values"}</span>
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
@@ -524,16 +524,16 @@ export default function MissionPage() {
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-500/20 animate-glow">
               <Target className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-purple-600 text-white rounded-full text-xs font-extrabold uppercase tracking-widest mb-4 border border-purple-500 shadow-sm">
               <span>{pageT.missionBadge || "Our Primary Mandate"}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.missionHeading || "Our Mission"}
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-purple-700 dark:text-purple-300 mb-6 drop-shadow-sm">
+            <div className="my-4 inline-block px-6 py-3 bg-purple-600 text-white text-xl sm:text-2xl font-black rounded-2xl shadow-lg border border-purple-500 tracking-wide">
               "To know Christ and make Him known"
-            </p>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-2xl mx-auto">
+            </div>
+            <p className="text-slate-600 dark:text-slate-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mt-2">
               Everything we do as Kingdom of Christ Ministries flows from this singular commitment: deepening our relationship with Jesus and bringing His salvation to our neighbors and the world.
             </p>
           </div>
@@ -562,10 +562,10 @@ export default function MissionPage() {
                     <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
                       {pillar.title}
                     </h3>
-                    <p className={`text-sm font-bold ${pillar.color} mb-3`}>
+                    <p className="text-sm font-extrabold text-purple-700 dark:text-purple-300 mb-3">
                       {pillar.subtitle}
                     </p>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-5">
+                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-5 font-medium">
                       {pillar.desc}
                     </p>
                   </div>
@@ -587,7 +587,7 @@ export default function MissionPage() {
                         quoteBorder: pillar.quoteBorder,
                       })
                     }
-                    className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/70 ${pillar.btnHover} hover:text-white dark:hover:text-white text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
+                    className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/70 ${pillar.btnHover} hover:text-white dark:hover:text-white text-slate-800 dark:text-slate-100 font-extrabold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
                   >
                     <span>Pillar Details</span>
                     <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -606,15 +606,15 @@ export default function MissionPage() {
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-500/20">
               <Eye className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-600 text-white rounded-full text-xs font-extrabold uppercase tracking-widest mb-4 border border-indigo-500 shadow-sm">
               <span>{pageT.visionBadge || "Our Future Picture"}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
               {pageT.visionHeading || "Our Vision"}
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mb-8 max-w-3xl mx-auto">
+            <div className="my-4 inline-block px-6 py-3 bg-indigo-600 text-white text-xl sm:text-2xl font-black rounded-2xl shadow-lg border border-indigo-500 tracking-wide max-w-3xl">
               "A church where every person experiences transformation through Christ"
-            </p>
+            </div>
           </div>
 
           {/* Vision Objectives List */}
@@ -642,7 +642,7 @@ export default function MissionPage() {
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                       {goal.title}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                    <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed font-medium">
                       {goal.text}
                     </p>
                   </div>
@@ -657,14 +657,14 @@ export default function MissionPage() {
       <section className="py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded-full text-xs font-extrabold uppercase tracking-widest mb-4">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-500 text-slate-950 rounded-full text-xs font-black uppercase tracking-widest mb-4 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-slate-950" />
               <span>Living the Gospel Daily</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
               {pageT.valuesHeading || "Core Values"}
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg font-medium">
               The non-negotiable spiritual standards that shape our worship, culture, and community interaction.
             </p>
           </div>
@@ -680,7 +680,7 @@ export default function MissionPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={pageT.searchPlaceholder || "Search values, scripture, or keywords..."}
-                  className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition-all"
+                  className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-lg transition-all font-semibold"
                 />
                 {searchQuery && (
                   <button
@@ -706,8 +706,8 @@ export default function MissionPage() {
                   onClick={() => setSelectedCategory(tab.id)}
                   className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ${
                     selectedCategory === tab.id
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-105"
-                      : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                      ? "bg-purple-600 text-white shadow-lg shadow-purple-600/25 scale-105"
+                      : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                   }`}
                 >
                   {tab.label}
@@ -757,7 +757,7 @@ export default function MissionPage() {
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                         {val.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
+                      <p className="text-slate-600 dark:text-slate-200 text-sm leading-relaxed mb-6 font-medium">
                         {val.desc}
                       </p>
                     </div>
@@ -780,7 +780,7 @@ export default function MissionPage() {
                           quoteBorder: val.quoteBorder,
                         })
                       }
-                      className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/60 ${val.btnHover} hover:text-white dark:hover:text-white text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
+                      className={`w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800/80 ${val.btnHover} hover:text-white dark:hover:text-white text-slate-800 dark:text-slate-100 font-extrabold rounded-xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-sm`}
                     >
                       <span>Deep Dive & Scriptural Proof</span>
                       <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

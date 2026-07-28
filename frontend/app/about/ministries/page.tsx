@@ -37,10 +37,10 @@ export default function MinistriesPage() {
 
   // Quick Metrics Stats
   const stats = [
-    { value: "6", label: pageT.statCount || "Active Ministries", icon: Sparkles, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10 dark:bg-purple-500/20" },
-    { value: "150+", label: pageT.statVolunteers || "Servant Volunteers", icon: Users, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 dark:bg-indigo-500/20" },
-    { value: "3", label: pageT.statCampuses || "Campuses Served", icon: MapPin, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10 dark:bg-pink-500/20" },
-    { value: "24/7", label: pageT.statSupport || "Prayer Support", icon: Heart, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 dark:bg-emerald-500/20" },
+    { value: "6", label: pageT.statCount || "Active Ministries", icon: Sparkles, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
+    { value: "150+", label: pageT.statVolunteers || "Servant Volunteers", icon: Users, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
+    { value: "3", label: pageT.statCampuses || "Campuses Served", icon: MapPin, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
+    { value: "24/7", label: pageT.statSupport || "Prayer Support", icon: Heart, color: "text-white", bg: "bg-emerald-600 shadow-md shadow-emerald-600/30" },
   ];
 
   // Categories definition
@@ -74,8 +74,8 @@ export default function MinistriesPage() {
       accent: "from-purple-500 to-indigo-500",
       border: "border-purple-200 dark:border-purple-700",
       cardBg: "bg-white dark:bg-purple-950/60",
-      badgeColor: "bg-purple-100 dark:bg-purple-600 text-purple-800 dark:text-white border border-purple-300 dark:border-purple-400 font-bold shadow-sm",
-      scheduleColor: "text-purple-700 dark:text-white bg-purple-100 dark:bg-purple-800 border-purple-300 dark:border-purple-400/70 [&_svg]:text-purple-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-purple-600 text-white border border-purple-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-purple-600 dark:[&_svg]:text-purple-400"
     },
     {
       id: "youth",
@@ -97,8 +97,8 @@ export default function MinistriesPage() {
       accent: "from-indigo-500 to-cyan-500",
       border: "border-indigo-200 dark:border-cyan-700",
       cardBg: "bg-white dark:bg-indigo-950/60",
-      badgeColor: "bg-cyan-100 dark:bg-cyan-600 text-cyan-800 dark:text-white border border-cyan-300 dark:border-cyan-400 font-bold shadow-sm",
-      scheduleColor: "text-indigo-700 dark:text-white bg-indigo-100 dark:bg-indigo-800 border-indigo-300 dark:border-indigo-400/70 [&_svg]:text-indigo-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-indigo-600 text-white border border-indigo-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-indigo-600 dark:[&_svg]:text-indigo-400"
     },
     {
       id: "children",
@@ -120,8 +120,8 @@ export default function MinistriesPage() {
       accent: "from-pink-500 to-rose-500",
       border: "border-pink-200 dark:border-pink-700",
       cardBg: "bg-white dark:bg-pink-950/60",
-      badgeColor: "bg-pink-100 dark:bg-pink-600 text-pink-800 dark:text-white border border-pink-300 dark:border-pink-400 font-bold shadow-sm",
-      scheduleColor: "text-pink-700 dark:text-white bg-pink-100 dark:bg-pink-800 border-pink-300 dark:border-pink-400/70 [&_svg]:text-pink-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-pink-600 text-white border border-pink-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-pink-600 dark:[&_svg]:text-pink-400"
     },
     {
       id: "women",
@@ -143,8 +143,8 @@ export default function MinistriesPage() {
       accent: "from-rose-500 to-red-500",
       border: "border-rose-200 dark:border-rose-700",
       cardBg: "bg-white dark:bg-rose-950/60",
-      badgeColor: "bg-rose-100 dark:bg-rose-600 text-rose-800 dark:text-white border border-rose-300 dark:border-rose-400 font-bold shadow-sm",
-      scheduleColor: "text-rose-700 dark:text-white bg-rose-100 dark:bg-rose-800 border-rose-300 dark:border-rose-400/70 [&_svg]:text-rose-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-rose-600 text-white border border-rose-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-rose-600 dark:[&_svg]:text-rose-400"
     },
     {
       id: "men",
@@ -166,8 +166,8 @@ export default function MinistriesPage() {
       accent: "from-blue-500 to-indigo-500",
       border: "border-blue-200 dark:border-blue-700",
       cardBg: "bg-white dark:bg-blue-950/60",
-      badgeColor: "bg-blue-100 dark:bg-blue-600 text-blue-800 dark:text-white border border-blue-300 dark:border-blue-400 font-bold shadow-sm",
-      scheduleColor: "text-blue-700 dark:text-white bg-blue-100 dark:bg-blue-800 border-blue-300 dark:border-blue-400/70 [&_svg]:text-blue-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-blue-600 text-white border border-blue-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-blue-600 dark:[&_svg]:text-blue-400"
     },
     {
       id: "outreach",
@@ -189,8 +189,8 @@ export default function MinistriesPage() {
       accent: "from-emerald-500 to-teal-500",
       border: "border-emerald-200 dark:border-emerald-700",
       cardBg: "bg-white dark:bg-emerald-950/60",
-      badgeColor: "bg-emerald-100 dark:bg-emerald-600 text-emerald-800 dark:text-white border border-emerald-300 dark:border-emerald-400 font-bold shadow-sm",
-      scheduleColor: "text-emerald-700 dark:text-white bg-emerald-100 dark:bg-emerald-800 border-emerald-300 dark:border-emerald-400/70 [&_svg]:text-emerald-600 dark:[&_svg]:text-white"
+      badgeColor: "bg-emerald-600 text-white border border-emerald-500 font-extrabold shadow-sm",
+      scheduleColor: "text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 font-bold [&_svg]:text-emerald-600 dark:[&_svg]:text-emerald-400"
     },
   ], [pageT]);
 
@@ -222,9 +222,9 @@ export default function MinistriesPage() {
               <BackToHome />
             </div>
             
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-500/25 backdrop-blur-md border border-purple-300/40 rounded-full text-white text-sm mb-6 animate-bounce-in shadow-lg">
-              <Heart className="h-4 w-4 text-pink-400 fill-pink-400/60" />
-              <span className="font-semibold tracking-wide text-white">{pageT.badge || "Serving Together"}</span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 backdrop-blur-md border border-purple-400/40 rounded-full text-white text-sm mb-6 animate-bounce-in shadow-md">
+              <Heart className="h-4 w-4 text-pink-400 fill-pink-400" />
+              <span className="font-extrabold tracking-wide text-white">{pageT.badge || "Serving Together"}</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 animate-fade-in-up">
@@ -254,7 +254,7 @@ export default function MinistriesPage() {
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mt-1">
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-200 mt-1">
                   {stat.label}
                 </div>
               </div>
@@ -282,7 +282,7 @@ export default function MinistriesPage() {
                       className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                         isActive
                           ? "bg-purple-600 text-white shadow-lg shadow-purple-500/25 scale-105"
-                          : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 font-semibold"
+                          : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 font-bold"
                       }`}
                     >
                       {cat.label}
