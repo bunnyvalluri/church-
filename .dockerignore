@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.next
+**/.next
+.git
+.github
+.vercel
+dist
+build
+coverage
+*.log
+.env.local
+.env.development.local
