@@ -13,10 +13,13 @@ env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
 jobs:
-  # ── STAGE 1: Lint, Test & Quality Assurance ────────────────────────────────
-  quality-assurance:
-    name: Code Quality & Security Tests
+  # ── STAGE 1: Build, Test & Security Scan ───────────────────────────────────
+  build-and-test:
+    name: Build, Test & Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -45,19 +48,42 @@ jobs:
         run: npm run lint -w frontend --if-present
         continue-on-error: true
 
+      - name: Build Next.js Application
+        working-directory: ./frontend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres' }}
+          DB_OFFLINE: "true"
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'placeholder' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'placeholder' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'placeholder' }}
+          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001' }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY || 'placeholder' }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'placeholder.firebaseapp.com' }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'placeholder' }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'placeholder.appspot.com' }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '000000000000' }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID || '1:000000000000:web:placeholder' }}
+          NEXT_PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY || 'placeholder' }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || 'placeholder' }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL || 'placeholder@placeholder.iam.gserviceaccount.com' }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY || '-----BEGIN RSA PRIVATE KEY-----\nplaceholder\n-----END RSA PRIVATE KEY-----\n' }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-build-placeholder-secret-32-chars' }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}
+        run: npm run build
+
       - name: Run Trivy Vulnerability Scanner on Source Code
         uses: aquasecurity/trivy-action@0.20.0
+        continue-on-error: true
         with:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'table'
-          exit-code: '0'
           severity: 'CRITICAL,HIGH'
 
   # ── STAGE 2: Build & Push Hardened Multi-Arch Images to GHCR ─────────────
-  build-and-push:
+  docker-build-push:
     name: Container Build & Push to GHCR
-    needs: quality-assurance
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -102,9 +128,11 @@ jobs:
   # ── STAGE 3: GitOps Manifest Update ─────────────────────────────────────────
   update-gitops:
     name: Update GitOps Helm Manifests
-    needs: build-and-push
+    needs: docker-build-push
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Repository
