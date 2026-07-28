@@ -6,6 +6,7 @@ on:
     paths:
       - 'monitoring/**'
       - '.github/workflows/observability-ci.yml'
+      - '.yamllint.yml'
   pull_request:
     branches: [ main, master ]
     paths:
@@ -34,7 +35,7 @@ jobs:
         run: |
           echo "Validating Grafana dashboard JSON syntax..."
           for file in monitoring/dashboards/*.json; do
-            node -e "JSON.parse(fs.readFileSync('$file'))" || exit 1
+            node -e "const fs = require('fs'); JSON.parse(fs.readFileSync('$file'))" || exit 1
             echo "✅ $file valid JSON"
           done
 
