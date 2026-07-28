@@ -58,9 +58,14 @@ export const translations = {
     sermons: {
       title: "Latest Sermons",
       subtitle: "Watch or listen to our latest messages and be inspired by God's Word.",
+      badge: "Latest Sermons",
       watch: "Watch Now",
       viewAll: "View All Sermons",
-      views: "Views"
+      views: "Views",
+      libraryTitle: "Sermon Library",
+      librarySubtitle: "Browse our collection of life-changing messages. Watch, listen, or read sermon notes.",
+      noSermons: "No Sermons Available",
+      noSermonsDesc: "Stay tuned! We are updating our sermon library with powerful, life-changing messages. Check back soon."
     },
     about: {
       title: "About Our Ministry",
@@ -1166,9 +1171,14 @@ export const translations = {
     sermons: {
       title: "తాజా ప్రసంగాలు",
       subtitle: "దేవుని వాక్యం ద్వారా ప్రేరణ పొందండి. మా తాజా సందేశాలను వీక్షించండి.",
+      badge: "తాజా ప్రసంగాలు",
       watch: "వీక్షించండి",
       viewAll: "అన్ని ప్రసంగాలు",
-      views: "వీక్షనలు"
+      views: "వీక్షనలు",
+      libraryTitle: "ప్రసంగాల గ్రంథాలయం",
+      librarySubtitle: "మా జీవితాలను మార్చే సందేశాల సేకరణను చూడండి, వినండి లేదా ప్రసంగ గమనికలను చదవండి.",
+      noSermons: "ప్రసంగాలు అందుబాటులో లేవు",
+      noSermonsDesc: "త్వరలోనే మరిన్ని ప్రసంగాలు రాబోతున్నాయి! శక్తివంతమైన దేవుని వాక్య సందేశాల కోసం త్వరలో మళ్ళీ చూడండి."
     },
     about: {
       title: "మా పరిచర్య గురించి",
@@ -2274,9 +2284,14 @@ export const translations = {
     sermons: {
       title: "नवीनतम प्रवचन",
       subtitle: "हमारे नवीनतम संदेश देखें या सुनें और परमेश्वर के वचन से प्रेरित हों।",
+      badge: "नवीनतम प्रवचन",
       watch: "अभी देखें",
       viewAll: "सभी प्रवचन देखें",
-      views: "व्यूज़"
+      views: "व्यूज़",
+      libraryTitle: "उपदेश पुस्तकालय",
+      librarySubtitle: "हमारे जीवन बदलने वाले संदेशों के संग्रह को देखें, सुनें या उपदेश नोट्स पढ़ें।",
+      noSermons: "कोई उपदेश उपलब्ध नहीं है",
+      noSermonsDesc: "बने रहें! हम शक्तिशाली और जीवन बदलने वाले संदेशों के साथ हमारे उपदेश पुस्तकालय को अपडेट कर रहे हैं।"
     },
     about: {
       title: "हमारे मंत्रालय के बारे में",

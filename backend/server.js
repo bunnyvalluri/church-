@@ -53,6 +53,9 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
       const pubClient = createClient({ url: redisUrl });
       const subClient = pubClient.duplicate();
       
+      pubClient.on('error', (err) => console.warn('[SOCKET] Redis pubClient error:', err.message));
+      subClient.on('error', (err) => console.warn('[SOCKET] Redis subClient error:', err.message));
+      
       Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
         io.adapter(createAdapter(pubClient, subClient));
         console.log('[SOCKET] Redis Adapter initialized.');
@@ -82,6 +85,7 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
       const { createClient } = require('redis');
       const { Emitter } = require('@socket.io/redis-emitter');
       const redisClient = createClient({ url: redisUrl });
+      redisClient.on('error', (err) => console.warn('[API] Redis client error:', err.message));
       
       redisClient.connect().then(() => {
         redisEmitter = new Emitter(redisClient);
@@ -156,29 +160,54 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
     const connection = new Redis(redisUrl, connectionOptions);
 
     connection.on('error', (err) => {
-      console.warn(`[QUEUE] Redis connection failed: ${err.message}`);
-      console.warn('[QUEUE] Redis connection skipped (running queue in-memory fallback).');
+      console.warn(`[QUEUE] Redis connection warning: ${err.message}`);
     });
 
+    let mediaQueue;
+    let worker;
+
     connection.on('connect', () => {
+      if (queueInitialized) return;
       console.log('[QUEUE] Connected to Redis. Initializing BullMQ...');
       
-      // Initialize Queue only to prevent errors, Worker processes jobs
-      const mediaQueue = new Queue('media-uploads', { connection });
-      
-      new Worker('media-uploads', async (job) => {
-        console.log(`[WORKER] Processing media job: ${job.id} (reportId: ${job.data.reportId})`);
-        await new Promise(r => setTimeout(r, 2000));
-        console.log(`[WORKER] Successfully optimized upload media for report ${job.data.reportId}`);
-      }, { connection });
+      try {
+        mediaQueue = new Queue('media-uploads', { connection });
+        mediaQueue.on('error', (err) => {
+          console.warn(`[QUEUE] BullMQ Queue error: ${err.message}`);
+        });
+        
+        worker = new Worker('media-uploads', async (job) => {
+          console.log(`[WORKER] Processing media job: ${job.id} (reportId: ${job.data.reportId})`);
+          await new Promise(r => setTimeout(r, 2000));
+          console.log(`[WORKER] Successfully optimized upload media for report ${job.data.reportId}`);
+        }, { connection });
 
-      queueInitialized = true;
+        worker.on('error', (err) => {
+          console.warn(`[WORKER] BullMQ Worker note: ${err.message}`);
+          if (err.message && err.message.includes('max requests limit exceeded')) {
+            console.warn('[WORKER] Upstash Redis quota limit reached. Pausing worker...');
+            worker.pause(true).catch(() => {});
+          }
+        });
+
+        queueInitialized = true;
+      } catch (e) {
+        console.warn('[QUEUE] BullMQ initialization skipped:', e.message);
+      }
     });
 
   } catch (err) {
     console.log('[QUEUE] BullMQ dependencies not configured. Bypassing worker setup.');
   }
 }
+
+// Global Process Error Protection
+process.on('uncaughtException', (err) => {
+  console.error('[SERVER UNCAUGHT EXCEPTION]', err.message || err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[SERVER UNHANDLED REJECTION]', reason?.message || reason);
+});
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 function shutdown(signal) {

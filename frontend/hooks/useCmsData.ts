@@ -297,28 +297,28 @@ export function useFooterConfig(initialData?: FooterConfig) {
 
 export const FOOTER_NAV_FALLBACK: FooterNavGroups = {
   about: [
-    { id: "f-1", label: "Our Story", labelTe: null, labelHi: null, href: "/about/story", placement: "FOOTER_ABOUT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-2", label: "Leadership", labelTe: null, labelHi: null, href: "/about/leadership", placement: "FOOTER_ABOUT", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-3", label: "Our Beliefs", labelTe: null, labelHi: null, href: "/about/beliefs", placement: "FOOTER_ABOUT", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-4", label: "Ministries", labelTe: null, labelHi: null, href: "/about/ministries", placement: "FOOTER_ABOUT", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-5", label: "Mission", labelTe: null, labelHi: null, href: "/about/mission", placement: "FOOTER_ABOUT", displayOrder: 4, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-1", label: "Our Story", labelTe: "మా కథ", labelHi: "हमारी कहानी", href: "/about/story", placement: "FOOTER_ABOUT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-2", label: "Leadership", labelTe: "నాయకత్వం", labelHi: "नेतृत्व", href: "/about/leadership", placement: "FOOTER_ABOUT", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-3", label: "Our Beliefs", labelTe: "మా నమ్మకాలు", labelHi: "हमारे विश्वास", href: "/about/beliefs", placement: "FOOTER_ABOUT", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-4", label: "Ministries", labelTe: "పరిచర్యలు", labelHi: "मंत्रालय", href: "/about/ministries", placement: "FOOTER_ABOUT", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-5", label: "Mission", labelTe: "ధ్యేయం & దర్శనం", labelHi: "मिशन और विजन", href: "/about/mission", placement: "FOOTER_ABOUT", displayOrder: 4, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   resources: [
-    { id: "f-6", label: "Sermons", labelTe: null, labelHi: null, href: "/sermons", placement: "FOOTER_RESOURCES", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-7", label: "Events", labelTe: null, labelHi: null, href: "/events", placement: "FOOTER_RESOURCES", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-9", label: "Prayer", labelTe: null, labelHi: null, href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-6", label: "Sermons", labelTe: "ప్రసంగాలు", labelHi: "प्रवचन", href: "/sermons", placement: "FOOTER_RESOURCES", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-7", label: "Events", labelTe: "కార్యక్రమాలు", labelHi: "कार्यक्रम", href: "/events", placement: "FOOTER_RESOURCES", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-9", label: "Prayer", labelTe: "ప్రార్థన", labelHi: "प्रार्थना", href: "/prayer", placement: "FOOTER_RESOURCES", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   involved: [
-    { id: "f-10", label: "Small Groups", labelTe: null, labelHi: null, href: "/get-involved/small-groups", placement: "FOOTER_INVOLVED", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-11", label: "Volunteer", labelTe: null, labelHi: null, href: "/get-involved/volunteer", placement: "FOOTER_INVOLVED", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-12", label: "Give", labelTe: null, labelHi: null, href: "/give", placement: "FOOTER_INVOLVED", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-13", label: "Membership", labelTe: null, labelHi: null, href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-10", label: "Small Groups", labelTe: "చిన్న గుంపులు", labelHi: "छोटे समूह", href: "/get-involved/small-groups", placement: "FOOTER_INVOLVED", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-11", label: "Volunteer", labelTe: "వాలంటీర్", labelHi: "स्वयंसेवक", href: "/get-involved/volunteer", placement: "FOOTER_INVOLVED", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-12", label: "Give", labelTe: "కానుకలు", labelHi: "दान दें", href: "/give", placement: "FOOTER_INVOLVED", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-13", label: "Membership", labelTe: "సభ్యత్వం", labelHi: "सदस्यता", href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   connect: [
-    { id: "f-14", label: "Contact Us", labelTe: null, labelHi: null, href: "#contact", placement: "FOOTER_CONNECT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-15", label: "Visit Us", labelTe: null, labelHi: null, href: "#about", placement: "FOOTER_CONNECT", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-16", label: "Services", labelTe: null, labelHi: null, href: "#services", placement: "FOOTER_CONNECT", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-17", label: "Locations", labelTe: null, labelHi: null, href: "/locations", placement: "FOOTER_CONNECT", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-14", label: "Contact Us", labelTe: "సంప్రదించండి", labelHi: "संपर्क करें", href: "#contact", placement: "FOOTER_CONNECT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-15", label: "Visit Us", labelTe: "మమ్మల్ని సందర్శించండి", labelHi: "हमसे मिलें", href: "#about", placement: "FOOTER_CONNECT", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-16", label: "Services", labelTe: "ఆరాధన సమయాలు", labelHi: "सेवा का समय", href: "#services", placement: "FOOTER_CONNECT", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-17", label: "Locations", labelTe: "ప్రాంతాలు", labelHi: "स्थान", href: "/locations", placement: "FOOTER_CONNECT", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
 };
 

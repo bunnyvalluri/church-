@@ -129,7 +129,7 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
           className="max-w-3xl mx-auto text-center mb-10 sm:mb-16 lg:mb-20"
         >
           <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-3 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
-            Latest Sermons
+            {t.sermons.badge || t.sermons.latest || "Latest Sermons"}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">
             {t.sermons.title.split(" ")[0]}{" "}
@@ -177,9 +177,11 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
                   <div className="w-16 h-16 bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))] rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
                     <Play className="w-8 h-8 ml-1" fill="currentColor" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">No Sermons Available</h3>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">
+                    {t.sermons.noSermons || "No Sermons Available"}
+                  </h3>
                   <p className="text-slate-500 dark:text-white/50 text-sm max-w-sm mx-auto leading-relaxed">
-                    Stay tuned! We are updating our sermon library with powerful, life-changing messages. Check back soon.
+                    {t.sermons.noSermonsDesc || "Stay tuned! We are updating our sermon library with powerful, life-changing messages. Check back soon."}
                   </p>
                 </div>
               )

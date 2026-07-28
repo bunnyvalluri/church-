@@ -9,6 +9,41 @@ import { usePathname } from "next/navigation";
 import { useFooterConfig, useFooterNavigation } from "@/hooks/useCmsData";
 import type { NavigationItem } from "@/types/cms";
 
+const LINK_MAP: Record<string, { te: string; hi: string }> = {
+  "/about/story": { te: "మా కథ", hi: "हमारी कहानी" },
+  "/about/leadership": { te: "నాయకత్వం", hi: "नेतृत्व" },
+  "/about/beliefs": { te: "మా నమ్మకాలు", hi: "हमारे विश्वास" },
+  "/about/ministries": { te: "పరిచర్యలు", hi: "मंत्रालय" },
+  "/about/mission": { te: "ధ్యేయం & దర్శనం", hi: "मिशन और विजन" },
+  "/sermons": { te: "ప్రసంగాలు", hi: "प्रवचन" },
+  "/events": { te: "కార్యక్రమాలు", hi: "कार्यक्रम" },
+  "/prayer": { te: "ప్రార్థన", hi: "प्रार्थना" },
+  "/get-involved/small-groups": { te: "చిన్న గుంపులు", hi: "छोटे समूह" },
+  "/get-involved/volunteer": { te: "వాలంటీర్", hi: "स्वयंसेवक" },
+  "/give": { te: "కానుకలు", hi: "दान दें" },
+  "/membership": { te: "సభ్యత్వం", hi: "सदस्यता" },
+  "#contact": { te: "సంప్రదించండి", hi: "संपर्क करें" },
+  "#about": { te: "మమ్మల్ని సందర్శించండి", hi: "हमसे मिलें" },
+  "#services": { te: "ఆరాధన సమయాలు", hi: "सेवा का समय" },
+  "/locations": { te: "ప్రాంతాలు", hi: "स्थान" },
+  "Our Story": { te: "మా కథ", hi: "हमारी कहानी" },
+  "Leadership": { te: "నాయకత్వం", hi: "नेतृत्व" },
+  "Our Beliefs": { te: "మా నమ్మకాలు", hi: "हमारे विश्वास" },
+  "Ministries": { te: "పరిచర్యలు", hi: "मंत्रालय" },
+  "Mission": { te: "ధ్యేయం & దర్శనం", hi: "मिशन और विजन" },
+  "Sermons": { te: "ప్రసంగాలు", hi: "प्रवचन" },
+  "Events": { te: "కార్యక్రమాలు", hi: "कार्यक्रम" },
+  "Prayer": { te: "ప్రార్థన", hi: "प्रार्थना" },
+  "Small Groups": { te: "చిన్న గుంపులు", hi: "छोटे समूह" },
+  "Volunteer": { te: "వాలంటీర్", hi: "स्वयंसेवक" },
+  "Give": { te: "కానుకలు", hi: "दान दें" },
+  "Membership": { te: "సభ్యత్వం", hi: "सदस्यता" },
+  "Contact Us": { te: "సంప్రదించండి", hi: "संपर्क करें" },
+  "Visit Us": { te: "మమ్మల్ని సందర్శించండి", hi: "हमसे मिलें" },
+  "Services": { te: "ఆరాధన సమయాలు", hi: "सेवा का समय" },
+  "Locations": { te: "ప్రాంతాలు", hi: "स्थान" },
+};
+
 // ── Nav link resolver ─────────────────────────────────────────────────────────
 function NavLink({
   item,
@@ -19,11 +54,12 @@ function NavLink({
   resolveHref: (href: string) => string;
   language: string;
 }) {
+  const trans = LINK_MAP[item.href] || LINK_MAP[item.label];
   const label =
-    language === "te" && item.labelTe
-      ? item.labelTe
-      : language === "hi" && item.labelHi
-      ? item.labelHi
+    language === "te"
+      ? item.labelTe || trans?.te || item.label
+      : language === "hi"
+      ? item.labelHi || trans?.hi || item.label
       : item.label;
 
   return (
@@ -265,13 +301,21 @@ export default function Footer() {
                 href="/privacy"
                 className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
               >
-                Privacy Policy
+                {mounted && language === "te"
+                  ? "గోప్యతా విధానం"
+                  : mounted && language === "hi"
+                  ? "गोपनीयता नीति"
+                  : "Privacy Policy"}
               </Link>
               <Link
                 href="/terms"
                 className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
               >
-                Terms of Service
+                {mounted && language === "te"
+                  ? "సేవా నిబంధనలు"
+                  : mounted && language === "hi"
+                  ? "सेवा की शर्तें"
+                  : "Terms of Service"}
               </Link>
             </div>
           </div>

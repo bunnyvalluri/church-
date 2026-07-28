@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface BackToHomeProps {
   className?: string;
@@ -15,8 +16,18 @@ export default function BackToHome({
   className,
   variant = "glass",
   href = "/",
-  label = "Back to Home",
+  label,
 }: BackToHomeProps) {
+  const { language } = useLanguage();
+
+  const defaultLabel =
+    language === "te"
+      ? "హోమ్‌కు తిరిగి వెళ్ళండి"
+      : language === "hi"
+      ? "होम पर वापस जाएं"
+      : "Back to Home";
+
+  const displayLabel = label || defaultLabel;
   return (
     <Link
       href={href}
@@ -42,10 +53,10 @@ export default function BackToHome({
         ],
         className
       )}
-      aria-label={label}
+      aria-label={displayLabel}
     >
       <ChevronLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-      <span>{label}</span>
+      <span>{displayLabel}</span>
     </Link>
   );
 }
