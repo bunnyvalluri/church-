@@ -1,0 +1,64 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Media/Cloudinary HTTPRoute
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-media-route
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-media-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Media upload and Cloudinary proxy routes"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-api
+
+  hostnames:
+    - "api.kcmchurch.org"
+
+  rules:
+    # ── Media Upload (authenticated, large body) ───────────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/media/upload
+          method: POST
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Proto
+                value: "https"
+              - name: X-Max-Body-Size
+                value: "52428800"  # 50MB — communicated to backend
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+      timeouts:
+        request: 300s   # 5 minutes for large file uploads
+        backendRequest: 295s
+
+    # ── Media/Asset Retrieval ──────────────────────────────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/media
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: Cache-Control
+                value: "public, max-age=86400"  # 1 day cache for media
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+      timeouts:
+        request: 60s

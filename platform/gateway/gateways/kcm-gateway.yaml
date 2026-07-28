@@ -1,0 +1,153 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Production Gateway
+# ==============================================================================
+# This Gateway defines the entry points (listeners) for all KCM Church traffic.
+# Listeners: HTTP (80) for redirect, HTTPS (443) for all portals.
+#
+# Namespace: kcm-system
+# GatewayClass: kcm-gateway-class (Envoy Gateway v1.8.3)
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: kcm-gateway
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+    environment: production
+  annotations:
+    meta.helm.sh/release-name: kcm-gateway
+    meta.helm.sh/release-namespace: kcm-system
+    description: "KCM Church production Gateway — all portal traffic entry point"
+spec:
+  gatewayClassName: kcm-gateway-class
+
+  # Allow HTTPRoutes from the kcm-system namespace (and sub-namespaces via ReferenceGrants)
+  listeners:
+    # ── HTTP Listener (port 80) — Redirects to HTTPS ─────────────────────────
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS Listener (port 443) — Main Production Traffic ──────────────────
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS Admin Listener ──────────────────────────────────────────────────
+    - name: https-admin
+      protocol: HTTPS
+      port: 443
+      hostname: "admin.kcmchurch.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS Pastor Listener ─────────────────────────────────────────────────
+    - name: https-pastor
+      protocol: HTTPS
+      port: 443
+      hostname: "pastor.kcmchurch.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS Member Listener ─────────────────────────────────────────────────
+    - name: https-member
+      protocol: HTTPS
+      port: 443
+      hostname: "member.kcmchurch.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS NGO Listener ────────────────────────────────────────────────────
+    - name: https-ngo
+      protocol: HTTPS
+      port: 443
+      hostname: "ngo.kcmchurch.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+    # ── HTTPS API Listener ────────────────────────────────────────────────────
+    - name: https-api
+      protocol: HTTPS
+      port: 443
+      hostname: "api.kcmchurch.org"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kcm-tls-cert
+            namespace: kcm-system
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+
+  # Infrastructure-level annotations for cloud load balancer
+  infrastructure:
+    annotations:
+      service.kubernetes.io/description: "KCM Church production load balancer"
+    labels:
+      app.kubernetes.io/part-of: kcm-church-portal
+      environment: production

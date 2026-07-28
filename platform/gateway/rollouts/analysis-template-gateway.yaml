@@ -1,0 +1,142 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — AnalysisTemplate: Envoy Gateway Metrics
+# ==============================================================================
+# Used by Argo Rollouts to evaluate canary success based on Envoy Gateway metrics.
+# Prometheus must be scraping envoy-gateway metrics (service monitor configured).
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: envoy-gateway-success-rate
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: envoy-gateway-success-rate
+    app.kubernetes.io/component: rollouts
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Gateway-based success rate analysis using Envoy Gateway Prometheus metrics"
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+      value: kcm-system
+
+  metrics:
+    # ── HTTP Success Rate (>= 99%) ─────────────────────────────────────────────
+    - name: http-success-rate
+      interval: 60s
+      # Consider the analysis successful after 5 consecutive success measurements
+      successCondition: result[0] >= 0.99
+      failureCondition: result[0] < 0.95
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(envoy_cluster_upstream_rq_xx{
+              envoy_cluster_name=~".*{{args.service-name}}.*",
+              envoy_response_code_class="2"
+            }[5m])) /
+            sum(rate(envoy_cluster_upstream_rq_total{
+              envoy_cluster_name=~".*{{args.service-name}}.*"
+            }[5m]))
+
+    # ── P99 Latency (< 500ms) ─────────────────────────────────────────────────
+    - name: p99-latency
+      interval: 60s
+      successCondition: result[0] < 0.5
+      failureCondition: result[0] > 1.0
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            histogram_quantile(0.99,
+              sum(rate(envoy_cluster_upstream_rq_time_bucket{
+                envoy_cluster_name=~".*{{args.service-name}}.*"
+              }[5m])) by (le)
+            ) / 1000
+
+    # ── Error Rate (< 1%) ────────────────────────────────────────────────────
+    - name: error-rate
+      interval: 60s
+      successCondition: result[0] < 0.01
+      failureCondition: result[0] > 0.05
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(envoy_cluster_upstream_rq_xx{
+              envoy_cluster_name=~".*{{args.service-name}}.*",
+              envoy_response_code_class="5"
+            }[5m])) /
+            sum(rate(envoy_cluster_upstream_rq_total{
+              envoy_cluster_name=~".*{{args.service-name}}.*"
+            }[5m]))
+---
+# ==============================================================================
+# AnalysisTemplate: HTTP Latency (Legacy — kept for backward compatibility)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: http-latency
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: http-latency
+    app.kubernetes.io/component: rollouts
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+  metrics:
+    - name: p95-latency
+      interval: 60s
+      successCondition: result[0] < 0.3
+      failureCondition: result[0] > 0.8
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            histogram_quantile(0.95,
+              sum(rate(envoy_cluster_upstream_rq_time_bucket{
+                envoy_cluster_name=~".*{{args.service-name}}.*"
+              }[5m])) by (le)
+            ) / 1000
+---
+# ==============================================================================
+# AnalysisTemplate: HTTP Success Rate (Legacy)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: http-success-rate
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: http-success-rate
+    app.kubernetes.io/component: rollouts
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  args:
+    - name: service-name
+    - name: namespace
+  metrics:
+    - name: success-rate
+      interval: 60s
+      successCondition: result[0] >= 0.99
+      failureCondition: result[0] < 0.95
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(envoy_cluster_upstream_rq_xx{
+              envoy_cluster_name=~".*{{args.service-name}}.*",
+              envoy_response_code_class="2"
+            }[5m])) /
+            sum(rate(envoy_cluster_upstream_rq_total{
+              envoy_cluster_name=~".*{{args.service-name}}.*"
+            }[5m]))

@@ -1,0 +1,124 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Envoy Gateway Helm Values
+# Chart: oci://docker.io/envoyproxy/gateway-helm
+# Version: v1.8.3
+# ==============================================================================
+#
+# Install Command:
+#   helm install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
+#     --version v1.8.3 \
+#     --namespace envoy-gateway-system \
+#     --create-namespace \
+#     --values platform/gateway/install/envoy-gateway-helm-values.yaml
+#
+# Upgrade Command:
+#   helm upgrade envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
+#     --version v1.8.3 \
+#     --namespace envoy-gateway-system \
+#     --values platform/gateway/install/envoy-gateway-helm-values.yaml
+# ==============================================================================
+
+config:
+  envoyGateway:
+    apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyGateway
+    gateway:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    provider:
+      type: Kubernetes
+      kubernetes:
+        rateLimitDeployment:
+          replicas: 2
+          container:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+        watchNamespaces: []  # Watch all namespaces
+    logging:
+      level:
+        default: info
+    telemetry:
+      metrics:
+        prometheus:
+          disable: false
+      tracing:
+        level: 1
+        provider:
+          backendRefs:
+            - name: otel-collector
+              namespace: monitoring
+              port: 4318
+          type: OpenTelemetry
+    extensionApis:
+      enableBackendLBPolicy: true
+      enableBackendTLSPolicy: true
+
+deployment:
+  replicas: 2
+  pod:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "19001"
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: envoy-gateway
+              topologyKey: kubernetes.io/hostname
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: envoy-gateway
+  container:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 65532
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+serviceAccount:
+  create: true
+  name: envoy-gateway
+
+rbac:
+  create: true
+
+metrics:
+  enabled: true
+  port: 19001
+
+certgen:
+  job:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

@@ -1,0 +1,83 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — ClientTrafficPolicy (Phase 9)
+# ==============================================================================
+# ClientTrafficPolicy controls the behavior of the Envoy proxy with respect
+# to client connections — TLS version, header handling, HTTP2, etc.
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: kcm-client-traffic-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-client-traffic-policy
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "Client traffic policy — TLS settings, header handling, HTTP/2"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: kcm-gateway
+
+  # ── TLS Configuration ──────────────────────────────────────────────────────
+  tls:
+    minVersion: "1.2"
+    maxVersion: "1.3"
+    ciphers:
+      # TLS 1.2 ciphers (strong only)
+      - ECDHE-ECDSA-AES128-GCM-SHA256
+      - ECDHE-RSA-AES128-GCM-SHA256
+      - ECDHE-ECDSA-AES256-GCM-SHA384
+      - ECDHE-RSA-AES256-GCM-SHA384
+      - ECDHE-ECDSA-CHACHA20-POLY1305
+      - ECDHE-RSA-CHACHA20-POLY1305
+    ecdhCurves:
+      - P-256
+      - X25519
+    alpnProtocols:
+      - h2
+      - http/1.1
+    clientValidation:
+      optional: true  # mTLS optional for now; set required: true for internal APIs
+
+  # ── HTTP Header Handling ───────────────────────────────────────────────────
+  headers:
+    withUnderscoresAction: RejectRequest  # Block headers like X_Forwarded_For
+    preserveXRequestID: true              # Keep X-Request-ID from upstream
+    xForwardedClientCert:
+      mode: AppendForward
+      certDetailsToAdd:
+        - Subject
+        - URI
+
+  # ── HTTP/1 Settings ────────────────────────────────────────────────────────
+  http1:
+    enableTrailers: true
+    preserveHeaderCase: true
+    http10:
+      defaultHost: "kcmchurch.org"
+
+  # ── HTTP/2 Settings ────────────────────────────────────────────────────────
+  http2:
+    initialStreamWindowSize: 65535
+    initialConnectionWindowSize: 1048576
+    maxConcurrentStreams: 100
+    onInvalidMessage: TerminateStream
+
+  # ── Connection Settings ────────────────────────────────────────────────────
+  connection:
+    connectionLimit:
+      value: 10000
+      closeDelay: 30s
+    bufferLimitBytes: 33554432  # 32MB buffer limit
+
+  # ── Path Normalization ─────────────────────────────────────────────────────
+  path:
+    disableMergeSlashes: false
+    escapedSlashesAction: UnescapeAndForward
+
+  # ── Proxy Protocol ─────────────────────────────────────────────────────────
+  enableProxyProtocol: false  # Enable if behind another proxy that sends PROXY protocol

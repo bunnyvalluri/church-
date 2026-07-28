@@ -13,6 +13,15 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "backend-socket-service"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # ── MIGRATION STATUS ───────────────────────────────────────────────────────
+    # This NGINX Ingress is DEPRECATED — migration to Envoy Gateway in progress.
+    # DO NOT DELETE until Envoy Gateway validation is complete.
+    # Tracking: platform/gateway/migration/migration-checklist.md
+    # Replaces: platform/gateway/httproutes/ (HTTPRoute resources)
+    migration.kcm/deprecated: "true"
+    migration.kcm/replaced-by: "HTTPRoute/kcm-frontend-route"
+    migration.kcm/status: "pending-validation"
+    migration.kcm/target-gateway: "kcm-gateway"
 spec:
   rules:
     - host: kcm-portal.local

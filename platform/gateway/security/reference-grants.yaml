@@ -1,0 +1,71 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — ReferenceGrants (Phase 10)
+# ==============================================================================
+# ReferenceGrant allows resources in one namespace to reference resources
+# in another namespace. Required for cross-namespace Gateway → Service references.
+# ==============================================================================
+
+# ── Allow Gateway in kcm-system to reference TLS secrets ──────────────────────
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: kcm-gateway-tls-secret-grant
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-gateway-tls-secret-grant
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Allow Gateway to reference TLS certificate secrets in kcm-system"
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: kcm-system
+  to:
+    - group: ""
+      kind: Secret
+      name: kcm-tls-cert
+---
+# ── Allow HTTPRoutes in kcm-system to reference services in same namespace ────
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: kcm-httproute-service-grant
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-httproute-service-grant
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Allow HTTPRoutes to reference backend services in kcm-system"
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: kcm-system
+  to:
+    - group: ""
+      kind: Service
+---
+# ── Allow Envoy Gateway to reference services in monitoring namespace ──────────
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: kcm-gateway-monitoring-grant
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: kcm-gateway-monitoring-grant
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Allow Gateway system to reference monitoring services (OTel collector)"
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      namespace: envoy-gateway-system
+  to:
+    - group: ""
+      kind: Service
+      name: otel-collector

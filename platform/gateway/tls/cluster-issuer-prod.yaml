@@ -1,0 +1,44 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Let's Encrypt Production ClusterIssuer
+# ==============================================================================
+# This issues trusted, browser-valid TLS certificates for all KCM domains.
+# Rate limits apply: https://letsencrypt.org/docs/rate-limits/
+# - 50 Certificates per Registered Domain per week
+# - 5 Duplicate Certificate failures per hour
+# ==============================================================================
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  labels:
+    app.kubernetes.io/name: letsencrypt-prod
+    app.kubernetes.io/component: tls
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "Let's Encrypt production ACME issuer — trusted certificates"
+spec:
+  acme:
+    # Let's Encrypt production endpoint
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # ⚠️ REPLACE with real admin email address
+    email: admin@kcmchurch.org
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+      # HTTP-01 challenge via Gateway API (cert-manager v1.15+)
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: kcm-gateway
+                namespace: kcm-system
+                kind: Gateway
+        selector:
+          dnsNames:
+            - "kcmchurch.org"
+            - "www.kcmchurch.org"
+            - "api.kcmchurch.org"
+            - "admin.kcmchurch.org"
+            - "pastor.kcmchurch.org"
+            - "member.kcmchurch.org"
+            - "ngo.kcmchurch.org"

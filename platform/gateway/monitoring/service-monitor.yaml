@@ -1,0 +1,61 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — ServiceMonitor: Envoy Gateway (Phase 11)
+# ==============================================================================
+# Prometheus scrapes Envoy Gateway controller and proxy metrics.
+# Requires: kube-prometheus-stack with ServiceMonitor CRDs installed.
+# ==============================================================================
+
+# ── Envoy Gateway Controller ServiceMonitor ───────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: envoy-gateway-controller
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: envoy-gateway-controller
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: kcm-church-portal
+    # Must match kube-prometheus-stack's serviceMonitorSelector
+    release: prometheus-stack
+  annotations:
+    description: "ServiceMonitor for Envoy Gateway controller metrics"
+spec:
+  namespaceSelector:
+    matchNames:
+      - envoy-gateway-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: envoy-gateway
+  endpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
+      path: /metrics
+      scheme: http
+---
+# ── Envoy Proxy Data Plane ServiceMonitor ─────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: envoy-proxy-dataplane
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: envoy-proxy-dataplane
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: kcm-church-portal
+    release: prometheus-stack
+  annotations:
+    description: "ServiceMonitor for Envoy proxy data plane metrics"
+spec:
+  namespaceSelector:
+    matchNames:
+      - kcm-system
+  selector:
+    matchLabels:
+      app: kcm-envoy-proxy
+  endpoints:
+    - port: metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      path: /stats/prometheus
+      scheme: http

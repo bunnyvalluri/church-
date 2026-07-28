@@ -1,0 +1,121 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — RBAC for Gateway API (Phase 9)
+# ==============================================================================
+
+# ── ClusterRole: Gateway Admin ────────────────────────────────────────────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kcm-gateway-admin
+  labels:
+    app.kubernetes.io/name: kcm-gateway-admin
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Full access to Gateway API resources — for CI/CD service accounts"
+rules:
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - grpcroutes
+      - tlsroutes
+      - tcproutes
+      - udproutes
+      - referencegrants
+      - backendlbpolicies
+      - backendtlspolicies
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["gateway.envoyproxy.io"]
+    resources:
+      - envoyproxies
+      - backendtrafficpolicies
+      - clienttrafficpolicies
+      - securitypolicies
+      - envoypatchpolicies
+      - envoyextensionpolicies
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["cert-manager.io"]
+    resources:
+      - certificates
+      - clusterissuers
+      - issuers
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+# ── ClusterRole: Gateway Viewer ───────────────────────────────────────────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kcm-gateway-viewer
+  labels:
+    app.kubernetes.io/name: kcm-gateway-viewer
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Read-only access to Gateway API resources — for monitoring/ops"
+rules:
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - referencegrants
+      - backendlbpolicies
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["gateway.envoyproxy.io"]
+    resources:
+      - envoyproxies
+      - backendtrafficpolicies
+      - clienttrafficpolicies
+      - securitypolicies
+    verbs: ["get", "list", "watch"]
+---
+# ── ServiceAccount: GitHub Actions CI/CD ─────────────────────────────────────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kcm-gateway-cicd
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-gateway-cicd
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Service account for GitHub Actions gateway deployments"
+---
+# ── ClusterRoleBinding: CI/CD Admin ──────────────────────────────────────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kcm-gateway-cicd-admin
+  labels:
+    app.kubernetes.io/name: kcm-gateway-cicd-admin
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kcm-church-portal
+subjects:
+  - kind: ServiceAccount
+    name: kcm-gateway-cicd
+    namespace: kcm-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kcm-gateway-admin
+---
+# ── ClusterRoleBinding: Argo CD Admin ────────────────────────────────────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kcm-gateway-argocd-admin
+  labels:
+    app.kubernetes.io/name: kcm-gateway-argocd-admin
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kcm-church-portal
+subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+    namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kcm-gateway-admin

@@ -1,0 +1,30 @@
+apiVersion: v2
+name: kcm-gateway
+description: |
+  KCM Church Enterprise Gateway Platform — Helm chart wrapping all Gateway API
+  resources for Envoy Gateway v1.8.3. Includes GatewayClass, Gateway listeners,
+  HTTPRoutes for all portals, SecurityPolicies, BackendTrafficPolicies, and
+  cert-manager Certificate resources.
+type: application
+version: 1.0.0
+appVersion: "v1.8.3"
+kubeVersion: ">=1.28.0"
+home: "https://github.com/bunnyvalluri/church-"
+sources:
+  - "https://github.com/bunnyvalluri/church-"
+  - "https://github.com/envoyproxy/gateway"
+maintainers:
+  - name: "KCM Platform Team"
+    email: "admin@kcmchurch.org"
+keywords:
+  - gateway
+  - envoy
+  - envoy-gateway
+  - gateway-api
+  - kcm-church
+  - kubernetes
+annotations:
+  category: networking
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial Envoy Gateway v1.8.3 Gateway API platform

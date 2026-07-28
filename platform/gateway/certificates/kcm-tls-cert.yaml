@@ -1,0 +1,68 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — TLS Certificate Resource
+# ==============================================================================
+# cert-manager Certificate resource that auto-provisions and renews TLS certs
+# for all KCM Church domains via Let's Encrypt.
+# Certificate is stored as a Kubernetes Secret: kcm-tls-cert
+# This secret is referenced by the Gateway listeners.
+# ==============================================================================
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kcm-tls-cert
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-tls-cert
+    app.kubernetes.io/component: tls
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "Multi-domain TLS certificate for all KCM Church portals"
+spec:
+  # Secret name where the certificate will be stored
+  secretName: kcm-tls-cert
+
+  # Certificate validity and renewal
+  duration: 2160h   # 90 days (Let's Encrypt default)
+  renewBefore: 360h # Renew 15 days before expiry
+
+  # Private key configuration
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+    rotationPolicy: Always
+
+  # All KCM Church domains covered by this certificate (SAN)
+  dnsNames:
+    - "kcmchurch.org"
+    - "www.kcmchurch.org"
+    - "api.kcmchurch.org"
+    - "admin.kcmchurch.org"
+    - "pastor.kcmchurch.org"
+    - "member.kcmchurch.org"
+    - "ngo.kcmchurch.org"
+
+  # Use Let's Encrypt production issuer
+  # Switch to letsencrypt-staging during initial setup and testing
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+  # Subject info
+  subject:
+    organizations:
+      - "Kingdom of Christ Ministries"
+    countries:
+      - "IN"
+    localities:
+      - "Hyderabad"
+    provinces:
+      - "Telangana"
+
+  # Usages
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth

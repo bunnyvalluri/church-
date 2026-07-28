@@ -1,0 +1,114 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Argo CD App: Envoy Gateway Install (Ph 12)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-install
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-install
+    app.kubernetes.io/component: gitops
+    component: gateway-install
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Installs Envoy Gateway v1.8.3 via Helm into envoy-gateway-system"
+    argocd.argoproj.io/sync-wave: "-10"  # Deploy first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kcm-gateway
+  source:
+    chart: gateway-helm
+    repoURL: "oci://docker.io/envoyproxy"
+    targetRevision: "v1.8.3"
+    helm:
+      releaseName: envoy-gateway
+      valueFiles: []
+      values: |
+        config:
+          envoyGateway:
+            apiVersion: gateway.envoyproxy.io/v1alpha1
+            kind: EnvoyGateway
+            gateway:
+              controllerName: gateway.envoyproxy.io/gatewayclass-controller
+            provider:
+              type: Kubernetes
+            logging:
+              level:
+                default: info
+            telemetry:
+              metrics:
+                prometheus:
+                  disable: false
+        deployment:
+          replicas: 2
+          container:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+        podDisruptionBudget:
+          enabled: true
+          minAvailable: 1
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Replace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
+---
+# ==============================================================================
+# Argo CD App: Envoy Gateway Namespace + GatewayClass Bootstrap
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-bootstrap
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-bootstrap
+    component: gateway-bootstrap
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: kcm-gateway
+  source:
+    repoURL: "https://github.com/bunnyvalluri/church-.git"
+    targetRevision: main
+    path: platform/gateway/install
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 15s
+        factor: 2

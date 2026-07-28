@@ -1,0 +1,90 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Frontend HTTPRoute
+# ==============================================================================
+# Routes: kcmchurch.org / → frontend-stable-service:3000
+# Weighted: stable(100%) + canary(0%) — weights managed by Argo Rollouts
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-frontend-route
+  namespace: kcm-system
+  labels:
+    app: kcm-frontend
+    app.kubernetes.io/name: kcm-frontend-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "KCM Church frontend routing — Next.js App Router"
+    # Argo Rollouts manages backendRefs weights during canary deployments
+    argo-rollouts.argoproj.io/managed-by: "kcm-frontend"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https
+
+  hostnames:
+    - "kcmchurch.org"
+    - "www.kcmchurch.org"
+
+  rules:
+    # ── Health / Liveness (public, no auth required) ─────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /health
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+
+    # ── Static Assets (long cache, no auth) ──────────────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /_next/static
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: Cache-Control
+                value: "public, max-age=31536000, immutable"
+              - name: X-Content-Type-Options
+                value: "nosniff"
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+
+    # ── Main Frontend Route ───────────────────────────────────────────────────
+    # Argo Rollouts controller adjusts these weights during canary deployments
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Frame-Options
+                value: "SAMEORIGIN"
+              - name: X-Content-Type-Options
+                value: "nosniff"
+              - name: X-XSS-Protection
+                value: "1; mode=block"
+              - name: Referrer-Policy
+                value: "strict-origin-when-cross-origin"
+              - name: Permissions-Policy
+                value: "camera=(), microphone=(), geolocation=(self)"
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+        - name: frontend-canary-service
+          port: 3000
+          weight: 0
+      timeouts:
+        request: 30s
+        backendRequest: 25s

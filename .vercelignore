@@ -14,3 +14,15 @@ browser
 **/*.avi
 **/*.mov
 **/*.wmv
+
+# ── Infrastructure / Platform (NOT needed for Vercel frontend build) ──────────
+platform/
+k8s/
+monitoring/
+docker/
+nginx/
+kcm-church-infra/
+database/
+scripts/
+backend/
+docs/

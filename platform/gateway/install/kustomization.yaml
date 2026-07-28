@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: envoy-gateway-install
+  annotations:
+    description: "Kustomization for Envoy Gateway namespace and base install resources"
+
+namespace: envoy-gateway-system
+
+resources:
+  - namespace.yaml
+
+# Helm chart is managed via Argo CD Application (platform/gateway/argocd/app-gateway-install.yaml)
+# and/or OpenTofu module (platform/opentofu/modules/gateway/main.tf)
+# Direct kubectl apply is for bootstrapping only.

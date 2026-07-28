@@ -1,0 +1,63 @@
+{{/* Gateway Resource */}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "kcm-gateway.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  gatewayClassName: {{ .Values.gatewayClass.name }}
+  listeners:
+    {{- if .Values.gateway.httpListener.enabled }}
+    - name: http
+      protocol: HTTP
+      port: {{ .Values.gateway.httpListener.port }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+    {{- end }}
+    {{- if .Values.gateway.httpsListener.enabled }}
+    - name: https
+      protocol: HTTPS
+      port: {{ .Values.gateway.httpsListener.port }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ .Values.gateway.tlsSecretName }}
+            namespace: {{ .Values.global.namespace }}
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+    {{- end }}
+    # Portal subdomain listeners
+    {{- range $portal := list "admin" "pastor" "member" "ngo" "api" }}
+    {{- $route := index $.Values.routes $portal }}
+    {{- if $route.enabled }}
+    - name: https-{{ $portal }}
+      protocol: HTTPS
+      port: {{ $.Values.gateway.httpsListener.port }}
+      hostname: {{ index $.Values.domain $portal | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ $.Values.gateway.tlsSecretName }}
+            namespace: {{ $.Values.global.namespace }}
+            kind: Secret
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: HTTPRoute
+    {{- end }}
+    {{- end }}

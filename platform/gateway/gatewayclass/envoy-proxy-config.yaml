@@ -1,0 +1,153 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — EnvoyProxy Configuration
+# ==============================================================================
+# EnvoyProxy is an Envoy Gateway extension CRD that allows customizing the
+# Envoy proxy deployment, telemetry, access logging, and backend TLS settings.
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: kcm-proxy-config
+  namespace: envoy-gateway-system
+  labels:
+    app.kubernetes.io/name: kcm-proxy-config
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+spec:
+  # ── Proxy Deployment Configuration ────────────────────────────────────────
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: 2
+        pod:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "19001"
+          labels:
+            app: kcm-envoy-proxy
+            app.kubernetes.io/component: proxy
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app: kcm-envoy-proxy
+                    topologyKey: kubernetes.io/hostname
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  app: kcm-envoy-proxy
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+        container:
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false  # Envoy needs write access to /tmp
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+      envoyService:
+        type: LoadBalancer
+        annotations:
+          # Cloud-provider annotations (uncomment for your cloud):
+          # GKE:
+          # cloud.google.com/load-balancer-type: "External"
+          # EKS:
+          # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+          # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+          # AKS:
+          # service.beta.kubernetes.io/azure-load-balancer-internal: "false"
+          service.kubernetes.io/description: "KCM Church Envoy Gateway Load Balancer"
+      # HPA for proxy pods
+      envoyHpa:
+        minReplicas: 2
+        maxReplicas: 10
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 70
+
+  # ── Shutdown / Drain Configuration ────────────────────────────────────────
+  shutdown:
+    drainTimeout: 60s
+    minDrainDuration: 5s
+
+  # ── Access Logging ─────────────────────────────────────────────────────────
+  telemetry:
+    accessLog:
+      settings:
+        - format:
+            type: JSON
+            json:
+              start_time: "%START_TIME%"
+              method: "%REQ(:METHOD)%"
+              path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+              protocol: "%PROTOCOL%"
+              response_code: "%RESPONSE_CODE%"
+              response_flags: "%RESPONSE_FLAGS%"
+              bytes_received: "%BYTES_RECEIVED%"
+              bytes_sent: "%BYTES_SENT%"
+              duration: "%DURATION%"
+              upstream_service_time: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
+              x_forwarded_for: "%REQ(X-FORWARDED-FOR)%"
+              user_agent: "%REQ(USER-AGENT)%"
+              request_id: "%REQ(X-REQUEST-ID)%"
+              authority: "%REQ(:AUTHORITY)%"
+              upstream_host: "%UPSTREAM_HOST%"
+              upstream_cluster: "%UPSTREAM_CLUSTER%"
+              route_name: "%ROUTE_NAME%"
+              trace_id: "%REQ(X-B3-TRACEID)%"
+          sinks:
+            - type: File
+              file:
+                path: /dev/stdout
+    # ── Metrics ──────────────────────────────────────────────────────────────
+    metrics:
+      enableVirtualHostStats: true
+      enablePerEndpointStats: true
+    # ── Distributed Tracing (OpenTelemetry) ──────────────────────────────────
+    tracing:
+      samplingRate: 5.0  # Sample 5% of traces in production
+      customTags:
+        service.name:
+          literal:
+            value: "kcm-envoy-proxy"
+        environment:
+          literal:
+            value: "production"
+        k8s.namespace.name:
+          environment:
+            name: NAMESPACE
+        k8s.pod.name:
+          environment:
+            name: POD_NAME
+      provider:
+        backendRefs:
+          - name: otel-collector
+            namespace: monitoring
+            port: 4318
+        type: OpenTelemetry

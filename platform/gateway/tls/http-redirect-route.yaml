@@ -1,0 +1,44 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — HTTP → HTTPS Redirect Route (Phase 6)
+# ==============================================================================
+# All HTTP traffic on port 80 is 301-redirected to HTTPS on port 443
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-http-redirect
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-http-redirect
+    app.kubernetes.io/component: tls
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "HTTP to HTTPS redirect for all KCM domains"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: http  # Binds to port-80 listener
+
+  # Match all hostnames (redirect covers every domain served by this Gateway)
+  hostnames:
+    - "kcmchurch.org"
+    - "www.kcmchurch.org"
+    - "api.kcmchurch.org"
+    - "admin.kcmchurch.org"
+    - "pastor.kcmchurch.org"
+    - "member.kcmchurch.org"
+    - "ngo.kcmchurch.org"
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+            port: 443

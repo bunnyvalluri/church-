@@ -1,0 +1,107 @@
+name: Gateway API — Deploy via GitOps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "platform/gateway/**"
+      - "platform/helm/kcm-gateway/**"
+  workflow_dispatch:
+    inputs:
+      sync_app:
+        description: "Argo CD Application to sync (leave empty for all gateway apps)"
+        required: false
+        default: "all"
+      prune:
+        description: "Enable prune during sync"
+        type: boolean
+        default: false
+
+concurrency:
+  group: "gateway-deploy-${{ github.ref }}"
+  cancel-in-progress: false  # Never cancel in-progress deploys
+
+jobs:
+  deploy:
+    name: Deploy Gateway Config via Argo CD
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Argo CD CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/download/v2.12.0/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/
+
+      - name: Login to Argo CD
+        run: |
+          argocd login ${{ secrets.ARGOCD_SERVER }} \
+            --auth-token ${{ secrets.ARGOCD_AUTH_TOKEN }} \
+            --insecure \
+            --grpc-web
+
+      - name: Sync Gateway Install App
+        if: ${{ github.event.inputs.sync_app == 'all' || github.event.inputs.sync_app == 'kcm-gateway-install' }}
+        run: |
+          argocd app sync kcm-gateway-install \
+            --timeout 300 \
+            --retry-limit 3 \
+            --retry-backoff-duration 10s
+
+      - name: Sync Gateway Bootstrap App
+        run: |
+          argocd app sync kcm-gateway-bootstrap \
+            --timeout 120 \
+            --retry-limit 3
+
+      - name: Sync Gateway Config App
+        if: ${{ github.event.inputs.sync_app == 'all' || github.event.inputs.sync_app == 'kcm-gateway-config' }}
+        run: |
+          argocd app sync kcm-gateway-config \
+            --timeout 180 \
+            --retry-limit 5 \
+            ${{ github.event.inputs.prune == 'true' && '--prune' || '' }}
+
+      - name: Sync Gateway TLS App
+        if: ${{ github.event.inputs.sync_app == 'all' || github.event.inputs.sync_app == 'kcm-gateway-tls' }}
+        run: |
+          argocd app sync kcm-gateway-tls \
+            --timeout 180 \
+            --retry-limit 5
+
+      - name: Sync Gateway Security App
+        if: ${{ github.event.inputs.sync_app == 'all' || github.event.inputs.sync_app == 'kcm-gateway-security' }}
+        run: |
+          argocd app sync kcm-gateway-security \
+            --timeout 120 \
+            --retry-limit 3
+
+      - name: Sync Gateway Monitoring App
+        if: ${{ github.event.inputs.sync_app == 'all' || github.event.inputs.sync_app == 'kcm-gateway-monitoring' }}
+        run: |
+          argocd app sync kcm-gateway-monitoring \
+            --timeout 120 \
+            --retry-limit 3
+
+      - name: Wait for all Gateway apps to be Healthy
+        run: |
+          argocd app wait kcm-gateway-config \
+            --health \
+            --timeout 300
+          
+          argocd app wait kcm-gateway-tls \
+            --health \
+            --timeout 300
+
+      - name: Verify Gateway Status
+        run: |
+          echo "## Gateway Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### Argo CD App Status" >> $GITHUB_STEP_SUMMARY
+          for app in kcm-gateway-install kcm-gateway-bootstrap kcm-gateway-config kcm-gateway-tls kcm-gateway-security kcm-gateway-monitoring; do
+            STATUS=$(argocd app get $app --output json 2>/dev/null | jq -r '.status.health.status // "Unknown"')
+            SYNC=$(argocd app get $app --output json 2>/dev/null | jq -r '.status.sync.status // "Unknown"')
+            echo "| $app | $STATUS | $SYNC |" >> $GITHUB_STEP_SUMMARY
+          done

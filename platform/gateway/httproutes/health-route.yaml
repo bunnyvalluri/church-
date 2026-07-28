@@ -1,0 +1,42 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Health Endpoints HTTPRoute (Public)
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-health-route
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-health-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Public health and readiness endpoint routing — no auth required"
+    security: "public"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https
+
+  hostnames:
+    - "kcmchurch.org"
+
+  rules:
+    # Kubernetes-style health endpoints — used by load balancer health checks
+    - matches:
+        - path:
+            type: Exact
+            value: /healthz
+        - path:
+            type: Exact
+            value: /readyz
+        - path:
+            type: Exact
+            value: /livez
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+      timeouts:
+        request: 5s

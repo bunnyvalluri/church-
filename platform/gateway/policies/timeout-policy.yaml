@@ -1,0 +1,61 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Timeout Policy (BackendTrafficPolicy)
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-timeout-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-timeout-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Timeout and connection settings for KCM backend services"
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-backend-api-route
+
+  timeout:
+    tcp:
+      connectTimeout: 10s
+    http:
+      requestReceivedTimeout: 60s
+      idleTimeout: 90s
+
+  tcpKeepalive:
+    probes: 3
+    idleTime: 900s
+    interval: 75s
+---
+# ==============================================================================
+# Frontend Timeout Policy
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-frontend-timeout-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-frontend-timeout-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-frontend-route
+
+  timeout:
+    tcp:
+      connectTimeout: 5s
+    http:
+      requestReceivedTimeout: 30s
+      idleTimeout: 60s
+
+  tcpKeepalive:
+    probes: 3
+    idleTime: 300s
+    interval: 75s

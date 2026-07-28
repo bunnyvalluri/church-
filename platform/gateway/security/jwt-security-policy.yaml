@@ -1,0 +1,170 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — JWT SecurityPolicy: Protected Portals (Ph 10)
+# ==============================================================================
+# Applies Firebase JWT validation to admin, pastor, member, and NGO portals.
+# Unauthenticated requests to these portals are rejected with 401.
+# ==============================================================================
+
+# ── Admin Portal JWT Policy ────────────────────────────────────────────────
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-admin-jwt-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-admin-jwt-policy
+    app.kubernetes.io/component: security
+    portal: admin
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "JWT auth enforcement for Admin portal — admin role required"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-admin-route
+
+  jwt:
+    providers:
+      - name: firebase-auth
+        issuer: "https://securetoken.google.com/kcm-church-portal"
+        audiences:
+          - "kcm-church-portal"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+          periodSeconds: 300
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: email
+            header: X-User-Email
+          - claim: "custom:role"
+            header: X-User-Role
+        extractFrom:
+          headers:
+            - name: Authorization
+              valuePrefix: "Bearer "
+          cookies:
+            - "firebase-auth-token"
+---
+# ── Pastor Portal JWT Policy ───────────────────────────────────────────────
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-pastor-jwt-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-pastor-jwt-policy
+    app.kubernetes.io/component: security
+    portal: pastor
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "JWT auth enforcement for Pastor portal"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-pastor-route
+
+  jwt:
+    providers:
+      - name: firebase-auth
+        issuer: "https://securetoken.google.com/kcm-church-portal"
+        audiences:
+          - "kcm-church-portal"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+          periodSeconds: 300
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: email
+            header: X-User-Email
+          - claim: "custom:role"
+            header: X-User-Role
+        extractFrom:
+          headers:
+            - name: Authorization
+              valuePrefix: "Bearer "
+          cookies:
+            - "firebase-auth-token"
+---
+# ── Member Portal JWT Policy ───────────────────────────────────────────────
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-member-jwt-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-member-jwt-policy
+    app.kubernetes.io/component: security
+    portal: member
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "JWT auth enforcement for Member portal"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-member-route
+
+  jwt:
+    providers:
+      - name: firebase-auth
+        issuer: "https://securetoken.google.com/kcm-church-portal"
+        audiences:
+          - "kcm-church-portal"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+          periodSeconds: 300
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: "custom:role"
+            header: X-User-Role
+        extractFrom:
+          headers:
+            - name: Authorization
+              valuePrefix: "Bearer "
+          cookies:
+            - "firebase-auth-token"
+---
+# ── NGO Portal JWT Policy ──────────────────────────────────────────────────
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-ngo-jwt-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-ngo-jwt-policy
+    app.kubernetes.io/component: security
+    portal: ngo
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "JWT auth enforcement for NGO portal"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-ngo-route
+
+  jwt:
+    providers:
+      - name: firebase-auth
+        issuer: "https://securetoken.google.com/kcm-church-portal"
+        audiences:
+          - "kcm-church-portal"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+          periodSeconds: 300
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: "custom:role"
+            header: X-User-Role
+        extractFrom:
+          headers:
+            - name: Authorization
+              valuePrefix: "Bearer "
+          cookies:
+            - "firebase-auth-token"

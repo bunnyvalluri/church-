@@ -1,0 +1,184 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Argo CD App: Gateway Config (Phase 12)
+# ==============================================================================
+# Manages: GatewayClass, EnvoyProxy, Gateway, HTTPRoutes, Traffic Policies
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-config
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-config
+    app.kubernetes.io/component: gitops
+    component: gateway-config
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: "GatewayClass, Gateway listeners, HTTPRoutes, and Traffic policies"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kcm-gateway
+  sources:
+    # GatewayClass + EnvoyProxy config
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/gatewayclass
+    # Gateway listeners
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/gateways
+    # HTTPRoutes
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/httproutes
+    # Traffic management policies
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/policies
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kcm-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 15s
+        factor: 2
+  health:
+    status:
+      - resource:
+          group: gateway.networking.k8s.io
+          kind: Gateway
+        check: |
+          if obj.status ~= nil and obj.status.conditions ~= nil then
+            for _, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Programmed" and condition.status == "True" then
+                return { status = "Healthy", message = "Gateway is programmed" }
+              end
+            end
+            return { status = "Progressing", message = "Gateway not yet programmed" }
+          end
+          return { status = "Progressing", message = "No status yet" }
+---
+# ==============================================================================
+# Argo CD App: Gateway TLS (Phase 12)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-tls
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-tls
+    component: gateway-tls
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+    description: "cert-manager ClusterIssuers and Certificate resources"
+spec:
+  project: kcm-gateway
+  sources:
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/tls
+    - repoURL: "https://github.com/bunnyvalluri/church-.git"
+      targetRevision: main
+      path: platform/gateway/certificates
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kcm-system
+  syncPolicy:
+    automated:
+      prune: false  # Never prune certificates — prevent accidental cert deletion
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 10m
+---
+# ==============================================================================
+# Argo CD App: Gateway Security (Phase 12)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-security
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-security
+    component: gateway-security
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    description: "SecurityPolicies, ClientTrafficPolicy, NetworkPolicies, RBAC, ReferenceGrants"
+spec:
+  project: kcm-gateway
+  source:
+    repoURL: "https://github.com/bunnyvalluri/church-.git"
+    targetRevision: main
+    path: platform/gateway/security
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: kcm-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 15s
+        factor: 2
+---
+# ==============================================================================
+# Argo CD App: Gateway Monitoring (Phase 12)
+# ==============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-gateway-monitoring
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-gateway-monitoring
+    component: gateway-monitoring
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    description: "ServiceMonitors, PrometheusRules, OTel Collector, Grafana dashboards"
+spec:
+  project: kcm-gateway
+  source:
+    repoURL: "https://github.com/bunnyvalluri/church-.git"
+    targetRevision: main
+    path: platform/gateway/monitoring
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 15s
+        factor: 2

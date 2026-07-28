@@ -1,0 +1,143 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — kcm-gateway Helm Values
+# ==============================================================================
+
+# ── Global Settings ────────────────────────────────────────────────────────────
+global:
+  namespace: kcm-system
+  environment: production
+  labels:
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+
+# ── Domain Configuration ──────────────────────────────────────────────────────
+domain:
+  primary: "kcmchurch.org"
+  www: "www.kcmchurch.org"
+  api: "api.kcmchurch.org"
+  admin: "admin.kcmchurch.org"
+  pastor: "pastor.kcmchurch.org"
+  member: "member.kcmchurch.org"
+  ngo: "ngo.kcmchurch.org"
+
+# ── GatewayClass ──────────────────────────────────────────────────────────────
+gatewayClass:
+  enabled: true
+  name: kcm-gateway-class
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+
+# ── Gateway ───────────────────────────────────────────────────────────────────
+gateway:
+  name: kcm-gateway
+  # HTTP listener (80) — redirects to HTTPS
+  httpListener:
+    enabled: true
+    port: 80
+  # HTTPS listener (443) — all portal traffic
+  httpsListener:
+    enabled: true
+    port: 443
+  tlsSecretName: kcm-tls-cert
+
+# ── HTTPRoutes ────────────────────────────────────────────────────────────────
+routes:
+  frontend:
+    enabled: true
+    hostname: "kcmchurch.org"
+    service: frontend-stable-service
+    port: 3000
+    canaryService: frontend-canary-service
+  api:
+    enabled: true
+    hostname: "api.kcmchurch.org"
+    service: backend-api-active-service
+    port: 3001
+    previewService: backend-api-preview-service
+  websocket:
+    enabled: true
+    service: backend-socket-service
+    port: 3001
+    timeout: 3600s
+  admin:
+    enabled: true
+    jwtRequired: true
+  pastor:
+    enabled: true
+    jwtRequired: true
+  member:
+    enabled: true
+    jwtRequired: true
+  ngo:
+    enabled: true
+    jwtRequired: true
+  health:
+    enabled: true
+  webhook:
+    enabled: true
+  media:
+    enabled: true
+    uploadTimeout: 300s
+
+# ── TLS ───────────────────────────────────────────────────────────────────────
+tls:
+  enabled: true
+  certName: kcm-tls-cert
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  duration: 2160h
+  renewBefore: 360h
+  httpRedirect: true
+
+# ── Security ──────────────────────────────────────────────────────────────────
+security:
+  cors:
+    enabled: true
+    maxAge: 86400
+    allowCredentials: true
+  jwt:
+    enabled: true
+    firebaseProjectId: "kcm-church-portal"  # ⚠️ Replace with real Firebase project ID
+    jwksRefreshInterval: 300
+  clientTrafficPolicy:
+    enabled: true
+    tlsMinVersion: "1.2"
+    maxConnections: 10000
+  networkPolicies:
+    enabled: true
+
+# ── Rate Limiting ─────────────────────────────────────────────────────────────
+rateLimit:
+  enabled: true
+  type: Global  # Uses Redis backend
+  frontend:
+    requestsPerMinute: 300
+  api:
+    requestsPerMinute: 1000
+    authenticatedRequestsPerMinute: 5000
+    authEndpointRequestsPerMinute: 20
+    webhookRequestsPerMinute: 10000
+
+# ── Circuit Breaker ───────────────────────────────────────────────────────────
+circuitBreaker:
+  enabled: true
+  api:
+    maxConnections: 1024
+    numRetries: 3
+  frontend:
+    maxConnections: 2048
+    numRetries: 2
+
+# ── Observability ─────────────────────────────────────────────────────────────
+monitoring:
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: prometheus-stack
+  prometheusRules:
+    enabled: true
+  otelCollector:
+    enabled: true
+    image: otel/opentelemetry-collector-contrib:0.102.0
+  grafanaDashboard:
+    enabled: true

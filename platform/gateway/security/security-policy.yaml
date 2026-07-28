@@ -1,0 +1,117 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — SecurityPolicy: CORS + JWT (Phase 9 & 10)
+# ==============================================================================
+# SecurityPolicy applies security controls at the Gateway level for HTTPRoutes.
+# Envoy Gateway enforces these policies in the Envoy proxy — offloading from app.
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-api-security-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-api-security-policy
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "CORS + JWT security policy for KCM backend API"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-backend-api-route
+
+  # ── CORS Policy ────────────────────────────────────────────────────────────
+  cors:
+    allowOrigins:
+      - type: Exact
+        value: "https://kcmchurch.org"
+      - type: Exact
+        value: "https://www.kcmchurch.org"
+      - type: Exact
+        value: "https://admin.kcmchurch.org"
+      - type: Exact
+        value: "https://pastor.kcmchurch.org"
+      - type: Exact
+        value: "https://member.kcmchurch.org"
+      - type: Exact
+        value: "https://ngo.kcmchurch.org"
+    allowMethods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowHeaders:
+      - Authorization
+      - Content-Type
+      - X-Requested-With
+      - X-Request-ID
+      - X-Firebase-App-Check
+      - X-API-Key
+    exposeHeaders:
+      - X-Request-ID
+      - X-Envoy-Upstream-Service-Time
+    maxAge: 86400  # 24 hours — browser preflight cache
+    allowCredentials: true
+
+  # ── JWT Validation (Firebase Authentication) ───────────────────────────────
+  jwt:
+    providers:
+      - name: firebase-auth
+        issuer: "https://securetoken.google.com/kcm-church-portal"
+        audiences:
+          - "kcm-church-portal"  # ⚠️ Replace with your Firebase project ID
+        remoteJWKS:
+          uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+          periodSeconds: 300    # Refresh JWKS every 5 minutes
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: email
+            header: X-User-Email
+          - claim: email_verified
+            header: X-Email-Verified
+        extractFrom:
+          headers:
+            - name: Authorization
+              valuePrefix: "Bearer "
+---
+# ==============================================================================
+# SecurityPolicy: Frontend (CORS only — no JWT for public pages)
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kcm-frontend-security-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-frontend-security-policy
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Security policy for KCM frontend (public access)"
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kcm-frontend-route
+
+  cors:
+    allowOrigins:
+      - type: Exact
+        value: "https://kcmchurch.org"
+      - type: Exact
+        value: "https://www.kcmchurch.org"
+    allowMethods:
+      - GET
+      - HEAD
+      - OPTIONS
+    allowHeaders:
+      - Content-Type
+      - Accept
+      - Accept-Language
+    maxAge: 86400
+    allowCredentials: false

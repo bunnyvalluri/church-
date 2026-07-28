@@ -1,0 +1,101 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — BackendTrafficPolicy: Circuit Breaking
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-circuit-breaker-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-circuit-breaker-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Circuit breaker and connection pool settings for KCM backend"
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-backend-api-route
+
+  # ── Circuit Breaking / Connection Limits ────────────────────────────────────
+  circuitBreaker:
+    maxConnections: 1024
+    maxPendingRequests: 1024
+    maxParallelRequests: 1024
+    maxParallelRetries: 3
+    maxRequestsPerConnection: 0  # 0 = unlimited
+
+  # ── Health Check / Outlier Detection ───────────────────────────────────────
+  healthCheck:
+    active:
+      timeout: 5s
+      interval: 10s
+      unhealthyThreshold: 3
+      healthyThreshold: 2
+      http:
+        path: /health
+        expectedStatuses:
+          - start: 200
+            end: 299
+
+  # ── Retry Policy ───────────────────────────────────────────────────────────
+  retry:
+    numRetries: 3
+    perRetry:
+      timeout: 5s
+    retryOn:
+      triggers:
+        - Error5xx
+        - GatewayError
+        - Reset
+        - Retriable4xx
+      httpStatusCodes:
+        - 503
+        - 502
+        - 504
+---
+# ==============================================================================
+# Frontend Circuit Breaker
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-frontend-circuit-breaker-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-frontend-circuit-breaker-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-frontend-route
+
+  circuitBreaker:
+    maxConnections: 2048
+    maxPendingRequests: 512
+    maxParallelRequests: 2048
+
+  healthCheck:
+    active:
+      timeout: 5s
+      interval: 15s
+      unhealthyThreshold: 3
+      healthyThreshold: 2
+      http:
+        path: /health
+        expectedStatuses:
+          - start: 200
+            end: 299
+
+  retry:
+    numRetries: 2
+    perRetry:
+      timeout: 5s
+    retryOn:
+      triggers:
+        - Error5xx
+        - GatewayError
+        - Reset

@@ -19,8 +19,11 @@ spec:
       canaryService: frontend-canary-service
       stableService: frontend-stable-service
       trafficRouting:
-        nginx:
-          stableIngress: kcm-frontend-ingress
+        plugins:
+          argoproj-labs/gatewayAPI:
+            # References the HTTPRoute managed by Envoy Gateway
+            httpRoute: kcm-frontend-route
+            namespace: kcm-system
       analysis:
         templates:
           - templateName: http-success-rate

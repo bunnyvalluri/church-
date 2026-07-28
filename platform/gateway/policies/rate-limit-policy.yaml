@@ -1,0 +1,97 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — BackendTrafficPolicy: Rate Limiting
+# ==============================================================================
+# Uses Envoy Gateway's BackendTrafficPolicy to apply rate limiting.
+# Rate limit store: Redis (existing KCM Redis deployment)
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-rate-limit-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-rate-limit-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "Rate limiting policies for KCM backend API"
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-backend-api-route
+
+  # ── Rate Limiting Rules ────────────────────────────────────────────────────
+  rateLimit:
+    type: Global  # Distributed via Redis
+    global:
+      rules:
+        # ── Per-IP Global Rate Limit ────────────────────────────────────────────
+        - clientSelectors:
+            - remoteAddress:
+                type: Distinct
+          limit:
+            requests: 1000
+            unit: Minute
+
+        # ── Per-IP Auth Endpoint Rate Limit (strict) ───────────────────────────
+        - clientSelectors:
+            - remoteAddress:
+                type: Distinct
+              headers:
+                - name: ":path"
+                  value: "/api/auth"
+                  type: RegularExpression
+          limit:
+            requests: 20
+            unit: Minute
+
+        # ── Authenticated Users (higher limit via Authorization header) ─────────
+        - clientSelectors:
+            - headers:
+                - name: "Authorization"
+                  value: "Bearer .+"
+                  type: RegularExpression
+          limit:
+            requests: 5000
+            unit: Minute
+
+        # ── Webhook Endpoints (very high limit — external services) ────────────
+        - clientSelectors:
+            - headers:
+                - name: ":path"
+                  value: "/api/webhooks"
+                  type: RegularExpression
+          limit:
+            requests: 10000
+            unit: Minute
+---
+# ==============================================================================
+# Frontend Rate Limiting
+# ==============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kcm-frontend-rate-limit-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-frontend-rate-limit-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-frontend-route
+
+  rateLimit:
+    type: Global
+    global:
+      rules:
+        - clientSelectors:
+            - remoteAddress:
+                type: Distinct
+          limit:
+            requests: 300
+            unit: Minute

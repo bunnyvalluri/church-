@@ -1,0 +1,56 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — BackendLBPolicy (Phase 7)
+# ==============================================================================
+# Load balancing policy for backend services.
+# BackendLBPolicy is a Gateway API extension in gateway.networking.k8s.io/v1alpha3
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendLBPolicy
+metadata:
+  name: kcm-frontend-lb-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-frontend-lb-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Load balancing policy for KCM frontend service"
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: frontend-stable-service
+  sessionPersistence:
+    sessionName: "kcm-session"
+    absoluteTimeout: 1h
+    idleTimeout: 30m
+    type: Cookie
+    cookieConfig:
+      lifetimeType: Session
+---
+# ==============================================================================
+# Backend API Load Balancing Policy
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendLBPolicy
+metadata:
+  name: kcm-backend-api-lb-policy
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-backend-api-lb-policy
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "Load balancing policy for KCM backend API service"
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: backend-api-active-service
+  sessionPersistence:
+    sessionName: "kcm-api-session"
+    absoluteTimeout: 24h
+    idleTimeout: 1h
+    type: Cookie
+    cookieConfig:
+      lifetimeType: Permanent

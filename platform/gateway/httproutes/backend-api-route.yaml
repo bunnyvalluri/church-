@@ -1,0 +1,112 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Backend API HTTPRoute
+# ==============================================================================
+# Routes: api.kcmchurch.org /api/* → backend-api-service:3001
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-backend-api-route
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    app.kubernetes.io/name: kcm-backend-api-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "KCM Church backend API routing — Express.js REST API"
+    argo-rollouts.argoproj.io/managed-by: "kcm-backend-api"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-api
+
+  hostnames:
+    - "api.kcmchurch.org"
+
+  rules:
+    # ── API Health Check (public) ─────────────────────────────────────────────
+    - matches:
+        - path:
+            type: Exact
+            value: /health
+        - path:
+            type: Exact
+            value: /api/health
+        - path:
+            type: Exact
+            value: /api/v1/health
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+
+    # ── Webhook Endpoints (Firebase, Stripe, etc.) ─────────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/webhooks
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Proto
+                value: "https"
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+      timeouts:
+        request: 60s
+        backendRequest: 55s
+
+    # ── Authentication Endpoints ───────────────────────────────────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/auth
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Proto
+                value: "https"
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+      timeouts:
+        request: 30s
+
+    # ── Main API Route (Blue/Green — Argo Rollouts managed) ───────────────────
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Proto
+                value: "https"
+              - name: X-Gateway-Version
+                value: "envoy-gateway-v1.8.3"
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Content-Type-Options
+                value: "nosniff"
+              - name: X-Frame-Options
+                value: "DENY"
+      backendRefs:
+        - name: backend-api-active-service
+          port: 3001
+          weight: 100
+        - name: backend-api-preview-service
+          port: 3001
+          weight: 0
+      timeouts:
+        request: 60s
+        backendRequest: 55s

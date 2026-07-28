@@ -1,0 +1,34 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Gateway API CRDs
+# ==============================================================================
+# Gateway API CRDs are bundled with Envoy Gateway v1.8.3 Helm chart.
+# No separate CRD installation is required when using the Helm-based install.
+#
+# CRD versions included with Envoy Gateway v1.8.3:
+#   - gateway.networking.k8s.io/v1 (GatewayClass, Gateway, HTTPRoute, GRPCRoute)
+#   - gateway.networking.k8s.io/v1alpha2 (BackendTLSPolicy, TCPRoute, TLSRoute, UDPRoute, ReferenceGrant)
+#   - gateway.networking.k8s.io/v1alpha3 (BackendLBPolicy)
+#   - gateway.networking.k8s.io/v1beta1 (ReferenceGrant)
+#
+# Envoy Gateway Extension CRDs (installed by gateway-helm):
+#   - gateway.envoyproxy.io/v1alpha1:
+#       EnvoyGateway, EnvoyProxy, BackendTrafficPolicy, ClientTrafficPolicy,
+#       EnvoyExtensionPolicy, EnvoyPatchPolicy, SecurityPolicy
+#
+# Official source:
+#   https://github.com/envoyproxy/gateway/releases/tag/v1.8.3
+#
+# Manual CRD install (if needed outside Helm):
+#   kubectl apply -f https://github.com/envoyproxy/gateway/releases/download/v1.8.3/install.yaml
+#
+# Helm-based install (recommended — used in this project):
+#   helm install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
+#     --version v1.8.3 \
+#     --namespace envoy-gateway-system \
+#     --create-namespace \
+#     --values platform/gateway/install/envoy-gateway-helm-values.yaml
+#
+# Validate CRDs after install:
+#   kubectl get crd | grep gateway.networking.k8s.io
+#   kubectl get crd | grep gateway.envoyproxy.io
+# ==============================================================================

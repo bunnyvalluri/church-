@@ -1,0 +1,89 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Member Portal HTTPRoute
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-member-route
+  namespace: kcm-system
+  labels:
+    app: kcm-member
+    portal: member
+    app.kubernetes.io/name: kcm-member-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "KCM Church Member Portal routing"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-member
+
+  hostnames:
+    - "member.kcmchurch.org"
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Frame-Options
+                value: "SAMEORIGIN"
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+      timeouts:
+        request: 30s
+---
+# ==============================================================================
+# KCM Church — NGO Portal HTTPRoute
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-ngo-route
+  namespace: kcm-system
+  labels:
+    app: kcm-ngo
+    portal: ngo
+    app.kubernetes.io/name: kcm-ngo-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "KCM Church NGO Portal routing"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-ngo
+
+  hostnames:
+    - "ngo.kcmchurch.org"
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Frame-Options
+                value: "SAMEORIGIN"
+              - name: X-Robots-Tag
+                value: "index, follow"
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+      timeouts:
+        request: 30s

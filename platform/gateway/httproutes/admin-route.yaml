@@ -1,0 +1,97 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Admin Portal HTTPRoute
+# ==============================================================================
+# Routes: admin.kcmchurch.org / → admin-service:3000
+# Requires: Firebase JWT (SecurityPolicy applied separately)
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-admin-route
+  namespace: kcm-system
+  labels:
+    app: kcm-admin
+    portal: admin
+    app.kubernetes.io/name: kcm-admin-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "KCM Church Admin Portal routing"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-admin
+
+  hostnames:
+    - "admin.kcmchurch.org"
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Frame-Options
+                value: "DENY"
+              - name: X-Robots-Tag
+                value: "noindex, nofollow"
+              - name: Content-Security-Policy
+                value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://res.cloudinary.com;"
+      backendRefs:
+        - name: frontend-stable-service  # Admin is served via main frontend with role-based routing
+          port: 3000
+          weight: 100
+      timeouts:
+        request: 30s
+---
+# ==============================================================================
+# KCM Church — Pastor Portal HTTPRoute
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-pastor-route
+  namespace: kcm-system
+  labels:
+    app: kcm-pastor
+    portal: pastor
+    app.kubernetes.io/name: kcm-pastor-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+  annotations:
+    description: "KCM Church Pastor Portal routing"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-pastor
+
+  hostnames:
+    - "pastor.kcmchurch.org"
+
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: X-Frame-Options
+                value: "SAMEORIGIN"
+              - name: X-Robots-Tag
+                value: "noindex, nofollow"
+      backendRefs:
+        - name: frontend-stable-service
+          port: 3000
+          weight: 100
+      timeouts:
+        request: 30s

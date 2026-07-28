@@ -1,0 +1,149 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — PrometheusRule: Envoy Gateway Alerts (Phase 11)
+# ==============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: envoy-gateway-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: envoy-gateway-alerts
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: kcm-church-portal
+    release: prometheus-stack
+  annotations:
+    description: "Alert rules for KCM Envoy Gateway health and traffic"
+spec:
+  groups:
+    # ── Gateway Health Alerts ─────────────────────────────────────────────────
+    - name: envoy-gateway-health
+      interval: 30s
+      rules:
+        - alert: EnvoyGatewayDown
+          expr: |
+            up{job="envoy-gateway-controller"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: platform
+            component: gateway
+          annotations:
+            summary: "Envoy Gateway controller is down"
+            description: "Envoy Gateway controller pod {{ $labels.instance }} has been down for more than 1 minute."
+            runbook: "https://github.com/bunnyvalluri/church-/blob/main/docs/gateway/Runbooks.md#envoy-gateway-down"
+
+        - alert: EnvoyProxyDown
+          expr: |
+            up{job="envoy-proxy-dataplane"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: platform
+            component: proxy
+          annotations:
+            summary: "Envoy Proxy data plane is down"
+            description: "Envoy Proxy instance {{ $labels.instance }} has been down for more than 1 minute."
+
+        - alert: EnvoyGatewayHighMemory
+          expr: |
+            container_memory_usage_bytes{namespace="envoy-gateway-system", container="envoy-gateway"}
+            / container_spec_memory_limit_bytes{namespace="envoy-gateway-system", container="envoy-gateway"} > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Envoy Gateway high memory usage"
+            description: "Envoy Gateway is using more than 85% of its memory limit."
+
+    # ── Traffic Alerts ────────────────────────────────────────────────────────
+    - name: envoy-gateway-traffic
+      interval: 60s
+      rules:
+        - alert: KCMHighErrorRate
+          expr: |
+            sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[5m])) /
+            sum(rate(envoy_cluster_upstream_rq_total[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+            component: gateway
+          annotations:
+            summary: "KCM API error rate exceeds 5%"
+            description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+        - alert: KCMHighLatency
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(envoy_cluster_upstream_rq_time_bucket[5m])) by (le, envoy_cluster_name)
+            ) > 2000
+          for: 5m
+          labels:
+            severity: warning
+            team: backend
+            component: gateway
+          annotations:
+            summary: "KCM API P99 latency exceeds 2 seconds"
+            description: "P99 latency for cluster {{ $labels.envoy_cluster_name }} is {{ $value }}ms."
+
+        - alert: KCMLowRequestRate
+          expr: |
+            sum(rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~".*frontend.*"}[5m])) < 0.1
+          for: 15m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "KCM frontend receiving very low traffic"
+            description: "Frontend request rate dropped below 0.1 req/s — possible routing issue."
+
+        - alert: KCMRateLimitTriggered
+          expr: |
+            sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", envoy_response_code="429"}[5m])) > 10
+          for: 2m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Rate limiting is actively throttling requests"
+            description: "More than 10 rate-limit (429) responses per second being returned."
+
+    # ── TLS Alerts ────────────────────────────────────────────────────────────
+    - name: envoy-gateway-tls
+      interval: 300s
+      rules:
+        - alert: TLSCertificateExpiringSoon
+          expr: |
+            certmanager_certificate_expiration_timestamp_seconds - time() < 86400 * 14
+          for: 1h
+          labels:
+            severity: warning
+            team: platform
+            component: tls
+          annotations:
+            summary: "TLS certificate expiring within 14 days"
+            description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} expires in {{ $value | humanizeDuration }}."
+
+        - alert: TLSCertificateExpired
+          expr: |
+            certmanager_certificate_expiration_timestamp_seconds - time() < 0
+          for: 5m
+          labels:
+            severity: critical
+            team: platform
+            component: tls
+          annotations:
+            summary: "TLS certificate has expired!"
+            description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired."
+
+        - alert: TLSHandshakeFailures
+          expr: |
+            sum(rate(envoy_listener_ssl_handshake{success="false"}[5m])) > 1
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "High TLS handshake failure rate"
+            description: "More than 1 TLS handshake failure per second detected."

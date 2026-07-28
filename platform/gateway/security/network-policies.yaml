@@ -1,0 +1,160 @@
+# ==============================================================================
+# Kingdom of Christ Ministries — Network Policies (Phase 9)
+# ==============================================================================
+
+# ── Envoy Gateway Controller Network Policy ───────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: envoy-gateway-controller-netpol
+  namespace: envoy-gateway-system
+  labels:
+    app.kubernetes.io/name: envoy-gateway-controller-netpol
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: envoy-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow Prometheus scraping from monitoring namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 19001
+    # Allow metrics from any namespace (self-monitoring)
+    - ports:
+        - protocol: TCP
+          port: 19001
+  egress:
+    # Allow talking to Kubernetes API server
+    - ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    # Allow DNS
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow talking to OpenTelemetry collector in monitoring namespace
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 4318
+    # Allow connecting to webhook/JWKS URLs (outbound HTTPS)
+    - ports:
+        - protocol: TCP
+          port: 443
+---
+# ── Envoy Proxy Data Plane Network Policy ────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: envoy-proxy-netpol
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: envoy-proxy-netpol
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  podSelector:
+    matchLabels:
+      app: kcm-envoy-proxy
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow inbound traffic from internet via load balancer (all sources on 80/443)
+    - ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+    # Allow Prometheus scraping from monitoring namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 19001
+  egress:
+    # Allow proxy to reach backend services in kcm-system
+    - to:
+        - podSelector: {}  # Any pod in kcm-system
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
+    # Allow DNS
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow outbound HTTPS (Let's Encrypt ACME, Firebase JWKS)
+    - ports:
+        - protocol: TCP
+          port: 443
+---
+# ── KCM Application Network Policy ───────────────────────────────────────────
+# Only allow traffic to app pods from the Envoy proxy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kcm-app-ingress-from-gateway
+  namespace: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-app-ingress-from-gateway
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: kcm-church-portal
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kcm-church-portal
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow from Envoy proxy pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app: kcm-envoy-proxy
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
+    # Allow from Argo Rollouts controller for health probes
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: argo-rollouts
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
+    # Allow from monitoring (Prometheus scraping)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
