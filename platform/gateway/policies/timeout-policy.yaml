@@ -19,11 +19,10 @@ spec:
       name: kcm-backend-api-route
 
   timeout:
+    http:
+      requestTimeout: 60s
     tcp:
       connectTimeout: 10s
-    http:
-      requestReceivedTimeout: 60s
-      idleTimeout: 90s
 
   tcpKeepalive:
     probes: 3

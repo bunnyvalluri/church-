@@ -29,6 +29,7 @@ spec:
   # ── Health Check / Outlier Detection ───────────────────────────────────────
   healthCheck:
     active:
+      type: HTTP
       timeout: 5s
       interval: 10s
       unhealthyThreshold: 3
@@ -80,6 +81,7 @@ spec:
 
   healthCheck:
     active:
+      type: HTTP
       timeout: 5s
       interval: 15s
       unhealthyThreshold: 3

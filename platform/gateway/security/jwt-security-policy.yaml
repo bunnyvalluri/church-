@@ -1,9 +1,6 @@
 # ==============================================================================
 # Kingdom of Christ Ministries — JWT SecurityPolicy: Protected Portals (Ph 10)
 # ==============================================================================
-# Applies Firebase JWT validation to admin, pastor, member, and NGO portals.
-# Unauthenticated requests to these portals are rejected with 401.
-# ==============================================================================
 
 # ── Admin Portal JWT Policy ────────────────────────────────────────────────
 apiVersion: gateway.envoyproxy.io/v1alpha1
@@ -17,7 +14,7 @@ metadata:
     portal: admin
     app.kubernetes.io/part-of: kcm-church-portal
   annotations:
-    description: "JWT auth enforcement for Admin portal — admin role required"
+    description: "JWT auth enforcement for Admin portal"
 spec:
   targetRef:
     group: gateway.networking.k8s.io
@@ -32,7 +29,6 @@ spec:
           - "kcm-church-portal"
         remoteJWKS:
           uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-          periodSeconds: 300
         claimToHeaders:
           - claim: sub
             header: X-User-ID
@@ -74,7 +70,6 @@ spec:
           - "kcm-church-portal"
         remoteJWKS:
           uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-          periodSeconds: 300
         claimToHeaders:
           - claim: sub
             header: X-User-ID
@@ -116,7 +111,6 @@ spec:
           - "kcm-church-portal"
         remoteJWKS:
           uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-          periodSeconds: 300
         claimToHeaders:
           - claim: sub
             header: X-User-ID
@@ -156,7 +150,6 @@ spec:
           - "kcm-church-portal"
         remoteJWKS:
           uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-          periodSeconds: 300
         claimToHeaders:
           - claim: sub
             header: X-User-ID

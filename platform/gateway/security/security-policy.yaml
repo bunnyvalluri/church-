@@ -1,9 +1,6 @@
 # ==============================================================================
 # Kingdom of Christ Ministries — SecurityPolicy: CORS + JWT (Phase 9 & 10)
 # ==============================================================================
-# SecurityPolicy applies security controls at the Gateway level for HTTPRoutes.
-# Envoy Gateway enforces these policies in the Envoy proxy — offloading from app.
-# ==============================================================================
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
@@ -25,18 +22,12 @@ spec:
   # ── CORS Policy ────────────────────────────────────────────────────────────
   cors:
     allowOrigins:
-      - type: Exact
-        value: "https://kcmchurch.org"
-      - type: Exact
-        value: "https://www.kcmchurch.org"
-      - type: Exact
-        value: "https://admin.kcmchurch.org"
-      - type: Exact
-        value: "https://pastor.kcmchurch.org"
-      - type: Exact
-        value: "https://member.kcmchurch.org"
-      - type: Exact
-        value: "https://ngo.kcmchurch.org"
+      - "https://kcmchurch.org"
+      - "https://www.kcmchurch.org"
+      - "https://admin.kcmchurch.org"
+      - "https://pastor.kcmchurch.org"
+      - "https://member.kcmchurch.org"
+      - "https://ngo.kcmchurch.org"
     allowMethods:
       - GET
       - POST
@@ -54,7 +45,7 @@ spec:
     exposeHeaders:
       - X-Request-ID
       - X-Envoy-Upstream-Service-Time
-    maxAge: 86400  # 24 hours — browser preflight cache
+    maxAge: "86400s"
     allowCredentials: true
 
   # ── JWT Validation (Firebase Authentication) ───────────────────────────────
@@ -63,10 +54,9 @@ spec:
       - name: firebase-auth
         issuer: "https://securetoken.google.com/kcm-church-portal"
         audiences:
-          - "kcm-church-portal"  # ⚠️ Replace with your Firebase project ID
+          - "kcm-church-portal"
         remoteJWKS:
           uri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-          periodSeconds: 300    # Refresh JWKS every 5 minutes
         claimToHeaders:
           - claim: sub
             header: X-User-ID
@@ -101,10 +91,8 @@ spec:
 
   cors:
     allowOrigins:
-      - type: Exact
-        value: "https://kcmchurch.org"
-      - type: Exact
-        value: "https://www.kcmchurch.org"
+      - "https://kcmchurch.org"
+      - "https://www.kcmchurch.org"
     allowMethods:
       - GET
       - HEAD
@@ -113,5 +101,5 @@ spec:
       - Content-Type
       - Accept
       - Accept-Language
-    maxAge: 86400
+    maxAge: "86400s"
     allowCredentials: false

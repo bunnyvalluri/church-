@@ -69,10 +69,7 @@ spec:
 
   # ── Connection Settings ────────────────────────────────────────────────────
   connection:
-    connectionLimit:
-      value: 10000
-      closeDelay: 30s
-    bufferLimitBytes: 33554432  # 32MB buffer limit
+    bufferLimit: "32Mi"  # 32MB buffer limit per connection
 
   # ── Path Normalization ─────────────────────────────────────────────────────
   path:
