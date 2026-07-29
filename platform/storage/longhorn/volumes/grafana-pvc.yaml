@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage-pvc
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: visualization
+    app.kubernetes.io/part-of: kcm-church
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-replicated
+  resources:
+    requests:
+      storage: 20Gi

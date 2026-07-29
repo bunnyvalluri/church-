@@ -1,0 +1,181 @@
+# Production Helm Values for Longhorn Enterprise Storage Platform
+# Kingdom of Christ Ministries (KCM Church)
+
+global:
+  systemDefaultRegistry: ""
+
+image:
+  longhorn:
+    engine:
+      repository: longhornio/longhorn-engine
+      tag: v1.6.2
+    manager:
+      repository: longhornio/longhorn-manager
+      tag: v1.6.2
+    ui:
+      repository: longhornio/longhorn-ui
+      tag: v1.6.2
+    instanceManager:
+      repository: longhornio/longhorn-instance-manager
+      tag: v1.6.2
+    shareManager:
+      repository: longhornio/longhorn-share-manager
+      tag: v1.6.2
+    backingImageManager:
+      repository: longhornio/longhorn-backing-image-manager
+      tag: v1.6.2
+  pullPolicy: IfNotPresent
+
+service:
+  ui:
+    type: ClusterIP
+    nodePort: ""
+  manager:
+    type: ClusterIP
+
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+  reclaimPolicy: Delete
+  recurrence: []
+  backingImage:
+    enable: true
+
+defaultSettings:
+  backupTarget: "s3://kcm-church-longhorn-backups@us-east-1/"
+  backupTargetCredentialSecret: "longhorn-s3-backup-secret"
+  createDefaultDiskTaggedNodes: true
+  defaultDataPath: "/var/lib/longhorn"
+  defaultDataLocality: "best-effort"
+  replicaSoftAntiAffinity: true
+  replicaAutoBalance: "least-effort"
+  storageOverProvisioningPercentage: 200
+  storageMinimalAvailablePercentage: 15
+  upgradeChecker: false
+  defaultReplicaCount: 3
+  guaranteedEngineManagerCPU: "250m"
+  guaranteedReplicaManagerCPU: "250m"
+  defaultLonghornStaticStorageClass: "longhorn"
+  backupCompressionMethod: "lz4"
+  backupConcurrentLimit: 3
+  restoreConcurrentLimit: 3
+  engineReplicaTimeout: 30
+  nodeDownCpuCost: 60
+  nodeDrainPolicy: "block-if-contains-last-replica"
+  detachManuallyAttachedVolumes: true
+  automaticallyCleanupTemplateEngineImage: true
+  autoCleanupSystemGeneratedSnapshot: true
+  autoSalavage: true
+  concurrentAutomaticEngineUpgradePerNodeLimit: 1
+  backingImageCleanupWaitInterval: 60
+  backingImageRecoveryWaitInterval: 300
+  guaranteedEngineCPU: "250m"
+  logLevel: "INFO"
+  toleration: "kubernetes.io/os=linux:NoSchedule"
+  taintToleration: ""
+  priorityClass: "system-cluster-critical"
+  autoDeletePodWhenVolumeDetachedUnexpectedly: true
+  disableSchedulingOnCrdnsNode: false
+  replicaZoneSoftAntiAffinity: true
+  nodeDiskSoftAntiAffinity: true
+
+privateRegistry:
+  registryUrl: ""
+  registryUser: ""
+  registryPass: ""
+  registrySecret: ""
+
+longhornUI:
+  replicas: 2
+  priorityClassName: "system-cluster-critical"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - longhorn-ui
+            topologyKey: kubernetes.io/hostname
+
+longhornManager:
+  priorityClassName: "system-cluster-critical"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+longhornDriver:
+  priorityClassName: "system-cluster-critical"
+
+ingress:
+  enabled: true
+  ingressClassName: "envoy"
+  host: longhorn.storage.kcmchurch.org
+  tls: true
+  tlsSecret: longhorn-ui-tls
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    envoy.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+metrics:
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus-stack
+      interval: 15s
+      scrapeTimeout: 10s
+
+csi:
+  kubeletRootDir: /var/lib/kubelet
+  attacherReplicaCount: 2
+  provisionerReplicaCount: 2
+  resizerReplicaCount: 2
+  snapshotterReplicaCount: 2
+
+enableAdmissionWebhook: true
+
+recurringJobs:
+  - name: daily-snapshot-job
+    groups:
+      - default
+    task: snapshot
+    cron: "0 1 * * *"
+    retain: 7
+    concurrency: 2
+    labels:
+      backup-type: daily
+  - name: hourly-critical-snapshot-job
+    groups:
+      - database
+    task: snapshot
+    cron: "0 * * * *"
+    retain: 24
+    concurrency: 2
+    labels:
+      backup-type: hourly
+  - name: weekly-s3-backup-job
+    groups:
+      - default
+      - database
+    task: backup
+    cron: "0 3 * * 0"
+    retain: 4
+    concurrency: 1
+    labels:
+      backup-type: weekly-s3

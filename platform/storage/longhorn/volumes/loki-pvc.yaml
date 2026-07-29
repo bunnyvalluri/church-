@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-chunks-pvc
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/component: log-storage
+    app.kubernetes.io/part-of: kcm-church
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-loki
+  resources:
+    requests:
+      storage: 150Gi

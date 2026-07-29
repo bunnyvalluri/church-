@@ -1,0 +1,91 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: longhorn-alert-rules
+  namespace: longhorn-system
+  labels:
+    role: alert-rules
+    release: prometheus-stack
+spec:
+  groups:
+    - name: longhorn.rules
+      rules:
+        - alert: LonghornDiskFull
+          expr: (longhorn_node_storage_usage_bytes / longhorn_node_storage_capacity_bytes) * 100 > 85
+          for: 5m
+          labels:
+            severity: critical
+            tier: storage
+          annotations:
+            summary: "Longhorn node disk space critical ({{ $labels.node }})"
+            description: "Node {{ $labels.node }} storage utilization is higher than 85%. Free up space or expand disk."
+
+        - alert: LonghornStorageExhaustion
+          expr: (longhorn_node_storage_usage_bytes / longhorn_node_storage_capacity_bytes) * 100 > 95
+          for: 2m
+          labels:
+            severity: page
+            tier: storage
+          annotations:
+            summary: "Longhorn node storage near total exhaustion on {{ $labels.node }}"
+            description: "Storage utilization on {{ $labels.node }} exceeded 95%. Immediate action required."
+
+        - alert: LonghornReplicaDegraded
+          expr: longhorn_volume_robustness == 2
+          for: 3m
+          labels:
+            severity: warning
+            tier: storage
+          annotations:
+            summary: "Longhorn volume replica degraded ({{ $labels.volume }})"
+            description: "Volume {{ $labels.volume }} is running in degraded mode with missing active replicas."
+
+        - alert: LonghornVolumeFaulted
+          expr: longhorn_volume_robustness == 3
+          for: 0m
+          labels:
+            severity: critical
+            tier: storage
+          annotations:
+            summary: "Longhorn volume completely faulted ({{ $labels.volume }})"
+            description: "Volume {{ $labels.volume }} is faulted and unreachable by attached workloads."
+
+        - alert: LonghornNodeOffline
+          expr: longhorn_node_status{condition="ready"} == 0
+          for: 3m
+          labels:
+            severity: critical
+            tier: storage
+          annotations:
+            summary: "Longhorn storage node offline ({{ $labels.node }})"
+            description: "Node {{ $labels.node }} is reported not ready by Longhorn storage manager."
+
+        - alert: LonghornBackupFailed
+          expr: longhorn_backup_status{status="failed"} > 0
+          for: 5m
+          labels:
+            severity: warning
+            tier: storage
+          annotations:
+            summary: "Longhorn automated backup job failed"
+            description: "Volume backup to remote S3 target failed. Check S3 credentials and network path."
+
+        - alert: LonghornSnapshotFailed
+          expr: longhorn_snapshot_status{status="failed"} > 0
+          for: 5m
+          labels:
+            severity: warning
+            tier: storage
+          annotations:
+            summary: "Longhorn scheduled snapshot failed"
+            description: "Snapshot creation failed for volume {{ $labels.volume }}."
+
+        - alert: LonghornHighVolumeLatency
+          expr: longhorn_volume_read_latency_seconds > 0.1 or longhorn_volume_write_latency_seconds > 0.1
+          for: 10m
+          labels:
+            severity: warning
+            tier: storage
+          annotations:
+            summary: "High I/O latency on Longhorn volume ({{ $labels.volume }})"
+            description: "Volume {{ $labels.volume }} read/write latency exceeded 100ms for over 10 minutes."

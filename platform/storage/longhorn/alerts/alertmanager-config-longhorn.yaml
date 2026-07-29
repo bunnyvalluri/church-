@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: longhorn-alertmanager-config
+  namespace: longhorn-system
+  labels:
+    release: prometheus-stack
+spec:
+  route:
+    groupBy: ['alertname', 'volume', 'node']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: 'longhorn-sre-team'
+    routes:
+      - matchers:
+          - name: severity
+            value: page
+        receiver: 'pagerduty-high-priority'
+      - matchers:
+          - name: tier
+            value: storage
+        receiver: 'slack-storage-alerts'
+  receivers:
+    - name: 'longhorn-sre-team'
+      emailConfigs:
+        - to: 'sre-alerts@kcmchurch.org'
+          from: 'alertmanager@kcmchurch.org'
+          smarthost: 'smtp.kcmchurch.org:587'
+          authUsername: 'alertmanager@kcmchurch.org'
+          authPassword:
+            name: alertmanager-smtp-secret
+            key: password
+    - name: 'slack-storage-alerts'
+      slackConfigs:
+        - channel: '#infra-storage-alerts'
+          sendResolved: true
+          apiURL:
+            name: alertmanager-slack-secret
+            key: webhook-url
+          text: "Storage Alert: {{ .CommonAnnotations.summary }}\n{{ .CommonAnnotations.description }}"
+    - name: 'pagerduty-high-priority'
+      pagerdutyConfigs:
+        - routingKey:
+            name: alertmanager-pd-secret
+            key: routing-key
+          sendResolved: true

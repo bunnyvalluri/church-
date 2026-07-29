@@ -1,0 +1,17 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: nightly-s3-backup
+  namespace: longhorn-system
+spec:
+  name: nightly-s3-backup
+  groups:
+    - default
+    - database
+  task: backup
+  cron: "0 3 * * *"
+  retain: 30
+  concurrency: 2
+  labels:
+    target: s3
+    tier: production

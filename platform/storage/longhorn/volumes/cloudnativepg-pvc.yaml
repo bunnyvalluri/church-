@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloudnativepg-data-pvc
+  namespace: database
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: kcm-church
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-cloudnativepg
+  resources:
+    requests:
+      storage: 100Gi

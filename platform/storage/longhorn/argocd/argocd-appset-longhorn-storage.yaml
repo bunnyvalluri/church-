@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: longhorn-storage-appset
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: production
+            url: https://kubernetes.default.svc
+          - cluster: staging
+            url: https://staging-k8s.kcmchurch.org
+  template:
+    metadata:
+      name: 'longhorn-storage-{{cluster}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/bunnyvalluri/church-.git
+        targetRevision: HEAD
+        path: platform/storage/longhorn/helm
+        helm:
+          valueFiles:
+            - values.yaml
+      destination:
+        server: '{{url}}'
+        namespace: longhorn-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

@@ -1,0 +1,68 @@
+name: Longhorn Storage Platform CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/storage/longhorn/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/storage/longhorn/**'
+
+jobs:
+  validate-yaml-helm:
+    name: Validate Helm & Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.14.0'
+
+      - name: Lint Longhorn Helm Chart Values
+        run: |
+          helm lint platform/storage/longhorn/helm
+
+      - name: Validate Kubernetes Manifests
+        uses: kubeconform/kubeconform-action@v0.4.0
+        with:
+          k8sVersion: 1.29.0
+          files: 'platform/storage/longhorn/**/*.yaml'
+
+  validate-opentofu:
+    name: Validate OpenTofu Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: OpenTofu Format Check
+        run: |
+          cd platform/storage/longhorn/opentofu
+          tofu fmt -check
+
+      - name: OpenTofu Init & Validate
+        run: |
+          cd platform/storage/longhorn/opentofu
+          tofu init -backend=false
+          tofu validate
+
+  gitops-sync-notify:
+    name: Notify Argo CD GitOps Sync
+    needs: [validate-yaml-helm, validate-opentofu]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Argo CD Sync Notification
+        run: |
+          echo "Longhorn Storage Platform manifests successfully validated and pushed to main."
+          echo "Argo CD will automatically sync the changes in cluster."

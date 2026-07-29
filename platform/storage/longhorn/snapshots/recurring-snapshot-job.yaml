@@ -1,0 +1,33 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: hourly-database-snapshot
+  namespace: longhorn-system
+spec:
+  name: hourly-database-snapshot
+  groups:
+    - database
+  task: snapshot
+  cron: "0 * * * *"
+  retain: 24
+  concurrency: 2
+  labels:
+    tier: database
+    schedule: hourly
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: daily-system-snapshot
+  namespace: longhorn-system
+spec:
+  name: daily-system-snapshot
+  groups:
+    - default
+  task: snapshot
+  cron: "0 2 * * *"
+  retain: 14
+  concurrency: 3
+  labels:
+    tier: system
+    schedule: daily

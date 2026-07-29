@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-workloads-pvc
+  namespace: default
+  labels:
+    app.kubernetes.io/name: kcm-app
+    app.kubernetes.io/component: application
+    app.kubernetes.io/part-of: kcm-church
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-replicated
+  resources:
+    requests:
+      storage: 50Gi

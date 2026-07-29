@@ -1,0 +1,148 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "title": "Total Storage Capacity",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(longhorn_node_storage_capacity_bytes)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "title": "Used Storage Bytes",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(longhorn_node_storage_usage_bytes)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "title": "Healthy Volumes Count",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(longhorn_volume_robustness == 1)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "title": "Degraded Volumes Count",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(longhorn_volume_robustness == 2)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 5,
+      "title": "Node Storage Capacity vs Usage",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "longhorn_node_storage_capacity_bytes",
+          "legendFormat": "{{node}} Capacity",
+          "refId": "A"
+        },
+        {
+          "expr": "longhorn_node_storage_usage_bytes",
+          "legendFormat": "{{node}} Used",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "id": 6,
+      "title": "Volume Replica Status",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "longhorn_volume_robustness",
+          "legendFormat": "Volume {{volume}} Robustness",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["longhorn", "storage", "kcm-church"],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "title": "Longhorn / Storage Platform Overview",
+  "uid": "longhorn-overview"
+}

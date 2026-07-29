@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn-storageclasses
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/part-of: kcm-platform
+    app.kubernetes.io/component: storage-classes
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/bunnyvalluri/church-.git
+    targetRevision: HEAD
+    path: platform/storage/longhorn/storageclasses
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

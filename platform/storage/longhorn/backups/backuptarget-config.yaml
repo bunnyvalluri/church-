@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: longhorn-backup-target-config
+  namespace: longhorn-system
+data:
+  backup-target: "s3://kcm-church-longhorn-backups@us-east-1/"
+  backup-target-secret: "longhorn-s3-backup-secret"
+  poll-interval: "300s"

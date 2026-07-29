@@ -1,0 +1,20 @@
+apiVersion: v2
+name: longhorn-storage-platform
+description: Enterprise Longhorn Distributed Storage Platform Helm Chart for KCM Church
+type: application
+version: 1.6.2
+appVersion: 1.6.2
+keywords:
+  - storage
+  - csi
+  - longhorn
+  - distributed-storage
+  - high-availability
+  - kcm-church
+maintainers:
+  - name: KCM Platform Infrastructure Team
+    email: devops@kcmchurch.org
+dependencies:
+  - name: longhorn
+    version: 1.6.2
+    repository: https://charts.longhorn.io
