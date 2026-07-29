@@ -212,7 +212,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Trivy — scan Falco Kubernetes manifests
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: config
           scan-ref: platform/security/falco/kubernetes/
@@ -222,7 +222,7 @@ jobs:
           format: table
 
       - name: Trivy — scan Falco Helm values
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: config
           scan-ref: platform/security/falco/helm/
