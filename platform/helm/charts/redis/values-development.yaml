@@ -1,0 +1,12 @@
+# Development Overrides for Redis
+replicaCount: 1
+architecture: standalone
+sentinel:
+  enabled: false
+master:
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi

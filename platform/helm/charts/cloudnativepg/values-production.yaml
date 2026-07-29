@@ -1,0 +1,13 @@
+# Production Overrides for CloudNativePG
+instances: 3
+storage:
+  size: 100Gi
+  storageClass: longhorn-crypto
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 4000m
+    memory: 8Gi

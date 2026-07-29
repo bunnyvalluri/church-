@@ -1,0 +1,13 @@
+# Development Overrides for Kafka
+replicaCount: 1
+persistence:
+  size: 5Gi
+  storageClass: longhorn
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi

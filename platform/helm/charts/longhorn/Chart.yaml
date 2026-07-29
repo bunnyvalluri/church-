@@ -1,0 +1,15 @@
+apiVersion: v2
+name: longhorn
+description: Helm Chart for Longhorn Cloud Native Distributed Block Storage for KCM Church
+type: application
+version: 1.0.0
+appVersion: "1.6.0"
+keywords:
+  - longhorn
+  - storage
+  - csi
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Storage Team
+    email: storage@kcmchurch.org

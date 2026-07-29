@@ -1,0 +1,32 @@
+replicaCount: 3
+
+architecture: replication
+
+master:
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+replica:
+  replicaCount: 2
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 10Gi
+
+sentinel:
+  enabled: true
+  masterSet: mymaster
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true

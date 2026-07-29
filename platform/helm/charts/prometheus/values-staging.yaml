@@ -1,0 +1,9 @@
+# Staging Overrides for Prometheus
+retention: "7d"
+storageSpec:
+  volumeClaimTemplate:
+    spec:
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: 20Gi

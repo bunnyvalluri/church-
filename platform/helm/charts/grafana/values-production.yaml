@@ -1,0 +1,4 @@
+# Production Overrides for Grafana
+persistence:
+  size: 20Gi
+  storageClassName: longhorn-fast

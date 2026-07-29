@@ -1,0 +1,27 @@
+adminUser: admin
+adminPassword: "KCM_Grafana_SecurePass2026"
+
+persistence:
+  enabled: true
+  storageClassName: longhorn
+  size: 10Gi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.kcm-observability.svc.cluster.local:9090
+        isDefault: true
+      - name: Loki
+        type: loki
+        url: http://loki-gateway.kcm-observability.svc.cluster.local:80
+      - name: Jaeger
+        type: jaeger
+        url: http://jaeger-query.kcm-observability.svc.cluster.local:16686
+
+ingress:
+  enabled: true
+  hosts:
+    - grafana.kcmchurch.org

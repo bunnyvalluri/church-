@@ -1,0 +1,5 @@
+# Production Overrides for Jaeger
+storage:
+  type: elasticsearch
+  elasticsearch:
+    serverUrls: http://elasticsearch.kcm-observability.svc.cluster.local:9200

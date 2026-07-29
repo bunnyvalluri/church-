@@ -1,0 +1,3 @@
+Backend Service deployed successfully!
+Service URL: http://{{ include "backend.fullname" . }}:{{ .Values.service.port }}
+Prisma Database Migrations: {{ if .Values.dbMigration.enabled }}Executed via pre-upgrade hook{{ else }}Disabled{{ end }}

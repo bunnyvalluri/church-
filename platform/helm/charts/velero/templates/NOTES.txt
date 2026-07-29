@@ -1,0 +1,2 @@
+Velero Disaster Recovery Backup Schedules initialized.
+Target S3 Bucket: {{ .Values.configuration.backupStorageLocation.bucket }}

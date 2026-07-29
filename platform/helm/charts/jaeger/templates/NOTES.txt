@@ -1,0 +1,4 @@
+Jaeger Tracing UI deployed.
+Query Endpoint: http://{{ (index .Values.query.ingress.hosts 0) }}
+OTLP gRPC Collector: {{ include "jaeger.name" . }}:4317
+OTLP HTTP Collector: {{ include "jaeger.name" . }}:4318

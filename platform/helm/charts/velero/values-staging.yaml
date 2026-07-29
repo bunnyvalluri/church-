@@ -1,0 +1,6 @@
+# Staging Overrides for Velero
+schedules:
+  daily-staging-backup:
+    schedule: "0 2 * * *"
+    template:
+      ttl: "168h"

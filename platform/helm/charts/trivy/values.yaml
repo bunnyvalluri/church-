@@ -1,0 +1,8 @@
+operator:
+  vulnerabilityScannerEnabled: true
+  configAuditScannerEnabled: true
+  rbacAssessmentScannerEnabled: true
+
+trivy:
+  ignoreUnfixed: true
+  severity: "CRITICAL,HIGH"

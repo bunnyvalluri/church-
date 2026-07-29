@@ -1,0 +1,22 @@
+# Production Overrides for Backend Chart
+replicaCount: 5
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 25
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  minAvailable: 3
+
+env:
+  NODE_ENV: "production"

@@ -1,0 +1,3 @@
+Argo CD ApplicationSet for KCM Church platform initialized.
+Repository URL: {{ .Values.repoURL }}
+Sync Policy: Automated (Prune: True, SelfHeal: True)

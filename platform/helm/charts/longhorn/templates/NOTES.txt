@@ -1,0 +1,2 @@
+Longhorn Distributed Storage Provisioner deployed.
+Dashboard URL: http://{{ .Values.ingress.host }}

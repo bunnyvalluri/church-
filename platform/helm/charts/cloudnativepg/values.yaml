@@ -1,0 +1,33 @@
+# Default values for CloudNativePG HA Cluster
+clusterName: kcm-postgres-cluster
+instances: 3
+
+postgresVersion: "16"
+
+storage:
+  size: 50Gi
+  storageClass: longhorn-crypto
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+monitoring:
+  enablePodMonitor: true
+
+backup:
+  enabled: true
+  retentionPolicy: "30d"
+  barmanObjectStore:
+    destinationPath: "s3://kcm-backups/pg-backups"
+    endpointURL: "https://s3.amazonaws.com"
+    s3Credentials:
+      secretName: aws-s3-credentials
+
+env:
+  - name: TZ
+    value: "UTC"

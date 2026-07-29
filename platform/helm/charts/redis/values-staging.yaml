@@ -1,0 +1,12 @@
+# Staging Overrides for Redis
+replicaCount: 2
+master:
+  persistence:
+    size: 5Gi
+    storageClass: longhorn
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+sentinel:
+  enabled: true

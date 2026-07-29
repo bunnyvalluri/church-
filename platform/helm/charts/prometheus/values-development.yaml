@@ -1,0 +1,9 @@
+# Development Overrides for Prometheus
+retention: "2d"
+storageSpec:
+  volumeClaimTemplate:
+    spec:
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: 5Gi

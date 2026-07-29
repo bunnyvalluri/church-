@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kcm-platform-applicationset
+  namespace: argocd
+  labels:
+    {{- include "argocd.labels" . | nindent 4 }}
+spec:
+  generators:
+    - list:
+        elements:
+          - chart: nextjs
+          - chart: backend
+          - chart: cloudnativepg
+          - chart: redis
+          - chart: kafka
+          - chart: nats
+          - chart: istio
+          - chart: velero
+          - chart: longhorn
+          - chart: grafana
+          - chart: prometheus
+          - chart: loki
+          - chart: jaeger
+          - chart: falco
+          - chart: trivy
+  template:
+    metadata:
+      name: 'kcm-{{`{{chart}}`}}'
+    spec:
+      project: default
+      source:
+        repoURL: {{ .Values.repoURL }}
+        targetRevision: {{ .Values.targetRevision }}
+        path: 'platform/helm/charts/{{`{{chart}}`}}'
+        helm:
+          valueFiles:
+            - values-production.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: kcm-production
+      syncPolicy:
+        automated:
+          prune: {{ .Values.syncPolicy.automated.prune }}
+          selfHeal: {{ .Values.syncPolicy.automated.selfHeal }}
+        syncOptions:
+          {{- toYaml .Values.syncPolicy.syncOptions | nindent 10 }}

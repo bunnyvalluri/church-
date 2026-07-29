@@ -1,0 +1,15 @@
+apiVersion: v2
+name: prometheus
+description: Helm Chart for Prometheus Operator & ServiceMonitors for KCM Church
+type: application
+version: 1.0.0
+appVersion: "v0.70.0"
+keywords:
+  - prometheus
+  - operator
+  - metrics
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Observability Team
+    email: observability@kcmchurch.org

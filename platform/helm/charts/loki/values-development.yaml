@@ -1,0 +1,5 @@
+# Development Overrides for Loki
+loki:
+  commonConfig:
+    replication_factor: 1
+deploymentMode: SingleBinary

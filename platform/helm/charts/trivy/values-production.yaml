@@ -1,0 +1,3 @@
+# Production Overrides for Trivy
+trivy:
+  severity: "CRITICAL,HIGH,MEDIUM"

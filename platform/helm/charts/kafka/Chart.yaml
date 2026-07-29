@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kafka
+description: Helm Chart for Apache Kafka KRaft Event Streaming Cluster for KCM Church
+type: application
+version: 1.0.0
+appVersion: "3.7.0"
+keywords:
+  - kafka
+  - kraft
+  - messaging
+  - event-streaming
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Event Streaming Team
+    email: messaging@kcmchurch.org

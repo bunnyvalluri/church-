@@ -1,0 +1,6 @@
+# Production Overrides for Velero
+schedules:
+  hourly-kcm-backup:
+    schedule: "0 * * * *"
+    template:
+      ttl: "2160h"

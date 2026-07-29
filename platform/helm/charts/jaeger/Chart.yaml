@@ -1,0 +1,15 @@
+apiVersion: v2
+name: jaeger
+description: Helm Chart for Jaeger Distributed Tracing for KCM Church
+type: application
+version: 1.0.0
+appVersion: "1.55.0"
+keywords:
+  - jaeger
+  - opentelemetry
+  - tracing
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Observability Team
+    email: observability@kcmchurch.org

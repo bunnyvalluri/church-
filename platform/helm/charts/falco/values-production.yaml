@@ -1,0 +1,5 @@
+# Production Overrides for Falco
+driver:
+  kind: modern_ebpf
+falcosidekick:
+  enabled: true

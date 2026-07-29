@@ -1,0 +1,3 @@
+Grafana Observability Suite deployed.
+URL: http://{{ (index .Values.ingress.hosts 0) }}
+Admin User: {{ .Values.adminUser }}

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jaeger.name" . }}
+  labels:
+    {{- include "jaeger.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "jaeger.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "jaeger.name" . }}
+    spec:
+      containers:
+        - name: jaeger-all-in-one
+          image: "ghcr.io/jaegertracing/all-in-one:1.55.0"
+          ports:
+            - containerPort: 16686
+              name: query
+            - containerPort: 4317
+              name: otlp-grpc
+            - containerPort: 4318
+              name: otlp-http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jaeger.name" . }}
+  labels:
+    {{- include "jaeger.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 16686
+      targetPort: 16686
+      name: query
+    - port: 4317
+      targetPort: 4317
+      name: otlp-grpc
+    - port: 4318
+      targetPort: 4318
+      name: otlp-http
+  selector:
+    app.kubernetes.io/name: {{ include "jaeger.name" . }}

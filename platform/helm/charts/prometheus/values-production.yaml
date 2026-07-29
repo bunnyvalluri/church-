@@ -1,0 +1,9 @@
+# Production Overrides for Prometheus
+retention: "30d"
+storageSpec:
+  volumeClaimTemplate:
+    spec:
+      storageClassName: longhorn-fast
+      resources:
+        requests:
+          storage: 200Gi

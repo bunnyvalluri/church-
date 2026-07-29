@@ -1,0 +1,2 @@
+Istio Service Mesh integration chart installed.
+mTLS Mode: STRICT

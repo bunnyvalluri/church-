@@ -1,0 +1,17 @@
+telemetry:
+  v2:
+    enabled: true
+
+meshConfig:
+  accessLogFile: /dev/stdout
+  enableAutoMtls: true
+  defaultConfig:
+    tracing:
+      zipkin:
+        address: jaeger-collector.kcm-observability.svc.cluster.local:9411
+
+gateway:
+  enabled: true
+  name: kcm-gateway
+  ingressPort: 80
+  tlsPort: 443

@@ -1,0 +1,36 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.clusterName }}
+  labels:
+    {{- include "cloudnativepg.labels" . | nindent 4 }}
+spec:
+  instances: {{ .Values.instances }}
+  imageName: ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgresVersion }}
+  
+  storage:
+    size: {{ .Values.storage.size }}
+    storageClass: {{ .Values.storage.storageClass }}
+    
+  resources:
+    {{- toYaml .Values.resources | nindent 4 }}
+
+  {{- if .Values.monitoring.enablePodMonitor }}
+  monitoring:
+    enablePodMonitor: true
+  {{- end }}
+
+  {{- if .Values.backup.enabled }}
+  backup:
+    retentionPolicy: {{ .Values.backup.retentionPolicy }}
+    barmanObjectStore:
+      destinationPath: {{ .Values.backup.barmanObjectStore.destinationPath }}
+      endpointURL: {{ .Values.backup.barmanObjectStore.endpointURL }}
+      s3Credentials:
+        secretAccessKey:
+          name: {{ .Values.backup.barmanObjectStore.s3Credentials.secretName }}
+          key: AWS_SECRET_ACCESS_KEY
+        accessKeyId:
+          name: {{ .Values.backup.barmanObjectStore.s3Credentials.secretName }}
+          key: AWS_ACCESS_KEY_ID
+  {{- end }}

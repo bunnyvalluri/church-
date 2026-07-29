@@ -1,0 +1,2 @@
+Grafana Loki Logging Cluster deployed.
+Service Endpoint: http://{{ include "loki.name" . }}:3100

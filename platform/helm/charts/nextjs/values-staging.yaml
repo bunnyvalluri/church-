@@ -1,0 +1,22 @@
+# Staging Overrides for Next.js Chart
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+
+podDisruptionBudget:
+  minAvailable: 1
+
+env:
+  NODE_ENV: "staging"
+  NEXT_PUBLIC_API_URL: "https://staging-api.kcmchurch.org"

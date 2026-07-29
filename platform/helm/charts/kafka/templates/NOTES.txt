@@ -1,0 +1,3 @@
+Apache Kafka KRaft Cluster deployed successfully!
+Brokers Endpoint: {{ include "kafka.fullname" . }}:9092
+KRaft Cluster ID: {{ .Values.kraft.clusterId }}

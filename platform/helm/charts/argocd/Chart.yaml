@@ -1,0 +1,15 @@
+apiVersion: v2
+name: argocd
+description: Helm Chart for Argo CD GitOps Application Management for KCM Church
+type: application
+version: 1.0.0
+appVersion: "2.10.0"
+keywords:
+  - argocd
+  - gitops
+  - applicationset
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM GitOps Team
+    email: gitops@kcmchurch.org

@@ -1,0 +1,2 @@
+Trivy Vulnerability Scanner Operator active.
+Target Severity Threshold: {{ .Values.trivy.severity }}

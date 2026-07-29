@@ -1,0 +1,15 @@
+apiVersion: v2
+name: trivy
+description: Helm Chart for Trivy Vulnerability Scanner Operator for KCM Church
+type: application
+version: 1.0.0
+appVersion: "0.50.0"
+keywords:
+  - trivy
+  - security
+  - vulnerability-scanner
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM DevSecOps Team
+    email: devsecops@kcmchurch.org

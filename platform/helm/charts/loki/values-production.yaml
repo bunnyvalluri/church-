@@ -1,0 +1,4 @@
+# Production Overrides for Loki
+loki:
+  commonConfig:
+    replication_factor: 3

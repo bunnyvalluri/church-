@@ -1,0 +1,20 @@
+provisionDataStore:
+  cassandra: false
+  elasticsearch: false
+
+storage:
+  type: memory
+
+query:
+  ingress:
+    enabled: true
+    hosts:
+      - jaeger.kcmchurch.org
+
+collector:
+  service:
+    otlp:
+      grpc:
+        enabled: true
+      http:
+        enabled: true

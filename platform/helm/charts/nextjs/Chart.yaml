@@ -1,0 +1,17 @@
+apiVersion: v2
+name: nextjs
+description: Helm Chart for KCM Church Next.js Frontend Application
+type: application
+version: 1.2.0
+appVersion: "2.4.0"
+keywords:
+  - nextjs
+  - react
+  - frontend
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+sources:
+  - https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM DevOps Team
+    email: devops@kcmchurch.org

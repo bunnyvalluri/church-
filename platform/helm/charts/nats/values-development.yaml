@@ -1,0 +1,9 @@
+# Development Overrides for NATS
+replicaCount: 1
+persistence:
+  size: 2Gi
+  storageClass: longhorn
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi

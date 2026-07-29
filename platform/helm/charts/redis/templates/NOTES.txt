@@ -1,0 +1,2 @@
+Redis HA Cluster with Sentinel deployed.
+Service: {{ include "redis.fullname" . }}:6379

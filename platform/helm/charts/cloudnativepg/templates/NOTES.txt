@@ -1,0 +1,4 @@
+CloudNativePG PostgreSQL Cluster deployed: {{ .Values.clusterName }}
+Instances: {{ .Values.instances }}
+Primary Service Endpoint: {{ .Values.clusterName }}-rw:5432
+Read-Only Service Endpoint: {{ .Values.clusterName }}-ro:5432

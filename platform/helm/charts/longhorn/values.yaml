@@ -1,0 +1,15 @@
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+
+storageClasses:
+  - name: longhorn-fast
+    replicaCount: 3
+    staleReplicaTimeout: 30
+  - name: longhorn-crypto
+    replicaCount: 3
+    encrypted: "true"
+
+ingress:
+  enabled: true
+  host: longhorn.kcmchurch.org

@@ -1,0 +1,29 @@
+replicaCount: 3
+
+kraft:
+  enabled: true
+  clusterId: "KCMChurchKafkaKRaft2026"
+
+persistence:
+  enabled: true
+  storageClass: longhorn-fast
+  size: 50Gi
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+
+listeners:
+  client:
+    port: 9092
+  controller:
+    port: 9093
+
+metrics:
+  prometheus:
+    serviceMonitor:
+      enabled: true

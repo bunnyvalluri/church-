@@ -1,0 +1,13 @@
+{{- range $name, $schedule := .Values.schedules }}
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "velero.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $schedule.schedule | quote }}
+  template:
+    ttl: {{ $schedule.template.ttl | quote }}
+---
+{{- end }}

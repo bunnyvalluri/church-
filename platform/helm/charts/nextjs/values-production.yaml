@@ -1,0 +1,23 @@
+# Production Overrides for Next.js Chart
+replicaCount: 5
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  minAvailable: 3
+
+env:
+  NODE_ENV: "production"
+  NEXT_PUBLIC_API_URL: "https://api.kcmchurch.org"

@@ -1,0 +1,20 @@
+repoURL: "https://github.com/bunnyvalluri/church-.git"
+targetRevision: "HEAD"
+
+environments:
+  - name: production
+    namespace: kcm-production
+    valuesFile: values-production.yaml
+  - name: staging
+    namespace: kcm-staging
+    valuesFile: values-staging.yaml
+  - name: development
+    namespace: kcm-development
+    valuesFile: values-development.yaml
+
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true

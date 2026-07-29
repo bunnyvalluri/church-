@@ -1,0 +1,3 @@
+# Production Overrides for Istio
+meshConfig:
+  enableAutoMtls: true

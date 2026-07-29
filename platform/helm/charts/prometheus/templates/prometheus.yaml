@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: kcm-prometheus
+  labels:
+    {{- include "prometheus.labels" . | nindent 4 }}
+spec:
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector:
+    {{- toYaml .Values.serviceMonitorSelector | nindent 4 }}
+  retention: {{ .Values.retention }}
+  storage:
+    {{- toYaml .Values.storageSpec | nindent 4 }}

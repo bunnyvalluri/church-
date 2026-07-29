@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "trivy.name" . }}-operator
+  labels:
+    {{- include "trivy.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "trivy.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "trivy.name" . }}
+    spec:
+      containers:
+        - name: trivy-operator
+          image: "ghcr.io/aquasecurity/trivy-operator:0.50.0"
+          env:
+            - name: OPERATOR_SEVERITY
+              value: {{ .Values.trivy.severity | quote }}

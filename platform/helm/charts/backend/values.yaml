@@ -1,0 +1,97 @@
+# Default values for Backend Service
+replicaCount: 3
+
+image:
+  repository: ghcr.io/bunnyvalluri/church-/backend
+  pullPolicy: IfNotPresent
+  tag: "v2.4.0"
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+serviceAccount:
+  create: true
+  name: "backend-sa"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 4000
+  targetPort: 4000
+
+ingress:
+  enabled: true
+  className: "envoy"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+  hosts:
+    - host: api.kcmchurch.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: backend-tls-cert
+      hosts:
+        - api.kcmchurch.org
+
+resources:
+  requests:
+    cpu: 300m
+    memory: 512Mi
+  limits:
+    cpu: 1500m
+    memory: 1536Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 75
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+networkPolicy:
+  enabled: true
+
+serviceMonitor:
+  enabled: true
+  interval: 15s
+
+dbMigration:
+  enabled: true
+  image: ghcr.io/bunnyvalluri/church-/backend-migrations:v2.4.0
+
+cloudnativepg:
+  enabled: false
+redis:
+  enabled: false
+kafka:
+  enabled: false
+nats:
+  enabled: false
+
+env:
+  NODE_ENV: "production"
+  PORT: "4000"
+  REDIS_HOST: "redis-cluster.kcm-database.svc.cluster.local"
+  REDIS_PORT: "6379"
+  KAFKA_BROKERS: "kafka-cluster.kcm-messaging.svc.cluster.local:9092"
+  NATS_URL: "nats://nats-cluster.kcm-messaging.svc.cluster.local:4222"
+
+secrets:
+  DATABASE_URL: "postgresql://kcm_user:KCM_SecurePass2026@cloudnativepg-cluster.kcm-database.svc.cluster.local:5432/kcm_db?sslmode=require"
+  JWT_SECRET: "KCM_Church_JWT_Secret_2026_Key"

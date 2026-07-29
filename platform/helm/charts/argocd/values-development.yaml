@@ -1,0 +1,2 @@
+# Development Overrides for Argo CD ApplicationSet
+targetRevision: "develop"

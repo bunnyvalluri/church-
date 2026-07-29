@@ -1,0 +1,15 @@
+apiVersion: v2
+name: falco
+description: Helm Chart for Falco Syscall Runtime Security Engine for KCM Church
+type: application
+version: 1.0.0
+appVersion: "0.37.0"
+keywords:
+  - falco
+  - security
+  - runtime
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM DevSecOps Team
+    email: devsecops@kcmchurch.org

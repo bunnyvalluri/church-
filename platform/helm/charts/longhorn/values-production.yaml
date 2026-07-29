@@ -1,0 +1,3 @@
+# Production Overrides for Longhorn
+persistence:
+  defaultClassReplicaCount: 3

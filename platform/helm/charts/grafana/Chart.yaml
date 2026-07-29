@@ -1,0 +1,15 @@
+apiVersion: v2
+name: grafana
+description: Helm Chart for Grafana Observability Dashboards & Datasources for KCM Church
+type: application
+version: 1.0.0
+appVersion: "10.4.0"
+keywords:
+  - grafana
+  - observability
+  - dashboards
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Observability Team
+    email: observability@kcmchurch.org

@@ -1,0 +1,11 @@
+retention: "15d"
+storageSpec:
+  volumeClaimTemplate:
+    spec:
+      storageClassName: longhorn-fast
+      resources:
+        requests:
+          storage: 50Gi
+
+serviceMonitorSelector:
+  matchLabels: {}

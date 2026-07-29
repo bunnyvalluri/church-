@@ -1,0 +1,15 @@
+apiVersion: v2
+name: nats
+description: Helm Chart for NATS + JetStream Messaging Cluster for KCM Church
+type: application
+version: 1.0.0
+appVersion: "2.10.0"
+keywords:
+  - nats
+  - jetstream
+  - messaging
+  - kcm-church
+home: https://github.com/bunnyvalluri/church-
+maintainers:
+  - name: KCM Messaging Team
+    email: messaging@kcmchurch.org
