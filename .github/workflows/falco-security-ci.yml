@@ -106,7 +106,7 @@ jobs:
 
       - name: Pull Falco chart for linting
         run: |
-          helm pull falcosecurity/falco --version 4.21.0 --untar --untardir /tmp/falco-charts
+          helm pull falcosecurity/falco --version 4.3.0 --untar --untardir /tmp/falco-charts
           echo "✅ Falco chart pulled to /tmp/falco-charts/falco"
 
       - name: Lint Falco values.yaml
