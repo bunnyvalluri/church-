@@ -1,6 +1,14 @@
 # Default values for Backend Service
 replicaCount: 3
 
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "backend-sa"
+
 image:
   repository: ghcr.io/bunnyvalluri/church-/backend
   pullPolicy: IfNotPresent
