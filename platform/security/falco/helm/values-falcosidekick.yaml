@@ -1,0 +1,225 @@
+# =============================================================================
+# Falcosidekick Helm Values — Kingdom of Christ Ministries
+# Official chart: falcosecurity/falcosidekick
+# Falcosidekick routes Falco events to Loki, Prometheus, Alertmanager
+# =============================================================================
+# Deploy:
+#   helm upgrade --install falcosidekick falcosecurity/falcosidekick \
+#     --namespace falco \
+#     -f values-falcosidekick.yaml
+# =============================================================================
+
+replicaCount: 2   # HA: 2 replicas with anti-affinity
+
+image:
+  registry: docker.io
+  repository: falcosecurity/falcosidekick
+  tag: ""         # uses chart appVersion
+  pullPolicy: IfNotPresent
+
+# ---------------------------------------------------------------------------
+# Falcosidekick Configuration
+# ---------------------------------------------------------------------------
+config:
+  # ---------------------------------------------------------------------------
+  # Loki — receive all Falco events as JSON log streams
+  # ---------------------------------------------------------------------------
+  loki:
+    hostport: "http://loki.monitoring.svc.cluster.local:3100"
+    user: ""
+    apikey: ""
+    # Custom labels for Loki streams
+    customlabels: "app=falco,cluster=kcm-prod,env=production"
+    mutualtls: false
+    checkcert: true
+    minimumpriority: "notice"
+    all: true
+
+  # ---------------------------------------------------------------------------
+  # Alertmanager — route critical/high/warning events
+  # ---------------------------------------------------------------------------
+  alertmanager:
+    hostport: "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
+    minimumpriority: "warning"
+    mutualtls: false
+    checkcert: false
+    # Custom labels passed to Alertmanager
+    extralabels: "cluster=kcm-prod,team=security"
+    # Custom annotations
+    extraannotations: "runbook=https://github.com/bunnyvalluri/kcm-church-infra/tree/main/platform/security/falco/runbooks"
+
+  # ---------------------------------------------------------------------------
+  # Prometheus — expose /metrics for Prometheus scraping
+  # ---------------------------------------------------------------------------
+  prometheus:
+    # Extra labels added to all Falcosidekick Prometheus metrics
+    extralabels: "cluster=kcm-prod,env=production"
+    # Falcosidekick exposes metrics at :2802/metrics
+    # ServiceMonitor in servicemonitor.yaml handles discovery
+
+  # ---------------------------------------------------------------------------
+  # Elasticsearch — disabled (using Loki instead)
+  # ---------------------------------------------------------------------------
+  elasticsearch:
+    hostport: ""
+
+  # ---------------------------------------------------------------------------
+  # Slack — configure if needed
+  # Uncomment and set FALCOSIDEKICK_CONFIG_SLACK_WEBHOOKURL secret
+  # ---------------------------------------------------------------------------
+  # slack:
+  #   webhookurl: ""     # Set via secret: FALCOSIDEKICK_CONFIG_SLACK_WEBHOOKURL
+  #   minimumpriority: "critical"
+  #   messageformat: ""
+  #   outputformat: "all"
+
+  # ---------------------------------------------------------------------------
+  # PagerDuty — configure if needed
+  # ---------------------------------------------------------------------------
+  # pagerduty:
+  #   routingkey: ""    # Set via secret
+  #   minimumpriority: "critical"
+
+  # ---------------------------------------------------------------------------
+  # Webhook — generic webhook output
+  # ---------------------------------------------------------------------------
+  webhook:
+    address: ""
+    customheaders: ""
+    mutualtls: false
+    checkcert: true
+    minimumpriority: ""
+
+  # ---------------------------------------------------------------------------
+  # OTLP — OpenTelemetry traces
+  # ---------------------------------------------------------------------------
+  otlp:
+    traces:
+      endpoint: "http://otel-collector.monitoring.svc.cluster.local:4317"
+      protocol: "grpc"
+      checkcert: false
+      minimumpriority: "warning"
+      synced: false
+      duration: 1000
+
+  # ---------------------------------------------------------------------------
+  # General settings
+  # ---------------------------------------------------------------------------
+  debug: false
+  tlsserver:
+    deploy: false
+  mutualtlsfilespath: "/etc/certs"
+
+# ---------------------------------------------------------------------------
+# Falcosidekick UI — disabled in production
+# ---------------------------------------------------------------------------
+webui:
+  enabled: false
+
+# ---------------------------------------------------------------------------
+# Service
+# ---------------------------------------------------------------------------
+service:
+  type: ClusterIP
+  port: 2801
+  annotations: {}
+
+# ---------------------------------------------------------------------------
+# Prometheus metrics service (port 2802)
+# ---------------------------------------------------------------------------
+prometheusPort: 2802
+
+# ---------------------------------------------------------------------------
+# ServiceMonitor for Prometheus Operator
+# ---------------------------------------------------------------------------
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 30s
+  scrapeTimeout: 10s
+  additionalLabels:
+    release: kube-prometheus-stack
+  relabelings:
+    - sourceLabels: [__address__]
+      action: replace
+      targetLabel: instance
+      regex: "(.+):.*"
+      replacement: "$1"
+
+# ---------------------------------------------------------------------------
+# Ingress — disabled, internal only
+# ---------------------------------------------------------------------------
+ingress:
+  enabled: false
+
+# ---------------------------------------------------------------------------
+# Resources
+# ---------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# ---------------------------------------------------------------------------
+# Pod Anti-Affinity — spread across nodes for HA
+# ---------------------------------------------------------------------------
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: falcosidekick
+          topologyKey: kubernetes.io/hostname
+
+# ---------------------------------------------------------------------------
+# Pod Security Context
+# ---------------------------------------------------------------------------
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1234
+  runAsGroup: 1234
+  fsGroup: 1234
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# ---------------------------------------------------------------------------
+# Pod Annotations
+# ---------------------------------------------------------------------------
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "2802"
+  prometheus.io/path: "/metrics"
+  security.kcm.church/component: "event-forwarder"
+
+# ---------------------------------------------------------------------------
+# Pod Labels
+# ---------------------------------------------------------------------------
+podLabels:
+  app.kubernetes.io/name: falcosidekick
+  app.kubernetes.io/component: event-forwarder
+  app.kubernetes.io/part-of: kcm-security-platform
+
+# ---------------------------------------------------------------------------
+# PodDisruptionBudget
+# ---------------------------------------------------------------------------
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# ---------------------------------------------------------------------------
+# Node Selector
+# ---------------------------------------------------------------------------
+nodeSelector:
+  kubernetes.io/os: linux

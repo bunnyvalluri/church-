@@ -1,0 +1,191 @@
+# =============================================================================
+# OpenTelemetry Collector — Falco Security Event Traces
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# Routes Falco HIGH/CRITICAL events as OpenTelemetry traces to Jaeger.
+# Falcosidekick sends events to the OTLP endpoint.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-otel-collector-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco-otel-collector
+    app.kubernetes.io/component: tracing
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 256
+        send_batch_max_size: 512
+
+      # Add KCM security metadata to all Falco spans
+      attributes:
+        actions:
+          - key: service.name
+            value: "falco-runtime-security"
+            action: upsert
+          - key: cluster
+            value: "kcm-prod"
+            action: upsert
+          - key: environment
+            value: "production"
+            action: upsert
+          - key: security.platform
+            value: "falco"
+            action: upsert
+
+      # Filter: only trace HIGH and CRITICAL events
+      filter:
+        error_mode: ignore
+        traces:
+          span:
+            - 'attributes["priority"] != "critical" and attributes["priority"] != "high"'
+
+      memory_limiter:
+        check_interval: 5s
+        limit_mib: 512
+        spike_limit_mib: 128
+
+    exporters:
+      # Jaeger traces
+      otlp/jaeger:
+        endpoint: "jaeger-collector.monitoring.svc.cluster.local:4317"
+        tls:
+          insecure: true
+
+      # Prometheus metrics from OTel spans
+      prometheus:
+        endpoint: "0.0.0.0:8889"
+        namespace: "falco_otel"
+
+      # Debug logging
+      logging:
+        verbosity: basic
+        sampling_initial: 2
+        sampling_thereafter: 500
+
+    service:
+      telemetry:
+        logs:
+          level: info
+        metrics:
+          level: basic
+
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, attributes, filter, batch]
+          exporters: [otlp/jaeger, logging]
+
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [prometheus]
+---
+# =============================================================================
+# OTel Collector Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: falco-otel-collector
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco-otel-collector
+    app.kubernetes.io/component: tracing
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falco-otel-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: falco-otel-collector
+        app.kubernetes.io/component: tracing
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8889"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: otel-collector
+          image: otel/opentelemetry-collector-contrib:0.96.0
+          args:
+            - --config=/etc/otel/otel-collector-config.yaml
+          ports:
+            - name: grpc-otlp
+              containerPort: 4317
+              protocol: TCP
+            - name: http-otlp
+              containerPort: 4318
+              protocol: TCP
+            - name: prometheus
+              containerPort: 8889
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: config
+              mountPath: /etc/otel
+      volumes:
+        - name: config
+          configMap:
+            name: falco-otel-collector-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco-otel-collector
+    app.kubernetes.io/managed-by: argocd
+spec:
+  type: ClusterIP
+  ports:
+    - name: grpc-otlp
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+    - name: http-otlp
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+    - name: prometheus
+      port: 8889
+      targetPort: 8889
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: falco-otel-collector

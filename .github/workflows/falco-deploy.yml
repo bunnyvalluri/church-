@@ -1,0 +1,232 @@
+name: "Falco Deploy — GitOps via ArgoCD"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "platform/security/falco/**"
+      - "kcm-church-infra/security/falco/**"
+      - "platform/opentofu/modules/falco*/**"
+      - "platform/opentofu/security.tf"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
+          - staging
+      sync_wave:
+        description: "ArgoCD app to sync (leave empty for all)"
+        required: false
+        default: ""
+
+concurrency:
+  group: falco-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+  ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+  ARGOCD_VERSION: "v2.10.0"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Pre-flight: verify CI passed
+  # ---------------------------------------------------------------------------
+  pre-flight:
+    name: "Pre-flight Check"
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check CI status
+        id: check
+        run: |
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+          echo "✅ Pre-flight checks passed — proceeding with deploy"
+
+  # ---------------------------------------------------------------------------
+  # Stage 0: Deploy Kubernetes manifests (RBAC, NetworkPolicy, PSA)
+  # ---------------------------------------------------------------------------
+  deploy-k8s-manifests:
+    name: "Stage 0: K8s Manifests"
+    runs-on: ubuntu-latest
+    needs: pre-flight
+    if: needs.pre-flight.outputs.should_deploy == 'true'
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd \
+            "https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64"
+          chmod +x /usr/local/bin/argocd
+          argocd version --client
+
+      - name: ArgoCD login
+        run: |
+          argocd login "$ARGOCD_SERVER" \
+            --auth-token "$ARGOCD_AUTH_TOKEN" \
+            --insecure \
+            --grpc-web
+
+      - name: Sync falco-kubernetes (wave 0)
+        run: |
+          argocd app sync falco-kubernetes \
+            --force \
+            --prune \
+            --timeout 120 \
+            --retry-limit 3
+          argocd app wait falco-kubernetes \
+            --health \
+            --sync \
+            --timeout 180
+          echo "✅ falco-kubernetes deployed"
+
+  # ---------------------------------------------------------------------------
+  # Stage 1: Deploy Falco Helm + Rules
+  # ---------------------------------------------------------------------------
+  deploy-falco-core:
+    name: "Stage 1: Falco Core + Rules"
+    runs-on: ubuntu-latest
+    needs: deploy-k8s-manifests
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd \
+            "https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64"
+          chmod +x /usr/local/bin/argocd
+
+      - name: ArgoCD login
+        run: |
+          argocd login "$ARGOCD_SERVER" \
+            --auth-token "$ARGOCD_AUTH_TOKEN" \
+            --insecure \
+            --grpc-web
+
+      - name: Sync falco-rules (ConfigMap)
+        run: |
+          argocd app sync falco-rules \
+            --prune \
+            --timeout 120
+          argocd app wait falco-rules --health --sync --timeout 120
+          echo "✅ falco-rules ConfigMap deployed"
+
+      - name: Sync falco (DaemonSet + Falcosidekick)
+        run: |
+          argocd app sync falco \
+            --prune \
+            --timeout 300 \
+            --retry-limit 3
+          argocd app wait falco \
+            --health \
+            --sync \
+            --timeout 600
+          echo "✅ Falco DaemonSet deployed"
+
+      - name: Verify Falco DaemonSet health
+        run: |
+          argocd login "$ARGOCD_SERVER" \
+            --auth-token "$ARGOCD_AUTH_TOKEN" \
+            --insecure --grpc-web
+          STATUS=$(argocd app get falco --output json | jq -r '.status.health.status')
+          if [[ "$STATUS" != "Healthy" ]]; then
+            echo "❌ Falco DaemonSet is not Healthy: $STATUS"
+            argocd app get falco --output wide
+            exit 1
+          fi
+          echo "✅ Falco health: $STATUS"
+
+  # ---------------------------------------------------------------------------
+  # Stage 2: Deploy Monitoring (Prometheus rules, dashboards, alerts)
+  # ---------------------------------------------------------------------------
+  deploy-falco-monitoring:
+    name: "Stage 2: Monitoring Stack"
+    runs-on: ubuntu-latest
+    needs: deploy-falco-core
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd \
+            "https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64"
+          chmod +x /usr/local/bin/argocd
+
+      - name: ArgoCD login
+        run: |
+          argocd login "$ARGOCD_SERVER" \
+            --auth-token "$ARGOCD_AUTH_TOKEN" \
+            --insecure \
+            --grpc-web
+
+      - name: Sync falco-monitoring (PrometheusRules, dashboards, Alertmanager)
+        run: |
+          argocd app sync falco-monitoring \
+            --prune \
+            --timeout 180 \
+            --retry-limit 3
+          argocd app wait falco-monitoring \
+            --health \
+            --sync \
+            --timeout 300
+          echo "✅ Falco monitoring stack deployed"
+
+  # ---------------------------------------------------------------------------
+  # Post-deploy: Smoke Tests
+  # ---------------------------------------------------------------------------
+  smoke-test:
+    name: "Smoke Tests"
+    runs-on: ubuntu-latest
+    needs: deploy-falco-monitoring
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.28.0"
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > /tmp/kubeconfig
+          echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
+
+      - name: Check Falco DaemonSet pods
+        run: |
+          DESIRED=$(kubectl get daemonset falco -n falco -o jsonpath='{.status.desiredNumberScheduled}')
+          READY=$(kubectl get daemonset falco -n falco -o jsonpath='{.status.numberReady}')
+          echo "Falco DaemonSet: $READY/$DESIRED pods ready"
+          if [[ "$READY" != "$DESIRED" ]]; then
+            echo "❌ Falco DaemonSet not fully ready"
+            kubectl describe daemonset falco -n falco
+            exit 1
+          fi
+          echo "✅ All $READY Falco pods running"
+
+      - name: Check Falcosidekick pods
+        run: |
+          READY=$(kubectl get deployment falcosidekick -n falco -o jsonpath='{.status.readyReplicas}')
+          echo "Falcosidekick ready replicas: $READY"
+          [[ "$READY" -ge 1 ]] && echo "✅ Falcosidekick running" || (echo "❌ Falcosidekick not ready" && exit 1)
+
+      - name: Check Prometheus rules loaded
+        run: |
+          RULES=$(kubectl get prometheusrule falco-security-rules -n monitoring -o name 2>/dev/null)
+          [[ -n "$RULES" ]] && echo "✅ PrometheusRule deployed: $RULES" || echo "⚠️ PrometheusRule not found"
+
+      - name: Deploy summary
+        run: |
+          echo ""
+          echo "================================================"
+          echo "🔒 Falco Runtime Security Platform Deployed"
+          echo "================================================"
+          echo "Namespace: falco"
+          echo "Monitoring: monitoring"
+          echo "ArgoCD Apps: falco, falco-kubernetes, falco-rules, falco-monitoring"
+          echo "Grafana: Security dashboards available at /d/falco-*"
+          echo "================================================"

@@ -1,0 +1,289 @@
+# =============================================================================
+# KCM Portal Rules — Church, Pastor, Member, NGO Portals
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# Specific threat detection rules for each KCM portal workload.
+# Loaded by Falco via: /etc/falco/rules.d/kcm-portals.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# LISTS — Portal-specific identifiers
+# ---------------------------------------------------------------------------
+
+# Church Admin Portal pods
+- list: kcm_admin_portal_pods
+  items:
+    - kcm-admin-portal
+    - admin-portal
+    - church-admin
+
+# Pastor Portal pods
+- list: kcm_pastor_portal_pods
+  items:
+    - kcm-pastor-portal
+    - pastor-portal
+
+# Member Portal pods
+- list: kcm_member_portal_pods
+  items:
+    - kcm-member-portal
+    - member-portal
+    - kcm-frontend
+
+# NGO Portal pods
+- list: kcm_ngo_portal_pods
+  items:
+    - kcm-ngo-portal
+    - ngo-portal
+    - KCM_NGO_SERVICES
+
+# Sensitive admin-only paths
+- list: kcm_admin_sensitive_paths
+  items:
+    - /app/config
+    - /app/secrets
+    - /app/.env
+    - /app/private
+
+# ---------------------------------------------------------------------------
+# MACROS — Portal-specific
+# ---------------------------------------------------------------------------
+
+- macro: kcm_admin_portal
+  condition: >
+    k8s.pod.name startswith "kcm-admin"
+    or k8s.pod.name startswith "admin-portal"
+    or container.name in (kcm_admin_portal_pods)
+
+- macro: kcm_pastor_portal
+  condition: >
+    k8s.pod.name startswith "kcm-pastor"
+    or k8s.pod.name startswith "pastor-portal"
+    or container.name in (kcm_pastor_portal_pods)
+
+- macro: kcm_member_portal
+  condition: >
+    k8s.pod.name startswith "kcm-frontend"
+    or k8s.pod.name startswith "kcm-member"
+    or container.name in (kcm_member_portal_pods)
+
+- macro: kcm_ngo_portal
+  condition: >
+    k8s.pod.name startswith "kcm-ngo"
+    or k8s.pod.name startswith "ngo-portal"
+    or container.name in (kcm_ngo_portal_pods)
+
+# ---------------------------------------------------------------------------
+# RULES — Church Admin Portal
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell in Admin Portal
+- rule: KCM Admin Portal Shell Execution
+  desc: >
+    A shell was spawned inside the KCM Church Admin Portal container.
+    Admin portals handle sensitive church management data and finances.
+  condition: >
+    spawned_shell_in_container
+    and kcm_admin_portal
+    and k8s.ns.name in (kcm_namespaces)
+  output: >
+    CRITICAL: Shell spawned in Church Admin Portal
+    (user=%user.name uid=%user.uid
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name parent=%proc.pname cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - admin-portal
+    - shell
+    - high-value-target
+    - T1059
+
+# [CRITICAL] Admin portal accesses secrets config
+- rule: KCM Admin Portal Secrets Access
+  desc: >
+    The Admin Portal container accessed sensitive configuration or secrets files.
+    This could indicate credential theft targeting church management systems.
+  condition: >
+    open_read
+    and kcm_admin_portal
+    and (
+      fd.name in (kcm_admin_sensitive_paths)
+      or fd.name glob "/proc/*/environ"
+      or fd.name = /etc/shadow
+    )
+  output: >
+    CRITICAL: Admin Portal accessed sensitive config/secrets
+    (user=%user.name pod=%k8s.pod.name
+    ns=%k8s.ns.name file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - admin-portal
+    - secrets
+    - T1003
+
+# [HIGH] Admin portal spawns unexpected child process
+- rule: KCM Admin Portal Unexpected Process
+  desc: >
+    The Admin Portal spawned an unexpected process that is not part of
+    the normal Next.js/Node.js runtime.
+  condition: >
+    spawned_process
+    and kcm_admin_portal
+    and not proc.name in (kcm_trusted_processes)
+    and not proc.name in (node, next, npm, npx, sh, bash, tini)
+  output: >
+    HIGH: Admin Portal spawned unexpected process
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name parent=%proc.pname cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - admin-portal
+    - unexpected-process
+    - T1059
+
+# ---------------------------------------------------------------------------
+# RULES — Pastor Portal
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell in Pastor Portal
+- rule: KCM Pastor Portal Shell Execution
+  desc: >
+    A shell was spawned inside the KCM Pastor Portal container.
+  condition: >
+    spawned_shell_in_container
+    and kcm_pastor_portal
+    and k8s.ns.name in (kcm_namespaces)
+  output: >
+    CRITICAL: Shell spawned in Pastor Portal
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - pastor-portal
+    - shell
+    - T1059
+
+# [HIGH] Pastor Portal unexpected outbound connection
+- rule: KCM Pastor Portal Suspicious Outbound
+  desc: >
+    The Pastor Portal container made an outbound connection to an unexpected destination.
+    All connections should go to the backend API and known services only.
+  condition: >
+    evt.type = connect
+    and kcm_pastor_portal
+    and fd.typechar = 4
+    and not fd.rport in (443, 80, 3001, 5432, 6379)
+    and not fd.rip startswith "10."
+    and not fd.rip startswith "172."
+    and not fd.rip startswith "192.168."
+  output: >
+    HIGH: Pastor Portal suspicious outbound connection
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name dest=%fd.rip:%fd.rport)
+  priority: HIGH
+  tags:
+    - kcm
+    - pastor-portal
+    - network
+    - T1041
+
+# ---------------------------------------------------------------------------
+# RULES — Member Portal
+# ---------------------------------------------------------------------------
+
+# [HIGH] Member Portal shell spawned
+- rule: KCM Member Portal Shell Execution
+  desc: >
+    A shell was spawned inside the KCM Member Portal (frontend).
+    The frontend is a Next.js SSR app and should never spawn shells.
+  condition: >
+    spawned_shell_in_container
+    and kcm_member_portal
+    and k8s.ns.name in (kcm_namespaces)
+  output: >
+    HIGH: Shell spawned in Member Portal (frontend)
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: HIGH
+  tags:
+    - kcm
+    - member-portal
+    - shell
+    - T1059
+
+# [MEDIUM] Member portal writes to unexpected path
+- rule: KCM Member Portal Unexpected Write
+  desc: >
+    The Member Portal wrote to an unexpected path. SSR apps should only
+    write to /tmp for build artifacts.
+  condition: >
+    open_write
+    and kcm_member_portal
+    and not fd.directory in (/tmp, /app/.next, /app/public)
+    and not proc.name in (next, node)
+  output: >
+    MEDIUM: Member Portal unexpected file write
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: WARNING
+  tags:
+    - kcm
+    - member-portal
+    - file-write
+    - T1074
+
+# ---------------------------------------------------------------------------
+# RULES — NGO Portal
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell in NGO Portal
+- rule: KCM NGO Portal Shell Execution
+  desc: >
+    A shell was spawned inside the KCM NGO Services Portal container.
+    NGO portals handle donation processing and sensitive beneficiary data.
+  condition: >
+    spawned_shell_in_container
+    and kcm_ngo_portal
+    and k8s.ns.name in (kcm_namespaces)
+  output: >
+    CRITICAL: Shell spawned in NGO Portal
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - ngo-portal
+    - shell
+    - T1059
+
+# [HIGH] NGO portal hostPath or sensitive mount access
+- rule: KCM NGO Portal Host Path Access
+  desc: >
+    The NGO Portal accessed a host-mounted path. This could indicate
+    a container escape or misconfigured volume mount.
+  condition: >
+    open_read
+    and kcm_ngo_portal
+    and (
+      fd.name startswith /host/
+      or fd.name startswith /mnt/
+    )
+  output: >
+    HIGH: NGO Portal accessed host-mounted path
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name)
+  priority: HIGH
+  tags:
+    - kcm
+    - ngo-portal
+    - hostpath
+    - container-escape
+    - T1611

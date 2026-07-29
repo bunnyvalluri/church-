@@ -10,6 +10,9 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+// Load backend-local .env FIRST (overrides root .env for dev-specific vars like REDIS_URL)
+require('dotenv').config({ path: path.join(__dirname, '.env'), override: true });
+// Load root .env as fallback for shared vars (DATABASE_URL, API keys, etc.)
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
@@ -158,7 +161,9 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
 }
 
 let queueInitialized = false;
-if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
+const DISABLE_BULLMQ = process.env.DISABLE_BULLMQ === 'true';
+
+if (!DISABLE_BULLMQ && (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker')) {
   try {
     const { Queue, Worker } = require('bullmq');
     const Redis = require('ioredis');
@@ -169,6 +174,14 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
     const connectionOptions = {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
+      // Limit retries in dev so it doesn't hang on ECONNREFUSED
+      retryStrategy: (times) => {
+        if (times > 3) {
+          console.warn('[QUEUE] Redis not available after 3 attempts. BullMQ disabled.');
+          return null; // stop retrying
+        }
+        return Math.min(times * 500, 2000);
+      },
     };
     
     if (redisUrl.startsWith('rediss://')) {
@@ -178,7 +191,9 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
     const connection = new Redis(redisUrl, connectionOptions);
 
     connection.on('error', (err) => {
-      console.warn(`[QUEUE] Redis connection warning: ${err.message}`);
+      if (!err.message.includes('ECONNREFUSED')) {
+        console.warn(`[QUEUE] Redis connection warning: ${err.message}`);
+      }
     });
 
     let mediaQueue;
@@ -217,6 +232,8 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'worker') {
   } catch (err) {
     console.log('[QUEUE] BullMQ dependencies not configured. Bypassing worker setup.');
   }
+} else if (DISABLE_BULLMQ) {
+  console.log('[QUEUE] BullMQ disabled (DISABLE_BULLMQ=true). Skipping Redis/queue setup.');
 }
 
 // Global Process Error Protection

@@ -1,0 +1,28 @@
+# =============================================================================
+# Falco Namespace — Kingdom of Christ Ministries
+# =============================================================================
+# Falco requires privileged access for the kernel driver (eBPF/kmod).
+# PSA is set to 'privileged' for the falco namespace ONLY.
+# All application namespaces use 'restricted' (see pod-security-admission.yaml).
+# =============================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+    security.kcm.church/component: runtime-security
+    # Pod Security Admission — privileged required for eBPF kernel driver
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/warn-version: latest
+  annotations:
+    meta.helm.sh/release-name: falco
+    meta.helm.sh/release-namespace: falco
+    security.kcm.church/description: "Falco runtime security engine namespace"
+    security.kcm.church/compliance: "CIS-K8s-5.2.1"

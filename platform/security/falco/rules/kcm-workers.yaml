@@ -1,0 +1,322 @@
+# =============================================================================
+# KCM Worker Rules — Background Workers, Cron Jobs, Queue Processors
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# Detection rules for asynchronous KCM workloads:
+# - kcm-backend-worker (queue/job processor)
+# - kcm-backend-cron (scheduled tasks)
+# Loaded by Falco via: /etc/falco/rules.d/kcm-workers.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# LISTS — Worker-specific
+# ---------------------------------------------------------------------------
+
+- list: kcm_worker_pods
+  items:
+    - kcm-backend-worker
+    - worker
+
+- list: kcm_cron_pods
+  items:
+    - kcm-backend-cron
+    - cron
+
+# Legitimate cron binaries
+- list: kcm_cron_trusted_binaries
+  items:
+    - node
+    - npm
+    - sh
+    - bash
+    - tini
+    - dumb-init
+    - prisma      # Prisma migrations in cron
+    - pg_dump     # DB backup
+    - pg_restore
+
+# ---------------------------------------------------------------------------
+# MACROS — Worker-specific
+# ---------------------------------------------------------------------------
+
+- macro: kcm_worker_container
+  condition: >
+    (k8s.pod.name startswith "kcm-backend-worker"
+    or container.name = "worker"
+    or container.name = "kcm-backend-worker")
+    and k8s.ns.name in (kcm_namespaces)
+
+- macro: kcm_cron_container
+  condition: >
+    (k8s.pod.name startswith "kcm-backend-cron"
+    or container.name = "cron"
+    or container.name = "kcm-backend-cron")
+    and k8s.ns.name in (kcm_namespaces)
+
+- macro: kcm_any_worker
+  condition: >
+    kcm_worker_container or kcm_cron_container
+
+# ---------------------------------------------------------------------------
+# RULES — Background Worker
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell spawned in Worker container
+- rule: KCM Worker Shell Spawned
+  desc: >
+    A shell was spawned inside the KCM Background Worker container.
+    Workers process queue jobs and should never spawn interactive shells.
+  condition: >
+    spawned_shell_in_container
+    and kcm_worker_container
+  output: >
+    CRITICAL: Shell spawned in KCM Worker container
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name parent=%proc.pname cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - worker
+    - shell
+    - T1059
+
+# [HIGH] Worker spawns unexpected process
+- rule: KCM Worker Unexpected Process
+  desc: >
+    The KCM Worker spawned a process that is not part of the expected
+    Node.js/Prisma worker runtime.
+  condition: >
+    spawned_process
+    and kcm_worker_container
+    and not proc.name in (kcm_trusted_processes)
+    and not proc.pname in (kcm_trusted_processes)
+  output: >
+    HIGH: KCM Worker spawned unexpected process
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name parent=%proc.pname cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - worker
+    - unexpected-process
+    - T1059
+
+# [HIGH] Worker reads Kubernetes ServiceAccount token
+- rule: KCM Worker ServiceAccount Token Theft
+  desc: >
+    The Background Worker is reading the Kubernetes ServiceAccount token.
+    Workers should not access the K8s API — this indicates token theft.
+  condition: >
+    open_read
+    and kcm_worker_container
+    and fd.name = /var/run/secrets/kubernetes.io/serviceaccount/token
+    and not proc.name in (node)
+  output: >
+    HIGH: KCM Worker reading ServiceAccount token
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline file=%fd.name)
+  priority: HIGH
+  tags:
+    - kcm
+    - worker
+    - serviceaccount-token
+    - T1528
+
+# [HIGH] Worker crypto mining process
+- rule: KCM Worker Crypto Mining
+  desc: >
+    A crypto mining process was detected inside the KCM Background Worker.
+    Workers run as persistent pods and are attractive targets for mining.
+  condition: >
+    spawned_process
+    and kcm_worker_container
+    and (
+      proc.name in (xmrig, minerd, cpuminer, ethminer, ccminer)
+      or proc.cmdline contains "stratum"
+      or proc.cmdline contains "xmrig"
+      or proc.cmdline contains "--pool"
+    )
+  output: >
+    CRITICAL: Crypto mining process in KCM Worker
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - worker
+    - cryptomining
+    - T1496
+
+# [MEDIUM] Worker writes to unexpected path
+- rule: KCM Worker Unexpected File Write
+  desc: >
+    The KCM Worker wrote to an unexpected path.
+    Workers should write only to /tmp or database (via Prisma).
+  condition: >
+    open_write
+    and kcm_worker_container
+    and not fd.directory in (/tmp, /app, /app/logs, /var/log)
+    and not fd.name glob "/proc/self/*"
+    and not proc.name in (node, npm, prisma)
+  output: >
+    MEDIUM: KCM Worker unexpected file write
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: WARNING
+  tags:
+    - kcm
+    - worker
+    - file-write
+    - T1074
+
+# ---------------------------------------------------------------------------
+# RULES — Cron Jobs
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell spawned in Cron container
+- rule: KCM Cron Shell Spawned
+  desc: >
+    A shell was spawned inside the KCM Cron container.
+    Cron containers should only run the Node.js scheduled tasks.
+  condition: >
+    spawned_shell_in_container
+    and kcm_cron_container
+    and not proc.pname in (kcm_cron_trusted_binaries)
+  output: >
+    CRITICAL: Shell spawned in KCM Cron container
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name parent=%proc.pname cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - cron
+    - shell
+    - T1059
+
+# [HIGH] Cron tampers with system crontab
+- rule: KCM Cron System Crontab Tamper
+  desc: >
+    A process in the KCM Cron container wrote to the system crontab files.
+    This is a persistence mechanism for malware.
+  condition: >
+    open_write
+    and kcm_cron_container
+    and (
+      fd.directory = /etc/cron.d
+      or fd.directory = /etc/cron.daily
+      or fd.directory = /etc/cron.weekly
+      or fd.name = /etc/crontab
+      or fd.name = /var/spool/cron/crontabs/root
+    )
+  output: >
+    HIGH: KCM Cron container tampering with system crontab
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - cron
+    - persistence
+    - T1053.003
+
+# [HIGH] Cron job spawns unexpected binary
+- rule: KCM Cron Unexpected Binary
+  desc: >
+    The KCM Cron container executed a binary not in the trusted list.
+    This could indicate cron job hijacking or malware persistence.
+  condition: >
+    spawned_process
+    and kcm_cron_container
+    and not proc.name in (kcm_cron_trusted_binaries)
+    and not proc.name in (kcm_trusted_processes)
+    and not proc.pname in (kcm_cron_trusted_binaries)
+  output: >
+    HIGH: KCM Cron container spawned unexpected binary
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name parent=%proc.pname cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - cron
+    - unexpected-binary
+    - T1053
+
+# [MEDIUM] Cron container network connection (unexpected for batch jobs)
+- rule: KCM Cron Unexpected Network Connection
+  desc: >
+    The KCM Cron container made a network connection.
+    Cron jobs should communicate only with PostgreSQL and Redis internally.
+    External connections are suspicious.
+  condition: >
+    evt.type = connect
+    and kcm_cron_container
+    and fd.typechar = 4
+    and not fd.rip startswith "10."
+    and not fd.rip startswith "172."
+    and not fd.rip startswith "192.168."
+    and not fd.rip startswith "127."
+    and not fd.rport in (5432, 6379, 443, 53)
+  output: >
+    MEDIUM: KCM Cron container unexpected network connection
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name dest=%fd.rip:%fd.rport)
+  priority: WARNING
+  tags:
+    - kcm
+    - cron
+    - network
+    - T1041
+
+# ---------------------------------------------------------------------------
+# RULES — Database Migration Security (Prisma)
+# ---------------------------------------------------------------------------
+
+# [HIGH] Prisma migration running in non-cron/worker container
+- rule: KCM Prisma Migration in Unexpected Container
+  desc: >
+    Prisma migrate was executed in an unexpected container.
+    DB migrations should only run in the cron/worker containers, not the API.
+  condition: >
+    spawned_process
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+    and proc.name = prisma
+    and proc.cmdline contains "migrate"
+    and not kcm_cron_container
+    and not kcm_worker_container
+  output: >
+    HIGH: Prisma DB migration in unexpected container
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline container=%container.name)
+  priority: HIGH
+  tags:
+    - kcm
+    - database
+    - prisma
+    - unexpected-migration
+
+# [MEDIUM] Prisma DB reset command (destructive)
+- rule: KCM Prisma DB Reset Detected
+  desc: >
+    A Prisma DB reset or force-reset was executed. This is a destructive
+    operation that wipes the database — should only happen in dev/test.
+  condition: >
+    spawned_process
+    and container.id != host
+    and proc.name = prisma
+    and (
+      proc.cmdline contains "db push --force-reset"
+      or proc.cmdline contains "migrate reset"
+    )
+  output: >
+    CRITICAL: Prisma DB reset detected in container
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline container=%container.name)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - database
+    - prisma
+    - destructive
+    - T1485

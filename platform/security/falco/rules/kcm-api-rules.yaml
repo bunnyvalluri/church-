@@ -1,0 +1,353 @@
+# =============================================================================
+# KCM API Rules — Auth, Payment, Media Upload APIs
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# High-sensitivity rules for the KCM backend API, specifically targeting
+# authentication, payment processing, and media upload attack vectors.
+# Loaded by Falco via: /etc/falco/rules.d/kcm-api-rules.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# LISTS — API-specific
+# ---------------------------------------------------------------------------
+
+# KCM backend API process name patterns
+- list: kcm_api_processes
+  items:
+    - kcm-backend-api
+    - kcm-backend-socket
+    - api
+    - socket
+
+# Suspicious tools that should never appear in API containers
+- list: kcm_blocked_tools
+  items:
+    - nmap
+    - masscan
+    - hydra
+    - sqlmap
+    - nikto
+    - netcat
+    - nc
+    - ncat
+    - socat
+    - curl       # blocked in runtime containers (build-time only)
+    - wget
+    - python3
+    - python
+    - perl
+    - ruby
+    - php
+    - gcc
+    - cc
+    - g++
+    - make
+    - cmake
+    - ld
+    - as
+
+# Payment processing sensitive paths
+- list: kcm_payment_sensitive_paths
+  items:
+    - /app/src/payment
+    - /app/src/stripe
+    - /app/src/billing
+    - /app/payments
+
+# Auth API sensitive paths
+- list: kcm_auth_sensitive_paths
+  items:
+    - /app/src/auth
+    - /app/src/firebase
+    - /app/src/jwt
+    - /app/src/tokens
+
+# ---------------------------------------------------------------------------
+# MACROS — API-specific
+# ---------------------------------------------------------------------------
+
+- macro: kcm_backend_api_pod
+  condition: >
+    (k8s.pod.name startswith "kcm-backend-api"
+    or container.name = "api"
+    or container.name = "kcm-backend-api")
+    and k8s.ns.name in (kcm_namespaces)
+
+- macro: kcm_socket_api_pod
+  condition: >
+    (k8s.pod.name startswith "kcm-backend-socket"
+    or container.name = "socket"
+    or container.name = "kcm-backend-socket")
+    and k8s.ns.name in (kcm_namespaces)
+
+- macro: kcm_any_api_pod
+  condition: >
+    kcm_backend_api_pod or kcm_socket_api_pod
+
+- macro: kcm_hacking_tool_spawned
+  condition: >
+    spawned_process
+    and proc.name in (kcm_blocked_tools)
+
+# ---------------------------------------------------------------------------
+# RULES — Authentication API
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Hacking tool in Auth API container
+- rule: KCM Auth API Hacking Tool Detected
+  desc: >
+    A known attack tool was executed inside the KCM Authentication API container.
+    This is a critical indicator of active exploitation of the auth system.
+  condition: >
+    kcm_hacking_tool_spawned
+    and kcm_backend_api_pod
+  output: >
+    CRITICAL: Hacking tool detected in KCM Auth API
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    tool=%proc.name cmd=%proc.cmdline parent=%proc.pname
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - auth-api
+    - hacking-tool
+    - T1059
+    - active-exploitation
+
+# [CRITICAL] Auth API reads /proc/*/environ (credential harvest)
+- rule: KCM Auth API Credential Harvest
+  desc: >
+    The Auth API container read /proc/*/environ which contains environment
+    variables including Firebase credentials, JWT secrets, and API keys.
+  condition: >
+    open_read
+    and kcm_backend_api_pod
+    and fd.name glob "/proc/*/environ"
+    and not proc.name in (node, kcm_trusted_processes)
+  output: >
+    CRITICAL: Auth API credential harvest via /proc/*/environ
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - auth-api
+    - credential-harvest
+    - T1003.007
+
+# [HIGH] Auth API spawns shell
+- rule: KCM Auth API Shell Spawned
+  desc: >
+    A shell was spawned inside the KCM Authentication API container.
+    The Auth API processes Firebase tokens and JWT — any shell is critical.
+  condition: >
+    spawned_shell_in_container
+    and kcm_backend_api_pod
+  output: >
+    CRITICAL: Shell spawned in Auth API
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name cmd=%proc.cmdline parent=%proc.pname)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - auth-api
+    - shell
+    - T1059
+
+# [CRITICAL] Auth API writes to unexpected path (token file creation)
+- rule: KCM Auth API Suspicious Write
+  desc: >
+    The Auth API container wrote a file to an unexpected path.
+    Could indicate token exfiltration staging or malware drop.
+  condition: >
+    open_write
+    and kcm_backend_api_pod
+    and not fd.directory in (/tmp, /app, /app/logs, /var/log)
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    HIGH: Auth API suspicious file write
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - auth-api
+    - file-write
+    - T1074
+
+# ---------------------------------------------------------------------------
+# RULES — Payment API
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell spawned near payment processing
+- rule: KCM Payment API Shell Spawned
+  desc: >
+    A shell was spawned in the KCM backend API which handles payment processing.
+    The Payment API processes Stripe/donation transactions — zero tolerance.
+  condition: >
+    spawned_shell_in_container
+    and kcm_backend_api_pod
+    and (
+      proc.pname in (node, api)
+      and proc.name in (shell_binaries, sh, bash)
+    )
+  output: >
+    CRITICAL: Shell spawned during payment processing context
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name cmd=%proc.cmdline parent=%proc.pname)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - payment-api
+    - shell
+    - financial-crime
+    - T1059
+
+# [CRITICAL] Payment API reads Stripe/Firebase secrets
+- rule: KCM Payment API Secrets File Access
+  desc: >
+    The Payment API read a sensitive secrets file outside of normal startup.
+    Could indicate active secret theft from the payment processing system.
+  condition: >
+    open_read
+    and kcm_backend_api_pod
+    and (
+      fd.name glob "*.key"
+      or fd.name glob "*.pem"
+      or fd.name glob "*secret*"
+      or fd.name glob "*stripe*"
+      or fd.name glob "*serviceAccount*"
+    )
+    and not proc.name in (node)
+    and not proc.pname in (node)
+  output: >
+    CRITICAL: Payment API accessed secrets file
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name parent=%proc.pname)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - payment-api
+    - secrets
+    - T1003
+
+# [HIGH] Payment API unexpected outbound (non-Stripe/Firebase)
+- rule: KCM Payment API Suspicious Outbound
+  desc: >
+    The Payment API made an outbound connection to an IP not on the allowlist.
+    All payment connections must go to Stripe (api.stripe.com) or Firebase.
+  condition: >
+    evt.type = connect
+    and kcm_backend_api_pod
+    and fd.typechar = 4
+    and fd.rport = 443
+    and not fd.rip startswith "10."
+    and not fd.rip startswith "172."
+    and not fd.rip startswith "192.168."
+    and not fd.rip startswith "127."
+    and proc.name in (node)
+  output: >
+    HIGH: Payment API outbound to external IP (verify is Stripe/Firebase)
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name dest_ip=%fd.rip dest_port=%fd.rport)
+  priority: HIGH
+  tags:
+    - kcm
+    - payment-api
+    - network
+    - data-exfiltration
+    - T1041
+
+# ---------------------------------------------------------------------------
+# RULES — Media Upload API
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Media upload container executes uploaded file
+- rule: KCM Media Upload RCE via Uploaded File
+  desc: >
+    The Media Upload API executed a file from the upload directory.
+    This is a critical Remote Code Execution indicator — uploaded malware executed.
+  condition: >
+    spawned_process
+    and kcm_backend_api_pod
+    and (
+      proc.exepath startswith /app/uploads
+      or proc.exepath startswith /tmp/uploads
+      or proc.exepath startswith /var/uploads
+      or proc.cmdline contains "uploads/"
+    )
+  output: >
+    CRITICAL: Media Upload API executed file from upload directory (RCE)
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name exepath=%proc.exepath cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - media-upload
+    - RCE
+    - T1190
+
+# [HIGH] Media upload writes outside allowed paths
+- rule: KCM Media Upload Unexpected Write Path
+  desc: >
+    The Media Upload API wrote a file outside of the expected upload/temp directories.
+    All media writes should go to Cloudinary via API — local disk writes are suspicious.
+  condition: >
+    open_write
+    and kcm_backend_api_pod
+    and not fd.directory in (/tmp, /app/uploads, /var/uploads, /app/logs)
+    and proc.name in (node)
+  output: >
+    MEDIUM: Media Upload API wrote file to unexpected path
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name)
+  priority: WARNING
+  tags:
+    - kcm
+    - media-upload
+    - unexpected-write
+
+# [HIGH] Media upload large file exfiltration pattern
+- rule: KCM Large Data Exfiltration via Socket API
+  desc: >
+    The Socket API is sending unusually large amounts of data via network.
+    Could indicate data exfiltration through the WebSocket connection.
+  condition: >
+    evt.type = sendto
+    and kcm_socket_api_pod
+    and fd.typechar = 4
+    and evt.rawres > 1048576
+    and not fd.rip startswith "10."
+    and not fd.rip startswith "172."
+    and not fd.rip startswith "192.168."
+  output: >
+    HIGH: Large outbound data from Socket API (possible exfiltration)
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name dest=%fd.rip:%fd.rport bytes=%evt.rawres)
+  priority: HIGH
+  tags:
+    - kcm
+    - socket-api
+    - exfiltration
+    - T1048
+
+# [CRITICAL] curl/wget in API container (runtime download attempt)
+- rule: KCM API Download Tool Executed
+  desc: >
+    curl or wget was executed inside a KCM API container at runtime.
+    These tools should not exist in production images — indicates malware staging.
+  condition: >
+    spawned_process
+    and kcm_any_api_pod
+    and proc.name in (curl, wget, fetch)
+  output: >
+    CRITICAL: Download tool executed in KCM API container
+    (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name
+    tool=%proc.name cmd=%proc.cmdline parent=%proc.pname
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - api
+    - malware-staging
+    - T1105

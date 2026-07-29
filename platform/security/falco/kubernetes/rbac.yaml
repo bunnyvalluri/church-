@@ -1,0 +1,102 @@
+# =============================================================================
+# Falco RBAC — Kingdom of Christ Ministries
+# =============================================================================
+# Principle of Least Privilege: Falco only reads Kubernetes metadata to
+# enrich syscall events. No write permissions granted anywhere.
+# =============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: runtime-security
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "Read-only Falco runtime sensor ClusterRole"
+    security.kcm.church/compliance: "CIS-K8s-5.1.3,least-privilege"
+rules:
+  # Pod metadata for event enrichment
+  - apiGroups: [""]
+    resources: ["pods", "pods/status"]
+    verbs: ["get", "list", "watch"]
+  # Node info for host-level event context
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/status"]
+    verbs: ["get", "list", "watch"]
+  # Namespace labels (for PSA and security context)
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  # ReplicationControllers, ReplicaSets, DaemonSets for workload context
+  - apiGroups: ["apps"]
+    resources: ["replicasets", "daemonsets", "deployments", "statefulsets"]
+    verbs: ["get", "list", "watch"]
+  # Events for K8s audit enrichment
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+  # ServiceAccounts for RBAC event enrichment
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get", "list", "watch"]
+  # ResourceQuotas for resource exhaustion detection
+  - apiGroups: [""]
+    resources: ["resourcequotas", "limitranges"]
+    verbs: ["get", "list", "watch"]
+  # CronJobs and Jobs for worker event enrichment
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: runtime-security
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "Binds falco ServiceAccount to ClusterRole"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: falco
+subjects:
+  - kind: ServiceAccount
+    name: falco
+    namespace: falco
+---
+# =============================================================================
+# Falco Metrics Reader — allows Prometheus to scrape Falcosidekick metrics
+# =============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: falco-metrics-reader
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/managed-by: argocd
+rules:
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: falco-metrics-reader
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/managed-by: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: falco-metrics-reader
+subjects:
+  - kind: ServiceAccount
+    name: falcosidekick
+    namespace: falco

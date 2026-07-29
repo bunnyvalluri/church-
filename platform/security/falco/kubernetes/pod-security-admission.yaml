@@ -1,0 +1,69 @@
+# =============================================================================
+# Pod Security Admission — KCM Namespace Labels
+# =============================================================================
+# Applies PSA enforcement labels to all KCM namespaces.
+# falco namespace: privileged (required for eBPF kernel driver)
+# kcm-system, monitoring: restricted
+# argocd: baseline
+# Apply with: kubectl apply -f pod-security-admission.yaml
+# =============================================================================
+---
+# kcm-system — application workloads (restricted)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kcm-system
+  labels:
+    app.kubernetes.io/name: kcm-portal
+    app.kubernetes.io/managed-by: kustomize
+    # Enforce restricted Pod Security Standard
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    security.kcm.church/psa: "restricted"
+    security.kcm.church/compliance: "CIS-K8s-5.2,PSS-restricted"
+---
+# monitoring — observability stack (baseline, some images need non-restricted)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    security.kcm.church/psa: "baseline"
+---
+# argocd — GitOps operator (baseline)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: baseline
+    pod-security.kubernetes.io/warn-version: latest
+    security.kcm.church/psa: "baseline"
+---
+# envoy-gateway-system — Envoy Gateway (privileged networking required)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: envoy-gateway-system
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/warn-version: latest
+    security.kcm.church/psa: "privileged"

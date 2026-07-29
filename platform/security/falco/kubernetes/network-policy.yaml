@@ -1,0 +1,100 @@
+# =============================================================================
+# Falco NetworkPolicy — Kingdom of Christ Ministries
+# =============================================================================
+# Restricts all ingress/egress for the falco namespace to only what is needed:
+# - Ingress: Prometheus scrape on port 2801 (Falcosidekick metrics)
+# - Egress: Loki (3100), Alertmanager (9093), kube-apiserver (6443),
+#           Falco event socket (internal DaemonSet → Sidekick)
+# =============================================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: falco-network-policy
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: runtime-security
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "Strict NetworkPolicy for Falco runtime sensor"
+    security.kcm.church/compliance: "CIS-K8s-5.3.2,network-segmentation"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: falco
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow Prometheus to scrape Falcosidekick metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 2801
+    # Allow intra-namespace traffic (Falco → Falcosidekick)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: falco
+  egress:
+    # Loki — receive Falco JSON events
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 3100
+    # Alertmanager — send alerts
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9093
+    # Prometheus Alertmanager (secondary port)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+    # Kubernetes API server — Falco metadata enrichment
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 6443
+        - protocol: TCP
+          port: 443
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Intra-namespace (Falco DaemonSet → Falcosidekick)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: falco
+---
+# Deny all ingress to falco namespace by default (default-deny)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: falco-default-deny-ingress
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/managed-by: argocd
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress

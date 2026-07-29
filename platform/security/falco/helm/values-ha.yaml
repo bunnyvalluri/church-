@@ -1,0 +1,98 @@
+# =============================================================================
+# Falco HA Override Values — Kingdom of Christ Ministries
+# Overlay on top of values.yaml for high-availability production clusters
+# =============================================================================
+# Usage:
+#   helm upgrade --install falco falcosecurity/falco \
+#     --namespace falco \
+#     -f values.yaml \
+#     -f values-falcosidekick.yaml \
+#     -f values-ha.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# DaemonSet — ensure Falco runs on ALL nodes including control plane
+# ---------------------------------------------------------------------------
+daemonset:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  tolerations:
+    # Tolerate all taints to ensure coverage on every node
+    - operator: Exists
+      effect: NoSchedule
+    - operator: Exists
+      effect: NoExecute
+    - operator: Exists
+      effect: PreferNoSchedule
+    # Control plane
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+    # Spot/preemptible nodes
+    - key: cloud.google.com/gke-spot
+      operator: Exists
+      effect: NoSchedule
+    - key: kubernetes.azure.com/scalesetpriority
+      value: spot
+      effect: NoSchedule
+
+# ---------------------------------------------------------------------------
+# PodDisruptionBudget — stricter in HA
+# ---------------------------------------------------------------------------
+podDisruptionBudget:
+  create: true
+  minAvailable: 1   # Always keep at least 1 node covered
+
+# ---------------------------------------------------------------------------
+# Priority — critical system component
+# ---------------------------------------------------------------------------
+priorityClassName: system-node-critical
+
+# ---------------------------------------------------------------------------
+# Resources — tuned for high-throughput production
+# ---------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+# ---------------------------------------------------------------------------
+# gRPC thread pool — increase for high event volume
+# ---------------------------------------------------------------------------
+falco:
+  grpc:
+    enabled: true
+    bind_address: "unix:///run/falco/falco.sock"
+    threadiness: 16
+
+  # Increase output queue for high-volume clusters
+  outputs_queue:
+    capacity: 1000
+
+  # Metrics interval — more frequent in HA
+  metrics:
+    enabled: true
+    interval: 5m
+
+  # Kernel event drop settings — alert on drops
+  syscall_event_drops:
+    actions:
+      - log
+      - alert
+    rate: 0.03333
+    max_burst: 10
+
+# ---------------------------------------------------------------------------
+# Falcosidekick HA overrides
+# ---------------------------------------------------------------------------
+falcosidekick:
+  enabled: true
+  replicaCount: 2

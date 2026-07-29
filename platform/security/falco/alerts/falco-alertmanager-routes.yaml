@@ -1,0 +1,152 @@
+# =============================================================================
+# Falco Alertmanager Routing — Kingdom of Christ Ministries
+# =============================================================================
+# This patches the existing Alertmanager configuration to add Falco-specific
+# routing for Critical/High/Warning security events.
+#
+# Apply via Helm values patch for kube-prometheus-stack alertmanager section,
+# or as a standalone alertmanagerconfig (if Alertmanager CRD is used).
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# AlertmanagerConfig CRD (Prometheus Operator >= 0.43)
+# ---------------------------------------------------------------------------
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: falco-security-routing
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: alertmanager
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+    alertmanagerConfig: "true"
+  annotations:
+    security.kcm.church/description: "Falco security alert routing configuration"
+spec:
+  # -------------------------------------------------------------------------
+  # Route — all Falco alerts enter here
+  # -------------------------------------------------------------------------
+  route:
+    receiver: "falco-default"
+    groupBy:
+      - alertname
+      - cluster
+      - priority
+      - category
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 4h
+    matchers:
+      - name: team
+        value: security
+        matchType: "="
+    routes:
+      # Critical — immediate, no grouping delay
+      - receiver: "falco-critical"
+        matchers:
+          - name: severity
+            value: critical
+            matchType: "="
+        groupWait: 0s
+        groupInterval: 30s
+        repeatInterval: 1h
+        continue: true
+
+      # High — fast routing
+      - receiver: "falco-high"
+        matchers:
+          - name: severity
+            value: high
+            matchType: "="
+        groupWait: 30s
+        groupInterval: 2m
+        repeatInterval: 2h
+
+      # Warning — standard routing
+      - receiver: "falco-warning"
+        matchers:
+          - name: severity
+            value: warning
+            matchType: "="
+        groupWait: 1m
+        groupInterval: 5m
+        repeatInterval: 6h
+
+      # Platform health alerts (Falco down)
+      - receiver: "falco-platform"
+        matchers:
+          - name: team
+            value: platform
+            matchType: "="
+        groupWait: 1m
+        groupInterval: 5m
+        repeatInterval: 4h
+
+  # -------------------------------------------------------------------------
+  # Receivers
+  # -------------------------------------------------------------------------
+  receivers:
+    # Critical security events — webhook + all channels
+    - name: "falco-critical"
+      webhookConfigs:
+        - url: "http://alertmanager-webhook.monitoring.svc.cluster.local:9095/falco/critical"
+          sendResolved: true
+          httpConfig:
+            tlsConfig:
+              insecureSkipVerify: false
+
+    # High severity events
+    - name: "falco-high"
+      webhookConfigs:
+        - url: "http://alertmanager-webhook.monitoring.svc.cluster.local:9095/falco/high"
+          sendResolved: true
+
+    # Warning events
+    - name: "falco-warning"
+      webhookConfigs:
+        - url: "http://alertmanager-webhook.monitoring.svc.cluster.local:9095/falco/warning"
+          sendResolved: true
+
+    # Platform team for infrastructure alerts
+    - name: "falco-platform"
+      webhookConfigs:
+        - url: "http://alertmanager-webhook.monitoring.svc.cluster.local:9095/falco/platform"
+          sendResolved: true
+
+    # Default fallback
+    - name: "falco-default"
+      webhookConfigs:
+        - url: "http://alertmanager-webhook.monitoring.svc.cluster.local:9095/falco/default"
+          sendResolved: false
+
+  # -------------------------------------------------------------------------
+  # Inhibition Rules — suppress lower-severity when critical fires
+  # -------------------------------------------------------------------------
+  inhibitRules:
+    # If critical fires for the same rule, suppress high
+    - sourceMatchers:
+        - name: severity
+          value: critical
+          matchType: "="
+      targetMatchers:
+        - name: severity
+          value: high
+          matchType: "="
+      equal:
+        - cluster
+        - rule
+
+    # If high fires for the same namespace, suppress warning
+    - sourceMatchers:
+        - name: severity
+          value: high
+          matchType: "="
+      targetMatchers:
+        - name: severity
+          value: warning
+          matchType: "="
+      equal:
+        - cluster
+        - namespace

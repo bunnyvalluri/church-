@@ -1,0 +1,213 @@
+# =============================================================================
+# ArgoCD Applications — Falco Runtime Security Platform
+# Kingdom of Christ Ministries
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# App 1: Falco Core — DaemonSet, RBAC, Helm Release
+# ---------------------------------------------------------------------------
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: runtime-security
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+    environment: production
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: security-alerts
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: security-alerts
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: security
+
+  source:
+    repoURL: "https://falcosecurity.github.io/charts"
+    chart: falco
+    targetRevision: "4.x"    # Latest stable 4.x chart (Falco 0.39.x)
+    helm:
+      releaseName: falco
+      values: |
+        # Inline values — override with values from repo
+      valueFiles: []
+      # Use values files from secondary source (GitOps-managed)
+      ignoreMissingValueFiles: false
+
+  # Multiple sources — chart from Helm registry + values from Git
+  sources:
+    - repoURL: "https://falcosecurity.github.io/charts"
+      chart: falco
+      targetRevision: "4.x"
+      helm:
+        releaseName: falco
+        valueFiles:
+          - $values/platform/security/falco/helm/values.yaml
+          - $values/platform/security/falco/helm/values-ha.yaml
+
+    - repoURL: "https://github.com/bunnyvalluri/kcm-church-infra.git"
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: falco
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+
+  # Resource health checks
+  ignoreDifferences:
+    - group: apps
+      kind: DaemonSet
+      jsonPointers:
+        - /spec/template/metadata/annotations
+
+---
+# ---------------------------------------------------------------------------
+# App 2: Falco Kubernetes Manifests (RBAC, NetworkPolicy, PSA, ConfigMaps)
+# ---------------------------------------------------------------------------
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco-kubernetes
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: falco-kubernetes
+    app.kubernetes.io/component: runtime-security
+    app.kubernetes.io/part-of: kcm-security-platform
+    environment: production
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"    # Deploy before Falco itself
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: security
+
+  source:
+    repoURL: "https://github.com/bunnyvalluri/kcm-church-infra.git"
+    targetRevision: main
+    path: platform/security/falco/kubernetes
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: falco
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+
+---
+# ---------------------------------------------------------------------------
+# App 3: Falco Monitoring (Prometheus rules, Grafana dashboards, Alertmanager)
+# ---------------------------------------------------------------------------
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco-monitoring
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: falco-monitoring
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/part-of: kcm-security-platform
+    environment: production
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"   # After Falco is deployed
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: security
+
+  source:
+    repoURL: "https://github.com/bunnyvalluri/kcm-church-infra.git"
+    targetRevision: main
+    path: platform/security/falco
+    directory:
+      recurse: true
+      include: "{alerts/**,dashboards/**,monitoring/**}"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 15s
+        factor: 2
+
+---
+# ---------------------------------------------------------------------------
+# App 4: Falco Custom Rules (ConfigMap with all KCM rules)
+# ---------------------------------------------------------------------------
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco-rules
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: falco-rules
+    app.kubernetes.io/component: rules
+    app.kubernetes.io/part-of: kcm-security-platform
+    environment: production
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    # Trigger Falco pod restart when rules ConfigMap changes
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: security
+
+  source:
+    repoURL: "https://github.com/bunnyvalluri/kcm-church-infra.git"
+    targetRevision: main
+    path: platform/security/falco/kubernetes
+    directory:
+      include: "configmap-rules.yaml"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: falco
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

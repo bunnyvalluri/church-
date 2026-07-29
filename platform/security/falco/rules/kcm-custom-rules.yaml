@@ -1,0 +1,423 @@
+# =============================================================================
+# KCM Custom Rules — Base Macros, Lists, and Core Rules
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# These macros and lists are the foundation for all KCM-specific rules.
+# They define KCM containers, trusted users, and known-safe paths.
+# Loaded by Falco via: /etc/falco/rules.d/kcm-custom-rules.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# LISTS — KCM Container Identifiers
+# ---------------------------------------------------------------------------
+
+# All KCM application containers
+- list: kcm_app_containers
+  items:
+    - kcm-backend-api
+    - kcm-backend-worker
+    - kcm-backend-cron
+    - kcm-backend-socket
+    - kcm-frontend
+    - api
+    - worker
+    - socket
+    - cron
+    - frontend
+
+# KCM container images
+- list: kcm_trusted_images
+  items:
+    - ghcr.io/bunnyvalluri/kcm-backend
+    - ghcr.io/bunnyvalluri/kcm-frontend
+
+# Trusted system users in KCM containers
+- list: kcm_trusted_users
+  items:
+    - root        # Only during init containers
+    - node        # Node.js runtime user
+    - nobody
+    - "1001"      # kcm app user (uid 1001)
+    - "65534"     # nobody uid
+
+# KCM namespaces
+- list: kcm_namespaces
+  items:
+    - kcm-system
+    - kcm-prod
+    - kcm-staging
+    - kcm-dev
+
+# Falco/infrastructure namespaces — known privileged operations
+- list: kcm_infra_namespaces
+  items:
+    - falco
+    - monitoring
+    - argocd
+    - envoy-gateway-system
+    - cert-manager
+    - kube-system
+
+# Trusted processes that Node.js legitimately spawns
+- list: kcm_trusted_processes
+  items:
+    - node
+    - npm
+    - npx
+    - sh           # legitimate npm scripts
+    - bash         # legitimate npm scripts
+    - prisma       # Prisma ORM migrations
+    - next         # Next.js build
+    - tini         # container init
+    - dumb-init
+    - /usr/local/bin/node
+    - /usr/local/bin/npm
+
+# Trusted file paths for KCM backend
+- list: kcm_trusted_read_paths
+  items:
+    - /app
+    - /etc/ssl
+    - /etc/ca-certificates
+    - /usr/local/share/ca-certificates
+    - /tmp
+    - /var/tmp
+    - /proc/self
+    - /dev/null
+    - /dev/urandom
+    - /dev/random
+
+# Sensitive paths that should never be accessed by app containers
+- list: kcm_sensitive_paths
+  items:
+    - /etc/shadow
+    - /etc/sudoers
+    - /etc/sudoers.d
+    - /etc/security
+    - /root/.ssh
+    - /root/.bash_history
+    - /root/.bashrc
+    - /.ssh
+    - /proc/sysrq-trigger
+    - /proc/kcore
+
+# Known-good outbound ports for KCM backend
+- list: kcm_allowed_outbound_ports
+  items: [80, 443, 3001, 3100, 5432, 6379, 9090, 9093, 9200]
+
+# ---------------------------------------------------------------------------
+# MACROS — Reusable conditions
+# ---------------------------------------------------------------------------
+
+# Is this a KCM application container?
+- macro: kcm_app_container
+  condition: >
+    container.name in (kcm_app_containers)
+    and k8s.ns.name in (kcm_namespaces)
+
+# Is this a trusted user in KCM containers?
+- macro: kcm_trusted_user
+  condition: >
+    user.name in (kcm_trusted_users)
+    or user.uid in (1001, 65534)
+
+# Is this a KCM infrastructure namespace?
+- macro: kcm_infra_namespace
+  condition: >
+    k8s.ns.name in (kcm_infra_namespaces)
+
+# Trusted image for KCM workloads
+- macro: kcm_trusted_image
+  condition: >
+    container.image.repository in (kcm_trusted_images)
+
+# Is process a shell?
+- macro: spawned_shell_in_container
+  condition: >
+    evt.type = execve
+    and container.id != host
+    and (proc.name in (shell_binaries) or proc.name = sh or proc.name = bash or proc.name = zsh or proc.name = ksh)
+
+# Is this a privileged container?
+- macro: kcm_privileged_container
+  condition: >
+    container.privileged = true
+    and not k8s.ns.name in (kcm_infra_namespaces)
+
+# Unexpected outbound network connection
+- macro: kcm_unexpected_outbound
+  condition: >
+    evt.type in (connect, sendto)
+    and fd.typechar = 4
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+    and not fd.sport in (kcm_allowed_outbound_ports)
+
+# Process running in KCM container is not trusted
+- macro: kcm_untrusted_process
+  condition: >
+    kcm_app_container
+    and not proc.name in (kcm_trusted_processes)
+    and not proc.pname in (kcm_trusted_processes)
+
+# ---------------------------------------------------------------------------
+# RULES — Core Security Rules for KCM
+# ---------------------------------------------------------------------------
+
+# [CRITICAL] Shell spawned inside KCM application container
+- rule: KCM Shell Spawned in Application Container
+  desc: >
+    A shell was spawned inside a KCM application container.
+    This is a strong indicator of an interactive intrusion or post-exploitation.
+  condition: >
+    spawned_shell_in_container
+    and kcm_app_container
+    and not proc.pname in (kcm_trusted_processes)
+    and not (proc.cmdline contains "npm" or proc.cmdline contains "node")
+  output: >
+    CRITICAL: Shell spawned inside KCM container
+    (user=%user.name user_uid=%user.uid
+    container=%container.name image=%container.image.repository
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    shell=%proc.name parent=%proc.pname cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - shell
+    - intrusion
+    - T1059
+    - CIS-5.7.4
+
+# [CRITICAL] Sensitive file access in KCM container
+- rule: KCM Sensitive File Access
+  desc: >
+    A KCM container attempted to read a sensitive system file.
+    This could indicate credential theft or privilege escalation.
+  condition: >
+    open_read
+    and kcm_app_container
+    and fd.name in (kcm_sensitive_paths)
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    CRITICAL: KCM container accessed sensitive file
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - sensitive-file
+    - credential-theft
+    - T1003
+    - CIS-5.7.4
+
+# [CRITICAL] Privilege escalation attempt
+- rule: KCM Privilege Escalation Attempt
+  desc: >
+    A process inside a KCM container attempted to escalate privileges
+    via setuid, setgid, or sudo.
+  condition: >
+    evt.type in (setuid, setgid)
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+    and not user.uid = 0
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    CRITICAL: Privilege escalation attempt in KCM container
+    (user=%user.name user_uid=%user.uid
+    container=%container.name pod=%k8s.pod.name
+    ns=%k8s.ns.name proc=%proc.name)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - privilege-escalation
+    - T1548
+    - CIS-5.2.6
+
+# [HIGH] Unexpected outbound network connection
+- rule: KCM Unexpected Outbound Network Connection
+  desc: >
+    A KCM container established an outbound connection on an unexpected port.
+    Could indicate exfiltration, reverse shell, or C2 communication.
+  condition: >
+    kcm_unexpected_outbound
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    HIGH: Unexpected outbound connection from KCM container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name dest_ip=%fd.rip dest_port=%fd.rport)
+  priority: HIGH
+  tags:
+    - kcm
+    - network
+    - exfiltration
+    - T1041
+
+# [HIGH] Crypto mining process detected
+- rule: KCM Crypto Mining Detected
+  desc: >
+    A known crypto mining binary or process was detected inside a KCM container.
+  condition: >
+    spawned_process
+    and container.id != host
+    and (
+      proc.name in (crypto_miners)
+      or proc.cmdline contains "stratum+tcp"
+      or proc.cmdline contains "stratum+ssl"
+      or proc.cmdline contains "xmrig"
+      or proc.cmdline contains "xmr"
+      or proc.cmdline contains "monero"
+      or proc.cmdline contains "--pool"
+      or proc.cmdline contains "minerd"
+      or proc.cmdline contains "cpuminer"
+      or proc.cmdline contains "nicehash"
+    )
+  output: >
+    CRITICAL: Crypto mining process detected in container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - cryptomining
+    - T1496
+
+# [CRITICAL] Container escape — namespace breakout attempt
+- rule: KCM Container Escape Attempt
+  desc: >
+    A process inside a KCM container attempted to access host proc filesystem
+    or mounted sensitive host paths — indicator of container escape.
+  condition: >
+    open_read
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+    and (
+      fd.name startswith /proc/1/
+      or fd.name startswith /host/proc
+      or fd.name startswith /host/etc
+      or fd.name = /proc/sysrq-trigger
+    )
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    CRITICAL: Container escape attempt detected
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - container-escape
+    - T1611
+
+# [HIGH] Reverse shell detected
+- rule: KCM Reverse Shell Detected
+  desc: >
+    A reverse shell pattern was detected — process redirecting stdin/stdout
+    to a network socket.
+  condition: >
+    evt.type = dup
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+    and fd.type = ipv4
+    and (proc.name in (shell_binaries) or proc.name = nc or proc.name = ncat or proc.name = socat)
+  output: >
+    CRITICAL: Reverse shell detected in KCM container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name fd.name=%fd.name)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - reverse-shell
+    - T1059.004
+
+# [CRITICAL] Kernel module load in KCM namespace
+- rule: KCM Kernel Module Load Attempt
+  desc: >
+    A KCM container attempted to load a kernel module.
+    This is a critical indicator of a rootkit or kernel exploit.
+  condition: >
+    evt.type = finit_module
+    and container.id != host
+    and k8s.ns.name in (kcm_namespaces)
+  output: >
+    CRITICAL: Kernel module load attempt from KCM container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name)
+  priority: CRITICAL
+  tags:
+    - kcm
+    - kernel-module
+    - rootkit
+    - T1547.006
+
+# [HIGH] Binary execution from unexpected path
+- rule: KCM Unexpected Binary Execution
+  desc: >
+    A binary was executed from an unexpected path in a KCM container.
+    Legitimate KCM processes run from /app or /usr/local/bin.
+  condition: >
+    spawned_process
+    and kcm_app_container
+    and not proc.exepath startswith /app
+    and not proc.exepath startswith /usr/local/bin
+    and not proc.exepath startswith /usr/bin
+    and not proc.exepath startswith /bin
+    and not proc.exepath startswith /usr/local/lib
+    and not proc.exepath = /proc/self/exe
+    and not proc.name in (kcm_trusted_processes)
+  output: >
+    HIGH: Binary executed from unexpected path in KCM container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name exepath=%proc.exepath cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - binary-drift
+    - T1059
+
+# [MEDIUM] Write to /tmp in KCM container
+- rule: KCM Write to Tmp Directory
+  desc: >
+    A KCM container wrote a file to /tmp or /var/tmp.
+    While sometimes legitimate, this can indicate staged malware.
+  condition: >
+    open_write
+    and kcm_app_container
+    and (fd.directory = /tmp or fd.directory = /var/tmp)
+    and not proc.name in (kcm_trusted_processes)
+    and not fd.name glob "/tmp/npm-*"
+    and not fd.name glob "/tmp/.npm*"
+  output: >
+    MEDIUM: KCM container wrote to /tmp
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    file=%fd.name proc=%proc.name)
+  priority: WARNING
+  tags:
+    - kcm
+    - tmp-write
+    - T1074
+
+# [MEDIUM] Hidden process (proc.name contains dot or null)
+- rule: KCM Hidden Process Detected
+  desc: >
+    A process with a hidden or obfuscated name was detected in a KCM container.
+    Malware often uses names starting with a dot or containing null bytes.
+  condition: >
+    spawned_process
+    and kcm_app_container
+    and (proc.name startswith "." or proc.name = "")
+  output: >
+    HIGH: Hidden process detected in KCM container
+    (user=%user.name container=%container.name
+    pod=%k8s.pod.name ns=%k8s.ns.name
+    proc=%proc.name cmd=%proc.cmdline)
+  priority: HIGH
+  tags:
+    - kcm
+    - hidden-process
+    - T1036

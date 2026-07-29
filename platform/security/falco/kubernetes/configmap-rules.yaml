@@ -1,0 +1,44 @@
+# =============================================================================
+# Falco Custom Rules ConfigMap — Kingdom of Christ Ministries
+# =============================================================================
+# This ConfigMap bundles all KCM custom Falco rules into a single K8s object
+# that gets mounted into the Falco DaemonSet at /etc/falco/rules.d/
+# ArgoCD manages this ConfigMap — changes auto-trigger Falco rule reload.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-custom-rules
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: rules
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "KCM custom Falco detection rules"
+    # Checksum updated by CI to force pod restart on rule change
+    security.kcm.church/rules-version: "v1.0.0"
+    argocd.argoproj.io/compare-options: "IncludeMutationWebhook=true"
+data:
+  # Rules are maintained as separate files in platform/security/falco/rules/
+  # and assembled here via Kustomize or CI pipeline.
+  # The actual content is managed by the falco-rules ArgoCD Application.
+
+  # Placeholder — CI replaces these with actual rule file contents
+  kcm-custom-rules.yaml: |
+    # Source: platform/security/falco/rules/kcm-custom-rules.yaml
+    # Version: 1.0.0
+    # DO NOT EDIT — managed by ArgoCD
+
+  kcm-portals.yaml: |
+    # Source: platform/security/falco/rules/kcm-portals.yaml
+
+  kcm-api-rules.yaml: |
+    # Source: platform/security/falco/rules/kcm-api-rules.yaml
+
+  kcm-k8s-rules.yaml: |
+    # Source: platform/security/falco/rules/kcm-k8s-rules.yaml
+
+  kcm-workers.yaml: |
+    # Source: platform/security/falco/rules/kcm-workers.yaml

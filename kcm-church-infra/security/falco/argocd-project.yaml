@@ -1,0 +1,84 @@
+# =============================================================================
+# ArgoCD AppProject — Security Platform
+# Kingdom of Christ Ministries
+# =============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: security
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: security
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "ArgoCD project for runtime security platform"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "KCM Church Enterprise Runtime Security Platform"
+
+  # Source repositories
+  sourceRepos:
+    - "https://github.com/bunnyvalluri/kcm-church-infra.git"
+    - "https://falcosecurity.github.io/charts"
+
+  # Allowed destinations
+  destinations:
+    - namespace: falco
+      server: https://kubernetes.default.svc
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+    - namespace: kcm-system
+      server: https://kubernetes.default.svc
+    - namespace: kcm-prod
+      server: https://kubernetes.default.svc
+
+  # Allowed cluster resources
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: policy
+      kind: PodSecurityPolicy
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+
+  # Allowed namespaced resources
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  # Sync windows — allow deploys during business hours and emergency
+  syncWindows:
+    - kind: allow
+      schedule: "0 6 * * 1-5"
+      duration: 10h
+      applications:
+        - "falco*"
+    - kind: allow
+      schedule: "0 0 * * *"
+      duration: 2h
+      applications:
+        - "falco-emergency*"
+      manualSync: true
+
+  # Project RBAC
+  roles:
+    - name: security-admin
+      description: Full access to security project
+      policies:
+        - p, proj:security:security-admin, applications, *, security/*, allow
+        - p, proj:security:security-admin, repositories, *, *, allow
+      groups:
+        - security-team
+    - name: security-readonly
+      description: Read-only access to security project
+      policies:
+        - p, proj:security:security-readonly, applications, get, security/*, allow
+      groups:
+        - developers
+        - devops

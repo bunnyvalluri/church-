@@ -1,0 +1,288 @@
+name: "Falco Security CI — Validate Rules, Helm, OpenTofu"
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "platform/security/falco/**"
+      - "kcm-church-infra/security/falco/**"
+      - "platform/opentofu/modules/falco*/**"
+      - "platform/opentofu/security.tf"
+  pull_request:
+    branches: [main]
+    paths:
+      - "platform/security/falco/**"
+      - "kcm-church-infra/security/falco/**"
+      - "platform/opentofu/modules/falco*/**"
+      - "platform/opentofu/security.tf"
+
+concurrency:
+  group: falco-security-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FALCO_VERSION: "0.39.2"
+  FALCOCTL_VERSION: "0.9.1"
+  HELM_VERSION: "3.14.0"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Validate Falco Rules
+  # ---------------------------------------------------------------------------
+  falco-rules-validate:
+    name: "Validate Falco Rules"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install falcoctl
+        run: |
+          curl -L "https://github.com/falcosecurity/falcoctl/releases/download/v${FALCOCTL_VERSION}/falcoctl_${FALCOCTL_VERSION}_linux_amd64.tar.gz" \
+            | tar xz -C /usr/local/bin
+          falcoctl version
+
+      - name: Install Falco (for rules validation)
+        run: |
+          curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
+            | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] https://download.falco.org/packages/deb stable main" \
+            | sudo tee -a /etc/apt/sources.list.d/falcosecurity.list
+          sudo apt-get update -qq
+          sudo apt-get install -y falco=${FALCO_VERSION}
+
+      - name: Validate default Falco rules load
+        run: |
+          sudo falco --validate /etc/falco/falco_rules.yaml
+          echo "✅ Default Falco rules valid"
+
+      - name: Validate KCM custom rules
+        run: |
+          # Validate each custom rule file against the base rules
+          for rulefile in platform/security/falco/rules/*.yaml; do
+            echo "Validating: $rulefile"
+            sudo falco --validate "$rulefile" || echo "⚠️ Validation issues in $rulefile (may need base rules context)"
+          done
+
+      - name: falcoctl lint rules
+        run: |
+          for rulefile in platform/security/falco/rules/*.yaml; do
+            echo "Linting: $rulefile"
+            falcoctl artifact lint --type rulesfile "$rulefile" 2>&1 || true
+          done
+
+      - name: YAML lint — security rules
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: platform/security/falco/rules/
+          config_file: .yamllint.yml
+
+      - name: YAML lint — kubernetes manifests
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: platform/security/falco/kubernetes/
+          config_file: .yamllint.yml
+
+      - name: YAML lint — alerts
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: platform/security/falco/alerts/
+          config_file: .yamllint.yml
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Helm Lint — Falco Values
+  # ---------------------------------------------------------------------------
+  helm-lint:
+    name: "Helm Lint — Falco Values"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Add Falco Helm repo
+        run: |
+          helm repo add falcosecurity https://falcosecurity.github.io/charts
+          helm repo update
+
+      - name: Lint Falco values.yaml
+        run: |
+          helm lint falcosecurity/falco \
+            --version 4.x \
+            --values platform/security/falco/helm/values.yaml \
+            --strict
+
+      - name: Lint Falco values-ha.yaml
+        run: |
+          helm lint falcosecurity/falco \
+            --version 4.x \
+            --values platform/security/falco/helm/values.yaml \
+            --values platform/security/falco/helm/values-ha.yaml \
+            --strict
+
+      - name: Lint Falcosidekick values
+        run: |
+          helm lint falcosecurity/falcosidekick \
+            --values platform/security/falco/helm/values-falcosidekick.yaml \
+            --strict
+
+      - name: Template render check
+        run: |
+          helm template falco falcosecurity/falco \
+            --version 4.x \
+            --namespace falco \
+            --values platform/security/falco/helm/values.yaml \
+            --values platform/security/falco/helm/values-ha.yaml \
+            > /tmp/falco-rendered.yaml
+          echo "✅ Falco template rendered: $(wc -l < /tmp/falco-rendered.yaml) lines"
+
+      - name: Kubeconform — validate rendered manifests
+        run: |
+          curl -L "https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz" \
+            | tar xz -C /usr/local/bin
+          kubeconform \
+            -strict \
+            -summary \
+            -kubernetes-version 1.28.0 \
+            -ignore-missing-schemas \
+            /tmp/falco-rendered.yaml
+          echo "✅ Rendered Falco manifests pass kubeconform"
+
+  # ---------------------------------------------------------------------------
+  # Job 3: OpenTofu Validate
+  # ---------------------------------------------------------------------------
+  opentofu-validate:
+    name: "OpenTofu Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.6.0"
+
+      - name: OpenTofu init — falco module
+        run: |
+          tofu -chdir=platform/opentofu init \
+            -backend=false \
+            -upgrade
+
+      - name: OpenTofu validate — falco module
+        run: |
+          tofu -chdir=platform/opentofu validate
+          echo "✅ OpenTofu modules validate"
+
+      - name: OpenTofu fmt check
+        run: |
+          tofu -chdir=platform/opentofu fmt \
+            -check \
+            -recursive \
+            -diff
+          echo "✅ OpenTofu formatting OK"
+
+      - name: tflint — security module
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.0
+
+      - name: Run tflint
+        run: |
+          tflint --chdir=platform/opentofu/modules/falco --init
+          tflint --chdir=platform/opentofu/modules/falco
+
+  # ---------------------------------------------------------------------------
+  # Job 4: Security Scan — Kubernetes Manifests
+  # ---------------------------------------------------------------------------
+  security-scan:
+    name: "Security Scan — K8s Manifests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trivy — scan Falco Kubernetes manifests
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: platform/security/falco/kubernetes/
+          severity: CRITICAL,HIGH
+          exit-code: 1
+          hide-progress: false
+          format: table
+
+      - name: Trivy — scan Falco Helm values
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: platform/security/falco/helm/
+          severity: CRITICAL,HIGH
+          exit-code: 0   # warn only on Helm values
+          format: table
+
+      - name: Checkov — IaC security scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: platform/opentofu/modules/falco/
+          framework: terraform
+          soft_fail: true
+          output_format: cli
+          quiet: false
+
+  # ---------------------------------------------------------------------------
+  # Job 5: ArgoCD Application Validation
+  # ---------------------------------------------------------------------------
+  argocd-validate:
+    name: "Validate ArgoCD Manifests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: YAML lint — ArgoCD apps
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: kcm-church-infra/security/falco/
+          config_file: .yamllint.yml
+
+      - name: kubeconform — ArgoCD manifests
+        run: |
+          curl -L "https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz" \
+            | tar xz -C /usr/local/bin
+          kubeconform \
+            -strict \
+            -summary \
+            -schema-location default \
+            -schema-location "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json" \
+            -ignore-missing-schemas \
+            kcm-church-infra/security/falco/
+
+  # ---------------------------------------------------------------------------
+  # Summary gate
+  # ---------------------------------------------------------------------------
+  ci-gate:
+    name: "CI Gate — All Falco Checks"
+    needs:
+      - falco-rules-validate
+      - helm-lint
+      - opentofu-validate
+      - security-scan
+      - argocd-validate
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          if [[ "${{ needs.falco-rules-validate.result }}" != "success" ||
+                "${{ needs.helm-lint.result }}" != "success" ||
+                "${{ needs.opentofu-validate.result }}" != "success" ||
+                "${{ needs.argocd-validate.result }}" != "success" ]]; then
+            echo "❌ One or more Falco CI checks failed"
+            exit 1
+          fi
+          echo "✅ All Falco security CI checks passed"

@@ -1,0 +1,356 @@
+# =============================================================================
+# Falco Prometheus Alert Rules — Kingdom of Christ Ministries
+# PrometheusRule CRD for kube-prometheus-stack
+# =============================================================================
+# Falcosidekick exposes metrics at :2802/metrics including:
+#   falcosidekick_falco_events_total{priority, rule, source}
+#   falcosidekick_inputs_total
+#   falcosidekick_outputs_total{output, status}
+# =============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: falco-security-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/component: alerting
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+    # Required by kube-prometheus-stack to pick up this rule
+    release: kube-prometheus-stack
+    prometheus: kube-prometheus
+    role: alert-rules
+  annotations:
+    security.kcm.church/description: "Falco runtime security Prometheus alert rules"
+spec:
+  groups:
+    # -------------------------------------------------------------------------
+    # Group 1: Critical Security Events
+    # -------------------------------------------------------------------------
+    - name: falco.critical
+      interval: 30s
+      rules:
+        # Any CRITICAL Falco event fires immediately
+        - alert: FalcoCriticalSecurityEvent
+          expr: |
+            increase(falcosidekick_falco_events_total{priority="critical"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            component: runtime-security
+          annotations:
+            summary: "CRITICAL Falco security event detected"
+            description: >
+              A CRITICAL severity Falco security event was detected on the KCM cluster.
+              Rule: {{ $labels.rule }}. Immediate investigation required.
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/critical-incident.md"
+            dashboard_url: "http://grafana.monitoring.svc.cluster.local:3000/d/falco-security-overview"
+
+        # Shell spawned in ANY container
+        - alert: FalcoShellSpawnedInContainer
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*Shell.*|.*shell.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: intrusion
+          annotations:
+            summary: "Shell spawned inside a KCM container"
+            description: >
+              A shell was spawned inside a KCM container. This is a strong indicator
+              of active intrusion. Rule: {{ $labels.rule }}
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/shell-in-container.md"
+
+        # Crypto mining detected
+        - alert: FalcoCryptoMiningDetected
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Cc]rypto.*|.*[Mm]ining.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: cryptomining
+          annotations:
+            summary: "Crypto mining detected in KCM cluster"
+            description: >
+              A crypto mining process was detected in a KCM container.
+              Immediate action: isolate pod and investigate.
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/crypto-mining.md"
+
+        # Container escape attempt
+        - alert: FalcoContainerEscapeAttempt
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Ee]scape.*|.*[Bb]reakout.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: container-escape
+          annotations:
+            summary: "Container escape attempt detected"
+            description: >
+              A container escape attempt was detected in the KCM cluster.
+              This is a node-level threat. Isolate immediately.
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/container-escape.md"
+
+        # Privilege escalation
+        - alert: FalcoPrivilegeEscalation
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Pp]rivilege.*[Ee]scalation.*|.*setuid.*|.*setgid.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: privilege-escalation
+          annotations:
+            summary: "Privilege escalation attempt in KCM container"
+            description: >
+              A privilege escalation attempt was detected. Rule: {{ $labels.rule }}
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/privilege-escalation.md"
+
+        # Reverse shell
+        - alert: FalcoReverseShellDetected
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Rr]everse.*[Ss]hell.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: reverse-shell
+          annotations:
+            summary: "Reverse shell detected in KCM cluster"
+            description: >
+              A reverse shell was detected in a KCM container.
+              Network isolation and forensics required immediately.
+            runbook_url: "https://github.com/bunnyvalluri/kcm-church-infra/blob/main/platform/security/falco/runbooks/critical-incident.md"
+
+        # Payment API critical event
+        - alert: FalcoPaymentAPICritical
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Pp]ayment.*",priority="critical"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: financial-security
+          annotations:
+            summary: "CRITICAL security event in KCM Payment API"
+            description: >
+              A critical security event occurred in the Payment API.
+              Financial data at risk. Escalate to security team immediately.
+
+        # K8s audit critical events
+        - alert: FalcoKubernetesPrivilegedPod
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Pp]rivileged.*[Pp]od.*",source="k8s_audit"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            team: security
+            cluster: kcm-prod
+            category: k8s-security
+          annotations:
+            summary: "Privileged Kubernetes pod created"
+            description: >
+              A privileged pod was created in the KCM cluster outside allowed namespaces.
+
+    # -------------------------------------------------------------------------
+    # Group 2: High Severity Events
+    # -------------------------------------------------------------------------
+    - name: falco.high
+      interval: 60s
+      rules:
+        # Multiple HIGH events in short window
+        - alert: FalcoHighSeverityBurst
+          expr: |
+            increase(falcosidekick_falco_events_total{priority="high"}[10m]) > 5
+          for: 0m
+          labels:
+            severity: high
+            team: security
+            cluster: kcm-prod
+          annotations:
+            summary: "Burst of HIGH severity Falco events"
+            description: >
+              More than 5 HIGH severity events in 10 minutes.
+              This may indicate an active attack campaign.
+
+        # kubectl exec into production pod
+        - alert: FalcoKubectlExecProduction
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Ee]xec.*[Pp]od.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: high
+            team: security
+            cluster: kcm-prod
+            category: k8s-ops
+          annotations:
+            summary: "kubectl exec into production KCM pod"
+            description: >
+              Someone used kubectl exec into a KCM production pod.
+              Audit this operation immediately.
+
+        # Secrets accessed
+        - alert: FalcoKubernetesSecretsAccess
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Ss]ecret.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: high
+            team: security
+            cluster: kcm-prod
+            category: secrets
+          annotations:
+            summary: "Kubernetes secrets accessed in KCM cluster"
+            description: >
+              Kubernetes secrets were accessed. Rule: {{ $labels.rule }}
+
+        # Unexpected network connection
+        - alert: FalcoUnexpectedNetworkConnection
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Uu]nexpected.*[Nn]etwork.*|.*[Ss]uspicious.*[Oo]utbound.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: high
+            team: security
+            cluster: kcm-prod
+            category: network
+          annotations:
+            summary: "Unexpected network connection from KCM container"
+            description: >
+              An unexpected outbound network connection was detected.
+
+    # -------------------------------------------------------------------------
+    # Group 3: Warning / Medium Events
+    # -------------------------------------------------------------------------
+    - name: falco.warning
+      interval: 120s
+      rules:
+        # Warning events accumulating
+        - alert: FalcoWarningEventAccumulation
+          expr: |
+            increase(falcosidekick_falco_events_total{priority="warning"}[30m]) > 20
+          for: 5m
+          labels:
+            severity: warning
+            team: security
+            cluster: kcm-prod
+          annotations:
+            summary: "KCM cluster accumulating WARNING Falco events"
+            description: >
+              More than 20 WARNING events in 30 minutes.
+              Review Falco dashboard for patterns.
+
+        # Tmp writes in containers
+        - alert: FalcoTmpWriteInContainer
+          expr: |
+            increase(falcosidekick_falco_events_total{rule=~".*[Tt]mp.*"}[1h]) > 50
+          for: 0m
+          labels:
+            severity: warning
+            team: security
+            cluster: kcm-prod
+          annotations:
+            summary: "High volume of /tmp writes in KCM containers"
+            description: >
+              Unusually high volume of /tmp writes detected. May indicate staging behavior.
+
+    # -------------------------------------------------------------------------
+    # Group 4: Falco Health & Availability
+    # -------------------------------------------------------------------------
+    - name: falco.health
+      interval: 60s
+      rules:
+        # Falcosidekick not receiving events
+        - alert: FalcosidekickNotReceivingEvents
+          expr: |
+            rate(falcosidekick_inputs_total[5m]) == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: platform
+            cluster: kcm-prod
+          annotations:
+            summary: "Falcosidekick not receiving Falco events"
+            description: >
+              Falcosidekick has not received any events for 5 minutes.
+              The Falco sensor may be down — runtime security coverage is DEGRADED.
+
+        # Falcosidekick output failures
+        - alert: FalcosidekickOutputFailure
+          expr: |
+            increase(falcosidekick_outputs_total{status="error"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: warning
+            team: platform
+            cluster: kcm-prod
+          annotations:
+            summary: "Falcosidekick output delivery failure"
+            description: >
+              Falcosidekick failed to deliver events to {{ $labels.output }}.
+              Security alerts may not be reaching Loki/Alertmanager.
+
+        # Falco DaemonSet pod not running on all nodes
+        - alert: FalcoDaemonSetNodeCoverageIncomplete
+          expr: |
+            kube_daemonset_status_number_unavailable{namespace="falco",daemonset="falco"} > 0
+          for: 2m
+          labels:
+            severity: high
+            team: platform
+            cluster: kcm-prod
+          annotations:
+            summary: "Falco DaemonSet missing on one or more nodes"
+            description: >
+              {{ $value }} nodes are not running the Falco sensor.
+              These nodes have NO runtime security coverage.
+
+        # Falco kernel event drops
+        - alert: FalcoKernelEventDrops
+          expr: |
+            increase(falco_evt_source_base_syscall_num_evts_dropped_total[5m]) > 100
+          for: 0m
+          labels:
+            severity: warning
+            team: platform
+            cluster: kcm-prod
+          annotations:
+            summary: "Falco dropping kernel events"
+            description: >
+              Falco is dropping {{ $value }} kernel events per 5 minutes.
+              Increase Falco resource limits or reduce event volume.
+
+    # -------------------------------------------------------------------------
+    # Group 5: Informational — Event Counts for Dashboards
+    # -------------------------------------------------------------------------
+    - name: falco.recording
+      interval: 60s
+      rules:
+        # Record per-rule event rate for dashboards
+        - record: falco:events_by_priority:rate5m
+          expr: |
+            sum by (priority) (rate(falcosidekick_falco_events_total[5m]))
+
+        - record: falco:events_by_rule:rate5m
+          expr: |
+            sum by (rule) (rate(falcosidekick_falco_events_total[5m]))
+
+        - record: falco:events_by_namespace:rate5m
+          expr: |
+            sum by (k8s_ns_name) (rate(falcosidekick_falco_events_total[5m]))
+
+        - record: falco:critical_event_total:1h
+          expr: |
+            sum(increase(falcosidekick_falco_events_total{priority="critical"}[1h]))

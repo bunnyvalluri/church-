@@ -1,0 +1,336 @@
+# =============================================================================
+# Falco Helm Values — Kingdom of Christ Ministries
+# Official chart: falcosecurity/falco (latest stable)
+# Chart repo: https://falcosecurity.github.io/charts
+# =============================================================================
+# Install:
+#   helm repo add falcosecurity https://falcosecurity.github.io/charts
+#   helm repo update
+#   helm upgrade --install falco falcosecurity/falco \
+#     --namespace falco --create-namespace \
+#     -f values.yaml -f values-falcosidekick.yaml
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Image
+# ---------------------------------------------------------------------------
+image:
+  registry: docker.io
+  repository: falcosecurity/falco-no-driver
+  tag: ""          # uses chart appVersion (latest stable)
+  pullPolicy: IfNotPresent
+
+# ---------------------------------------------------------------------------
+# Driver — modern eBPF (no kernel module, no compilation needed)
+# Requires kernel >= 5.8. For older kernels use driver.kind: ebpf
+# ---------------------------------------------------------------------------
+driver:
+  enabled: true
+  kind: modern_ebpf      # Options: modern_ebpf | ebpf | kmod
+  loader:
+    enabled: true
+    initContainer:
+      enabled: true
+      image:
+        registry: docker.io
+        repository: falcosecurity/falco-driver-loader
+        tag: ""
+        pullPolicy: IfNotPresent
+
+# ---------------------------------------------------------------------------
+# Falco Core Configuration
+# ---------------------------------------------------------------------------
+falco:
+  # JSON output for structured logging → Loki
+  json_output: true
+  json_include_output_property: true
+  json_include_tags_property: true
+
+  # Log level
+  log_stderr: true
+  log_syslog: false
+  log_level: info
+
+  # Priority threshold — log everything NOTICE and above
+  priority: notice
+
+  # Buffered outputs for performance
+  buffered_outputs: false
+  outputs_queue:
+    capacity: 0
+
+  # gRPC server for Falcosidekick integration
+  grpc:
+    enabled: true
+    bind_address: "unix:///run/falco/falco.sock"
+    threadiness: 8
+
+  grpc_output:
+    enabled: true
+
+  # Kubernetes metadata enrichment
+  metadata_download:
+    max_mb: 100
+    chunk_wait_us: 1000
+    worker_wait_us: 5000
+
+  # Metrics — expose Prometheus-compatible metrics via Falcosidekick
+  metrics:
+    enabled: true
+    interval: 15m
+    output_rule: true
+    rules_counters_enabled: true
+    resource_utilization_enabled: true
+    state_counters_enabled: true
+    kernel_event_counters_enabled: true
+    libbpf_stats_enabled: true
+    plugins_metrics_enabled: true
+    convert_memory_to_mb: true
+    include_empty_values: false
+
+  # Syscall event sources
+  syscall_event_drops:
+    actions:
+      - log
+      - alert
+    rate: 0.03333
+    max_burst: 10
+
+  # File output (JSON)
+  file_output:
+    enabled: true
+    keep_alive: false
+    filename: /var/log/falco/falco.log
+
+  # Stdout output
+  stdout_output:
+    enabled: true
+
+  # Program output (pipe to Falcosidekick)
+  program_output:
+    enabled: false
+    keep_alive: false
+    program: ""
+
+  # HTTP output to Falcosidekick
+  http_output:
+    enabled: true
+    url: "http://falcosidekick.falco.svc.cluster.local:2801/"
+    user_agent: "falcosecurity/falco"
+    insecure: false
+    ca_cert: ""
+    ca_bundle: ""
+    ca_path: ""
+    mtls: false
+    client_cert: ""
+    client_key: ""
+    echo: false
+    compress_uploads: false
+    keep_alive: false
+
+# ---------------------------------------------------------------------------
+# Rule Files — load default rules + all KCM custom rules
+# ---------------------------------------------------------------------------
+rulesFile:
+  - /etc/falco/falco_rules.yaml
+  - /etc/falco/falco_rules.local.yaml
+  - /etc/falco/rules.d/kcm-custom-rules.yaml
+  - /etc/falco/rules.d/kcm-portals.yaml
+  - /etc/falco/rules.d/kcm-api-rules.yaml
+  - /etc/falco/rules.d/kcm-k8s-rules.yaml
+  - /etc/falco/rules.d/kcm-workers.yaml
+
+# ---------------------------------------------------------------------------
+# Custom Rules via ConfigMap (mounted at /etc/falco/rules.d/)
+# ---------------------------------------------------------------------------
+customRulesFiles:
+  kcm-custom-rules.yaml: |-
+    # See platform/security/falco/rules/kcm-custom-rules.yaml
+    # Loaded from ConfigMap: falco-custom-rules
+  kcm-portals.yaml: |-
+    # See platform/security/falco/rules/kcm-portals.yaml
+  kcm-api-rules.yaml: |-
+    # See platform/security/falco/rules/kcm-api-rules.yaml
+  kcm-k8s-rules.yaml: |-
+    # See platform/security/falco/rules/kcm-k8s-rules.yaml
+  kcm-workers.yaml: |-
+    # See platform/security/falco/rules/kcm-workers.yaml
+
+# Load rules from existing ConfigMaps
+existingRulesConfigMaps:
+  - falco-custom-rules
+
+# ---------------------------------------------------------------------------
+# DaemonSet Configuration — 1 pod per node
+# ---------------------------------------------------------------------------
+controller:
+  kind: daemonset
+
+daemonset:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  # Tolerate all nodes (including control plane, tainted nodes)
+  tolerations:
+    - operator: Exists
+      effect: NoSchedule
+    - operator: Exists
+      effect: NoExecute
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+# ---------------------------------------------------------------------------
+# Pod Spec
+# ---------------------------------------------------------------------------
+podAnnotations:
+  prometheus.io/scrape: "false"  # metrics via Falcosidekick
+  security.kcm.church/component: "runtime-security"
+  security.kcm.church/sensor: "falco"
+
+podLabels:
+  app.kubernetes.io/name: falco
+  app.kubernetes.io/component: runtime-security
+  app.kubernetes.io/part-of: kcm-security-platform
+
+# ---------------------------------------------------------------------------
+# Security Context — Falco needs privileged for kernel driver access
+# ---------------------------------------------------------------------------
+containerSecurityContext:
+  privileged: true
+  readOnlyRootFilesystem: false   # Falco writes to /run/falco/
+  allowPrivilegeEscalation: true  # Required for eBPF programs
+  capabilities:
+    add:
+      - SYS_PTRACE
+      - SYS_ADMIN    # Required for eBPF
+      - NET_ADMIN    # Required for network monitoring
+
+podSecurityContext:
+  runAsUser: 0      # root required for kernel driver
+  runAsGroup: 0
+
+# ---------------------------------------------------------------------------
+# Resources
+# ---------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+# ---------------------------------------------------------------------------
+# Volume Mounts — Host paths required for eBPF/syscall monitoring
+# ---------------------------------------------------------------------------
+extraVolumes:
+  - name: falco-log
+    emptyDir: {}
+  - name: proc
+    hostPath:
+      path: /proc
+  - name: boot
+    hostPath:
+      path: /boot
+  - name: lib-modules
+    hostPath:
+      path: /lib/modules
+  - name: usr
+    hostPath:
+      path: /usr
+  - name: etc
+    hostPath:
+      path: /etc
+
+extraVolumeMounts:
+  - name: falco-log
+    mountPath: /var/log/falco
+  - name: proc
+    mountPath: /host/proc
+    readOnly: true
+  - name: boot
+    mountPath: /host/boot
+    readOnly: true
+  - name: lib-modules
+    mountPath: /host/lib/modules
+    readOnly: true
+  - name: usr
+    mountPath: /host/usr
+    readOnly: true
+  - name: etc
+    mountPath: /host/etc
+    readOnly: true
+
+# ---------------------------------------------------------------------------
+# Priority Class
+# ---------------------------------------------------------------------------
+priorityClassName: system-node-critical
+
+# ---------------------------------------------------------------------------
+# PodDisruptionBudget
+# ---------------------------------------------------------------------------
+podDisruptionBudget:
+  create: true
+  minAvailable: 1
+
+# ---------------------------------------------------------------------------
+# Liveness / Readiness
+# ---------------------------------------------------------------------------
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# ---------------------------------------------------------------------------
+# Falcosidekick — deploy as companion (event routing)
+# See values-falcosidekick.yaml for full config
+# ---------------------------------------------------------------------------
+falcosidekick:
+  enabled: true
+  fullfqdnresolution: false
+  config:
+    loki:
+      hostport: "http://loki.monitoring.svc.cluster.local:3100"
+      all: true
+    prometheus:
+      extralabels: ""
+    alertmanager:
+      hostport: "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
+      minimumpriority: "warning"
+
+# ---------------------------------------------------------------------------
+# Service Monitor for Prometheus Operator
+# ---------------------------------------------------------------------------
+serviceMonitor:
+  create: false   # Managed separately via servicemonitor.yaml
+
+# ---------------------------------------------------------------------------
+# Node Selector — run on Linux nodes only
+# ---------------------------------------------------------------------------
+nodeSelector:
+  kubernetes.io/os: linux
+
+# ---------------------------------------------------------------------------
+# Affinity — prefer spreading across nodes
+# ---------------------------------------------------------------------------
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/os
+              operator: In
+              values:
+                - linux

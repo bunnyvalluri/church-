@@ -1,0 +1,258 @@
+# =============================================================================
+# Promtail Configuration — Falco JSON Log Ingestion into Loki
+# Kingdom of Christ Ministries — Enterprise Runtime Security Platform
+# =============================================================================
+# This ConfigMap configures Promtail to:
+# 1. Read Falco JSON events from /var/log/falco/falco.log (file_output)
+# 2. Parse the JSON structure
+# 3. Add security-specific labels for Loki queries
+# 4. Forward to Loki with proper log stream labels
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-promtail-config
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falco-promtail
+    app.kubernetes.io/component: log-collector
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    security.kcm.church/description: "Promtail configuration for Falco log ingestion"
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+      log_level: info
+
+    positions:
+      filename: /run/promtail/positions.yaml
+
+    clients:
+      - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+        tenant_id: "kcm-security"
+        backoff_config:
+          min_period: 500ms
+          max_period: 5m
+          max_retries: 10
+        timeout: 10s
+        external_labels:
+          cluster: kcm-prod
+          env: production
+          app: falco
+
+    scrape_configs:
+      # -----------------------------------------------------------------------
+      # Falco JSON log file — primary source
+      # -----------------------------------------------------------------------
+      - job_name: falco-file
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: falco
+              app: falco
+              cluster: kcm-prod
+              log_type: security
+              __path__: /var/log/falco/falco.log
+
+        pipeline_stages:
+          # Parse JSON output from Falco
+          - json:
+              expressions:
+                output: output
+                priority: priority
+                rule: rule
+                time: time
+                hostname: hostname
+                source: source
+                tags: tags
+
+          # Extract labels from parsed JSON
+          - labels:
+              priority:
+              rule:
+              source:
+              hostname:
+
+          # Set timestamp from Falco event time
+          - timestamp:
+              source: time
+              format: "2006-01-02T15:04:05.999999999Z"
+              action_on_failure: skip
+
+          # Filter: only keep events at NOTICE and above for Loki
+          - match:
+              selector: '{job="falco"}'
+              stages:
+                - json:
+                    expressions:
+                      priority: priority
+                - drop:
+                    expression: "debug"
+                    source: priority
+                    drop_counter_reason: "below_threshold"
+
+          # Add output fields as structured metadata
+          - output:
+              source: output
+
+          # Add static security labels
+          - static_labels:
+              security_platform: "falco"
+              compliance: "kcm-church"
+
+      # -----------------------------------------------------------------------
+      # Falco events from stdout (DaemonSet pod logs)
+      # -----------------------------------------------------------------------
+      - job_name: falco-pod-logs
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - falco
+
+        relabel_configs:
+          # Only collect from Falco pods
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            action: keep
+            regex: falco
+
+          # Use pod name as instance label
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+
+          # Node name
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            action: replace
+            target_label: node
+
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+
+        pipeline_stages:
+          - cri: {}
+          - json:
+              expressions:
+                output: output
+                priority: priority
+                rule: rule
+                time: time
+          - labels:
+              priority:
+              rule:
+          - static_labels:
+              job: falco-stdout
+              app: falco
+              cluster: kcm-prod
+              log_type: security
+---
+# =============================================================================
+# Promtail DaemonSet — runs alongside Falco on every node
+# =============================================================================
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: falco-promtail
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falco-promtail
+    app.kubernetes.io/component: log-collector
+    app.kubernetes.io/part-of: kcm-security-platform
+    app.kubernetes.io/managed-by: argocd
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falco-promtail
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: falco-promtail
+        app.kubernetes.io/component: log-collector
+        app.kubernetes.io/part-of: kcm-security-platform
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9080"
+    spec:
+      serviceAccountName: falco
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+        - operator: Exists
+          effect: NoExecute
+      priorityClassName: system-node-critical
+      containers:
+        - name: promtail
+          image: grafana/promtail:2.9.4
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          ports:
+            - name: http-metrics
+              containerPort: 9080
+              protocol: TCP
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - DAC_READ_SEARCH  # Required to read host log files
+          volumeMounts:
+            - name: config
+              mountPath: /etc/promtail
+            - name: positions
+              mountPath: /run/promtail
+            - name: falco-log
+              mountPath: /var/log/falco
+              readOnly: true
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: falco-promtail-config
+        - name: positions
+          emptyDir: {}
+        - name: falco-log
+          hostPath:
+            path: /var/log/falco
+            type: DirectoryOrCreate
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+      nodeSelector:
+        kubernetes.io/os: linux
