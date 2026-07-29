@@ -32,16 +32,18 @@ resource "kubernetes_namespace" "falco" {
   metadata {
     name = var.falco_namespace
 
-    labels = {
-      "app.kubernetes.io/name"                        = "falco"
-      "app.kubernetes.io/part-of"                     = "kcm-security-platform"
-      "app.kubernetes.io/managed-by"                  = "opentofu"
-      "security.kcm.church/component"                 = "runtime-security"
-      "pod-security.kubernetes.io/enforce"            = "privileged"
-      "pod-security.kubernetes.io/enforce-version"    = "latest"
-      "pod-security.kubernetes.io/audit"              = "privileged"
-      "pod-security.kubernetes.io/warn"               = "privileged"
-    }
+    labels = merge(var.tags, {
+      "app.kubernetes.io/name"                     = "falco"
+      "app.kubernetes.io/part-of"                  = "kcm-security-platform"
+      "app.kubernetes.io/managed-by"               = "opentofu"
+      "security.kcm.church/component"              = "runtime-security"
+      "cluster"                                    = var.cluster_name
+      "environment"                                = var.environment
+      "pod-security.kubernetes.io/enforce"         = "privileged"
+      "pod-security.kubernetes.io/enforce-version" = "latest"
+      "pod-security.kubernetes.io/audit"           = "privileged"
+      "pod-security.kubernetes.io/warn"            = "privileged"
+    })
 
     annotations = {
       "security.kcm.church/description" = "Falco runtime security engine namespace"
@@ -167,6 +169,26 @@ resource "helm_release" "falco" {
     value = "http://falcosidekick.${kubernetes_namespace.falco.metadata[0].name}.svc.cluster.local:2801/"
   }
 
+  set {
+    name  = "resources.requests.cpu"
+    value = var.falco_resources_cpu_request
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = var.falco_resources_memory_request
+  }
+
+  set {
+    name  = "resources.limits.cpu"
+    value = var.falco_resources_cpu_limit
+  }
+
+  set {
+    name  = "resources.limits.memory"
+    value = var.falco_resources_memory_limit
+  }
+
   depends_on = [
     kubernetes_cluster_role_binding.falco,
     kubernetes_service_account.falco,
@@ -205,6 +227,11 @@ resource "helm_release" "falcosidekick" {
   set {
     name  = "config.otlp.traces.endpoint"
     value = var.otel_endpoint
+  }
+
+  set {
+    name  = "replicaCount"
+    value = var.enable_high_availability ? 2 : 1
   }
 
   depends_on = [
