@@ -69,7 +69,7 @@ jobs:
             });
 
       - name: OpenTofu Apply
-        if: ${{ github.event.inputs.apply == 'true' && github.ref == 'refs/heads/main' }}
+        if: github.event.inputs.apply == 'true' && github.ref == 'refs/heads/main'
         run: |
           tofu apply \
             -auto-approve \

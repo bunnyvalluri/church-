@@ -33,7 +33,7 @@ jobs:
 
       # ==== BUILD FRONTEND ====
       - name: Build Frontend Container Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
@@ -44,7 +44,7 @@ jobs:
 
       # ==== BUILD BACKEND ====
       - name: Build Backend Container Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./backend/Dockerfile
@@ -55,7 +55,7 @@ jobs:
 
       # ==== TRIVY VULNERABILITY SCAN ====
       - name: Run Trivy vulnerability scanner on Frontend
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest'
           format: 'table'

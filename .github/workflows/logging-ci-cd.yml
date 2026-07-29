@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Yamllint & Helm
         run: |
@@ -51,10 +51,10 @@ jobs:
           tofu validate
 
       - name: Security Scan (Trivy)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: 'config'
-          hide-shortcut-table: 'true'
+          hide-progress: 'true'
           output: 'trivy-results.txt'
           exit-code: '0'
 
