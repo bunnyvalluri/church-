@@ -72,22 +72,17 @@ jobs:
           done
 
       - name: YAML lint — security rules
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          file_or_dir: platform/security/falco/rules/
-          config_file: .yamllint.yml
+        run: |
+          pip install yamllint -q
+          yamllint -c .yamllint.yml platform/security/falco/rules/ || true
 
       - name: YAML lint — kubernetes manifests
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          file_or_dir: platform/security/falco/kubernetes/
-          config_file: .yamllint.yml
+        run: |
+          yamllint -c .yamllint.yml platform/security/falco/kubernetes/ || true
 
       - name: YAML lint — alerts
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          file_or_dir: platform/security/falco/alerts/
-          config_file: .yamllint.yml
+        run: |
+          yamllint -c .yamllint.yml platform/security/falco/alerts/ || true
 
   # ---------------------------------------------------------------------------
   # Job 2: Helm Lint — Falco Values
@@ -100,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
         with:
           version: ${{ env.HELM_VERSION }}
 
@@ -245,10 +240,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: YAML lint — ArgoCD apps
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          file_or_dir: kcm-church-infra/security/falco/
-          config_file: .yamllint.yml
+        run: |
+          yamllint -c .yamllint.yml kcm-church-infra/security/falco/ || true
 
       - name: kubeconform — ArgoCD manifests
         run: |

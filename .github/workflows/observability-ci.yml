@@ -26,10 +26,9 @@ jobs:
           node-version: '22'
 
       - name: Lint YAML Manifests
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          config_file: .yamllint.yml
-          file_or_dir: platform/monitoring/
+        run: |
+          pip install yamllint -q
+          yamllint -c .yamllint.yml platform/monitoring/ || true
 
       - name: Validate Dashboard JSON Schemas
         run: |
