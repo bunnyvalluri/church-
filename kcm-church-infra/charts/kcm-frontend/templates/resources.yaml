@@ -15,8 +15,8 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "kcm-frontend.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
----
 {{- if .Values.ingress.enabled }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -55,8 +55,8 @@ spec:
           {{- end }}
     {{- end }}
 {{- end }}
----
 {{- if .Values.autoscaling.enabled }}
+---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -88,8 +88,8 @@ spec:
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}
----
 {{- if .Values.podDisruptionBudget.enabled }}
+---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:

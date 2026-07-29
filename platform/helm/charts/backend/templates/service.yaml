@@ -13,8 +13,8 @@ spec:
       name: http
   selector:
     {{- include "backend.selectorLabels" . | nindent 4 }}
+{{- if .Values.serviceAccount.create }}
 ---
-{{- if .Values.serviceAccount.create -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -22,8 +22,8 @@ metadata:
   labels:
     {{- include "backend.labels" . | nindent 4 }}
 {{- end }}
+{{- if .Values.autoscaling.enabled }}
 ---
-{{- if .Values.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -45,8 +45,8 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
 {{- end }}
+{{- if .Values.podDisruptionBudget.enabled }}
 ---
-{{- if .Values.podDisruptionBudget.enabled -}}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -59,8 +59,8 @@ spec:
     matchLabels:
       {{- include "backend.selectorLabels" . | nindent 6 }}
 {{- end }}
+{{- if .Values.serviceMonitor.enabled }}
 ---
-{{- if .Values.serviceMonitor.enabled -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

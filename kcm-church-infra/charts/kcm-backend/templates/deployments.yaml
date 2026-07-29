@@ -67,8 +67,8 @@ spec:
       name: http
   selector:
     app.kubernetes.io/name: {{ include "kcm-backend.name" . }}-api
----
 {{- if .Values.api.autoscaling.enabled }}
+---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -88,8 +88,8 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.api.autoscaling.targetCPUUtilizationPercentage }}
 {{- end }}
----
 {{- if .Values.worker.enabled }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
