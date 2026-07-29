@@ -1,166 +1,176 @@
-// Grafana Alloy River Pipeline Configuration for KCM Church Platform
-// Collects logs from Pods, System, Envoy Gateway, CloudNativePG, Falco, Redis
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-config
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/part-of: logging
+data:
+  config.alloy: |
+    // Grafana Alloy River Pipeline Configuration for KCM Church Platform
+    // Collects logs from Pods, System, Envoy Gateway, CloudNativePG, Falco, Redis
 
-logging {
-  level  = "info"
-  format = "logfmt"
-}
-
-// Discovery of Kubernetes Pods across all namespaces
-discovery.kubernetes "pods" {
-  role = "pod"
-}
-
-// Relabeling rules for Pod logs
-discovery.relabel "pod_logs" {
-  targets = discovery.kubernetes.pods.targets
-
-  rule {
-    source_labels = ["__meta_kubernetes_namespace"]
-    action        = "replace"
-    target_label  = "namespace"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_name"]
-    action        = "replace"
-    target_label  = "pod"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_container_name"]
-    action        = "replace"
-    target_label  = "container"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_node_name"]
-    action        = "replace"
-    target_label  = "node"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_label_app"]
-    action        = "replace"
-    target_label  = "app"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-    action        = "replace"
-    target_label  = "app_name"
-  }
-
-  rule {
-    source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
-    action        = "replace"
-    separator     = "/"
-    target_label  = "__path__"
-    replacement   = "/var/log/pods/*$1/*.log"
-  }
-}
-
-// Local File Ingestion Source for Pod Logs
-loki.source.kubernetes "pod_logs" {
-  targets    = discovery.relabel.pod_logs.output
-  forward_to = [loki.process.pipeline.receiver]
-}
-
-// Node System Journal Logs (/var/log/journal)
-loki.source.journal "system" {
-  max_age    = "12h"
-  path       = "/var/log/journal"
-  labels     = { job = "systemd-journal" }
-  forward_to = [loki.process.pipeline.receiver]
-}
-
-// Processing Pipeline: JSON Parsing, Correlation Extraction & Multi-Line Handling
-loki.process "pipeline" {
-  stage.cri {}
-
-  stage.json {
-    expressions = {
-      timestamp      = "timestamp",
-      level          = "level",
-      message        = "message",
-      correlation_id = "correlation_id",
-      trace_id       = "trace_id",
-      span_id        = "span_id",
-      user_id        = "user_id",
-      category       = "category",
-      security       = "security",
-      database       = "database",
-      rule           = "rule",
-      priority       = "priority",
-      output         = "output"
+    logging {
+      level  = "info"
+      format = "logfmt"
     }
-  }
 
-  // Falco Security Alert Processing
-  stage.match {
-    selector = '{container="falco"}'
-    stage.json {
-      expressions = {
-        falco_rule     = "rule",
-        falco_priority = "priority",
-        falco_output   = "output"
+    // Discovery of Kubernetes Pods across all namespaces
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    // Relabeling rules for Pod logs
+    discovery.relabel "pod_logs" {
+      targets = discovery.kubernetes.pods.targets
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action        = "replace"
+        target_label  = "namespace"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        action        = "replace"
+        target_label  = "pod"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        action        = "replace"
+        target_label  = "container"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_node_name"]
+        action        = "replace"
+        target_label  = "node"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_label_app"]
+        action        = "replace"
+        target_label  = "app"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+        action        = "replace"
+        target_label  = "app_name"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+        action        = "replace"
+        separator     = "/"
+        target_label  = "__path__"
+        replacement   = "/var/log/pods/*$1/*.log"
       }
     }
-    stage.labels {
-      values = {
-        falco_rule     = "falco_rule",
-        falco_priority = "falco_priority"
+
+    // Local File Ingestion Source for Pod Logs
+    loki.source.kubernetes "pod_logs" {
+      targets    = discovery.relabel.pod_logs.output
+      forward_to = [loki.process.pipeline.receiver]
+    }
+
+    // Node System Journal Logs (/var/log/journal)
+    loki.source.journal "system" {
+      max_age    = "12h"
+      path       = "/var/log/journal"
+      labels     = { job = "systemd-journal" }
+      forward_to = [loki.process.pipeline.receiver]
+    }
+
+    // Processing Pipeline: JSON Parsing, Correlation Extraction & Multi-Line Handling
+    loki.process "pipeline" {
+      stage.cri {}
+
+      stage.json {
+        expressions = {
+          timestamp      = "timestamp",
+          level          = "level",
+          message        = "message",
+          correlation_id = "correlation_id",
+          trace_id       = "trace_id",
+          span_id        = "span_id",
+          user_id        = "user_id",
+          category       = "category",
+          security       = "security",
+          database       = "database",
+          rule           = "rule",
+          priority       = "priority",
+          output         = "output"
+        }
+      }
+
+      // Falco Security Alert Processing
+      stage.match {
+        selector = '{container="falco"}'
+        stage.json {
+          expressions = {
+            falco_rule     = "rule",
+            falco_priority = "priority",
+            falco_output   = "output"
+          }
+        }
+        stage.labels {
+          values = {
+            falco_rule     = "falco_rule",
+            falco_priority = "falco_priority"
+          }
+        }
+      }
+
+      // CloudNativePG / PostgreSQL Processing
+      stage.match {
+        selector = '{app="cnpg-operator"} | {container="postgres"}'
+        stage.labels {
+          values = {
+            db_category = "category"
+          }
+        }
+      }
+
+      // Envoy Gateway Access Log Processing
+      stage.match {
+        selector = '{namespace="envoy-gateway-system"}'
+        stage.json {
+          expressions = {
+            http_method = "http.method",
+            status_code = "http.status_code",
+            path        = "http.path"
+          }
+        }
+        stage.labels {
+          values = {
+            status_code = "status_code"
+          }
+        }
+      }
+
+      // Promote extracted metadata to Loki labels
+      stage.labels {
+        values = {
+          level          = "level",
+          correlation_id = "correlation_id",
+          category       = "category"
+        }
+      }
+
+      forward_to = [loki.write.endpoint.receiver]
+    }
+
+    // Loki Remote Write Destination
+    loki.write "endpoint" {
+      endpoint {
+        url = "http://loki-gateway.logging.svc.cluster.local:3100/loki/api/v1/push"
+        batch_size = "1MB"
+        batch_wait = "1s"
+        min_backoff = "500ms"
+        max_backoff = "5s"
+        max_retries = 10
       }
     }
-  }
-
-  // CloudNativePG / PostgreSQL Processing
-  stage.match {
-    selector = '{app="cnpg-operator"} | {container="postgres"}'
-    stage.labels {
-      values = {
-        db_category = "category"
-      }
-    }
-  }
-
-  // Envoy Gateway Access Log Processing
-  stage.match {
-    selector = '{namespace="envoy-gateway-system"}'
-    stage.json {
-      expressions = {
-        http_method = "http.method",
-        status_code = "http.status_code",
-        path        = "http.path"
-      }
-    }
-    stage.labels {
-      values = {
-        status_code = "status_code"
-      }
-    }
-  }
-
-  // Promote extracted metadata to Loki labels
-  stage.labels {
-    values = {
-      level          = "level",
-      correlation_id = "correlation_id",
-      category       = "category"
-    }
-  }
-
-  forward_to = [loki.write.endpoint.receiver]
-}
-
-// Loki Remote Write Destination
-loki.write "endpoint" {
-  endpoint {
-    url = "http://loki-gateway.logging.svc.cluster.local:3100/loki/api/v1/push"
-    batch_size = "1MB"
-    batch_wait = "1s"
-    min_backoff = "500ms"
-    max_backoff = "5s"
-    max_retries = 10
-  }
-}
