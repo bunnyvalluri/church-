@@ -34,7 +34,7 @@ env:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Pre-flight: verify CI passed
+  # Pre-flight: verify CI passed & secrets ready
   # ---------------------------------------------------------------------------
   pre-flight:
     name: "Pre-flight Check"
@@ -45,11 +45,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check CI status
+      - name: Check CI status & secrets
         id: check
         run: |
-          echo "should_deploy=true" >> $GITHUB_OUTPUT
-          echo "✅ Pre-flight checks passed — proceeding with deploy"
+          READY=true
+          if [ -z "${{ secrets.ARGOCD_SERVER }}" ] || [ -z "${{ secrets.ARGOCD_AUTH_TOKEN }}" ]; then
+            echo "::warning::ARGOCD_SERVER or ARGOCD_AUTH_TOKEN secret is not set."
+            READY=false
+          fi
+          echo "should_deploy=$READY" >> $GITHUB_OUTPUT
+          if [ "$READY" = "true" ]; then
+            echo "✅ Pre-flight checks passed — proceeding with deploy"
+          else
+            echo "⚠️ ArgoCD secrets not configured — live deployment will be skipped"
+          fi
+
+  deploy-skipped:
+    name: "Deploy Skipped (Secrets Not Set)"
+    runs-on: ubuntu-latest
+    needs: pre-flight
+    if: needs.pre-flight.outputs.should_deploy != 'true'
+    steps:
+      - name: Explain skip
+        run: |
+          echo "## ⚠️ Falco Deployment Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "Argo CD secrets (ARGOCD_SERVER, ARGOCD_AUTH_TOKEN) are not configured." >> $GITHUB_STEP_SUMMARY
+          echo "✅ Job completed — live deployment requires Argo CD cluster secrets."
 
   # ---------------------------------------------------------------------------
   # Stage 0: Deploy Kubernetes manifests (RBAC, NetworkPolicy, PSA)
