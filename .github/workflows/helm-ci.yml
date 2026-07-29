@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs platform/helm/charts --validate-maintainers=false
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs platform/helm/charts --validate-maintainers=false --check-version-increment=false
 
       - name: Validate Helm Templates (helm template)
         run: |

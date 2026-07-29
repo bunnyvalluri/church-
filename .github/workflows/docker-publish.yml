@@ -76,7 +76,7 @@ jobs:
       - name: Build and push Nginx
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./nginx
           file: ./nginx/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-nginx.outputs.tags }}

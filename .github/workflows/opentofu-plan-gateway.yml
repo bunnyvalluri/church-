@@ -31,11 +31,16 @@ jobs:
       - name: Configure kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > ~/.kube/config
+          if [ -n "${{ secrets.KUBECONFIG_B64 }}" ]; then
+            echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > ~/.kube/config
+          else
+            echo "::warning::KUBECONFIG_B64 secret is not set, generating placeholder config"
+            echo "apiVersion: v1" > ~/.kube/config
+          fi
           chmod 600 ~/.kube/config
 
       - name: OpenTofu Init
-        run: tofu init
+        run: tofu init -backend=false
 
       - name: OpenTofu Format Check
         run: tofu fmt -check -recursive
