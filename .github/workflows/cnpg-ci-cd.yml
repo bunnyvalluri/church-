@@ -65,6 +65,8 @@ jobs:
   prisma-validate:
     name: Validate Prisma ORM Schema
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/kcm_portal_db"
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
