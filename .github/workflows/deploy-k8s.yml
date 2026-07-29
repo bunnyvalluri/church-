@@ -55,7 +55,7 @@ jobs:
 
       # ==== TRIVY VULNERABILITY SCAN ====
       - name: Run Trivy vulnerability scanner on Frontend
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/kcm-frontend:latest'
           format: 'table'
@@ -66,7 +66,9 @@ jobs:
 
       # ==== KUSTOMIZE VALIDATION ====
       - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v2
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
 
       - name: Validate Kubernetes Manifests
         run: |
