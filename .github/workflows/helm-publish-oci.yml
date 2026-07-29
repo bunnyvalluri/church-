@@ -37,9 +37,14 @@ jobs:
       - name: Package & Push OCI Charts
         run: |
           mkdir -p .cr-release-packages
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           for chart in platform/helm/charts/*; do
-            if [ -d "$chart" ]; then
+            if [ -d "$chart" ] && [ -f "$chart/Chart.yaml" ]; then
               chart_name=$(basename "$chart")
+              if grep -q "dependencies:" "$chart/Chart.yaml"; then
+                echo "Building dependencies for: $chart_name"
+                helm dependency build "$chart" || helm dependency update "$chart"
+              fi
               echo "Packaging chart: $chart_name"
               helm package "$chart" --destination .cr-release-packages
             fi
@@ -47,5 +52,6 @@ jobs:
 
           for pkg in .cr-release-packages/*.tgz; do
             echo "Pushing OCI package: $pkg"
-            helm push "$pkg" oci://ghcr.io/${{ github.repository_owner }}/church-/charts
+            helm push "$pkg" "oci://ghcr.io/${OWNER}/church-/charts"
           done
+

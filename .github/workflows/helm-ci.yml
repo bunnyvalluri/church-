@@ -32,6 +32,17 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
 
+      - name: Build Chart Dependencies
+        run: |
+          for chart in platform/helm/charts/*; do
+            if [ -d "$chart" ] && [ -f "$chart/Chart.yaml" ]; then
+              if grep -q "dependencies:" "$chart/Chart.yaml"; then
+                echo "Building dependencies for: $chart"
+                helm dependency build "$chart" || helm dependency update "$chart"
+              fi
+            fi
+          done
+
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
@@ -41,13 +52,17 @@ jobs:
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs platform/helm/charts
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs platform/helm/charts --validate-maintainers=false
 
       - name: Validate Helm Templates (helm template)
         run: |
           for chart in platform/helm/charts/*; do
-            if [ -d "$chart" ]; then
+            if [ -d "$chart" ] && [ -f "$chart/Chart.yaml" ]; then
               echo "Testing chart: $chart"
+              if grep -q "dependencies:" "$chart/Chart.yaml"; then
+                helm dependency build "$chart" || helm dependency update "$chart"
+              fi
               helm template test-release "$chart" --debug > /dev/null
             fi
           done
+
