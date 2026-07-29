@@ -5,41 +5,7 @@ global:
   clusterName: kcm-k8s-prod
 
 loki:
-  deploymentMode: SimpleScalable
-
-  enterprise:
-    enabled: false
-
-  loki:
-    auth_enabled: false
-    pattern_ingester:
-      enabled: false
-
-    commonConfig:
-      replication_factor: 3
-
-    schemaConfig:
-      configs:
-        - from: "2024-01-01"
-          store: tsdb
-          object_store: filesystem
-          schema: v13
-          index:
-            prefix: loki_index_
-            period: 24h
-
-  limits_config:
-    retention_period: 30d
-    ingestion_rate_mb: 32
-
-  read:
-    replicas: 3
-
-  write:
-    replicas: 3
-
-  backend:
-    replicas: 2
+  deploymentMode: SingleBinary
 
 alloy:
   alloy:
