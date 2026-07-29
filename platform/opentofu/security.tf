@@ -9,23 +9,20 @@
 module "falco" {
   source = "./modules/falco"
 
-  falco_namespace             = "falco"
-  falco_chart_version         = "4.3.0"
-  falcosidekick_chart_version = "0.7.18"
-  falco_driver_kind           = var.falco_driver_kind
-
-  loki_endpoint         = var.loki_endpoint
-  alertmanager_endpoint = var.alertmanager_endpoint
-  otel_endpoint         = var.otel_endpoint
-
+  falco_namespace                = "falco"
+  falco_chart_version            = "4.3.0"
+  falcosidekick_chart_version    = "0.7.18"
+  falco_driver_kind              = var.falco_driver_kind
+  loki_endpoint                  = var.loki_endpoint
+  alertmanager_endpoint          = var.alertmanager_endpoint
+  otel_endpoint                  = var.otel_endpoint
   enable_high_availability       = var.falco_ha_enabled
   falco_resources_cpu_request    = "200m"
   falco_resources_memory_request = "512Mi"
   falco_resources_cpu_limit      = "2000m"
   falco_resources_memory_limit   = "2Gi"
-
-  cluster_name = var.cluster_name
-  environment  = var.environment
+  cluster_name                   = var.cluster_name
+  environment                    = var.environment
 
   tags = {
     "managed-by"  = "opentofu"
@@ -41,7 +38,7 @@ module "falco" {
 module "falco_monitoring" {
   source = "./modules/falco-monitoring"
 
-  monitoring_namespace    = var.monitoring_namespace
+  monitoring_namespace     = var.monitoring_namespace
   prometheus_release_label = "kube-prometheus-stack"
 
   depends_on = [module.falco]

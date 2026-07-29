@@ -26,10 +26,10 @@ resource "kubernetes_namespace" "envoy_gateway_system" {
   metadata {
     name = var.gateway_namespace
     labels = {
-      "app.kubernetes.io/name"      = var.gateway_namespace
-      "app.kubernetes.io/component" = "gateway"
-      "app.kubernetes.io/part-of"   = "kcm-church-portal"
-      "environment"                  = "production"
+      "app.kubernetes.io/name"                     = var.gateway_namespace
+      "app.kubernetes.io/component"                = "gateway"
+      "app.kubernetes.io/part-of"                  = "kcm-church-portal"
+      "environment"                                = "production"
       "pod-security.kubernetes.io/enforce"         = "restricted"
       "pod-security.kubernetes.io/enforce-version" = "v1.29"
       "pod-security.kubernetes.io/audit"           = "restricted"
@@ -47,7 +47,7 @@ resource "helm_release" "envoy_gateway" {
   create_namespace = false
   wait             = true
   wait_for_jobs    = true
-  timeout          = 600  # 10 minutes
+  timeout          = 600 # 10 minutes
 
   values = [
     yamlencode({

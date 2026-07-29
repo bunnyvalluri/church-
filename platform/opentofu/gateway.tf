@@ -6,7 +6,7 @@
 module "cert_manager" {
   source = "./modules/cert-manager"
 
-  kubeconfig_path = var.kubeconfig_path
+  kubeconfig_path      = var.kubeconfig_path
   cert_manager_version = var.cert_manager_version
   letsencrypt_email    = var.letsencrypt_email
 }
@@ -15,11 +15,11 @@ module "cert_manager" {
 module "envoy_gateway" {
   source = "./modules/gateway"
 
-  kubeconfig_path     = var.kubeconfig_path
+  kubeconfig_path       = var.kubeconfig_path
   envoy_gateway_version = var.envoy_gateway_version
-  gateway_namespace   = var.gateway_namespace
-  gateway_replicas    = var.gateway_replicas
-  enable_hpa          = var.enable_hpa
+  gateway_namespace     = var.gateway_namespace
+  gateway_replicas      = var.gateway_replicas
+  enable_hpa            = var.enable_hpa
 
   # Wait for cert-manager to be ready before deploying gateway
   depends_on = [module.cert_manager]
