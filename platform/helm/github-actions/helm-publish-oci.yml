@@ -52,6 +52,7 @@ jobs:
 
           for pkg in .cr-release-packages/*.tgz; do
             echo "Pushing OCI package: $pkg"
-            helm push "$pkg" "oci://ghcr.io/${OWNER}/church-/charts"
+            helm push "$pkg" "oci://ghcr.io/${OWNER}"
           done
+
 
