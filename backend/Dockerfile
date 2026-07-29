@@ -1,5 +1,5 @@
 # ── Stage 1: Dependency Resolver ──────────────────────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY prisma ./prisma/
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # ── Stage 2: Production Builder ───────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy entire dependency footprint
@@ -22,7 +22,7 @@ COPY . .
 RUN if [ -d "prisma" ]; then npx prisma generate; fi
 
 # ── Stage 3: Minimal Production Runner ────────────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
