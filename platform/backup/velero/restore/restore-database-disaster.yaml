@@ -1,0 +1,18 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: kcm-database-disaster-restore
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: restore-database
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  backupName: kcm-hourly-critical-workloads-latest
+  includedNamespaces:
+    - kcm-database
+    - kcm-cache
+  restorePVs: true
+  itemOperationTimeout: 1h0m0s
+  existingResourcePolicy: update
+  hooks: {}

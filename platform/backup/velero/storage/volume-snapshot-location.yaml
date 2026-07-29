@@ -1,0 +1,16 @@
+apiVersion: velero.io/v1
+kind: VolumeSnapshotLocation
+metadata:
+  name: kcm-csi-snapshots
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: volume-snapshot
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  provider: aws
+  credential:
+    name: velero-s3-credentials
+    key: cloud
+  config:
+    region: us-east-1

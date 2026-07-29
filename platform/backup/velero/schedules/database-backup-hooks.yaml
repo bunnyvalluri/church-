@@ -1,0 +1,29 @@
+# Dedicated Velero Backup Hooks Annotations & Template Configuration
+# These annotations can be directly applied to Pods/Deployments/StatefulSets for consistent snapshot execution.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: velero-database-hooks-reference
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: backup-hooks
+    app.kubernetes.io/part-of: kcm-platform
+data:
+  postgres-pod-annotations.yaml: |
+    pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "psql -U postgres -c \"SELECT pg_backup_start(''velero_hook_backup'', true);\""]'
+    pre.hook.backup.velero.io/container: postgres
+    pre.hook.backup.velero.io/on-error: Fail
+    pre.hook.backup.velero.io/timeout: 30s
+
+    post.hook.backup.velero.io/command: '["/bin/sh", "-c", "psql -U postgres -c \"SELECT pg_backup_stop(false);\""]'
+    post.hook.backup.velero.io/container: postgres
+    post.hook.backup.velero.io/on-error: Continue
+    post.hook.backup.velero.io/timeout: 30s
+
+  redis-pod-annotations.yaml: |
+    pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "redis-cli SAVE"]'
+    pre.hook.backup.velero.io/container: redis
+    pre.hook.backup.velero.io/on-error: Fail
+    pre.hook.backup.velero.io/timeout: 45s

@@ -1,0 +1,22 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: kcm-weekly-dr-backup
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: schedule-weekly
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  schedule: "0 3 * * 0" # Every Sunday at 03:00 UTC
+  template:
+    ttl: 2160h0m0s # 90 days
+    includedNamespaces:
+      - "*"
+    excludedNamespaces:
+      - velero
+    includeClusterResources: true
+    storageLocation: kcm-s3-primary
+    volumeSnapshotLocations:
+      - kcm-csi-snapshots
+    snapshotVolumes: true

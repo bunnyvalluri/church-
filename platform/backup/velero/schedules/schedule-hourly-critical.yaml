@@ -1,0 +1,78 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: kcm-hourly-critical-workloads
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: schedule-hourly
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  schedule: "0 * * * *"
+  template:
+    ttl: 72h0m0s
+    includedNamespaces:
+      - kcm-database
+      - kcm-cache
+      - kcm-app
+    excludedNamespaces:
+      - kube-system
+      - velero
+    includedResources:
+      - persistentvolumeclaims
+      - persistentvolumes
+      - statefulsets
+      - deployments
+      - secrets
+      - configmaps
+      - pods
+    storageLocation: kcm-s3-primary
+    volumeSnapshotLocations:
+      - kcm-csi-snapshots
+    snapshotVolumes: true
+    defaultVolumesToFsBackup: false
+    hooks:
+      resources:
+        - name: cnpg-db-freeze
+          includedNamespaces:
+            - kcm-database
+          includedResources:
+            - pods
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: cloudnativepg
+          pre:
+            - exec:
+                container: postgres
+                command:
+                  - /bin/sh
+                  - -c
+                  - "psql -U postgres -c 'SELECT pg_backup_start(\"velero-hourly-snapshot\", true);'"
+                onError: Fail
+                timeout: 30s
+          post:
+            - exec:
+                container: postgres
+                command:
+                  - /bin/sh
+                  - -c
+                  - "psql -U postgres -c 'SELECT pg_backup_stop(false);'"
+                onError: Continue
+                timeout: 30s
+        - name: redis-bgsave
+          includedNamespaces:
+            - kcm-cache
+          includedResources:
+            - pods
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+          pre:
+            - exec:
+                container: redis
+                command:
+                  - /bin/sh
+                  - -c
+                  - "redis-cli BGSAVE && while [ $(redis-cli LASTSAVE) -eq $(redis-cli LASTSAVE) ]; do sleep 1; done"
+                onError: Fail
+                timeout: 60s

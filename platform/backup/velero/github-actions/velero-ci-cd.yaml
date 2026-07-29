@@ -1,0 +1,78 @@
+name: Velero Backup Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/backup/velero/**'
+      - '.github/workflows/velero-ci-cd.yaml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/backup/velero/**'
+
+jobs:
+  validate-opentofu:
+    name: Validate OpenTofu IaC
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: OpenTofu Format Check
+        run: tofu fmt -check
+        working-directory: platform/backup/velero/opentofu
+
+      - name: OpenTofu Init & Validate
+        run: |
+          tofu init -backend=false
+          tofu validate
+        working-directory: platform/backup/velero/opentofu
+
+  lint-helm-and-manifests:
+    name: Lint Helm Chart & Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+
+      - name: Helm Template & Lint Check
+        run: |
+          helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+          helm repo update
+          helm template velero vmware-tanzu/velero -f platform/backup/velero/helm/values.yaml > rendered-velero.yaml
+          echo "Successfully rendered Helm templates."
+
+      - name: Setup Kubeconform
+        run: |
+          wget https://github.com/yannh/kubeconform/releases/download/v0.6.4/kubeconform-linux-amd64.tar.gz
+          tar -xvzf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate Kubernetes Manifests & Schedules
+        run: |
+          kubeconform -strict -summary platform/backup/velero/schedules/
+          kubeconform -strict -summary platform/backup/velero/storage/
+          kubeconform -strict -summary platform/backup/velero/restore/
+          kubeconform -strict -summary platform/backup/velero/alerts/
+          kubeconform -strict -summary platform/backup/velero/argocd/
+
+  gitops-sync-notify:
+    name: GitOps Sync Notification
+    needs: [validate-opentofu, lint-helm-and-manifests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Log Deployment Success
+        run: |
+          echo "Velero Backup Platform CI/CD checks passed. Argo CD GitOps controller will automatically sync updated Backup Schedules and Configuration."

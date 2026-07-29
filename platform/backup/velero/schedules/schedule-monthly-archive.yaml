@@ -1,0 +1,23 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: kcm-monthly-compliance-archive
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: schedule-monthly
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  schedule: "0 4 1 * *" # 1st of every month at 04:00 UTC
+  template:
+    ttl: 8760h0m0s # 365 days / 1 year
+    includedNamespaces:
+      - kcm-app
+      - kcm-database
+      - kcm-ingress
+      - cert-manager
+    includeClusterResources: true
+    storageLocation: kcm-s3-primary
+    volumeSnapshotLocations:
+      - kcm-csi-snapshots
+    snapshotVolumes: true

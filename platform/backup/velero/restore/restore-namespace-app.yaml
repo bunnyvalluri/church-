@@ -1,0 +1,18 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: kcm-app-namespace-restore
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: restore-application
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  backupName: kcm-daily-cluster-backup-20260729020000
+  includedNamespaces:
+    - kcm-app
+  namespaceMapping:
+    kcm-app: kcm-app-restored
+  restorePVs: true
+  preserveNodePorts: true
+  existingResourcePolicy: update

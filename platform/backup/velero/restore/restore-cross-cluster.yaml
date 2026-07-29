@@ -1,0 +1,22 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: kcm-cross-cluster-migration-restore
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: restore-migration
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  backupName: kcm-weekly-dr-backup-latest
+  scheduleName: kcm-weekly-dr-backup
+  includedNamespaces:
+    - kcm-app
+    - kcm-database
+    - kcm-cache
+    - kcm-ingress
+    - cert-manager
+  includeClusterResources: true
+  restorePVs: true
+  preserveNodePorts: false
+  existingResourcePolicy: none

@@ -1,0 +1,129 @@
+# Production Helm Values for Official Velero Chart (vmware-tanzu/velero)
+# Project: Kingdom of Christ Ministries (KCM Church) Enterprise Kubernetes Platform
+
+image:
+  repository: velero/velero
+  tag: v1.14.0
+  pullPolicy: IfNotPresent
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /plugins
+        name: plugins
+  - name: velero-plugin-for-csi
+    image: velero/velero-plugin-for-csi:v0.8.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /plugins
+        name: plugins
+
+configuration:
+  provider: aws
+  backupStorageLocation:
+    - name: kcm-s3-primary
+      provider: aws
+      bucket: kcm-velero-backups
+      prefix: kcm-k8s-cluster
+      default: true
+      accessMode: ReadWrite
+      credential:
+        name: velero-s3-credentials
+        key: cloud
+      config:
+        region: us-east-1
+        s3ForcePathStyle: false
+        checksumAlgorithm: ""
+  volumeSnapshotLocation:
+    - name: kcm-csi-snapshots
+      provider: aws
+      config:
+        region: us-east-1
+
+features: EnableCSI
+
+credentials:
+  useSecret: true
+  existingSecret: velero-s3-credentials
+  secretContents:
+    cloud: |
+      [default]
+      aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+      aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
+
+deployNodeAgent: true
+
+nodeAgent:
+  podVolumePath: /var/lib/kubelet/pods
+  privacyDataLocation: /var/lib/velero
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  securityContext:
+    privileged: false
+    runAsUser: 0
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+securityContext:
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  supplementalGroups: []
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8085"
+  prometheus.io/path: "/metrics"
+
+podLabels:
+  app.kubernetes.io/name: velero
+  app.kubernetes.io/instance: velero
+  app.kubernetes.io/component: backup-engine
+  app.kubernetes.io/part-of: kcm-platform
+
+metrics:
+  enabled: true
+  scrapeInterval: 30s
+  service:
+    annotations: {}
+  serviceMonitor:
+    enabled: true
+    namespace: kcm-monitoring
+    additionalLabels:
+      release: prometheus-stack
+    interval: 30s
+  prometheusRule:
+    enabled: true
+    namespace: kcm-monitoring
+    additionalLabels:
+      role: alert-rules
+
+rbac:
+  create: true
+
+serviceAccount:
+  server:
+    create: true
+    name: velero-server
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+priorityClassName: system-cluster-critical
+
+uploaderConfig:
+  option: kopia

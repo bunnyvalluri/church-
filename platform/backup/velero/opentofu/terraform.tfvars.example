@@ -1,0 +1,7 @@
+aws_region                 = "us-east-1"
+environment                = "production"
+bucket_name                = "kcm-velero-backups"
+object_lock_retention_days = 30
+backup_expiration_days     = 365
+velero_access_key_id       = "AKIAEXAMPLEKEYID1234"
+velero_secret_access_key   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

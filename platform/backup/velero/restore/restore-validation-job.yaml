@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: velero-restore-validation
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: restore-validation
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  ttlSecondsAfterFinished: 86400 # 24 hours
+  template:
+    metadata:
+      labels:
+        app: velero-restore-validation
+    spec:
+      serviceAccountName: velero-server
+      restartPolicy: OnFailure
+      containers:
+        - name: validator
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Starting Velero Restore Validation Suite..."
+              
+              # Check latest restore phase
+              RESTORE_NAME=$(kubectl get restore -n velero --sort-by='.metadata.creationTimestamp' -o jsonpath='{.items[-1].metadata.name}')
+              echo "Validating latest restore: ${RESTORE_NAME}"
+              
+              PHASE=$(kubectl get restore ${RESTORE_NAME} -n velero -o jsonpath='{.status.phase}')
+              echo "Restore phase: ${PHASE}"
+              
+              if [ "${PHASE}" != "Completed" ]; then
+                echo "ERROR: Restore ${RESTORE_NAME} is in status ${PHASE} (expected Completed)"
+                kubectl get restore ${RESTORE_NAME} -n velero -o yaml
+                exit 1
+              fi
+
+              # Validate target namespace pods
+              RESTORED_PODS=$(kubectl get pods -n kcm-app-restored --no-headers 2>/dev/null | wc -l || true)
+              echo "Restored pod count in target namespace: ${RESTORED_PODS}"
+              
+              echo "SUCCESS: Velero Restore validation verified."

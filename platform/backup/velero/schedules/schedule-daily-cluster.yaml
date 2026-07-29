@@ -1,0 +1,26 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: kcm-daily-cluster-backup
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/component: schedule-daily
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  schedule: "0 2 * * *"
+  template:
+    ttl: 720h0m0s # 30 days
+    includedNamespaces:
+      - "*"
+    excludedNamespaces:
+      - velero
+      - kube-system
+      - kube-public
+      - kube-node-lease
+    includeClusterResources: true
+    storageLocation: kcm-s3-primary
+    volumeSnapshotLocations:
+      - kcm-csi-snapshots
+    snapshotVolumes: true
+    defaultVolumesToFsBackup: false
