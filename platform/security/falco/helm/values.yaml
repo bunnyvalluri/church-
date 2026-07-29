@@ -193,7 +193,6 @@ podAnnotations:
   security.kcm.church/sensor: "falco"
 
 podLabels:
-  app.kubernetes.io/name: falco
   app.kubernetes.io/component: runtime-security
   app.kubernetes.io/part-of: kcm-security-platform
 
