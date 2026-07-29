@@ -1,9 +1,11 @@
 name: "Falco Security CI — Validate Rules, Helm, OpenTofu"
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, develop]
     paths:
+      - ".github/workflows/falco-security-ci.yml"
       - "platform/security/falco/**"
       - "kcm-church-infra/security/falco/**"
       - "platform/opentofu/modules/falco*/**"
@@ -11,6 +13,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - ".github/workflows/falco-security-ci.yml"
       - "platform/security/falco/**"
       - "kcm-church-infra/security/falco/**"
       - "platform/opentofu/modules/falco*/**"
