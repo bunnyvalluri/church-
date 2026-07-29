@@ -4,10 +4,19 @@ global:
   environment: production
   clusterName: kcm-k8s-prod
 
+enterprise:
+  enabled: false
+
 loki:
+  enterprise:
+    enabled: false
+
   deploymentMode: SimpleScalable
   auth_enabled: false
-  
+
+  pattern_ingester:
+    enabled: false
+
   commonConfig:
     replication_factor: 3
 
@@ -25,12 +34,14 @@ loki:
     retention_period: 30d
     ingestion_rate_mb: 32
 
-read:
-  replicas: 3
-write:
-  replicas: 3
-backend:
-  replicas: 2
+  read:
+    replicas: 3
+
+  write:
+    replicas: 3
+
+  backend:
+    replicas: 2
 
 alloy:
   alloy:
