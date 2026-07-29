@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kcm-database-platform
+description: Enterprise PostgreSQL Platform Helm Chart for KCM Church using CloudNativePG
+type: application
+version: 1.0.0
+appVersion: 16.2.0
+dependencies:
+  - name: cloudnative-pg
+    version: 0.20.0
+    repository: https://cloudnative-pg.github.io/charts

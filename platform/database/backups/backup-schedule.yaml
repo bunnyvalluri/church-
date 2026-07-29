@@ -1,0 +1,15 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: kcm-db-daily-backup
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-postgresql
+    app.kubernetes.io/part-of: kcm-database-platform
+spec:
+  immediate: true
+  schedule: "0 0 2 * * *" # Daily at 02:00 AM UTC
+  cluster:
+    name: kcm-db-cluster
+  backupOwnerReference: self
+  method: barmanObjectStore

@@ -1,0 +1,66 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kcm-db-network-policy
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-postgresql
+    app.kubernetes.io/part-of: kcm-database-platform
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: kcm-db-cluster
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow connection from PgBouncer poolers
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/poder: kcm-db-pooler
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow direct application connection from KCM backend services
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kcm-backend
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow Prometheus monitoring scrapers
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9187
+    # Allow internal cluster node-to-node replication traffic
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: kcm-db-cluster
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow outbound traffic to Object Storage (S3/MinIO) for backups
+    - ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 9000

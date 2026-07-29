@@ -1,0 +1,84 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cnpg-alert-rules
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: cnpg-alerts
+    app.kubernetes.io/part-of: kcm-database-platform
+    role: alert-rules
+spec:
+  groups:
+    - name: cnpg.rules
+      rules:
+        - alert: CNPGPrimaryFailure
+          expr: cnpg_pg_replication_is_replica{cluster="kcm-db-cluster", role="primary"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CloudNativePG Primary Node down on {{ $labels.cluster }}"
+            description: "The primary PostgreSQL pod for cluster {{ $labels.cluster }} is unreachable or lost primary role."
+
+        - alert: CNPGReplicationLagHigh
+          expr: cnpg_pg_replication_lag_seconds{cluster="kcm-db-cluster"} > 30
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High Replication Lag on {{ $labels.instance }}"
+            description: "Replication lag on replica {{ $labels.instance }} is currently {{ $value }}s (>30s)."
+
+        - alert: CNPGReplicaFailure
+          expr: count(cnpg_pg_replication_is_replica{cluster="kcm-db-cluster"}) < 3
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL Replica pod missing on {{ $labels.cluster }}"
+            description: "Cluster {{ $labels.cluster }} currently has fewer than 3 running nodes."
+
+        - alert: CNPGBackupFailed
+          expr: cnpg_backup_last_status{cluster="kcm-db-cluster"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Database Scheduled Backup failed for {{ $labels.cluster }}"
+            description: "The last automated backup for cluster {{ $labels.cluster }} returned failure status."
+
+        - alert: CNPGDiskFullWarning
+          expr: (kubelet_volume_stats_used_bytes{namespace="kcm-database"} / kubelet_volume_stats_capacity_bytes{namespace="kcm-database"}) > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL PVC space low (>85%)"
+            description: "PVC volume {{ $labels.persistentvolumeclaim }} usage has reached {{ $value | humanizePercentage }}."
+
+        - alert: CNPGDiskFullCritical
+          expr: (kubelet_volume_stats_used_bytes{namespace="kcm-database"} / kubelet_volume_stats_capacity_bytes{namespace="kcm-database"}) > 0.95
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "PostgreSQL PVC space critically low (>95%)"
+            description: "PVC volume {{ $labels.persistentvolumeclaim }} risk of imminent outage."
+
+        - alert: CNPGHighConnections
+          expr: (cnpg_pg_stat_database_numbackends{cluster="kcm-db-cluster"} / 300) > 0.80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High Connection Usage on {{ $labels.cluster }}"
+            description: "PostgreSQL active client connections reached {{ $value | humanizePercentage }} of max_connections."
+
+        - alert: CNPGSlowQueriesDetected
+          expr: rate(cnpg_pg_stat_statements_total_time_seconds{cluster="kcm-db-cluster"}[5m]) > 5
+          for: 5m
+          labels:
+            severity: info
+          annotations:
+            summary: "Slow database queries detected on {{ $labels.cluster }}"
+            description: "Total statement execution time rate is high."

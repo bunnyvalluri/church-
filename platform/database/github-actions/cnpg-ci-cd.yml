@@ -1,0 +1,20 @@
+name: CloudNativePG Platform Validation Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'platform/database/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'platform/database/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate YAML
+        run: |
+          python3 -c "import yaml, glob; [yaml.safe_load(open(f)) for f in glob.glob('platform/database/**/*.yaml', recursive=True)]"

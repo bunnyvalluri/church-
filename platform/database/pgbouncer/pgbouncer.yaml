@@ -1,0 +1,88 @@
+# CloudNativePG Pooler CRD for Read-Write Primary Connection Pooling
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: kcm-db-pooler-rw
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-pgbouncer-rw
+    app.kubernetes.io/part-of: kcm-database-platform
+spec:
+  cluster:
+    name: kcm-db-cluster
+  type: rw
+  instances: 3
+  typePooler: pgbouncer
+  pgbouncer:
+    poolMode: transaction
+    parameters:
+      max_client_conn: "5000"
+      default_pool_size: "50"
+      min_pool_size: "10"
+      reserve_pool_size: "10"
+      reserve_pool_timeout: "5"
+      max_db_connections: "200"
+      server_idle_timeout: "60"
+      server_connect_timeout: "15"
+      query_timeout: "30"
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+---
+# CloudNativePG Pooler CRD for Read-Only Replica Connection Pooling
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: kcm-db-pooler-ro
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-pgbouncer-ro
+    app.kubernetes.io/part-of: kcm-database-platform
+spec:
+  cluster:
+    name: kcm-db-cluster
+  type: ro
+  instances: 3
+  typePooler: pgbouncer
+  pgbouncer:
+    poolMode: transaction
+    parameters:
+      max_client_conn: "5000"
+      default_pool_size: "50"
+      min_pool_size: "10"
+      reserve_pool_size: "10"
+      reserve_pool_timeout: "5"
+      max_db_connections: "200"
+      server_idle_timeout: "60"
+      query_timeout: "30"
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kcm-db-pooler-rw-hpa
+  namespace: kcm-database
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kcm-db-pooler-rw
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75

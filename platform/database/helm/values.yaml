@@ -1,0 +1,46 @@
+# Default values for kcm-database-platform
+global:
+  environment: production
+  namespace: kcm-database
+
+cloudnative-pg:
+  crds:
+    create: true
+  config:
+    management:
+      leaderElection: true
+
+cluster:
+  name: kcm-db-cluster
+  instances: 3
+  postgresqlVersion: "16.2"
+  storage:
+    size: 50Gi
+    class: kcm-nvme-sc
+  walStorage:
+    size: 20Gi
+    class: kcm-nvme-sc
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "4000m"
+      memory: "8Gi"
+
+pgbouncer:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  poolMode: transaction
+
+monitoring:
+  enabled: true
+  createPodMonitor: true
+  createPrometheusRules: true
+
+backups:
+  enabled: true
+  schedule: "0 0 2 * * *"
+  retentionDays: "30d"
+  s3Bucket: "kcm-database-backups-prod"

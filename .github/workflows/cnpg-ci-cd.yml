@@ -1,0 +1,89 @@
+name: CloudNativePG Database CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/database/**'
+      - 'database/**'
+      - '.github/workflows/cnpg-ci-cd.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/database/**'
+      - 'database/**'
+
+jobs:
+  validate-manifests:
+    name: Validate Manifests & Helm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Yamllint
+        run: sudo apt-get update && sudo apt-get install -y yamllint
+
+      - name: Lint Kubernetes Manifests
+        run: |
+          yamllint platform/database/kubernetes/
+          yamllint platform/database/clusters/
+          yamllint platform/database/backups/
+          yamllint platform/database/pgbouncer/
+          yamllint platform/database/alerts/
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      - name: Helm Lint
+        run: helm lint platform/database/helm/
+
+  validate-opentofu:
+    name: Validate OpenTofu IaC
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: OpenTofu Format Check
+        run: tofu fmt -check
+        working-directory: platform/database/opentofu
+
+      - name: OpenTofu Init & Validate
+        run: |
+          tofu init -backend=false
+          tofu validate
+        working-directory: platform/database/opentofu
+
+  prisma-validate:
+    name: Validate Prisma ORM Schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Prisma Schema
+        run: npx prisma validate --schema=database/schema.prisma
+
+  gitops-deploy-notification:
+    name: Trigger GitOps Synchronization
+    needs: [validate-manifests, validate-opentofu, prisma-validate]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Argo CD Deployment
+        run: echo "CloudNativePG Database manifests validated successfully. Argo CD automated sync active."

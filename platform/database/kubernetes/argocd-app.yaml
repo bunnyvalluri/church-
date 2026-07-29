@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-database-platform
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kcm-database-platform
+    app.kubernetes.io/part-of: kcm-infrastructure
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/church-.git'
+    targetRevision: HEAD
+    path: platform/database/kubernetes
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kcm-database
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

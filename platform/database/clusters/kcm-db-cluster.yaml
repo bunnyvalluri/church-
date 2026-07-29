@@ -1,0 +1,115 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: kcm-db-cluster
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-postgresql
+    app.kubernetes.io/part-of: kcm-database-platform
+    environment: production
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  # Primary and replica high availability settings
+  primaryUpdateStrategy: unsupervised
+  failoverDelay: 0
+
+  # Storage configuration for data directory
+  storage:
+    size: 50Gi
+    storageClass: kcm-nvme-sc
+    resizeInUseVolumes: true
+
+  # Storage configuration for WAL directory
+  walStorage:
+    size: 20Gi
+    storageClass: kcm-nvme-sc
+    resizeInUseVolumes: true
+
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "4000m"
+      memory: "8Gi"
+
+  # PostgreSQL Engine Performance Tuning Parameters
+  postgresql:
+    parameters:
+      shared_buffers: "2GB"
+      work_mem: "32MB"
+      maintenance_work_mem: "512MB"
+      effective_cache_size: "6GB"
+      max_connections: "300"
+      wal_buffers: "16MB"
+      min_wal_size: "2GB"
+      max_wal_size: "10GB"
+      checkpoint_completion_target: "0.9"
+      checkpoint_timeout: "15min"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      autovacuum_max_workers: "4"
+      autovacuum_vacuum_scale_factor: "0.05"
+      autovacuum_analyze_scale_factor: "0.02"
+      autovacuum_vacuum_cost_limit: "1000"
+      log_destination: "csvlog"
+      logging_collector: "on"
+      log_min_duration_statement: "250" # Log queries taking > 250ms
+      log_line_prefix: '%m [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+      log_statement: "ddl"
+      track_io_timing: "on"
+      track_functions: "all"
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: "all"
+
+  # Anti-Affinity configuration for multi-node distribution
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: cnpg.io/cluster
+                  operator: In
+                  values:
+                    - kcm-db-cluster
+            topologyKey: kubernetes.io/hostname
+
+  # User Credentials
+  bootstrap:
+    initdb:
+      database: kcm_portal_db
+      owner: kcm_app_user
+      secret:
+        name: kcm-db-app-secret
+
+  superuserSecret:
+    name: kcm-db-superuser-secret
+
+  # Observability - Enable CloudNativePG exporter metrics endpoint
+  monitoring:
+    enablePodMonitor: true
+
+  # Backup & Disaster Recovery via Barman Object Store
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://kcm-database-backups-prod/cnpg-wal/
+      endpointURL: https://s3.amazonaws.com
+      s3Credentials:
+        accessKeyId:
+          name: kcm-db-s3-backup-secret
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: kcm-db-s3-backup-secret
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+        maxParallel: 4
+      data:
+        compression: gzip
+        jobs: 2
+    retentionPolicy: "30d"

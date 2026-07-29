@@ -1,0 +1,40 @@
+# Point-in-Time Recovery (PITR) & Disaster Recovery Restoration Template
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: kcm-db-pitr-restored
+  namespace: kcm-database
+  labels:
+    app.kubernetes.io/name: kcm-postgresql
+    app.kubernetes.io/part-of: kcm-database-platform
+    environment: disaster-recovery-test
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  storage:
+    size: 50Gi
+    storageClass: kcm-nvme-sc
+
+  walStorage:
+    size: 20Gi
+    storageClass: kcm-nvme-sc
+
+  bootstrap:
+    recovery:
+      source: kcm-db-cluster
+      # PITR Target Timestamp (Specify precise UTC target for recovery)
+      targetTime: "2026-07-29 02:00:00.000000+00"
+
+  externalClusters:
+    - name: kcm-db-cluster
+      barmanObjectStore:
+        destinationPath: s3://kcm-database-backups-prod/cnpg-wal/
+        endpointURL: https://s3.amazonaws.com
+        s3Credentials:
+          accessKeyId:
+            name: kcm-db-s3-backup-secret
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: kcm-db-s3-backup-secret
+            key: AWS_SECRET_ACCESS_KEY
