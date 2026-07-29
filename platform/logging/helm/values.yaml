@@ -4,11 +4,15 @@ global:
   environment: production
   clusterName: kcm-k8s-prod
 
+namespace: logging
+
 loki:
-  deploymentMode: SingleBinary
+  replicas: 3
+  retention: 30d
+  storage:
+    type: s3
+    bucket: kcm-loki-chunks
 
 alloy:
-  alloy:
-    configMap:
-      create: true
-      name: alloy-config
+  enabled: true
+  configMapName: alloy-config
