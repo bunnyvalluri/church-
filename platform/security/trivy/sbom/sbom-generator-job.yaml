@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: trivy-sbom-generator
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-sbom-generator
+    app.kubernetes.io/part-of: kcm-security-platform
+spec:
+  schedule: "0 2 * * *" # Daily at 02:00 UTC
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: trivy-sbom-generator
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: trivy-operator
+          containers:
+            - name: sbom-generator
+              image: ghcr.io/aquasecurity/trivy:0.58.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Generating CycloneDX SBOM for KCM Frontend Image..."
+                  trivy image --format cyclonedx --output /tmp/kcm-portal-cyclonedx.json ghcr.io/kcm-church/kcm-portal:latest
+                  echo "Generating SPDX SBOM for KCM Frontend Image..."
+                  trivy image --format spdx-json --output /tmp/kcm-portal-spdx.json ghcr.io/kcm-church/kcm-portal:latest
+                  echo "SBOM Generation Complete."
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 10001
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                limits:
+                  cpu: 1000m
+                  memory: 2Gi
+              volumeMounts:
+                - name: tmp-volume
+                  mountPath: /tmp
+          volumes:
+            - name: tmp-volume
+              emptyDir: {}

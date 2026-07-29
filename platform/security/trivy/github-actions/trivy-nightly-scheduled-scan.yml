@@ -1,0 +1,23 @@
+name: Trivy Nightly Compliance & Vulnerability Audit
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # Every day at 01:00 UTC
+  workflow_dispatch:
+
+jobs:
+  nightly-security-audit:
+    name: Full Infrastructure & Repository Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Comprehensive Trivy Repository Audit
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          exit-code: '0'

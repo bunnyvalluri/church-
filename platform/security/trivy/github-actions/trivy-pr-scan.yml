@@ -1,0 +1,36 @@
+name: Trivy PR Security Gate
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy-repo-scan:
+    name: Repository & IaC Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy File System & Secret Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: false
+
+      - name: Upload SARIF report to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'

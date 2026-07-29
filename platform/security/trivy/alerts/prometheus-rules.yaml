@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: trivy-security-alerts
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-operator
+    app.kubernetes.io/part-of: kcm-security-platform
+    role: alert-rules
+spec:
+  groups:
+    - name: trivy.rules
+      rules:
+        - alert: TrivyCriticalVulnerabilityDetected
+          expr: sum by (namespace, resource_name) (trivy_vulnerability_reports{severity="CRITICAL"}) > 0
+          for: 5m
+          labels:
+            severity: critical
+            team: devsecops
+          annotations:
+            summary: "Critical CVE detected in workload {{ $labels.resource_name }} (Namespace: {{ $labels.namespace }})"
+            description: "Trivy scanner detected one or more CRITICAL vulnerabilities. Immediate remediation required."
+
+        - alert: TrivyHighVulnerabilityDetected
+          expr: sum by (namespace, resource_name) (trivy_vulnerability_reports{severity="HIGH"}) > 0
+          for: 15m
+          labels:
+            severity: warning
+            team: devsecops
+          annotations:
+            summary: "High CVE detected in workload {{ $labels.resource_name }} (Namespace: {{ $labels.namespace }})"
+            description: "Trivy scanner detected HIGH severity vulnerabilities requiring triage within 24 hours."
+
+        - alert: TrivyExposedSecretDetected
+          expr: sum by (namespace, resource_name) (trivy_exposed_secret_reports) > 0
+          for: 1m
+          labels:
+            severity: critical
+            team: security-response
+          annotations:
+            summary: "EXPOSED SECRET detected in workload {{ $labels.resource_name }} (Namespace: {{ $labels.namespace }})"
+            description: "Trivy scanner detected plaintext secret credentials. Immediate revocation required."
+
+        - alert: TrivyOperatorScanFailed
+          expr: trivy_operator_scan_errors_total > 0
+          for: 10m
+          labels:
+            severity: warning
+            team: sre
+          annotations:
+            summary: "Trivy Operator scan failure recorded"
+            description: "Trivy Operator scan job failed to complete. Inspect trivy-operator pod logs."

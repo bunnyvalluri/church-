@@ -1,0 +1,35 @@
+apiVersion: aquasecurity.github.io/v1alpha1
+kind: ConfigAuditReport
+metadata:
+  name: kcm-iac-config-audit-summary
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-operator
+    app.kubernetes.io/part-of: kcm-security-platform
+    kcm.church/compliance-framework: cis-kubernetes-1.8
+spec:
+  updateTimestamp: "2026-07-29T18:00:00Z"
+  summary:
+    criticalCount: 0
+    highCount: 0
+    mediumCount: 0
+    lowCount: 0
+  checks:
+    - checkID: KSV001
+      title: Can elevate privileges
+      severity: HIGH
+      status: PASS
+      messages:
+        - "allowPrivilegeEscalation is explicitly set to false across all workload containers"
+    - checkID: KSV014
+      title: Root file system is not read-only
+      severity: MEDIUM
+      status: PASS
+      messages:
+        - "readOnlyRootFilesystem is set to true"
+    - checkID: KSV020
+      title: Runs as root user
+      severity: HIGH
+      status: PASS
+      messages:
+        - "runAsNonRoot is enforced, runAsUser set to 10001"

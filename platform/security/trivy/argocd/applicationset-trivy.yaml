@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: trivy-security-stack
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: in-cluster
+            url: https://kubernetes.default.svc
+            environment: production
+  template:
+    metadata:
+      name: '{{environment}}-trivy-operator'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://aquasecurity.github.io/helm-charts'
+        chart: trivy-operator
+        targetRevision: 0.22.0
+      destination:
+        server: '{{url}}'
+        namespace: trivy-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

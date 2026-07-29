@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-operator-config
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-operator
+    app.kubernetes.io/part-of: kcm-security-platform
+data:
+  trivy.severity: "CRITICAL,HIGH,MEDIUM"
+  trivy.scanners: "Vulnerability,ConfigAudit,Secret,RBAC"
+  trivy.timeout: "15m0s"
+  trivy.dbRepository: "ghcr.io/aquasecurity/trivy-db"
+  trivy.javaDbRepository: "ghcr.io/aquasecurity/trivy-java-db"
+  trivy.ignoreUnfixed: "false"
+  trivy.slow: "true"
+  trivy.mode: "Standalone"
+  trivy.resources.requests.cpu: "100m"
+  trivy.resources.requests.memory: "256Mi"
+  trivy.resources.limits.cpu: "1000m"
+  trivy.resources.limits.memory: "1Gi"
+  vulnerabilityScanner.scanInterval: "6h0m"
+  configAuditScanner.scanInterval: "12h0m"
+  rbacAssessmentScanner.scanInterval: "12h0m"
+  exposedSecretScanner.scanInterval: "6h0m"
+  nodeCollector.volumeMounts: '[{"name":"var-log","readOnly":true,"mountPath":"/var/log"}]'
+  targetNamespaces: "" # Scan all namespaces across KCM cluster
+  excludeNamespaces: "kube-system"

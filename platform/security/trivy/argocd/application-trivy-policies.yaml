@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trivy-policies
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: trivy-policies
+    app.kubernetes.io/part-of: kcm-security-platform
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/church-.git'
+    targetRevision: HEAD
+    path: 'platform/security/trivy/policies'
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: trivy-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

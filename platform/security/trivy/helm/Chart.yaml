@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kcm-trivy-operator
+description: Helm chart wrapper for Trivy Operator deployment in KCM Church Platform
+type: application
+version: 1.0.0
+appVersion: 0.22.0
+dependencies:
+  - name: trivy-operator
+    version: 0.22.0
+    repository: https://aquasecurity.github.io/helm-charts/

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-scan-policy
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-operator
+    app.kubernetes.io/part-of: kcm-security-platform
+data:
+  trivy.rego: |
+    package trivy
+
+    default allow = true
+
+    # Fail scanner gate if any unpatched CRITICAL or HIGH vulnerability is present
+    deny[msg] {
+      input.Vulnerabilities[_].Severity == "CRITICAL"
+      msg := sprintf("CRITICAL vulnerability found: %s in package %s", [input.Vulnerabilities[_].VulnerabilityID, input.Vulnerabilities[_].PkgName])
+    }
+
+    deny[msg] {
+      input.Vulnerabilities[_].Severity == "HIGH"
+      not input.Vulnerabilities[_].FixedVersion == ""
+      msg := sprintf("HIGH patchable vulnerability found: %s in package %s", [input.Vulnerabilities[_].VulnerabilityID, input.Vulnerabilities[_].PkgName])
+    }

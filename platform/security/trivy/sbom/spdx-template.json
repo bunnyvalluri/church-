@@ -1,0 +1,26 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "ghcr.io/kcm-church/kcm-portal:v1.4.2",
+  "documentNamespace": "https://aquasecurity.github.io/trivy/spdx/ghcr.io/kcm-church/kcm-portal-v1.4.2",
+  "creationInfo": {
+    "creators": [
+      "Tool: trivy-0.58.0",
+      "Organization: Kingdom of Christ Ministries"
+    ],
+    "created": "2026-07-29T18:00:00Z"
+  },
+  "packages": [
+    {
+      "name": "ghcr.io/kcm-church/kcm-portal",
+      "SPDXID": "SPDXRef-Package-ContainerImage",
+      "versionInfo": "v1.4.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+trivy-operator:
+  operator:
+    replicas: 2
+    scanners: "Vulnerability,ConfigAudit,Secret,RBAC"
+    scanJobTimeout: "15m"
+    scanJobPodTemplate:
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 10001
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+  trivy:
+    severity: "CRITICAL,HIGH,MEDIUM"
+    ignoreUnfixed: false
+    mode: Standalone
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+  serviceMonitor:
+    enabled: true
+    namespace: trivy-system
+    interval: 30s
+    labels:
+      release: prometheus
+  podSecurityStandards:
+    enforce: "restricted"

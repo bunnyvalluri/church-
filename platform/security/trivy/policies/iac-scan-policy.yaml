@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-iac-policy-rules
+  namespace: trivy-system
+  labels:
+    app.kubernetes.io/name: trivy-operator
+    app.kubernetes.io/part-of: kcm-security-platform
+    kcm.church/compliance-framework: cis-kubernetes-1.8
+data:
+  iac-rules.rego: |
+    package appshield.kubernetes.KSV001
+
+    import future.keywords.in
+
+    __rego_metadata__ := {
+      "id": "KSV001",
+      "title": "Process can elevate privileges",
+      "severity": "HIGH",
+      "type": "Kubernetes Security Check",
+      "description": "Containers should run with allowPrivilegeEscalation=false",
+    }
+
+    deny[res] {
+      container := input.spec.containers[_]
+      not container.securityContext.allowPrivilegeEscalation == false
+      res := sprintf("Container '%s' does not explicitly set allowPrivilegeEscalation: false", [container.name])
+    }
