@@ -1,0 +1,82 @@
+# JetStream Consumers Configuration for Kingdom of Christ Ministries
+# Production Durable Consumers for Reliable Queue Group Processing & Worker Pools
+
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Consumer
+metadata:
+  name: email-worker-consumer
+  namespace: messaging
+spec:
+  streamName: KCM_NOTIFICATIONS_STREAM
+  durableName: EMAIL_WORKER_GROUP
+  deliverPolicy: all
+  ackPolicy: explicit
+  ackWait: 30s
+  maxDeliver: 5
+  filterSubject: "email.jobs.>"
+  replayPolicy: instant
+  deliverGroup: "email-workers"
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Consumer
+metadata:
+  name: sms-worker-consumer
+  namespace: messaging
+spec:
+  streamName: KCM_NOTIFICATIONS_STREAM
+  durableName: SMS_WORKER_GROUP
+  deliverPolicy: all
+  ackPolicy: explicit
+  ackWait: 15s
+  maxDeliver: 3
+  filterSubject: "sms.jobs.>"
+  replayPolicy: instant
+  deliverGroup: "sms-workers"
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Consumer
+metadata:
+  name: push-worker-consumer
+  namespace: messaging
+spec:
+  streamName: KCM_NOTIFICATIONS_STREAM
+  durableName: PUSH_WORKER_GROUP
+  deliverPolicy: all
+  ackPolicy: explicit
+  ackWait: 15s
+  maxDeliver: 3
+  filterSubject: "push.notifications.>"
+  replayPolicy: instant
+  deliverGroup: "push-workers"
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Consumer
+metadata:
+  name: media-transcoder-consumer
+  namespace: messaging
+spec:
+  streamName: KCM_MEDIA_STREAM
+  durableName: MEDIA_TRANSCODER_GROUP
+  deliverPolicy: all
+  ackPolicy: explicit
+  ackWait: 300s # 5 minutes for heavy media transcoding jobs
+  maxDeliver: 3
+  filterSubject: "media.processing.>"
+  replayPolicy: instant
+  deliverGroup: "media-transcoders"
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Consumer
+metadata:
+  name: audit-indexer-consumer
+  namespace: messaging
+spec:
+  streamName: KCM_AUDIT_STREAM
+  durableName: AUDIT_INDEXER_GROUP
+  deliverPolicy: new
+  ackPolicy: explicit
+  ackWait: 20s
+  maxDeliver: 10
+  filterSubject: "audit.logs.>"
+  replayPolicy: instant
+  deliverGroup: "audit-indexers"

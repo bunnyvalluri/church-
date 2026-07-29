@@ -1,0 +1,46 @@
+name: NATS Platform CI/CD & Manifest Validation
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/messaging/nats/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/messaging/nats/**'
+
+jobs:
+  validate-manifests:
+    name: Validate Helm, OpenTofu & Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+
+      - name: Lint NATS Helm Values
+        run: |
+          helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+          helm repo update
+          helm template nats nats/nats -f platform/messaging/nats/helm/values.yaml > /dev/null
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: Validate OpenTofu IaC
+        run: |
+          cd platform/messaging/nats/opentofu
+          tofu init -backend=false
+          tofu validate
+
+      - name: Validate JSON Schemas and Subject Taxonomy
+        run: |
+          python3 -c "import json; json.load(open('platform/messaging/nats/subjects/subject-taxonomy.json'))"
+          python3 -c "import json; json.load(open('platform/messaging/nats/subjects/subject-schemas.json'))"

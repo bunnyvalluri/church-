@@ -1,0 +1,91 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "NATS JetStream Persistence & Consumer Metrics - KCM Church",
+  "tags": ["jetstream", "nats", "queues", "kcm"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total JetStream Messages Stored",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(gnatsd_jetstream_stream_messages)",
+          "legendFormat": "Total Messages"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "JetStream File Storage Used",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(gnatsd_jetstream_stream_bytes)",
+          "legendFormat": "Storage Used"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Active Streams Count",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "count(gnatsd_jetstream_stream_messages)",
+          "legendFormat": "Active Streams"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Messages per Stream",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "gnatsd_jetstream_stream_messages",
+          "legendFormat": "{{stream}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Consumer Pending Message Backlog",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "gnatsd_jetstream_consumer_num_pending",
+          "legendFormat": "{{stream}} / {{consumer}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Redelivery Rate per Consumer",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(gnatsd_jetstream_consumer_num_redelivered[1m])",
+          "legendFormat": "{{consumer}} redeliveries"
+        }
+      ]
+    }
+  ]
+}

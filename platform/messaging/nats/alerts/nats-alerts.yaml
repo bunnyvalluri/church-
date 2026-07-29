@@ -1,0 +1,71 @@
+# Prometheus AlertManager Rules for NATS Cluster & JetStream Messaging Platform
+# Kingdom of Christ Ministries (KCM Church)
+
+groups:
+  - name: nats.cluster.alerts
+    rules:
+      - alert: NATSNodeDown
+        expr: count(gnatsd_varz_server_id) < 3
+        for: 1m
+        labels:
+          severity: critical
+          service: messaging
+          team: platform
+        annotations:
+          summary: "NATS Cluster Member Down"
+          description: "NATS cluster count has dropped below expected 3 nodes. Current active node count: {{ $value }}."
+
+      - alert: NATSSlowConsumersDetected
+        expr: sum(gnatsd_varz_slow_consumers) > 0
+        for: 2m
+        labels:
+          severity: warning
+          service: messaging
+          team: backend
+        annotations:
+          summary: "Slow NATS Consumers Detected"
+          description: "There are {{ $value }} slow consumers dropping messages or lagging behind publish rates."
+
+      - alert: NATSHighMemoryUsage
+        expr: (gnatsd_varz_mem / gnatsd_varz_max_mem) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: messaging
+          team: platform
+        annotations:
+          summary: "High Memory Usage on NATS Node"
+          description: "NATS node memory usage has exceeded 85% of allocated limits."
+
+      - alert: NATSJetStreamStorageFull
+        expr: (sum(gnatsd_jetstream_stream_bytes) / 53687091200) * 100 > 80
+        for: 5m
+        labels:
+          severity: critical
+          service: messaging
+          team: platform
+        annotations:
+          summary: "JetStream Persistent Storage Above 80%"
+          description: "JetStream storage usage is at {{ $value }}%. Clean up or expand persistent volumes."
+
+      - alert: NATSConsumerBacklogHigh
+        expr: gnatsd_jetstream_consumer_num_pending > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: messaging
+          team: backend
+        annotations:
+          summary: "JetStream Queue Backlog High"
+          description: "Consumer {{ $labels.consumer }} on stream {{ $labels.stream }} has over 1,000 unacknowledged pending messages."
+
+      - alert: NATSConsumerOffline
+        expr: rate(gnatsd_jetstream_consumer_num_ack_pending[5m]) == 0 and gnatsd_jetstream_consumer_num_pending > 50
+        for: 10m
+        labels:
+          severity: critical
+          service: messaging
+          team: backend
+        annotations:
+          summary: "JetStream Consumer Appears Offline"
+          description: "Consumer {{ $labels.consumer }} has pending messages but has not sent acknowledgments for over 10 minutes."

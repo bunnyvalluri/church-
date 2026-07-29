@@ -1,0 +1,116 @@
+{
+  "system": "Kingdom of Christ Ministries Messaging Backbone",
+  "version": "1.0.0",
+  "domains": {
+    "auth": {
+      "prefix": "auth.events",
+      "subjects": [
+        "auth.events.login.success",
+        "auth.events.login.failure",
+        "auth.events.token.refreshed",
+        "auth.events.logout",
+        "auth.events.password.reset_requested",
+        "auth.events.mfa.verified"
+      ]
+    },
+    "users": {
+      "prefix": "users.events",
+      "subjects": [
+        "users.events.created",
+        "users.events.updated",
+        "users.events.deleted",
+        "users.events.role.assigned",
+        "users.events.profile.picture_updated"
+      ]
+    },
+    "members": {
+      "prefix": "members.events",
+      "subjects": [
+        "members.events.registered",
+        "members.events.baptized",
+        "members.events.group.joined",
+        "members.events.group.left",
+        "members.events.attendance.recorded"
+      ]
+    },
+    "pastors": {
+      "prefix": "pastors.events",
+      "subjects": [
+        "pastors.events.assigned",
+        "pastors.events.counseling.scheduled",
+        "pastors.events.counseling.completed",
+        "pastors.events.sermon.scheduled"
+      ]
+    },
+    "prayer": {
+      "prefix": "prayer.events",
+      "subjects": [
+        "prayer.events.requested",
+        "prayer.events.answered",
+        "prayer.events.urgent_broadcast",
+        "prayer.events.intercessor.assigned"
+      ]
+    },
+    "donations": {
+      "prefix": "donations.events",
+      "subjects": [
+        "donations.events.tithe.processed",
+        "donations.events.offering.received",
+        "donations.events.campaign.pledged",
+        "donations.events.receipt.generated",
+        "donations.events.recurring.scheduled"
+      ]
+    },
+    "notifications": {
+      "prefix": "events.notifications",
+      "subjects": [
+        "events.notifications.service.reminder",
+        "events.notifications.announcement.broadcast",
+        "events.notifications.emergency.alert"
+      ]
+    },
+    "media": {
+      "prefix": "media.processing",
+      "subjects": [
+        "media.processing.sermon.uploaded",
+        "media.processing.sermon.transcode_started",
+        "media.processing.sermon.transcode_completed",
+        "media.processing.image.thumbnail_generated",
+        "media.processing.audio.extracted"
+      ]
+    },
+    "email": {
+      "prefix": "email.jobs",
+      "subjects": [
+        "email.jobs.welcome.send",
+        "email.jobs.receipt.send",
+        "email.jobs.newsletter.send",
+        "email.jobs.password_reset.send"
+      ]
+    },
+    "sms": {
+      "prefix": "sms.jobs",
+      "subjects": [
+        "sms.jobs.alert.send",
+        "sms.jobs.otp.send",
+        "sms.jobs.reminder.send"
+      ]
+    },
+    "push": {
+      "prefix": "push.notifications",
+      "subjects": [
+        "push.notifications.mobile.broadcast",
+        "push.notifications.direct.send"
+      ]
+    },
+    "audit": {
+      "prefix": "audit.logs",
+      "subjects": [
+        "audit.logs.access.granted",
+        "audit.logs.access.denied",
+        "audit.logs.security.violation",
+        "audit.logs.data.export"
+      ]
+    }
+  }
+}

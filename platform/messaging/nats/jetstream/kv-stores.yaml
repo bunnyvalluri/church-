@@ -1,0 +1,29 @@
+# JetStream Key-Value Buckets for Kingdom of Christ Ministries
+
+apiVersion: jetstream.nats.io/v1alpha1
+kind: KeyValue
+metadata:
+  name: kcm-app-config
+  namespace: messaging
+spec:
+  bucket: KCM_APP_CONFIG
+  description: "Dynamic System Configuration & Feature Flags Key-Value Store"
+  history: 10
+  ttl: 0s # Persistent key-value storage
+  storage: file
+  replicas: 3
+  maxBytes: 1073741824 # 1 GiB
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: KeyValue
+metadata:
+  name: kcm-user-sessions
+  namespace: messaging
+spec:
+  bucket: KCM_USER_SESSIONS
+  description: "Distributed User Session & Rate Limiting Token Bucket Store"
+  history: 1
+  ttl: 86400s # 24 Hours TTL
+  storage: file
+  replicas: 3
+  maxBytes: 2147483648 # 2 GiB

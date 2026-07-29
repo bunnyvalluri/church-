@@ -1,0 +1,58 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nats-server-tls
+  namespace: messaging
+spec:
+  secretName: nats-server-tls
+  duration: 8760h # 1 year
+  renewBefore: 720h # 30 days
+  subject:
+    organizations:
+      - "Kingdom of Christ Ministries"
+    organizationalUnits:
+      - "Infrastructure & Platform Architecture"
+  commonName: nats.messaging.svc.cluster.local
+  dnsNames:
+    - nats
+    - nats.messaging
+    - nats.messaging.svc
+    - nats.messaging.svc.cluster.local
+    - "*.nats.messaging.svc.cluster.local"
+  issuerRef:
+    name: kcm-cluster-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-external
+  namespace: messaging
+  labels:
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/component: messaging-broker
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "7777"
+spec:
+  type: ClusterIP
+  ports:
+    - name: client
+      port: 4222
+      targetPort: 4222
+      protocol: TCP
+    - name: cluster
+      port: 6222
+      targetPort: 6222
+      protocol: TCP
+    - name: monitor
+      port: 8222
+      targetPort: 8222
+      protocol: TCP
+    - name: metrics
+      port: 7777
+      targetPort: 7777
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: nats

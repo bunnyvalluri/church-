@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-nats-cluster
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/part-of: kcm-platform
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/church-.git'
+    targetRevision: HEAD
+    path: platform/messaging/nats/helm
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: messaging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-nats-jetstream-config
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: nats-jetstream
+    app.kubernetes.io/part-of: kcm-platform
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/church-.git'
+    targetRevision: HEAD
+    path: platform/messaging/nats/jetstream
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: messaging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

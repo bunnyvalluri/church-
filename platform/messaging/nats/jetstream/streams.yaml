@@ -1,0 +1,102 @@
+# JetStream Streams Definition for Kingdom of Christ Ministries
+# Production Streams with R3 Replication and Longhorn Persistent Storage
+
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Stream
+metadata:
+  name: kcm-events-stream
+  namespace: messaging
+spec:
+  name: KCM_EVENTS_STREAM
+  description: "Core Domain Event Stream for KCM Church Operations"
+  subjects:
+    - "auth.events.>"
+    - "users.events.>"
+    - "members.events.>"
+    - "pastors.events.>"
+  storage: file
+  replicas: 3
+  retention: limits
+  maxBytes: 10737418240 # 10 GiB
+  maxAge: 604800s # 7 Days retention
+  maxMsgSize: 1048576 # 1 MB
+  discard: old
+  duplicateWindow: 120s
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Stream
+metadata:
+  name: kcm-notifications-stream
+  namespace: messaging
+spec:
+  name: KCM_NOTIFICATIONS_STREAM
+  description: "Asynchronous WorkQueue Stream for Email, SMS, and Push Notifications"
+  subjects:
+    - "email.jobs.>"
+    - "sms.jobs.>"
+    - "push.notifications.>"
+    - "events.notifications.>"
+  storage: file
+  replicas: 3
+  retention: workqueue
+  maxBytes: 5368709120 # 5 GiB
+  maxMsgSize: 2097152 # 2 MB
+  discard: old
+  duplicateWindow: 300s
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Stream
+metadata:
+  name: kcm-media-stream
+  namespace: messaging
+spec:
+  name: KCM_MEDIA_STREAM
+  description: "Sermon Video Transcoding and Media Processing Pipeline Stream"
+  subjects:
+    - "media.processing.>"
+  storage: file
+  replicas: 3
+  retention: workqueue
+  maxBytes: 21474836480 # 20 GiB
+  maxMsgSize: 10485760 # 10 MB metadata size limit
+  discard: old
+  duplicateWindow: 600s
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Stream
+metadata:
+  name: kcm-audit-stream
+  namespace: messaging
+spec:
+  name: KCM_AUDIT_STREAM
+  description: "Immutable Audit Log Stream for Security & Financial Operations"
+  subjects:
+    - "audit.logs.>"
+    - "donations.events.>"
+  storage: file
+  replicas: 3
+  retention: limits
+  maxBytes: 32212254720 # 30 GiB
+  maxAge: 7776000s # 90 Days retention
+  maxMsgSize: 1048576 # 1 MB
+  discard: old
+  duplicateWindow: 120s
+---
+apiVersion: jetstream.nats.io/v1alpha1
+kind: Stream
+metadata:
+  name: kcm-prayer-stream
+  namespace: messaging
+spec:
+  name: KCM_PRAYER_STREAM
+  description: "Real-time Prayer Request & Intercession Notification Stream"
+  subjects:
+    - "prayer.events.>"
+  storage: file
+  replicas: 3
+  retention: limits
+  maxBytes: 2147483648 # 2 GiB
+  maxAge: 2592000s # 30 Days
+  maxMsgSize: 524288 # 512 KB
+  discard: old
+  duplicateWindow: 120s

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KCM Event Metadata Schema",
+  "type": "object",
+  "required": ["eventId", "eventType", "timestamp", "sourceService", "correlationId", "payload"],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the message event"
+    },
+    "eventType": {
+      "type": "string",
+      "description": "NATS Subject name representing the event type"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when event occurred"
+    },
+    "sourceService": {
+      "type": "string",
+      "description": "Microservice identifier initiating the event"
+    },
+    "correlationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trace correlation ID for OpenTelemetry propagation"
+    },
+    "actor": {
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userRole": { "type": "string" },
+        "ipAddress": { "type": "string" }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Domain specific data payload"
+    }
+  }
+}

@@ -1,0 +1,156 @@
+# Enterprise NATS Helm Chart Configuration for Kingdom of Christ Ministries (KCM Church)
+# Target Chart: nats/nats (official repository: https://github.com/nats-io/k8s)
+# Production HA Architecture with JetStream, Longhorn Storage, TLS, and Prometheus Exporter
+
+config:
+  cluster:
+    enabled: true
+    name: "kcm-nats-cluster"
+    replicas: 3
+
+  jetstream:
+    enabled: true
+    domain: "kcm-prod"
+    memStorage:
+      enabled: true
+      maxSize: 2Gi
+    fileStorage:
+      enabled: true
+      maxSize: 50Gi
+      storageDirectory: /data/jetstream
+      pvc:
+        enabled: true
+        size: 50Gi
+        storageClassName: "longhorn-crypto-nvme"
+        accessMode: ReadWriteOnce
+
+  # Account & Security Configuration
+  accounts:
+    KCM_APP:
+      users:
+        - user: "kcm_api_service"
+          password: "$NATS_APP_USER_PASSWORD"
+          permissions:
+            publish:
+              allow:
+                - "auth.events.>"
+                - "users.events.>"
+                - "members.events.>"
+                - "pastors.events.>"
+                - "prayer.events.>"
+                - "donations.events.>"
+                - "events.notifications.>"
+                - "media.processing.>"
+                - "email.jobs.>"
+                - "sms.jobs.>"
+                - "push.notifications.>"
+                - "audit.logs.>"
+                - "$JS.API.>"
+            subscribe:
+              allow:
+                - "auth.events.>"
+                - "users.events.>"
+                - "members.events.>"
+                - "pastors.events.>"
+                - "prayer.events.>"
+                - "donations.events.>"
+                - "events.notifications.>"
+                - "media.processing.>"
+                - "email.jobs.>"
+                - "sms.jobs.>"
+                - "push.notifications.>"
+                - "audit.logs.>"
+                - "$JS.API.>"
+    KCM_ADMIN:
+      users:
+        - user: "kcm_nats_admin"
+          password: "$NATS_ADMIN_PASSWORD"
+          permissions:
+            publish: { allow: [">"] }
+            subscribe: { allow: [">"] }
+
+  # TLS Configuration
+  tls:
+    secretName: "nats-server-tls"
+    ca: "ca.crt"
+    cert: "tls.crt"
+    key: "tls.key"
+    verify: true
+    timeout: 5
+
+  # Logging & Monitoring
+  debug: false
+  trace: false
+  logtime: true
+
+container:
+  image:
+    repository: nats
+    tag: 2.10.18-alpine
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+
+# High Availability and Pod Scheduling Rules
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - nats
+        topologyKey: "kubernetes.io/hostname"
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: nats
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+
+# Prometheus Exporter Sidecar Integration
+promExporter:
+  enabled: true
+  image:
+    repository: natsio/prometheus-nats-exporter
+    tag: 0.15.0
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 15s
+    scrapeTimeout: 10s
+    labels:
+      release: prometheus
