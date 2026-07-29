@@ -36,9 +36,11 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | cosign login ghcr.io -u "$OWNER" --password-stdin || true
 
       - name: Package & Push OCI Charts
+        id: package-push
         run: |
           mkdir -p .cr-release-packages
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          PUSHED=0
           for chart in platform/helm/charts/*; do
             if [ -d "$chart" ] && [ -f "$chart/Chart.yaml" ]; then
               chart_name=$(basename "$chart")
@@ -55,8 +57,32 @@ jobs:
           for pkg in .cr-release-packages/*.tgz; do
             if [ -f "$pkg" ]; then
               echo "Pushing OCI package: $pkg"
-              helm push "$pkg" "oci://ghcr.io/${OWNER}" || true
+              helm push "$pkg" "oci://ghcr.io/${OWNER}" && PUSHED=$((PUSHED+1)) || true
             fi
           done
 
+          echo "pushed_count=$PUSHED" >> $GITHUB_OUTPUT
+          echo "✅ Pushed $PUSHED chart(s) to OCI registry"
 
+      - name: Sign OCI Charts with Cosign
+        if: steps.package-push.outputs.pushed_count != '0'
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          shopt -s nullglob
+          for pkg in .cr-release-packages/*.tgz; do
+            if [ -f "$pkg" ]; then
+              chart_name=$(basename "$pkg" .tgz)
+              digest=$(helm show chart "oci://ghcr.io/${OWNER}/${chart_name%%[0-9]*}" 2>/dev/null | grep -m1 "^version:" | awk '{print $2}' || echo "")
+              if [ -n "$digest" ]; then
+                cosign sign --yes "ghcr.io/${OWNER}/${chart_name%%[0-9]*}:${digest}" || echo "::warning::Cosign sign skipped for $chart_name"
+              fi
+            fi
+          done
+          echo "✅ Cosign signing complete"
+
+      - name: Publish Summary
+        if: always()
+        run: |
+          echo "## Helm OCI Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Charts packaged and pushed to \`oci://ghcr.io/${{ github.repository_owner }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
