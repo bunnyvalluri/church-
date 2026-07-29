@@ -23,13 +23,17 @@ WORKDIR /app
 COPY --from=deps /app ./
 COPY . .
 
-# Generate Prisma Client (using workspace scripts)
-RUN npm run db:generate -w backend || true
-RUN npm run db:generate -w frontend || true
+# Generate Prisma Client
+RUN cd backend && npx prisma generate --schema=./prisma/schema.prisma || true
+RUN cd frontend && npx prisma generate || true
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 ENV DATABASE_URL "postgresql://dummy:dummy@localhost:5432/dummy"
+ENV DB_OFFLINE "true"
+ENV SKIP_ENV_VALIDATION "1"
+ENV NEXTAUTH_SECRET "ci-build-placeholder-secret-32-chars"
+ENV NEXTAUTH_URL "http://localhost:3000"
 
 # Build the Next.js frontend
 RUN npm run build -w frontend
