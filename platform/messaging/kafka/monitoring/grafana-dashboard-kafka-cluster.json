@@ -1,0 +1,77 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Kafka Broker Active Controller Count",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(kafka_controller_kafkacontroller_activecontrollercount)",
+          "legendFormat": "Active Controller"
+        }
+      ]
+    },
+    {
+      "title": "Under-Replicated Partitions",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(kafka_server_replicamanager_underreplicatedpartitions)",
+          "legendFormat": "Under Replicated"
+        }
+      ]
+    },
+    {
+      "title": "Offline Partitions",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(kafka_controller_kafkacontroller_offlinepartitionscount)",
+          "legendFormat": "Offline Partitions"
+        }
+      ]
+    },
+    {
+      "title": "Bytes In / Out per Second",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "sum(rate(kafka_server_brokertopicmetrics_bytesinpersec[5m]))",
+          "legendFormat": "Bytes In"
+        },
+        {
+          "expr": "sum(rate(kafka_server_brokertopicmetrics_bytesoutpersec[5m]))",
+          "legendFormat": "Bytes Out"
+        }
+      ]
+    },
+    {
+      "title": "Broker Storage Usage (Longhorn)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "kubelet_volume_stats_used_bytes{namespace=\"messaging\", persistentvolumeclaim=~\"kafka-data-.*\"} / 1024 / 1024 / 1024",
+          "legendFormat": "{{persistentvolumeclaim}} (GB)"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["kafka", "cluster", "kcm"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "KCM Kafka Cluster Overview",
+  "uid": "kcm-kafka-cluster-overview"
+}

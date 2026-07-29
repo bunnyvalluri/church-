@@ -1,0 +1,81 @@
+# Production Helm Values for Apache Kafka (KRaft Mode)
+# Enterprise Event Streaming Platform for KCM Church
+
+global:
+  environment: production
+  namespace: messaging
+  clusterName: kcm-kafka-cluster
+
+replicaCount: 3
+
+image:
+  repository: bitnami/kafka
+  tag: 3.8.0-debian-12-r0
+  pullPolicy: IfNotPresent
+
+kraft:
+  enabled: true
+  clusterId: "KCM-Kafka-KRaft-Prod-Cluster-UUID-001"
+  processRoles: "broker,controller"
+  controllerQuorumVoters: "0@kcm-kafka-0.kcm-kafka-headless.messaging.svc.cluster.local:9093,1@kcm-kafka-1.kcm-kafka-headless.messaging.svc.cluster.local:9093,2@kcm-kafka-2.kcm-kafka-headless.messaging.svc.cluster.local:9093"
+
+service:
+  type: ClusterIP
+  ports:
+    client: 9092
+    controller: 9093
+    internal: 9094
+    jmx: 9308
+
+storage:
+  enabled: true
+  storageClassName: longhorn
+  accessMode: ReadWriteOnce
+  size: 100Gi
+
+auth:
+  sasl:
+    enabled: true
+    interBrokerMechanism: SCRAM-SHA-512
+    mechanisms:
+      - SCRAM-SHA-512
+    jaasSecretName: kcm-kafka-sasl-secret
+  tls:
+    enabled: true
+    certManager:
+      enabled: true
+      issuerRef:
+        name: kcm-ca-issuer
+        kind: ClusterIssuer
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+
+jvm:
+  heapOpts: "-Xms4g -Xmx4g -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35"
+
+jmxExporter:
+  enabled: true
+  port: 9308
+  image: bitnami/jmx-exporter:1.0.1
+  configMapName: kcm-kafka-jmx-config
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - kafka
+        topologyKey: "kubernetes.io/hostname"

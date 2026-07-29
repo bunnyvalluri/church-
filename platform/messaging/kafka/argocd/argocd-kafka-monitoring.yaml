@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcm-kafka-monitoring
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/bunnyvalluri/church-.git'
+    targetRevision: HEAD
+    path: platform/messaging/kafka/monitoring
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: messaging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

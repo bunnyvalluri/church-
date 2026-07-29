@@ -1,0 +1,153 @@
+# Declarative Kafka Topic Configurations for KCM Church Event Platform
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kcm-kafka-topics-config
+  namespace: messaging
+data:
+  topics.json: |
+    [
+      {
+        "name": "user.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "2592000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "auth.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "2592000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "member.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "7776000000",
+          "cleanup.policy": "compact",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "pastor.events",
+        "partitions": 3,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "7776000000",
+          "cleanup.policy": "compact",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "prayer.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "5184000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "donation.events",
+        "partitions": 12,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "220752000000",
+          "cleanup.policy": "compact,delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "event.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "5184000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "media.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "2592000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "notification.events",
+        "partitions": 12,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "604800000",
+          "cleanup.policy": "delete",
+          "compression.type": "snappy"
+        }
+      },
+      {
+        "name": "audit.events",
+        "partitions": 12,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "220752000000",
+          "cleanup.policy": "compact,delete",
+          "compression.type": "zstd"
+        }
+      },
+      {
+        "name": "email.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "604800000",
+          "cleanup.policy": "delete",
+          "compression.type": "snappy"
+        }
+      },
+      {
+        "name": "sms.events",
+        "partitions": 6,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "604800000",
+          "cleanup.policy": "delete",
+          "compression.type": "snappy"
+        }
+      },
+      {
+        "name": "analytics.events",
+        "partitions": 12,
+        "replicationFactor": 3,
+        "configs": {
+          "min.insync.replicas": "2",
+          "retention.ms": "7776000000",
+          "cleanup.policy": "delete",
+          "compression.type": "zstd"
+        }
+      }
+    ]

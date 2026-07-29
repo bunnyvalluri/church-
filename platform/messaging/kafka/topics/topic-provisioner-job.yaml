@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kcm-kafka-topic-provisioner
+  namespace: messaging
+spec:
+  template:
+    metadata:
+      name: topic-provisioner
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: topic-provisioner
+          image: bitnami/kafka:3.8.0-debian-12-r0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Starting Kafka Topic and ACL Provisioner..."
+              BROKER="kcm-kafka.messaging.svc.cluster.local:9092"
+              
+              # Wait for broker readiness
+              until kafka-topics.sh --bootstrap-server $BROKER --list; do
+                echo "Waiting for Kafka broker to be ready..."
+                sleep 5
+              done
+              
+              echo "Applying topics..."
+              # Read topics JSON and provision via kafka-topics.sh
+              cat /etc/kafka-config/topics.json | jq -c '.[]' | while read topic; do
+                NAME=$(echo $topic | jq -r '.name')
+                PARTITIONS=$(echo $topic | jq -r '.partitions')
+                RF=$(echo $topic | jq -r '.replicationFactor')
+                echo "Ensuring topic $NAME (partitions: $PARTITIONS, RF: $RF)..."
+                kafka-topics.sh --bootstrap-server $BROKER --create --if-not-exists \
+                  --topic $NAME \
+                  --partitions $PARTITIONS \
+                  --replication-factor $RF
+              done
+              
+              echo "Topic Provisioning Complete!"
+          volumeMounts:
+            - name: topics-config
+              mountPath: /etc/kafka-config
+      volumes:
+        - name: topics-config
+          configMap:
+            name: kcm-kafka-topics-config

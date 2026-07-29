@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "kcm-kafka.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  serviceName: {{ include "kcm-kafka.fullname" . }}-headless
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.ports.jmx }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsNonRoot: true
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      containers:
+        - name: kafka
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KAFKA_CFG_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: "{{ .Values.kraft.processRoles }}"
+            - name: KAFKA_CFG_KRAFT_CLUSTER_ID
+              value: "{{ .Values.kraft.clusterId }}"
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: "{{ .Values.kraft.controllerQuorumVoters }}"
+            - name: KAFKA_CFG_LISTENERS
+              value: "CLIENT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,INTERNAL://0.0.0.0:9094"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "CLIENT://$(POD_NAME).{{ include "kcm-kafka.fullname" . }}-headless.{{ .Values.global.namespace }}.svc.cluster.local:9092,INTERNAL://$(POD_NAME).{{ include "kcm-kafka.fullname" . }}-headless.{{ .Values.global.namespace }}.svc.cluster.local:9094"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "CLIENT:SASL_SSL,CONTROLLER:SASL_SSL,INTERNAL:SASL_SSL"
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: "CONTROLLER"
+            - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+              value: "INTERNAL"
+            - name: KAFKA_CFG_SASL_ENABLED_MECHANISMS
+              value: "SCRAM-SHA-512"
+            - name: KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL
+              value: "SCRAM-SHA-512"
+            - name: KAFKA_HEAP_OPTS
+              value: "{{ .Values.jvm.heapOpts }}"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - name: client
+              containerPort: 9092
+            - name: controller
+              containerPort: 9093
+            - name: internal
+              containerPort: 9094
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 5
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka
+            - name: tls-certs
+              mountPath: /etc/kafka/certs
+              readOnly: true
+        - name: jmx-exporter
+          image: "{{ .Values.jmxExporter.image }}"
+          ports:
+            - name: jmx-metrics
+              containerPort: 9308
+          command:
+            - java
+            - -jar
+            - /opt/jmx_exporter/jmx_prometheus_javaagent.jar
+            - "9308"
+            - /etc/jmx-exporter/kafka-jmx-config.yaml
+          volumeMounts:
+            - name: jmx-config
+              mountPath: /etc/jmx-exporter
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: kcm-kafka-tls-secret
+        - name: jmx-config
+          configMap:
+            name: {{ .Values.jmxExporter.configMapName }}
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: {{ .Values.storage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.size }}

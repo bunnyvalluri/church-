@@ -1,0 +1,52 @@
+name: KCM Kafka CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/messaging/kafka/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/messaging/kafka/**'
+
+jobs:
+  validate-and-lint:
+    name: Validate Manifests & OpenTofu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: Validate OpenTofu IaC
+        run: |
+          cd platform/messaging/kafka/opentofu
+          tofu init -backend=false
+          tofu validate
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Lint Kafka Helm Chart
+        run: |
+          helm lint platform/messaging/kafka/helm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Compile Producer and Consumer TypeScript Code
+        run: |
+          cd platform/messaging/kafka
+          npm install --no-save kafkajs
+          npx tsc --noEmit producers/*.ts consumers/*.ts || true
+
+      - name: Verify Argo CD Manifests
+        run: |
+          kubectl apply --dry-run=client -f platform/messaging/kafka/argocd/

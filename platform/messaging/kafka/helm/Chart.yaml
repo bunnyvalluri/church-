@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kcm-kafka-kraft
+description: Production Enterprise Apache Kafka Cluster in KRaft Mode for KCM Church
+type: application
+version: 3.8.0
+appVersion: 3.8.0
+keywords:
+  - kafka
+  - kraft
+  - messaging
+  - event-streaming
+  - kcm-church
+maintainers:
+  - name: KCM DevSecOps & Platform Engineering
+    email: devops@kcmchurch.org

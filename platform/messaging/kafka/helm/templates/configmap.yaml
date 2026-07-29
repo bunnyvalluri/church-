@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.jmxExporter.configMapName }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  kafka-jmx-config.yaml: |
+    hostPort: 127.0.0.1:9999
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    ssl: false
+    rules:
+      # Kafka Controller Metrics
+      - pattern: kafka.controller<type=(.+), name=(.+)><>(Value|OneMinuteRate)
+        name: kafka_controller_$1_$2
+        type: GAUGE
+      # Kafka Broker Performance Metrics
+      - pattern: kafka.server<type=(.+), name=(.+)><>(Value|OneMinuteRate)
+        name: kafka_server_$1_$2
+        type: GAUGE
+      # Kafka Network Metrics
+      - pattern: kafka.network<type=(.+), name=(.+)><>(Value|OneMinuteRate)
+        name: kafka_network_$1_$2
+        type: GAUGE
+      # Kafka Topic & Partition Metrics
+      - pattern: kafka.log<type=Log, name=(.+), topic=(.+), partition=(.+)><>Value
+        name: kafka_log_$1
+        labels:
+          topic: "$2"
+          partition: "$3"
+        type: GAUGE

@@ -1,0 +1,26 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kcm-kafka-broker-tls
+  namespace: {{ .Values.global.namespace }}
+spec:
+  secretName: kcm-kafka-tls-secret
+  duration: 8760h # 1 year
+  renewBefore: 720h # 30 days
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+    - kcm-kafka
+    - kcm-kafka.messaging
+    - kcm-kafka.messaging.svc
+    - kcm-kafka.messaging.svc.cluster.local
+    - "*.kcm-kafka-headless.messaging.svc.cluster.local"
+  issuerRef:
+    name: {{ .Values.auth.tls.certManager.issuerRef.name }}
+    kind: {{ .Values.auth.tls.certManager.issuerRef.kind }}

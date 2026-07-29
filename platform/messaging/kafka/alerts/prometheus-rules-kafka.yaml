@@ -1,0 +1,65 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kcm-kafka-alerts
+  namespace: messaging
+  labels:
+    role: alert-rules
+    release: prometheus-stack
+spec:
+  groups:
+    - name: kcm-kafka-alerts
+      rules:
+        - alert: KafkaBrokerDown
+          expr: count(up{job="kcm-kafka"}) < 3
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Kafka broker instance down"
+            description: "Fewer than 3 Kafka brokers are running in namespace messaging."
+
+        - alert: KafkaUnderReplicatedPartitions
+          expr: sum(kafka_server_replicamanager_underreplicatedpartitions) > 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Kafka Under-Replicated Partitions Detected"
+            description: "There are {{ $value }} under-replicated partitions on the Kafka cluster."
+
+        - alert: KafkaOfflinePartitions
+          expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount) > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Kafka Offline Partitions Detected"
+            description: "Kafka cluster has {{ $value }} offline partitions! Immediate action required."
+
+        - alert: KafkaHighConsumerLag
+          expr: sum(kafka_consumergroup_lag) by (consumergroup, topic) > 5000
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Kafka Consumer Lag High"
+            description: "Consumer group {{ $labels.consumergroup }} has a lag of {{ $value }} messages on topic {{ $labels.topic }}."
+
+        - alert: KafkaHighDiskUsage
+          expr: kubelet_volume_stats_used_bytes{namespace="messaging", persistentvolumeclaim=~"kafka-data-.*"} / kubelet_volume_stats_capacity_bytes{namespace="messaging", persistentvolumeclaim=~"kafka-data-.*"} > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Kafka Storage Usage > 85%"
+            description: "Volume {{ $labels.persistentvolumeclaim }} usage is above 85%."
+
+        - alert: KafkaDLQMessagesDetected
+          expr: sum(rate(kafka_server_brokertopicmetrics_messagesinpersec{topic=~".*\\.DLQ"}[5m])) > 0
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Poisoned Messages Sent to Kafka DLQ"
+            description: "Dead Letter Queue {{ $labels.topic }} is receiving failed consumer messages."

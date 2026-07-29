@@ -1,0 +1,87 @@
+# Declarative ACL Definitions for KCM Church Event Streaming Platform
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kcm-kafka-acls-config
+  namespace: messaging
+data:
+  acls.json: |
+    [
+      {
+        "principal": "User:CN=auth-service",
+        "operation": "WRITE",
+        "resourceType": "TOPIC",
+        "resourceName": "auth.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=auth-service",
+        "operation": "WRITE",
+        "resourceType": "TOPIC",
+        "resourceName": "user.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=donation-service",
+        "operation": "WRITE",
+        "resourceType": "TOPIC",
+        "resourceName": "donation.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=church-event-service",
+        "operation": "WRITE",
+        "resourceType": "TOPIC",
+        "resourceName": "event.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=media-service",
+        "operation": "WRITE",
+        "resourceType": "TOPIC",
+        "resourceName": "media.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=notification-consumer",
+        "operation": "READ",
+        "resourceType": "TOPIC",
+        "resourceName": "notification.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=notification-consumer",
+        "operation": "READ",
+        "resourceType": "GROUP",
+        "resourceName": "kcm-notification-group",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=email-consumer",
+        "operation": "READ",
+        "resourceType": "TOPIC",
+        "resourceName": "email.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=sms-consumer",
+        "operation": "READ",
+        "resourceType": "TOPIC",
+        "resourceName": "sms.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=audit-consumer",
+        "operation": "READ",
+        "resourceType": "TOPIC",
+        "resourceName": "audit.events",
+        "permissionType": "ALLOW"
+      },
+      {
+        "principal": "User:CN=analytics-consumer",
+        "operation": "READ",
+        "resourceType": "TOPIC",
+        "resourceName": "analytics.events",
+        "permissionType": "ALLOW"
+      }
+    ]
