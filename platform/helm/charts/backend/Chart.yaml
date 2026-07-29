@@ -2,7 +2,7 @@ apiVersion: v2
 name: backend
 description: Helm Chart for KCM Church Node.js Express Backend Service
 type: application
-version: 1.2.0
+version: 1.2.1
 appVersion: "2.4.0"
 keywords:
   - nodejs
