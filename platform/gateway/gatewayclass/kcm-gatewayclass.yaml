@@ -26,7 +26,4 @@ spec:
     kind: EnvoyProxy
     name: kcm-proxy-config
     namespace: envoy-gateway-system
-  description: |
-    KCM Church Enterprise Gateway Class powered by Envoy Gateway v1.8.3.
-    Provides HTTP/HTTPS routing, TLS termination, traffic management,
-    security policies, and observability for all KCM portals.
+

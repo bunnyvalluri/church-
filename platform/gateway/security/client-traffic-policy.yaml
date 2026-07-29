@@ -40,8 +40,12 @@ spec:
     alpnProtocols:
       - h2
       - http/1.1
-    clientValidation:
-      optional: true  # mTLS optional for now; set required: true for internal APIs
+    # clientValidation:  # Uncomment and add caCertificateRefs to enable mTLS
+    #   caCertificateRefs:
+    #     - kind: Secret
+    #       name: kcm-ca-cert
+    #       namespace: kcm-system
+
 
   # ── HTTP Header Handling ───────────────────────────────────────────────────
   headers:
