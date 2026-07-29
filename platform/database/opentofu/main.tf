@@ -10,12 +10,6 @@ terraform {
       version = "~> 2.12.0"
     }
   }
-  backend "s3" {
-    bucket         = "kcm-tf-state"
-    key            = "platform/database/terraform.tfstate"
-    region         = "ap-south-1"
-    encrypt        = true
-  }
 }
 
 provider "kubernetes" {
@@ -32,8 +26,8 @@ resource "kubernetes_namespace" "kcm_database" {
   metadata {
     name = var.namespace
     labels = {
-      "app.kubernetes.io/name"       = "kcm-postgresql"
-      "app.kubernetes.io/part-of"    = "kcm-database-platform"
+      "app.kubernetes.io/name"             = "kcm-postgresql"
+      "app.kubernetes.io/part-of"          = "kcm-database-platform"
       "pod-security.kubernetes.io/enforce" = "restricted"
     }
   }

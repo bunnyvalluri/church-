@@ -41,6 +41,9 @@ jobs:
   validate-opentofu:
     name: Validate OpenTofu IaC
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/database/opentofu
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -48,17 +51,16 @@ jobs:
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: 1.6.2
+          tofu_version: "1.8.0"
+
+      - name: OpenTofu Init
+        run: tofu init -backend=false
 
       - name: OpenTofu Format Check
         run: tofu fmt -check
-        working-directory: platform/database/opentofu
 
-      - name: OpenTofu Init & Validate
-        run: |
-          tofu init -backend=false
-          tofu validate
-        working-directory: platform/database/opentofu
+      - name: OpenTofu Validate
+        run: tofu validate
 
   prisma-validate:
     name: Validate Prisma ORM Schema
@@ -74,7 +76,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install --ignore-scripts
 
       - name: Validate Prisma Schema
         run: npx prisma validate --schema=database/schema.prisma
