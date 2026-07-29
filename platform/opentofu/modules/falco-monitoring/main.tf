@@ -17,8 +17,8 @@ terraform {
 
 locals {
   monitoring_namespace = var.monitoring_namespace
-  dashboard_path       = "${path.module}/../../../platform/security/falco/dashboards"
-  rules_path           = "${path.module}/../../../platform/security/falco/alerts"
+  dashboard_path       = "${path.module}/../../../security/falco/dashboards"
+  rules_path           = "${path.module}/../../../security/falco/alerts"
 
   common_labels = merge({
     "app.kubernetes.io/name"      = "falco"

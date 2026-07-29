@@ -148,8 +148,8 @@ resource "helm_release" "falco" {
 
   # Merge base values + HA values
   values = [
-    file("${path.module}/../../../platform/security/falco/helm/values.yaml"),
-    file("${path.module}/../../../platform/security/falco/helm/values-ha.yaml"),
+    file("${path.module}/../../../security/falco/helm/values.yaml"),
+    file("${path.module}/../../../security/falco/helm/values-ha.yaml"),
   ]
 
   set {
