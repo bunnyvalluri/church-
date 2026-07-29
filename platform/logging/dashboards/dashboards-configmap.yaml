@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-logging-dashboards
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: kcm-platform
+data:
+  kcm-cluster-logs.json: |
+    {
+      "title": "KCM Platform - Cluster Logs",
+      "uid": "kcm-cluster-logs",
+      "tags": ["logging", "loki", "kcm", "cluster"],
+      "timezone": "browser",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "10s",
+      "panels": [
+        {
+          "title": "Log Rate by Namespace",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [{ "expr": "sum by (namespace) (rate({namespace=~\".+\"}[$__interval]))", "legendFormat": "{{namespace}}" }]
+        },
+        {
+          "title": "Error Log Volume by Container",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [{ "expr": "sum by (container) (rate({namespace=~\".+\"} |~ \"(?i)error|fatal|exception\"[$__interval]))", "legendFormat": "{{container}}" }]
+        },
+        {
+          "title": "Cluster Log Viewer",
+          "type": "logs",
+          "gridPos": { "h": 16, "w": 24, "x": 0, "y": 8 },
+          "options": { "showLabels": true, "wrapLogMessage": true, "enableLogDetails": true, "showTime": true },
+          "targets": [{ "expr": "{namespace=~\".+\"} | json" }]
+        }
+      ]
+    }
+  kcm-application-logs.json: |
+    {
+      "title": "KCM Platform - Application Logs",
+      "uid": "kcm-application-logs",
+      "tags": ["logging", "loki", "kcm", "application"],
+      "timezone": "browser",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "10s",
+      "panels": [
+        {
+          "title": "Application Error Rate per Service",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [{ "expr": "sum by (service) (rate({service=~\".+\"} | json | level=\"ERROR\" [$__interval]))", "legendFormat": "{{service}}" }]
+        },
+        {
+          "title": "HTTP 5xx Server Errors",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [{ "expr": "sum by (service) (rate({service=~\".+\"} | json | status_code >= 500 [$__interval]))", "legendFormat": "{{service}}" }]
+        },
+        {
+          "title": "Application Log Explorer",
+          "type": "logs",
+          "gridPos": { "h": 16, "w": 24, "x": 0, "y": 8 },
+          "options": { "showLabels": true, "wrapLogMessage": true, "enableLogDetails": true, "showTime": true },
+          "targets": [{ "expr": "{service=~\"kcm-.+\"} | json" }]
+        }
+      ]
+    }

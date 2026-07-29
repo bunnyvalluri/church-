@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: loki-sa
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: logging
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: alloy-sa
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/part-of: logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: alloy-logs-reader
+  labels:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/part-of: logging
+rules:
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  - pods/logs
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - events
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+  - daemonsets
+  - deployments
+  - statefulsets
+  - replicasets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["gateway.networking.k8s.io"]
+  resources:
+  - httproutes
+  - gateways
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["postgresql.cnpg.io"]
+  resources:
+  - clusters
+  - backups
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["falco.org"]
+  resources:
+  - falcoevents
+  verbs: ["get", "list", "watch"]
+- nonResourceURLs:
+  - /metrics
+  - /logs
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: alloy-logs-reader-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: alloy-logs-reader
+subjects:
+- kind: ServiceAccount
+  name: alloy-sa
+  namespace: logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: loki-config-reader
+  namespace: logging
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: loki-config-reader-binding
+  namespace: logging
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: loki-config-reader
+subjects:
+- kind: ServiceAccount
+  name: loki-sa
+  namespace: logging

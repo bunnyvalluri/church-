@@ -1,0 +1,71 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: loki-logging-alerts
+  namespace: logging
+  labels:
+    role: alert-rules
+    app.kubernetes.io/part-of: kcm-platform
+spec:
+  groups:
+  - name: LokiApplicationAlerts
+    rules:
+    - alert: HighApplicationErrorRate
+      expr: sum(rate({service=~"kcm-.+"} | json | level="ERROR" [5m])) > 10
+      for: 2m
+      labels:
+        severity: critical
+        category: application
+      annotations:
+        summary: "High Application Error Rate on {{ $labels.service }}"
+        description: "Service {{ $labels.service }} is experiencing more than 10 error logs per second."
+
+    - alert: ContainerCrashLoopBackOff
+      expr: sum(rate({app="k8s-event-exporter"} | json | reason="CrashLoopBackOff" [5m])) > 0
+      for: 1m
+      labels:
+        severity: critical
+        category: infrastructure
+      annotations:
+        summary: "Container CrashLoopBackOff Detected"
+        description: "Kubernetes event exporter captured a CrashLoopBackOff event in cluster."
+
+    - alert: FirebaseAuthFailureSpike
+      expr: sum(rate({category="AUDIT"} | json | security_event_type="AUTH_FAILURE" [5m])) > 5
+      for: 2m
+      labels:
+        severity: warning
+        category: security
+      annotations:
+        summary: "Firebase Authentication Failure Spike"
+        description: "More than 5 authentication failures recorded in 5 minutes."
+
+    - alert: DatabaseSlowQueriesHighRate
+      expr: sum(rate({category="DATABASE"} | json | database_is_slow="true" [5m])) > 2
+      for: 3m
+      labels:
+        severity: warning
+        category: database
+      annotations:
+        summary: "PostgreSQL Slow Query Rate Elevated"
+        description: "PostgreSQL query execution latency is exceeding 200ms threshold frequently."
+
+    - alert: FalcoSecurityThreatDetected
+      expr: sum(rate({container="falco"} | json | priority=~"Warning|Error|Critical" [1m])) > 0
+      for: 0m
+      labels:
+        severity: critical
+        category: security
+      annotations:
+        summary: "Falco Runtime Security Threat Triggered"
+        description: "Falco detected abnormal system/container behavior in namespace {{ $labels.namespace }}."
+
+    - alert: LokiStorageNearCapacity
+      expr: (loki_ingester_memory_chunks / loki_ingester_chunk_target_size) > 0.85
+      for: 5m
+      labels:
+        severity: warning
+        category: storage
+      annotations:
+        summary: "Loki Ingester Storage Near Capacity"
+        description: "Loki ingester memory chunk usage has crossed 85% threshold."

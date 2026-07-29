@@ -1,0 +1,59 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "title": "Argo Rollouts Deployment Events",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate({namespace=\"argo-rollouts\"} [$__interval]))",
+          "legendFormat": "{{pod}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Kubernetes Events (Warnings & Normal)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (reason) (rate({app=\"k8s-event-exporter\"} | json [$__interval]))",
+          "legendFormat": "{{reason}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Deployment & GitOps Audit Logs",
+      "type": "logs",
+      "gridPos": { "h": 16, "w": 24, "x": 0, "y": 8 },
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "showTime": true
+      },
+      "targets": [
+        {
+          "expr": "{namespace=~\"argocd|argo-rollouts\"} | json",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["logging", "loki", "kcm", "deployments", "argocd", "rollouts"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "KCM Platform - Deployment & Rollout Logs",
+  "uid": "kcm-deployment-logs"
+}

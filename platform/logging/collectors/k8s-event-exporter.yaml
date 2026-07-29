@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-event-exporter
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: k8s-event-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k8s-event-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k8s-event-exporter
+    spec:
+      serviceAccountName: alloy-sa
+      containers:
+      - name: event-exporter
+        image: bitnami/kubernetes-event-exporter:1.0.0
+        args:
+        - -conf=/etc/event-exporter/config.yaml
+        volumeMounts:
+        - name: config
+          mountPath: /etc/event-exporter
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+      volumes:
+      - name: config
+        configMap:
+          name: event-exporter-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: event-exporter-config
+  namespace: logging
+data:
+  config.yaml: |
+    logLevel: info
+    logFormat: json
+    receivers:
+      - name: stdout
+        stdout: {}
+      - name: loki
+        webhook:
+          url: "http://loki-gateway.logging.svc.cluster.local:3100/loki/api/v1/push"
+          headers:
+            Content-Type: application/json

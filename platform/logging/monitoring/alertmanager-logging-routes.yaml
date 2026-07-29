@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: logging-alertmanager-config
+  namespace: logging
+  labels:
+    release: kube-prometheus-stack
+spec:
+  route:
+    groupBy: ['alertname', 'namespace', 'category']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: 'pagerduty-security-oncall'
+    routes:
+    - matchers:
+      - name: category
+        value: security
+      receiver: 'pagerduty-security-oncall'
+    - matchers:
+      - name: severity
+        value: critical
+      receiver: 'slack-ops-critical'
+  receivers:
+  - name: 'pagerduty-security-oncall'
+    pagerdutyConfigs:
+    - routingKey:
+        name: alertmanager-secret
+        key: pagerduty-key
+      sendResolved: true
+  - name: 'slack-ops-critical'
+    slackConfigs:
+    - channel: '#ops-alerts'
+      apiURL:
+        name: alertmanager-secret
+        key: slack-webhook-url
+      sendResolved: true

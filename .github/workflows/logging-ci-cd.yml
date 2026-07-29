@@ -1,0 +1,69 @@
+name: Enterprise Logging Platform CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'platform/logging/**'
+      - '.github/workflows/logging-ci-cd.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'platform/logging/**'
+
+jobs:
+  lint-and-validate:
+    name: Lint & Validate Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Yamllint & Helm
+        run: |
+          sudo apt-get update && sudo apt-get install -y yamllint
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Yamllint Validation
+        run: |
+          yamllint -c .yamllint.yml platform/logging/kubernetes/ platform/logging/loki/ platform/logging/collectors/ platform/logging/alerts/
+
+      - name: Helm Chart Dependency & Linting
+        run: |
+          helm dependency build platform/logging/helm/ || true
+          helm lint platform/logging/helm/
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.2
+
+      - name: OpenTofu Format & Validate
+        run: |
+          cd platform/logging/opentofu
+          tofu init -backend=false
+          tofu fmt -check
+          tofu validate
+
+      - name: Security Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          hide-shortcut-table: 'true'
+          output: 'trivy-results.txt'
+          exit-code: '0'
+
+  gitops-sync:
+    name: Trigger GitOps Synchronization
+    needs: lint-and-validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Argo CD Sync Status
+        run: |
+          echo "Logging Platform changes merged to main. Argo CD will auto-sync Application 'logging-platform'."

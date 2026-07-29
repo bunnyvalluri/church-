@@ -1,0 +1,156 @@
+# Production High Availability Helm Values for Grafana Loki (Chart: grafana/loki v6.x / Loki v3.x)
+deploymentMode: SimpleScalable
+
+loki:
+  auth_enabled: false
+  
+  commonConfig:
+    replication_factor: 3
+
+  schemaConfig:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+
+  storage:
+    type: s3
+    s3:
+      endpoint: "minio.logging.svc.cluster.local:9000"
+      region: "us-east-1"
+      bucketnames: "kcm-loki-chunks"
+      secretAccessKey: "${MINIO_SECRET_KEY}"
+      accessKeyId: "${MINIO_ACCESS_KEY}"
+      s3ForcePathStyle: true
+      insecure: true
+    bucketNames:
+      chunks: "kcm-loki-chunks"
+      ruler: "kcm-loki-ruler"
+      admin: "kcm-loki-admin"
+
+  limits_config:
+    retention_period: 30d
+    enforce_metric_name: false
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    max_cache_freshness_per_query: 10m
+    split_queries_by_interval: 15m
+    max_query_parallelism: 32
+    ingestion_rate_mb: 32
+    ingestion_burst_size_mb: 64
+    max_streams_per_user: 50000
+    max_line_size: 256KB
+    per_stream_rate_limit: 10MB
+    per_stream_rate_limit_burst: 20MB
+    retention_stream:
+      - selector: '{namespace="security"}'
+        priority: 1
+        period: 90d
+      - selector: '{app="falco"}'
+        priority: 1
+        period: 90d
+      - selector: '{category="AUDIT"}'
+        priority: 2
+        period: 90d
+
+  compactor:
+    working_directory: /var/loki/compactor
+    compaction_interval: 10m
+    retention_enabled: true
+    retention_delete_delay: 2h
+    retention_delete_worker_count: 150
+    delete_request_store: s3
+
+  ingester:
+    chunk_encoding: snappy
+    chunk_target_size: 1572864
+    max_chunk_age: 2h
+    chunk_idle_period: 30m
+    lifecycler:
+      ring:
+        kvstore:
+          store: memberlist
+        replication_factor: 3
+
+  pattern_ingester:
+    enabled: true
+
+  ruler:
+    enable_api: true
+    rule_path: /var/loki/rules
+    storage:
+      type: s3
+      s3:
+        bucketnames: "kcm-loki-ruler"
+    alertmanager_url: "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
+
+read:
+  replicas: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 75
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+
+write:
+  replicas: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 80
+  persistence:
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+backend:
+  replicas: 2
+  persistence:
+    size: 50Gi
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+
+gateway:
+  enabled: true
+  replicas: 2
+  verboseLogging: false
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+monitoring:
+  dashboards:
+    enabled: true
+    labels:
+      grafana_dashboard: "1"
+  rules:
+    enabled: true
+    alerting: true
+  serviceMonitor:
+    enabled: true

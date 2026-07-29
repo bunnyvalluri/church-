@@ -1,0 +1,59 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "title": "Falco Security Rule Triggers",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (falco_rule) (rate({container=\"falco\"} | json [$__interval]))",
+          "legendFormat": "{{falco_rule}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Failed Authentication Spikes (Firebase Auth)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (service) (rate({category=\"AUDIT\"} | json | security_event_type=\"AUTH_FAILURE\" [$__interval]))",
+          "legendFormat": "{{service}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Security & Audit Event Stream",
+      "type": "logs",
+      "gridPos": { "h": 16, "w": 24, "x": 0, "y": 8 },
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "showTime": true
+      },
+      "targets": [
+        {
+          "expr": "{category=\"AUDIT\"} | json",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["logging", "loki", "kcm", "security", "falco"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "KCM Platform - Security Logs & Falco Audit",
+  "uid": "kcm-security-logs"
+}
