@@ -189,7 +189,7 @@ resource "helm_release" "falcosidekick" {
   timeout          = 300
 
   values = [
-    file("${path.module}/../../../platform/security/falco/helm/values-falcosidekick.yaml"),
+    file("${path.module}/../../../security/falco/helm/values-falcosidekick.yaml"),
   ]
 
   set {
