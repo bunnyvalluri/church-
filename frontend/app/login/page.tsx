@@ -508,9 +508,9 @@ export default function LoginPage() {
   // ── Removed to prevent hydration mismatch
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-slate-950">
+    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950">
       {/* ── Left Branding Panel ── */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#0f072b]">
+      <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#0f072b]">
         {/* Glowing top accent border */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-500" />
         
@@ -608,7 +608,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden">
         {/* Subtle grid pattern background (visible on desktop) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
         
@@ -644,7 +644,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md my-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 mb-20 lg:mb-0"
+          className="w-full max-w-md bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10"
         >
           {/* Mobile Branding Header */}
           <div className="lg:hidden flex flex-col items-center mb-5 text-center">
@@ -783,7 +783,7 @@ export default function LoginPage() {
                   <div className="w-full border-t border-gray-200 dark:border-gray-800" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-white dark:bg-gray-950 text-xs font-semibold text-gray-400 uppercase tracking-wider">{loginT.orContinueWith}</span>
+                  <span className="px-4 bg-white/90 dark:bg-gray-950 lg:bg-white lg:dark:bg-gray-950 text-xs font-semibold text-gray-400 uppercase tracking-wider">{loginT.orContinueWith}</span>
                 </div>
               </motion.div>
 
