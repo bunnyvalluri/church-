@@ -5,6 +5,4 @@ metadata:
   labels:
     {{- include "nextjs.labels" . | nindent 4 }}
 data:
-  {{- range $key, $value := .Values.env }}
-  {{- $key }}: {{ $value | quote }}
-  {{- end }}
+  {{- toYaml .Values.env | nindent 2 }}
