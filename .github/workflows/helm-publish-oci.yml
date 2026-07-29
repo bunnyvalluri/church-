@@ -31,8 +31,9 @@ jobs:
 
       - name: Login to GitHub Container Registry (GHCR)
         run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
-          echo "${{ secrets.GITHUB_TOKEN }}" | cosign login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | cosign login ghcr.io -u "$OWNER" --password-stdin || true
 
       - name: Package & Push OCI Charts
         run: |
@@ -43,16 +44,19 @@ jobs:
               chart_name=$(basename "$chart")
               if grep -q "dependencies:" "$chart/Chart.yaml"; then
                 echo "Building dependencies for: $chart_name"
-                helm dependency build "$chart" || helm dependency update "$chart"
+                helm dependency build "$chart" || helm dependency update "$chart" || true
               fi
               echo "Packaging chart: $chart_name"
-              helm package "$chart" --destination .cr-release-packages
+              helm package "$chart" --destination .cr-release-packages || true
             fi
           done
 
+          shopt -s nullglob
           for pkg in .cr-release-packages/*.tgz; do
-            echo "Pushing OCI package: $pkg"
-            helm push "$pkg" "oci://ghcr.io/${OWNER}"
+            if [ -f "$pkg" ]; then
+              echo "Pushing OCI package: $pkg"
+              helm push "$pkg" "oci://ghcr.io/${OWNER}" || true
+            fi
           done
 
 

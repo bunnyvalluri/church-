@@ -77,14 +77,18 @@ jobs:
 
       # ==== DEPLOY TO CLUSTER ====
       - name: Set Kubernetes Context & Deploy
-        if: ${{ secrets.KUBE_CONFIG != '' }}
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        if: ${{ env.KUBE_CONFIG != '' }}
         uses: azure/k8s-set-context@v3
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Deploy Manifests to Kubernetes
-        if: ${{ secrets.KUBE_CONFIG != '' }}
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        if: ${{ env.KUBE_CONFIG != '' }}
         run: |
           kubectl apply -k k8s/
           kubectl rollout status deployment/kcm-frontend -n kcm-system --timeout=180s

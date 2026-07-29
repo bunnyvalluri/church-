@@ -115,7 +115,8 @@ jobs:
   deploy-falco-core:
     name: "Stage 1: Falco Core + Rules"
     runs-on: ubuntu-latest
-    needs: deploy-k8s-manifests
+    needs: [pre-flight, deploy-k8s-manifests]
+    if: needs.pre-flight.outputs.should_deploy == 'true'
     environment: ${{ github.event.inputs.environment || 'production' }}
     steps:
       - name: Install ArgoCD CLI
@@ -170,7 +171,8 @@ jobs:
   deploy-falco-monitoring:
     name: "Stage 2: Monitoring Stack"
     runs-on: ubuntu-latest
-    needs: deploy-falco-core
+    needs: [pre-flight, deploy-falco-core]
+    if: needs.pre-flight.outputs.should_deploy == 'true'
     environment: ${{ github.event.inputs.environment || 'production' }}
     steps:
       - name: Install ArgoCD CLI
@@ -204,7 +206,8 @@ jobs:
   smoke-test:
     name: "Smoke Tests"
     runs-on: ubuntu-latest
-    needs: deploy-falco-monitoring
+    needs: [pre-flight, deploy-falco-monitoring]
+    if: needs.pre-flight.outputs.should_deploy == 'true'
     environment: ${{ github.event.inputs.environment || 'production' }}
     steps:
       - name: Install kubectl

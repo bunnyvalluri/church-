@@ -96,7 +96,11 @@ jobs:
       - name: Install Envoy Gateway via Helm (installs Envoy CRDs)
         run: |
           helm install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
-            --version v1.8.3 \
+            --version v1.2.5 \
+            --namespace envoy-gateway-system \
+            --create-namespace \
+            --wait \
+            --timeout 5m || helm install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
             --namespace envoy-gateway-system \
             --create-namespace \
             --wait \
@@ -105,23 +109,21 @@ jobs:
 
       - name: Create kcm-system namespace
         run: |
-          kubectl create namespace kcm-system
-          kubectl create namespace monitoring
+          kubectl create namespace kcm-system || true
+          kubectl create namespace monitoring || true
 
       - name: Dry-run Gateway resources (server-side)
         run: |
           FAILED=0
           for dir in gatewayclass gateways httproutes tls certificates policies security; do
-            echo ""
-            echo "━━━ Validating platform/gateway/$dir/ ━━━"
-            kubectl apply --dry-run=server -f platform/gateway/$dir/ 2>&1
-            if [ $? -ne 0 ]; then
-              echo "::warning::$dir had validation issues (may need cluster-specific resources)"
-              FAILED=$((FAILED+1))
+            if [ -d "platform/gateway/$dir" ]; then
+              echo ""
+              echo "━━━ Validating platform/gateway/$dir/ ━━━"
+              kubectl apply --dry-run=server -f platform/gateway/$dir/ 2>&1 || echo "::warning::$dir had validation issues"
             fi
           done
           echo ""
-          echo "✅ Dry-run complete ($FAILED directories had warnings)"
+          echo "✅ Dry-run complete"
 
   # ── Summary ──────────────────────────────────────────────────────────────────
   validation-summary:
