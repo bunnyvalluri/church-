@@ -54,13 +54,19 @@ jobs:
         continue-on-error: true
 
       - name: Stage 5 — Deploy to Vercel Production
+        if: ${{ success() && secrets.VERCEL_TOKEN != '' }}
         uses: amondnet/vercel-action@v25
-        if: success()
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
+
+      - name: Stage 5 (Info) — Vercel Secret Configuration Note
+        if: ${{ success() && secrets.VERCEL_TOKEN == '' }}
+        run: |
+          echo "ℹ️ VERCEL_TOKEN secret is not configured in GitHub Repository Settings yet."
+          echo "To activate direct Vercel deployment from GitHub Actions, add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID under GitHub -> Settings -> Secrets and variables -> Actions."
 
       - name: Stage 6 — Automated Rollback & Alert Dispatch on Failure
         if: failure()
