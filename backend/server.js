@@ -150,6 +150,23 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
     return res.json({ status: "OK", time: new Date(), type: PROCESS_TYPE });
   });
 
+  // Loop Engineering Architecture Initialization & Diagnostic Endpoint
+  try {
+    const { initializeLoopEngine, runLoopHealthCheck } = require('./src/loops/engine');
+    initializeLoopEngine(io);
+
+    app.get('/api/loops/health', async (req, res) => {
+      try {
+        const report = await runLoopHealthCheck(io);
+        return res.json(report);
+      } catch (err) {
+        return res.status(500).json({ error: 'Loop health check failed', details: err.message });
+      }
+    });
+  } catch (err) {
+    console.warn('[LOOP_ENGINE_INIT] Warning initializing Loop Engine:', err.message);
+  }
+
   app.get('/metrics', async (req, res) => {
     try {
       res.set('Content-Type', metrics ? metrics.register.contentType : 'text/plain');
