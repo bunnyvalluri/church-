@@ -7,7 +7,14 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'audit';
+export enum LogLevel {
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error',
+  SECURITY = 'security',
+  AUDIT = 'audit',
+  DEBUG = 'debug',
+}
 
 export interface LogMeta {
   component?: string;
@@ -19,6 +26,19 @@ export interface LogMeta {
   durationMs?: number;
   error?: Error | { name: string; message: string; stack?: string };
   [key: string]: unknown;
+}
+
+export function logEvent(level: LogLevel | string, eventName: string, message?: string, meta?: LogMeta) {
+  const metaObj = meta || {};
+  if (level === LogLevel.SECURITY || level === 'security') {
+    logger.warn(`[SECURITY] ${eventName}: ${message || ''}`, metaObj);
+  } else if (level === LogLevel.ERROR || level === 'error') {
+    logger.error(`${eventName}: ${message || ''}`, metaObj);
+  } else if (level === LogLevel.WARN || level === 'warn') {
+    logger.warn(`${eventName}: ${message || ''}`, metaObj);
+  } else {
+    logger.info(`${eventName}: ${message || ''}`, metaObj);
+  }
 }
 
 class NextLogger {

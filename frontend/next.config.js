@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Dev server config reload trigger
 
 // ─── Content Security Policy ────────────────────────────────────────────────
 const ContentSecurityPolicy = `
