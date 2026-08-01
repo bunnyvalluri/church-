@@ -292,51 +292,31 @@ export default function LoginPage() {
     document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
   };
 
-  // Helper to resolve role dynamically based on user email
-  const getRoleForEmail = (userEmail: string): string => {
-    if (!userEmail) return "MEMBER";
-    const e = userEmail.toLowerCase().trim();
-    if (e.includes("superadmin") || e.includes("super_admin")) return "SUPER_ADMIN";
-    if (e.includes("admin") || e === "bishop.kraju@kcmchurch.org") return "ADMIN";
-    if (e.includes("pastor") || e.includes("bishop")) return "PASTOR";
-    if (e.includes("event") || e.includes("eventmanager") || e === "eventmanager@kcm-church.com") return "EVENT_MANAGER";
-    if (e.includes("volunteer") || e === "volunteer@kcm-church.com") return "FIELD_VOLUNTEER";
-    return "MEMBER";
-  };
-
   const redirectForRole = (targetRole: string) => {
     let targetPath = "/member";
-    switch (targetRole) {
-      case "SUPER_ADMIN":
-        targetPath = "/portal-select";
-        break;
-      case "ADMIN":
-        targetPath = "/admin";
-        break;
-      case "PASTOR":
-        targetPath = "/pastor";
-        break;
-      case "EVENT_MANAGER":
-      case "FIELD_VOLUNTEER":
-        targetPath = "/event-manager";
-        break;
-      default:
-        targetPath = "/member";
-        break;
-    }
-
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const nextParam = params.get("next");
       if (nextParam && nextParam.startsWith("/")) {
-        if (targetRole === "MEMBER") {
-          targetPath = nextParam;
-        } else if (
-          (targetRole === "ADMIN" && nextParam.startsWith("/admin")) ||
-          (targetRole === "PASTOR" && nextParam.startsWith("/pastor")) ||
-          ((targetRole === "EVENT_MANAGER" || targetRole === "FIELD_VOLUNTEER") && nextParam.startsWith("/event-manager"))
-        ) {
-          targetPath = nextParam;
+        targetPath = nextParam;
+      } else {
+        switch (targetRole) {
+          case "SUPER_ADMIN":
+            targetPath = "/portal-select";
+            break;
+          case "ADMIN":
+            targetPath = "/admin";
+            break;
+          case "PASTOR":
+            targetPath = "/pastor";
+            break;
+          case "EVENT_MANAGER":
+          case "FIELD_VOLUNTEER":
+            targetPath = "/event-manager";
+            break;
+          default:
+            targetPath = "/member";
+            break;
         }
       }
     }
