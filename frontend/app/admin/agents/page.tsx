@@ -69,6 +69,12 @@ export default function AdminAgentsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <a
+              href="/admin/firecrawl-intelligence"
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-slate-950 font-bold text-sm px-4 py-2.5 rounded-xl transition shadow-lg"
+            >
+              <Sparkles className="w-4 h-4" /> Firecrawl Intelligence Hub
+            </a>
             <button
               onClick={() => setShowHistory(!showHistory)}
               className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-md"

@@ -1431,5 +1431,150 @@ model ChurchNewsArticle {
   @@map("church_news_articles")
 }
 
+// ─── Firecrawl Content Intelligence Models ────────────────────────────────────
+
+model FirecrawlScrapeJob {
+  id             String    @id @default(cuid())
+  jobType        String    @map("job_type") // SCRAPE | CRAWL | MAP | SEARCH | EXTRACT
+  targetUrl      String?   @map("target_url") @db.Text
+  query          String?   @db.Text
+  status         String    @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+  scrapedContent Json      @default("{}") @map("scraped_content")
+  markdown       String?   @db.Text
+  metadata       Json      @default("{}")
+  error          String?   @db.Text
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@index([jobType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("firecrawl_scrape_jobs")
+}
+
+model SermonResearchSummary {
+  id                String   @id @default(cuid())
+  topic             String
+  scriptureRef      String?  @map("scripture_ref")
+  summaryText       String   @db.Text @map("summary_text")
+  keyTakeaways      String[] @default([]) @map("key_takeaways")
+  theologicalThemes String[] @default([]) @map("theological_themes")
+  sermonOutline     Json     @default("[]") @map("sermon_outline")
+  scrapedSources    Json     @default("[]") @map("scraped_sources")
+  createdById       String?  @map("created_by")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([topic])
+  @@index([createdAt])
+  @@map("sermon_research_summaries")
+}
+
+model ChurchNewsItem {
+  id           String    @id @default(cuid())
+  category     String    // CHRISTIAN_NEWS | MINISTRY_UPDATE | MISSION_REPORT | DENOMINATIONAL
+  title        String
+  sourceName   String    @map("source_name")
+  sourceUrl    String    @unique @map("source_url")
+  summary      String    @db.Text
+  contentMd    String?   @db.Text @map("content_md")
+  imageUrl     String?   @map("image_url")
+  publishedAt  DateTime? @map("published_at")
+  isFeatured   Boolean   @default(false) @map("is_featured")
+  fetchedAt    DateTime  @default(now()) @map("fetched_at")
+
+  @@index([category])
+  @@index([fetchedAt])
+  @@map("church_news_items")
+}
+
+model BibleStudyResource {
+  id           String   @id @default(cuid())
+  resourceType String   @map("resource_type") // DEVOTIONAL | ARTICLE | BIBLE_STUDY | COMMENTARY
+  title        String
+  author       String?
+  scriptureRef String?  @map("scripture_ref")
+  summary      String?  @db.Text
+  bodyMd       String   @db.Text @map("body_md")
+  sourceUrl    String   @map("source_url")
+  tags         String[] @default([])
+  storedInApp  Boolean  @default(true) @map("stored_in_app")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([resourceType])
+  @@index([sourceUrl])
+  @@map("bible_study_resources")
+}
+
+model EventContentGenLog {
+  id             String   @id @default(cuid())
+  eventId        String?  @map("event_id")
+  topic          String
+  targetAudience String?  @map("target_audience")
+  socialCaptions Json     @default("{}") @map("social_captions")
+  blogMarkdown   String   @db.Text @map("blog_markdown")
+  blogTitle      String   @map("blog_title")
+  bannerImageUrl String?  @map("banner_image_url")
+  cloudinaryId   String?  @map("cloudinary_id")
+  createdById    String?  @map("created_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([topic])
+  @@index([createdAt])
+  @@map("event_content_gen_logs")
+}
+
+model NgoOpportunity {
+  id              String    @id @default(cuid())
+  organization    String
+  title           String
+  opportunityType String    @map("opportunity_type") // GRANT | PARTNERSHIP | COMMUNITY_PROGRAM | VOLUNTEER
+  description     String    @db.Text
+  location        String?
+  linkUrl         String    @unique @map("link_url")
+  deadline        DateTime?
+  tags            String[]  @default([])
+  scrapedAt       DateTime  @default(now()) @map("scraped_at")
+
+  @@index([opportunityType])
+  @@index([scrapedAt])
+  @@map("ngo_opportunities")
+}
+
+model WebsiteMonitorTarget {
+  id             String              @id @default(cuid())
+  siteName       String              @map("site_name")
+  targetUrl      String              @unique @map("target_url")
+  checkFrequency String              @default("HOURLY") @map("check_frequency") // HOURLY | DAILY | EVERY_30_MIN
+  cssSelector    String?             @map("css_selector")
+  lastHash       String?             @map("last_hash")
+  lastContent    String?             @db.Text @map("last_content")
+  isActive       Boolean             @default(true) @map("is_active")
+  lastCheckedAt  DateTime?           @map("last_checked_at")
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+  logs           WebsiteMonitorLog[]
+
+  @@index([isActive])
+  @@map("website_monitor_targets")
+}
+
+model WebsiteMonitorLog {
+  id               String               @id @default(cuid())
+  targetId         String               @map("target_id")
+  target           WebsiteMonitorTarget @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  changeDetected   Boolean              @default(false) @map("change_detected")
+  diffSummary      String?              @db.Text @map("diff_summary")
+  snapshotHash     String?              @map("snapshot_hash")
+  notificationSent Boolean              @default(false) @map("notification_sent")
+  checkedAt        DateTime             @default(now()) @map("checked_at")
+
+  @@index([targetId])
+  @@index([changeDetected])
+  @@map("website_monitor_logs")
+}
+
+
 
 

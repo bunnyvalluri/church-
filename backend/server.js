@@ -240,6 +240,142 @@ app.get('/api/agents/tasks/:id', async (req, res) => {
   }
 });
 
+// ── Firecrawl Content Intelligence Routes ────────────────────────────────────
+const firecrawlService = require('./src/services/firecrawlService');
+const sermonResearchEngine = require('./src/services/sermonResearchEngine');
+const churchNewsEngine = require('./src/services/churchNewsEngine');
+const bibleStudyAggregator = require('./src/services/bibleStudyAggregator');
+const eventContentEngine = require('./src/services/eventContentEngine');
+const ngoResearchEngine = require('./src/services/ngoResearchEngine');
+const websiteMonitorEngine = require('./src/services/websiteMonitorEngine');
+
+// 1. Firecrawl Direct Scrape
+app.post('/api/firecrawl/scrape', async (req, res) => {
+  try {
+    const { url, options } = req.body;
+    if (!url) return res.status(400).json({ success: false, error: 'url is required' });
+    const result = await firecrawlService.scrapeUrl(url, options || {});
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 2. Sermon Research Engine
+app.post('/api/firecrawl/sermon-research', async (req, res) => {
+  try {
+    const { topic, scriptureRef } = req.body;
+    if (!topic) return res.status(400).json({ success: false, error: 'topic is required' });
+    const record = await sermonResearchEngine.runSermonResearch(topic, scriptureRef || '');
+    return res.json({ success: true, summary: record });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 3. Church News Feed
+app.get('/api/firecrawl/church-news', async (req, res) => {
+  try {
+    const { category, limit } = req.query;
+    const articles = await churchNewsEngine.getChurchNews(category, limit ? parseInt(limit, 10) : 20);
+    return res.json({ success: true, count: articles.length, articles });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/firecrawl/church-news/scrape', async (req, res) => {
+  try {
+    const articles = await churchNewsEngine.scrapeChurchNews(io);
+    return res.json({ success: true, count: articles.length, articles });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 4. Bible Study Aggregator
+app.get('/api/firecrawl/bible-study', async (req, res) => {
+  try {
+    const { type, limit } = req.query;
+    const resources = await bibleStudyAggregator.getBibleStudyResources(type, limit ? parseInt(limit, 10) : 20);
+    return res.json({ success: true, count: resources.length, resources });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/firecrawl/bible-study/aggregate', async (req, res) => {
+  try {
+    const resources = await bibleStudyAggregator.runBibleStudyAggregation();
+    return res.json({ success: true, count: resources.length, resources });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 5. Event Content Generator
+app.post('/api/firecrawl/event-generator', async (req, res) => {
+  try {
+    const { eventId, topic } = req.body;
+    if (!topic) return res.status(400).json({ success: false, error: 'topic is required' });
+    const log = await eventContentEngine.generateEventContent(eventId, topic);
+    return res.json({ success: true, result: log });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 6. NGO Research Module
+app.get('/api/firecrawl/ngo-research', async (req, res) => {
+  try {
+    const { type, limit } = req.query;
+    const opportunities = await ngoResearchEngine.getNgoOpportunities(type, limit ? parseInt(limit, 10) : 20);
+    return res.json({ success: true, count: opportunities.length, opportunities });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/firecrawl/ngo-research/scrape', async (req, res) => {
+  try {
+    const opportunities = await ngoResearchEngine.scrapeNgoOpportunities();
+    return res.json({ success: true, count: opportunities.length, opportunities });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 7. Website Monitoring
+app.get('/api/firecrawl/website-monitoring', async (req, res) => {
+  try {
+    const targets = await websiteMonitorEngine.getWebsiteTargets();
+    return res.json({ success: true, targets });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/firecrawl/website-monitoring/targets', async (req, res) => {
+  try {
+    const { siteName, targetUrl, checkFrequency, cssSelector } = req.body;
+    if (!siteName || !targetUrl) return res.status(400).json({ success: false, error: 'siteName and targetUrl are required' });
+    const target = await websiteMonitorEngine.addWebsiteTarget(siteName, targetUrl, checkFrequency, cssSelector);
+    return res.json({ success: true, target });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/firecrawl/website-monitoring/check', async (req, res) => {
+  try {
+    const results = await websiteMonitorEngine.runAllWebsiteMonitors(io);
+    return res.json({ success: true, checkedCount: results.length, results });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 
 
 const server = http.createServer(app);
