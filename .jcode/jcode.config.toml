@@ -1,0 +1,41 @@
+# jcode Central Server & Multi-Session Configuration
+# Repository: KCM Ministries Church Platform
+
+[server]
+host = "127.0.0.1"
+port = 7331
+max_concurrent_sessions = 10
+boot_timeout_ms = 5000
+log_level = "info"
+
+[workspace]
+name = "kcm-church-platform"
+root = "c:/K.C.M-Portal"
+shared_memory_enabled = true
+isolation_level = "session_domain"
+
+[memory_graph]
+enabled = true
+embedding_provider = "openai-compatible"
+embedding_model = "text-embedding-3-small"
+vector_dimensions = 1536
+max_cascade_depth = 4
+verification_side_agent = true
+persistence_path = ".jcode/memory/graph.db"
+
+[swarm]
+enabled = true
+conflict_resolution = "optimistic_lock"
+file_watcher_debounce_ms = 250
+broadcast_channel_buffer = 1000
+lock_timeout_seconds = 300
+
+[resources]
+max_ram_per_session_mb = 27
+target_boot_time_ms = 14
+cache_in_memory_nodes = 50000
+
+[telemetry]
+enabled = true
+metrics_port = 9091
+export_format = "prometheus"

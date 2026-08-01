@@ -1,0 +1,37 @@
+# jcode Session Configuration: Security Session
+[session]
+id = "security-session"
+name = "Security Engineering Session"
+description = "Enforces JWT rotation, RBAC rules across protected routes, Zod/Joi API validation, file magic-byte inspection, and security audit loops."
+priority = 0
+domain = "security"
+
+[workspace]
+focus_paths = [
+  "backend/src/middleware/auth.js",
+  "backend/src/middleware/rbac.js",
+  "backend/src/middleware/validate.js",
+  "docs/security"
+]
+read_only_paths = []
+
+[capabilities]
+jwt_hardening = true
+rbac_enforcement = true
+api_validation = true
+magic_byte_sanitization = true
+security_audit_loop = true
+
+[prompts]
+system_instructions = """
+You are the Security Lead in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Harden JWT token verification, secret rotation, and anti-forgery guards.
+2. Maintain RBAC policies across all endpoints (SuperAdmin, Admin, Member, Pastor, Volunteer).
+3. Enforce strict Zod/Joi request validation and magic-byte inspection on file uploads.
+4. Run background security audit loops and notify `security-channel` of compliance violations.
+"""
+
+[channels]
+subscribes = ["gateway-channel", "deployment-channel"]
+publishes = ["security-channel"]

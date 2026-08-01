@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JcodeMemoryGraphSchema",
+  "type": "object",
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "session_id": { "type": "string" },
+          "node_type": { "type": "string", "enum": ["decision", "api_contract", "schema_migration", "performance_benchmark", "security_rule"] },
+          "content": { "type": "string" },
+          "file_references": { "type": "array", "items": { "type": "string" } },
+          "timestamp": { "type": "string" },
+          "vector_embedding": { "type": "array", "items": { "type": "number" } }
+        },
+        "required": ["id", "session_id", "node_type", "content", "timestamp"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": { "type": "string" },
+          "target_id": { "type": "string" },
+          "relation": { "type": "string", "enum": ["depends_on", "invalidates", "implements", "extends", "audits"] }
+        },
+        "required": ["source_id", "target_id", "relation"]
+      }
+    }
+  }
+}

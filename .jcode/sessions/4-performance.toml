@@ -1,0 +1,36 @@
+# jcode Session Configuration: Performance Session
+[session]
+id = "performance-session"
+name = "Performance Engineering Session"
+description = "Optimizes virtualization scroll dynamics, React Server Components (RSC) rendering, dynamic import chunking, and bundle size reduction."
+priority = 2
+domain = "performance"
+
+[workspace]
+focus_paths = [
+  "frontend/app",
+  "frontend/components",
+  "frontend/next.config.js",
+  "frontend/lib/performance"
+]
+read_only_paths = []
+
+[capabilities]
+scroll_optimization = true
+rendering_optimization = true
+bundle_optimization = true
+lighthouse_audits = true
+
+[prompts]
+system_instructions = """
+You are the Performance Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Implement virtualization for long event/sermon lists to maintain 60 FPS scrolling.
+2. Minimize client bundle footprint via dynamic imports, tree-shaking, and RSC streaming.
+3. Optimize Core Web Vitals (LCP < 2.5s, CLS < 0.1, INP < 200ms) across all pages.
+4. Broadcast optimization metrics to `performance-channel`.
+"""
+
+[channels]
+subscribes = ["events-channel", "sermons-channel", "pwa-channel"]
+publishes = ["performance-channel"]

@@ -1,0 +1,56 @@
+{
+  "swarmName": "kcm-church-swarm",
+  "version": "1.0.0",
+  "policy": {
+    "allowParallelEdits": true,
+    "fileLockingMode": "strict_domain",
+    "conflictStrategy": "notify_and_lock",
+    "autoSyncMemory": true
+  },
+  "channels": [
+    {
+      "name": "events-channel",
+      "producers": ["event-manager-session"],
+      "consumers": ["pwa-session", "deployment-session", "api-gateway-session"]
+    },
+    {
+      "name": "sermons-channel",
+      "producers": ["sermon-session"],
+      "consumers": ["pwa-session", "performance-session"]
+    },
+    {
+      "name": "security-channel",
+      "producers": ["security-session"],
+      "consumers": ["api-gateway-session", "event-manager-session", "sermon-session"]
+    },
+    {
+      "name": "performance-channel",
+      "producers": ["performance-session"],
+      "consumers": ["pwa-session", "event-manager-session", "sermon-session"]
+    },
+    {
+      "name": "gateway-channel",
+      "producers": ["api-gateway-session"],
+      "consumers": ["security-session", "event-manager-session", "sermon-session"]
+    },
+    {
+      "name": "pwa-channel",
+      "producers": ["pwa-session"],
+      "consumers": ["performance-session", "event-manager-session"]
+    },
+    {
+      "name": "deployment-channel",
+      "producers": ["deployment-session"],
+      "consumers": ["api-gateway-session", "security-session"]
+    }
+  ],
+  "domainLocks": {
+    "event-manager-session": ["frontend/app/events/**", "backend/src/services/eventService.js", "backend/src/queues/eventQueue.js"],
+    "sermon-session": ["frontend/app/sermons/**", "backend/src/services/sermonService.js", "backend/src/queues/sermonQueue.js"],
+    "security-session": ["backend/src/middleware/auth.js", "backend/src/middleware/rbac.js", "docs/security/**"],
+    "performance-session": ["frontend/app/**", "frontend/components/**", "frontend/next.config.js"],
+    "api-gateway-session": ["backend/server.js", "frontend/middleware.ts", "docs/gateway/**"],
+    "pwa-session": ["frontend/public/sw.js", "frontend/lib/pwa/**"],
+    "deployment-session": [".github/workflows/**", "k8s/**", "docker/**", "monitoring/**"]
+  }
+}

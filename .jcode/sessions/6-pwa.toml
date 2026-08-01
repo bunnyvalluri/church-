@@ -1,0 +1,36 @@
+# jcode Session Configuration: PWA Session
+[session]
+id = "pwa-session"
+name = "PWA Engineering Session"
+description = "Manages offline caching strategies, Service Worker installation, IndexedDB local persistence, and background sync for offline actions."
+priority = 2
+domain = "pwa"
+
+[workspace]
+focus_paths = [
+  "frontend/public/sw.js",
+  "frontend/lib/pwa",
+  "frontend/app/manifest.json",
+  "frontend/hooks/useIndexedDB.ts"
+]
+read_only_paths = []
+
+[capabilities]
+offline_sync = true
+indexeddb_persistence = true
+background_sync = true
+service_worker_caching = true
+
+[prompts]
+system_instructions = """
+You are the PWA Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Implement robust Service Worker caching strategies (Stale-While-Revalidate for sermons, Cache-First for static assets).
+2. Maintain IndexedDB state for offline event registration and draft sermon notes.
+3. Handle Background Sync API to replay queued offline form submissions once connectivity is restored.
+4. Broadcast service worker and storage updates to `pwa-channel`.
+"""
+
+[channels]
+subscribes = ["events-channel", "sermons-channel", "performance-channel"]
+publishes = ["pwa-channel"]

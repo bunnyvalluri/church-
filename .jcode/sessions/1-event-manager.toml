@@ -1,0 +1,40 @@
+# jcode Session Configuration: Event Manager Session
+[session]
+id = "event-manager-session"
+name = "Event Manager Engineering Session"
+description = "Manages event CRUD, image/poster upload pipelines, Socket.io live updates, and Firebase FCM push notifications."
+priority = 1
+domain = "events"
+
+[workspace]
+focus_paths = [
+  "frontend/app/events",
+  "backend/src/services/eventService.js",
+  "backend/src/queues/eventQueue.js",
+  "backend/src/loops/eventLoop.js"
+]
+read_only_paths = [
+  "backend/src/middleware/auth.js",
+  "backend/prisma/schema.prisma"
+]
+
+[capabilities]
+event_crud = true
+upload_pipeline = true
+socket_notifications = true
+firebase_fcm = true
+bullmq_integration = true
+
+[prompts]
+system_instructions = """
+You are the Event Manager Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Handle event CRUD API design and UI components in Next.js (App Router).
+2. Maintain the upload pipeline for event posters/banner images using Cloudinary/S3.
+3. Trigger real-time notifications via Socket.io and Firebase FCM when events are created/updated.
+4. Integrate with backend BullMQ `eventUploadQueue` for asynchronous processing.
+"""
+
+[channels]
+subscribes = ["security-channel", "gateway-channel", "performance-channel"]
+publishes = ["events-channel"]

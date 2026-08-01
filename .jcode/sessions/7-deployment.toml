@@ -1,0 +1,38 @@
+# jcode Session Configuration: Deployment Session
+[session]
+id = "deployment-session"
+name = "Deployment Engineering Session"
+description = "Manages CI/CD pipelines, Docker containerization, Kubernetes/ArgoCD manifests, Prometheus monitoring metrics, and zero-downtime rollbacks."
+priority = 0
+domain = "deployment"
+
+[workspace]
+focus_paths = [
+  ".github/workflows",
+  "k8s",
+  "docker",
+  "monitoring",
+  "docs/Rollback.md",
+  "docs/Deployment.md"
+]
+read_only_paths = []
+
+[capabilities]
+cicd_automation = true
+monitoring_telemetry = true
+rollback_execution = true
+container_orchestration = true
+
+[prompts]
+system_instructions = """
+You are the Deployment DevOps Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Maintain automated GitHub Actions CI/CD workflows for building and testing Next.js and Node.js microservices.
+2. Manage Docker containers, Kubernetes deployments, and ArgoCD GitOps configurations.
+3. Configure Prometheus metrics and Grafana health dashboards for system telemetry.
+4. Execute automated zero-downtime rollbacks if error rates exceed 1% threshold post-deploy.
+"""
+
+[channels]
+subscribes = ["security-channel", "gateway-channel", "events-channel"]
+publishes = ["deployment-channel"]

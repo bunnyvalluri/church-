@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-config.json",
+  "mcpServers": {
+    "kcm-database-mcp": {
+      "command": "node",
+      "args": ["backend/src/services/mcpDatabaseServer.js"],
+      "env": {
+        "DATABASE_URL": "${NEON_DATABASE_URL}",
+        "NODE_ENV": "development"
+      },
+      "disabled": false,
+      "autoApprove": ["query_schema", "verify_migration"]
+    },
+    "kcm-cloudinary-mcp": {
+      "command": "node",
+      "args": ["backend/src/services/mcpCloudinaryServer.js"],
+      "env": {
+        "CLOUDINARY_URL": "${CLOUDINARY_URL}"
+      },
+      "disabled": false,
+      "autoApprove": ["list_resources", "verify_upload_signature"]
+    },
+    "google-developer-knowledge": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-google-knowledge"],
+      "disabled": false
+    }
+  },
+  "sessionRules": {
+    "allowWorkspaceAccess": true,
+    "maxToolCallTimeoutMs": 30000
+  }
+}

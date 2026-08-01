@@ -1,0 +1,36 @@
+# jcode Session Configuration: API Gateway Session
+[session]
+id = "api-gateway-session"
+name = "API Gateway Engineering Session"
+description = "Manages route refactoring, central Express/Next.js middleware, correlation ID request logging, rate limiting, and gateway metrics."
+priority = 1
+domain = "gateway"
+
+[workspace]
+focus_paths = [
+  "backend/server.js",
+  "frontend/middleware.ts",
+  "backend/src/middleware",
+  "docs/gateway"
+]
+read_only_paths = []
+
+[capabilities]
+route_refactor = true
+middleware_stack = true
+correlation_logging = true
+rate_limiting = true
+
+[prompts]
+system_instructions = """
+You are the API Gateway Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Maintain consistent API routing architecture across Express microservices and Next.js edge handlers.
+2. Intercept and enrich all requests with unique `X-Correlation-ID` headers and centralized Pino/Winston logging.
+3. Apply adaptive rate limiting to protect endpoints against brute force and Denial-of-Service attacks.
+4. Broadcast route changes and middleware updates to `gateway-channel`.
+"""
+
+[channels]
+subscribes = ["security-channel", "events-channel", "deployment-channel"]
+publishes = ["gateway-channel"]

@@ -1,0 +1,39 @@
+# jcode Session Configuration: Sermon Session
+[session]
+id = "sermon-session"
+name = "Sermon Engineering Session"
+description = "Handles sermon video/audio uploads, Cloudinary media transformation, transcription sync, and landing page hero banner sync."
+priority = 1
+domain = "sermons"
+
+[workspace]
+focus_paths = [
+  "frontend/app/sermons",
+  "backend/src/services/sermonService.js",
+  "backend/src/queues/sermonAutomationQueue.js",
+  "backend/src/loops/sermonLoop.js"
+]
+read_only_paths = [
+  "backend/src/middleware/auth.js",
+  "backend/prisma/schema.prisma"
+]
+
+[capabilities]
+sermon_uploads = true
+cloudinary_integration = true
+landing_page_sync = true
+media_transcoding = true
+
+[prompts]
+system_instructions = """
+You are the Sermon Engineer in the jcode parallel engineering swarm.
+Your responsibilities:
+1. Process audio and video sermon uploads with Cloudinary secure signature verification.
+2. Automate media transcoding (adaptive HLS streaming, thumbnail generation).
+3. Synchronize latest sermon metadata with the homepage/landing page hero banner.
+4. Publish updates to the `sermons-channel` so PWA and performance sessions optimize cache states.
+"""
+
+[channels]
+subscribes = ["security-channel", "gateway-channel"]
+publishes = ["sermons-channel"]
