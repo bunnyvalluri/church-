@@ -350,6 +350,8 @@ exports.Prisma.PrayerRequestScalarFieldEnum = {
   title: 'title',
   description: 'description',
   category: 'category',
+  urgencyLevel: 'urgencyLevel',
+  aiSummary: 'aiSummary',
   isAnonymous: 'isAnonymous',
   status: 'status',
   createdAt: 'createdAt',
@@ -1227,6 +1229,23 @@ exports.Prisma.WebsiteMonitorLogScalarFieldEnum = {
   checkedAt: 'checkedAt'
 };
 
+exports.Prisma.AIChatLogScalarFieldEnum = {
+  id: 'id',
+  assistantType: 'assistantType',
+  userId: 'userId',
+  userRole: 'userRole',
+  prompt: 'prompt',
+  response: 'response',
+  provider: 'provider',
+  modelName: 'modelName',
+  latencyMs: 'latencyMs',
+  status: 'status',
+  isFlagged: 'isFlagged',
+  moderationReason: 'moderationReason',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1436,7 +1455,8 @@ exports.Prisma.ModelName = {
   EventContentGenLog: 'EventContentGenLog',
   NgoOpportunity: 'NgoOpportunity',
   WebsiteMonitorTarget: 'WebsiteMonitorTarget',
-  WebsiteMonitorLog: 'WebsiteMonitorLog'
+  WebsiteMonitorLog: 'WebsiteMonitorLog',
+  AIChatLog: 'AIChatLog'
 };
 
 /**

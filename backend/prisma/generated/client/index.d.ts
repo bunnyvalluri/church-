@@ -388,6 +388,11 @@ export type WebsiteMonitorTarget = $Result.DefaultSelection<Prisma.$WebsiteMonit
  * 
  */
 export type WebsiteMonitorLog = $Result.DefaultSelection<Prisma.$WebsiteMonitorLogPayload>
+/**
+ * Model AIChatLog
+ * 
+ */
+export type AIChatLog = $Result.DefaultSelection<Prisma.$AIChatLogPayload>
 
 /**
  * Enums
@@ -1469,6 +1474,16 @@ export class PrismaClient<
     * ```
     */
   get websiteMonitorLog(): Prisma.WebsiteMonitorLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.aIChatLog`: Exposes CRUD operations for the **AIChatLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AIChatLogs
+    * const aIChatLogs = await prisma.aIChatLog.findMany()
+    * ```
+    */
+  get aIChatLog(): Prisma.AIChatLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1984,7 +1999,8 @@ export namespace Prisma {
     EventContentGenLog: 'EventContentGenLog',
     NgoOpportunity: 'NgoOpportunity',
     WebsiteMonitorTarget: 'WebsiteMonitorTarget',
-    WebsiteMonitorLog: 'WebsiteMonitorLog'
+    WebsiteMonitorLog: 'WebsiteMonitorLog',
+    AIChatLog: 'AIChatLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2000,7 +2016,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog"
+      modelProps: "user" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog" | "aIChatLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -7251,6 +7267,76 @@ export namespace Prisma {
           count: {
             args: Prisma.WebsiteMonitorLogCountArgs<ExtArgs>
             result: $Utils.Optional<WebsiteMonitorLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      AIChatLog: {
+        payload: Prisma.$AIChatLogPayload<ExtArgs>
+        fields: Prisma.AIChatLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AIChatLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AIChatLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AIChatLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AIChatLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          findMany: {
+            args: Prisma.AIChatLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>[]
+          }
+          create: {
+            args: Prisma.AIChatLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          createMany: {
+            args: Prisma.AIChatLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AIChatLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AIChatLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          update: {
+            args: Prisma.AIChatLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AIChatLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AIChatLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AIChatLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIChatLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AIChatLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAIChatLog>
+          }
+          groupBy: {
+            args: Prisma.AIChatLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AIChatLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AIChatLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AIChatLogCountAggregateOutputType> | number
           }
         }
       }
@@ -24437,6 +24523,8 @@ export namespace Prisma {
     title: string | null
     description: string | null
     category: $Enums.PrayerCategory | null
+    urgencyLevel: string | null
+    aiSummary: string | null
     isAnonymous: boolean | null
     status: $Enums.PrayerStatus | null
     createdAt: Date | null
@@ -24449,6 +24537,8 @@ export namespace Prisma {
     title: string | null
     description: string | null
     category: $Enums.PrayerCategory | null
+    urgencyLevel: string | null
+    aiSummary: string | null
     isAnonymous: boolean | null
     status: $Enums.PrayerStatus | null
     createdAt: Date | null
@@ -24461,6 +24551,8 @@ export namespace Prisma {
     title: number
     description: number
     category: number
+    urgencyLevel: number
+    aiSummary: number
     isAnonymous: number
     status: number
     createdAt: number
@@ -24475,6 +24567,8 @@ export namespace Prisma {
     title?: true
     description?: true
     category?: true
+    urgencyLevel?: true
+    aiSummary?: true
     isAnonymous?: true
     status?: true
     createdAt?: true
@@ -24487,6 +24581,8 @@ export namespace Prisma {
     title?: true
     description?: true
     category?: true
+    urgencyLevel?: true
+    aiSummary?: true
     isAnonymous?: true
     status?: true
     createdAt?: true
@@ -24499,6 +24595,8 @@ export namespace Prisma {
     title?: true
     description?: true
     category?: true
+    urgencyLevel?: true
+    aiSummary?: true
     isAnonymous?: true
     status?: true
     createdAt?: true
@@ -24584,6 +24682,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel: string | null
+    aiSummary: string | null
     isAnonymous: boolean
     status: $Enums.PrayerStatus
     createdAt: Date
@@ -24613,6 +24713,8 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     category?: boolean
+    urgencyLevel?: boolean
+    aiSummary?: boolean
     isAnonymous?: boolean
     status?: boolean
     createdAt?: boolean
@@ -24626,6 +24728,8 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     category?: boolean
+    urgencyLevel?: boolean
+    aiSummary?: boolean
     isAnonymous?: boolean
     status?: boolean
     createdAt?: boolean
@@ -24639,6 +24743,8 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     category?: boolean
+    urgencyLevel?: boolean
+    aiSummary?: boolean
     isAnonymous?: boolean
     status?: boolean
     createdAt?: boolean
@@ -24663,6 +24769,8 @@ export namespace Prisma {
       title: string
       description: string
       category: $Enums.PrayerCategory
+      urgencyLevel: string | null
+      aiSummary: string | null
       isAnonymous: boolean
       status: $Enums.PrayerStatus
       createdAt: Date
@@ -25066,6 +25174,8 @@ export namespace Prisma {
     readonly title: FieldRef<"PrayerRequest", 'String'>
     readonly description: FieldRef<"PrayerRequest", 'String'>
     readonly category: FieldRef<"PrayerRequest", 'PrayerCategory'>
+    readonly urgencyLevel: FieldRef<"PrayerRequest", 'String'>
+    readonly aiSummary: FieldRef<"PrayerRequest", 'String'>
     readonly isAnonymous: FieldRef<"PrayerRequest", 'Boolean'>
     readonly status: FieldRef<"PrayerRequest", 'PrayerStatus'>
     readonly createdAt: FieldRef<"PrayerRequest", 'DateTime'>
@@ -84874,6 +84984,1022 @@ export namespace Prisma {
 
 
   /**
+   * Model AIChatLog
+   */
+
+  export type AggregateAIChatLog = {
+    _count: AIChatLogCountAggregateOutputType | null
+    _avg: AIChatLogAvgAggregateOutputType | null
+    _sum: AIChatLogSumAggregateOutputType | null
+    _min: AIChatLogMinAggregateOutputType | null
+    _max: AIChatLogMaxAggregateOutputType | null
+  }
+
+  export type AIChatLogAvgAggregateOutputType = {
+    latencyMs: number | null
+  }
+
+  export type AIChatLogSumAggregateOutputType = {
+    latencyMs: number | null
+  }
+
+  export type AIChatLogMinAggregateOutputType = {
+    id: string | null
+    assistantType: string | null
+    userId: string | null
+    userRole: string | null
+    prompt: string | null
+    response: string | null
+    provider: string | null
+    modelName: string | null
+    latencyMs: number | null
+    status: string | null
+    isFlagged: boolean | null
+    moderationReason: string | null
+    createdAt: Date | null
+  }
+
+  export type AIChatLogMaxAggregateOutputType = {
+    id: string | null
+    assistantType: string | null
+    userId: string | null
+    userRole: string | null
+    prompt: string | null
+    response: string | null
+    provider: string | null
+    modelName: string | null
+    latencyMs: number | null
+    status: string | null
+    isFlagged: boolean | null
+    moderationReason: string | null
+    createdAt: Date | null
+  }
+
+  export type AIChatLogCountAggregateOutputType = {
+    id: number
+    assistantType: number
+    userId: number
+    userRole: number
+    prompt: number
+    response: number
+    provider: number
+    modelName: number
+    latencyMs: number
+    status: number
+    isFlagged: number
+    moderationReason: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AIChatLogAvgAggregateInputType = {
+    latencyMs?: true
+  }
+
+  export type AIChatLogSumAggregateInputType = {
+    latencyMs?: true
+  }
+
+  export type AIChatLogMinAggregateInputType = {
+    id?: true
+    assistantType?: true
+    userId?: true
+    userRole?: true
+    prompt?: true
+    response?: true
+    provider?: true
+    modelName?: true
+    latencyMs?: true
+    status?: true
+    isFlagged?: true
+    moderationReason?: true
+    createdAt?: true
+  }
+
+  export type AIChatLogMaxAggregateInputType = {
+    id?: true
+    assistantType?: true
+    userId?: true
+    userRole?: true
+    prompt?: true
+    response?: true
+    provider?: true
+    modelName?: true
+    latencyMs?: true
+    status?: true
+    isFlagged?: true
+    moderationReason?: true
+    createdAt?: true
+  }
+
+  export type AIChatLogCountAggregateInputType = {
+    id?: true
+    assistantType?: true
+    userId?: true
+    userRole?: true
+    prompt?: true
+    response?: true
+    provider?: true
+    modelName?: true
+    latencyMs?: true
+    status?: true
+    isFlagged?: true
+    moderationReason?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AIChatLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIChatLog to aggregate.
+     */
+    where?: AIChatLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIChatLogs to fetch.
+     */
+    orderBy?: AIChatLogOrderByWithRelationInput | AIChatLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AIChatLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIChatLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIChatLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AIChatLogs
+    **/
+    _count?: true | AIChatLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AIChatLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AIChatLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AIChatLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AIChatLogMaxAggregateInputType
+  }
+
+  export type GetAIChatLogAggregateType<T extends AIChatLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAIChatLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAIChatLog[P]>
+      : GetScalarType<T[P], AggregateAIChatLog[P]>
+  }
+
+
+
+
+  export type AIChatLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIChatLogWhereInput
+    orderBy?: AIChatLogOrderByWithAggregationInput | AIChatLogOrderByWithAggregationInput[]
+    by: AIChatLogScalarFieldEnum[] | AIChatLogScalarFieldEnum
+    having?: AIChatLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AIChatLogCountAggregateInputType | true
+    _avg?: AIChatLogAvgAggregateInputType
+    _sum?: AIChatLogSumAggregateInputType
+    _min?: AIChatLogMinAggregateInputType
+    _max?: AIChatLogMaxAggregateInputType
+  }
+
+  export type AIChatLogGroupByOutputType = {
+    id: string
+    assistantType: string
+    userId: string | null
+    userRole: string | null
+    prompt: string
+    response: string
+    provider: string
+    modelName: string
+    latencyMs: number
+    status: string
+    isFlagged: boolean
+    moderationReason: string | null
+    metadata: JsonValue
+    createdAt: Date
+    _count: AIChatLogCountAggregateOutputType | null
+    _avg: AIChatLogAvgAggregateOutputType | null
+    _sum: AIChatLogSumAggregateOutputType | null
+    _min: AIChatLogMinAggregateOutputType | null
+    _max: AIChatLogMaxAggregateOutputType | null
+  }
+
+  type GetAIChatLogGroupByPayload<T extends AIChatLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AIChatLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AIChatLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AIChatLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AIChatLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AIChatLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    assistantType?: boolean
+    userId?: boolean
+    userRole?: boolean
+    prompt?: boolean
+    response?: boolean
+    provider?: boolean
+    modelName?: boolean
+    latencyMs?: boolean
+    status?: boolean
+    isFlagged?: boolean
+    moderationReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["aIChatLog"]>
+
+  export type AIChatLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    assistantType?: boolean
+    userId?: boolean
+    userRole?: boolean
+    prompt?: boolean
+    response?: boolean
+    provider?: boolean
+    modelName?: boolean
+    latencyMs?: boolean
+    status?: boolean
+    isFlagged?: boolean
+    moderationReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["aIChatLog"]>
+
+  export type AIChatLogSelectScalar = {
+    id?: boolean
+    assistantType?: boolean
+    userId?: boolean
+    userRole?: boolean
+    prompt?: boolean
+    response?: boolean
+    provider?: boolean
+    modelName?: boolean
+    latencyMs?: boolean
+    status?: boolean
+    isFlagged?: boolean
+    moderationReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $AIChatLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AIChatLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      assistantType: string
+      userId: string | null
+      userRole: string | null
+      prompt: string
+      response: string
+      provider: string
+      modelName: string
+      latencyMs: number
+      status: string
+      isFlagged: boolean
+      moderationReason: string | null
+      metadata: Prisma.JsonValue
+      createdAt: Date
+    }, ExtArgs["result"]["aIChatLog"]>
+    composites: {}
+  }
+
+  type AIChatLogGetPayload<S extends boolean | null | undefined | AIChatLogDefaultArgs> = $Result.GetResult<Prisma.$AIChatLogPayload, S>
+
+  type AIChatLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AIChatLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AIChatLogCountAggregateInputType | true
+    }
+
+  export interface AIChatLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AIChatLog'], meta: { name: 'AIChatLog' } }
+    /**
+     * Find zero or one AIChatLog that matches the filter.
+     * @param {AIChatLogFindUniqueArgs} args - Arguments to find a AIChatLog
+     * @example
+     * // Get one AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AIChatLogFindUniqueArgs>(args: SelectSubset<T, AIChatLogFindUniqueArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AIChatLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AIChatLogFindUniqueOrThrowArgs} args - Arguments to find a AIChatLog
+     * @example
+     * // Get one AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AIChatLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AIChatLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AIChatLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogFindFirstArgs} args - Arguments to find a AIChatLog
+     * @example
+     * // Get one AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AIChatLogFindFirstArgs>(args?: SelectSubset<T, AIChatLogFindFirstArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AIChatLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogFindFirstOrThrowArgs} args - Arguments to find a AIChatLog
+     * @example
+     * // Get one AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AIChatLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AIChatLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AIChatLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AIChatLogs
+     * const aIChatLogs = await prisma.aIChatLog.findMany()
+     * 
+     * // Get first 10 AIChatLogs
+     * const aIChatLogs = await prisma.aIChatLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aIChatLogWithIdOnly = await prisma.aIChatLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AIChatLogFindManyArgs>(args?: SelectSubset<T, AIChatLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AIChatLog.
+     * @param {AIChatLogCreateArgs} args - Arguments to create a AIChatLog.
+     * @example
+     * // Create one AIChatLog
+     * const AIChatLog = await prisma.aIChatLog.create({
+     *   data: {
+     *     // ... data to create a AIChatLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AIChatLogCreateArgs>(args: SelectSubset<T, AIChatLogCreateArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AIChatLogs.
+     * @param {AIChatLogCreateManyArgs} args - Arguments to create many AIChatLogs.
+     * @example
+     * // Create many AIChatLogs
+     * const aIChatLog = await prisma.aIChatLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AIChatLogCreateManyArgs>(args?: SelectSubset<T, AIChatLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AIChatLogs and returns the data saved in the database.
+     * @param {AIChatLogCreateManyAndReturnArgs} args - Arguments to create many AIChatLogs.
+     * @example
+     * // Create many AIChatLogs
+     * const aIChatLog = await prisma.aIChatLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AIChatLogs and only return the `id`
+     * const aIChatLogWithIdOnly = await prisma.aIChatLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AIChatLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AIChatLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AIChatLog.
+     * @param {AIChatLogDeleteArgs} args - Arguments to delete one AIChatLog.
+     * @example
+     * // Delete one AIChatLog
+     * const AIChatLog = await prisma.aIChatLog.delete({
+     *   where: {
+     *     // ... filter to delete one AIChatLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AIChatLogDeleteArgs>(args: SelectSubset<T, AIChatLogDeleteArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AIChatLog.
+     * @param {AIChatLogUpdateArgs} args - Arguments to update one AIChatLog.
+     * @example
+     * // Update one AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AIChatLogUpdateArgs>(args: SelectSubset<T, AIChatLogUpdateArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AIChatLogs.
+     * @param {AIChatLogDeleteManyArgs} args - Arguments to filter AIChatLogs to delete.
+     * @example
+     * // Delete a few AIChatLogs
+     * const { count } = await prisma.aIChatLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AIChatLogDeleteManyArgs>(args?: SelectSubset<T, AIChatLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIChatLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AIChatLogs
+     * const aIChatLog = await prisma.aIChatLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AIChatLogUpdateManyArgs>(args: SelectSubset<T, AIChatLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AIChatLog.
+     * @param {AIChatLogUpsertArgs} args - Arguments to update or create a AIChatLog.
+     * @example
+     * // Update or create a AIChatLog
+     * const aIChatLog = await prisma.aIChatLog.upsert({
+     *   create: {
+     *     // ... data to create a AIChatLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AIChatLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AIChatLogUpsertArgs>(args: SelectSubset<T, AIChatLogUpsertArgs<ExtArgs>>): Prisma__AIChatLogClient<$Result.GetResult<Prisma.$AIChatLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AIChatLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogCountArgs} args - Arguments to filter AIChatLogs to count.
+     * @example
+     * // Count the number of AIChatLogs
+     * const count = await prisma.aIChatLog.count({
+     *   where: {
+     *     // ... the filter for the AIChatLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AIChatLogCountArgs>(
+      args?: Subset<T, AIChatLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AIChatLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AIChatLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AIChatLogAggregateArgs>(args: Subset<T, AIChatLogAggregateArgs>): Prisma.PrismaPromise<GetAIChatLogAggregateType<T>>
+
+    /**
+     * Group by AIChatLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIChatLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AIChatLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AIChatLogGroupByArgs['orderBy'] }
+        : { orderBy?: AIChatLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AIChatLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAIChatLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AIChatLog model
+   */
+  readonly fields: AIChatLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AIChatLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AIChatLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AIChatLog model
+   */ 
+  interface AIChatLogFieldRefs {
+    readonly id: FieldRef<"AIChatLog", 'String'>
+    readonly assistantType: FieldRef<"AIChatLog", 'String'>
+    readonly userId: FieldRef<"AIChatLog", 'String'>
+    readonly userRole: FieldRef<"AIChatLog", 'String'>
+    readonly prompt: FieldRef<"AIChatLog", 'String'>
+    readonly response: FieldRef<"AIChatLog", 'String'>
+    readonly provider: FieldRef<"AIChatLog", 'String'>
+    readonly modelName: FieldRef<"AIChatLog", 'String'>
+    readonly latencyMs: FieldRef<"AIChatLog", 'Int'>
+    readonly status: FieldRef<"AIChatLog", 'String'>
+    readonly isFlagged: FieldRef<"AIChatLog", 'Boolean'>
+    readonly moderationReason: FieldRef<"AIChatLog", 'String'>
+    readonly metadata: FieldRef<"AIChatLog", 'Json'>
+    readonly createdAt: FieldRef<"AIChatLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AIChatLog findUnique
+   */
+  export type AIChatLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter, which AIChatLog to fetch.
+     */
+    where: AIChatLogWhereUniqueInput
+  }
+
+  /**
+   * AIChatLog findUniqueOrThrow
+   */
+  export type AIChatLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter, which AIChatLog to fetch.
+     */
+    where: AIChatLogWhereUniqueInput
+  }
+
+  /**
+   * AIChatLog findFirst
+   */
+  export type AIChatLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter, which AIChatLog to fetch.
+     */
+    where?: AIChatLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIChatLogs to fetch.
+     */
+    orderBy?: AIChatLogOrderByWithRelationInput | AIChatLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIChatLogs.
+     */
+    cursor?: AIChatLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIChatLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIChatLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIChatLogs.
+     */
+    distinct?: AIChatLogScalarFieldEnum | AIChatLogScalarFieldEnum[]
+  }
+
+  /**
+   * AIChatLog findFirstOrThrow
+   */
+  export type AIChatLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter, which AIChatLog to fetch.
+     */
+    where?: AIChatLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIChatLogs to fetch.
+     */
+    orderBy?: AIChatLogOrderByWithRelationInput | AIChatLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIChatLogs.
+     */
+    cursor?: AIChatLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIChatLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIChatLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIChatLogs.
+     */
+    distinct?: AIChatLogScalarFieldEnum | AIChatLogScalarFieldEnum[]
+  }
+
+  /**
+   * AIChatLog findMany
+   */
+  export type AIChatLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter, which AIChatLogs to fetch.
+     */
+    where?: AIChatLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIChatLogs to fetch.
+     */
+    orderBy?: AIChatLogOrderByWithRelationInput | AIChatLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AIChatLogs.
+     */
+    cursor?: AIChatLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIChatLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIChatLogs.
+     */
+    skip?: number
+    distinct?: AIChatLogScalarFieldEnum | AIChatLogScalarFieldEnum[]
+  }
+
+  /**
+   * AIChatLog create
+   */
+  export type AIChatLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * The data needed to create a AIChatLog.
+     */
+    data: XOR<AIChatLogCreateInput, AIChatLogUncheckedCreateInput>
+  }
+
+  /**
+   * AIChatLog createMany
+   */
+  export type AIChatLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AIChatLogs.
+     */
+    data: AIChatLogCreateManyInput | AIChatLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIChatLog createManyAndReturn
+   */
+  export type AIChatLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AIChatLogs.
+     */
+    data: AIChatLogCreateManyInput | AIChatLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIChatLog update
+   */
+  export type AIChatLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * The data needed to update a AIChatLog.
+     */
+    data: XOR<AIChatLogUpdateInput, AIChatLogUncheckedUpdateInput>
+    /**
+     * Choose, which AIChatLog to update.
+     */
+    where: AIChatLogWhereUniqueInput
+  }
+
+  /**
+   * AIChatLog updateMany
+   */
+  export type AIChatLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AIChatLogs.
+     */
+    data: XOR<AIChatLogUpdateManyMutationInput, AIChatLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AIChatLogs to update
+     */
+    where?: AIChatLogWhereInput
+  }
+
+  /**
+   * AIChatLog upsert
+   */
+  export type AIChatLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * The filter to search for the AIChatLog to update in case it exists.
+     */
+    where: AIChatLogWhereUniqueInput
+    /**
+     * In case the AIChatLog found by the `where` argument doesn't exist, create a new AIChatLog with this data.
+     */
+    create: XOR<AIChatLogCreateInput, AIChatLogUncheckedCreateInput>
+    /**
+     * In case the AIChatLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AIChatLogUpdateInput, AIChatLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AIChatLog delete
+   */
+  export type AIChatLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+    /**
+     * Filter which AIChatLog to delete.
+     */
+    where: AIChatLogWhereUniqueInput
+  }
+
+  /**
+   * AIChatLog deleteMany
+   */
+  export type AIChatLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIChatLogs to delete
+     */
+    where?: AIChatLogWhereInput
+  }
+
+  /**
+   * AIChatLog without action
+   */
+  export type AIChatLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIChatLog
+     */
+    select?: AIChatLogSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -85160,6 +86286,8 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     category: 'category',
+    urgencyLevel: 'urgencyLevel',
+    aiSummary: 'aiSummary',
     isAnonymous: 'isAnonymous',
     status: 'status',
     createdAt: 'createdAt',
@@ -86215,6 +87343,26 @@ export namespace Prisma {
   };
 
   export type WebsiteMonitorLogScalarFieldEnum = (typeof WebsiteMonitorLogScalarFieldEnum)[keyof typeof WebsiteMonitorLogScalarFieldEnum]
+
+
+  export const AIChatLogScalarFieldEnum: {
+    id: 'id',
+    assistantType: 'assistantType',
+    userId: 'userId',
+    userRole: 'userRole',
+    prompt: 'prompt',
+    response: 'response',
+    provider: 'provider',
+    modelName: 'modelName',
+    latencyMs: 'latencyMs',
+    status: 'status',
+    isFlagged: 'isFlagged',
+    moderationReason: 'moderationReason',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type AIChatLogScalarFieldEnum = (typeof AIChatLogScalarFieldEnum)[keyof typeof AIChatLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -88015,6 +89163,8 @@ export namespace Prisma {
     title?: StringFilter<"PrayerRequest"> | string
     description?: StringFilter<"PrayerRequest"> | string
     category?: EnumPrayerCategoryFilter<"PrayerRequest"> | $Enums.PrayerCategory
+    urgencyLevel?: StringNullableFilter<"PrayerRequest"> | string | null
+    aiSummary?: StringNullableFilter<"PrayerRequest"> | string | null
     isAnonymous?: BoolFilter<"PrayerRequest"> | boolean
     status?: EnumPrayerStatusFilter<"PrayerRequest"> | $Enums.PrayerStatus
     createdAt?: DateTimeFilter<"PrayerRequest"> | Date | string
@@ -88028,6 +89178,8 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    urgencyLevel?: SortOrderInput | SortOrder
+    aiSummary?: SortOrderInput | SortOrder
     isAnonymous?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -88044,6 +89196,8 @@ export namespace Prisma {
     title?: StringFilter<"PrayerRequest"> | string
     description?: StringFilter<"PrayerRequest"> | string
     category?: EnumPrayerCategoryFilter<"PrayerRequest"> | $Enums.PrayerCategory
+    urgencyLevel?: StringNullableFilter<"PrayerRequest"> | string | null
+    aiSummary?: StringNullableFilter<"PrayerRequest"> | string | null
     isAnonymous?: BoolFilter<"PrayerRequest"> | boolean
     status?: EnumPrayerStatusFilter<"PrayerRequest"> | $Enums.PrayerStatus
     createdAt?: DateTimeFilter<"PrayerRequest"> | Date | string
@@ -88057,6 +89211,8 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    urgencyLevel?: SortOrderInput | SortOrder
+    aiSummary?: SortOrderInput | SortOrder
     isAnonymous?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -88075,6 +89231,8 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"PrayerRequest"> | string
     description?: StringWithAggregatesFilter<"PrayerRequest"> | string
     category?: EnumPrayerCategoryWithAggregatesFilter<"PrayerRequest"> | $Enums.PrayerCategory
+    urgencyLevel?: StringNullableWithAggregatesFilter<"PrayerRequest"> | string | null
+    aiSummary?: StringNullableWithAggregatesFilter<"PrayerRequest"> | string | null
     isAnonymous?: BoolWithAggregatesFilter<"PrayerRequest"> | boolean
     status?: EnumPrayerStatusWithAggregatesFilter<"PrayerRequest"> | $Enums.PrayerStatus
     createdAt?: DateTimeWithAggregatesFilter<"PrayerRequest"> | Date | string
@@ -93339,6 +94497,105 @@ export namespace Prisma {
     checkedAt?: DateTimeWithAggregatesFilter<"WebsiteMonitorLog"> | Date | string
   }
 
+  export type AIChatLogWhereInput = {
+    AND?: AIChatLogWhereInput | AIChatLogWhereInput[]
+    OR?: AIChatLogWhereInput[]
+    NOT?: AIChatLogWhereInput | AIChatLogWhereInput[]
+    id?: StringFilter<"AIChatLog"> | string
+    assistantType?: StringFilter<"AIChatLog"> | string
+    userId?: StringNullableFilter<"AIChatLog"> | string | null
+    userRole?: StringNullableFilter<"AIChatLog"> | string | null
+    prompt?: StringFilter<"AIChatLog"> | string
+    response?: StringFilter<"AIChatLog"> | string
+    provider?: StringFilter<"AIChatLog"> | string
+    modelName?: StringFilter<"AIChatLog"> | string
+    latencyMs?: IntFilter<"AIChatLog"> | number
+    status?: StringFilter<"AIChatLog"> | string
+    isFlagged?: BoolFilter<"AIChatLog"> | boolean
+    moderationReason?: StringNullableFilter<"AIChatLog"> | string | null
+    metadata?: JsonFilter<"AIChatLog">
+    createdAt?: DateTimeFilter<"AIChatLog"> | Date | string
+  }
+
+  export type AIChatLogOrderByWithRelationInput = {
+    id?: SortOrder
+    assistantType?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    userRole?: SortOrderInput | SortOrder
+    prompt?: SortOrder
+    response?: SortOrder
+    provider?: SortOrder
+    modelName?: SortOrder
+    latencyMs?: SortOrder
+    status?: SortOrder
+    isFlagged?: SortOrder
+    moderationReason?: SortOrderInput | SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIChatLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AIChatLogWhereInput | AIChatLogWhereInput[]
+    OR?: AIChatLogWhereInput[]
+    NOT?: AIChatLogWhereInput | AIChatLogWhereInput[]
+    assistantType?: StringFilter<"AIChatLog"> | string
+    userId?: StringNullableFilter<"AIChatLog"> | string | null
+    userRole?: StringNullableFilter<"AIChatLog"> | string | null
+    prompt?: StringFilter<"AIChatLog"> | string
+    response?: StringFilter<"AIChatLog"> | string
+    provider?: StringFilter<"AIChatLog"> | string
+    modelName?: StringFilter<"AIChatLog"> | string
+    latencyMs?: IntFilter<"AIChatLog"> | number
+    status?: StringFilter<"AIChatLog"> | string
+    isFlagged?: BoolFilter<"AIChatLog"> | boolean
+    moderationReason?: StringNullableFilter<"AIChatLog"> | string | null
+    metadata?: JsonFilter<"AIChatLog">
+    createdAt?: DateTimeFilter<"AIChatLog"> | Date | string
+  }, "id">
+
+  export type AIChatLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    assistantType?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    userRole?: SortOrderInput | SortOrder
+    prompt?: SortOrder
+    response?: SortOrder
+    provider?: SortOrder
+    modelName?: SortOrder
+    latencyMs?: SortOrder
+    status?: SortOrder
+    isFlagged?: SortOrder
+    moderationReason?: SortOrderInput | SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    _count?: AIChatLogCountOrderByAggregateInput
+    _avg?: AIChatLogAvgOrderByAggregateInput
+    _max?: AIChatLogMaxOrderByAggregateInput
+    _min?: AIChatLogMinOrderByAggregateInput
+    _sum?: AIChatLogSumOrderByAggregateInput
+  }
+
+  export type AIChatLogScalarWhereWithAggregatesInput = {
+    AND?: AIChatLogScalarWhereWithAggregatesInput | AIChatLogScalarWhereWithAggregatesInput[]
+    OR?: AIChatLogScalarWhereWithAggregatesInput[]
+    NOT?: AIChatLogScalarWhereWithAggregatesInput | AIChatLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AIChatLog"> | string
+    assistantType?: StringWithAggregatesFilter<"AIChatLog"> | string
+    userId?: StringNullableWithAggregatesFilter<"AIChatLog"> | string | null
+    userRole?: StringNullableWithAggregatesFilter<"AIChatLog"> | string | null
+    prompt?: StringWithAggregatesFilter<"AIChatLog"> | string
+    response?: StringWithAggregatesFilter<"AIChatLog"> | string
+    provider?: StringWithAggregatesFilter<"AIChatLog"> | string
+    modelName?: StringWithAggregatesFilter<"AIChatLog"> | string
+    latencyMs?: IntWithAggregatesFilter<"AIChatLog"> | number
+    status?: StringWithAggregatesFilter<"AIChatLog"> | string
+    isFlagged?: BoolWithAggregatesFilter<"AIChatLog"> | boolean
+    moderationReason?: StringNullableWithAggregatesFilter<"AIChatLog"> | string | null
+    metadata?: JsonWithAggregatesFilter<"AIChatLog">
+    createdAt?: DateTimeWithAggregatesFilter<"AIChatLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -95017,6 +96274,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -95030,6 +96289,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -95041,6 +96302,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -95054,6 +96317,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -95066,6 +96331,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -95077,6 +96344,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -95089,6 +96358,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -101233,6 +102504,125 @@ export namespace Prisma {
     checkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AIChatLogCreateInput = {
+    id?: string
+    assistantType: string
+    userId?: string | null
+    userRole?: string | null
+    prompt: string
+    response: string
+    provider: string
+    modelName: string
+    latencyMs: number
+    status?: string
+    isFlagged?: boolean
+    moderationReason?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIChatLogUncheckedCreateInput = {
+    id?: string
+    assistantType: string
+    userId?: string | null
+    userRole?: string | null
+    prompt: string
+    response: string
+    provider: string
+    modelName: string
+    latencyMs: number
+    status?: string
+    isFlagged?: boolean
+    moderationReason?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIChatLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assistantType?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    userRole?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    response?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelName?: StringFieldUpdateOperationsInput | string
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    isFlagged?: BoolFieldUpdateOperationsInput | boolean
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIChatLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assistantType?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    userRole?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    response?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelName?: StringFieldUpdateOperationsInput | string
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    isFlagged?: BoolFieldUpdateOperationsInput | boolean
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIChatLogCreateManyInput = {
+    id?: string
+    assistantType: string
+    userId?: string | null
+    userRole?: string | null
+    prompt: string
+    response: string
+    provider: string
+    modelName: string
+    latencyMs: number
+    status?: string
+    isFlagged?: boolean
+    moderationReason?: string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIChatLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assistantType?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    userRole?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    response?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelName?: StringFieldUpdateOperationsInput | string
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    isFlagged?: BoolFieldUpdateOperationsInput | boolean
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIChatLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assistantType?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    userRole?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    response?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelName?: StringFieldUpdateOperationsInput | string
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    isFlagged?: BoolFieldUpdateOperationsInput | boolean
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -102565,6 +103955,8 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    urgencyLevel?: SortOrder
+    aiSummary?: SortOrder
     isAnonymous?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -102577,6 +103969,8 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    urgencyLevel?: SortOrder
+    aiSummary?: SortOrder
     isAnonymous?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -102589,6 +103983,8 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     category?: SortOrder
+    urgencyLevel?: SortOrder
+    aiSummary?: SortOrder
     isAnonymous?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
@@ -105786,6 +107182,63 @@ export namespace Prisma {
     snapshotHash?: SortOrder
     notificationSent?: SortOrder
     checkedAt?: SortOrder
+  }
+
+  export type AIChatLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    assistantType?: SortOrder
+    userId?: SortOrder
+    userRole?: SortOrder
+    prompt?: SortOrder
+    response?: SortOrder
+    provider?: SortOrder
+    modelName?: SortOrder
+    latencyMs?: SortOrder
+    status?: SortOrder
+    isFlagged?: SortOrder
+    moderationReason?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIChatLogAvgOrderByAggregateInput = {
+    latencyMs?: SortOrder
+  }
+
+  export type AIChatLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    assistantType?: SortOrder
+    userId?: SortOrder
+    userRole?: SortOrder
+    prompt?: SortOrder
+    response?: SortOrder
+    provider?: SortOrder
+    modelName?: SortOrder
+    latencyMs?: SortOrder
+    status?: SortOrder
+    isFlagged?: SortOrder
+    moderationReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIChatLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    assistantType?: SortOrder
+    userId?: SortOrder
+    userRole?: SortOrder
+    prompt?: SortOrder
+    response?: SortOrder
+    provider?: SortOrder
+    modelName?: SortOrder
+    latencyMs?: SortOrder
+    status?: SortOrder
+    isFlagged?: SortOrder
+    moderationReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIChatLogSumOrderByAggregateInput = {
+    latencyMs?: SortOrder
   }
 
   export type DonationCreateNestedManyWithoutUserInput = {
@@ -109662,6 +111115,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -109673,6 +111128,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -110431,6 +111888,8 @@ export namespace Prisma {
     title?: StringFilter<"PrayerRequest"> | string
     description?: StringFilter<"PrayerRequest"> | string
     category?: EnumPrayerCategoryFilter<"PrayerRequest"> | $Enums.PrayerCategory
+    urgencyLevel?: StringNullableFilter<"PrayerRequest"> | string | null
+    aiSummary?: StringNullableFilter<"PrayerRequest"> | string | null
     isAnonymous?: BoolFilter<"PrayerRequest"> | boolean
     status?: EnumPrayerStatusFilter<"PrayerRequest"> | $Enums.PrayerStatus
     createdAt?: DateTimeFilter<"PrayerRequest"> | Date | string
@@ -121450,6 +122909,8 @@ export namespace Prisma {
     title: string
     description: string
     category: $Enums.PrayerCategory
+    urgencyLevel?: string | null
+    aiSummary?: string | null
     isAnonymous?: boolean
     status?: $Enums.PrayerStatus
     createdAt?: Date | string
@@ -121821,6 +123282,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121832,6 +123295,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121843,6 +123308,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     category?: EnumPrayerCategoryFieldUpdateOperationsInput | $Enums.PrayerCategory
+    urgencyLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     isAnonymous?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumPrayerStatusFieldUpdateOperationsInput | $Enums.PrayerStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124951,6 +126418,10 @@ export namespace Prisma {
      * @deprecated Use WebsiteMonitorLogDefaultArgs instead
      */
     export type WebsiteMonitorLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WebsiteMonitorLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AIChatLogDefaultArgs instead
+     */
+    export type AIChatLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AIChatLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

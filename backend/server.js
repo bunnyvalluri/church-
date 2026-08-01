@@ -46,6 +46,10 @@ app.use(generalLimiter);
 // Webhook verification middleware
 const { verifyGoogleWebhook } = require('./src/middleware/webhookVerify');
 
+// ── AI Assistant Core Suite Routes ───────────────────────────────────────────
+const aiRoutes = require('./src/routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
+
 // ── Notification & Event Routes ───────────────────────────────────────────────
 
 // Register FCM device token

@@ -351,16 +351,18 @@ model SermonBookmark {
 }
 
 model PrayerRequest {
-  id          String         @id @default(cuid())
-  userId      String
-  title       String
-  description String
-  category    PrayerCategory
-  isAnonymous Boolean        @default(false)
-  status      PrayerStatus   @default(PENDING)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String         @id @default(cuid())
+  userId       String
+  title        String
+  description  String
+  category     PrayerCategory
+  urgencyLevel String?        @default("NORMAL") @map("urgency_level")
+  aiSummary    String?        @map("ai_summary") @db.Text
+  isAnonymous  Boolean        @default(false)
+  status       PrayerStatus   @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -1569,4 +1571,29 @@ model WebsiteMonitorLog {
   @@index([targetId])
   @@index([changeDetected])
   @@map("website_monitor_logs")
+}
+
+// ─── AI Feature Chat & Audit Log Model ───────────────────────────────────────
+
+model AIChatLog {
+  id               String   @id @default(cuid())
+  assistantType    String   @map("assistant_type") // SERMON_ASSISTANT | PRAYER_ASSISTANT | EVENT_CONTENT_ASSISTANT | BIBLE_STUDY_ASSISTANT | CHURCH_CHATBOT
+  userId           String?  @map("user_id")
+  userRole         String?  @map("user_role")
+  prompt           String   @db.Text
+  response         String   @db.Text
+  provider         String // Groq | OpenRouter | GoogleAIStudio
+  modelName        String   @map("model_name")
+  latencyMs        Int      @map("latency_ms")
+  status           String   @default("SUCCESS") // SUCCESS | MODERATED | FAILED
+  isFlagged        Boolean  @default(false) @map("is_flagged")
+  moderationReason String?  @map("moderation_reason")
+  metadata         Json     @default("{}")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([assistantType])
+  @@index([userId])
+  @@index([provider])
+  @@index([createdAt])
+  @@map("ai_chat_logs")
 }
