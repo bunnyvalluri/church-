@@ -39,3 +39,12 @@ cache_in_memory_nodes = 50000
 enabled = true
 metrics_port = 9091
 export_format = "prometheus"
+
+[plugin.opencode_antigravity_auth]
+config_file = ".jcode/opencode-antigravity-auth.config.json"
+auth_provider = "antigravity-auth-gateway"
+architecture_model = "claude-3-7-sonnet"
+implementation_model = "gemini-3.6-flash"
+model_rotation_strategy = "architect_designer_to_executor"
+shared_state_path = ".jcode/memory/auth_state.json"
+

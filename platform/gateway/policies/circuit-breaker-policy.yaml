@@ -16,7 +16,10 @@ spec:
   targetRefs:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      name: kcm-backend-api-route
+      name: kcm-public-api-route
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kcm-protected-api-route
 
   # ── Circuit Breaking / Connection Limits ────────────────────────────────────
   circuitBreaker:
@@ -87,7 +90,7 @@ spec:
       unhealthyThreshold: 3
       healthyThreshold: 2
       http:
-        path: /health
+        path: /healthz
         expectedStatuses:
           - start: 200
             end: 299

@@ -22,10 +22,10 @@ spec:
   parentRefs:
     - name: kcm-gateway
       namespace: kcm-system
-      sectionName: https
+      sectionName: https-api
 
   hostnames:
-    - "kcmchurch.org"
+    - "api.kcmchurch.org"
 
   rules:
     - matches:
@@ -37,10 +37,10 @@ spec:
         - type: RequestMirror
           requestMirror:
             backendRef:
-              name: frontend-canary-service
-              port: 3000
+              name: backend-api-preview-service
+              port: 3001
             percent: 10  # Mirror 10% of API traffic to canary
       backendRefs:
-        - name: frontend-stable-service
-          port: 3000
+        - name: backend-api-active-service
+          port: 3001
           weight: 100

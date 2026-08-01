@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "plugin": "opencode-antigravity-auth",
+  "version": "2.4.0",
+  "project": "KCM Ministries Church Platform",
+  "auth": {
+    "provider": "antigravity-auth-gateway",
+    "token_rotation_interval_seconds": 3600,
+    "enable_auto_refresh": true,
+    "session_persistence": true
+  },
+  "model_rotation": {
+    "enabled": true,
+    "default_architecture_model": "claude-3-7-sonnet",
+    "default_implementation_model": "gemini-3.6-flash",
+    "tasks": {
+      "architecture": {
+        "model": "claude-3-7-sonnet",
+        "focus": ["schema-design", "api-specs", "security-blueprints", "rfc-creation", "system-decomposition"]
+      },
+      "implementation": {
+        "model": "gemini-3.6-flash",
+        "focus": ["code-generation", "large-refactors", "unit-testing", "mass-boilerplate", "async-workers"]
+      },
+      "rotation_trigger": {
+        "token_threshold_per_step": 80000,
+        "mode_switch": "auto_handoff_with_snapshot"
+      }
+    }
+  },
+  "modules": [
+    "Admin Portal",
+    "Pastor Portal",
+    "Member Portal",
+    "Event Manager",
+    "Sermons",
+    "Donations",
+    "Prayer Requests",
+    "Notifications"
+  ],
+  "workflow_domains": [
+    {
+      "id": "multi_session_coding",
+      "session_count": 5,
+      "memory_sync": "realtime",
+      "lead_model": "claude-3-7-sonnet"
+    },
+    {
+      "id": "large_refactoring",
+      "batch_size_files": 25,
+      "verification": "strict_lint_build",
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "parallel_agent_development",
+      "swarm_mode": true,
+      "conflict_resolution": "optimistic_lock",
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "performance_optimization",
+      "target_lighthouse_score": 95,
+      "max_bundle_size_kb": 250,
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "security_hardening",
+      "jwt_algorithm": "RS256",
+      "rbac_strict": true,
+      "magic_bytes_check": true,
+      "lead_model": "claude-3-7-sonnet"
+    },
+    {
+      "id": "api_gateway_implementation",
+      "proxy_target": "http://127.0.0.1:4000",
+      "rate_limit_rpm": 120,
+      "lead_model": "claude-3-7-sonnet"
+    },
+    {
+      "id": "pwa_offline_sync",
+      "sw_version": "v2.1.0",
+      "indexeddb_store": "kcm_offline_cache",
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "cloudinary_integration",
+      "folder": "kcm_church_assets",
+      "auto_tagging": true,
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "socket_io_realtime",
+      "rooms": ["sermon_live", "prayer_wall", "notifications"],
+      "reconnect_attempts": 10,
+      "lead_model": "gemini-3.6-flash"
+    },
+    {
+      "id": "firebase_fcm",
+      "topic_prefix": "kcm_topic_",
+      "batch_notification_limit": 500,
+      "lead_model": "gemini-3.6-flash"
+    }
+  ]
+}

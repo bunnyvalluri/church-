@@ -1,22 +1,22 @@
 # ==============================================================================
-# Kingdom of Christ Ministries — Backend API HTTPRoute
+# Kingdom of Christ Ministries — Public API HTTPRoute (No JWT Required)
 # ==============================================================================
-# Routes: api.kcmchurch.org /api/* → backend-api-service:3001
+# Routes: api.kcmchurch.org /health, /api/health, /api/auth → backend-api-active-service:3001
 # ==============================================================================
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: kcm-backend-api-route
+  name: kcm-public-api-route
   namespace: kcm-system
   labels:
     app: kcm-backend-api
-    app.kubernetes.io/name: kcm-backend-api-route
+    app.kubernetes.io/name: kcm-public-api-route
     app.kubernetes.io/component: routing
     app.kubernetes.io/part-of: kcm-church-portal
     app.kubernetes.io/managed-by: helm
   annotations:
-    description: "KCM Church backend API routing — Express.js REST API"
-    argo-rollouts.argoproj.io/managed-by: "kcm-backend-api"
+    description: "KCM Church public API routing — Health and Auth Endpoints"
+    security: "public-unauthenticated"
 spec:
   parentRefs:
     - name: kcm-gateway
@@ -43,26 +43,7 @@ spec:
           port: 3001
           weight: 100
 
-    # ── Webhook Endpoints (Firebase, Stripe, etc.) ─────────────────────────────
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/webhooks
-      filters:
-        - type: RequestHeaderModifier
-          requestHeaderModifier:
-            add:
-              - name: X-Forwarded-Proto
-                value: "https"
-      backendRefs:
-        - name: backend-api-active-service
-          port: 3001
-          weight: 100
-      timeouts:
-        request: 60s
-        backendRequest: 55s
-
-    # ── Authentication Endpoints ───────────────────────────────────────────────
+    # ── Authentication Endpoints (public login / register) ────────────────────
     - matches:
         - path:
             type: PathPrefix
@@ -79,8 +60,38 @@ spec:
           weight: 100
       timeouts:
         request: 30s
+---
+# ==============================================================================
+# Kingdom of Christ Ministries — Protected Backend API HTTPRoute (JWT Required)
+# ==============================================================================
+# Routes: api.kcmchurch.org /api/* → backend-api-service:3001
+# ==============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kcm-protected-api-route
+  namespace: kcm-system
+  labels:
+    app: kcm-backend-api
+    app.kubernetes.io/name: kcm-protected-api-route
+    app.kubernetes.io/component: routing
+    app.kubernetes.io/part-of: kcm-church-portal
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    description: "KCM Church protected backend API routing — Express.js REST API"
+    argo-rollouts.argoproj.io/managed-by: "kcm-backend-api"
+    security: "jwt-required"
+spec:
+  parentRefs:
+    - name: kcm-gateway
+      namespace: kcm-system
+      sectionName: https-api
 
-    # ── Main API Route (Blue/Green — Argo Rollouts managed) ───────────────────
+  hostnames:
+    - "api.kcmchurch.org"
+
+  rules:
+    # ── Protected API Routes (Blue/Green — Argo Rollouts managed) ─────────────
     - matches:
         - path:
             type: PathPrefix
@@ -110,3 +121,4 @@ spec:
       timeouts:
         request: 60s
         backendRequest: 55s
+
