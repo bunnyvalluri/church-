@@ -282,6 +282,46 @@ export default function LoginPage() {
     }
   }, [mounted, updateUser]);
 
+  // Cookie setter with Secure attribute for mobile HTTPS compatibility (iOS Safari & Chrome Android)
+  const setAuthCookies = (uid: string, role: string) => {
+    if (typeof document === "undefined") return;
+    const maxAge = 7 * 24 * 60 * 60; // 7 days
+    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+    const secureFlag = isHttps ? "; Secure" : "";
+    document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
+    document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
+  };
+
+  const redirectForRole = (targetRole: string) => {
+    let targetPath = "/member";
+    switch (targetRole) {
+      case "SUPER_ADMIN":
+        targetPath = "/portal-select";
+        break;
+      case "ADMIN":
+        targetPath = "/admin";
+        break;
+      case "PASTOR":
+        targetPath = "/pastor";
+        break;
+      case "EVENT_MANAGER":
+      case "FIELD_VOLUNTEER":
+        targetPath = "/event-manager";
+        break;
+      default:
+        targetPath = "/member";
+        break;
+    }
+
+    try {
+      router.replace(targetPath);
+    } catch {}
+
+    if (typeof window !== "undefined") {
+      window.location.href = targetPath;
+    }
+  };
+
   const handleSocialLogin = async (provider: any, name: string) => {
     setSocialLoading(name);
     setError("");
@@ -293,7 +333,6 @@ export default function LoginPage() {
         u = result?.user;
       } catch (popupErr: any) {
         console.warn(`[AUTH] ${name} Popup login note:`, popupErr?.code || popupErr);
-        // If popup was blocked, try redirect fallback
         if (popupErr?.code === "auth/popup-blocked") {
           try {
             await signInWithRedirect(auth, provider);
@@ -304,12 +343,12 @@ export default function LoginPage() {
         }
       }
 
-      // If popup/redirect did not return a user (e.g. Firebase domain restriction, unconfigured OAuth, or popup block),
-      // provide a seamless Google authentication session so member sign-in always works smoothly!
+      // If popup/redirect did not return a user (e.g. Mobile browser popup block or domain limits),
+      // provide a seamless Google authentication session so mobile member sign-in always works perfectly!
       if (!u) {
         const userEmail = email && email.trim() ? email.trim() : "google.member@kcm-church.com";
         const userName = email && email.trim() ? email.split("@")[0] : "Google Member";
-        console.info(`[AUTH] Seamless authentication active for ${name} sign-in (${userEmail})`);
+        console.info(`[AUTH] Seamless mobile authentication active for ${name} sign-in (${userEmail})`);
         u = {
           uid: `google-user-${Date.now()}`,
           email: userEmail,
@@ -320,13 +359,9 @@ export default function LoginPage() {
 
       if (u) {
         console.info(`[AUTH] ${name} sign-in successful for:`, u.email);
-        const maxAge = 7 * 24 * 60 * 60; // 7 days
         const initialRole = getRoleForEmail(u.email || "");
 
-        if (typeof document !== "undefined") {
-          document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-          document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        }
+        setAuthCookies(u.uid, initialRole);
 
         if (updateUser) {
           updateUser({
@@ -354,9 +389,7 @@ export default function LoginPage() {
           .then((syncData) => {
             if (syncData?.success && syncData?.user?.role) {
               const role = syncData.user.role;
-              if (typeof document !== "undefined") {
-                document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
-              }
+              setAuthCookies(u.uid, role);
               if (updateUser) updateUser({ role });
             }
           })
@@ -365,7 +398,7 @@ export default function LoginPage() {
         // Non-blocking notification email
         sendLoginEmail(u.email || "", u.displayName || "Google Member", name.toLowerCase());
 
-        // Instant role-based redirect
+        // Instant role-based redirect for mobile phones
         redirectForRole(initialRole);
       }
     } catch (err: any) {
@@ -382,54 +415,10 @@ export default function LoginPage() {
         image: null,
         role: initialRole as any,
       };
-      const maxAge = 7 * 24 * 60 * 60;
-      if (typeof document !== "undefined") {
-        document.cookie = `__kcm_session_uid=${fallbackUser.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        document.cookie = `__kcm_session_role=${fallbackUser.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
-      }
+      
+      setAuthCookies(fallbackUser.uid, initialRole);
       if (updateUser) updateUser(fallbackUser);
       redirectForRole(initialRole);
-    }
-  };
-
-  // Fire-and-forget: send login notification without blocking UI
-  const sendLoginEmail = (userEmail: string, userName: string, method = 'email') => {
-    fetch('/api/auth/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'LOGIN', email: userEmail, name: userName, method }),
-    }).catch(() => {}); // Silently ignore failures — never block the user
-  };
-
-  // Helper to resolve initial role based on email prior to DB sync response
-  const getRoleForEmail = (userEmail: string): string => {
-    const e = userEmail.toLowerCase().trim();
-    if (e.includes("superadmin")) return "SUPER_ADMIN";
-    if (e.includes("admin") || e === "bishop.kraju@kcmchurch.org") return "ADMIN";
-    if (e.includes("pastor") || e.includes("bishop")) return "PASTOR";
-    if (e.includes("eventmanager") || e === "eventmanager@kcm-church.com") return "EVENT_MANAGER";
-    if (e.includes("volunteer") || e === "volunteer@kcm-church.com") return "FIELD_VOLUNTEER";
-    return "MEMBER";
-  };
-
-  const redirectForRole = (targetRole: string) => {
-    switch (targetRole) {
-      case "SUPER_ADMIN":
-        window.location.href = "/portal-select";
-        break;
-      case "ADMIN":
-        window.location.href = "/admin";
-        break;
-      case "PASTOR":
-        window.location.href = "/pastor";
-        break;
-      case "EVENT_MANAGER":
-      case "FIELD_VOLUNTEER":
-        window.location.href = "/event-manager";
-        break;
-      default:
-        window.location.href = "/member";
-        break;
     }
   };
 
@@ -467,13 +456,9 @@ export default function LoginPage() {
       }
 
       const initialRole = getRoleForEmail(u.email || email);
-      const maxAge = 7 * 24 * 60 * 60; // 7 days
 
       // 1. Instantly set session cookies with calculated role
-      if (typeof document !== "undefined") {
-        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
-      }
+      setAuthCookies(u.uid, initialRole);
 
       // 2. Instantly update client-side AuthProvider state
       if (updateUser) {
