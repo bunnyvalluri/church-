@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   ImageIcon,
   X,
@@ -141,14 +142,14 @@ const GalleryCard = React.memo(function GalleryCard({
   return (
     <div
       onClick={onClick}
-      className="relative group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-100 dark:bg-slate-900/90 cursor-pointer shadow-sm hover:border-purple-500/50 transition-all duration-300 hover:shadow-purple-500/15 hover:shadow-xl aspect-[3/2] w-full"
+      className="relative group rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-950 cursor-pointer shadow-sm hover:border-purple-500/50 transition-all duration-300 hover:shadow-purple-500/20 hover:shadow-xl aspect-[4/3] sm:aspect-[3/2] w-full"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
       aria-label={`Open ${item.title}`}
     >
       {/* Category badge */}
-      <div className={`absolute top-3 left-3 z-10 px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md transition-transform duration-300 group-hover:scale-105`}>
+      <div className={`absolute top-2 left-2 sm:top-3 sm:left-3 z-20 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md transition-transform duration-300 group-hover:scale-105 backdrop-blur-md`}>
         {item.category}
       </div>
 
@@ -159,61 +160,74 @@ const GalleryCard = React.memo(function GalleryCard({
             e.stopPropagation();
             onDelete(item);
           }}
-          className="absolute top-3 right-3 z-20 p-2 rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white transition-all duration-200 shadow-lg"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 z-30 p-1.5 sm:p-2 rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white transition-all duration-200 shadow-lg"
           title="Delete image"
           aria-label="Delete image"
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
         </button>
       )}
 
       {/* Image container */}
-      <div className="relative overflow-hidden w-full h-full bg-slate-200 dark:bg-slate-950 flex items-center justify-center">
+      <div className="relative overflow-hidden w-full h-full bg-slate-950 flex items-center justify-center">
         {!isLoaded && !hasError && (
-          <div className="absolute inset-0 bg-slate-300 dark:bg-slate-800/80 animate-pulse z-10 flex items-center justify-center">
-            <Loader2 className="w-6 h-6 text-purple-500/50 animate-spin" />
+          <div className="absolute inset-0 bg-slate-800/80 animate-pulse z-10 flex items-center justify-center">
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500/50 animate-spin" />
           </div>
         )}
 
         {hasError ? (
-          <div className="flex flex-col items-center justify-center text-center p-4 space-y-2 bg-gradient-to-br from-slate-900 to-purple-950 text-white w-full h-full">
-            <ImageIcon className="w-8 h-8 text-purple-400 opacity-60" />
-            <span className="text-[11px] font-medium text-slate-300 truncate max-w-[90%]">{item.title}</span>
-            <span className="text-[9px] uppercase tracking-widest text-purple-300/80 font-mono">Service Photo</span>
+          <div className="flex flex-col items-center justify-center text-center p-3 space-y-1.5 bg-gradient-to-br from-slate-900 to-purple-950 text-white w-full h-full">
+            <ImageIcon className="w-6 h-6 text-purple-400 opacity-60" />
+            <span className="text-[10px] sm:text-[11px] font-medium text-slate-300 truncate max-w-[90%]">{item.title}</span>
+            <span className="text-[8px] uppercase tracking-widest text-purple-300/80 font-mono">Service Photo</span>
           </div>
         ) : (
-          <Image
-            src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
-            alt={item.title || "Service photo"}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            priority={priority}
-            unoptimized
-            className={`object-cover transform group-hover:scale-105 transition-all duration-500 ease-out ${
-              isLoaded ? "opacity-100 scale-100" : "opacity-90 blur-sm"
-            }`}
-            onLoad={() => {
-              loadedImagesCache.add(item.thumbnailUrl);
-              loadedImagesCache.add(item.imageUrl);
-              setIsLoaded(true);
-            }}
-            onError={() => {
-              setHasError(true);
-              setIsLoaded(true);
-            }}
-          />
+          <>
+            {/* Ambient Blurred Layer for color-matched background */}
+            <Image
+              src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
+              alt=""
+              fill
+              unoptimized
+              aria-hidden="true"
+              className="object-cover blur-md opacity-35 scale-110 pointer-events-none select-none"
+            />
+
+            {/* Crisp Contained Foreground Image - Never crops Telugu text or newspaper press release headlines! */}
+            <Image
+              src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
+              alt={item.title || "Service photo"}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={priority}
+              unoptimized
+              className={`object-contain z-10 transform group-hover:scale-105 transition-all duration-500 ease-out ${
+                isLoaded ? "opacity-100 scale-100" : "opacity-90 blur-sm"
+              }`}
+              onLoad={() => {
+                loadedImagesCache.add(item.thumbnailUrl);
+                loadedImagesCache.add(item.imageUrl);
+                setIsLoaded(true);
+              }}
+              onError={() => {
+                setHasError(true);
+                setIsLoaded(true);
+              }}
+            />
+          </>
         )}
 
-        {/* Premium Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-between p-4 z-20">
+        {/* Premium Hover / Touch Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-between p-3 sm:p-4 z-20">
           <div className="flex justify-end">
-            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-300">
-              <Maximize2 className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-300">
+              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out space-y-1">
-            <p className="text-white text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">{item.category}</p>
-            <p className="text-white/90 text-xs font-medium drop-shadow-sm truncate">
+          <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out space-y-0.5">
+            <p className="text-white text-[10px] sm:text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">{item.category}</p>
+            <p className="text-white/90 text-[11px] sm:text-xs font-medium drop-shadow-sm truncate">
               {item.title}
             </p>
           </div>
@@ -689,8 +703,8 @@ export default function NgoGalleryPage() {
           </div>
         </div>
 
-        {/* Category Filter Chips with Vibrant Color Identities */}
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+        {/* Category Filter Chips with Sticky Scroll & Ambient Backdrop Blur */}
+        <div className="sticky top-[104px] sm:top-[120px] z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-xl py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center gap-2.5 overflow-x-auto scrollbar-none border-y border-slate-200/60 dark:border-white/10 shadow-sm transition-all">
           <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider flex-shrink-0">
             <Filter className="w-3.5 h-3.5" />
             <span>Filter</span>
@@ -722,9 +736,9 @@ export default function NgoGalleryPage() {
 
         {/* Gallery Grid */}
         {status === "pending" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="w-full aspect-[3/2] bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl border border-slate-200 dark:border-white/5" />
+              <div key={i} className="w-full aspect-[4/3] sm:aspect-[3/2] bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl sm:rounded-2xl border border-slate-200 dark:border-white/5" />
             ))}
           </div>
         ) : status === "error" ? (
@@ -767,7 +781,7 @@ export default function NgoGalleryPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5"
             >
               {displayedItems.map((item, index) => (
                 <GalleryCard
@@ -808,372 +822,374 @@ export default function NgoGalleryPage() {
         )}
 
         {/* Lightbox Overlay */}
-        <AnimatePresence>
-          {lightboxIndex !== null && filteredItems.length > 0 && (() => {
-            const currentItem = filteredItems[lightboxIndex];
-            const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
-            
-            const slideVariants = {
-              enter: (dir: number) => ({
-                x: dir > 0 ? "100vw" : dir < 0 ? "-100vw" : 0,
-                opacity: 0,
-                scale: 0.95,
-              }),
-              center: {
-                x: 0,
-                opacity: 1,
-                scale: 1,
-                zIndex: 10,
-              },
-              exit: (dir: number) => ({
-                x: dir < 0 ? "100vw" : dir > 0 ? "-100vw" : 0,
-                opacity: 0,
-                scale: 0.95,
-                zIndex: 0,
-              }),
-            };
+        {mounted && typeof document !== "undefined" && createPortal(
+          <AnimatePresence>
+            {lightboxIndex !== null && filteredItems.length > 0 && (() => {
+              const currentItem = filteredItems[lightboxIndex];
+              const gradient = CATEGORY_COLORS[currentItem?.category] ?? "from-slate-600 to-slate-500";
+              
+              const slideVariants = {
+                enter: (dir: number) => ({
+                  x: dir > 0 ? "100vw" : dir < 0 ? "-100vw" : 0,
+                  opacity: 0,
+                  scale: 0.95,
+                }),
+                center: {
+                  x: 0,
+                  opacity: 1,
+                  scale: 1,
+                  zIndex: 10,
+                },
+                exit: (dir: number) => ({
+                  x: dir < 0 ? "100vw" : dir > 0 ? "-100vw" : 0,
+                  opacity: 0,
+                  scale: 0.95,
+                  zIndex: 0,
+                }),
+              };
 
-            const handleImageTap = (e: React.MouseEvent | React.TouchEvent) => {
-              e.stopPropagation();
-              const now = Date.now();
-              if (now - lastTap < 300) {
-                setZoomScale((prev) => (prev > 1 ? 1 : 2.5));
-              } else {
-                setLastTap(now);
-              }
-            };
+              const handleImageTap = (e: React.MouseEvent | React.TouchEvent) => {
+                e.stopPropagation();
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                  setZoomScale((prev) => (prev > 1 ? 1 : 2.5));
+                } else {
+                  setLastTap(now);
+                }
+              };
 
-            return (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="fixed inset-0 w-screen h-screen z-[200] flex flex-col justify-between items-center bg-black/95 backdrop-blur-md overflow-hidden select-none"
-                onClick={closeLightbox}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Image lightbox"
-              >
-                {/* Prefetch adjacent images */}
-                {filteredItems[lightboxIndex + 1] && (
-                  <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
-                )}
-                {filteredItems[lightboxIndex - 1] && (
-                  <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
-                )}
-
-                {/* Top Toolbar */}
+              return (
                 <motion.div
-                  animate={{ y: showControls ? 0 : -80, opacity: showControls ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none"
-                  onClick={(e) => e.stopPropagation()}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="fixed inset-0 w-full h-[100dvh] z-[99999] flex flex-col justify-between items-center bg-black/95 backdrop-blur-md overflow-hidden select-none"
+                  onClick={closeLightbox}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Image lightbox"
                 >
-                  <div className="flex items-center gap-3 pointer-events-auto">
-                    <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md`}>
-                      {currentItem?.category}
-                    </span>
-                    <span className="text-white/80 text-xs font-mono font-bold">
-                      {lightboxIndex + 1} / {filteredItems.length}
-                    </span>
-                  </div>
+                  {/* Prefetch adjacent images */}
+                  {filteredItems[lightboxIndex + 1] && (
+                    <img src={encodeSrc(filteredItems[lightboxIndex + 1].imageUrl)} className="hidden" alt="" />
+                  )}
+                  {filteredItems[lightboxIndex - 1] && (
+                    <img src={encodeSrc(filteredItems[lightboxIndex - 1].imageUrl)} className="hidden" alt="" />
+                  )}
 
-                  <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-                    <button
-                      onClick={() => setZoomScale((prev) => (prev > 1 ? 1 : 2.5))}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
-                      title={zoomScale > 1 ? "Zoom Out" : "Zoom In"}
-                    >
-                      {zoomScale > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
-                    </button>
+                  {/* Top Toolbar */}
+                  <motion.div
+                    animate={{ y: showControls ? 0 : -80, opacity: showControls ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-3 sm:p-5 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-none gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto min-w-0">
+                      <span className={`px-2.5 py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md truncate max-w-[120px] sm:max-w-none`}>
+                        {currentItem?.category}
+                      </span>
+                      <span className="text-white/80 text-[11px] sm:text-xs font-mono font-bold whitespace-nowrap">
+                        {lightboxIndex + 1} / {filteredItems.length}
+                      </span>
+                    </div>
 
-                    <button
-                      onClick={toggleFullscreen}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
-                      title="Toggle Fullscreen"
-                    >
-                      {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const link = document.createElement("a");
-                        link.href = encodeSrc(currentItem.imageUrl);
-                        link.download = currentItem.imageUrl.substring(currentItem.imageUrl.lastIndexOf("/") + 1);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
-                      title="Download Photo"
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        if (!currentItem) return;
-                        const absoluteUrl = window.location.origin + currentItem.imageUrl;
-                        navigator.clipboard.writeText(absoluteUrl);
-                        setToastMessage("Image link copied to clipboard");
-                      }}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
-                      title="Share Link"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={() => setShowMobileInfo((prev) => !prev)}
-                      className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all backdrop-blur-md border ${
-                        showMobileInfo
-                          ? "bg-purple-600 border-purple-500 text-white"
-                          : "bg-white/10 hover:bg-white/20 border-white/10 text-white"
-                      }`}
-                      title="Toggle Information"
-                    >
-                      <Info className="w-4 h-4" />
-                    </button>
-
-                    {isAdminMode && currentItem && (
+                    <div className="flex items-center gap-1 sm:gap-2 pointer-events-auto flex-shrink-0">
                       <button
-                        onClick={() => setDeletingItem(currentItem)}
-                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200"
-                        title="Delete Image"
+                        onClick={() => setZoomScale((prev) => (prev > 1 ? 1 : 2.5))}
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        title={zoomScale > 1 ? "Zoom Out" : "Zoom In"}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {zoomScale > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
                       </button>
+
+                      <button
+                        onClick={toggleFullscreen}
+                        className="w-8 h-8 sm:w-9 sm:h-9 hidden sm:flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        title="Toggle Fullscreen"
+                      >
+                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (!currentItem) return;
+                          const link = document.createElement("a");
+                          link.href = encodeSrc(currentItem.imageUrl);
+                          link.download = currentItem.imageUrl.substring(currentItem.imageUrl.lastIndexOf("/") + 1);
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        title="Download Photo"
+                      >
+                        <Download className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (!currentItem) return;
+                          const absoluteUrl = window.location.origin + currentItem.imageUrl;
+                          navigator.clipboard.writeText(absoluteUrl);
+                          setToastMessage("Image link copied to clipboard");
+                        }}
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+                        title="Share Link"
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => setShowMobileInfo((prev) => !prev)}
+                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl transition-all backdrop-blur-md border ${
+                          showMobileInfo
+                            ? "bg-purple-600 border-purple-500 text-white"
+                            : "bg-white/10 hover:bg-white/20 border-white/10 text-white"
+                        }`}
+                        title="Toggle Information"
+                      >
+                        <Info className="w-4 h-4" />
+                      </button>
+
+                      {isAdminMode && currentItem && (
+                        <button
+                          onClick={() => setDeletingItem(currentItem)}
+                          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-200"
+                          title="Delete Image"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      <button
+                        onClick={closeLightbox}
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 ml-1"
+                        title="Close Lightbox"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  {/* Left/Right Navigation Buttons */}
+                  <AnimatePresence>
+                    {showControls && zoomScale === 1 && (
+                      <>
+                        <motion.button
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          onClick={prevImage}
+                          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95 shadow-lg"
+                          aria-label="Previous Image"
+                        >
+                          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </motion.button>
+
+                        <motion.button
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          onClick={nextImage}
+                          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-5 h-5 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95 shadow-lg"
+                          aria-label="Next Image"
+                        >
+                          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </motion.button>
+                      </>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Main Viewport */}
+                  <div
+                    className="relative flex-1 w-full h-[calc(100dvh-150px)] sm:h-[calc(100dvh-180px)] flex items-center justify-center overflow-hidden py-14 sm:py-16"
+                    onClick={closeLightbox}
+                  >
+                    {lbLoading && !lbError && (
+                      <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+                        <span className="text-white/80 text-xs font-mono">Loading Photo...</span>
+                      </div>
                     )}
 
-                    <button
-                      onClick={closeLightbox}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
-                      title="Close Lightbox"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.div>
+                    {lbError && (
+                      <div className="absolute z-30 flex flex-col items-center gap-4 text-center max-w-xs p-6 bg-slate-900/90 border border-white/10 rounded-2xl backdrop-blur-lg">
+                        <AlertCircle className="w-12 h-12 text-red-400" />
+                        <p className="text-white text-sm font-semibold">Failed to load photo</p>
+                        <button
+                          onClick={() => { setLbLoading(true); setLbError(false); }}
+                          className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    )}
 
-                {/* Left/Right Navigation Buttons */}
-                <AnimatePresence>
-                  {showControls && zoomScale === 1 && (
-                    <>
-                      <motion.button
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        onClick={prevImage}
-                        className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95"
-                        aria-label="Previous Image"
-                      >
-                        <ChevronLeft className="w-6 h-6" />
-                      </motion.button>
-
-                      <motion.button
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        onClick={nextImage}
-                        className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-transform active:scale-95"
-                        aria-label="Next Image"
-                      >
-                        <ChevronRight className="w-6 h-6" />
-                      </motion.button>
-                    </>
-                  )}
-                </AnimatePresence>
-
-                {/* Main Viewport */}
-                <div
-                  className="relative flex-1 w-full h-[calc(100vh-160px)] sm:h-[calc(100vh-200px)] flex items-center justify-center overflow-hidden"
-                  onClick={closeLightbox}
-                >
-                  {lbLoading && !lbError && (
-                    <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/40 p-6 rounded-2xl backdrop-blur-sm border border-white/10">
-                      <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
-                      <span className="text-white/80 text-xs font-mono">Loading Photo...</span>
-                    </div>
-                  )}
-
-                  {lbError && (
-                    <div className="absolute z-30 flex flex-col items-center gap-4 text-center max-w-xs p-6 bg-slate-900/90 border border-white/10 rounded-2xl backdrop-blur-lg">
-                      <AlertCircle className="w-12 h-12 text-red-400" />
-                      <p className="text-white text-sm font-semibold">Failed to load photo</p>
-                      <button
-                        onClick={() => { setLbLoading(true); setLbError(false); }}
-                        className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
-                      >
-                        Retry
-                      </button>
-                    </div>
-                  )}
-
-                  <AnimatePresence initial={false} custom={direction}>
-                    <motion.div
-                      key={lightboxIndex}
-                      custom={direction}
-                      variants={slideVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 },
-                        scale: { duration: 0.3 },
-                      }}
-                      drag={zoomScale === 1}
-                      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                      dragElastic={0.6}
-                      onDragEnd={(e, info) => {
-                        if (zoomScale === 1) {
-                          const swipeThresholdX = 100;
-                          const swipeThresholdY = 120;
-                          if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
-                            if (info.offset.x > swipeThresholdX) {
-                              prevImage();
-                            } else if (info.offset.x < -swipeThresholdX) {
-                              nextImage();
-                            }
-                          } else {
-                            if (info.offset.y > swipeThresholdY) {
-                              closeLightbox();
+                    <AnimatePresence initial={false} custom={direction}>
+                      <motion.div
+                        key={lightboxIndex}
+                        custom={direction}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                          x: { type: "spring", stiffness: 300, damping: 30 },
+                          opacity: { duration: 0.2 },
+                          scale: { duration: 0.3 },
+                        }}
+                        drag={zoomScale === 1}
+                        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                        dragElastic={0.6}
+                        onDragEnd={(e, info) => {
+                          if (zoomScale === 1) {
+                            const swipeThresholdX = 100;
+                            const swipeThresholdY = 120;
+                            if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+                              if (info.offset.x > swipeThresholdX) {
+                                prevImage();
+                              } else if (info.offset.x < -swipeThresholdX) {
+                                nextImage();
+                              }
+                            } else {
+                              if (info.offset.y > swipeThresholdY) {
+                                closeLightbox();
+                              }
                             }
                           }
-                        }
-                      }}
-                      className="absolute inset-0 flex items-center justify-center p-4 sm:p-8"
-                      onClick={closeLightbox}
-                    >
-                      <div
-                        className="relative max-w-full max-h-full flex items-center justify-center"
+                        }}
+                        className="absolute inset-0 flex items-center justify-center p-2 sm:p-6"
+                        onClick={closeLightbox}
+                      >
+                        <div
+                          className="relative max-w-full max-h-full flex items-center justify-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <motion.div
+                            animate={{ scale: zoomScale }}
+                            transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                            className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in bg-black/40 rounded-lg overflow-hidden"
+                            onClick={handleImageTap}
+                          >
+                            <Image
+                              src={encodeSrc(currentItem.imageUrl || currentItem.thumbnailUrl)}
+                              alt={currentItem.title || "Service Photo"}
+                              width={1620}
+                              height={1080}
+                              priority
+                              unoptimized
+                              className="max-w-[92vw] sm:max-w-[85vw] max-h-[62dvh] sm:max-h-[72dvh] md:max-h-[78dvh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300"
+                              onLoad={() => {
+                                loadedImagesCache.add(currentItem.imageUrl);
+                                setLbLoading(false);
+                                setLbLoaded(true);
+                              }}
+                              onError={() => { setLbLoading(false); setLbError(true); }}
+                            />
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Sidebar Info Panel */}
+                  <AnimatePresence>
+                    {showMobileInfo && currentItem && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 30 }}
+                        className="fixed inset-x-3 bottom-20 sm:bottom-24 sm:right-4 sm:left-auto sm:w-96 z-[60] p-5 sm:p-6 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl text-left text-white shadow-2xl flex flex-col justify-between max-h-[50vh] sm:max-h-[70vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <motion.div
-                          animate={{ scale: zoomScale }}
-                          transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                          className="relative max-w-full max-h-full flex items-center justify-center cursor-zoom-in bg-black/40 rounded-lg overflow-hidden"
-                          onClick={handleImageTap}
-                        >
-                          <Image
-                            src={encodeSrc(currentItem.imageUrl || currentItem.thumbnailUrl)}
-                            alt={currentItem.title || "Service Photo"}
-                            width={1620}
-                            height={1080}
-                            priority
-                            unoptimized
-                            className="max-w-[95vw] max-h-[70vh] sm:max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl transition-opacity duration-300"
-                            onLoad={() => {
-                              loadedImagesCache.add(currentItem.imageUrl);
-                              setLbLoading(false);
-                              setLbLoaded(true);
-                            }}
-                            onError={() => { setLbLoading(false); setLbError(true); }}
-                          />
-                        </motion.div>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-
-                {/* Sidebar Info Panel */}
-                <AnimatePresence>
-                  {showMobileInfo && currentItem && (
-                    <motion.div
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 50 }}
-                      className="absolute top-20 right-4 bottom-24 w-80 sm:w-96 z-[60] p-6 bg-slate-900/90 backdrop-blur-lg border border-white/10 rounded-2xl text-left text-white shadow-2xl flex flex-col justify-between overflow-y-auto"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                          <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-sm`}>
-                            {currentItem.category}
-                          </span>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
+                            <span className={`px-2.5 py-0.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-sm`}>
+                              {currentItem.category}
+                            </span>
+                            <button
+                              onClick={() => setShowMobileInfo(false)}
+                              className="text-slate-400 hover:text-white transition-colors text-xs font-bold"
+                            >
+                              Hide details
+                            </button>
+                          </div>
+                          <h2 className="text-sm sm:text-base font-black text-white tracking-tight leading-snug">
+                            {currentItem.title}
+                          </h2>
+                          {currentItem.createdAt && (
+                            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                              <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                              <span>{new Date(currentItem.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="pt-3 border-t border-white/10 space-y-2 mt-4">
                           <button
-                            onClick={() => setShowMobileInfo(false)}
-                            className="text-slate-400 hover:text-white transition-colors text-xs font-bold"
+                            onClick={() => {
+                              const link = document.createElement("a");
+                              link.href = encodeSrc(currentItem.imageUrl);
+                              link.download = currentItem.imageUrl.substring(currentItem.imageUrl.lastIndexOf("/") + 1);
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
+                            className="w-full py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
                           >
-                            Hide details
+                            <Download className="w-3.5 h-3.5" /> Download Photo
+                          </button>
+                          <button
+                            onClick={() => {
+                              const absoluteUrl = window.location.origin + currentItem.imageUrl;
+                              navigator.clipboard.writeText(absoluteUrl);
+                              setToastMessage("Image link copied to clipboard");
+                            }}
+                            className="w-full py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                          >
+                            <Share2 className="w-3.5 h-3.5" /> Copy Image URL
                           </button>
                         </div>
-                        <h2 className="text-base font-black text-white tracking-tight leading-snug">
-                          {currentItem.title}
-                        </h2>
-                        {currentItem.createdAt && (
-                          <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
-                            <Calendar className="w-3.5 h-3.5 text-purple-400" />
-                            <span>{new Date(currentItem.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="pt-4 border-t border-white/5 space-y-2 mt-6">
-                        <button
-                          onClick={() => {
-                            const link = document.createElement("a");
-                            link.href = encodeSrc(currentItem.imageUrl);
-                            link.download = currentItem.imageUrl.substring(currentItem.imageUrl.lastIndexOf("/") + 1);
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }}
-                          className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
-                        >
-                          <Download className="w-3.5 h-3.5" /> Download Photo
-                        </button>
-                        <button
-                          onClick={() => {
-                            const absoluteUrl = window.location.origin + currentItem.imageUrl;
-                            navigator.clipboard.writeText(absoluteUrl);
-                            setToastMessage("Image link copied to clipboard");
-                          }}
-                          className="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
-                        >
-                          <Share2 className="w-3.5 h-3.5" /> Copy Image URL
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                {/* Bottom Thumbnail Strip */}
-                <motion.div
-                  animate={{ y: showControls ? 0 : 100, opacity: showControls ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute bottom-4 inset-x-0 z-50 flex flex-col items-center gap-3 w-full"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="w-full max-w-4xl px-4 flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-2 scrollbar-none select-none">
-                    {filteredItems.map((item, idx) => (
-                      <button
-                        key={item.id}
-                        ref={(el) => { thumbnailRefs.current[idx] = el; }}
-                        onClick={() => goTo(idx, idx > lightboxIndex ? 1 : -1)}
-                        className={`relative flex-shrink-0 w-11 h-11 rounded-lg overflow-hidden border-2 transition-all ${
-                          idx === lightboxIndex
-                            ? "border-purple-500 scale-110 opacity-100 shadow-lg shadow-purple-500/40"
-                            : "border-transparent opacity-40 hover:opacity-80"
-                        }`}
-                      >
-                        <img
-                          src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
-                          alt=""
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
+                  {/* Bottom Thumbnail Strip */}
+                  <motion.div
+                    animate={{ y: showControls ? 0 : 100, opacity: showControls ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="absolute bottom-3 inset-x-0 z-50 flex flex-col items-center gap-2 w-full pb-[env(safe-area-inset-bottom)]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="w-full max-w-4xl px-3 flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto py-1.5 no-scrollbar select-none">
+                      {filteredItems.map((item, idx) => (
+                        <button
+                          key={item.id}
+                          ref={(el) => { thumbnailRefs.current[idx] = el; }}
+                          onClick={() => goTo(idx, idx > lightboxIndex ? 1 : -1)}
+                          className={`relative flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden border-2 transition-all ${
+                            idx === lightboxIndex
+                              ? "border-purple-500 scale-110 opacity-100 shadow-lg shadow-purple-500/40"
+                              : "border-transparent opacity-40 hover:opacity-80"
+                          }`}
+                        >
+                          <img
+                            src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
+                            alt=""
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
-
+              );
+            })()}
+          </AnimatePresence>,
+          document.body
+        )}
       </div>
     </div>
   );
