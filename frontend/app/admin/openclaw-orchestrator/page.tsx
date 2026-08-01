@@ -280,23 +280,23 @@ export default function OpenClawOrchestratorAdminPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 md:p-8 font-sans transition-colors duration-200">
       
       {/* Top Header Banner */}
-      <div className="max-w-7xl mx-auto mb-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-950 border border-indigo-500/30 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden text-white">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="max-w-7xl mx-auto mb-8 bg-slate-900 border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl relative text-white">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-3 py-1 bg-indigo-500/30 text-indigo-200 border border-indigo-400/40 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2.5 mb-3">
+              <span className="px-3 py-1 bg-indigo-600/40 text-indigo-100 border border-indigo-400/60 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
                 <Cpu className="w-3.5 h-3.5 text-indigo-300" />
                 OpenClaw Skill Architecture
               </span>
-              <span className="px-3 py-1 bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 rounded-full text-xs font-semibold shadow-sm">
+              <span className="px-3 py-1 bg-emerald-600/40 text-emerald-100 border border-emerald-400/60 rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
                 Production-Grade Engine
               </span>
             </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-sm">
+            <h1 className="text-2xl md:text-4xl font-black tracking-tight text-white drop-shadow-md">
               OpenClaw AI Skill Orchestrator
             </h1>
-            <p className="text-indigo-100/80 text-xs md:text-sm mt-2 max-w-3xl leading-relaxed">
+            <p className="text-slate-200 font-medium text-xs md:text-sm mt-2 max-w-3xl leading-relaxed">
               Specialized AI workflow automation for KCM Ministries across Security, Event, Sermon, Notification, Prayer, and Deployment domains.
             </p>
           </div>
@@ -305,9 +305,9 @@ export default function OpenClawOrchestratorAdminPage() {
             <button
               onClick={runFullDomainPipeline}
               disabled={pipelineRunning}
-              className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 border border-indigo-400/30 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-sm whitespace-nowrap"
+              className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-xl shadow-indigo-600/40 border border-indigo-400/50 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-sm whitespace-nowrap"
             >
-              <Play className={`w-4 h-4 ${pipelineRunning ? 'animate-spin' : ''}`} />
+              <Play className={`w-4.5 h-4.5 ${pipelineRunning ? 'animate-spin' : ''}`} />
               {pipelineRunning ? 'Running Pipeline...' : 'Run Full Multi-Domain Pipeline'}
             </button>
           </div>
