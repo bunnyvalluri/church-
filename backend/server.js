@@ -448,6 +448,21 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
       }
     });
 
+    // 8. OpenClaw Specialized AI Skill Execution Endpoint
+    app.post('/api/openclaw/execute', async (req, res) => {
+      try {
+        const { skillId, input, userContext } = req.body;
+        if (!skillId) return res.status(400).json({ success: false, error: 'skillId is required' });
+
+        const { handleBackendOpenClawSkillExecution } = require('./src/skills/openclawBackendSkills');
+        const result = await handleBackendOpenClawSkillExecution(skillId, input || {}, userContext || {}, io);
+        return res.json(result);
+      } catch (err) {
+        console.error('[OPENCLAW_API] Execution error:', err.message);
+        return res.status(500).json({ success: false, error: err.message });
+      }
+    });
+
     // Mount Centralized Error Handler
     const errorHandler = require('./src/middleware/errorHandler');
     app.use(errorHandler);
