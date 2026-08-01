@@ -41,11 +41,12 @@ export async function POST(req: Request) {
     const sanitizedPhoneNumber = phoneNumber ? sanitize(phoneNumber) : null;
 
 function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' {
+  if (!email) return 'MEMBER';
   const e = email.toLowerCase().trim();
-  if (e.includes('superadmin')) return 'SUPER_ADMIN';
+  if (e.includes('superadmin') || e.includes('super_admin')) return 'SUPER_ADMIN';
   if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
   if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
-  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
+  if (e.includes('event') || e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
   if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
   return 'MEMBER';
 }
@@ -64,9 +65,10 @@ function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_
     if (userByUid) {
       // User already exists with this Firebase UID.
       // If email has changed or role needs upgrading, update it.
-      const shouldUpgradeRole = userByUid.role === 'MEMBER' && computedRole !== 'MEMBER';
+      const shouldUpgradeRole = computedRole !== 'MEMBER' && userByUid.role !== computedRole;
       if (userByUid.email !== sanitizedEmail || shouldUpgradeRole) {
-        console.info(`[AUTH/SYNC] Updating user ${sanitizedUid} (Email: ${sanitizedEmail}, Role: ${shouldUpgradeRole ? computedRole : userByUid.role})`);
+        const finalRole = shouldUpgradeRole ? computedRole : userByUid.role;
+        console.info(`[AUTH/SYNC] Updating user ${sanitizedUid} (Email: ${sanitizedEmail}, Role: ${finalRole})`);
         user = await prisma.user.update({
           where: { id: sanitizedUid },
           data: {
@@ -74,7 +76,7 @@ function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_
             name: sanitizedName || userByUid.name,
             image: sanitizedPhotoURL || userByUid.image,
             phone: sanitizedPhoneNumber || userByUid.phone,
-            ...(shouldUpgradeRole ? { role: computedRole } : {}),
+            role: finalRole,
           },
         });
       } else {
