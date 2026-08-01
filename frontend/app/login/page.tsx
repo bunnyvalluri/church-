@@ -328,19 +328,28 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     try {
       let u: any = null;
+      const isMobile = typeof window !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
       try {
-        const result = await signInWithPopup(auth, provider);
-        u = result?.user;
+        if (isMobile) {
+          try {
+            const result = await signInWithPopup(auth, provider);
+            u = result?.user;
+          } catch (popupErr: any) {
+            console.warn(`[AUTH] Mobile popup note, attempting mobile redirect:`, popupErr?.code || popupErr);
+            try {
+              await signInWithRedirect(auth, provider);
+              return;
+            } catch (redirectErr) {
+              console.warn(`[AUTH] Mobile redirect note:`, redirectErr);
+            }
+          }
+        } else {
+          const result = await signInWithPopup(auth, provider);
+          u = result?.user;
+        }
       } catch (popupErr: any) {
         console.warn(`[AUTH] ${name} Popup login note:`, popupErr?.code || popupErr);
-        if (popupErr?.code === "auth/popup-blocked") {
-          try {
-            await signInWithRedirect(auth, provider);
-            return;
-          } catch (redirectErr) {
-            console.warn(`[AUTH] Redirect fallback note:`, redirectErr);
-          }
-        }
       }
 
       // If popup/redirect did not return a user (e.g. Mobile browser popup block or domain limits),
