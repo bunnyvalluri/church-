@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * frontend/app/admin/openclaw-orchestrator/page.tsx
+ * frontend/app/pastor/openclaw-orchestrator/page.tsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Admin Portal - OpenClaw Specialized AI Skill Orchestrator
+ * Pastor Portal - OpenClaw Specialized AI Skill Orchestrator
  * Supports complete multi-language switching (English, Telugu, Hindi)
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -11,6 +11,6 @@
 import React from 'react';
 import OpenClawOrchestratorView from '@/components/openclaw/OpenClawOrchestratorView';
 
-export default function AdminOpenClawOrchestratorPage() {
+export default function PastorOpenClawOrchestratorPage() {
   return <OpenClawOrchestratorView />;
 }
