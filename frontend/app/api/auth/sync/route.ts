@@ -180,7 +180,21 @@ function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_
       }
     }
 
-    return NextResponse.json({ success: true, user });
+    const res = NextResponse.json({ success: true, user });
+    const maxAge = 7 * 24 * 60 * 60; // 7 days
+    res.cookies.set('__kcm_session_uid', sanitizedUid, {
+      path: '/',
+      maxAge,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    res.cookies.set('__kcm_session_role', user.role, {
+      path: '/',
+      maxAge,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    return res;
   } catch (err: any) {
     console.error('[AUTH/SYNC] Error:', err);
     return NextResponse.json(

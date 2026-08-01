@@ -294,23 +294,31 @@ export default function LoginPage() {
 
   const redirectForRole = (targetRole: string) => {
     let targetPath = "/member";
-    switch (targetRole) {
-      case "SUPER_ADMIN":
-        targetPath = "/portal-select";
-        break;
-      case "ADMIN":
-        targetPath = "/admin";
-        break;
-      case "PASTOR":
-        targetPath = "/pastor";
-        break;
-      case "EVENT_MANAGER":
-      case "FIELD_VOLUNTEER":
-        targetPath = "/event-manager";
-        break;
-      default:
-        targetPath = "/member";
-        break;
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const nextParam = params.get("next");
+      if (nextParam && nextParam.startsWith("/")) {
+        targetPath = nextParam;
+      } else {
+        switch (targetRole) {
+          case "SUPER_ADMIN":
+            targetPath = "/portal-select";
+            break;
+          case "ADMIN":
+            targetPath = "/admin";
+            break;
+          case "PASTOR":
+            targetPath = "/pastor";
+            break;
+          case "EVENT_MANAGER":
+          case "FIELD_VOLUNTEER":
+            targetPath = "/event-manager";
+            break;
+          default:
+            targetPath = "/member";
+            break;
+        }
+      }
     }
 
     try {
