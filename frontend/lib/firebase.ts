@@ -30,6 +30,8 @@ try {
   db = getFirestore(app);
   googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: "select_account" });
+  googleProvider.addScope("email");
+  googleProvider.addScope("profile");
   facebookProvider = new FacebookAuthProvider();
   twitterProvider = new TwitterAuthProvider();
 } catch (e) {
@@ -37,9 +39,9 @@ try {
   // Mock auth and db to prevent crash
   auth = { currentUser: null };
   db = null;
-  googleProvider = {};
-  facebookProvider = {};
-  twitterProvider = {};
+  googleProvider = new GoogleAuthProvider();
+  facebookProvider = new FacebookAuthProvider();
+  twitterProvider = new TwitterAuthProvider();
 }
 
 export { auth, db, googleProvider, facebookProvider, twitterProvider };
