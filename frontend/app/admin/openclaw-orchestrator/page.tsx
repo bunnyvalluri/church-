@@ -4,6 +4,7 @@
  * frontend/app/admin/openclaw-orchestrator/page.tsx
  * ─────────────────────────────────────────────────────────────────────────────
  * OpenClaw Specialized AI Skill Orchestrator Control Center
+ * Universal Light & Dark Mode Dual-Theme with High Contrast Aesthetics
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -24,7 +25,8 @@ import {
   Cpu, 
   Layers,
   Terminal,
-  Server
+  Server,
+  Search
 } from 'lucide-react';
 
 interface SkillMeta {
@@ -44,13 +46,13 @@ interface SkillMeta {
 }
 
 const DOMAINS = [
-  { id: 'ALL', label: 'All Skill Domains', icon: Layers, color: 'text-indigo-400 border-indigo-500' },
-  { id: 'SECURITY', label: '1. Security Skills', icon: ShieldCheck, color: 'text-emerald-400 border-emerald-500' },
-  { id: 'EVENT', label: '2. Event Skills', icon: Zap, color: 'text-amber-400 border-amber-500' },
-  { id: 'SERMON', label: '3. Sermon Skills', icon: BookOpen, color: 'text-purple-400 border-purple-500' },
-  { id: 'NOTIFICATION', label: '4. Notification Skills', icon: Bell, color: 'text-blue-400 border-blue-500' },
-  { id: 'PRAYER', label: '5. Prayer Skills', icon: Heart, color: 'text-rose-400 border-rose-500' },
-  { id: 'DEPLOYMENT', label: '6. Deployment Skills', icon: Activity, color: 'text-cyan-400 border-cyan-500' },
+  { id: 'ALL', label: 'All Skill Domains', icon: Layers, activeColor: 'bg-indigo-600 text-white border-indigo-600' },
+  { id: 'SECURITY', label: '1. Security Skills', icon: ShieldCheck, activeColor: 'bg-emerald-600 text-white border-emerald-600' },
+  { id: 'EVENT', label: '2. Event Skills', icon: Zap, activeColor: 'bg-amber-600 text-white border-amber-600' },
+  { id: 'SERMON', label: '3. Sermon Skills', icon: BookOpen, activeColor: 'bg-purple-600 text-white border-purple-600' },
+  { id: 'NOTIFICATION', label: '4. Notification Skills', icon: Bell, activeColor: 'bg-blue-600 text-white border-blue-600' },
+  { id: 'PRAYER', label: '5. Prayer Skills', icon: Heart, activeColor: 'bg-rose-600 text-white border-rose-600' },
+  { id: 'DEPLOYMENT', label: '6. Deployment Skills', icon: Activity, activeColor: 'bg-cyan-600 text-white border-cyan-600' },
 ];
 
 const DEFAULT_SAMPLE_INPUTS: Record<string, any> = {
@@ -275,25 +277,26 @@ export default function OpenClawOrchestratorAdminPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10 font-sans">
-      {/* Header Banner */}
-      <div className="max-w-7xl mx-mx-auto mb-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 md:p-8 font-sans transition-colors duration-200">
+      
+      {/* Top Header Banner */}
+      <div className="max-w-7xl mx-auto mb-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-950 border border-indigo-500/30 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden text-white">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="px-3 py-1 bg-indigo-500/30 text-indigo-200 border border-indigo-400/40 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                <Cpu className="w-3.5 h-3.5 text-indigo-300" />
                 OpenClaw Skill Architecture
               </span>
-              <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-medium">
+              <span className="px-3 py-1 bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 rounded-full text-xs font-semibold shadow-sm">
                 Production-Grade Engine
               </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-300">
+            <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-sm">
               OpenClaw AI Skill Orchestrator
             </h1>
-            <p className="text-slate-400 text-sm md:text-base mt-2 max-w-3xl">
+            <p className="text-indigo-100/80 text-xs md:text-sm mt-2 max-w-3xl leading-relaxed">
               Specialized AI workflow automation for KCM Ministries across Security, Event, Sermon, Notification, Prayer, and Deployment domains.
             </p>
           </div>
@@ -302,18 +305,18 @@ export default function OpenClawOrchestratorAdminPage() {
             <button
               onClick={runFullDomainPipeline}
               disabled={pipelineRunning}
-              className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 border border-indigo-400/30 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+              className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 border border-indigo-400/30 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-sm whitespace-nowrap"
             >
               <Play className={`w-4 h-4 ${pipelineRunning ? 'animate-spin' : ''}`} />
-              {pipelineRunning ? 'Running Composite Pipeline...' : 'Run Full Multi-Domain Pipeline'}
+              {pipelineRunning ? 'Running Pipeline...' : 'Run Full Multi-Domain Pipeline'}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Domain Navigation Tabs */}
+      {/* Domain Selection Tabs */}
       <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
           {DOMAINS.map(d => {
             const Icon = d.icon;
             const isSelected = selectedDomain === d.id;
@@ -321,10 +324,10 @@ export default function OpenClawOrchestratorAdminPage() {
               <button
                 key={d.id}
                 onClick={() => setSelectedDomain(d.id)}
-                className={`px-4 py-2.5 rounded-xl border font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap ${
+                className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap shadow-sm ${
                   isSelected
-                    ? `bg-slate-900 ${d.color} shadow-lg shadow-slate-950/50`
-                    : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                    ? `${d.activeColor} shadow-md scale-105`
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -335,35 +338,38 @@ export default function OpenClawOrchestratorAdminPage() {
         </div>
       </div>
 
-      {/* Main Grid: Skills Explorer & Test Panel */}
+      {/* Main Grid Workspace */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column: Skill List (5 cols) */}
+        {/* Left Column: Registered Skill Explorer (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold text-slate-200 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-indigo-400" />
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               Registered Skills ({filteredSkills.length})
             </h2>
-            <div className="relative w-48">
+
+            <div className="relative w-44 md:w-52">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search skills..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-[720px] overflow-y-auto pr-1">
             {filteredSkills.map(skill => {
               const isSelected = activeSkill?.id === skill.id;
+              
               const securityColor = 
-                skill.securityLevel === 'CRITICAL' ? 'bg-red-500/20 text-red-300 border-red-500/40' :
-                skill.securityLevel === 'HIGH' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
-                skill.securityLevel === 'MEDIUM' ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
-                'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+                skill.securityLevel === 'CRITICAL' ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300 border-red-300 dark:border-red-800' :
+                skill.securityLevel === 'HIGH' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800' :
+                skill.securityLevel === 'MEDIUM' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 dark:border-blue-800' :
+                'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
 
               return (
                 <div
@@ -371,29 +377,29 @@ export default function OpenClawOrchestratorAdminPage() {
                   onClick={() => selectSkill(skill)}
                   className={`p-4 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-slate-900 border-indigo-500/80 shadow-md shadow-indigo-500/10 ring-1 ring-indigo-500/30'
-                      : 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700'
+                      ? 'bg-indigo-50/90 dark:bg-slate-900 border-indigo-600 dark:border-indigo-500 shadow-md ring-2 ring-indigo-500/20'
+                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-mono font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-mono font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-500/30">
                       {skill.id}
                     </span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${securityColor}`}>
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border ${securityColor}`}>
                       {skill.securityLevel}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-sm text-slate-100 mb-1">{skill.name}</h3>
-                  <p className="text-xs text-slate-400 line-clamp-2 mb-3">{skill.description}</p>
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">{skill.name}</h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">{skill.description}</p>
 
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     {skill.tags.map(t => (
-                      <span key={t} className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                      <span key={t} className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium px-2 py-0.5 rounded">
                         #{t}
                       </span>
                     ))}
-                    <span className="text-[10px] bg-slate-800/60 text-slate-500 px-2 py-0.5 rounded ml-auto">
+                    <span className="text-[10px] bg-slate-200/60 dark:bg-slate-800/80 text-slate-700 dark:text-slate-400 font-semibold px-2 py-0.5 rounded ml-auto">
                       Role: {skill.policy.requiredRole}
                     </span>
                   </div>
@@ -403,26 +409,26 @@ export default function OpenClawOrchestratorAdminPage() {
           </div>
         </div>
 
-        {/* Right Column: Execution Workspace & Console (7 cols) */}
+        {/* Right Column: Execution Workspace (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {activeSkill ? (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
               
               {/* Skill Info Header */}
-              <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-mono font-bold text-indigo-400">{activeSkill.id}</span>
+                    <span className="text-xs font-mono font-bold text-indigo-700 dark:text-indigo-400">{activeSkill.id}</span>
                     <span className="text-xs text-slate-500">• v{activeSkill.version}</span>
                   </div>
-                  <h2 className="text-xl font-bold text-white">{activeSkill.name}</h2>
-                  <p className="text-xs text-slate-400 mt-1">{activeSkill.description}</p>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{activeSkill.name}</h2>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{activeSkill.description}</p>
                 </div>
 
                 <button
                   onClick={runSkillExecution}
                   disabled={executing}
-                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 border border-emerald-400/30 flex items-center gap-2 text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl shadow-md shadow-emerald-600/20 border border-emerald-500/30 flex items-center justify-center gap-2 text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-50 whitespace-nowrap self-start sm:self-center"
                 >
                   <Play className={`w-4 h-4 ${executing ? 'animate-spin' : ''}`} />
                   {executing ? 'Executing...' : 'Execute Skill'}
@@ -432,13 +438,13 @@ export default function OpenClawOrchestratorAdminPage() {
               {/* Input Schema Parameters Editor */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <Code className="w-4 h-4 text-indigo-400" />
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <Code className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     Input Parameters (Zod Schema JSON)
                   </label>
                   <button
                     onClick={() => setInputJson(JSON.stringify(DEFAULT_SAMPLE_INPUTS[activeSkill.id] || {}, null, 2))}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                    className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
                   >
                     <RefreshCw className="w-3 h-3" /> Reset Sample
                   </button>
@@ -448,36 +454,36 @@ export default function OpenClawOrchestratorAdminPage() {
                   value={inputJson}
                   onChange={e => setInputJson(e.target.value)}
                   rows={8}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-slate-200 focus:outline-none focus:border-indigo-500/80 shadow-inner scrollbar-thin"
+                  className="w-full bg-slate-900 text-emerald-400 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner scrollbar-thin"
                 />
               </div>
 
               {/* Execution Telemetry & Result Terminal */}
               <div>
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                  <Terminal className="w-4 h-4 text-emerald-400" />
+                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                  <Terminal className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   Execution Telemetry & Output
                 </label>
 
                 {executionResult ? (
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-4">
-                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-4 shadow-inner">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
                       <div className="flex items-center gap-2">
                         {executionResult.success ? (
-                          <span className="flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                          <span className="flex items-center gap-1 text-emerald-400 font-extrabold bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-500/30">
                             <CheckCircle2 className="w-3.5 h-3.5" /> SUCCESS
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-red-400 font-bold bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                          <span className="flex items-center gap-1 text-red-400 font-extrabold bg-red-950/80 px-2.5 py-1 rounded border border-red-500/30">
                             <AlertTriangle className="w-3.5 h-3.5" /> FAILED
                           </span>
                         )}
-                        <span className="text-slate-400">Domain: {executionResult.domain}</span>
+                        <span className="text-slate-300 font-semibold">Domain: {executionResult.domain}</span>
                       </div>
 
                       {executionResult.telemetry && (
                         <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 font-semibold text-indigo-300">
                             <Clock className="w-3 h-3 text-indigo-400" />
                             {executionResult.telemetry.durationMs} ms
                           </span>
@@ -487,34 +493,34 @@ export default function OpenClawOrchestratorAdminPage() {
                       )}
                     </div>
 
-                    <pre className="text-slate-300 overflow-x-auto max-h-72 scrollbar-thin">
+                    <pre className="text-emerald-300 overflow-x-auto max-h-72 scrollbar-thin leading-relaxed">
                       {JSON.stringify(executionResult, null, 2)}
                     </pre>
                   </div>
                 ) : (
-                  <div className="bg-slate-950/60 border border-dashed border-slate-800 rounded-xl p-8 text-center text-slate-500 text-xs">
-                    Click <span className="text-slate-300 font-semibold">"Execute Skill"</span> to trigger OpenClaw policy validation & execution telemetry.
+                  <div className="bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl p-8 text-center text-slate-500 text-xs">
+                    Click <span className="text-slate-900 dark:text-slate-200 font-semibold">"Execute Skill"</span> to trigger OpenClaw policy validation & telemetry metrics.
                   </div>
                 )}
               </div>
 
             </div>
           ) : (
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-12 text-center text-slate-400">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center text-slate-500">
               Select a skill from the left list to open the execution panel.
             </div>
           )}
 
           {/* Composite Pipeline Live Log Console */}
           {pipelineLogs.length > 0 && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3 text-slate-100">
+              <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
                 <Server className="w-4 h-4 text-purple-400" />
-                Composite Workflow Pipeline Logs
+                Composite Workflow Pipeline Execution Logs
               </h3>
               <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-1.5 max-h-48 overflow-y-auto">
                 {pipelineLogs.map((log, idx) => (
-                  <div key={idx} className="text-slate-300">
+                  <div key={idx} className="text-slate-200">
                     {log}
                   </div>
                 ))}
