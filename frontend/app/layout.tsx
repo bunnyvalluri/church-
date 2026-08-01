@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "@/app/globals.css";
 import { Providers } from "@/components/providers/index";
@@ -6,6 +6,9 @@ import dynamic from "next/dynamic";
 const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
+import SkipToContent from "@/components/ui/SkipToContent";
+import OfflineBanner from "@/components/ui/OfflineBanner";
+import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 
 const inter  = Inter({
   subsets: ["latin"],
@@ -21,11 +24,23 @@ const outfit = Outfit({
   weight: ["400", "600", "700", "800", "900"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#05050A" },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "Kingdom of Christ Ministries | Hyderabad",
   description: "Welcome to Kingdom of Christ Ministries - A place of worship, prayer, and community in Jeedimetla, Hyderabad. Join us for services, events, and spiritual growth.",
   keywords: ["church", "ministry", "worship", "prayer", "Hyderabad", "Jeedimetla", "Kingdom of Christ"],
   authors: [{ name: "Kingdom of Christ Ministries" }],
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/logo.png", type: "image/png" },
@@ -61,14 +76,21 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://apis.google.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
+        {/* WCAG 2.2 AA Skip Navigation Link */}
+        <SkipToContent />
+        <ServiceWorkerProvider />
+        <OfflineBanner />
+
         {/* Dynamic Premium Ambient Mesh Background (GPU hardware-accelerated, zero scrolling paint overhead) */}
         <div className="premium-glow-bg" />
         <div className="fixed inset-0 z-[-2] bg-white/70 dark:bg-[#05050A]/85 pointer-events-none" />
 
         <Providers>
           <SmoothScroll />
-          {children}
+          <div id="main-content" tabIndex={-1} className="outline-none">
+            {children}
+          </div>
           <BackToTop />
           <AIChat />
         </Providers>
@@ -76,3 +98,4 @@ export default function RootLayout({
     </html>
   );
 }
+

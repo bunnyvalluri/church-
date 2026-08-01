@@ -1,0 +1,25 @@
+{
+  "name": "Kingdom of Christ Ministries",
+  "short_name": "KCM Ministries",
+  "description": "Kingdom of Christ Ministries Church Portal - Worship, Sermons, Events, NGO & Community Services",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05050A",
+  "theme_color": "#8b5cf6",
+  "orientation": "any",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

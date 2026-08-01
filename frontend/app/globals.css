@@ -125,6 +125,43 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--primary-gradient-start)), hsl(var(--primary-gradient-end)));
   }
+
+  /* ── Safe Area Insets (iOS Dynamic Island & Android Notch Support) ── */
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+  .pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+  .p-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* ── Modern Dynamic Viewport Heights (Fixes mobile address bar collapse layout shifts) ── */
+  .min-h-dvh {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .h-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* ── WCAG 2.2 AA Minimum Touch Target (44x44px minimum interactive area) ── */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Cross-browser flexbox child overflow calculation fix ── */
+  .flex-item-fix {
+    min-width: 0;
+    min-height: 0;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
