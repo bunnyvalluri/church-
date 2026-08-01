@@ -42,7 +42,8 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeft,
-  X
+  X,
+  Cpu
 } from "lucide-react";
 
 interface MenuItem {
@@ -72,6 +73,15 @@ const menuGroups: MenuGroup[] = [
         color: "text-indigo-500 dark:text-indigo-400",
         activeGradient: "from-indigo-600 via-indigo-700 to-purple-700",
         iconBg: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+      },
+      {
+        name: "OpenClaw AI Orchestrator",
+        href: "/admin/openclaw-orchestrator",
+        icon: Cpu,
+        badge: "AI 2.0",
+        color: "text-purple-500 dark:text-purple-400",
+        activeGradient: "from-purple-600 via-indigo-600 to-pink-600",
+        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
       },
     ],
   },
@@ -289,6 +299,20 @@ const menuGroups: MenuGroup[] = [
         color: "text-blue-500 dark:text-blue-400",
         activeGradient: "from-blue-600 to-indigo-600",
         iconBg: "bg-blue-500/10 text-blue-500 dark:text-blue-400",
+      },
+    ],
+  },
+  {
+    title: "AI & Skill Orchestration",
+    items: [
+      {
+        name: "OpenClaw Orchestrator",
+        href: "/admin/openclaw-orchestrator",
+        icon: Cpu,
+        badge: "PROD",
+        color: "text-purple-500 dark:text-purple-400",
+        activeGradient: "from-indigo-600 via-purple-600 to-pink-600",
+        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
       },
     ],
   },

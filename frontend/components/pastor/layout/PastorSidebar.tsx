@@ -31,7 +31,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   Sparkles,
-  X
+  X,
+  Cpu
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -72,6 +73,7 @@ export default function PastorSidebar({
       group: t.groupMain,
       items: [
         { name: t.navDashboard, href: "/pastor/dashboard", icon: Layers, iconColor: "text-indigo-500", activeBg: "bg-indigo-500/10 dark:bg-indigo-500/20", activeText: "text-indigo-600 dark:text-indigo-400", activeBar: "bg-indigo-500" },
+        { name: "OpenClaw AI Skills", href: "/admin/openclaw-orchestrator", icon: Cpu, iconColor: "text-purple-500", activeBg: "bg-purple-500/10 dark:bg-purple-500/20", activeText: "text-purple-600 dark:text-purple-400", activeBar: "bg-purple-500" },
         { name: t.navSermons, href: "/pastor/main/sermons", icon: Play, iconColor: "text-violet-500", activeBg: "bg-violet-500/10 dark:bg-violet-500/20", activeText: "text-violet-600 dark:text-violet-400", activeBar: "bg-violet-500" },
         { name: t.navDonations, href: "/pastor/main/donations", icon: IndianRupee, iconColor: "text-emerald-500", activeBg: "bg-emerald-500/10 dark:bg-emerald-500/20", activeText: "text-emerald-600 dark:text-emerald-400", activeBar: "bg-emerald-500" },
         { name: t.navMemberRequests, href: "/pastor/main/member-requests", icon: Users, iconColor: "text-sky-500", activeBg: "bg-sky-500/10 dark:bg-sky-500/20", activeText: "text-sky-600 dark:text-sky-400", activeBar: "bg-sky-500" },
