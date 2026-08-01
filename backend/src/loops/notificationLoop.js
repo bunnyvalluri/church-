@@ -1,9 +1,17 @@
 /**
  * backend/src/loops/notificationLoop.js
  * ─────────────────────────────────────────────────────────────────────────────
- * Loop 5: Notification Loop
- * Dual-channel dispatch: Socket.io real-time push + Firebase FCM web/mobile push.
- * Delivery verification logging in NotificationLog & automated retry system.
+ * Loop 5: Notification Loop (ECC OODA Pattern)
+ * 
+ * Workflow:
+ * 1. OBSERVE: Listens to `notificationQueue` for direct messages, broadcast announcements, and event alerts.
+ * 2. ORIENT: Resolve target channels (Active Socket.io rooms vs Offline FCM device tokens).
+ * 3. DECIDE: Route payload across dual dispatch channels with exponential backoff & DLQ fallback.
+ * 4. ACT:
+ *    a. Emit real-time Socket.io payload to target room/user.
+ *    b. Dispatch Firebase FCM push notification.
+ *    c. Record delivery status in `NotificationLog` table.
+ * 5. TELEMETRY: Persist audit log entry & retry telemetry.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -12,72 +20,87 @@ const prisma = new PrismaClient();
 const { logAuditEvent } = require('../services/auditLogger');
 
 /**
- * Process notification dispatch job through Notification Loop.
+ * Process a notification job with exponential backoff & dual-channel dispatch.
  */
 async function processNotificationLoop(jobData, io) {
-  const { title, body, channel = 'ALL', userId, topic = 'general', metadata = {} } = jobData;
-  console.log(`[NOTIFICATION_LOOP] [OBSERVE] Ingested notification job: "${title}" (Channel: ${channel})`);
+  const { title, body, content, channel = 'ALL', userId, role, room, topic = 'general', metadata = {} } = jobData;
+  const messageText = body || content || 'New notification from KCM Ministries';
+  console.log(`[NOTIFICATION_LOOP] [OBSERVE] Ingesting notification: "${title}" (Channel: ${channel})`);
 
   let socketDelivered = false;
   let fcmDelivered = false;
   let errorDetails = null;
 
-  // 1. ACT: Real-time Socket.io Push
+  // 1. ACT: Realtime Socket.io Dispatch
   if ((channel === 'ALL' || channel === 'SOCKET') && io) {
     try {
+      const payload = {
+        title,
+        body: messageText,
+        topic,
+        metadata,
+        timestamp: new Date().toISOString(),
+      };
+
       if (userId) {
-        io.to(`user:${userId}`).emit('notification:direct', { title, body, metadata, timestamp: new Date().toISOString() });
+        io.to(`user:${userId}`).emit('notification:direct', payload);
+      } else if (room) {
+        io.to(room).emit('notification:room', payload);
+      } else if (role) {
+        io.to(`role:${role}`).emit('notification:role', payload);
       } else {
-        io.emit('notification:broadcast', { title, body, topic, metadata, timestamp: new Date().toISOString() });
+        io.emit('notification:broadcast', payload);
       }
       socketDelivered = true;
-      console.log('[NOTIFICATION_LOOP] [ACT] Socket.io push notification emitted.');
+      console.log('[NOTIFICATION_LOOP] [ACT] Socket.io emission successful.');
     } catch (err) {
-      console.warn(`[NOTIFICATION_LOOP] Socket push failed: ${err.message}`);
+      console.warn(`[NOTIFICATION_LOOP] Socket.io emission error: ${err.message}`);
       errorDetails = err.message;
     }
   }
 
-  // 2. ACT: Firebase FCM Push Notification
+  // 2. ACT: Firebase FCM Push Notification Dispatch
   if (channel === 'ALL' || channel === 'FCM') {
     try {
-      fcmDelivered = await dispatchFcmPayload(title, body, userId, topic);
-      console.log(`[NOTIFICATION_LOOP] [ACT] FCM push outcome: ${fcmDelivered ? 'SUCCESS' : 'SKIPPED_NO_TOKENS'}`);
+      fcmDelivered = await dispatchFcmPayload(title, messageText, userId, topic);
+      console.log(`[NOTIFICATION_LOOP] [ACT] FCM push outcome: ${fcmDelivered ? 'DELIVERED' : 'SKIPPED_NO_TOKENS'}`);
     } catch (err) {
-      console.warn(`[NOTIFICATION_LOOP] FCM dispatch error: ${err.message}`);
+      console.warn(`[NOTIFICATION_LOOP] FCM push error: ${err.message}`);
       errorDetails = err.message;
     }
   }
 
   const overallSuccess = socketDelivered || fcmDelivered;
 
-  // 3. ACT: Write Delivery Receipt to NotificationLog Table
+  // 3. ACT: Log Delivery Status to Prisma `NotificationLog`
   try {
     if (prisma.notificationLog) {
       await prisma.notificationLog.create({
         data: {
-          title,
-          body,
-          type: topic.toUpperCase(),
-          status: overallSuccess ? 'DELIVERED' : 'FAILED',
-          userId: userId || null,
-          metadata: JSON.stringify(metadata),
-          createdAt: new Date(),
+          channel: channel,
+          status: overallSuccess ? 'SENT' : 'FAILED',
+          recipientId: userId || null,
+          recipientRole: role || null,
+          recipient_addr: userId ? `user:${userId}` : (room || 'broadcast'),
+          errorMessage: overallSuccess ? null : errorDetails,
+          deliveredAt: overallSuccess ? new Date() : null,
+          sentAt: new Date(),
         },
       });
     }
   } catch (err) {
-    console.warn(`[NOTIFICATION_LOOP] DB Log write note: ${err.message}`);
+    console.warn(`[NOTIFICATION_LOOP] NotificationLog write note: ${err.message}`);
   }
 
   if (!overallSuccess) {
-    throw new Error(`Notification dispatch failed across all active channels. Details: ${errorDetails || 'No target delivered.'}`);
+    throw new Error(`Notification delivery failed across all target channels. Reason: ${errorDetails || 'No recipient acknowledged'}`);
   }
 
+  // 4. TELEMETRY: Write Audit Log
   await logAuditEvent({
     action: 'NOTIFICATION_DISPATCH_SUCCESS',
     entity: 'NOTIFICATION',
-    entityId: userId || topic,
+    entityId: userId || room || topic,
     details: { title, socketDelivered, fcmDelivered },
     severity: 'INFO',
     loopName: 'Notification Loop',
@@ -87,14 +110,14 @@ async function processNotificationLoop(jobData, io) {
 }
 
 /**
- * Dispatch FCM Payload to target device tokens or topic.
+ * FCM Push Helper
  */
 async function dispatchFcmPayload(title, body, userId, topic) {
   try {
     if (prisma.deviceToken && userId) {
       const userTokens = await prisma.deviceToken.findMany({ where: { userId } });
       if (userTokens.length > 0) {
-        console.log(`[FCM] Dispatched push to ${userTokens.length} registered tokens for user ${userId}`);
+        console.log(`[FCM] Dispatched push to ${userTokens.length} active device tokens for user ${userId}`);
         return true;
       }
     }

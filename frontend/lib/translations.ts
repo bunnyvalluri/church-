@@ -654,8 +654,6 @@ export const translations = {
         submitAnother: "Submit Another Request",
         callAction: "Call Now",
         emailAction: "Send Email",
-        subhashLoc: "Subhash Nagar Location",
-        bahadurLoc: "Bahadurpally Location",
         viewMap: "View Map"
       },
       volunteer: {
@@ -1801,8 +1799,6 @@ export const translations = {
         submitAnother: "మరొక విన్నపాన్ని పంపండి",
         callAction: "ఇప్పుడే కాల్ చేయండి",
         emailAction: "ఈమెయిల్ చేయండి",
-        subhashLoc: "సుభాష్ నగర్ ప్రాంగణం",
-        bahadurLoc: "బహదూర్ పల్లి ప్రాంగణం",
         viewMap: "మ్యాప్ చూడండి"
       },
       volunteer: {
@@ -2948,8 +2944,6 @@ export const translations = {
         submitAnother: "एक और निवेदन भेजें",
         callAction: "अभी कॉल करें",
         emailAction: "ईमेल भेजें",
-        subhashLoc: "सुभाष नगर स्थान",
-        bahadurLoc: "बहादुरपल्ली स्थान",
         viewMap: "मानचित्र देखें"
       },
       volunteer: {

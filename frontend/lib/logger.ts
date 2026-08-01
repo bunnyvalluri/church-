@@ -50,7 +50,7 @@ class NextLogger {
     this.environment = process.env.NODE_ENV || 'production';
   }
 
-  private format(level: LogLevel, message: string, meta: LogMeta = {}): string {
+  private format(level: LogLevel | string, message: string, meta: LogMeta = {}): string {
     const timestamp = new Date().toISOString();
     
     let errorObj = undefined;

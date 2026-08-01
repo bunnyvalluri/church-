@@ -1,15 +1,21 @@
 /**
  * backend/src/cron/scheduler.js
  * ─────────────────────────────────────────────────────────────────────────────
- * Cron Scheduler for Loop Engineering Architecture.
- * Periodically triggers Security Scan (5 min), Branch Audit (6 hours),
- * Notification Sweep (15 min), and Offline Sync Check (10 min).
+ * Cron Scheduler for Autonomous Loop Architecture.
+ * Periodically triggers:
+ * - Security Scan (Every 5 minutes)
+ * - Upload Verification (Hourly)
+ * - Deployment Health Probe (Every 15 minutes)
+ * - Database Audit (Every 6 hours)
+ * - Branch Compliance Audit (Every 6 hours)
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 const { runSecurityAuditScan } = require('../loops/securityLoop');
+const { runUploadVerificationLoop } = require('../loops/uploadVerificationLoop');
+const { runDeploymentHealthLoop } = require('../loops/deploymentHealthLoop');
+const { runDatabaseAuditLoop } = require('../loops/databaseAuditLoop');
 const { auditBranchComplianceLoop } = require('../loops/branchLoop');
-const { getQueue } = require('../queues/queueManager');
 
 function startLoopCronScheduler(io) {
   console.log('[CRON_SCHEDULER] Starting background Loop Cron Scheduler...');
@@ -23,7 +29,34 @@ function startLoopCronScheduler(io) {
     }
   }, 5 * 60 * 1000);
 
-  // 2. Branch Audit Routine (Every 6 hours)
+  // 2. Upload Verification Routine (Every 60 minutes)
+  setInterval(async () => {
+    try {
+      await runUploadVerificationLoop();
+    } catch (err) {
+      console.warn(`[CRON] Upload verification interval note: ${err.message}`);
+    }
+  }, 60 * 60 * 1000);
+
+  // 3. Deployment Health Routine (Every 15 minutes)
+  setInterval(async () => {
+    try {
+      await runDeploymentHealthLoop(io);
+    } catch (err) {
+      console.warn(`[CRON] Deployment health interval note: ${err.message}`);
+    }
+  }, 15 * 60 * 1000);
+
+  // 4. Database Audit Routine (Every 6 hours)
+  setInterval(async () => {
+    try {
+      await runDatabaseAuditLoop();
+    } catch (err) {
+      console.warn(`[CRON] Database audit interval note: ${err.message}`);
+    }
+  }, 6 * 60 * 60 * 1000);
+
+  // 5. Branch Audit Routine (Every 6 hours)
   setInterval(async () => {
     try {
       await auditBranchComplianceLoop(io);
@@ -32,13 +65,16 @@ function startLoopCronScheduler(io) {
     }
   }, 6 * 60 * 60 * 1000);
 
-  // Initial trigger after server startup (10s delay)
+  // Initial startup diagnostic sweep after 10 seconds
   setTimeout(() => {
     runSecurityAuditScan().catch(() => {});
+    runUploadVerificationLoop().catch(() => {});
+    runDeploymentHealthLoop(io).catch(() => {});
+    runDatabaseAuditLoop().catch(() => {});
     auditBranchComplianceLoop(io).catch(() => {});
   }, 10000);
 
-  console.log('[CRON_SCHEDULER] Loop Cron Scheduler operational.');
+  console.log('[CRON_SCHEDULER] Loop Cron Scheduler operational across all 7 loops.');
 }
 
 module.exports = {

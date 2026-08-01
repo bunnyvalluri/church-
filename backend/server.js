@@ -153,16 +153,100 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
   // Loop Engineering Architecture Initialization & Diagnostic Endpoint
   try {
     const { initializeLoopEngine, runLoopHealthCheck } = require('./src/loops/engine');
+    const { processEventUploadLoop } = require('./src/loops/eventUploadLoop');
+    const { processSermonAutomationLoop } = require('./src/loops/sermonAutomationLoop');
+    const { runSecurityAuditScan } = require('./src/loops/securityLoop');
+    const { runUploadVerificationLoop } = require('./src/loops/uploadVerificationLoop');
+    const { processNotificationLoop } = require('./src/loops/notificationLoop');
+    const { runDeploymentHealthLoop } = require('./src/loops/deploymentHealthLoop');
+    const { runDatabaseAuditLoop } = require('./src/loops/databaseAuditLoop');
+    const { sendSuccess, sendError } = require('./src/utils/apiResponse');
+
     initializeLoopEngine(io);
 
-    app.get('/api/loops/health', async (req, res) => {
+    // Master Health Diagnostic Endpoint
+    app.get('/api/loops/health', async (req, res, next) => {
       try {
         const report = await runLoopHealthCheck(io);
-        return res.json(report);
+        return sendSuccess(res, report, 'Master loop health check completed.');
       } catch (err) {
-        return res.status(500).json({ error: 'Loop health check failed', details: err.message });
+        next(err);
       }
     });
+
+    // 1. Event Automation Loop Endpoint
+    app.post('/api/loops/event', async (req, res, next) => {
+      try {
+        const event = await processEventUploadLoop(req.body, io);
+        return sendSuccess(res, event, 'Event automation loop executed successfully.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 2. Sermon Automation Loop Endpoint
+    app.post('/api/loops/sermon', async (req, res, next) => {
+      try {
+        const sermon = await processSermonAutomationLoop(req.body, io);
+        return sendSuccess(res, sermon, 'Sermon automation loop executed successfully.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 3. Security Audit Loop Endpoint
+    app.post('/api/loops/security-audit', async (req, res, next) => {
+      try {
+        const scan = await runSecurityAuditScan();
+        return sendSuccess(res, scan, 'Security audit scan completed.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 4. Upload Verification Loop Endpoint
+    app.post('/api/loops/upload-verification', async (req, res, next) => {
+      try {
+        const report = await runUploadVerificationLoop();
+        return sendSuccess(res, report, 'Upload verification scan completed.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 5. Notification Loop Endpoint
+    app.post('/api/loops/notification', async (req, res, next) => {
+      try {
+        const result = await processNotificationLoop(req.body, io);
+        return sendSuccess(res, result, 'Notification loop executed successfully.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 6. Deployment Health Loop Endpoint
+    app.post('/api/loops/deployment-health', async (req, res, next) => {
+      try {
+        const report = await runDeploymentHealthLoop(io);
+        return sendSuccess(res, report, 'Deployment health probe completed.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // 7. Database Audit Loop Endpoint
+    app.post('/api/loops/db-audit', async (req, res, next) => {
+      try {
+        const report = await runDatabaseAuditLoop();
+        return sendSuccess(res, report, 'Database audit loop completed.');
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Mount Centralized Error Handler
+    const errorHandler = require('./src/middleware/errorHandler');
+    app.use(errorHandler);
   } catch (err) {
     console.warn('[LOOP_ENGINE_INIT] Warning initializing Loop Engine:', err.message);
   }

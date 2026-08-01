@@ -46,11 +46,23 @@ module.exports = {
       attempts: 3,
       backoff: { type: 'exponential', delay: 5000 },
     },
+    sermonAutomation: {
+      name: 'sermonAutomationQueue',
+      concurrency: 3,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
+    },
     securityAudit: {
       name: 'securityAuditQueue',
       concurrency: 10,
       attempts: 5,
       backoff: { type: 'exponential', delay: 1000 },
+    },
+    uploadVerification: {
+      name: 'uploadVerificationQueue',
+      concurrency: 2,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
     },
     branchAudit: {
       name: 'branchAuditQueue',
@@ -63,6 +75,18 @@ module.exports = {
       concurrency: 15,
       attempts: 5,
       backoff: { type: 'exponential', delay: 2000 },
+    },
+    deploymentHealth: {
+      name: 'deploymentHealthQueue',
+      concurrency: 2,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
+    },
+    databaseAudit: {
+      name: 'databaseAuditQueue',
+      concurrency: 2,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
     },
     offlineSync: {
       name: 'offlineSyncQueue',
@@ -89,16 +113,20 @@ module.exports = {
       'image/gif',
       'application/pdf',
       'video/mp4',
+      'audio/mpeg',
     ],
-    maxFileUploadSizeBytes: 25 * 1024 * 1024, // 25 MB
+    maxFileUploadSizeBytes: 50 * 1024 * 1024, // 50 MB
   },
 
   // Cron Schedules (Standard 5-part cron syntax)
   crons: {
-    securityScan: '*/5 * * * *',       // Every 5 minutes
-    branchAudit: '0 */6 * * *',        // Every 6 hours
-    notificationRetry: '*/15 * * * *', // Every 15 minutes
-    offlineSyncCheck: '*/10 * * * *',  // Every 10 minutes
+    securityScan: '*/5 * * * *',          // Every 5 minutes
+    uploadVerification: '0 * * * *',     // Hourly
+    deploymentHealth: '*/15 * * * *',     // Every 15 minutes
+    databaseAudit: '0 */6 * * *',         // Every 6 hours
+    branchAudit: '0 */6 * * *',           // Every 6 hours
+    notificationRetry: '*/15 * * * *',    // Every 15 minutes
+    offlineSyncCheck: '*/10 * * * *',     // Every 10 minutes
   },
 
   // Third Party Integrations

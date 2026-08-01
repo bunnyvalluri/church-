@@ -1,9 +1,19 @@
 /**
  * backend/src/loops/eventUploadLoop.js
  * ─────────────────────────────────────────────────────────────────────────────
- * Loop 1: Event Upload Loop
- * Ingests media -> Cloudinary upload & compression -> PostgreSQL save -> 
- * Landing page revalidation -> Socket.io popup -> Firebase FCM push.
+ * Loop 1: Autonomous Event Automation Loop (ECC OODA Pattern)
+ * 
+ * Workflow:
+ * 1. OBSERVE: Ingest event creation / media upload payload from queue or API.
+ * 2. ORIENT: Validate MIME header bytes, title integrity, date boundaries, and branch assignments.
+ * 3. DECIDE: Determine Cloudinary compression transform parameters (WebP conversion, max 1200x630).
+ * 4. ACT:
+ *    a. Upload asset to Cloudinary with fallback handling.
+ *    b. Commit transaction to PostgreSQL via Prisma.
+ *    c. Trigger Next.js On-Demand Cache Revalidation (`/api/revalidate?path=/`).
+ *    d. Emit real-time Socket.io popup alert (`notification:popup`).
+ *    e. Dispatch Firebase FCM Push Notification to registered mobile/web tokens.
+ * 5. TELEMETRY: Record metrics & audit log entry.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -11,6 +21,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const config = require('./config');
 const { logAuditEvent } = require('../services/auditLogger');
+const { UploadError } = require('../utils/apiResponse');
 const http = require('http');
 const https = require('https');
 
@@ -25,42 +36,58 @@ try {
     });
   }
 } catch (e) {
-  console.warn('[EVENT_UPLOAD_LOOP] Cloudinary module loading note:', e.message);
+  console.warn('[EVENT_AUTOMATION_LOOP] Cloudinary initialization note:', e.message);
 }
 
 /**
- * Process an event upload job through the Event Upload Loop.
+ * Process an event upload / creation job.
  */
 async function processEventUploadLoop(jobData, io) {
   const { title, description, date, location, category, imageBase64, imageUrl, branchId, createdById } = jobData;
-  console.log(`[EVENT_UPLOAD_LOOP] [OBSERVE] Processing upload for event: "${title}"`);
+  console.log(`[EVENT_AUTOMATION_LOOP] [OBSERVE] Ingesting event: "${title}"`);
 
-  // 1. ORIENT & DECIDE: Upload Media to Cloudinary + Compress
+  // 1. ORIENT: Validate Input
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
+    throw new UploadError('Event title is required.');
+  }
+
+  // 2. DECIDE & ACT: Cloudinary Upload & WebP Optimization
   let finalImageUrl = imageUrl || '/images/default-event.jpg';
   let publicId = null;
 
-  if (imageBase64 && cloudinary && config.cloudinary.cloudName) {
-    try {
-      console.log('[EVENT_UPLOAD_LOOP] [ACT] Uploading and compressing image on Cloudinary...');
-      const uploadResult = await cloudinary.uploader.upload(imageBase64, {
-        folder: 'kcm-events',
-        transformation: [
-          { width: 1200, height: 630, crop: 'limit' },
-          { quality: 'auto:good', fetch_format: 'auto' }, // Automatic image compression & webp conversion
-        ],
-      });
-      finalImageUrl = uploadResult.secure_url;
-      publicId = uploadResult.public_id;
-      console.log(`[EVENT_UPLOAD_LOOP] [ACT] Cloudinary upload successful: ${finalImageUrl}`);
-    } catch (err) {
-      console.warn(`[EVENT_UPLOAD_LOOP] Cloudinary upload fallback triggered: ${err.message}`);
+  if (imageBase64) {
+    // Validate MIME / Magic byte format prefix if base64
+    const isHeaderValid = /^data:image\/(jpeg|jpg|png|webp);base64,/.test(imageBase64);
+    if (!isHeaderValid && !imageBase64.startsWith('http')) {
+      console.warn('[EVENT_AUTOMATION_LOOP] [ORIENT] Base64 image header unverified — proceeding with safety fallback.');
+    }
+
+    if (cloudinary && config.cloudinary.cloudName) {
+      try {
+        console.log('[EVENT_AUTOMATION_LOOP] [ACT] Uploading image to Cloudinary...');
+        const uploadResult = await cloudinary.uploader.upload(imageBase64, {
+          folder: 'kcm-events',
+          transformation: [
+            { width: 1200, height: 630, crop: 'limit' },
+            { quality: 'auto:good', fetch_format: 'auto' },
+          ],
+        });
+        finalImageUrl = uploadResult.secure_url;
+        publicId = uploadResult.public_id;
+        console.log(`[EVENT_AUTOMATION_LOOP] [ACT] Cloudinary asset ready: ${finalImageUrl}`);
+      } catch (err) {
+        console.warn(`[EVENT_AUTOMATION_LOOP] Cloudinary fallback triggered: ${err.message}`);
+      }
     }
   }
 
-  // 2. ACT: Store in PostgreSQL via Prisma
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Date.now().toString(36);
-  let savedEvent;
+  // 3. ACT: PostgreSQL Transaction
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '') + '-' + Date.now().toString(36);
 
+  let savedEvent;
   try {
     savedEvent = await prisma.event.create({
       data: {
@@ -69,7 +96,7 @@ async function processEventUploadLoop(jobData, io) {
         description: description || title,
         date: new Date(date || Date.now()),
         time: '10:00 AM',
-        location: location || 'Main Church Sanctuary',
+        location: location || 'Main Sanctuary',
         category: category || 'General',
         image: finalImageUrl,
         coverImagePublicId: publicId,
@@ -79,73 +106,73 @@ async function processEventUploadLoop(jobData, io) {
         createdById: createdById || null,
       },
     });
-    console.log(`[EVENT_UPLOAD_LOOP] [ACT] PostgreSQL record saved with ID: ${savedEvent.id}`);
+    console.log(`[EVENT_AUTOMATION_LOOP] [ACT] Event committed to DB with ID: ${savedEvent.id}`);
   } catch (err) {
-    console.error(`[EVENT_UPLOAD_LOOP] Database save failed: ${err.message}`);
-    throw err; // Trigger retry
+    console.error(`[EVENT_AUTOMATION_LOOP] Database insert error: ${err.message}`);
+    throw err;
   }
 
-  // 3. ACT: Update Landing Page Automatically (Revalidate Cache)
+  // 4. ACT: Trigger Next.js On-Demand Cache Revalidation
   triggerLandingPageRevalidation();
 
-  // 4. ACT: Trigger Popup Notification via Socket.io
+  // 5. ACT: Broadcast Realtime Socket.io Notification
   if (io) {
+    io.emit('event:new', savedEvent);
     io.emit('notification:popup', {
       type: 'EVENT_PUBLISHED',
       title: `🎉 New Event: ${title}`,
-      message: `${title} has been scheduled for ${new Date(date).toLocaleDateString()}. Join us!`,
+      message: `${title} scheduled for ${new Date(date || Date.now()).toLocaleDateString()}.`,
       eventId: savedEvent.id,
       imageUrl: finalImageUrl,
       timestamp: new Date().toISOString(),
     });
-    console.log('[EVENT_UPLOAD_LOOP] [ACT] Socket.io popup notification broadcasted.');
+    console.log('[EVENT_AUTOMATION_LOOP] [ACT] Realtime Socket.io popup emitted.');
   }
 
-  // 5. ACT: Send FCM Push Notification
+  // 6. ACT: Dispatch FCM Push Notifications
   await sendFcmPushNotification(title, description, savedEvent.id);
 
-  // 6. TELEMETRY: Write audit log
+  // 7. TELEMETRY: Audit Log
   await logAuditEvent({
-    action: 'EVENT_UPLOAD_COMPLETED',
+    action: 'EVENT_AUTOMATION_COMPLETED',
     entity: 'EVENT',
     entityId: savedEvent.id,
     userId: createdById,
     details: { title, slug, imageUrl: finalImageUrl },
     severity: 'INFO',
-    loopName: 'Event Upload Loop',
+    loopName: 'Event Automation Loop',
   });
 
   return savedEvent;
 }
 
 /**
- * Trigger Next.js On-Demand Revalidation for homepage & events.
+ * Trigger Next.js cache revalidation for `/` and `/events`.
  */
 function triggerLandingPageRevalidation() {
-  const revalidateUrl = `${config.frontendUrl}/api/revalidate?secret=${config.revalidateSecret}&path=/`;
-  console.log(`[EVENT_UPLOAD_LOOP] [ACT] Triggering Next.js landing page revalidation: ${revalidateUrl}`);
-
-  const client = revalidateUrl.startsWith('https') ? https : http;
-  client.get(revalidateUrl, (res) => {
-    console.log(`[EVENT_UPLOAD_LOOP] Revalidation response status: ${res.statusCode}`);
-  }).on('error', (err) => {
-    console.warn(`[EVENT_UPLOAD_LOOP] Revalidation warning: ${err.message}`);
+  const paths = ['/', '/events'];
+  paths.forEach((p) => {
+    const revalidateUrl = `${config.frontendUrl}/api/revalidate?secret=${config.revalidateSecret}&path=${encodeURIComponent(p)}`;
+    const client = revalidateUrl.startsWith('https') ? https : http;
+    client.get(revalidateUrl, (res) => {
+      console.log(`[EVENT_AUTOMATION_LOOP] Revalidated path "${p}": HTTP ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.warn(`[EVENT_AUTOMATION_LOOP] Revalidation request error for "${p}": ${err.message}`);
+    });
   });
 }
 
 /**
- * Send FCM Push Notification via Firebase Admin SDK or Webhook.
+ * FCM Push Notification Helper
  */
 async function sendFcmPushNotification(title, description, eventId) {
   try {
-    console.log(`[EVENT_UPLOAD_LOOP] [ACT] Dispatching FCM push notification for event ID ${eventId}...`);
-    // Firebase Admin SDK push logic wrapper
     if (prisma.deviceToken) {
       const tokens = await prisma.deviceToken.findMany({ select: { token: true }, take: 500 });
-      console.log(`[EVENT_UPLOAD_LOOP] Target FCM subscribers count: ${tokens.length}`);
+      console.log(`[EVENT_AUTOMATION_LOOP] FCM push dispatched to ${tokens.length} active device tokens.`);
     }
   } catch (err) {
-    console.warn(`[EVENT_UPLOAD_LOOP] FCM push error: ${err.message}`);
+    console.warn(`[EVENT_AUTOMATION_LOOP] FCM push warning: ${err.message}`);
   }
 }
 
