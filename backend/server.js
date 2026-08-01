@@ -16,7 +16,8 @@ require('dotenv').config({ path: path.join(__dirname, '.env'), override: true })
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 // Prometheus Metrics Instrumentation
 let metrics;
@@ -30,13 +31,112 @@ try {
 // Enable CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-KCM-Webhook-Secret");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
   next();
 });
+
+// Rate Limiting
+const { generalLimiter, webhookLimiter, notificationLimiter } = require('./src/middleware/rateLimiter');
+app.use(generalLimiter);
+
+// Webhook verification middleware
+const { verifyGoogleWebhook } = require('./src/middleware/webhookVerify');
+
+// ── Notification & Event Routes ───────────────────────────────────────────────
+
+// Register FCM device token
+app.post('/api/device-tokens', async (req, res) => {
+  try {
+    const { token, userId, deviceType, platform } = req.body;
+    if (!token) return res.status(400).json({ error: 'token is required' });
+
+    const { registerDeviceToken } = require('./src/services/fcmService');
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const record = await registerDeviceToken({ token, userId, deviceType, platform }, prisma);
+    return res.json({ success: true, id: record.id });
+  } catch (err) {
+    console.error('[DEVICE_TOKEN] Registration error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Event creation endpoint (called by Event Manager / Next.js API)
+app.post('/api/events', async (req, res) => {
+  try {
+    const { processEventUploadLoop } = require('./src/loops/eventUploadLoop');
+    const event = await processEventUploadLoop(req.body, io);
+    return res.status(201).json({ success: true, event });
+  } catch (err) {
+    console.error('[API/EVENTS] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Google Apps Script webhook — receives member data and/or triggers notifications
+app.post('/api/google-event-trigger', webhookLimiter, verifyGoogleWebhook, async (req, res) => {
+  try {
+    const { event_title, event_branch, event_date, event_description, event_link, event_id } = req.body;
+    console.log('[GOOGLE_WEBHOOK] Received event trigger:', event_title);
+
+    // If this is called back from Apps Script with member data, log it
+    const { members } = req.body;
+    if (members && Array.isArray(members)) {
+      console.log(`[GOOGLE_WEBHOOK] Apps Script returned ${members.length} members.`);
+    }
+
+    return res.json({
+      success: true,
+      message: 'Google webhook received.',
+      received: { event_title, event_branch, event_date },
+    });
+  } catch (err) {
+    console.error('[GOOGLE_WEBHOOK] Error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Manual notification dispatch endpoint (admin use)
+app.post('/api/notifications/dispatch', notificationLimiter, async (req, res) => {
+  try {
+    const { eventId, branch, channels } = req.body;
+    if (!eventId) return res.status(400).json({ error: 'eventId is required' });
+
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    if (!event) return res.status(404).json({ error: 'Event not found' });
+
+    const { dispatchEventNotification } = require('./src/services/notificationDispatcher');
+    // Non-blocking — respond immediately
+    res.json({ success: true, message: 'Notification dispatch started.', eventId });
+
+    // Dispatch in background
+    dispatchEventNotification(event, { branch: branch || null }).catch(err => {
+      console.error('[NOTIFY_DISPATCH] Background dispatch error:', err.message);
+    });
+
+  } catch (err) {
+    console.error('[NOTIFY_DISPATCH] Error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Notification retry trigger (manual)
+app.post('/api/notifications/retry', async (req, res) => {
+  try {
+    const { runNotificationRetryWorker } = require('./src/cron/notificationRetryWorker');
+    const summary = await runNotificationRetryWorker();
+    return res.json({ success: true, summary });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 
 const server = http.createServer(app);
 

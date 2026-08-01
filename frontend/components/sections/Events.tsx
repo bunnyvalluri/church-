@@ -37,15 +37,36 @@ interface DynamicEvent {
   priority?: string;
 }
 
+// Helper function to robustly parse target date
+function parseTargetDate(dateStr: string, timeStr?: string): Date | null {
+  if (!dateStr) return null;
+  // If ISO format (contains T)
+  let d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    return d;
+  }
+  if (timeStr) {
+    d = new Date(`${dateStr} ${timeStr}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 // Countdown hook
-function useCountdown(targetDate: string) {
+function useCountdown(targetDate: string, targetTime?: string) {
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
 
   useEffect(() => {
     if (!targetDate) return;
 
     const calculate = () => {
-      const difference = +new Date(targetDate) - +new Date();
+      const parsed = parseTargetDate(targetDate, targetTime);
+      if (!parsed) {
+        setTimeLeft(null);
+        return;
+      }
+
+      const difference = parsed.getTime() - Date.now();
       if (difference <= 0) {
         setTimeLeft(null);
         return;
@@ -61,18 +82,18 @@ function useCountdown(targetDate: string) {
     calculate();
     const interval = setInterval(calculate, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, targetTime]);
 
   return timeLeft;
 }
 
-// Countdown display component
-function CountdownTimer({ date }: { date: string }) {
-  const timeLeft = useCountdown(date);
+// Countdown display component with light & dark mode high contrast styling
+function CountdownTimer({ date, time }: { date: string; time?: string }) {
+  const timeLeft = useCountdown(date, time);
   if (!timeLeft) return null;
 
   return (
-    <div className="grid grid-cols-4 gap-2 text-center p-3.5 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl text-white max-w-xs mx-auto md:mx-0">
+    <div className="grid grid-cols-4 gap-2 text-center p-3 bg-gradient-to-r from-indigo-50/90 via-purple-50/90 to-indigo-50/90 dark:from-slate-900/90 dark:via-indigo-950/40 dark:to-slate-900/90 border border-indigo-200/60 dark:border-indigo-500/20 rounded-2xl max-w-xs mx-auto md:mx-0 shadow-sm backdrop-blur-md">
       {[
         { label: "Days", value: timeLeft.days },
         { label: "Hrs", value: timeLeft.hours },
@@ -80,8 +101,8 @@ function CountdownTimer({ date }: { date: string }) {
         { label: "Secs", value: timeLeft.seconds },
       ].map((item) => (
         <div key={item.label}>
-          <span className="block text-base font-black tracking-tight leading-none text-indigo-400">{item.value}</span>
-          <span className="text-[8px] uppercase tracking-wider font-bold text-slate-300 mt-1 block">{item.label}</span>
+          <span className="block text-base sm:text-lg font-black tracking-tight leading-none text-indigo-700 dark:text-indigo-400">{item.value}</span>
+          <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-600 dark:text-slate-400 mt-1 block">{item.label}</span>
         </div>
       ))}
     </div>
@@ -235,11 +256,11 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
               return (
                 <div
                   key={event.id}
-                  className="group bg-white dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-none hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:hover:shadow-2xl dark:hover:shadow-indigo-500/5 transition-all duration-500 hover:-translate-y-2 border border-slate-100 dark:border-white/[0.05] dark:backdrop-blur-3xl flex flex-col justify-between"
+                  className="group bg-white dark:bg-slate-900/90 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl dark:hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1.5 border border-slate-200/80 dark:border-slate-800 dark:backdrop-blur-3xl flex flex-col justify-between"
                 >
                   <div>
                     {/* Image Banner */}
-                    <div className="relative h-52 w-full overflow-hidden bg-slate-900">
+                    <div className="relative h-52 w-full overflow-hidden bg-slate-950">
                       <Image
                         src={displayImage}
                         alt={event.title}
@@ -250,13 +271,13 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                       
                       {branchName && (
-                        <span className="absolute bottom-3 left-3 bg-indigo-600/90 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md">
+                        <span className="absolute bottom-3 left-3 bg-indigo-600/95 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-sm">
                           {branchName}
                         </span>
                       )}
 
                       {event.priority === "URGENT" && (
-                        <span className="absolute top-3 right-3 bg-rose-500 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg">
+                        <span className="absolute top-3 right-3 bg-rose-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
                           URGENT
                         </span>
                       )}
@@ -265,37 +286,37 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                     {/* Content */}
                     <div className="p-6 space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase">
+                        <span className="inline-block px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-700/60 text-[10px] font-black uppercase tracking-wider">
                           {event.category}
                         </span>
                         
                         {event.registrationRequired && typeof event.remainingSeats === "number" && (
-                          <span className={`text-[10px] font-bold ${event.remainingSeats > 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                          <span className={`text-[10px] font-bold ${event.remainingSeats > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                             {event.remainingSeats > 0 ? `${event.remainingSeats} seats left` : "Waitlist Open"}
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white line-clamp-1">
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white line-clamp-1 tracking-tight">
                         {event.title}
                       </h3>
 
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-normal">
                         {event.shortDescription || event.description}
                       </p>
 
                       {/* Event Details */}
-                      <div className="space-y-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      <div className="space-y-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
                         <div className="flex items-center gap-2.5">
-                          <Calendar className="h-4 w-4 text-indigo-500 shrink-0" />
+                          <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                           <span>{formatEventDate(event.date)}</span>
                         </div>
                         <div className="flex items-center gap-2.5">
-                          <Clock className="h-4 w-4 text-indigo-500 shrink-0" />
+                          <Clock className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                           <span>{event.time}</span>
                         </div>
                         <div className="flex items-center gap-2.5">
-                          <MapPin className="h-4 w-4 text-indigo-500 shrink-0" />
+                          <MapPin className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                           <span className="truncate">{event.location}</span>
                         </div>
                       </div>
@@ -303,20 +324,10 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                       {/* Render Countdown on first card */}
                       {isFirst && (
                         <div className="pt-2">
-                          <CountdownTimer date={`${event.date}T${event.time}`} />
+                          <CountdownTimer date={event.date} time={event.time} />
                         </div>
                       )}
                     </div>
-                  </div>
-
-                  <div className="p-6 pt-0">
-                    <button
-                      onClick={() => setRegisterEvent(event)}
-                      aria-label={`Register for ${event.title}`}
-                      className="w-full h-11 min-h-[44px] rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                    >
-                      {event.registrationRequired ? "Register / Reserve Seat" : "Attend Event"}
-                    </button>
                   </div>
                 </div>
               );

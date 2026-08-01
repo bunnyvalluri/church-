@@ -17,9 +17,15 @@
     "bullmq": "^5.79.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.1",
+    "firebase-admin": "^12.7.0",
+    "google-auth-library": "^8.9.0",
+    "googleapis": "^126.0.1",
     "ioredis": "^5.11.1",
     "prom-client": "^15.1.0",
-    "socket.io": "^4.8.3"
+    "resend": "^6.18.1",
+    "socket.io": "^4.8.3",
+    "twilio": "^6.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",

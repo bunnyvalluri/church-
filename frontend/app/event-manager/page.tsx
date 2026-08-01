@@ -59,7 +59,8 @@ import {
   TrendingUp,
   WalletCards,
   Video,
-  Star
+  Star,
+  Search
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -259,6 +260,17 @@ export default function UnifiedEventManagementPortal() {
   const [viewingSermon, setViewingSermon] = useState<any | null>(null);
   const [viewingService, setViewingService] = useState<any | null>(null);
 
+  // Search & Filter state for modals
+  const [reportSearchQuery, setReportSearchQuery] = useState("");
+  const [reportStatusFilter, setReportStatusFilter] = useState<"ALL" | "APPROVED" | "PENDING" | "REJECTED">("ALL");
+  const [serviceSearchQuery, setServiceSearchQuery] = useState("");
+  const [serviceStatusFilter, setServiceStatusFilter] = useState<"ALL" | "PUBLISHED" | "DRAFT">("ALL");
+  const [sermonSearchQuery, setSermonSearchQuery] = useState("");
+  const [sermonStatusFilter, setSermonStatusFilter] = useState<"ALL" | "PUBLISHED" | "DRAFT">("ALL");
+  const [confirmDeleteServiceId, setConfirmDeleteServiceId] = useState<string | null>(null);
+  const [confirmDeleteReportId, setConfirmDeleteReportId] = useState<string | null>(null);
+  const [confirmDeleteSermonId, setConfirmDeleteSermonId] = useState<string | null>(null);
+
   const fetchAllSermons = async () => {
     setLoadingSermons(true);
     try {
@@ -345,20 +357,34 @@ export default function UnifiedEventManagementPortal() {
   const handleDeleteService = async (id: string) => {
     setDeletingServiceId(id);
     try {
-      const token = await getIdToken();
+      let token = null;
+      try {
+        token = await getIdToken();
+      } catch (e) {
+        console.warn("[EVENT MANAGER] getIdToken fallback:", e);
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch(`/api/events/${id}`, {
         method: "DELETE",
-        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers,
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast("✅ Service Deleted", "Successfully deleted service/event from database.");
+        setServicesList((prev) => prev.filter((s) => s.id !== id));
+        showToast("✅ Event Deleted", "Successfully deleted service/event from database.");
         fetchAllServices();
-        setDeletingService(null);
       } else {
         throw new Error(data.error || "Failed to delete service");
       }
     } catch (err: any) {
+      console.error("[DELETE EVENT ERROR]:", err);
       alert(err.message || "Failed to delete service");
     } finally {
       setDeletingServiceId(null);
@@ -368,24 +394,36 @@ export default function UnifiedEventManagementPortal() {
   const clearSeededServices = async () => {
     setClearingSeededServices(true);
     try {
-      const token = await getIdToken();
+      let token = null;
+      try {
+        token = await getIdToken();
+      } catch (e) {
+        console.warn("[EVENT MANAGER] getIdToken fallback:", e);
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/events/clear-seeded", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers,
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast("🗑️ Seeded Services Cleared", `Removed ${data.deletedCount} static services. The calendar is now fully dynamic!`);
+        setServicesList([]);
+        showToast("🗑️ Sample Events Cleared", `Removed ${data.deletedCount || 0} sample events.`);
         fetchAllServices();
         setShowClearServicesConfirm(false);
       } else {
-        throw new Error(data.error || "Failed to clear seeded services");
+        throw new Error(data.error || "Failed to clear sample events");
       }
     } catch (err: any) {
-      alert(err.message || "Failed to clear seeded services");
+      console.error("[CLEAR SAMPLE EVENTS ERROR]:", err);
+      alert(err.message || "Failed to clear sample events");
     } finally {
       setClearingSeededServices(false);
     }
@@ -1232,22 +1270,31 @@ export default function UnifiedEventManagementPortal() {
               ))}
             </div>
           ) : reports.length === 0 ? (
-            <div className="py-16 text-center bg-white dark:bg-slate-900/20 border border-slate-200/40 dark:border-white/5 rounded-2xl shadow-sm space-y-4 max-w-lg mx-auto">
-              <div className="w-14 h-14 rounded-2xl bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 flex items-center justify-center mx-auto">
-                <AlertCircle className="w-7 h-7 text-violet-500" />
+            <div className="py-14 px-6 text-center bg-gradient-to-br from-white via-slate-50/90 to-indigo-50/30 dark:from-slate-900/90 dark:via-slate-900/60 dark:to-indigo-950/20 backdrop-blur-md border border-slate-200/80 dark:border-indigo-500/20 rounded-3xl shadow-xl space-y-5 max-w-lg mx-auto transition-all">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-600 text-white border border-white/20 flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/25">
+                <ClipboardList className="w-8 h-8 text-white" />
               </div>
-              <div className="space-y-1">
-                <p className="text-base font-black text-slate-800 dark:text-white tracking-tight">{t.eventManager?.noReportsTitle || "No Reports Found"}</p>
-                <p className="text-xs text-slate-400 font-medium max-w-xs mx-auto leading-relaxed">
-                  {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters."}
+              <div className="space-y-1.5 max-w-sm mx-auto">
+                <h4 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                  {t.eventManager?.noReportsTitle || "No Reports Found"}
+                </h4>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                  {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters. Submit an events report or check another branch."}
                 </p>
               </div>
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <Link href="/event-manager/report" className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-violet-500 to-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-violet-500/15 active:scale-95">
-                  <PlusCircle className="w-3.5 h-3.5" /> {t.eventManager?.createFirstReportBtn || "Create Events Report"}
+              <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
+                <Link
+                  href="/event-manager/report"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-indigo-500/25 active:scale-95"
+                >
+                  <PlusCircle className="w-4 h-4" /> {t.eventManager?.createFirstReportBtn || "Create Events Report"}
                 </Link>
-                <button type="button" onClick={() => setShowManageEvents(true)} className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-xs font-bold transition-all active:scale-95">
-                  <Settings className="w-3.5 h-3.5" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
+                <button
+                  type="button"
+                  onClick={() => setShowManageEvents(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-200/80 dark:border-slate-700 active:scale-95"
+                >
+                  <Settings className="w-4 h-4" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
                 </button>
               </div>
             </div>
@@ -1979,29 +2026,89 @@ export default function UnifiedEventManagementPortal() {
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
-              <button type="button" onClick={() => { setShowManageSermons(false); setViewingSermon(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600" />
+              <button
+                type="button"
+                onClick={() => { setShowManageSermons(false); setViewingSermon(null); }}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-fuchsia-500"
+              >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Header */}
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/5">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800/80 space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-fuchsia-50 dark:bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400"><Mic2 className="w-5 h-5" /></div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Sermon Library</h3>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Create · Read · Update · Delete</p>
+                  <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-fuchsia-600 to-purple-600 text-white shadow-md shadow-fuchsia-500/20">
+                    <Mic2 className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-black tracking-tight text-slate-900 dark:text-white">MANAGE SERMON LIBRARY</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase mt-0.5 tracking-wider">CREATE · READ · UPDATE · DELETE SERMONS</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-4 flex-wrap">
-                  <button type="button" onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[11px] font-black transition-all active:scale-95 shadow-sm">
-                    <PlusCircle className="w-3.5 h-3.5" /> Upload Sermon
+
+                {/* Primary Action Bar */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-fuchsia-500/20"
+                  >
+                    <PlusCircle className="w-4 h-4" /> Upload Sermon
                   </button>
-                  <button type="button" onClick={fetchAllSermons} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 rounded-xl text-[11px] font-black transition-all border border-slate-200 dark:border-white/10 active:scale-95">
-                    <RefreshCw className="w-3.5 h-3.5" /> Refresh
+                  <button
+                    type="button"
+                    onClick={fetchAllSermons}
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-200/80 dark:border-slate-700 active:scale-95"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingSermons ? 'animate-spin' : ''}`} /> Refresh
                   </button>
-                  <span className="ml-auto text-[10px] font-bold text-slate-400">{sermonsList.length} sermon{sermonsList.length !== 1 ? 's' : ''}</span>
+                  <span className="ml-auto text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                    {sermonsList.length} sermon{sermonsList.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                {/* Search & Filter Bar */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap sm:flex-nowrap">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={sermonSearchQuery}
+                      onChange={(e) => setSermonSearchQuery(e.target.value)}
+                      placeholder="Search sermons by title, pastor, scripture..."
+                      className="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 placeholder:text-slate-400"
+                    />
+                    {sermonSearchQuery && (
+                      <button type="button" onClick={() => setSermonSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setSermonStatusFilter("ALL")}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${sermonStatusFilter === "ALL" ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-black" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"}`}
+                    >
+                      All ({sermonsList.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSermonStatusFilter("PUBLISHED")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${sermonStatusFilter === "PUBLISHED" ? "bg-emerald-500 text-white font-black shadow-sm" : "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Published ({sermonsList.filter(s => s.status === "PUBLISHED" || s.visibility === "PUBLIC").length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSermonStatusFilter("DRAFT")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${sermonStatusFilter === "DRAFT" ? "bg-amber-500 text-white font-black shadow-sm" : "text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Draft ({sermonsList.filter(s => s.status !== "PUBLISHED" && s.visibility !== "PUBLIC").length})
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -2023,22 +2130,26 @@ export default function UnifiedEventManagementPortal() {
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                      <div className="bg-white dark:bg-slate-900/60 border border-fuchsia-200/50 dark:border-fuchsia-500/20 rounded-xl p-4 space-y-2">
-                        <h5 className="text-sm font-black text-slate-900 dark:text-white">{viewingSermon.title}</h5>
+                      <div className="bg-white dark:bg-slate-900/80 border border-fuchsia-200/50 dark:border-fuchsia-500/20 rounded-2xl p-4 space-y-2.5 shadow-sm">
+                        <h5 className="text-sm font-extrabold text-slate-900 dark:text-white">{viewingSermon.title}</h5>
                         <div className="flex flex-wrap gap-2 text-[10px]">
-                          <span className="bg-fuchsia-50 dark:bg-fuchsia-500/10 border border-fuchsia-200 dark:border-fuchsia-500/20 px-2 py-0.5 rounded-lg font-bold text-fuchsia-700 dark:text-fuchsia-300">By {viewingSermon.pastor}</span>
-                          <span className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 px-2 py-0.5 rounded-lg font-bold text-purple-700 dark:text-purple-300">{viewingSermon.category}</span>
-                          <span className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded-lg font-bold text-slate-600 dark:text-slate-300">{new Date(viewingSermon.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                          <span className="bg-fuchsia-50 dark:bg-fuchsia-500/10 border border-fuchsia-200 dark:border-fuchsia-500/20 px-2.5 py-1 rounded-lg font-bold text-fuchsia-700 dark:text-fuchsia-300">By {viewingSermon.pastor || viewingSermon.speaker || 'Pastor'}</span>
+                          <span className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 px-2.5 py-1 rounded-lg font-bold text-purple-700 dark:text-purple-300">{viewingSermon.category || 'General'}</span>
+                          <span className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-lg font-bold text-slate-600 dark:text-slate-300">{new Date(viewingSermon.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                         </div>
-                        {viewingSermon.description && <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{viewingSermon.description}</p>}
-                        {viewingSermon.scripture && <p className="text-xs font-bold text-purple-600 dark:text-purple-400">📖 {viewingSermon.scripture}</p>}
+                        {viewingSermon.description && <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{viewingSermon.description}</p>}
+                        {(viewingSermon.bibleVerse || viewingSermon.scripture) && (
+                          <p className="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                            📖 {viewingSermon.bibleVerse || viewingSermon.scripture}
+                          </p>
+                        )}
                         <div className="flex gap-2 pt-1">
                           <button type="button" onClick={() => { setEditingSermon(viewingSermon); setShowEditSermon(true); setViewingSermon(null); }}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/20 dark:hover:bg-fuchsia-950/40 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl text-[11px] font-black transition-colors border border-fuchsia-200 dark:border-fuchsia-500/20">
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/40 dark:hover:bg-fuchsia-900/60 text-fuchsia-600 dark:text-fuchsia-400 rounded-xl text-xs font-extrabold transition-colors border border-fuchsia-200 dark:border-fuchsia-500/20">
                             <Pencil className="w-3.5 h-3.5" /> Edit Sermon
                           </button>
                           <button type="button" onClick={() => { setDeletingSermon(viewingSermon); setViewingSermon(null); }}
-                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl text-[11px] font-black transition-colors border border-red-200 dark:border-red-500/20">
+                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-extrabold transition-colors border border-rose-200 dark:border-rose-500/20">
                             <Trash2 className="w-3.5 h-3.5" /> Delete
                           </button>
                         </div>
@@ -2049,89 +2160,188 @@ export default function UnifiedEventManagementPortal() {
               </AnimatePresence>
 
               {/* Sermon List */}
-              <div className="px-6 py-4 space-y-2 max-h-[380px] overflow-y-auto">
+              <div className="px-6 py-5 space-y-2.5 max-h-[380px] overflow-y-auto">
                 {loadingSermons ? (
-                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-fuchsia-500" /><p className="text-xs font-bold">Loading sermons...</p></div>
+                  <div className="py-12 text-center text-slate-500">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-fuchsia-600 dark:text-fuchsia-400" />
+                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">Loading sermon library...</p>
+                  </div>
                 ) : sermonsList.length === 0 ? (
-                  <div className="py-10 text-center space-y-3 border border-dashed border-slate-200 dark:border-white/5 rounded-xl">
-                    <Play className="w-8 h-8 mx-auto text-slate-300" />
-                    <p className="text-xs font-bold text-slate-500">No sermons found.</p>
-                    <button type="button" onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded-xl text-xs font-black transition-colors shadow-sm">
-                      <PlusCircle className="w-3.5 h-3.5" /> Upload First Sermon
+                  /* High-End Empty State */
+                  <div className="py-12 px-6 text-center space-y-4 border-2 border-dashed border-slate-200/80 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-950/40 backdrop-blur-sm">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-fuchsia-500/10 to-purple-500/10 dark:from-fuchsia-500/20 dark:to-purple-500/20 border border-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                      <Mic2 className="w-7 h-7" />
+                    </div>
+                    <div className="max-w-xs mx-auto space-y-1">
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white">No Sermons Found</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                        Upload inspiring messages, Sunday morning sermons, and bible study audio/video recordings.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setShowManageSermons(false); setShowCreateSermon(true); }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-fuchsia-500/20 active:scale-95"
+                    >
+                      <PlusCircle className="w-4 h-4" /> Upload First Sermon
                     </button>
                   </div>
-                ) : (
-                  sermonsList.map(sermon => (
-                    <div key={sermon.id} className={`group flex items-center gap-3 p-3.5 border rounded-xl transition-all cursor-default ${
-                      viewingSermon?.id === sermon.id
-                        ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30 border-fuchsia-300 dark:border-fuchsia-500/40'
-                        : 'bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 hover:border-fuchsia-300/40 dark:hover:border-fuchsia-500/20'
-                    }`}>
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
-                        <Mic2 className="w-3.5 h-3.5 text-white" />
+                ) : (() => {
+                  const filteredSermons = sermonsList.filter(sermon => {
+                    const matchesStatus =
+                      sermonStatusFilter === "ALL"
+                        ? true
+                        : sermonStatusFilter === "PUBLISHED"
+                        ? sermon.status === "PUBLISHED" || sermon.visibility === "PUBLIC"
+                        : sermon.status !== "PUBLISHED" && sermon.visibility !== "PUBLIC";
+                    const matchesSearch =
+                      !sermonSearchQuery ||
+                      sermon.title?.toLowerCase().includes(sermonSearchQuery.toLowerCase()) ||
+                      sermon.pastor?.toLowerCase().includes(sermonSearchQuery.toLowerCase()) ||
+                      sermon.speaker?.toLowerCase().includes(sermonSearchQuery.toLowerCase()) ||
+                      sermon.category?.toLowerCase().includes(sermonSearchQuery.toLowerCase()) ||
+                      sermon.bibleVerse?.toLowerCase().includes(sermonSearchQuery.toLowerCase());
+                    return matchesStatus && matchesSearch;
+                  });
+
+                  if (filteredSermons.length === 0) {
+                    return (
+                      <div className="py-10 text-center text-slate-500 space-y-2 border border-slate-100 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/40">
+                        <Search className="w-6 h-6 mx-auto text-slate-400" />
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">No matching sermons found</p>
+                        <p className="text-[11px] text-slate-400">Try adjusting your search query or filter chip.</p>
+                      </div>
+                    );
+                  }
+
+                  return filteredSermons.map(sermon => (
+                    <div
+                      key={sermon.id}
+                      className={`group flex items-center gap-3 p-3.5 border rounded-2xl transition-all cursor-default ${
+                        viewingSermon?.id === sermon.id
+                          ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30 border-fuchsia-300 dark:border-fuchsia-500/40 shadow-sm'
+                          : 'bg-white dark:bg-slate-950/40 border-slate-200/80 dark:border-slate-800/80 hover:border-fuchsia-300 dark:hover:border-fuchsia-500/30 hover:shadow-md'
+                      }`}
+                    >
+                      {/* Thumbnail / Icon */}
+                      <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-fuchsia-500 to-purple-600 shrink-0 flex items-center justify-center shadow-xs">
+                        {sermon.thumbnail ? (
+                          <img src={sermon.thumbnail} alt={sermon.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <Mic2 className="w-5 h-5 text-white" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{sermon.title}</h4>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-400 font-semibold">
-                          <span>By {sermon.pastor}</span><span>•</span><span>{sermon.category}</span><span>•</span><span>{new Date(sermon.date).toLocaleDateString('en-IN')}</span>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-extrabold text-slate-900 dark:text-white truncate">{sermon.title}</h4>
+                          <span className={`px-2 py-0.5 text-[9px] font-black rounded-md uppercase border ${
+                            sermon.status === 'PUBLISHED' || sermon.visibility === 'PUBLIC'
+                              ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
+                              : 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                          }`}>
+                            {sermon.status || sermon.visibility || 'PUBLISHED'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                          <span className="text-fuchsia-600 dark:text-fuchsia-400 font-bold">By {sermon.pastor || sermon.speaker || 'Pastor'}</span>
+                          <span>•</span>
+                          <span>{sermon.category || 'General'}</span>
+                          <span>•</span>
+                          <span>{sermon.date ? new Date(sermon.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBA'}</span>
+                          {(sermon.bibleVerse || sermon.scripture) && (
+                            <>
+                              <span>•</span>
+                              <span className="text-purple-600 dark:text-purple-400 font-bold">{sermon.bibleVerse || sermon.scripture}</span>
+                            </>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {/* Read */}
-                        <button type="button" title="View Details"
+                        <button
+                          type="button"
+                          title="View Details"
                           onClick={() => setViewingSermon(viewingSermon?.id === sermon.id ? null : sermon)}
                           className={`p-2 rounded-xl transition-colors ${
                             viewingSermon?.id === sermon.id
-                              ? 'bg-fuchsia-600 text-white'
-                              : 'bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/20 dark:hover:bg-fuchsia-950/40 text-fuchsia-600 dark:text-fuchsia-400'
-                          }`}>
+                              ? 'bg-fuchsia-600 text-white shadow-sm'
+                              : 'bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/40 dark:hover:bg-fuchsia-900/60 text-fuchsia-600 dark:text-fuchsia-400'
+                          }`}
+                        >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
                         {/* Update */}
-                        <button type="button" title="Edit Sermon"
+                        <button
+                          type="button"
+                          title="Edit Sermon"
                           onClick={() => { setEditingSermon(sermon); setShowEditSermon(true); setViewingSermon(null); }}
-                          className="p-2 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/20 dark:hover:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-xl transition-colors">
+                          className="p-2 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/60 text-purple-600 dark:text-purple-400 rounded-xl transition-colors"
+                        >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         {/* Delete */}
-                        <button type="button" title="Delete Sermon"
+                        <button
+                          type="button"
+                          title="Delete Sermon"
                           onClick={() => { setDeletingSermon(sermon); setViewingSermon(null); }}
-                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
+                          className="p-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl transition-colors"
+                        >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
-                  ))
-                )}
+                  ));
+                })()}
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
-                <button type="button" onClick={() => { setShowClearSermonsConfirm(true); }} disabled={clearingSeeded || loadingSermons}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl border border-red-200 dark:border-red-900/40 disabled:opacity-50">
-                  <Trash2 className="w-3.5 h-3.5" /> Clear All Static Sermons
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+                {showClearSermonsConfirm ? (
+                  <div className="flex items-center gap-2 animate-in fade-in duration-200">
+                    <span className="text-xs font-bold text-rose-600 dark:text-rose-400">Clear all static sermons?</span>
+                    <button
+                      type="button"
+                      disabled={clearingSeeded}
+                      onClick={() => clearSeededSermons()}
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1 active:scale-95 transition-all"
+                    >
+                      {clearingSeeded ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Confirm Clear"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowClearSermonsConfirm(false)}
+                      className="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowClearSermonsConfirm(true)}
+                    disabled={clearingSeeded || loadingSermons}
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-xl border border-rose-200/80 dark:border-rose-900/40 disabled:opacity-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Clear All Static Sermons
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setShowManageSermons(false); setViewingSermon(null); }}
+                  className="px-4 py-2 text-xs font-extrabold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors"
+                >
+                  Close
                 </button>
-                <button type="button" onClick={() => { setShowManageSermons(false); setViewingSermon(null); }} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* Manage Services Modal */}
+      {/* Manage Services / Landing Page Events Modal */}
       <AnimatePresence>
         {showManageServices && (
-          <ChurchServiceManager
-            onClose={() => setShowManageServices(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Manage Events Modal */}
-      <AnimatePresence>
-        {showManageEvents && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowManageEvents(false); setViewingReport(null); }}>
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowManageServices(false)}>
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -2139,30 +2349,395 @@ export default function UnifiedEventManagementPortal() {
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-600" />
-              <button type="button" onClick={() => { setShowManageEvents(false); setViewingReport(null); }} className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600" />
+              <button
+                type="button"
+                onClick={() => setShowManageServices(false)}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Header */}
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/5">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800/80 space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400"><ClipboardList className="w-5 h-5" /></div>
+                  <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20">
+                    <Calendar className="w-5 h-5" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Manage Event Reports</h3>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Create · Read · Update · Delete</p>
+                    <h3 className="text-base font-black tracking-tight text-slate-900 dark:text-white">MANAGE LANDING PAGE EVENTS & SERVICES</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase mt-0.5 tracking-wider">CREATE · READ · UPDATE · DELETE PUBLISHED EVENTS</p>
                   </div>
                 </div>
-                {/* CRUD Action Bar */}
-                <div className="flex items-center gap-2 mt-4 flex-wrap">
-                  <a href="/event-manager/report"
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[11px] font-black transition-all active:scale-95 shadow-sm">
-                    <PlusCircle className="w-3.5 h-3.5" /> Create New
+
+                {/* Primary Action Bar */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => { setShowManageServices(false); setShowCreateService(true); }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-indigo-500/20"
+                  >
+                    <PlusCircle className="w-4 h-4" /> Create New Event
+                  </button>
+                  <button
+                    type="button"
+                    onClick={fetchAllServices}
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-200/80 dark:border-slate-700 active:scale-95"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingServices ? 'animate-spin' : ''}`} /> Refresh
+                  </button>
+                  <span className="ml-auto text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                    {servicesList.length} event{servicesList.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                {/* Search & Filter Bar */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap sm:flex-nowrap">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={serviceSearchQuery}
+                      onChange={(e) => setServiceSearchQuery(e.target.value)}
+                      placeholder="Search events by title, venue, category..."
+                      className="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400"
+                    />
+                    {serviceSearchQuery && (
+                      <button type="button" onClick={() => setServiceSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setServiceStatusFilter("ALL")}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${serviceStatusFilter === "ALL" ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-black" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"}`}
+                    >
+                      All ({servicesList.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setServiceStatusFilter("PUBLISHED")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${serviceStatusFilter === "PUBLISHED" ? "bg-emerald-500 text-white font-black shadow-sm" : "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Published ({servicesList.filter(s => s.status === "PUBLISHED" || s.isPublished).length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setServiceStatusFilter("DRAFT")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${serviceStatusFilter === "DRAFT" ? "bg-amber-500 text-white font-black shadow-sm" : "text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Draft ({servicesList.filter(s => s.status !== "PUBLISHED" && !s.isPublished).length})
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event List */}
+              <div className="px-6 py-5 space-y-2.5 max-h-[380px] overflow-y-auto">
+                {loadingServices ? (
+                  <div className="py-12 text-center text-slate-500">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
+                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">Loading published events...</p>
+                  </div>
+                ) : servicesList.length === 0 ? (
+                  /* High-End Empty State */
+                  <div className="py-12 px-6 text-center space-y-4 border-2 border-dashed border-slate-200/80 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-950/40 backdrop-blur-sm">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                      <Calendar className="w-7 h-7" />
+                    </div>
+                    <div className="max-w-xs mx-auto space-y-1">
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white">No Published Events Found</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                        Create dynamic worship services, youth revival nights, and special church conferences for the landing page.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setShowManageServices(false); setShowCreateService(true); }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-indigo-500/20 active:scale-95"
+                    >
+                      <PlusCircle className="w-4 h-4" /> Create First Event
+                    </button>
+                  </div>
+                ) : (() => {
+                  const filteredServices = servicesList.filter(srv => {
+                    const matchesStatus =
+                      serviceStatusFilter === "ALL"
+                        ? true
+                        : serviceStatusFilter === "PUBLISHED"
+                        ? srv.status === "PUBLISHED" || srv.isPublished
+                        : srv.status !== "PUBLISHED" && !srv.isPublished;
+                    const matchesSearch =
+                      !serviceSearchQuery ||
+                      srv.title?.toLowerCase().includes(serviceSearchQuery.toLowerCase()) ||
+                      srv.location?.toLowerCase().includes(serviceSearchQuery.toLowerCase()) ||
+                      srv.category?.toLowerCase().includes(serviceSearchQuery.toLowerCase());
+                    return matchesStatus && matchesSearch;
+                  });
+
+                  if (filteredServices.length === 0) {
+                    return (
+                      <div className="py-10 text-center text-slate-500 space-y-2 border border-slate-100 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/40">
+                        <Search className="w-6 h-6 mx-auto text-slate-400" />
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">No matching events found</p>
+                        <p className="text-[11px] text-slate-400">Try adjusting your search query or filter chip.</p>
+                      </div>
+                    );
+                  }
+
+                  return filteredServices.map(srv => (
+                    <div
+                      key={srv.id}
+                      className="group flex items-center gap-3 p-3.5 border rounded-2xl transition-all bg-white dark:bg-slate-950/40 border-slate-200/80 dark:border-slate-800/80 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:shadow-md cursor-default"
+                    >
+                      {/* Image / Category Icon */}
+                      <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200/60 dark:border-slate-700 shrink-0 flex items-center justify-center shadow-xs">
+                        {srv.image && srv.image !== '/images/default-event.jpg' ? (
+                          <img src={srv.image} alt={srv.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-extrabold text-slate-900 dark:text-white truncate">{srv.title}</h4>
+                          <span className={`px-2 py-0.5 text-[9px] font-black rounded-md uppercase border ${
+                            srv.status === 'PUBLISHED' || srv.isPublished
+                              ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
+                              : 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                          }`}>
+                            {srv.status || (srv.isPublished ? 'PUBLISHED' : 'DRAFT')}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                          <span className="text-indigo-600 dark:text-indigo-400 font-bold">{srv.category || 'Worship'}</span>
+                          <span>•</span>
+                          <span>{srv.date ? new Date(srv.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBA'}</span>
+                          {srv.time && (
+                            <>
+                              <span>•</span>
+                              <span>{srv.time}</span>
+                            </>
+                          )}
+                          {srv.location && (
+                            <>
+                              <span>•</span>
+                              <span className="truncate max-w-[140px] text-slate-700 dark:text-slate-300">{srv.location}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      {confirmDeleteServiceId === srv.id ? (
+                        <div className="flex items-center gap-1.5 animate-in fade-in duration-200 shrink-0">
+                          <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">Delete?</span>
+                          <button
+                            type="button"
+                            disabled={deletingServiceId === srv.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteService(srv.id);
+                              setConfirmDeleteServiceId(null);
+                            }}
+                            className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-extrabold shadow-sm flex items-center gap-1 transition-all active:scale-95"
+                          >
+                            {deletingServiceId === srv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Confirm"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmDeleteServiceId(null);
+                            }}
+                            className="px-2 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[10px] font-bold transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            title="Edit Event"
+                            onClick={() => { setEditingService(srv); setShowEditService(true); }}
+                            className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Delete Event"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmDeleteServiceId(srv.id);
+                            }}
+                            className="p-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+                {showClearServicesConfirm ? (
+                  <div className="flex items-center gap-2 animate-in fade-in duration-200">
+                    <span className="text-xs font-bold text-rose-600 dark:text-rose-400">Clear all sample events?</span>
+                    <button
+                      type="button"
+                      disabled={clearingSeededServices}
+                      onClick={() => clearSeededServices()}
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1 active:scale-95 transition-all"
+                    >
+                      {clearingSeededServices ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Confirm Clear"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowClearServicesConfirm(false)}
+                      className="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowClearServicesConfirm(true)}
+                    disabled={clearingSeededServices || loadingServices}
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-xl border border-rose-200/80 dark:border-rose-900/40 disabled:opacity-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Clear Sample Events
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(false)}
+                  className="px-4 py-2 text-xs font-extrabold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Manage Events Modal */}
+      <AnimatePresence>
+        {showManageEvents && (
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => { setShowManageEvents(false); setViewingReport(null); }}>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 12 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-2xl max-w-2xl w-full relative overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600" />
+              <button
+                type="button"
+                onClick={() => { setShowManageEvents(false); setViewingReport(null); }}
+                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800/80 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/20">
+                    <ClipboardList className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-black tracking-tight text-slate-900 dark:text-white">MANAGE EVENT REPORTS</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase mt-0.5 tracking-wider">CREATE · READ · UPDATE · DELETE</p>
+                  </div>
+                </div>
+
+                {/* Primary Action Buttons */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <a
+                    href="/event-manager/report"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-violet-500/20"
+                  >
+                    <PlusCircle className="w-4 h-4" /> Create New Report
                   </a>
-                  <button type="button" onClick={fetchAllEventsReports} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 rounded-xl text-[11px] font-black transition-all border border-slate-200 dark:border-white/10 active:scale-95">
+                  <button
+                    type="button"
+                    onClick={fetchAllEventsReports}
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-200/80 dark:border-slate-700 active:scale-95"
+                  >
                     <RefreshCw className="w-3.5 h-3.5" /> Refresh
                   </button>
-                  <span className="ml-auto text-[10px] font-bold text-slate-400">{eventsReportList.length} report{eventsReportList.length !== 1 ? 's' : ''}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setShowManageEvents(false); setShowManageServices(true); }}
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-bold transition-all border border-indigo-200 dark:border-indigo-800 active:scale-95"
+                  >
+                    <Calendar className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Manage Landing Page Events
+                  </button>
+                  <span className="ml-auto text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                    {eventsReportList.length} report{eventsReportList.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                {/* Search & Filter Bar */}
+                <div className="flex items-center gap-2 pt-1 flex-wrap sm:flex-nowrap">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={reportSearchQuery}
+                      onChange={(e) => setReportSearchQuery(e.target.value)}
+                      placeholder="Search reports by title or branch..."
+                      className="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400"
+                    />
+                    {reportSearchQuery && (
+                      <button type="button" onClick={() => setReportSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setReportStatusFilter("ALL")}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${reportStatusFilter === "ALL" ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-black" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"}`}
+                    >
+                      All ({eventsReportList.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReportStatusFilter("APPROVED")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${reportStatusFilter === "APPROVED" ? "bg-emerald-500 text-white font-black shadow-sm" : "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Approved ({eventsReportList.filter(r => r.status === "APPROVED").length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReportStatusFilter("PENDING")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${reportStatusFilter === "PENDING" ? "bg-amber-500 text-white font-black shadow-sm" : "text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Pending ({eventsReportList.filter(r => r.status === "PENDING").length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReportStatusFilter("REJECTED")}
+                      className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${reportStatusFilter === "REJECTED" ? "bg-rose-500 text-white font-black shadow-sm" : "text-rose-600 dark:text-rose-400 hover:bg-rose-500/10"}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" /> Rejected ({eventsReportList.filter(r => r.status === "REJECTED").length})
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -2238,80 +2813,147 @@ export default function UnifiedEventManagementPortal() {
               </AnimatePresence>
 
               {/* Report List */}
-              <div className="px-6 py-4 space-y-2 max-h-[380px] overflow-y-auto">
+              <div className="px-6 py-5 space-y-2.5 max-h-[380px] overflow-y-auto">
                 {loadingEventsReport ? (
-                  <div className="py-10 text-center text-slate-500"><Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-violet-500" /><p className="text-xs font-bold">Loading reports...</p></div>
+                  <div className="py-12 text-center text-slate-500">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-violet-600 dark:text-violet-400" />
+                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">Loading reports...</p>
+                  </div>
                 ) : eventsReportList.length === 0 ? (
-                  <div className="py-10 text-center space-y-3 border border-dashed border-slate-200 dark:border-white/5 rounded-xl">
-                    <FileText className="w-8 h-8 mx-auto text-slate-300" />
-                    <p className="text-xs font-bold text-slate-500">No event reports found.</p>
-                    <a href="/event-manager/report" className="inline-flex items-center gap-1.5 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-xs font-black transition-colors shadow-sm">
-                      <PlusCircle className="w-3.5 h-3.5" /> Submit First Report
+                  /* High-End Empty State */
+                  <div className="py-12 px-6 text-center space-y-4 border-2 border-dashed border-slate-200/80 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-950/40 backdrop-blur-sm">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-violet-500/10 to-indigo-500/10 dark:from-violet-500/20 dark:to-indigo-500/20 border border-violet-500/20 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                      <FileText className="w-7 h-7" />
+                    </div>
+                    <div className="max-w-xs mx-auto space-y-1">
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white">No Event Reports Found</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                        Submit official ministry field reports, record attendance & offerings, and track volunteer contributions.
+                      </p>
+                    </div>
+                    <a
+                      href="/event-manager/report"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-violet-500/20 active:scale-95"
+                    >
+                      <PlusCircle className="w-4 h-4" /> Submit First Report
                     </a>
                   </div>
-                ) : (
-                  eventsReportList.map(report => (
-                    <div key={report.id} className={`group flex items-center gap-3 p-3.5 border rounded-xl transition-all cursor-default ${
-                      viewingReport?.id === report.id
-                        ? 'bg-violet-50 dark:bg-violet-950/30 border-violet-300 dark:border-violet-500/40'
-                        : 'bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 hover:border-violet-300/40 dark:hover:border-violet-500/20'
-                    }`}>
-                      {/* Status dot */}
-                      <div className={`w-2 h-2 rounded-full shrink-0 mt-0.5 ${
-                        report.status === 'APPROVED' ? 'bg-emerald-500' :
-                        report.status === 'REJECTED' ? 'bg-red-500' : 'bg-amber-500'
-                      }`} />
+                ) : (() => {
+                  const filteredReports = eventsReportList.filter(report => {
+                    const matchesStatus = reportStatusFilter === "ALL" || report.status === reportStatusFilter;
+                    const matchesSearch = !reportSearchQuery ||
+                      report.title?.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
+                      report.branch?.name?.toLowerCase().includes(reportSearchQuery.toLowerCase());
+                    return matchesStatus && matchesSearch;
+                  });
+
+                  if (filteredReports.length === 0) {
+                    return (
+                      <div className="py-10 text-center text-slate-500 space-y-2 border border-slate-100 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/40">
+                        <Search className="w-6 h-6 mx-auto text-slate-400" />
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">No matching reports found</p>
+                        <p className="text-[11px] text-slate-400">Try adjusting your search query or filter chip.</p>
+                      </div>
+                    );
+                  }
+
+                  return filteredReports.map(report => (
+                    <div
+                      key={report.id}
+                      className={`group flex items-center gap-3 p-3.5 border rounded-2xl transition-all cursor-default ${
+                        viewingReport?.id === report.id
+                          ? 'bg-violet-50 dark:bg-violet-950/40 border-violet-300 dark:border-violet-500/40 shadow-sm'
+                          : 'bg-white dark:bg-slate-950/40 border-slate-200/80 dark:border-slate-800/80 hover:border-violet-300 dark:hover:border-violet-500/30 hover:shadow-md'
+                      }`}
+                    >
+                      {/* Status badge pill */}
+                      <span className={`px-2.5 py-1 text-[9px] font-black rounded-lg uppercase tracking-wider shrink-0 border ${
+                        report.status === 'APPROVED' ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400' :
+                        report.status === 'REJECTED' ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400' :
+                        'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400'
+                      }`}>
+                        {report.status}
+                      </span>
+
                       <div className="min-w-0 flex-1">
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{report.title}</h4>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-400 font-semibold">
-                          <span>{report.branch?.name || 'General'}</span>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                          <span className="text-slate-700 dark:text-slate-300">{report.branch?.name || 'General'}</span>
                           <span>•</span>
                           <span>{new Date(report.reportDate).toLocaleDateString('en-IN')}</span>
                           <span>•</span>
-                          <span className="text-violet-500 dark:text-violet-400">{report.attendanceCount} attendees</span>
+                          <span className="text-indigo-600 dark:text-indigo-400 font-bold">{report.attendanceCount} attendees</span>
                         </div>
                       </div>
+
                       {/* CRUD Buttons */}
                       <div className="flex items-center gap-1 shrink-0">
-                        {/* Read */}
-                        <button type="button"
+                        <button
+                          type="button"
                           title="View Details"
                           onClick={() => setViewingReport(viewingReport?.id === report.id ? null : report)}
-                          className={`p-2 rounded-xl transition-colors text-[10px] font-black ${
+                          className={`p-2 rounded-xl transition-all text-xs font-bold ${
                             viewingReport?.id === report.id
-                              ? 'bg-violet-600 text-white'
-                              : 'bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-950/40 text-violet-600 dark:text-violet-400'
-                          }`}>
+                              ? 'bg-violet-600 text-white shadow-sm'
+                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
+                          }`}
+                        >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
-                        {/* Update */}
-                        <button type="button"
+                        <button
+                          type="button"
                           title="Edit Report"
                           onClick={() => { openEditModal(report); setViewingReport(null); }}
-                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
+                          className="p-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors"
+                        >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
-                        {/* Delete */}
-                        <button type="button"
+                        <button
+                          type="button"
                           title="Delete Report"
                           onClick={() => { setDeletingReport(report); setViewingReport(null); }}
-                          className="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl transition-colors">
+                          className="p-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl transition-colors"
+                        >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
-                  ))
-                )}
+                  ));
+                })()}
               </div>
 
-              {/* Footer */}
-              <div className="px-6 py-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Approved</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> Pending</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Rejected</span>
+              {/* Interactive Footer Filter Chips */}
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setReportStatusFilter("APPROVED")}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 transition-colors border border-emerald-200/60 dark:border-emerald-500/20 text-[10px]"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" /> Approved
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReportStatusFilter("PENDING")}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-100 transition-colors border border-amber-200/60 dark:border-amber-500/20 text-[10px]"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-amber-500" /> Pending
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReportStatusFilter("REJECTED")}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-100 transition-colors border border-rose-200/60 dark:border-rose-500/20 text-[10px]"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-rose-500" /> Rejected
+                  </button>
                 </div>
-                <button type="button" onClick={() => { setShowManageEvents(false); setViewingReport(null); }} className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl border border-slate-200 dark:border-white/10 transition-colors">Close</button>
+                <button
+                  type="button"
+                  onClick={() => { setShowManageEvents(false); setViewingReport(null); }}
+                  className="px-4 py-2 text-xs font-extrabold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors"
+                >
+                  Close
+                </button>
               </div>
             </motion.div>
           </div>

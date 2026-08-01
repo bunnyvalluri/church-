@@ -2,7 +2,7 @@
  * backend/src/loops/eventUploadLoop.js
  * ─────────────────────────────────────────────────────────────────────────────
  * Loop 1: Autonomous Event Automation Loop (ECC OODA Pattern)
- * 
+ *
  * Workflow:
  * 1. OBSERVE: Ingest event creation / media upload payload from queue or API.
  * 2. ORIENT: Validate MIME header bytes, title integrity, date boundaries, and branch assignments.
@@ -12,7 +12,8 @@
  *    b. Commit transaction to PostgreSQL via Prisma.
  *    c. Trigger Next.js On-Demand Cache Revalidation (`/api/revalidate?path=/`).
  *    d. Emit real-time Socket.io popup alert (`notification:popup`).
- *    e. Dispatch Firebase FCM Push Notification to registered mobile/web tokens.
+ *    e. Dispatch ALL notification channels (Email, SMS, WhatsApp, FCM Push)
+ *       via the central notificationDispatcher.
  * 5. TELEMETRY: Record metrics & audit log entry.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -24,6 +25,14 @@ const { logAuditEvent } = require('../services/auditLogger');
 const { UploadError } = require('../utils/apiResponse');
 const http = require('http');
 const https = require('https');
+
+// Central notification orchestrator (Email + SMS + WhatsApp + FCM)
+let dispatchEventNotification;
+try {
+  ({ dispatchEventNotification } = require('../services/notificationDispatcher'));
+} catch (e) {
+  console.warn('[EVENT_AUTOMATION_LOOP] notificationDispatcher not available:', e.message);
+}
 
 let cloudinary;
 try {
@@ -129,8 +138,34 @@ async function processEventUploadLoop(jobData, io) {
     console.log('[EVENT_AUTOMATION_LOOP] [ACT] Realtime Socket.io popup emitted.');
   }
 
-  // 6. ACT: Dispatch FCM Push Notifications
-  await sendFcmPushNotification(title, description, savedEvent.id);
+  // 6. ACT: Dispatch ALL Notification Channels (Email, SMS, WhatsApp, FCM)
+  // Non-blocking — runs in background so event creation API responds immediately.
+  if (dispatchEventNotification) {
+    setImmediate(async () => {
+      try {
+        const dispatchResult = await dispatchEventNotification(savedEvent, {
+          // Optionally restrict to the event's branch
+          branch: null, // null = notify ALL branches
+          emailEnabled:    true,
+          smsEnabled:      true,
+          whatsappEnabled: true,
+          pushEnabled:     true,
+        });
+        console.log(`[EVENT_AUTOMATION_LOOP] [ACT] Notification dispatch complete:`, {
+          email:    dispatchResult.email?.sent,
+          sms:      dispatchResult.sms?.sent,
+          whatsapp: dispatchResult.whatsapp?.sent,
+          push:     dispatchResult.push?.sent,
+          members:  dispatchResult.totalMembersNotified,
+        });
+      } catch (err) {
+        console.error('[EVENT_AUTOMATION_LOOP] Notification dispatch error:', err.message);
+      }
+    });
+  } else {
+    // Fallback: legacy FCM-only push (if dispatcher not available)
+    await sendFcmPushNotification(title, description, savedEvent.id);
+  }
 
   // 7. TELEMETRY: Audit Log
   await logAuditEvent({

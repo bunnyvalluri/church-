@@ -182,21 +182,24 @@ export function middleware(req: NextRequest) {
 
   // ── Guard: /api/pastor/* endpoints ────────────────────────────────────────
   if (PASTOR_API_PREFIXES.some((p) => pathname.startsWith(p))) {
-    if (!isAuthenticated) {
-      return NextResponse.json(
-        { error: 'Authentication required. Please sign in.' },
-        { status: 401 }
-      );
-    }
-    // Sermon endpoints: also allow EVENT_MANAGER and FIELD_VOLUNTEER so they
-    // can create / manage sermons from the event-manager dashboard.
-    const isSermonEndpoint = pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/clear-seeded-sermons');
-    const canAccess = isPastorRole || (isSermonEndpoint && isVolunteerRole);
-    if (!canAccess) {
-      return NextResponse.json(
-        { error: 'Access denied. Pastor or Admin privileges required.' },
-        { status: 403 }
-      );
+    const isGetSermons = req.method === 'GET' && pathname.startsWith('/api/pastor/sermons');
+    if (!isGetSermons) {
+      if (!isAuthenticated) {
+        return NextResponse.json(
+          { error: 'Authentication required. Please sign in.' },
+          { status: 401 }
+        );
+      }
+      // Sermon endpoints: also allow EVENT_MANAGER and FIELD_VOLUNTEER so they
+      // can create / manage sermons from the event-manager dashboard.
+      const isSermonEndpoint = pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/clear-seeded-sermons');
+      const canAccess = isPastorRole || (isSermonEndpoint && isVolunteerRole);
+      if (!canAccess) {
+        return NextResponse.json(
+          { error: 'Access denied. Pastor or Admin privileges required.' },
+          { status: 403 }
+        );
+      }
     }
     return NextResponse.next();
   }

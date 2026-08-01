@@ -8,6 +8,7 @@
  * - Deployment Health Probe (Every 15 minutes)
  * - Database Audit (Every 6 hours)
  * - Branch Compliance Audit (Every 6 hours)
+ * - Notification Retry Worker (Every 15 minutes)  ← NEW
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -16,6 +17,7 @@ const { runUploadVerificationLoop } = require('../loops/uploadVerificationLoop')
 const { runDeploymentHealthLoop } = require('../loops/deploymentHealthLoop');
 const { runDatabaseAuditLoop } = require('../loops/databaseAuditLoop');
 const { auditBranchComplianceLoop } = require('../loops/branchLoop');
+const { runNotificationRetryWorker } = require('./notificationRetryWorker');
 
 function startLoopCronScheduler(io) {
   console.log('[CRON_SCHEDULER] Starting background Loop Cron Scheduler...');
@@ -65,6 +67,18 @@ function startLoopCronScheduler(io) {
     }
   }, 6 * 60 * 60 * 1000);
 
+  // 6. Notification Retry Worker (Every 15 minutes) — retries failed Email/SMS/WhatsApp
+  setInterval(async () => {
+    try {
+      const summary = await runNotificationRetryWorker();
+      if (summary.processed > 0) {
+        console.log('[CRON] Notification retry run:', summary);
+      }
+    } catch (err) {
+      console.warn(`[CRON] Notification retry interval note: ${err.message}`);
+    }
+  }, 15 * 60 * 1000);
+
   // Initial startup diagnostic sweep after 10 seconds
   setTimeout(() => {
     runSecurityAuditScan().catch(() => {});
@@ -72,9 +86,11 @@ function startLoopCronScheduler(io) {
     runDeploymentHealthLoop(io).catch(() => {});
     runDatabaseAuditLoop().catch(() => {});
     auditBranchComplianceLoop(io).catch(() => {});
+    // Run notification retry on startup to process any jobs that survived a restart
+    runNotificationRetryWorker().catch(() => {});
   }, 10000);
 
-  console.log('[CRON_SCHEDULER] Loop Cron Scheduler operational across all 7 loops.');
+  console.log('[CRON_SCHEDULER] Loop Cron Scheduler operational across all 8 loops (incl. Notification Retry).');
 }
 
 module.exports = {
