@@ -1485,7 +1485,7 @@ function NgoDonationsContent() {
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <Link
-                      href="/member/donations"
+                      href="/member/give"
                       className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/40 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <FileText className="w-4 h-4" />

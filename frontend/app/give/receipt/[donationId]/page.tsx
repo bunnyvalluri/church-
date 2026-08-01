@@ -523,7 +523,7 @@ export default function ReceiptPage() {
           Make Another Donation
         </Link>
         <Link
-          href="/member/donations"
+          href="/member/give"
           className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 font-semibold hover:underline text-sm"
         >
           <FileText className="w-4 h-4" />

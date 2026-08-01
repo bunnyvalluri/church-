@@ -43,7 +43,9 @@ const nextConfig = {
   ],
 
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: [
+      'lucide-react', 'framer-motion', 'recharts', 'date-fns', 'clsx', 'tailwind-merge'
+    ],
     serverComponentsExternalPackages: [
       'prisma', '@prisma/client', 'firebase-admin', '@google-cloud/storage', 'cloudinary'
     ],
