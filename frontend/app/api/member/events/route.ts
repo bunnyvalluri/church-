@@ -7,6 +7,10 @@ export async function GET(req: Request) {
     const userId = searchParams.get('userId');
 
     const dbEvents = await prisma.event.findMany({
+      where: {
+        isDeleted: false,
+        isPublished: true,
+      },
       orderBy: { date: 'asc' },
     });
 

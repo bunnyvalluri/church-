@@ -9,6 +9,7 @@ export async function GET(req: Request) {
   try {
     const events = await prisma.event.findMany({
       where: {
+        isDeleted: false,
         status: "PUBLISHED",
       },
       orderBy: {
