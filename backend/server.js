@@ -137,6 +137,110 @@ app.post('/api/notifications/retry', async (req, res) => {
   }
 });
 
+// ── Agent Reach Internet Intelligence Routes ─────────────────────────────────
+const agentReachEngine = require('./src/services/agentReachEngine');
+
+// 1. Sermon Research Agent
+app.post('/api/agents/sermon-research', async (req, res) => {
+  try {
+    const task = await agentReachEngine.runSermonResearch(req.body, io);
+    return res.json({ success: true, task });
+  } catch (err) {
+    console.error('[AGENT/SERMON_RESEARCH] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 2. Church News Agent (Get cached articles & manual refresh)
+app.get('/api/agents/church-news', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const articles = await prisma.churchNewsArticle.findMany({
+      orderBy: { publishedAt: 'desc' },
+      take: 20
+    });
+    return res.json({ success: true, count: articles.length, articles });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/agents/church-news/fetch', async (req, res) => {
+  try {
+    const task = await agentReachEngine.runChurchNewsFetch(req.body, io);
+    return res.json({ success: true, task });
+  } catch (err) {
+    console.error('[AGENT/CHURCH_NEWS] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 3. Event Inspiration Agent
+app.post('/api/agents/event-inspiration', async (req, res) => {
+  try {
+    const task = await agentReachEngine.runEventInspiration(req.body, io);
+    return res.json({ success: true, task });
+  } catch (err) {
+    console.error('[AGENT/EVENT_INSPIRATION] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 4. Social Content Agent
+app.post('/api/agents/social-content', async (req, res) => {
+  try {
+    const task = await agentReachEngine.runSocialContent(req.body, io);
+    return res.json({ success: true, task });
+  } catch (err) {
+    console.error('[AGENT/SOCIAL_CONTENT] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 5. Developer Support Agent
+app.post('/api/agents/developer-support', async (req, res) => {
+  try {
+    const task = await agentReachEngine.runDeveloperSupport(req.body, io);
+    return res.json({ success: true, task });
+  } catch (err) {
+    console.error('[AGENT/DEVELOPER_SUPPORT] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Agent Task History Endpoints
+app.get('/api/agents/tasks', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const tasks = await prisma.agentReachTask.findMany({
+      include: { sources: true },
+      orderBy: { createdAt: 'desc' },
+      take: 15
+    });
+    return res.json({ success: true, tasks });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/agents/tasks/:id', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    const task = await prisma.agentReachTask.findUnique({
+      where: { id: req.params.id },
+      include: { sources: true }
+    });
+    if (!task) return res.status(404).json({ success: false, error: 'Task not found' });
+    return res.json({ success: true, task });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 
 const server = http.createServer(app);
 

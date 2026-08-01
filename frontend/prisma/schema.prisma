@@ -1373,4 +1373,63 @@ model DonationRetryJob {
   @@map("donation_retry_jobs")
 }
 
+// ─── Agent Reach Internet Intelligence Models ─────────────────────────────────
+
+model AgentReachTask {
+  id             String             @id @default(cuid())
+  agentType      String             @map("agent_type") // SERMON_RESEARCH | CHURCH_NEWS | EVENT_INSPIRATION | SOCIAL_CONTENT | DEVELOPER_SUPPORT
+  status         String             @default("PENDING") // PENDING | RUNNING | COMPLETED | FAILED
+  query          String             @db.Text
+  parameters     Json               @default("{}")
+  summaryResult  Json               @default("{}") @map("summary_result")
+  markdownReport String?            @db.Text @map("markdown_report")
+  error          String?            @db.Text
+  createdById    String?            @map("created_by")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  completedAt    DateTime?          @map("completed_at")
+  sources        AgentReachSource[]
+
+  @@index([agentType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("agent_reach_tasks")
+}
+
+model AgentReachSource {
+  id          String         @id @default(cuid())
+  taskId      String         @map("task_id")
+  task        AgentReachTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  sourceType  String         @map("source_type") // YOUTUBE | BLOG | GITHUB | REDDIT | NEWS_RSS | NGO | CLOUDINARY_MEDIA | DOCS
+  title       String
+  url         String?        @db.Text
+  author      String?
+  publishedAt String?        @map("published_at")
+  snippet     String?        @db.Text
+  metadata    Json           @default("{}")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@index([taskId])
+  @@index([sourceType])
+  @@map("agent_reach_sources")
+}
+
+model ChurchNewsArticle {
+  id          String    @id @default(cuid())
+  category    String    // CHRISTIAN_NEWS | NGO_NEWS | MISSION_UPDATE
+  title       String
+  sourceName  String    @map("source_name")
+  sourceUrl   String    @unique @map("source_url")
+  summary     String    @db.Text
+  content     String?   @db.Text
+  imageUrl    String?   @map("image_url")
+  publishedAt DateTime? @map("published_at")
+  fetchedAt   DateTime  @default(now()) @map("fetched_at")
+
+  @@index([category])
+  @@index([fetchedAt])
+  @@map("church_news_articles")
+}
+
+
 
