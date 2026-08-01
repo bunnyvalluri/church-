@@ -17,12 +17,12 @@
  */
 
 // ── Script Properties ─────────────────────────────────────────────────────────
-var SCRIPT_PROPS  = PropertiesService.getScriptProperties();
+var SCRIPT_PROPS   = PropertiesService.getScriptProperties();
 var WEBHOOK_SECRET = SCRIPT_PROPS.getProperty('KCM_WEBHOOK_SECRET') || 'kcm_google_webhook_secret';
-var SHEET_ID      = SCRIPT_PROPS.getProperty('SHEET_ID');
-var BACKEND_URL   = SCRIPT_PROPS.getProperty('BACKEND_URL') || 'https://api.kcmministries.org';
-var CHURCH_NAME   = 'Kingdom of Christ Ministries';
-var EVENTS_URL    = 'https://kcmchurch.vercel.app/#events';
+var SHEET_ID       = SCRIPT_PROPS.getProperty('SHEET_ID');
+var BACKEND_URL    = SCRIPT_PROPS.getProperty('BACKEND_URL') || 'https://api.kcmministries.org';
+var CHURCH_NAME    = 'Kingdom of Christ Ministries';
+var EVENTS_URL     = 'https://kcmchurch.vercel.app/#events';
 
 // Column mapping (0-based) — must match KCM Members Database sheet
 var COL_FULL_NAME   = 1;
@@ -40,13 +40,22 @@ var COL_CONSENT     = 12;
  */
 function doPost(e) {
   try {
+    // Safety guard when testing from Apps Script editor or malformed POST
+    if (!e || !e.postData || !e.postData.contents) {
+      Logger.log('WARNING: doPost received empty postData or e is undefined. Use testDoPost() in Apps Script to test manually.');
+      return _jsonResponse({
+        error: 'No POST body provided. If testing in Apps Script Editor, select testDoPost from dropdown.',
+        success: false
+      });
+    }
+
     var body = JSON.parse(e.postData.contents);
 
     // 1. Authenticate webhook secret
-    var incomingSecret = body.secret || e.parameter.secret || '';
+    var incomingSecret = body.secret || (e.parameter && e.parameter.secret) || '';
     if (incomingSecret !== WEBHOOK_SECRET) {
-      Logger.log('UNAUTHORIZED: Invalid webhook secret from ' + (e.parameter.remoteAddress || 'unknown'));
-      return _jsonResponse({ error: 'Unauthorized', code: 401 });
+      Logger.log('UNAUTHORIZED: Invalid webhook secret.');
+      return _jsonResponse({ error: 'Unauthorized', code: 401, success: false });
     }
 
     var eventData = {
@@ -57,23 +66,29 @@ function doPost(e) {
       event_link:        body.event_link        || EVENTS_URL,
     };
 
-    Logger.log('Webhook received for event: ' + eventData.event_title);
+    Logger.log('Webhook received for event: ' + eventData.event_title + ' (Branch: ' + eventData.event_branch + ')');
 
     // 2. Load members from Google Sheet
     var members = _loadMembers();
-    Logger.log('Loaded ' + members.length + ' eligible members.');
+    Logger.log('Loaded ' + members.length + ' eligible members from Sheet.');
 
-    // 3. Send Gmail emails to members who opted for Email notifications
-    var emailResults = _sendBulkEmails(members, eventData);
+    // 3. Filter members by branch if specified
+    var filteredMembers = _filterByBranch(members, eventData.event_branch);
+    Logger.log('Eligible members after branch filter (' + eventData.event_branch + '): ' + filteredMembers.length);
 
-    // 4. Log summary
+    // 4. Send Gmail emails to members who opted for Email notifications
+    var emailResults = _sendBulkEmails(filteredMembers, eventData);
+
+    // 5. Log summary
     Logger.log('Email dispatch complete: ' + JSON.stringify(emailResults));
 
     return _jsonResponse({
       success: true,
       members_loaded: members.length,
+      members_targeted: filteredMembers.length,
       emails_sent: emailResults.sent,
       emails_failed: emailResults.failed,
+      emails_skipped: emailResults.skipped,
     });
 
   } catch (err) {
@@ -97,29 +112,53 @@ function doGet(e) {
 
 /**
  * Load all eligible members from the KCM Members Database Google Sheet.
- * Filters by: consent given + has email address.
+ * Filters by: consent given + valid email address.
  */
 function _loadMembers() {
-  if (!SHEET_ID) {
-    Logger.log('WARNING: SHEET_ID not set in Script Properties.');
+  var spreadsheet = null;
+
+  if (SHEET_ID) {
+    try {
+      spreadsheet = SpreadsheetApp.openById(SHEET_ID);
+    } catch (err) {
+      Logger.log('ERROR: Unable to open spreadsheet by SHEET_ID (' + SHEET_ID + '): ' + err.message);
+    }
+  }
+
+  // Fallback to active spreadsheet if script is container-bound
+  if (!spreadsheet) {
+    try {
+      spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (err) {
+      Logger.log('WARNING: No active spreadsheet bound.');
+    }
+  }
+
+  if (!spreadsheet) {
+    Logger.log('ERROR: SHEET_ID not set in Script Properties and no bound active spreadsheet.');
     return [];
   }
 
   try {
-    var spreadsheet = SpreadsheetApp.openById(SHEET_ID);
     var sheet = spreadsheet.getSheetByName('KCM Members Database') || spreadsheet.getActiveSheet();
     var rows = sheet.getDataRange().getValues();
 
-    if (rows.length <= 1) return []; // Header only
+    if (!rows || rows.length <= 1) return []; // Header only or empty sheet
 
     var members = [];
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i];
-      var consent = String(row[COL_CONSENT] || '').toLowerCase();
-      var hasConsent = consent.indexOf('yes') >= 0 || consent.indexOf('agree') >= 0;
+
+      // Consent logic: default to true if empty/unspecified, or explicitly yes/agree/true
+      var consent = String(row[COL_CONSENT] || '').toLowerCase().trim();
+      var hasConsent = consent === '' || consent === 'true' || consent.indexOf('yes') >= 0 || consent.indexOf('agree') >= 0;
+
       var email = String(row[COL_EMAIL] || '').trim().toLowerCase();
 
-      if (!hasConsent || !email) continue;
+      // Basic email structure validation
+      var isValidEmail = email && email.indexOf('@') > 0 && email.indexOf('.') > email.indexOf('@') + 1;
+
+      if (!hasConsent || !isValidEmail) continue;
 
       var notifPref = String(row[COL_NOTIF_PREF] || '');
       members.push({
@@ -141,6 +180,23 @@ function _loadMembers() {
   }
 }
 
+/**
+ * Filter members by branch matching logic.
+ */
+function _filterByBranch(members, targetBranch) {
+  if (!targetBranch || targetBranch.toLowerCase() === 'all' || targetBranch.toLowerCase() === 'all branches') {
+    return members;
+  }
+
+  var targetLower = targetBranch.toLowerCase().trim();
+  return members.filter(function(m) {
+    if (!m.branch || m.branch.toLowerCase() === 'all' || m.branch.toLowerCase() === 'all branches') {
+      return true; // Member registered under All Branches receives all notifications
+    }
+    return m.branch.toLowerCase().indexOf(targetLower) >= 0 || targetLower.indexOf(m.branch.toLowerCase()) >= 0;
+  });
+}
+
 // ── Email Sender ─────────────────────────────────────────────────────────────
 
 /**
@@ -155,7 +211,7 @@ function _sendBulkEmails(members, eventData) {
     var member = members[i];
 
     // Check email notification preference
-    var notifPref = member.notifPref.toLowerCase();
+    var notifPref = String(member.notifPref || '').toLowerCase();
     var wantsEmail = notifPref === '' ||
                      notifPref.indexOf('email') >= 0 ||
                      notifPref.indexOf('all')   >= 0;
@@ -214,6 +270,9 @@ function _buildPlainEmailBody(member, eventData) {
 function _buildHtmlEmailBody(member, eventData) {
   var dateStr  = _formatDate(eventData.event_date);
   var name     = member.fullName || 'Beloved Member';
+  var descSnippet = eventData.event_description
+    ? '<p style="color:#64748b;font-size:13px;margin:12px 0 0;line-height:1.6;border-top:1px solid #2d2d44;padding-top:12px;">' + _escapeHtml(eventData.event_description.substring(0, 200)) + (eventData.event_description.length > 200 ? '...' : '') + '</p>'
+    : '';
 
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>' +
     '<body style="margin:0;padding:0;background:#0f0f1a;font-family:Arial,sans-serif;">' +
@@ -230,16 +289,16 @@ function _buildHtmlEmailBody(member, eventData) {
 
     // Body
     '<tr><td style="padding:36px;">' +
-    '<p style="color:#c4b5fd;font-size:16px;margin:0 0 16px;">Dear <strong style="color:#fff;">' + name + '</strong>,</p>' +
+    '<p style="color:#c4b5fd;font-size:16px;margin:0 0 16px;">Dear <strong style="color:#fff;">' + _escapeHtml(name) + '</strong>,</p>' +
     '<p style="color:#a78bfa;font-size:14px;line-height:1.7;margin:0 0 24px;">Praise God! A new event has been announced at ' + CHURCH_NAME + '.</p>' +
 
     // Event Card
     '<div style="background:#0f0f1a;border-radius:10px;border:1px solid #7c3aed;padding:24px;margin-bottom:24px;">' +
     '<div style="color:#a855f7;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 New Event</div>' +
-    '<h2 style="color:#fff;margin:0 0 14px;font-size:20px;">' + eventData.event_title + '</h2>' +
-    '<p style="color:#94a3b8;font-size:13px;margin:4px 0;">📍 Branch: <span style="color:#e2e8f0;font-weight:500;">' + eventData.event_branch + '</span></p>' +
-    '<p style="color:#94a3b8;font-size:13px;margin:4px 0;">📆 Date: <span style="color:#e2e8f0;font-weight:500;">' + dateStr + '</span></p>' +
-    (eventData.event_description ? '<p style="color:#64748b;font-size:13px;margin:12px 0 0;line-height:1.6;border-top:1px solid #2d2d44;padding-top:12px;">' + eventData.event_description.substring(0, 200) + '...</p>' : '') +
+    '<h2 style="color:#fff;margin:0 0 14px;font-size:20px;">' + _escapeHtml(eventData.event_title) + '</h2>' +
+    '<p style="color:#94a3b8;font-size:13px;margin:4px 0;">📍 Branch: <span style="color:#e2e8f0;font-weight:500;">' + _escapeHtml(eventData.event_branch) + '</span></p>' +
+    '<p style="color:#94a3b8;font-size:13px;margin:4px 0;">📆 Date: <span style="color:#e2e8f0;font-weight:500;">' + _escapeHtml(dateStr) + '</span></p>' +
+    descSnippet +
     '</div>' +
 
     // CTA
@@ -265,6 +324,8 @@ function _formatDate(dateStr) {
   if (!dateStr || dateStr === 'TBA') return 'TBA';
   try {
     var d = new Date(dateStr);
+    if (isNaN(d.getTime())) return String(dateStr);
+
     var days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
@@ -273,8 +334,40 @@ function _formatDate(dateStr) {
   }
 }
 
+function _escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function _jsonResponse(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── Testing Helper for Apps Script IDE Editor ─────────────────────────────
+
+/**
+ * Run this function from the Google Apps Script IDE dropdown to test doPost!
+ */
+function testDoPost() {
+  var dummyEvent = {
+    postData: {
+      contents: JSON.stringify({
+        secret: WEBHOOK_SECRET,
+        event_title: "Test Youth Fellowship Convention 2026",
+        event_branch: "Shapur Nagar",
+        event_date: new Date().toISOString(),
+        event_description: "Join us for a powerful evening of praise, worship, and God's Word.",
+        event_link: EVENTS_URL
+      })
+    }
+  };
+  var response = doPost(dummyEvent);
+  Logger.log("Test doPost Output:\n" + response.getContent());
 }
