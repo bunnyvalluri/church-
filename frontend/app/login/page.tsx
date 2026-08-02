@@ -371,41 +371,53 @@ export default function LoginPage() {
     setSocialLoading(name);
     setIsLoggingIn(true);
 
-    const isMobile = typeof window !== "undefined" && (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-      window.innerWidth < 768
-    );
-
     try {
       let u: any = null;
 
-      // On desktop browsers, attempt Firebase OAuth popup
-      if (!isMobile && auth && typeof signInWithPopup === "function") {
-        try {
+      // Step 1: Always try Google OAuth popup first (shows Google account chooser)
+      try {
+        if (auth && typeof signInWithPopup === "function") {
           const result = await signInWithPopup(auth, provider);
           u = result.user;
-        } catch (popupErr: any) {
-          console.warn(`[AUTH/OAUTH] ${name} Popup sign-in warning:`, popupErr);
+        }
+      } catch (popupErr: any) {
+        console.warn(`[AUTH/OAUTH] ${name} popup error:`, popupErr?.code);
+
+        if (
+          popupErr?.code === "auth/popup-blocked" ||
+          popupErr?.code === "auth/cancelled-popup-request"
+        ) {
+          // Popup was blocked by browser — fallback to full-page redirect (mobile browsers)
+          if (auth && typeof signInWithRedirect === "function") {
+            await signInWithRedirect(auth, provider);
+            return; // page will reload, getRedirectResult will handle the rest
+          }
+        } else if (
+          popupErr?.code === "auth/popup-closed-by-user" ||
+          popupErr?.code === "auth/user-cancelled"
+        ) {
+          // User deliberately closed the Google popup — do nothing, clear loading state
+          setSocialLoading(null);
+          setIsLoggingIn(false);
+          return;
+        } else {
+          // Real error (e.g. auth/operation-not-allowed, auth/unauthorized-domain)
+          throw popupErr;
         }
       }
 
-      // Seamless fallback user authentication if on mobile phone or popup is blocked
       if (!u) {
-        const fallbackEmail = email || "member@kcmchurch.org";
-        u = {
-          uid: `google-user-${Date.now()}`,
-          email: fallbackEmail,
-          displayName: fallbackEmail.split("@")[0] || "Google Member",
-          photoURL: null,
-        };
+        setSocialLoading(null);
+        setIsLoggingIn(false);
+        return;
       }
 
       const initialRole = getRoleForEmail(u.email || "");
 
-      // 1. Instantly set session cookies with Secure flag for mobile phone HTTPS compatibility
+      // 1. Set session cookies
       setAuthCookies(u.uid, initialRole);
 
-      // 2. Instantly update client-side AuthProvider state
+      // 2. Update client-side auth state
       if (updateUser) {
         updateUser({
           uid: u.uid,
@@ -416,7 +428,7 @@ export default function LoginPage() {
         });
       }
 
-      // 3. Fire-and-forget background database sync
+      // 3. Background database sync (fire-and-forget)
       fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -429,23 +441,17 @@ export default function LoginPage() {
         }),
       }).catch(() => {});
 
-      // 4. Send non-blocking login notification email
+      // 4. Non-blocking login notification email
       sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
 
-      // 5. INSTANT GUARANTEED MOBILE & DESKTOP REDIRECT TO /member
-      if (typeof window !== "undefined") {
-        window.location.replace("/member");
-      } else {
-        redirectForRole(initialRole);
-      }
+      // 5. Redirect to the appropriate dashboard
+      redirectForRole(initialRole);
+
     } catch (err: any) {
-      console.error(`[AUTH/OAUTH] Mobile sign-in redirect:`, err);
-      if (typeof window !== "undefined") {
-        window.location.replace("/member");
-      }
-    } finally {
+      console.error(`[AUTH/OAUTH] ${name} sign-in failed:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
+      setError(err?.code || "sign-in-failed");
     }
   };
 
