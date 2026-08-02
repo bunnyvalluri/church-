@@ -840,7 +840,7 @@ export default function LoginPage() {
                   disabled={!!socialLoading}
                   whileHover={!socialLoading ? { scale: 1.01, y: -0.5 } : {}}
                   whileTap={!socialLoading ? { scale: 0.99 } : {}}
-                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-gray-250 dark:border-gray-800 bg-white dark:bg-gray-900/30 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-85 disabled:cursor-wait group overflow-hidden"
+                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/30 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-85 disabled:cursor-wait group overflow-hidden"
                   title={loginT.googleSignIn}
                 >
                   <AnimatePresence>
@@ -865,8 +865,8 @@ export default function LoginPage() {
                         className="flex items-center justify-center gap-3"
                       >
                         <Loader2 className="w-5 h-5 animate-spin text-[hsl(var(--primary))]" />
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 animate-pulse">
-                          {language === "en" ? "Connecting to Google..." : "கூகுள் கணக்குடன் இணைகிறது..."}
+                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 animate-pulse">
+                          {language === "te" ? "Google తో అనుసంధానిస్తోంది..." : language === "hi" ? "Google से जुड़ रहा है..." : "Connecting to Google..."}
                         </span>
                       </motion.div>
                     ) : (
@@ -883,7 +883,7 @@ export default function LoginPage() {
                           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
                           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
                           {loginT.googleSignIn}
                         </span>
                       </motion.div>
