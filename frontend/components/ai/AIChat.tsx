@@ -111,7 +111,13 @@ export default function AIChat() {
     }
   }, [messages, isLoading]);
 
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/pastor")) return null;
+  if (
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/pastor") ||
+    pathname?.startsWith("/login") ||
+    pathname?.startsWith("/register")
+  )
+    return null;
   if (!mounted) return null;
 
   // Floating trigger button when closed

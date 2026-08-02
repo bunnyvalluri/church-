@@ -254,7 +254,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-3 py-4 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
