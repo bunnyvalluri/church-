@@ -61,6 +61,25 @@ const itemVariants = {
   },
 };
 
+const getRoleForEmail = (email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' => {
+  const e = (email || "").toLowerCase().trim();
+  if (e.includes('superadmin')) return 'SUPER_ADMIN';
+  if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
+  if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
+  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
+  if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
+  return 'MEMBER';
+};
+
+const sendLoginEmail = (email: string, name: string, method: string) => {
+  if (!email) return;
+  fetch('/api/auth/send-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'LOGIN', email, name, method }),
+  }).catch(() => {});
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const { mounted, status, user, updateUser } = useAuth();
