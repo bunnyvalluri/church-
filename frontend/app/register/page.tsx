@@ -360,6 +360,8 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
+            </div>
+
             {/* Email */}
             <div className="space-y-1">
               <label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -395,7 +397,7 @@ export default function RegisterPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   className={inputClass}
-                  placeholder="+91 98765 43210"
+                  placeholder="+91 1234567890"
                 />
               </div>
             </div>

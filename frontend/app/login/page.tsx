@@ -523,7 +523,7 @@ export default function LoginPage() {
           if (syncData?.success && syncData?.user?.role) {
             const syncedRole = syncData.user.role;
             if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_role=${syncedRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              document.cookie = `__kcm_session_role=${syncedRole}; path=/; max-age=604800; SameSite=Lax`;
             }
             if (updateUser) updateUser({ role: syncedRole });
             if (syncedRole !== initialRole) {
