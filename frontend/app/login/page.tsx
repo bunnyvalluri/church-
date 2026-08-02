@@ -650,7 +650,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 sm:px-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Subtle grid pattern background (visible on desktop) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
         
@@ -664,7 +664,10 @@ export default function LoginPage() {
         
         {/* Cross Watermark (Mobile Only) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none lg:hidden">
-          <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
+          <svg className="w-80 h-80 text-white" viewBox="0 0 100 100" fill="currentColor">
+            <rect x="42" y="6" width="16" height="88" rx="2" />
+            <rect x="14" y="28" width="72" height="16" rx="2" />
+          </svg>
         </div>
 
         {/* Top Controls Bar (Desktop Language Toggle & Mobile Header) */}
@@ -686,7 +689,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10"
+          className="w-full max-w-md mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 min-w-0 box-border"
         >
           {/* Mobile Branding Header */}
           <div className="lg:hidden flex flex-col items-center mb-5 text-center">

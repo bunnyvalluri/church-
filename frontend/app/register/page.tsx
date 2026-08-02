@@ -254,30 +254,34 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         
         {/* Cross Watermark (Mobile Only) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none lg:hidden">
-          <span className="text-white font-bold" style={{ fontSize: "30rem", lineHeight: 1 }}>✝</span>
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none lg:hidden">
+          <svg className="w-80 h-80 text-white" viewBox="0 0 100 100" fill="currentColor">
+            <rect x="42" y="6" width="16" height="88" rx="2" />
+            <rect x="14" y="28" width="72" height="16" rx="2" />
+          </svg>
         </div>
 
-        {/* Language Selection */}
-        <div className="absolute top-6 right-6 z-20">
+        {/* Desktop Language Toggle */}
+        <div className="hidden lg:block absolute top-6 right-6 z-20">
           <LanguageToggle />
         </div>
 
-        {/* Mobile Header / Back Button */}
-        <div className="absolute top-6 left-6 lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-2 text-white/90 hover:text-white transition-colors bg-white/10 dark:bg-white/5 border border-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full">
+        {/* Mobile Top Header Bar */}
+        <div className="w-full max-w-lg flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
+          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
             <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-medium">{registerT.backToSignIn}</span>
+            <span className="text-xs font-semibold tracking-wide">{registerT.backToSignIn}</span>
           </Link>
+          <LanguageToggle />
         </div>
 
-        <div className="w-full max-w-lg mt-20 mb-8 lg:mt-0 lg:mb-0 bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none lg:p-0 z-10 animate-fade-in-up">
+        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
           {/* Mobile Branding (Visible only on smaller screens) */}
           <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
             <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-850 mb-3 shadow-sm bg-white dark:bg-gray-900">
