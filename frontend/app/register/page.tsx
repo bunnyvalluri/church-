@@ -188,7 +188,7 @@ export default function RegisterPage() {
   };
 
   const inputClass =
-    "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-sm";
+    "w-full pl-10 pr-3.5 py-2 sm:py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-xs sm:text-sm";
 
   return (
     <div className="min-h-[100dvh] flex flex-col lg:flex-row">
@@ -254,7 +254,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-3 py-3 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
@@ -273,18 +273,18 @@ export default function RegisterPage() {
         </div>
 
         {/* Mobile Top Header Bar */}
-        <div className="w-full max-w-lg flex items-center justify-between pt-1 px-1 mb-3 lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
-            <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-semibold tracking-wide">{registerT.backToSignIn}</span>
+        <div className="w-full max-w-lg flex items-center justify-between pt-0.5 px-1 mb-1.5 lg:hidden z-20">
+          <Link href="/login" className="flex items-center gap-1 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-2.5 py-1 rounded-full shadow-md">
+            <ChevronLeft className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-semibold tracking-wide">{registerT.backToSignIn}</span>
           </Link>
           <LanguageToggle />
         </div>
 
-        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
+        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
           {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-4 text-center">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-1.5 shadow-md bg-white dark:bg-gray-900 p-0.5">
+          <div className="lg:hidden flex flex-col items-center mb-2 text-center">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-1 shadow-md bg-white dark:bg-gray-900 p-0.5">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -295,41 +295,41 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-base font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
             <p className={`text-gray-400 font-semibold mt-0.5 ${
-              language === "en" ? "text-[9px] uppercase tracking-widest" : "text-xs tracking-normal"
+              language === "en" ? "text-[8px] uppercase tracking-widest" : "text-[10px] tracking-normal"
             }`}>{loginT.ministries}</p>
           </div>
 
           {/* Header */}
-          <div className="mb-4 sm:mb-6 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+          <div className="mb-2.5 sm:mb-6 text-center lg:text-left">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-0.5 tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-[11px] sm:text-sm">
               {registerT.subtitle}
             </p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
-              <span className="text-red-500 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
+            <div className="mb-2.5 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-2">
+              <span className="text-red-500 text-sm mt-0.5">⚠</span>
+              <p className="text-red-700 dark:text-red-300 text-xs">{getLocalizedError(error)}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            {/* Name Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
+            {/* Name Row - Always 2 Columns for Mobile Efficiency */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              <div className="space-y-1">
+                <label htmlFor="firstName" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                   {registerT.firstName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -342,12 +342,12 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="space-y-1">
+                <label htmlFor="lastName" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                   {registerT.lastName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -360,15 +360,13 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
-            </div>
-
             {/* Email */}
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1">
+              <label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {registerT.email}
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   id="email"
                   name="email"
@@ -384,12 +382,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Phone */}
-            <div className="space-y-1.5">
-              <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1">
+              <label htmlFor="phone" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {registerT.phone}
               </label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   id="phone"
                   name="phone"
@@ -403,12 +401,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1">
+              <label htmlFor="password" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {registerT.password}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   id="password"
                   name="password"
@@ -417,20 +415,20 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className={`${inputClass} pr-12`}
+                  className={`${inputClass} pr-10`}
                   placeholder={registerT.passwordPlaceholder}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
               {/* Password Strength Meter */}
               {formData.password && (
-                <div className="pt-1 space-y-1.5">
+                <div className="pt-0.5 space-y-1">
                   <div className="flex gap-1">
                     {[1, 2, 3, 4].map((i) => (
                       <div
@@ -441,7 +439,7 @@ export default function RegisterPage() {
                       />
                     ))}
                   </div>
-                  <p className={`text-xs font-medium ${pwScore <= 1 ? "text-red-500" : pwScore <= 2 ? "text-orange-500" : pwScore <= 3 ? "text-yellow-600" : "text-green-600"}`}>
+                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-500" : pwScore <= 2 ? "text-orange-500" : pwScore <= 3 ? "text-yellow-600" : "text-green-600"}`}>
                     {registerT.strengthLabel} {getStrengthLabel(pwScore)}
                   </p>
                 </div>
@@ -449,12 +447,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Confirm Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1">
+              <label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {registerT.confirmPassword}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -463,7 +461,7 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className={`${inputClass} pr-12 ${
+                  className={`${inputClass} pr-10 ${
                     formData.confirmPassword && formData.password !== formData.confirmPassword
                       ? "border-red-400 focus:ring-red-400"
                       : formData.confirmPassword && formData.password === formData.confirmPassword
@@ -475,25 +473,25 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                 >
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirm ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-xs text-red-500">{registerT.mismatch}</p>
+                <p className="text-[10px] sm:text-xs text-red-500">{registerT.mismatch}</p>
               )}
             </div>
 
             {/* Terms */}
-            <div className="flex items-start gap-3 py-1">
+            <div className="flex items-start gap-2 py-0.5">
               <input
                 id="terms"
                 type="checkbox"
                 required
-                className="w-4 h-4 mt-0.5 accent-[hsl(var(--primary))] rounded"
+                className="w-3.5 h-3.5 mt-0.5 accent-[hsl(var(--primary))] rounded"
               />
-              <label htmlFor="terms" className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              <label htmlFor="terms" className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-tight">
                 {registerT.agreeTo}{" "}
                 <Link href="/terms" className="text-[hsl(var(--primary))] hover:underline font-medium">{registerT.terms}</Link>
                 {" "}{registerT.and}{" "}
@@ -505,11 +503,11 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-2.5 sm:py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold text-xs sm:text-sm shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
