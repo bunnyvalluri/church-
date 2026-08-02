@@ -9,6 +9,7 @@ import { auth, googleProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 import LanguageToggle from "@/components/LanguageToggle";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -63,9 +64,23 @@ const itemVariants = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { mounted, status, user, updateUser } = useAuth();
-  const { t, language } = useLanguage();
-  const loginT = t.pages.login;
+  const authContext = useAuth();
+  const mounted = authContext?.mounted ?? false;
+  const status = authContext?.status ?? "unauthenticated";
+  const user = authContext?.user ?? null;
+  const updateUser = authContext?.updateUser;
+
+  let t = translations.en;
+  let language = "en";
+  try {
+    const langContext = useLanguage();
+    if (langContext?.t) t = langContext.t;
+    if (langContext?.language) language = langContext.language;
+  } catch (err) {
+    console.warn("[AUTH/UI] Fallback to default English translations:", err);
+  }
+
+  const loginT = t?.pages?.login || translations.en.pages.login;
 
   // Local helper functions inside component closure to guarantee retention in production JS bundles
   const getRoleForEmail = (email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' => {
