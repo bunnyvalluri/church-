@@ -650,7 +650,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 sm:px-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-3 py-4 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Subtle grid pattern background (visible on desktop) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
         

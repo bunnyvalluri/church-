@@ -254,7 +254,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-3 py-4 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
         {/* Background Decorative Circles (Mobile Only) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
@@ -273,7 +273,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Mobile Top Header Bar */}
-        <div className="w-full max-w-lg flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
+        <div className="w-full max-w-lg flex items-center justify-between pt-1 px-1 mb-3 lg:hidden z-20">
           <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
             <ChevronLeft className="w-4 h-4" />
             <span className="text-xs font-semibold tracking-wide">{registerT.backToSignIn}</span>
@@ -281,52 +281,47 @@ export default function RegisterPage() {
           <LanguageToggle />
         </div>
 
-        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
-          {/* Mobile Branding (Visible only on smaller screens) */}
-          <div className="lg:hidden flex flex-col items-center mb-8 text-center animate-fade-in-up">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 dark:border-gray-850 mb-3 shadow-sm bg-white dark:bg-gray-900">
-              <Image
-                src="/logo.png"
-                alt="Kingdom of Christ Ministries Logo"
-                fill
-                className="object-cover"
-                priority
-              />
+        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-4 sm:p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
+          {/* Mobile Branding Header */}
+          <div className="lg:hidden flex flex-col items-center mb-4 text-center">
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-1.5 shadow-md bg-white dark:bg-gray-900 p-0.5">
+              <div className="relative w-full h-full rounded-full overflow-hidden">
+                <Image
+                  src="/logo.png"
+                  alt="Kingdom of Christ Ministries Logo"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
-            <p className={`text-gray-500 dark:text-gray-400 font-bold mt-0.5 leading-normal ${
-              language === "en" ? "text-[10px] uppercase tracking-widest" : "text-xs tracking-normal"
+            <p className={`text-gray-400 font-semibold mt-0.5 ${
+              language === "en" ? "text-[9px] uppercase tracking-widest" : "text-xs tracking-normal"
             }`}>{loginT.ministries}</p>
-            
-            {/* Glassmorphic Mobile Scripture Quote */}
-            <div className="mt-4 px-4 py-3 rounded-xl bg-[hsl(var(--primary))/0.03] dark:bg-[hsl(var(--primary))/0.08] border border-[hsl(var(--primary))/0.1] dark:border-[hsl(var(--primary))/0.2] backdrop-blur-sm max-w-sm mx-auto shadow-sm">
-              <p className="text-xs italic text-gray-600 dark:text-gray-300 font-light leading-relaxed">
-                "{registerT.quote}"
-              </p>
-            </div>
           </div>
 
           {/* Header */}
-          <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+          <div className="mb-4 sm:mb-6 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
               {registerT.subtitle}
             </p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+            <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
               <span className="text-red-500 text-lg mt-0.5">⚠</span>
               <p className="text-red-700 dark:text-red-300 text-sm">{getLocalizedError(error)}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Name Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
