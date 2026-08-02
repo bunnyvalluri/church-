@@ -311,6 +311,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Keyboard handler for logout confirmation dialog (Enter key to confirm, Escape key to cancel)
+  useEffect(() => {
+    if (!showLogoutAlert) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleConfirmLogoutAlert();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handleCancelLogoutAlert();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showLogoutAlert, pendingLogoutResolve]);
+
   const status = loading ? "loading" : user ? "authenticated" : "unauthenticated";
 
   return (
@@ -330,14 +346,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             </p>
             <div className="flex justify-end gap-3">
               <button
+                type="button"
                 onClick={handleCancelLogoutAlert}
                 className="px-6 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-[13px] border border-white/20 hover:border-white/40 active:scale-95 transition-all"
               >
                 Cancel
               </button>
               <button
+                type="button"
+                autoFocus
                 onClick={handleConfirmLogoutAlert}
-                className="px-6 py-1.5 rounded-full bg-[#fca595] hover:bg-[#fdbeb2] text-black font-semibold text-[13px] border-[1.5px] border-black outline outline-[1.5px] outline-[#fca595] outline-offset-[1.5px] hover:outline-[#fdbeb2] active:scale-95 transition-all shadow-sm"
+                className="px-6 py-1.5 rounded-full bg-[#fca595] hover:bg-[#fdbeb2] text-black font-semibold text-[13px] border-[1.5px] border-black outline outline-[1.5px] outline-[#fca595] outline-offset-[1.5px] hover:outline-[#fdbeb2] active:scale-95 transition-all shadow-sm focus:ring-2 focus:ring-[#fca595]"
               >
                 OK
               </button>
