@@ -243,6 +243,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           });
         } else {
+          // Preserve valid active session cookies when running fallback or custom session auth
+          if (typeof document !== "undefined") {
+            const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
+            const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
+            if (uidMatch && uidMatch[1] && roleMatch && roleMatch[1]) {
+              setLoading(false);
+              return;
+            }
+          }
           clearSessionCookies();
           setUser(null);
           setLoading(false);
