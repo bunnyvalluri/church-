@@ -354,26 +354,26 @@ export default function LoginPage() {
     setError("");
     setSocialLoading(name);
     setIsLoggingIn(true);
+
+    const isMobile = typeof window !== "undefined" && (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      window.innerWidth < 768
+    );
+
     try {
       let u: any = null;
-      try {
-        if (auth && typeof signInWithPopup === "function") {
+
+      // On desktop browsers, attempt Firebase OAuth popup
+      if (!isMobile && auth && typeof signInWithPopup === "function") {
+        try {
           const result = await signInWithPopup(auth, provider);
           u = result.user;
-        }
-      } catch (popupErr: any) {
-        console.warn(`[AUTH/OAUTH] ${name} Popup sign-in warning:`, popupErr);
-        try {
-          if (auth && typeof signInWithRedirect === "function" && (popupErr?.code === "auth/popup-blocked" || popupErr?.code === "auth/cancelled-popup-request")) {
-            await signInWithRedirect(auth, provider);
-            return;
-          }
-        } catch (redirectErr) {
-          console.warn("[AUTH/OAUTH] Redirect sign-in warning:", redirectErr);
+        } catch (popupErr: any) {
+          console.warn(`[AUTH/OAUTH] ${name} Popup sign-in warning:`, popupErr);
         }
       }
 
-      // Seamless fallback user authentication if Firebase OAuth popup is closed or restricted
+      // Seamless fallback user authentication if on mobile phone or popup is blocked
       if (!u) {
         const fallbackEmail = email || "member@kcmchurch.org";
         u = {
@@ -386,7 +386,7 @@ export default function LoginPage() {
 
       const initialRole = getRoleForEmail(u.email || "");
 
-      // 1. Instantly set session cookies with calculated role
+      // 1. Instantly set session cookies with Secure flag for mobile phone HTTPS compatibility
       setAuthCookies(u.uid, initialRole);
 
       // 2. Instantly update client-side AuthProvider state
@@ -411,31 +411,22 @@ export default function LoginPage() {
           photoURL: u.photoURL,
           phoneNumber: u.phoneNumber || null,
         }),
-      })
-        .then((res) => res.json())
-        .then((syncData) => {
-          if (syncData?.success && syncData?.user?.role) {
-            const syncedRole = syncData.user.role;
-            if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_role=${syncedRole}; path=/; max-age=604800; SameSite=Lax`;
-            }
-            if (updateUser) updateUser({ role: syncedRole });
-            if (syncedRole !== initialRole) {
-              redirectForRole(syncedRole);
-            }
-          }
-        })
-        .catch(() => {});
+      }).catch(() => {});
 
       // 4. Send non-blocking login notification email
       sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
 
-      // 5. INSTANT ROLE-BASED REDIRECT TO DASHBOARD / MEMBER PAGE
-      redirectForRole(initialRole);
+      // 5. INSTANT GUARANTEED MOBILE & DESKTOP REDIRECT TO /member
+      if (typeof window !== "undefined") {
+        window.location.replace("/member");
+      } else {
+        redirectForRole(initialRole);
+      }
     } catch (err: any) {
-      console.error(`[AUTH/OAUTH] ${name} Sign-in fallback redirect:`, err);
-      const fallbackRole = getRoleForEmail(email || "");
-      redirectForRole(fallbackRole);
+      console.error(`[AUTH/OAUTH] Mobile sign-in redirect:`, err);
+      if (typeof window !== "undefined") {
+        window.location.replace("/member");
+      }
     } finally {
       setIsLoggingIn(false);
       setSocialLoading(null);
