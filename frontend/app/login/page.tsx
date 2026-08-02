@@ -107,6 +107,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     setIsClient(true);
+    setError("");
     // Instant prefetch of dashboard routes for 0ms page transitions
     router.prefetch("/member");
     router.prefetch("/admin");
