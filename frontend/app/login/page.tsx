@@ -354,108 +354,106 @@ export default function LoginPage() {
     setSocialLoading(name);
     setError("");
     setIsLoggingIn(true);
+
+    if (!auth) {
+      console.error("[AUTH/OAUTH] Firebase Auth instance is unavailable.");
+      setError("auth/internal-error");
+      setIsLoggingIn(false);
+      setSocialLoading(null);
+      return;
+    }
+
     try {
-      let u: any = null;
+      console.info(`[AUTH/OAUTH] Initiating ${name} OAuth authentication flow...`);
+      let userCredential: any = null;
       const isMobile = typeof window !== "undefined" && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
+
       try {
         if (isMobile) {
           try {
-            const result = await signInWithPopup(auth, provider);
-            u = result?.user;
-          } catch (popupErr: any) {
-            console.warn(`[AUTH] Mobile popup note, attempting mobile redirect:`, popupErr?.code || popupErr);
-            try {
+            userCredential = await signInWithPopup(auth, provider);
+          } catch (mobilePopupErr: any) {
+            console.warn(`[AUTH/OAUTH] Mobile popup blocked or unsupported (${mobilePopupErr?.code}). Initiating OAuth redirect...`);
+            if (mobilePopupErr?.code === "auth/popup-blocked" || mobilePopupErr?.code === "auth/popup-closed-by-user") {
               await signInWithRedirect(auth, provider);
               return;
-            } catch (redirectErr) {
-              console.warn(`[AUTH] Mobile redirect note:`, redirectErr);
             }
+            throw mobilePopupErr;
           }
         } else {
-          const result = await signInWithPopup(auth, provider);
-          u = result?.user;
+          userCredential = await signInWithPopup(auth, provider);
         }
       } catch (popupErr: any) {
-        console.warn(`[AUTH] ${name} Popup login note:`, popupErr?.code || popupErr);
-      }
-
-      // If popup/redirect did not return a user (e.g. Mobile browser popup block or domain limits),
-      // provide a seamless Google authentication session so mobile member sign-in always works perfectly!
-      if (!u) {
-        const userEmail = email && email.trim() ? email.trim() : "google.member@kcm-church.com";
-        const userName = email && email.trim() ? email.split("@")[0] : "Google Member";
-        console.info(`[AUTH] Seamless mobile authentication active for ${name} sign-in (${userEmail})`);
-        u = {
-          uid: `google-user-${Date.now()}`,
-          email: userEmail,
-          displayName: userName,
-          photoURL: null,
-        };
-      }
-
-      if (u) {
-        console.info(`[AUTH] ${name} sign-in successful for:`, u.email);
-        const initialRole = getRoleForEmail(u.email || "");
-
-        setAuthCookies(u.uid, initialRole);
-
-        if (updateUser) {
-          updateUser({
-            uid: u.uid,
-            email: u.email,
-            name: u.displayName || "Google Member",
-            image: u.photoURL || null,
-            role: initialRole as any,
-          });
+        if (popupErr?.code === "auth/popup-blocked") {
+          console.warn("[AUTH/OAUTH] Desktop popup blocked by browser. Falling back to redirect flow...");
+          await signInWithRedirect(auth, provider);
+          return;
         }
-
-        // Background database sync (non-blocking)
-        fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: u.uid,
-            email: u.email,
-            name: u.displayName || "Google Member",
-            photoURL: u.photoURL,
-            phoneNumber: u.phoneNumber || null,
-          }),
-        })
-          .then((res) => res.json())
-          .then((syncData) => {
-            if (syncData?.success && syncData?.user?.role) {
-              const role = syncData.user.role;
-              setAuthCookies(u.uid, role);
-              if (updateUser) updateUser({ role });
-            }
-          })
-          .catch(() => {});
-
-        // Non-blocking notification email
-        sendLoginEmail(u.email || "", u.displayName || "Google Member", name.toLowerCase());
-
-        // Instant role-based redirect for mobile phones
-        redirectForRole(initialRole);
+        throw popupErr;
       }
+
+      const u = userCredential?.user;
+      if (!u) {
+        throw new Error("auth/internal-error");
+      }
+
+      console.info(`[AUTH/OAUTH] Authentic ${name} sign-in successful for:`, u.email || u.uid);
+      const initialRole = getRoleForEmail(u.email || "");
+
+      // 1. Set session cookies with Secure attribute for mobile HTTPS compatibility
+      setAuthCookies(u.uid, initialRole);
+
+      // 2. Update client-side AuthProvider state
+      if (updateUser) {
+        updateUser({
+          uid: u.uid,
+          email: u.email,
+          name: u.displayName || "Member",
+          image: u.photoURL || null,
+          role: initialRole as any,
+        });
+      }
+
+      // 3. Database sync (non-blocking verification)
+      fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: u.uid,
+          email: u.email,
+          name: u.displayName || "Member",
+          photoURL: u.photoURL,
+          phoneNumber: u.phoneNumber || null,
+        }),
+      })
+        .then((res) => res.json())
+        .then((syncData) => {
+          if (syncData?.success && syncData?.user?.role) {
+            const role = syncData.user.role;
+            setAuthCookies(u.uid, role);
+            if (updateUser) updateUser({ role });
+            if (role !== initialRole) {
+              redirectForRole(role);
+            }
+          }
+        })
+        .catch((syncErr) => {
+          console.warn("[AUTH/OAUTH] Background DB sync warning:", syncErr);
+        });
+
+      // 4. Send non-blocking login notification email
+      sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
+
+      // 5. Instant role-based redirect
+      redirectForRole(initialRole);
     } catch (err: any) {
-      console.error(`[AUTH] ${name} Sign-in error:`, err?.code || err);
+      console.error(`[AUTH/OAUTH] ${name} Sign-in failed:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
 
-      const targetEmail = email && email.trim() ? email.trim() : "google.member@kcm-church.com";
-      const initialRole = getRoleForEmail(targetEmail);
-      const fallbackUser = {
-        uid: `google-user-${Date.now()}`,
-        email: targetEmail,
-        name: targetEmail.split("@")[0] || "Google Member",
-        image: null,
-        role: initialRole as any,
-      };
-      
-      setAuthCookies(fallbackUser.uid, initialRole);
-      if (updateUser) updateUser(fallbackUser);
-      redirectForRole(initialRole);
+      // Display actionable error message to the user
+      const errorCode = err?.code || "sign-in-failed";
+      setError(errorCode);
     }
   };
 
