@@ -37,7 +37,6 @@ async function main() {
   // 1.1 BRANCHES
   // ──────────────────────────────────────────────
   const branches = [
-    { name: 'Shapur Nagar' },
     { name: 'Subhash Nagar' },
     { name: 'Bahadurpally' }
   ];
@@ -142,7 +141,7 @@ async function main() {
       password: 'event-handle-2026',
       role: 'FIELD_VOLUNTEER',
       phone: '+91 92222 33333',
-      address: 'Shapur Nagar, Hyderabad',
+      address: 'Subhash Nagar, Hyderabad',
     },
   ];
 
@@ -692,7 +691,7 @@ async function main() {
       id: 'att_003',
       date: new Date('2024-05-10T00:00:00.000Z'),
       serviceType: 'Friday Evening Prayer',
-      location: 'Shapur Location',
+      location: 'Subhash Nagar Location',
       headcount: 120,
       newVisitors: 3,
       notes: 'Weekly Friday evening service.'
@@ -731,7 +730,7 @@ async function main() {
   // ──────────────────────────────────────────────
   const transactions = [
     { id: 'tx_001', type: 'INFLOW', amount: 15000, category: 'Tithe', description: 'Sunday Morning Tithe Collections', date: new Date('2026-06-07'), account: 'General Fund' },
-    { id: 'tx_002', type: 'OUTFLOW', amount: 3500, category: 'Utilities', description: 'Shapur Sanctuary Electricity Bill', date: new Date('2026-06-05'), account: 'General Fund' },
+    { id: 'tx_002', type: 'OUTFLOW', amount: 3500, category: 'Utilities', description: 'Subhash Sanctuary Electricity Bill', date: new Date('2026-06-05'), account: 'General Fund' },
     { id: 'tx_003', type: 'OUTFLOW', amount: 12000, category: 'Charity', description: 'Believer Education Sponsorship Support', date: new Date('2026-06-03'), account: 'Charity Fund' },
     { id: 'tx_004', type: 'INFLOW', amount: 25000, category: 'Pledge Pay', description: 'James Wilson Pledge payment', date: new Date('2026-06-02'), account: 'Building Fund' }
   ];
