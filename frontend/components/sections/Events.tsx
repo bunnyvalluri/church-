@@ -308,7 +308,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                         {event.title}
                       </h3>
 
-                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-normal">
+                      <p className="text-xs text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed font-medium">
                         {event.shortDescription || event.description}
                       </p>
 

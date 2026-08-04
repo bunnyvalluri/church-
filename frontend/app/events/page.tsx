@@ -104,7 +104,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
       {/* Content */}
       <div className="p-5 space-y-3">
         <h3 className="text-base font-black text-slate-900 dark:text-white leading-tight line-clamp-1">{event.title}</h3>
-        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">{event.description}</p>
+        <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">{event.description}</p>
 
         <div className="space-y-2 pt-1">
           <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
