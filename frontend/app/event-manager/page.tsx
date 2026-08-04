@@ -1730,18 +1730,18 @@ export default function UnifiedEventManagementPortal() {
                 {existingMedia.length > 0 && (
                   <div className="space-y-2 border-t border-slate-100 dark:border-white/5 pt-4">
                     <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest block">{t.eventManager?.existingMediaLabel || "Existing Media Attachments"}</label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {existingMedia.map(item => {
                         const isRemoved = removedMediaIds.includes(item.id);
                         return (
-                          <div key={item.id} className={`relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group shadow-sm transition-opacity ${isRemoved ? "opacity-30 border-rose-500/40" : ""}`}>
-                            <img src={item.url} alt="Uploaded snap" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div key={item.id} className={`relative aspect-[16/9] rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group shadow-sm bg-slate-950 transition-opacity ${isRemoved ? "opacity-30 border-rose-500/40" : ""}`}>
+                            <img src={item.url} alt="Uploaded snap" className="w-full h-full object-contain p-1" />
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity gap-2">
                               {isRemoved ? (
-                                <button type="button" onClick={() => setRemovedMediaIds(prev => prev.filter(id => id !== item.id))} className="px-2 py-1 bg-violet-600 hover:bg-violet-500 rounded-lg text-white text-[9px] font-black uppercase">Undo</button>
+                                <button type="button" onClick={() => setRemovedMediaIds(prev => prev.filter(id => id !== item.id))} className="px-2.5 py-1 bg-violet-600 hover:bg-violet-500 rounded-lg text-white text-[9px] font-black uppercase">Undo</button>
                               ) : (
                                 <button type="button" onClick={() => setRemovedMediaIds(prev => [...prev, item.id])} className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-white transition-colors">
-                                  <X className="w-3 h-3" />
+                                  <X className="w-3.5 h-3.5" />
                                 </button>
                               )}
                             </div>
