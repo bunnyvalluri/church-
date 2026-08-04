@@ -22,23 +22,74 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
     setMounted(true);
   }, []);
 
-  // Close modal on Escape key press
+  // Global Keyboard Shortcuts for PC / Laptop Users
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      // Ignore shortcut triggers inside input text fields or textareas
+      const activeElement = document.activeElement;
+      const isInput =
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          (activeElement as HTMLElement).isContentEditable);
+
+      // Ctrl + K or Cmd + K or Alt + P -> Toggle Preferences Modal
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.altKey && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        setIsOpen((prev) => !prev);
+        return;
+      }
+
+      if (isInput) return;
+
+      // Escape -> Close modal
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        return;
+      }
+
+      // Alt + D -> Toggle Dark / Light mode
+      if (e.altKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        setMode(mode === "dark" ? "light" : "dark");
+        return;
+      }
+
+      // Alt + L -> Toggle Language
+      if (e.altKey && e.key.toLowerCase() === "l") {
+        e.preventDefault();
+        const nextLang = language === "en" ? "te" : language === "te" ? "hi" : "en";
+        setLanguage(nextLang as any);
+        return;
+      }
+
+      // Alt + 1-5 -> Quick Accent Color Select
+      if (e.altKey && ["1", "2", "3", "4", "5"].includes(e.key)) {
+        e.preventDefault();
+        const index = parseInt(e.key, 10) - 1;
+        if (colorThemes[index]) {
+          setColorTheme(colorThemes[index].code as ColorTheme);
+        }
+        return;
+      }
     };
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+
+    window.addEventListener("keydown", handleGlobalShortcuts);
+    return () => window.removeEventListener("keydown", handleGlobalShortcuts);
+  }, [isOpen, mode, language, setMode, setLanguage, setColorTheme]);
 
   const colorThemes = [
-    { code: "violet", label: "Purple Glory", desc: "Grace & Royal Glory", gradientStyle: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)" },
-    { code: "emerald", label: "Emerald", desc: "Growth & Spiritual Healing", gradientStyle: "linear-gradient(135deg, #10B981 0%, #047857 100%)" },
-    { code: "ocean", label: "Holy Blue", desc: "Truth, Peace & Baptism", gradientStyle: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)" },
-    { code: "crimson", label: "Crimson", desc: "Redemption & Sacrificial Love", gradientStyle: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)" },
-    { code: "gold", label: "Royal Gold", desc: "Kingship & Divine Anointing", gradientStyle: "linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)" },
+    { code: "violet", label: "Purple Glory", desc: "Grace & Royal Glory", keyNum: "1", gradientStyle: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)" },
+    { code: "emerald", label: "Emerald", desc: "Growth & Spiritual Healing", keyNum: "2", gradientStyle: "linear-gradient(135deg, #10B981 0%, #047857 100%)" },
+    { code: "ocean", label: "Holy Blue", desc: "Truth, Peace & Baptism", keyNum: "3", gradientStyle: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)" },
+    { code: "crimson", label: "Crimson", desc: "Redemption & Sacrificial Love", keyNum: "4", gradientStyle: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)" },
+    { code: "gold", label: "Royal Gold", desc: "Kingship & Divine Anointing", keyNum: "5", gradientStyle: "linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)" },
   ] as const;
 
   const languages = [
@@ -52,8 +103,8 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/60 dark:border-white/20 text-gray-700 dark:text-white hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer"
-        title="Preferences & Theme Settings"
+        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/60 dark:border-white/20 text-gray-700 dark:text-white hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative"
+        title="Preferences & Theme Settings (Ctrl+K)"
         type="button"
         aria-label="Open preferences modal"
       >
@@ -79,9 +130,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                   <Settings className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
-                    Portal Preferences
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                      Portal Preferences
+                    </h3>
+                    <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-gray-400 font-bold">
+                      Ctrl+K
+                    </kbd>
+                  </div>
                   <p className="text-xs text-slate-500 dark:text-gray-400">
                     Customize your experience & color theme
                   </p>
@@ -100,9 +156,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
             <div className="space-y-4 mb-5">
               {/* Language Selector */}
               <div>
-                <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 mb-2 flex items-center gap-1.5">
-                  <Globe className="w-3.5 h-3.5 text-indigo-500" /> Language
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-indigo-500" /> Language
+                  </label>
+                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-500">
+                    Alt+L
+                  </kbd>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {languages.map((lang) => {
                     const isActive = language === lang.code;
@@ -127,9 +188,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
 
               {/* Mode Toggle */}
               <div>
-                <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 mb-2 flex items-center gap-1.5">
-                  <Sun className="w-3.5 h-3.5 text-amber-500" /> Mode / Appearance
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-amber-500" /> Mode / Appearance
+                  </label>
+                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-500">
+                    Alt+D
+                  </kbd>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -161,9 +227,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
 
             {/* Color Theme Palette */}
             <div>
-              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 mb-2.5 flex items-center gap-1.5">
-                <Palette className="w-3.5 h-3.5 text-purple-500" /> Color Accent Theme
-              </label>
+              <div className="flex items-center justify-between mb-2.5">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                  <Palette className="w-3.5 h-3.5 text-purple-500" /> Color Accent Theme
+                </label>
+                <span className="hidden sm:inline-block text-[9px] font-mono text-slate-400 dark:text-gray-500">
+                  Alt + 1-5
+                </span>
+              </div>
               <div className="space-y-2">
                 {colorThemes.map((item) => {
                   const isActive = colorTheme === item.code;
@@ -182,15 +253,20 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                     >
                       <div className="flex items-center gap-3">
                         <div 
-                          className="w-8 h-8 rounded-xl shadow-sm flex items-center justify-center flex-shrink-0 text-white"
+                          className="w-8 h-8 rounded-xl shadow-sm flex items-center justify-center flex-shrink-0 text-white font-mono text-xs font-bold"
                           style={{ background: item.gradientStyle }}
                         >
-                          <span className="text-xs font-bold">✝</span>
+                          ✝
                         </div>
                         <div>
-                          <span className={`block text-xs font-bold ${isActive ? "text-purple-600 dark:text-purple-400" : "text-slate-800 dark:text-gray-200"}`}>
-                            {item.label}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className={`block text-xs font-bold ${isActive ? "text-purple-600 dark:text-purple-400" : "text-slate-800 dark:text-gray-200"}`}>
+                              {item.label}
+                            </span>
+                            <kbd className="hidden sm:inline-block text-[9px] font-mono px-1 rounded bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400">
+                              Alt+{item.keyNum}
+                            </kbd>
+                          </div>
                           <span className="block text-[10px] text-slate-500 dark:text-gray-400">
                             {item.desc}
                           </span>
@@ -208,8 +284,21 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               </div>
             </div>
 
+            {/* Laptop / PC Keyboard Shortcuts Footer Legend */}
+            <div className="mt-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-[11px] text-slate-600 dark:text-gray-400 space-y-1.5">
+              <span className="font-extrabold text-[10px] uppercase tracking-wider text-slate-400 dark:text-gray-400 block mb-1">
+                ⌨ Laptop / PC Keyboard Shortcuts
+              </span>
+              <div className="grid grid-cols-2 gap-1 text-[10px]">
+                <div><kbd className="font-mono bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded">Ctrl+K</kbd> Open/Close</div>
+                <div><kbd className="font-mono bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded">Alt+D</kbd> Light/Dark</div>
+                <div><kbd className="font-mono bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded">Alt+L</kbd> Toggle Language</div>
+                <div><kbd className="font-mono bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded">Alt+1..5</kbd> Switch Color</div>
+              </div>
+            </div>
+
             {/* Done Button */}
-            <div className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10">
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/10">
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-full py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.99] transition-all cursor-pointer"
