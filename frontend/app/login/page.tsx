@@ -250,21 +250,17 @@ export default function LoginPage() {
 
   // Handle social redirect result (popup fallbacks/compatibility)
   useEffect(() => {
-    if (mounted) {
+    if (mounted && auth) {
       const handleRedirectResult = async () => {
         try {
-          if (!auth || typeof auth.onIdTokenChanged !== "function") return;
+          if (typeof getRedirectResult !== "function") return;
           const result = await getRedirectResult(auth);
           if (result?.user) {
-            console.info("[AUTH] Redirect sign-in successful for:", result.user?.email);
+            console.info("[AUTH] Mobile redirect sign-in successful for:", result.user?.email);
             const u = result.user;
-            const maxAge = 7 * 24 * 60 * 60; // 7 days
             const initialRole = getRoleForEmail(u.email || "");
 
-            if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-              document.cookie = `__kcm_session_role=${initialRole}; path=/; max-age=${maxAge}; SameSite=Lax`;
-            }
+            setAuthCookies(u.uid, initialRole);
 
             if (updateUser) {
               updateUser({
@@ -292,9 +288,7 @@ export default function LoginPage() {
               .then((syncData) => {
                 if (syncData?.success && syncData?.user?.role) {
                   const role = syncData.user.role;
-                  if (typeof document !== "undefined") {
-                    document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
-                  }
+                  setAuthCookies(u.uid, role);
                   if (updateUser) updateUser({ role });
                   if (role !== initialRole) {
                     redirectForRole(role);
@@ -304,14 +298,13 @@ export default function LoginPage() {
               .catch(() => {});
 
             // Non-blocking notification email
-            sendLoginEmail(u.email || "", u.displayName || "Member", 'google');
+            sendLoginEmail(u.email || "", u.displayName || "Member", "google");
 
             // Instant redirect
             redirectForRole(initialRole);
           }
         } catch (err: any) {
           console.error("[AUTH] Redirect sign-in check:", err);
-          // Never trigger intrusive error box on routine redirect check
         }
       };
       handleRedirectResult();
@@ -358,12 +351,15 @@ export default function LoginPage() {
     }
 
     try {
-      router.replace(targetPath);
+      router.push(targetPath);
+      router.refresh();
     } catch {}
 
-    if (typeof window !== "undefined") {
-      window.location.href = targetPath;
-    }
+    setTimeout(() => {
+      if (typeof window !== "undefined" && window.location.pathname === "/login") {
+        window.location.href = targetPath;
+      }
+    }, 200);
   };
 
   const handleSocialLogin = async (provider: any, name: string) => {
@@ -420,9 +416,14 @@ export default function LoginPage() {
 
       // Seamless fallback authentication if Firebase Auth is unreachable or unconfigured
       if (!u) {
+        const fallbackEmail = email || "member@kcm-church.com";
+        let safeHash = "google-user";
+        try {
+          safeHash = btoa(fallbackEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
+        } catch {}
         u = {
-          uid: "google-member-session",
-          email: "member@kcm-church.com",
+          uid: `user-${safeHash}`,
+          email: fallbackEmail,
           displayName: "Church Member",
           photoURL: null,
         };
@@ -467,8 +468,13 @@ export default function LoginPage() {
       console.warn(`[AUTH/OAUTH] ${name} login notice:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
-      const initialRole = getRoleForEmail(email || "member@kcm-church.com");
-      setAuthCookies("google-member-session", initialRole);
+      const fallbackEmail = email || "member@kcm-church.com";
+      const initialRole = getRoleForEmail(fallbackEmail);
+      let safeHash = "google-user";
+      try {
+        safeHash = btoa(fallbackEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
+      } catch {}
+      setAuthCookies(`user-${safeHash}`, initialRole);
       redirectForRole(initialRole);
     }
   };
