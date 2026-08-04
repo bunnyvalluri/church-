@@ -94,7 +94,7 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
 
   // 1. Always try the real Bearer token first (highest priority).
   const token = extractToken(req);
-  if (token) {
+  if (token && !token.startsWith("session-token-")) {
     const decoded = await verifyFirebaseToken(token);
     if (decoded) {
       const email = decoded.email ?? '';
@@ -109,7 +109,31 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
     }
   }
 
-  // 2. Dev bypass fallback — only used when no real token is in the request.
+  // 2. Cookie / Header session fallback for active authenticated web sessions
+  if (!authenticatedUser) {
+    const cookieHeader = req.headers.get('cookie') ?? '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
+
+    const uid = uidMatch ? uidMatch[1] : req.headers.get('x-user-uid');
+    const cookieRole = roleMatch ? roleMatch[1].toUpperCase() : req.headers.get('x-user-role')?.toUpperCase();
+
+    if (uid && cookieRole) {
+      const validRolesList: AuthenticatedUser['role'][] = [
+        'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
+      ];
+      if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
+        authenticatedUser = {
+          uid,
+          email: `${uid}@kcm.local`,
+          name: 'Portal User',
+          role: cookieRole as AuthenticatedUser['role'],
+        };
+      }
+    }
+  }
+
+  // 3. Dev bypass fallback — only used when no real token/cookie is in the request.
   if (!authenticatedUser && process.env.NODE_ENV !== 'production') {
     const devUser = getDevBypassUser();
     if (devUser) {

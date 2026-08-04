@@ -95,6 +95,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.error("[AUTH] getIdToken error:", err);
     }
+    // Fallback: Use cookie presence session token if available
+    if (typeof document !== "undefined") {
+      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
+      if (uidMatch && uidMatch[1]) {
+        return `session-token-${uidMatch[1]}`;
+      }
+    }
     return null;
   };
 
