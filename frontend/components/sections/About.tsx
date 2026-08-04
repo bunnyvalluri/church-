@@ -205,6 +205,49 @@ export default function About({ initialAboutData, initialContactsData, initialPa
       ? "हमारे बारे में"
       : about?.sectionBadge ?? "Who We Are";
 
+  // Resolve localized text for Mission & Pastor
+  const missionTitle =
+    language === "te"
+      ? "మా లక్ష్యం"
+      : language === "hi"
+      ? "हमारा लक्ष्य"
+      : about?.missionTitle ?? t.about.missionTitle;
+
+  const missionText =
+    language === "te"
+      ? "క్రీస్తు యొక్క రాజ సువార్తను ప్రకటించడం, సమస్త జనులను శిష్యులుగా చేయడం, మరియు ప్రేమ కనికరములతో సమాజానికి సేవ చేస్తూ నశించిన వారిని రక్షించడం మా లక్ష్యం."
+      : language === "hi"
+      ? "मसीह के राज्य के सुसमाचार का प्रचार करना, सभी जातियों को चेला बनाना, और प्रेम व करुणा से समाज की सेवा करते हुए खोए हुओं को बचाना हमारा लक्ष्य है।"
+      : about?.missionText ?? t.about.missionText;
+
+  const ledByLabel =
+    language === "te"
+      ? "నడిపించువారు"
+      : language === "hi"
+      ? "नेतृत्वकर्ता"
+      : "Led By";
+
+  const pastorTitle =
+    language === "te"
+      ? primaryPastor?.titleTe || "బిషప్"
+      : language === "hi"
+      ? primaryPastor?.titleHi || "बिशप"
+      : primaryPastor?.title || "Bishop";
+
+  const pastorName =
+    language === "te"
+      ? primaryPastor?.nameTe || "కుర్రా క్రీస్తు రాజు"
+      : language === "hi"
+      ? primaryPastor?.nameHi || "कुर्रा क्रिस्तु राजू"
+      : primaryPastor?.name || "Kurra Kristhu Raju";
+
+  const pastorDesignation =
+    language === "te"
+      ? primaryPastor?.designationTe || "సీనియర్ పాస్టర్ & వ్యవస్థాపకులు"
+      : language === "hi"
+      ? primaryPastor?.designationHi || "वरिष्ठ पादरी एवं संस्थापक"
+      : primaryPastor?.designation || "Senior Pastor & Founder";
+
   return (
     <section
       id="about"
@@ -257,7 +300,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
             <div className="relative z-10 pl-4">
               <h3 className="text-xl sm:text-2xl font-bold mb-5 text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
                 <span className="text-2xl">✝️</span>
-                {aboutLoading ? "..." : about?.missionTitle ?? t.about.missionTitle}
+                {aboutLoading ? "..." : missionTitle}
               </h3>
               {aboutLoading ? (
                 <div className="animate-pulse space-y-2">
@@ -267,7 +310,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                 </div>
               ) : (
                 <p className="text-base sm:text-lg text-slate-600 dark:text-white/70 leading-relaxed">
-                  {about?.missionText ?? t.about.missionText}
+                  {missionText}
                 </p>
               )}
             </div>
@@ -346,24 +389,24 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                     />
                   </div>
                   <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">
-                    Led By
+                    {ledByLabel}
                   </p>
                   <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">
-                    {primaryPastor.title}
+                    {pastorTitle}
                   </h3>
                   <p className="text-xl md:text-3xl font-black tracking-wide text-violet-600 dark:text-amber-300">
-                    {primaryPastor.name}
+                    {pastorName}
                   </p>
-                  {primaryPastor.designation && (
-                    <p className="text-sm text-slate-500 dark:text-white/50 mt-1">{primaryPastor.designation}</p>
-                  )}
+                  <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
+                    {pastorDesignation}
+                  </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center text-center mb-12 pb-12 border-b border-slate-200/80 dark:border-white/10">
                   <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
                     <Image src="/pastor.png" alt="Bishop Kurra Kristhu Raju" fill sizes="112px" className="object-cover" />
                   </div>
-                  <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">Led By</p>
+                  <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">{ledByLabel}</p>
                   <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
                   <p className="text-xl md:text-3xl font-black tracking-wide text-violet-600 dark:text-amber-300">{t.about.pastorName}</p>
                 </div>
