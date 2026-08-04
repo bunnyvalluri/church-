@@ -495,7 +495,7 @@ export default function MemberDashboard() {
             <p className="text-sm sm:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
               &ldquo;{scripture.text}&rdquo;
             </p>
-            <span className="inline-block mt-2.5 text-xs font-extrabold text-purple-700 dark:text-purple-300 bg-purple-100/70 dark:bg-purple-950/50 px-3 py-1 rounded-full border border-purple-200/80 dark:border-purple-800/50">
+            <span className="inline-block mt-2.5 text-xs font-black text-amber-950 dark:text-amber-100 bg-amber-200/90 dark:bg-amber-900/60 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-700/60 shadow-xs">
               — {scripture.ref}
             </span>
           </div>
