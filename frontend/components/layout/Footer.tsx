@@ -129,8 +129,10 @@ export default function Footer() {
       : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`);
 
   const tagline =
-    mounted && language === "te" && footer?.taglineTe
-      ? footer.taglineTe
+    mounted && language === "te"
+      ? footer?.taglineTe || 'కాలము సంభవమైయున్నది, దేవునిరాజ్యము సమీపించియున్నది, మారుమనస్సు పొంది సువార్త నమ్ముడి. — మార్కు 1:15'
+      : mounted && language === "hi"
+      ? (footer as any)?.taglineHi || 'समय पूरा हो गया है, और परमेश्वर का राज्य निकट आ गया है; मन फिराओ और सुसमाचार पर विश्वास करो। — मरकुस 1:15'
       : footer?.tagline ?? '"Time is fulfilled, and the Kingdom of God is at hand." — Mark 1:15';
 
   // Footer nav section labels (from translation or defaults)

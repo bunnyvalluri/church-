@@ -192,19 +192,51 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
   };
 
   // Resolve localized text instantly without client hydration mismatch
-  const badgeText = hero?.badgeText ?? t.hero.prayerBoxSub ?? "We are here for you 24/7";
-  const headline = hero?.headline ?? t.hero.welcome ?? "Welcome to";
-  const churchName = hero?.subheadline ?? t.hero.churchName ?? "Kingdom of Christ";
-  const ministriesText = t.hero.ministries ?? "Ministries";
-  const subtitle = hero?.subtitle ?? t.hero.subtitle ?? "A place of Love, Faith, and Miracles";
+  const badgeText =
+    language === "te" && (hero as any)?.badgeTextTe
+      ? (hero as any).badgeTextTe
+      : language === "hi" && (hero as any)?.badgeTextHi
+      ? (hero as any).badgeTextHi
+      : language !== "en"
+      ? t.hero.prayerBoxSub
+      : hero?.badgeText ?? t.hero.prayerBoxSub ?? "We are here for you 24/7";
 
-  // CTA text — use CMS values with language-specific override for hero CTA
+  const headline =
+    language === "te" && (hero as any)?.headlineTe
+      ? (hero as any).headlineTe
+      : language === "hi" && (hero as any)?.headlineHi
+      ? (hero as any).headlineHi
+      : language !== "en"
+      ? t.hero.welcome
+      : hero?.headline ?? t.hero.welcome ?? "Welcome to";
+
+  const churchName =
+    language === "te" && (hero as any)?.subheadlineTe
+      ? (hero as any).subheadlineTe
+      : language === "hi" && (hero as any)?.subheadlineHi
+      ? (hero as any).subheadlineHi
+      : language !== "en"
+      ? t.hero.churchName
+      : hero?.subheadline ?? t.hero.churchName ?? "Kingdom of Christ";
+
+  const ministriesText = t.hero.ministries ?? "Ministries";
+
+  const subtitle =
+    language === "te" && (hero as any)?.subtitleTe
+      ? (hero as any).subtitleTe
+      : language === "hi" && (hero as any)?.subtitleHi
+      ? (hero as any).subtitleHi
+      : language !== "en"
+      ? t.hero.subtitle
+      : hero?.subtitle ?? t.hero.subtitle ?? "A place of Love, Faith, and Miracles";
+
+  // CTA text — use CMS localized values or dictionary defaults
   const ctaPrimaryText =
     language === "te"
-      ? "ఆరాధనలో చేరండి"
+      ? (hero as any)?.ctaPrimaryTextTe || t.hero.ctaPrimary || "మా చిరునామా"
       : language === "hi"
-      ? "आराधना में शामिल हों"
-      : hero?.ctaPrimaryText ?? "Join Worship";
+      ? (hero as any)?.ctaPrimaryTextHi || t.hero.ctaPrimary || "आराधना में शामिल हों"
+      : hero?.ctaPrimaryText ?? t.hero.ctaPrimary ?? "Plan A Visit";
 
   const ctaSecondaryText =
     language === "te"

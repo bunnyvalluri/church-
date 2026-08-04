@@ -163,6 +163,8 @@ export default function About({ initialAboutData, initialContactsData, initialPa
       ? about.headingTe
       : language === "hi" && about?.headingHi
       ? about.headingHi
+      : language !== "en"
+      ? t.about.title
       : about?.heading ?? t.about.title;
 
   const subtitle =
@@ -170,24 +172,23 @@ export default function About({ initialAboutData, initialContactsData, initialPa
       ? about.subtitleTe
       : language === "hi" && about?.subtitleHi
       ? about.subtitleHi
+      : language !== "en"
+      ? t.about.subtitle
       : about?.subtitle ?? t.about.subtitle;
 
   // Values from CMS or fallback to translation
-  const values = about?.values?.length
+  const values = language !== "en"
+    ? [
+        { icon: Church, title: t.about.values.worship, description: t.about.values.worshipDesc, gradient: "from-purple-500 to-violet-600" },
+        { icon: Heart, title: t.about.values.community, description: t.about.values.communityDesc, gradient: "from-rose-500 to-pink-600" },
+        { icon: Users, title: t.about.values.fellowship, description: t.about.values.fellowshipDesc, gradient: "from-blue-500 to-cyan-600" },
+        { icon: BookOpen, title: t.about.values.teaching, description: t.about.values.teachingDesc, gradient: "from-emerald-500 to-teal-600" },
+      ]
+    : about?.values?.length
     ? about.values.map((v) => ({
         icon: getIcon(v.icon),
-        title:
-          language === "te" && v.titleTe
-            ? v.titleTe
-            : language === "hi" && v.titleHi
-            ? v.titleHi
-            : v.title,
-        description:
-          language === "te" && v.descriptionTe
-            ? v.descriptionTe
-            : language === "hi" && v.descriptionHi
-            ? v.descriptionHi
-            : v.description,
+        title: v.title,
+        description: v.description,
         gradient: v.gradient,
       }))
     : [
@@ -196,6 +197,13 @@ export default function About({ initialAboutData, initialContactsData, initialPa
         { icon: Users, title: t.about.values.fellowship, description: t.about.values.fellowshipDesc, gradient: "from-blue-500 to-cyan-600" },
         { icon: BookOpen, title: t.about.values.teaching, description: t.about.values.teachingDesc, gradient: "from-emerald-500 to-teal-600" },
       ];
+
+  const sectionBadge =
+    language === "te"
+      ? "మా గురించి"
+      : language === "hi"
+      ? "हमारे बारे में"
+      : about?.sectionBadge ?? "Who We Are";
 
   return (
     <section
@@ -213,7 +221,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           className="max-w-3xl mx-auto text-center mb-20"
         >
           <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-4 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
-            {aboutLoading ? "..." : about?.sectionBadge ?? "Who We Are"}
+            {aboutLoading ? "..." : sectionBadge}
           </span>
           {aboutLoading ? (
             <div className="animate-pulse space-y-3">

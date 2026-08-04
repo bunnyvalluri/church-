@@ -227,13 +227,20 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14 lg:mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 border border-indigo-500/20">
-            <Sparkles className="w-3 h-3" /> Live Booking Enabled
+            <Sparkles className="w-3 h-3" /> {t.events.title}
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight">
-            Upcoming <span className="text-gradient">Events</span>
+            {t.events.title.split(" ").length > 1 ? (
+              <>
+                {t.events.title.split(" ").slice(0, -1).join(" ")}{" "}
+                <span className="text-gradient">{t.events.title.split(" ").slice(-1)[0]}</span>
+              </>
+            ) : (
+              <span className="text-gradient">{t.events.title}</span>
+            )}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-white/70 px-2">
-            Register to reserve a seat, download entry passes, and receive calendar updates.
+            {t.events.subtitle}
           </p>
         </div>
 
@@ -338,9 +345,9 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
             <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce">
               <Calendar className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Scheduled Events</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.events.noEventsTitle || "No Scheduled Events"}</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Check back soon for upcoming worship services, conferences, and fellowships.
+              {t.events.noEventsDesc || "Check back soon for upcoming worship services, conferences, and fellowships."}
             </p>
           </div>
         )}

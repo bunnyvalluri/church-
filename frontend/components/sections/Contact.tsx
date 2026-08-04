@@ -194,7 +194,7 @@ export default function Contact() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
             <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
-              Get In Touch
+              {t.contact.title} {t.contact.titleHighlight || ""}
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight">

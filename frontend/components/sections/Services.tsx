@@ -326,13 +326,21 @@ export default function Services({ initialServices = [] }: { initialServices?: C
           className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 lg:mb-20"
         >
           <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-3 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
-            Our Services
+            {t.services.title}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight leading-tight">
-            {t.services.title.split(" ").slice(0, -1).join(" ")}{" "}
-            <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
-              {t.services.title.split(" ").slice(-1)[0]}
-            </span>
+            {t.services.title.split(" ").length > 1 ? (
+              <>
+                {t.services.title.split(" ").slice(0, -1).join(" ")}{" "}
+                <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
+                  {t.services.title.split(" ").slice(-1)[0]}
+                </span>
+              </>
+            ) : (
+              <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
+                {t.services.title}
+              </span>
+            )}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-white/60 leading-relaxed px-2">
             {t.services.subtitle}
