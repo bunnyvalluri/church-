@@ -896,16 +896,6 @@ export default function LoginPage() {
                 </motion.button>
               </motion.div>
 
-              {/* Portal Selector Shortcuts */}
-              <motion.div variants={itemVariants} className="pt-2 flex items-center justify-center gap-2 flex-wrap">
-                <Link href="/login" className="px-2.5 py-1 rounded-md bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-semibold hover:bg-purple-500/20 transition-all">
-                  Member Portal
-                </Link>
-                <Link href="/admin/login" className="px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold hover:bg-indigo-500/20 transition-all">
-                  Admin Login
-                </Link>
-              </motion.div>
-
               {/* Register Link */}
               <motion.p variants={itemVariants} className="text-center pt-2 text-sm text-gray-400 font-medium">
                 {loginT.newToMinistry}{" "}
