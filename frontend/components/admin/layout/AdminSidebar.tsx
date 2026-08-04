@@ -89,20 +89,12 @@ const menuGroups: MenuGroup[] = [
     title: "Members",
     items: [
       {
-        name: "Directory Overview",
+        name: "Member Registry",
         href: "/admin/members",
         icon: Users,
         color: "text-emerald-500 dark:text-emerald-400",
         activeGradient: "from-emerald-600 to-teal-600",
         iconBg: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
-      },
-      {
-        name: "Member Registry",
-        href: "/admin/members/member",
-        icon: UserCheck,
-        color: "text-teal-500 dark:text-teal-400",
-        activeGradient: "from-teal-600 to-cyan-600",
-        iconBg: "bg-teal-500/10 text-teal-500 dark:text-teal-400",
       },
       {
         name: "Member Groups",

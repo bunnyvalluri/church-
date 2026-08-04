@@ -1,95 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import AdminPageTemplate from "@/components/admin/layout/AdminPageTemplate";
-import MemberManagement from "@/components/admin/MemberManagement";
-import { UserCheck } from "lucide-react";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function MemberRegistryPage() {
-  const { getIdToken } = useAuth();
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const token = await getIdToken();
-      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("/api/admin/users", { headers });
-      const result = await res.json();
-      if (res.ok && result.success) {
-        setUsers(result.users || []);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function RedundantMemberRegistryPage() {
+  const router = useRouter();
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    try {
-      const token = await getIdToken();
-      const headers: HeadersInit = token
-        ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-        : { "Content-Type": "application/json" };
-      await fetch("/api/admin/users", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ userId, newRole }),
-      });
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId || u.uid === userId ? { ...u, role: newRole } : u))
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleDeleteMember = async (id: string | number) => {
-    try {
-      const token = await getIdToken();
-      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-      await fetch(`/api/admin/users?id=${id}`, { method: "DELETE", headers });
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const filteredUsers = users.filter((u) => {
-    if (!search.trim()) return true;
-    const s = search.toLowerCase();
-    return (
-      (u.name && u.name.toLowerCase().includes(s)) ||
-      (u.email && u.email.toLowerCase().includes(s)) ||
-      (u.role && u.role.toLowerCase().includes(s)) ||
-      (u.phone && u.phone.includes(s))
-    );
-  });
+    router.replace("/admin/members");
+  }, [router]);
 
   return (
-    <AdminPageTemplate
-      title="Member Registry"
-      description="Detailed membership records, registration dates, and role verification."
-      icon={UserCheck}
-      onRefresh={loadData}
-      isLoading={loading}
-    >
-      <MemberManagement
-        users={users}
-        onRoleChange={handleRoleChange}
-        onDeleteMember={handleDeleteMember}
-        onAddMember={(newMember) => {
-          setUsers((prev) => [newMember, ...prev]);
-        }}
-      />
-    </AdminPageTemplate>
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+      <div className="text-center p-6">
+        <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-sm font-semibold text-gray-300">Redirecting to Members Directory...</p>
+      </div>
+    </div>
   );
 }
