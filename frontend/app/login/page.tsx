@@ -87,7 +87,7 @@ export default function LoginPage() {
     const e = (email || "").toLowerCase().trim();
     if (e.includes('superadmin')) return 'SUPER_ADMIN';
     if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
-    if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
+    if (e.includes('pastor') || e.includes('bishop') || e === 'pastor.kristhuraju@kcm-church.com' || e.includes('kristhuraju')) return 'PASTOR';
     if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
     if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
     return 'MEMBER';
