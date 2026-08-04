@@ -188,29 +188,43 @@ export default function RegisterPage() {
   };
 
   const inputClass =
-    "w-full pl-10 pr-3.5 py-2 sm:py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-600 text-xs sm:text-sm";
+    "w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all placeholder-gray-500 text-xs sm:text-sm";
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:flex-row">
+    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 font-sans antialiased text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
       {/* ── Left Branding Panel ── */}
-      <div className="hidden lg:flex lg:w-5/12 relative flex-col justify-between p-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end" />
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
-          <span className="text-white font-bold" style={{ fontSize: "40rem", lineHeight: 1 }}>✝</span>
+      <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#09051d] border-r border-white/10">
+        {/* Glowing top accent border */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-500 shadow-[0_0_12px_rgba(192,132,252,0.8)]" />
+        
+        {/* Layered glowing radial mesh */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.35),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.25),transparent_55%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+
+        {/* Ambient Animated Orbs */}
+        <div className="absolute -top-24 -left-24 w-[30rem] h-[30rem] bg-purple-500/30 rounded-full blur-[90px] pointer-events-none animate-pulse" />
+        <div className="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] bg-indigo-600/25 rounded-full blur-[90px] pointer-events-none" />
+
+        {/* Centered Large Solid Cross Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none select-none">
+          <svg className="w-[36rem] h-[36rem] text-white" viewBox="0 0 100 100" fill="currentColor">
+            <rect x="42" y="6" width="16" height="88" rx="2" />
+            <rect x="14" y="28" width="72" height="16" rx="2" />
+          </svg>
         </div>
 
+        {/* Header Back Link */}
         <div className="relative z-10">
-          <Link href="/login" className="flex items-center gap-3 group">
-            <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-            <span className="text-white/60 text-sm group-hover:text-white transition-colors">{registerT.backToSignIn}</span>
+          <Link href="/login" className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-white/90 hover:text-white hover:bg-white/20 text-xs font-semibold tracking-wide transition-all group shadow-md">
+            <ChevronLeft className="w-4 h-4 text-purple-300 group-hover:-translate-x-1 transition-transform" />
+            <span>{registerT.backToSignIn}</span>
           </Link>
         </div>
 
-        <div className="relative z-10 text-white">
-          <div className="flex items-center gap-4 mb-10">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border border-white/20 backdrop-blur-sm shadow-md">
+        {/* Central Identity & Benefits */}
+        <div className="relative z-10 text-white max-w-xl my-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 backdrop-blur-md shadow-2xl bg-white/10 p-1 flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="Kingdom of Christ Ministries Logo"
@@ -220,17 +234,19 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{loginT.churchName}</h1>
-              <p className="text-white/80 text-sm">{loginT.ministries}</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                {loginT.churchName}
+              </h1>
+              <p className="text-purple-200/80 text-xs font-bold tracking-widest uppercase mt-0.5">{loginT.ministries}</p>
             </div>
           </div>
 
-          <h2 className="text-3xl font-light leading-relaxed text-white/90 mb-8">
+          <h2 className="text-2xl sm:text-3xl font-normal leading-relaxed text-white/95 tracking-tight mb-8">
             {registerT.quote}
           </h2>
 
           {/* Benefits */}
-          <div className="space-y-4">
+          <div className="space-y-4 p-6 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-xl shadow-xl">
             {[
               registerT.benefit1,
               registerT.benefit2,
@@ -238,53 +254,53 @@ export default function RegisterPage() {
               registerT.benefit4,
             ].map((benefit) => (
               <div key={benefit} className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <span className="text-white/80 text-sm">{benefit}</span>
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">{benefit}</span>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Footer Status Ticker */}
         <div className="relative z-10">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-white/60 text-sm">{registerT.footerTicker}</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/15 backdrop-blur-md shadow-lg">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.9)]" />
+            <span className="text-white/90 text-xs font-semibold tracking-wide">{registerT.footerTicker}</span>
           </div>
         </div>
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-3 py-3 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 overflow-y-auto relative overflow-x-hidden min-h-[100dvh] lg:min-h-0">
-        {/* Background Decorative Circles (Mobile Only) */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-end/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-start/20 rounded-full blur-3xl lg:hidden pointer-events-none" />
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+        {/* Subtle grid pattern background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
-        {/* Cross Watermark (Mobile Only) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none lg:hidden">
-          <svg className="w-80 h-80 text-white" viewBox="0 0 100 100" fill="currentColor">
-            <rect x="42" y="6" width="16" height="88" rx="2" />
-            <rect x="14" y="28" width="72" height="16" rx="2" />
-          </svg>
-        </div>
-
-        {/* Desktop Language Toggle */}
+        {/* Ambient glow spots */}
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
+        
+        {/* Top Controls Bar */}
         <div className="hidden lg:block absolute top-6 right-6 z-20">
           <LanguageToggle />
         </div>
 
         {/* Mobile Top Header Bar */}
-        <div className="w-full max-w-lg flex items-center justify-between pt-0.5 px-1 mb-1.5 lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-1 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-2.5 py-1 rounded-full shadow-md">
-            <ChevronLeft className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-semibold tracking-wide">{registerT.backToSignIn}</span>
+        <div className="w-full max-w-lg flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
+          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
+            <ChevronLeft className="w-4 h-4 text-purple-300" />
+            <span>{registerT.backToSignIn}</span>
           </Link>
           <LanguageToggle />
         </div>
 
-        <div className="w-full max-w-lg mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 dark:border-white/5 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 animate-fade-in-up min-w-0 box-border">
+        {/* Form Container Card */}
+        <div className="w-full max-w-lg mx-auto bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden">
+          {/* Subtle glowing card accent border */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
+
           {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-2 text-center">
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-1 shadow-md bg-white dark:bg-gray-900 p-0.5">
+          <div className="lg:hidden flex flex-col items-center mb-6 text-center">
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-500/30 mb-2 shadow-xl bg-purple-950/50 p-1">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -295,41 +311,41 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            <h1 className="text-base font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
               {loginT.churchName}
             </h1>
-            <p className={`text-gray-400 font-semibold mt-0.5 ${
-              language === "en" ? "text-[8px] uppercase tracking-widest" : "text-[10px] tracking-normal"
-            }`}>{loginT.ministries}</p>
+            <p className="text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
+              {loginT.ministries}
+            </p>
           </div>
 
           {/* Header */}
-          <div className="mb-2.5 sm:mb-6 text-center lg:text-left">
-            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-0.5 tracking-tight">
+          <div className="mb-6 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-[11px] sm:text-sm">
+            <p className="text-gray-400 text-xs sm:text-sm font-medium mt-1">
               {registerT.subtitle}
             </p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-2.5 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-2">
-              <span className="text-red-500 text-sm mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-xs">{getLocalizedError(error)}</p>
+            <div className="mb-4 px-4 py-3 rounded-xl bg-red-950/50 border border-red-800/60 flex items-start gap-3 shadow-md">
+              <span className="text-red-400 text-lg mt-0.5">⚠</span>
+              <p className="text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Row - Always 2 Columns for Mobile Efficiency */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <div className="space-y-1">
-                <label htmlFor="firstName" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label htmlFor="firstName" className="text-xs font-semibold text-gray-300">
                   {registerT.firstName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -342,12 +358,12 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-1">
-                <label htmlFor="lastName" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="space-y-1.5">
+                <label htmlFor="lastName" className="text-xs font-semibold text-gray-300">
                   {registerT.lastName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -363,12 +379,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Email */}
-            <div className="space-y-1">
-              <label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-xs font-semibold text-gray-300">
                 {registerT.email}
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="email"
                   name="email"
@@ -384,12 +400,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Phone */}
-            <div className="space-y-1">
-              <label htmlFor="phone" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1.5">
+              <label htmlFor="phone" className="text-xs font-semibold text-gray-300">
                 {registerT.phone}
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="phone"
                   name="phone"
@@ -403,12 +419,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Password */}
-            <div className="space-y-1">
-              <label htmlFor="password" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-xs font-semibold text-gray-300">
                 {registerT.password}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="password"
                   name="password"
@@ -423,9 +439,9 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {/* Password Strength Meter */}
@@ -436,12 +452,12 @@ export default function RegisterPage() {
                       <div
                         key={i}
                         className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          i <= pwScore ? strengthColor[pwScore] : "bg-gray-200 dark:bg-gray-700"
+                          i <= pwScore ? strengthColor[pwScore] : "bg-gray-800"
                         }`}
                       />
                     ))}
                   </div>
-                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-500" : pwScore <= 2 ? "text-orange-500" : pwScore <= 3 ? "text-yellow-600" : "text-green-600"}`}>
+                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-400" : pwScore <= 2 ? "text-orange-400" : pwScore <= 3 ? "text-yellow-400" : "text-emerald-400"}`}>
                     {registerT.strengthLabel} {getStrengthLabel(pwScore)}
                   </p>
                 </div>
@@ -449,12 +465,12 @@ export default function RegisterPage() {
             </div>
 
             {/* Confirm Password */}
-            <div className="space-y-1">
-              <label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-1.5">
+              <label htmlFor="confirmPassword" className="text-xs font-semibold text-gray-300">
                 {registerT.confirmPassword}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -465,9 +481,9 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   className={`${inputClass} pr-10 ${
                     formData.confirmPassword && formData.password !== formData.confirmPassword
-                      ? "border-red-400 focus:ring-red-400"
+                      ? "border-red-500 focus:ring-red-500"
                       : formData.confirmPassword && formData.password === formData.confirmPassword
-                      ? "border-green-400 focus:ring-green-400"
+                      ? "border-emerald-500 focus:ring-emerald-500"
                       : ""
                   }`}
                   placeholder={registerT.confirmPasswordPlaceholder}
@@ -475,37 +491,37 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
-                  {showConfirm ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-[10px] sm:text-xs text-red-500">{registerT.mismatch}</p>
+                <p className="text-[10px] sm:text-xs text-red-400">{registerT.mismatch}</p>
               )}
             </div>
 
             {/* Terms */}
-            <div className="flex items-start gap-2 py-0.5">
+            <div className="flex items-start gap-2 py-1">
               <input
                 id="terms"
                 type="checkbox"
                 required
-                className="w-3.5 h-3.5 mt-0.5 accent-[hsl(var(--primary))] rounded"
+                className="w-4 h-4 mt-0.5 accent-purple-500 rounded bg-slate-950 border-gray-800"
               />
-              <label htmlFor="terms" className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-tight">
+              <label htmlFor="terms" className="text-xs text-gray-400 leading-tight">
                 {registerT.agreeTo}{" "}
-                <Link href="/terms" className="text-[hsl(var(--primary))] hover:underline font-medium">{registerT.terms}</Link>
+                <Link href="/terms" className="text-purple-400 hover:text-purple-300 font-semibold">{registerT.terms}</Link>
                 {" "}{registerT.and}{" "}
-                <Link href="/privacy" className="text-[hsl(var(--primary))] hover:underline font-medium">{registerT.privacy}</Link>
+                <Link href="/privacy" className="text-purple-400 hover:text-purple-300 font-semibold">{registerT.privacy}</Link>
               </label>
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 sm:py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold text-xs sm:text-sm shadow-lg shadow-[hsl(var(--primary))/0.25] hover:shadow-[hsl(var(--primary))/0.4] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2"
+              className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 border border-purple-400/20"
             >
               {isLoading ? (
                 <>
@@ -519,14 +535,15 @@ export default function RegisterPage() {
                 <>{registerT.createBtn} <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
-          </form>
 
-          <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-            {registerT.alreadyHaveAccount}{" "}
-            <Link href="/login" className="text-[hsl(var(--primary))] font-semibold hover:underline">
-              {registerT.signInLink}
-            </Link>
-          </p>
+            {/* Login Link */}
+            <p className="text-center pt-2 text-sm text-gray-400 font-medium">
+              {registerT.alreadyHaveAccount}{" "}
+              <Link href="/login" className="text-purple-400 font-bold hover:text-purple-300 hover:underline transition-all">
+                {registerT.signInLink}
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </div>
