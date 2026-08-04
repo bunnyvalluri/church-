@@ -16,7 +16,7 @@ async function setupRoles() {
   const roleUpdates = [
     // Super Admin
     { email: 'kingofchristministries23@gmail.com', role: 'SUPER_ADMIN' },
-    { email: 'admin@kcm-church.com', role: 'SUPER_ADMIN' },
+    { email: 'admin@kcm-church.com', role: 'SUPER_ADMIN', name: 'Admin Leader' },
     // Admins
     { email: 'accounts@kcm-church.com', role: 'ADMIN' },
     { email: 'secretary@kcm-church.com', role: 'ADMIN' },
@@ -28,9 +28,11 @@ async function setupRoles() {
 
   let updated = 0;
   for (const update of roleUpdates) {
+    const data = { role: update.role };
+    if (update.name) data.name = update.name;
     const result = await p.user.updateMany({
       where: { email: update.email },
-      data: { role: update.role }
+      data
     });
     if (result.count > 0) {
       console.log(`\n✓ Set ${update.email} → ${update.role}`);

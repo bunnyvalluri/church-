@@ -156,7 +156,7 @@ async function main() {
     },
     {
       id: 'user_admin_002',
-      name: 'Admin Sarah Thomas',
+      name: 'Admin Leader',
       email: 'admin@kcm-church.com',
       password: 'firebase-authenticated',
       role: 'SUPER_ADMIN',
