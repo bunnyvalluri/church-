@@ -572,33 +572,33 @@ export default function LoginPage() {
   // ── Removed to prevent hydration mismatch
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950">
+    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 font-sans antialiased text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
       {/* ── Left Branding Panel ── */}
-      <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#0f072b]">
+      <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#09051d] border-r border-white/10">
         {/* Glowing top accent border */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-500" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-500 shadow-[0_0_12px_rgba(192,132,252,0.8)]" />
         
         {/* Layered glowing radial mesh */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.35),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.25),transparent_55%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
         {/* Ambient Animated Orbs */}
         <motion.div 
           animate={{
             scale: [1, 1.12, 1],
-            opacity: [0.3, 0.45, 0.3],
+            opacity: [0.35, 0.5, 0.35],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute -top-24 -left-24 w-[28rem] h-[28rem] bg-purple-500/25 rounded-full blur-[80px] pointer-events-none" 
+          className="absolute -top-24 -left-24 w-[30rem] h-[30rem] bg-purple-500/30 rounded-full blur-[90px] pointer-events-none" 
         />
         <motion.div 
           animate={{
             scale: [1, 1.15, 1],
-            opacity: [0.2, 0.35, 0.2],
+            opacity: [0.25, 0.4, 0.25],
           }}
           transition={{
             duration: 12,
@@ -606,11 +606,11 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 1
           }}
-          className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] bg-indigo-600/20 rounded-full blur-[80px] pointer-events-none" 
+          className="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] bg-indigo-600/25 rounded-full blur-[90px] pointer-events-none" 
         />
 
         {/* Centered Large Solid Cross Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none select-none">
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none select-none">
           <svg className="w-[36rem] h-[36rem] text-white" viewBox="0 0 100 100" fill="currentColor">
             <rect x="42" y="6" width="16" height="88" rx="2" />
             <rect x="14" y="28" width="72" height="16" rx="2" />
@@ -619,8 +619,8 @@ export default function LoginPage() {
 
         {/* Header Back Link */}
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 group text-white/80 hover:text-white text-sm font-medium transition-colors">
-            <ChevronLeft className="w-4 h-4 text-white/70 group-hover:-translate-x-1 transition-transform" />
+          <Link href="/" className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-white/90 hover:text-white hover:bg-white/20 text-xs font-semibold tracking-wide transition-all group shadow-md">
+            <ChevronLeft className="w-4 h-4 text-purple-300 group-hover:-translate-x-1 transition-transform" />
             <span>{loginT.backToHome}</span>
           </Link>
         </div>
@@ -628,8 +628,8 @@ export default function LoginPage() {
         {/* Central Quote & Identity */}
         <div className="relative z-10 text-white max-w-xl my-auto">
           {/* Identity Header with Official Logo */}
-          <div className="flex items-center gap-3.5 mb-10">
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border border-white/20 backdrop-blur-md shadow-xl bg-white/10 p-1 flex-shrink-0 group hover:border-white/40 transition-all duration-300">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 backdrop-blur-md shadow-2xl bg-white/10 p-1 flex-shrink-0 group hover:border-purple-300 transition-all duration-300">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -641,8 +641,10 @@ export default function LoginPage() {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">{loginT.churchName}</h1>
-              <p className="text-purple-200/70 text-xs font-semibold tracking-widest uppercase mt-0.5">{loginT.ministries}</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white bg-gradient-to-r from-white via-purple-100 to-purple-200 bg-clip-text text-transparent">
+                {loginT.churchName}
+              </h1>
+              <p className="text-purple-200/80 text-xs font-bold tracking-widest uppercase mt-0.5">{loginT.ministries}</p>
             </div>
           </div>
 
@@ -651,12 +653,13 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="space-y-4"
+            className="p-6 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-xl shadow-xl relative overflow-hidden"
           >
-            <blockquote className="text-2xl sm:text-3xl font-normal leading-snug text-white tracking-tight">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl pointer-events-none" />
+            <blockquote className="text-xl sm:text-2xl font-normal leading-relaxed text-white/95 tracking-tight italic">
               "{loginT.quote}"
             </blockquote>
-            <p className="text-purple-200/90 text-sm font-medium italic pt-1">
+            <p className="text-purple-200 text-sm font-semibold pt-3 not-italic">
               — {loginT.author}
             </p>
           </motion.div>
@@ -664,58 +667,49 @@ export default function LoginPage() {
 
         {/* Footer Status Ticker */}
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="text-white/80 text-xs font-medium tracking-wide">{loginT.footerTicker}</span>
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/15 backdrop-blur-md shadow-lg">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.9)]" />
+            <span className="text-white/90 text-xs font-semibold tracking-wide">{loginT.footerTicker}</span>
           </div>
         </div>
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-8 lg:p-12 w-full min-w-0 bg-gradient-to-br from-gradient-start via-slate-950 to-gradient-end lg:from-transparent lg:via-transparent lg:to-transparent lg:bg-none lg:bg-white lg:dark:bg-gray-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
-        {/* Subtle grid pattern background (visible on desktop) */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none hidden lg:block" />
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+        {/* Subtle grid pattern background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
         {/* Ambient glow spots */}
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-gradient-start/[0.03] dark:bg-gradient-start/[0.08] rounded-full blur-[90px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-gradient-end/[0.03] dark:bg-gradient-end/[0.08] rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
         
-        {/* Background Decorative Circles (Mobile Only) */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[hsl(var(--primary))]/15 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-end/15 rounded-full blur-3xl lg:hidden pointer-events-none" />
-        
-        {/* Cross Watermark (Mobile Only) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none lg:hidden">
-          <svg className="w-80 h-80 text-white" viewBox="0 0 100 100" fill="currentColor">
-            <rect x="42" y="6" width="16" height="88" rx="2" />
-            <rect x="14" y="28" width="72" height="16" rx="2" />
-          </svg>
-        </div>
-
         {/* Top Controls Bar (Desktop Language Toggle & Mobile Header) */}
         <div className="hidden lg:block absolute top-6 right-6 z-20">
           <LanguageToggle />
         </div>
 
         {/* Mobile Header Bar */}
-        <div className="w-full max-w-md flex items-center justify-between pt-2 px-1 mb-2 lg:hidden z-20">
-          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 dark:bg-white/5 border border-white/10 hover:border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
-            <ChevronLeft className="w-4 h-4" />
-            <span className="text-xs font-semibold tracking-wide">{loginT.backToHome}</span>
+        <div className="w-full max-w-md flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
+          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
+            <ChevronLeft className="w-4 h-4 text-purple-300" />
+            <span>{loginT.backToHome}</span>
           </Link>
           <LanguageToggle />
         </div>
 
-        {/* Form Container */}
+        {/* Form Container Card */}
         <motion.div 
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto bg-white/90 dark:bg-gray-950/90 lg:bg-transparent lg:dark:bg-transparent p-5 sm:p-8 lg:p-0 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-xl lg:border-none lg:shadow-none lg:backdrop-blur-none z-10 min-w-0 box-border"
+          className="w-full max-w-md mx-auto bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden"
         >
+          {/* Subtle glowing card accent border */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
+
           {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-5 text-center">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 mb-2 shadow-md bg-white dark:bg-gray-900 p-0.5">
+          <div className="lg:hidden flex flex-col items-center mb-6 text-center">
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-500/30 mb-2 shadow-xl bg-purple-950/50 p-1">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -726,20 +720,20 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-300 via-fuchsia-200 to-indigo-200 bg-clip-text text-transparent tracking-tight">
               {loginT.churchName}
             </h1>
-            <p className={`text-gray-400 font-semibold mt-0.5 ${
-              language === "en" ? "text-[9px] uppercase tracking-widest" : "text-xs tracking-normal"
-            }`}>{loginT.ministries}</p>
+            <p className="text-purple-300/70 text-[10px] font-bold tracking-widest uppercase mt-0.5">
+              {loginT.ministries}
+            </p>
           </div>
 
-          {/* Header */}
-          <div className="mb-5 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+          {/* Form Header */}
+          <div className="mb-6 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               {loginT.title}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
+            <p className="text-gray-400 text-xs sm:text-sm font-medium mt-1">
               {loginT.subtitle}
             </p>
           </div>
@@ -749,14 +743,14 @@ export default function LoginPage() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 flex items-start gap-3 shadow-sm"
+              className="mb-6 px-4 py-3 rounded-xl bg-red-950/50 border border-red-800/60 flex items-start gap-3 shadow-md"
             >
-              <span className="text-red-500 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-300 text-sm font-medium">{getLocalizedError(error)}</p>
+              <span className="text-red-400 text-lg mt-0.5">⚠</span>
+              <p className="text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
             </motion.div>
           )}
 
-          {/* Email/Password Form with stagger animations */}
+          {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <motion.div 
               variants={containerVariants}
@@ -764,13 +758,13 @@ export default function LoginPage() {
               animate="visible"
               className="space-y-5"
             >
-              {/* Email */}
+              {/* Email Input */}
               <motion.div variants={itemVariants} className="space-y-1.5 group">
-                <label htmlFor="email" className="text-xs font-semibold text-gray-500 dark:text-gray-400 group-focus-within:text-[hsl(var(--primary))] transition-colors duration-300">
+                <label htmlFor="email" className="text-xs font-semibold text-gray-300 group-focus-within:text-purple-400 transition-colors duration-300">
                   {loginT.email}
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[hsl(var(--primary))] transition-colors duration-300" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors duration-300" />
                   <input
                     id="email"
                     type="email"
@@ -778,27 +772,27 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-[hsl(var(--primary))]/10 focus:border-[hsl(var(--primary))] focus:bg-white dark:focus:bg-gray-950 transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-600 text-sm"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-gray-500 text-sm"
                     placeholder={loginT.emailPlaceholder}
                   />
                 </div>
               </motion.div>
 
-              {/* Password */}
+              {/* Password Input */}
               <motion.div variants={itemVariants} className="space-y-1.5 group">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-xs font-semibold text-gray-500 dark:text-gray-400 group-focus-within:text-[hsl(var(--primary))] transition-colors duration-300">
+                  <label htmlFor="password" className="text-xs font-semibold text-gray-300 group-focus-within:text-purple-400 transition-colors duration-300">
                     {loginT.password}
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-[hsl(var(--primary))] hover:opacity-85 font-medium transition-colors"
+                    className="text-xs text-purple-400 hover:text-purple-300 font-semibold transition-colors"
                   >
                     {loginT.forgotPassword}
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[hsl(var(--primary))] transition-colors duration-300" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors duration-300" />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -806,34 +800,34 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
-                    className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-[hsl(var(--primary))]/10 focus:border-[hsl(var(--primary))] focus:bg-white dark:focus:bg-gray-950 transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-600 text-sm"
+                    className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-gray-500 text-sm"
                     placeholder={loginT.passwordPlaceholder}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                     aria-label="Toggle password visibility"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5 animate-pulse" /> : <Eye className="w-5 h-5 animate-pulse" />}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </motion.div>
 
-              {/* Submit */}
-              <motion.div variants={itemVariants} className="pt-2">
+              {/* Submit Button */}
+              <motion.div variants={itemVariants} className="pt-1">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-white font-semibold shadow-lg shadow-[hsl(var(--primary))]/15 hover:shadow-[hsl(var(--primary))]/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 group"
+                  className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 group border border-purple-400/20"
                 >
                   {/* Gloss sheen overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
                   
                   {isLoading ? (
                     <>
                       <Loader2 className="animate-spin w-5 h-5" />
-                      {loginT.signingIn}
+                      <span>{loginT.signingIn}</span>
                     </>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
@@ -847,10 +841,10 @@ export default function LoginPage() {
               {/* Divider */}
               <motion.div variants={itemVariants} className="relative my-6 pt-1">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200 dark:border-gray-800" />
+                  <div className="w-full border-t border-gray-800" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-white/90 dark:bg-gray-950 lg:bg-white lg:dark:bg-gray-950 text-xs font-semibold text-gray-400 uppercase tracking-wider">{loginT.orContinueWith}</span>
+                  <span className="px-4 bg-slate-900 text-xs font-bold text-gray-400 uppercase tracking-widest">{loginT.orContinueWith}</span>
                 </div>
               </motion.div>
 
@@ -860,23 +854,11 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => handleSocialLogin(googleProvider, "Google")}
                   disabled={!!socialLoading}
-                  whileHover={!socialLoading ? { scale: 1.01, y: -0.5 } : {}}
+                  whileHover={!socialLoading ? { scale: 1.01, y: -1 } : {}}
                   whileTap={!socialLoading ? { scale: 0.99 } : {}}
-                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/30 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-85 disabled:cursor-wait group overflow-hidden"
+                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-gray-800 bg-slate-950/80 hover:bg-slate-800/80 hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-lg disabled:opacity-85 disabled:cursor-wait group overflow-hidden"
                   title={loginT.googleSignIn}
                 >
-                  <AnimatePresence>
-                    {socialLoading === "Google" && (
-                      <motion.div
-                        initial={{ x: "-100%" }}
-                        animate={{ x: "100%" }}
-                        exit={{ opacity: 0 }}
-                        transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/30 dark:via-white/5 to-transparent skew-x-12 pointer-events-none"
-                      />
-                    )}
-                  </AnimatePresence>
-
                   <AnimatePresence mode="wait">
                     {socialLoading === "Google" ? (
                       <motion.div
@@ -886,8 +868,8 @@ export default function LoginPage() {
                         exit={{ opacity: 0, y: -6 }}
                         className="flex items-center justify-center gap-3"
                       >
-                        <Loader2 className="w-5 h-5 animate-spin text-[hsl(var(--primary))]" />
-                        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 animate-pulse">
+                        <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
+                        <span className="text-sm font-semibold text-gray-300 animate-pulse">
                           {language === "te" ? "Google తో అనుసంధానిస్తోంది..." : language === "hi" ? "Google से जुड़ रहा है..." : "Connecting to Google..."}
                         </span>
                       </motion.div>
@@ -899,13 +881,13 @@ export default function LoginPage() {
                         exit={{ opacity: 0, y: 6 }}
                         className="flex items-center justify-center gap-3"
                       >
-                        <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-105 transition-transform duration-300" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24">
                           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
                           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300">
+                        <span className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors duration-300">
                           {loginT.googleSignIn}
                         </span>
                       </motion.div>
@@ -914,11 +896,20 @@ export default function LoginPage() {
                 </motion.button>
               </motion.div>
 
+              {/* Portal Selector Shortcuts */}
+              <motion.div variants={itemVariants} className="pt-2 flex items-center justify-center gap-2 flex-wrap">
+                <Link href="/login" className="px-2.5 py-1 rounded-md bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] font-semibold hover:bg-purple-500/20 transition-all">
+                  Member Portal
+                </Link>
+                <Link href="/admin/login" className="px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold hover:bg-indigo-500/20 transition-all">
+                  Admin Login
+                </Link>
+              </motion.div>
 
               {/* Register Link */}
-              <motion.p variants={itemVariants} className="text-center pt-4 text-sm text-gray-500 dark:text-gray-400 font-medium">
+              <motion.p variants={itemVariants} className="text-center pt-2 text-sm text-gray-400 font-medium">
                 {loginT.newToMinistry}{" "}
-                <Link href="/register" className="text-[hsl(var(--primary))] font-bold hover:underline transition-all">
+                <Link href="/register" className="text-purple-400 font-bold hover:text-purple-300 hover:underline transition-all">
                   {loginT.createAccountLink}
                 </Link>
               </motion.p>
