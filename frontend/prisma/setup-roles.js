@@ -23,7 +23,6 @@ async function setupRoles() {
     // Pastors
     { email: 'pastor.kristhuraju@kcm-church.com', role: 'PASTOR' },
     { email: 'pastor.samuel@kcm-church.com', role: 'PASTOR' },
-    { email: 'pastor.david@kcm-church.com', role: 'PASTOR' },
     { email: 'pastor@kcm-church.com', role: 'PASTOR' },
   ];
 
