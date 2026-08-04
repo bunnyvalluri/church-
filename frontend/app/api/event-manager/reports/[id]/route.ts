@@ -277,7 +277,35 @@ export async function DELETE(
       }
     }
 
-    // 2. Delete report. Prisma cascade delete takes care of MediaReport table rows
+    // 2. Remove any associated public landing page Event & EventMedia
+    try {
+      const matchingEvents = await prisma.event.findMany({
+        where: {
+          OR: [
+            { slug: `report-${params.id}` },
+            { AND: [{ branchId: report.branchId }, { title: report.title }] }
+          ]
+        },
+        select: { id: true }
+      });
+
+      if (matchingEvents.length > 0) {
+        const matchingIds = matchingEvents.map(e => e.id);
+        await prisma.eventMedia.deleteMany({
+          where: { eventId: { in: matchingIds } }
+        });
+        await prisma.eventRegistration.deleteMany({
+          where: { eventId: { in: matchingIds } }
+        });
+        await prisma.event.deleteMany({
+          where: { id: { in: matchingIds } }
+        });
+      }
+    } catch (eventDelErr) {
+      console.warn("[API/EVENT_MANAGER/REPORTS/ID/DELETE] Landing page event cleanup:", eventDelErr);
+    }
+
+    // 3. Delete report. Prisma cascade delete takes care of MediaReport table rows
     await prisma.eventReport.delete({
       where: { id: params.id },
     });
