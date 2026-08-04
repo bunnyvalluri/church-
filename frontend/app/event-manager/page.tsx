@@ -1348,12 +1348,10 @@ export default function UnifiedEventManagementPortal() {
                         </div>
                       </div>
 
-                      {/* Brief preview description (when collapsed) */}
-                      {!isExpanded && (
-                        <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
-                          {report.description || "No description provided."}
-                        </p>
-                      )}
+                      {/* Complete report notes */}
+                      <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 font-medium whitespace-pre-wrap bg-slate-50/80 dark:bg-white/5 p-3 rounded-xl border border-slate-200/60 dark:border-white/5">
+                        {report.description || "No description provided."}
+                      </p>
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-950/40 border border-slate-100/80 dark:border-white/5 p-3.5 rounded-xl text-xs">
