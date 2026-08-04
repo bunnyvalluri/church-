@@ -374,7 +374,7 @@ export default function LoginPage() {
     try {
       let u: any = null;
 
-      // Step 1: Always try Google OAuth popup first (shows Google account chooser)
+      // Always try Google OAuth popup first (shows Firebase Google account chooser)
       try {
         if (auth && typeof signInWithPopup === "function") {
           const result = await signInWithPopup(auth, provider);
@@ -387,33 +387,29 @@ export default function LoginPage() {
           popupErr?.code === "auth/popup-blocked" ||
           popupErr?.code === "auth/cancelled-popup-request"
         ) {
-          // Popup was blocked by browser — fallback to full-page redirect (mobile browsers)
+          // Popup was blocked by browser — fallback to full-page OAuth redirect
           if (auth && typeof signInWithRedirect === "function") {
             await signInWithRedirect(auth, provider);
-            return; // page will reload, getRedirectResult will handle the rest
+            return;
           }
         } else if (
           popupErr?.code === "auth/popup-closed-by-user" ||
           popupErr?.code === "auth/user-cancelled"
         ) {
-          // User deliberately closed the Google popup — clear loading state without error box
+          // User closed the Google popup — reset states cleanly and stay on login page
           setSocialLoading(null);
           setIsLoggingIn(false);
           return;
         } else {
-          console.info(`[AUTH/OAUTH] ${name} using seamless fallback authentication for domain.`);
+          // For network or operational errors, surface localized error message
+          throw popupErr;
         }
       }
 
-      // Seamless fallback if Firebase Auth is unreachable, blocked, or unauthorized for domain
       if (!u) {
-        const demoEmail = "member@kcm-church.com";
-        u = {
-          uid: "google-session-user",
-          email: demoEmail,
-          displayName: "Church Member",
-          photoURL: null,
-        };
+        setSocialLoading(null);
+        setIsLoggingIn(false);
+        return;
       }
 
       const initialRole = getRoleForEmail(u.email || "");
@@ -452,12 +448,10 @@ export default function LoginPage() {
       redirectForRole(initialRole);
 
     } catch (err: any) {
-      console.warn(`[AUTH/OAUTH] ${name} error fallback:`, err?.code || err);
+      console.error(`[AUTH/OAUTH] ${name} sign-in error:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
-      const initialRole = getRoleForEmail(email || "member@kcm-church.com");
-      setAuthCookies("google-session-user", initialRole);
-      redirectForRole(initialRole);
+      setError(err?.code || "sign-in-failed");
     }
   };
 
