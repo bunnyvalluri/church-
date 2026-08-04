@@ -5,11 +5,11 @@ import sanitizeHtml from 'sanitize-html';
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const syncSchema = z.object({
-  uid: z.string().min(5).max(128).trim().regex(/^[a-zA-Z0-9_\-\.\:\+]+$/),
+  uid: z.string().min(1).max(256).trim(),
   email: z.string().email().toLowerCase().trim().max(254),
-  name: z.string().max(100).trim().optional().nullable(),
-  photoURL: z.string().max(1000).trim().optional().nullable(),
-  phoneNumber: z.string().max(30).trim().optional().nullable(),
+  name: z.string().max(200).trim().optional().nullable(),
+  photoURL: z.string().max(100000).trim().optional().nullable(),
+  phoneNumber: z.string().max(50).trim().optional().nullable(),
 });
 
 // ── Sanitizer config ─────────────────────────────────────────────────────────
