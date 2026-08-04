@@ -133,17 +133,7 @@ export async function PUT(
 
     // 3. Process new media attachments
     const { validateFileSecurity } = await import("@/lib/uploadSecurity");
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    const mimeExtensions: Record<string, string> = {
-      "image/jpeg": ".jpg",
-      "image/jpg": ".jpg",
-      "image/png": ".png",
-      "image/webp": ".webp",
-      "video/mp4": ".mp4",
-      "video/webm": ".webm",
-    };
+    const { uploadBufferToCloudinary } = await import("@/lib/cloudinary");
 
     const processAttachment = async (base64Str: string, isVideo: boolean, index: number) => {
       const matches = base64Str.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
@@ -153,10 +143,7 @@ export async function PUT(
 
       const mimeType = matches[1];
       const buffer = Buffer.from(matches[2], "base64");
-      const ext = mimeExtensions[mimeType] || (isVideo ? ".mp4" : ".jpg");
-      const filename = `report-${params.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}${ext}`;
-      const relativeUrl = `/uploads/${filename}`;
-      const absolutePath = path.join(uploadDir, filename);
+      const filename = `report-${params.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}`;
 
       // Security check
       const securityCheck = validateFileSecurity(buffer, filename, mimeType);
@@ -164,14 +151,21 @@ export async function PUT(
         throw new Error(`Security validation failed: ${securityCheck.error}`);
       }
 
-      await fs.writeFile(absolutePath, buffer);
+      // Cloud-native upload (safe on Vercel Serverless Function environment)
+      const uploadResult = await uploadBufferToCloudinary(
+        buffer,
+        "events",
+        isVideo ? "video" : "image"
+      );
+
+      const mediaUrl = uploadResult.secure_url || uploadResult.url;
 
       // Create Database MediaReport
       await prisma.mediaReport.create({
         data: {
           eventReportId: params.id,
           type: isVideo ? "VIDEO" : "IMAGE",
-          url: relativeUrl,
+          url: mediaUrl,
           uploadedById: auth.uid,
         },
       });
