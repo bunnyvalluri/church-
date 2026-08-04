@@ -1354,14 +1354,8 @@ export default function UnifiedEventManagementPortal() {
                       </p>
 
                       {/* Stats Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-slate-50/80 dark:bg-slate-950/40 border border-slate-100/80 dark:border-white/5 p-3.5 rounded-xl text-xs">
+                      <div className="bg-slate-50/80 dark:bg-slate-950/40 border border-slate-100/80 dark:border-white/5 p-3.5 rounded-xl text-xs">
                         <div className="space-y-0.5">
-                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">{t.eventManager?.attendanceLabel || "Attendance"}</span>
-                          <span className="font-extrabold text-violet-600 dark:text-violet-400 text-sm flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5" /> {report.attendanceCount}
-                          </span>
-                        </div>
-                        <div className="space-y-0.5 col-span-2">
                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">{t.eventManager?.gpsLabel || "GPS coordinates"}</span>
                           <span className="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 text-xs">
                             <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
@@ -1700,17 +1694,6 @@ export default function UnifiedEventManagementPortal() {
                         className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500" />
                     </div>
                   </div>
-
-                  {/* Attendance Count */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest block">{t.eventManager?.attendanceLabel || "Attendance Count"}</label>
-                    <div className="relative">
-                      <Users className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input type="number" min={0} required value={editAttendanceCount} onChange={e => setEditAttendanceCount(parseInt(e.target.value) || 0)}
-                        className="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500" />
-                    </div>
-                  </div>
-
                 </div>
 
                 {/* Event Title */}
@@ -2755,15 +2738,9 @@ export default function UnifiedEventManagementPortal() {
                           }`}>{viewingReport.status}</span>
                         </div>
                         {viewingReport.description && <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{viewingReport.description}</p>}
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Attendance</p>
-                            <p className="text-base font-black text-slate-800 dark:text-white mt-0.5">{viewingReport.attendanceCount}</p>
-                          </div>
-                          <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Media</p>
-                            <p className="text-base font-black text-indigo-600 dark:text-indigo-400 mt-0.5">{viewingReport.media?.length || 0}</p>
-                          </div>
+                        <div className="bg-slate-50 dark:bg-white/5 rounded-lg p-2.5 text-center border border-slate-100 dark:border-white/5">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-wide">Media Attachments</p>
+                          <p className="text-base font-black text-indigo-600 dark:text-indigo-400 mt-0.5">{viewingReport.media?.length || 0}</p>
                         </div>
                         {viewingReport.volunteerNames?.length > 0 && (
                           <div>
