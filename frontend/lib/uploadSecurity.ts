@@ -16,11 +16,20 @@ export interface SecurityValidationResult {
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 
-const ALLOWED_IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"];
-const ALLOWED_VIDEO_MIMES = ["video/mp4"];
+const ALLOWED_IMAGE_MIMES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ALLOWED_VIDEO_MIMES = ["video/mp4", "video/webm"];
 
-const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".mp4"];
+const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm"];
 const FORBIDDEN_EXTENSIONS = [".exe", ".svg", ".php", ".js", ".sh", ".bat", ".html"];
+
+const MIME_EXT_MAP: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/jpg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "video/mp4": ".mp4",
+  "video/webm": ".webm",
+};
 
 
 /**
@@ -104,16 +113,18 @@ export function validateFileSecurity(
   }
 
   // 2. Extension Validation
-  const extIndex = filename.lastIndexOf(".");
+  let extIndex = filename.lastIndexOf(".");
   if (extIndex === -1) {
-    return { isValid: false, error: "File extension is missing." };
+    const inferredExt = MIME_EXT_MAP[declaredMimeType] || (isVideo ? ".mp4" : ".jpg");
+    filename = filename + inferredExt;
+    extIndex = filename.lastIndexOf(".");
   }
   const ext = filename.slice(extIndex).toLowerCase();
   if (FORBIDDEN_EXTENSIONS.includes(ext)) {
     return { isValid: false, error: `Security Violation: File extension "${ext}" is strictly forbidden.` };
   }
   if (!ALLOWED_EXTENSIONS.includes(ext)) {
-    return { isValid: false, error: `File extension "${ext}" is not permitted. Allowed: jpg, jpeg, png, webp, mp4.` };
+    return { isValid: false, error: `File extension "${ext}" is not permitted. Allowed: jpg, jpeg, png, webp, mp4, webm.` };
   }
 
 

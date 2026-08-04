@@ -135,6 +135,15 @@ export async function PUT(
     const { validateFileSecurity } = await import("@/lib/uploadSecurity");
     const { uploadBufferToCloudinary } = await import("@/lib/cloudinary");
 
+    const mimeExtensions: Record<string, string> = {
+      "image/jpeg": ".jpg",
+      "image/jpg": ".jpg",
+      "image/png": ".png",
+      "image/webp": ".webp",
+      "video/mp4": ".mp4",
+      "video/webm": ".webm",
+    };
+
     const processAttachment = async (base64Str: string, isVideo: boolean, index: number) => {
       const matches = base64Str.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
@@ -143,7 +152,8 @@ export async function PUT(
 
       const mimeType = matches[1];
       const buffer = Buffer.from(matches[2], "base64");
-      const filename = `report-${params.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}`;
+      const ext = mimeExtensions[mimeType] || (isVideo ? ".mp4" : ".jpg");
+      const filename = `report-${params.id}-${Date.now()}-${isVideo ? "video" : "image"}-${index}${ext}`;
 
       // Security check
       const securityCheck = validateFileSecurity(buffer, filename, mimeType);
