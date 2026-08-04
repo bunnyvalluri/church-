@@ -350,16 +350,12 @@ export default function LoginPage() {
       }
     }
 
-    try {
-      router.push(targetPath);
-      router.refresh();
-    } catch {}
-
-    setTimeout(() => {
-      if (typeof window !== "undefined" && window.location.pathname === "/login") {
-        window.location.href = targetPath;
-      }
-    }, 200);
+    if (typeof window !== "undefined") {
+      try {
+        router.push(targetPath);
+      } catch {}
+      window.location.href = targetPath;
+    }
   };
 
   const handleSocialLogin = async (provider: any, name: string) => {
