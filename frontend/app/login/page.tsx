@@ -720,10 +720,10 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-300 via-fuchsia-200 to-indigo-200 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
               {loginT.churchName}
             </h1>
-            <p className="text-purple-300/70 text-[10px] font-bold tracking-widest uppercase mt-0.5">
+            <p className="text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
               {loginT.ministries}
             </p>
           </div>
