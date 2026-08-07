@@ -10,6 +10,7 @@ import {
   SkipBack, SkipForward, ArrowUpRight, Volume2, Video
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 
 /* ════════════════════════════════ TYPES ════════════════════════════════ */
 export interface MediaItem {
@@ -523,7 +524,27 @@ export default function NgoVideosPage() {
     }
   };
 
-  const ngoT = (t as any).ngo || {};
+  const { t } = useLanguage();
+  const vT = (t as any).videosPage || {
+    badge: "KCM NGO Field Service Video Logs",
+    heroTitle: "Video Theater & Outreach Logs",
+    heroSubtitle: "Watch live video recordings of KCM's Bethany Samrakshana Ashramam, Home for Disabled Care, and Hospital food & relief distribution drives.",
+    searchPlaceholder: "Search videos by title, date, or hospital...",
+    filterAll: "All Videos",
+    filterYt: "YouTube Series",
+    filterAshramam: "Ashramam Field Clips",
+    filterHospital: "Hospital Drives",
+    filterDisabled: "Disabled Care",
+    playlistTitle: "Up Next Playlist",
+    playlistSubtitle: "Select Video to Play",
+    featuredTitle: "Featured Video Collections",
+    featuredSubtitle: "Showing video logs • Click any card to play in main stage",
+    clickToPlay: "Click to Play Video",
+    fieldLog: "Field Video Log",
+    youtubeDoc: "YouTube Documentary",
+    noResults: "No video logs match your search query",
+    clearFilters: "Clear Filters"
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
@@ -541,20 +562,24 @@ export default function NgoVideosPage() {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             
             <div className="space-y-3 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                KCM Social Service Media Portal
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {vT.badge}
+                </span>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                Service Video Archive & Coverage
+                {vT.heroTitle}
               </h1>
               <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-                {ngoT.videosPage?.desc || "Explore authentic video documentation of KCM outreach — government hospital relief campaigns, Bethany Ashramam support drives, and disability care visits."}
+                {vT.heroSubtitle}
               </p>
             </div>
 
-            {/* Quick Stat Pill Cards */}
-            <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Quick Stat Pill Cards & Language Toggle */}
+            <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
+              <LanguageToggle align="right" />
+
               <button
                 onClick={() => { setPlaylistTab("yt"); setFilterCategory("yt"); }}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-left transition-all ${
@@ -606,7 +631,7 @@ export default function NgoVideosPage() {
                 }`}
               >
                 <Youtube className="w-3.5 h-3.5" />
-                YouTube Series ({YOUTUBE_ITEMS.length})
+                {vT.filterYt} ({YOUTUBE_ITEMS.length})
               </button>
 
               <button
@@ -618,7 +643,7 @@ export default function NgoVideosPage() {
                 }`}
               >
                 <Film className="w-3.5 h-3.5" />
-                Ashramam Field Clips ({MP4_ITEMS.length})
+                {vT.filterAshramam} ({MP4_ITEMS.length})
               </button>
 
               <button
@@ -629,7 +654,7 @@ export default function NgoVideosPage() {
                     : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
                 }`}
               >
-                All Videos ({ALL_MEDIA_DATABASE.length})
+                {vT.filterAll} ({ALL_MEDIA_DATABASE.length})
               </button>
 
               <button
@@ -640,7 +665,7 @@ export default function NgoVideosPage() {
                     : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
                 }`}
               >
-                Hospital Drives ({ALL_MEDIA_DATABASE.filter(m => m.category === "hospital").length})
+                {vT.filterHospital} ({ALL_MEDIA_DATABASE.filter(m => m.category === "hospital").length})
               </button>
 
               <button
@@ -652,7 +677,7 @@ export default function NgoVideosPage() {
                 }`}
               >
                 <Film className="w-3.5 h-3.5" />
-                Disabled Care ({ALL_MEDIA_DATABASE.filter(m => m.category === "disabled").length})
+                {vT.filterDisabled} ({ALL_MEDIA_DATABASE.filter(m => m.category === "disabled").length})
               </button>
             </div>
 
@@ -661,7 +686,7 @@ export default function NgoVideosPage() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search video logs..."
+                placeholder={vT.searchPlaceholder}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-slate-900 dark:text-white"
@@ -868,10 +893,10 @@ export default function NgoVideosPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-extrabold text-slate-900 dark:text-white leading-none">
-                      Up Next Playlist
+                      {vT.playlistTitle}
                     </h3>
                     <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                      Select Video to Play
+                      {vT.playlistSubtitle}
                     </p>
                   </div>
                 </div>
@@ -920,7 +945,7 @@ export default function NgoVideosPage() {
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5 flex-shrink-0" />
-                    All ({ALL_MEDIA_DATABASE.length})
+                    {vT.filterAll} ({ALL_MEDIA_DATABASE.length})
                   </button>
 
                 </div>
@@ -951,10 +976,10 @@ export default function NgoVideosPage() {
             <div>
               <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Clapperboard className="w-5 h-5 text-emerald-500" />
-                Featured Video Collections
+                {vT.featuredTitle}
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Showing {filteredShowcaseMedia.length} video logs • Click any card to play in main stage
+                {vT.featuredSubtitle} ({filteredShowcaseMedia.length})
               </p>
             </div>
           </div>

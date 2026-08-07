@@ -1142,6 +1142,26 @@ export const translations = {
       submitReportBtn: "Submit Field Report",
       queueReportBtn: "Queue Report in Offline Outbox",
       branchText: "Branch"
+    },
+    videosPage: {
+      badge: "KCM NGO Field Service Video Logs",
+      heroTitle: "Video Theater & Outreach Logs",
+      heroSubtitle: "Watch live video recordings of KCM's Bethany Samrakshana Ashramam, Home for Disabled Care, and Hospital food & relief distribution drives.",
+      searchPlaceholder: "Search videos by title, date, or hospital...",
+      filterAll: "All Videos",
+      filterYt: "YouTube Series",
+      filterAshramam: "Ashramam Field Clips",
+      filterHospital: "Hospital Drives",
+      filterDisabled: "Disabled Care",
+      playlistTitle: "Up Next Playlist",
+      playlistSubtitle: "Select Video to Play",
+      featuredTitle: "Featured Video Collections",
+      featuredSubtitle: "Showing video logs • Click any card to play in main stage",
+      clickToPlay: "Click to Play Video",
+      fieldLog: "Field Video Log",
+      youtubeDoc: "YouTube Documentary",
+      noResults: "No video logs match your search query",
+      clearFilters: "Clear Filters"
     }
   },
   te: {
@@ -2287,6 +2307,26 @@ export const translations = {
       submitReportBtn: "నివేదికను సమర్పించండి",
       queueReportBtn: "ఆఫ్‌లైన్ అవుట్‌బాక్స్‌లో క్యూ చేయి",
       branchText: "బ్రాంచ్"
+    },
+    videosPage: {
+      badge: "KCM NGO క్షేత్ర సేవ వీడియో లాగ్‌లు",
+      heroTitle: "వీడియో థియేటర్ & సేవా సమాచారం",
+      heroSubtitle: "KCM యొక్క బెతానీ సంరక్షణ ఆశ్రమం, దివ్యాంగుల ఆశ్రమం మరియు ఆసుపత్రి ఆహార పంపిణీ వీడియో రికార్డింగ్‌లను ప్రత్యక్షంగా చూడండి.",
+      searchPlaceholder: "శీర్షిక, తేదీ లేదా ఆసుపత్రి ద్వారా వెతకండి...",
+      filterAll: "అన్ని వీడియోలు",
+      filterYt: "యూట్యూబ్ సిరీస్",
+      filterAshramam: "ఆశ్రమం వీడియో క్లిప్‌లు",
+      filterHospital: "ఆసుపత్రి సేవా డ్రైవ్‌లు",
+      filterDisabled: "దివ్యాంగుల సేవ",
+      playlistTitle: "తదుపరి వీడియోల జాబితా",
+      playlistSubtitle: "ప్లే చేయడానికి వీడియోను ఎంచుకోండి",
+      featuredTitle: "ప్రత్యేక వీడియో సేకరణలు",
+      featuredSubtitle: "వీడియో లాగ్‌లను చూపుతోంది • ప్రధాన ప్రదర్శనలో ప్లే చేయడానికి కార్డ్‌పై క్లిక్ చేయండి",
+      clickToPlay: "వీడియో ప్లే చేయడానికి క్లిక్ చేయండి",
+      fieldLog: "ఫీల్డ్ వీడియో లాగ్",
+      youtubeDoc: "యూట్యూబ్ డాక్యుమెంటరీ",
+      noResults: "మీ శోధనకు తగిన వీడియో లాగ్‌లు కనుగొనబడలేదు",
+      clearFilters: "ఫిల్టర్లను క్లియర్ చేయండి"
     }
   },
   hi: {
@@ -3432,6 +3472,26 @@ export const translations = {
       submitReportBtn: "रिपोर्ट जमा करें",
       queueReportBtn: "ऑफ़लाइन आउटबॉक्स में कतारबद्ध करें",
       branchText: "ब्रांच"
+    },
+    videosPage: {
+      badge: "KCM NGO सेवा वीडियो लॉग",
+      heroTitle: "वीडियो थिएटर और आउटरीच लॉग",
+      heroSubtitle: "KCM के बेथानी संरक्षण आश्रम, दिव्यांग आश्रम और अस्पताल भोजन/राहत वितरण अभियानों की लाइव वीडियो रिकॉर्डिंग देखें।",
+      searchPlaceholder: "शीर्षक, तिथि या अस्पताल द्वारा वीडियो खोजें...",
+      filterAll: "सभी वीडियो",
+      filterYt: "यूट्यूब श्रृंखला",
+      filterAshramam: "आश्रम वीडियो क्लिप्स",
+      filterHospital: "अस्पताल सेवा ड्राइव",
+      filterDisabled: "दिव्यांग देखभाल",
+      playlistTitle: "अगली प्लेलिस्ट",
+      playlistSubtitle: "चलाने के लिए वीडियो चुनें",
+      featuredTitle: "विशेष रूप से प्रदर्शित वीडियो संग्रह",
+      featuredSubtitle: "वीडियो लॉग दिखाए जा रहे हैं • मुख्य मंच पर चलाने के लिए किसी भी कार्ड पर क्लिक करें",
+      clickToPlay: "वीडियो चलाने के लिए क्लिक करें",
+      fieldLog: "फील्ड वीडियो लॉग",
+      youtubeDoc: "यूट्यूब डॉक्यूमेंट्री",
+      noResults: "आपकी खोज से मेल खाने वाले कोई वीडियो लॉग नहीं मिले",
+      clearFilters: "फ़िल्टर साफ़ करें"
     }
   }
 };
