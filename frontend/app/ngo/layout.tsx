@@ -77,11 +77,11 @@ export default function NgoLayout({
       {/* Main Global Navbar */}
       <Navbar />
 
-      {/* Responsive spacing matching header height across viewports */}
-      <div className="h-[52px] min-[360px]:h-[56px] sm:h-[60px] md:h-[64px] lg:h-[72px]" />
+      {/* Responsive spacing matching header height across viewports (including TopInfoBar on xl+) */}
+      <div className="h-[52px] min-[360px]:h-[56px] sm:h-[60px] md:h-[64px] lg:h-[72px] xl:h-[108px] 2xl:h-[112px]" />
 
       {/* Dedicated NGO Sub-Navbar Bar */}
-      <div className="sticky top-[52px] min-[360px]:top-[56px] sm:top-[60px] md:top-[64px] lg:top-[72px] z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 py-2 sm:py-2.5 shadow-sm">
+      <div className="sticky top-[52px] min-[360px]:top-[56px] sm:top-[60px] md:top-[64px] lg:top-[72px] 2xl:top-[76px] z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 py-2 sm:py-2.5 shadow-sm">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3">
             
@@ -99,7 +99,7 @@ export default function NgoLayout({
             <div className="w-full sm:w-auto overflow-x-auto no-scrollbar scroll-smooth -mx-3 px-3 sm:mx-0 sm:px-0">
               <nav className="flex items-center gap-1.5 min-w-max py-0.5">
                 {subNavItems.map((item) => {
-                  const isActive = pathname === item.href;
+                  const isActive = item.href === "/ngo" ? pathname === "/ngo" : pathname.startsWith(item.href);
                   const Icon = item.icon;
                   return (
                     <Link
