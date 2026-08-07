@@ -18,8 +18,8 @@ const ContentSecurityPolicy = `
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig = {
-  // -- Docker (standalone output only if explicitly set in environment) --
-  output: process.env.NEXT_PRIVATE_STANDALONE ? 'standalone' : undefined,
+  // -- Docker (standalone for Docker/CI, disabled on Vercel) --
+  output: process.env.VERCEL ? undefined : 'standalone',
 
   // -- Performance --
   compress: true,
