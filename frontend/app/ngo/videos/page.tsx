@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import {
   Video,
   PlayCircle,
@@ -40,50 +39,6 @@ interface VideoItem {
   date?: string;
   fileSize?: string;
 }
-
-// Helper function to resolve HD Drive YouTube streams for MP4 field logs
-const getDriveFallbackStream = (video: VideoItem): { title: string; embedUrl: string } => {
-  if (video.category === "BETHANY-ASHRAMAM") {
-    if (video.date === "21-04-2026") {
-      return {
-        title: "Bethany Ashramam April 21 Drive HD Coverage",
-        embedUrl: "https://www.youtube.com/embed/yBuQroMa5t0?si=pVto2gBF8EWn6Yl4&autoplay=1",
-      };
-    }
-    return {
-      title: "Bethany Ashramam May 15 Drive HD Coverage",
-      embedUrl: "https://www.youtube.com/embed/bVh2ipzvRlI?si=70m7eA3IijU3AZHC&autoplay=1",
-    };
-  }
-  if (video.category === "DISABLED-ASHRAMAM") {
-    return {
-      title: "Home for Disabled June 17 Drive HD Coverage",
-      embedUrl: "https://www.youtube.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi&autoplay=1",
-    };
-  }
-  if (video.category === "HOSPITALS") {
-    if (video.url.includes("NIMS") || video.title.toLowerCase().includes("nims") || video.date === "11-03-2026") {
-      return {
-        title: "NIMS Hospital Support Drive HD Coverage",
-        embedUrl: "https://www.youtube.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw&autoplay=1",
-      };
-    }
-    if (video.url.includes("GOVT") || video.title.toLowerCase().includes("govt") || video.date === "23-02-2026") {
-      return {
-        title: "Government Hospital Outreach HD Coverage",
-        embedUrl: "https://www.youtube.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd&autoplay=1",
-      };
-    }
-    return {
-      title: "Gandhi Hospital Care Drive HD Coverage",
-      embedUrl: "https://www.youtube.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r&autoplay=1",
-    };
-  }
-  return {
-    title: "Kingdom of Christ Ministries Social Service HD Coverage",
-    embedUrl: "https://www.youtube.com/embed/pnvJ8UDfgCg?si=JWrL87G_bwZYZLS5&autoplay=1",
-  };
-};
 
 // 30 Direct MP4 Video Logs from Bethany Samrakshana Ashramam (May 15 & April 21 drives)
 const BETHANY_MP4_VIDEOS: VideoItem[] = [
@@ -1266,34 +1221,15 @@ export default function NgoVideosPage() {
   const [displayLimit, setDisplayLimit] = useState<number>(16);
   const [copiedToast, setCopiedToast] = useState(false);
 
-  // Smart video player cloud fallback states
-  const [videoError, setVideoError] = useState(false);
-  const [fallbackToYoutube, setFallbackToYoutube] = useState(false);
-
   const playerRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const videoId = params.get("v");
-      if (videoId) {
-        const found = ALL_VIDEOS.find((v) => v.id === videoId);
-        if (found) {
-          setActiveVideo(found);
-          if (found.type === "VIDEO_LOCAL" || found.url.endsWith(".mp4")) {
-            setPlaylistTab("MP4");
-          }
-        }
-      }
-    }
   }, []);
 
   const selectAndPlayVideo = (video: VideoItem) => {
     setActiveVideo(video);
-    setVideoError(false);
-    setFallbackToYoutube(false);
     if (playerRef.current) {
       playerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -1634,7 +1570,16 @@ export default function NgoVideosPage() {
               
               {/* Responsive 16:9 Video Display Container */}
               <div className="relative aspect-video rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-950/20 dark:border-white/15 shadow-2xl bg-slate-950 flex items-center justify-center group">
-                {!isLocalMp4 ? (
+                {isLocalMp4 ? (
+                  <video
+                    key={activeVideo.id}
+                    src={activeVideo.url}
+                    poster={activeVideo.thumbnailUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain bg-black"
+                  />
+                ) : (
                   <iframe
                     src={activeVideo.url}
                     title={activeVideo.title}
@@ -1643,56 +1588,6 @@ export default function NgoVideosPage() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
-                  />
-                ) : fallbackToYoutube || videoError ? (
-                  <div className="relative w-full h-full bg-slate-950 flex flex-col items-center justify-center">
-                    {/* Top Banner Overlay notice */}
-                    <div className="absolute top-0 left-0 right-0 z-20 bg-slate-900/90 backdrop-blur-md px-3 sm:px-4 py-2 border-b border-purple-500/30 flex items-center justify-between text-xs text-white">
-                      <div className="flex items-center gap-2 truncate pr-2">
-                        <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping flex-shrink-0" />
-                        <span className="font-mono font-bold text-purple-300 flex-shrink-0">Cloud Storage Notice:</span>
-                        <span className="text-slate-200 text-[11px] truncate">
-                          {videoError
-                            ? "Raw MP4 is archived locally due to 1.5GB cloud limits. Playing HD YouTube Coverage below."
-                            : `Streaming HD YouTube Drive Coverage (${getDriveFallbackStream(activeVideo).title})`}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setVideoError(false);
-                          setFallbackToYoutube(false);
-                        }}
-                        className="px-2.5 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-[10px] border border-white/20 transition-colors flex-shrink-0 cursor-pointer"
-                      >
-                        Try Direct MP4
-                      </button>
-                    </div>
-
-                    {/* YouTube HD Stream Embed */}
-                    <iframe
-                      src={getDriveFallbackStream(activeVideo).embedUrl}
-                      title={getDriveFallbackStream(activeVideo).title}
-                      className="absolute inset-0 w-full h-full pt-8"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                  </div>
-                ) : (
-                  <video
-                    key={activeVideo.id}
-                    src={activeVideo.url}
-                    poster={activeVideo.thumbnailUrl}
-                    controls
-                    autoPlay
-                    onError={() => {
-                      console.warn(
-                        `Local MP4 path ${activeVideo.url} not accessible on Vercel deployment. Switching to HD YouTube Drive Stream.`
-                      );
-                      setVideoError(true);
-                    }}
-                    className="w-full h-full object-contain bg-black"
                   />
                 )}
               </div>
@@ -1710,59 +1605,21 @@ export default function NgoVideosPage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    {/* Share Button */}
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={handleShareVideo}
                       className="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-[10px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Share2 className="w-3 h-3" />
-                      <span>Share</span>
+                      <span>Share Video</span>
                     </button>
-
-                    {/* Stream Mode Toggle Button for MP4 items */}
-                    {isLocalMp4 && (
-                      <button
-                        onClick={() => {
-                          if (fallbackToYoutube || videoError) {
-                            setFallbackToYoutube(false);
-                            setVideoError(false);
-                          } else {
-                            setFallbackToYoutube(true);
-                          }
-                        }}
-                        className={`px-3 py-1 rounded-full border text-[10px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                          fallbackToYoutube || videoError
-                            ? "bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-500/20"
-                            : "bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40"
-                        }`}
-                      >
-                        <Video className="w-3 h-3" />
-                        <span>{fallbackToYoutube || videoError ? "Switch to Direct MP4" : "Stream HD Drive (YouTube)"}</span>
-                      </button>
-                    )}
-
-                    {/* Photo Gallery Link */}
-                    <Link
-                      href="/ngo/gallery"
-                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 text-[10px] font-mono font-bold transition-all flex items-center gap-1.5"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Drive Photos</span>
-                    </Link>
-
                     <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${
                       isLocalMp4
                         ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40"
                         : "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40"
                     }`}>
-                      {isLocalMp4
-                        ? fallbackToYoutube || videoError
-                          ? "HD Stream Fallback Active"
-                          : `Direct MP4 (${activeVideo.fileSize || "Original Log"})`
-                        : "YouTube Stream"}
+                      {isLocalMp4 ? `Direct MP4 (${activeVideo.fileSize || "Original Log"})` : "YouTube Stream"}
                     </span>
-
                     {activeVideo.date && (
                       <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                         {activeVideo.date}
