@@ -2,6 +2,9 @@
   "version": 2,
   "cleanUrls": true,
   "framework": "nextjs",
+  "buildEnv": {
+    "VERCEL_SUPPORT_LARGE_FUNCTIONS": "1"
+  },
   "headers": [
     {
       "source": "/(.*)",

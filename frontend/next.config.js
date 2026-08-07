@@ -18,8 +18,8 @@ const ContentSecurityPolicy = `
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig = {
-  // -- Docker --
-  output: 'standalone',
+  // -- Docker (standalone output only if explicitly set in environment) --
+  output: process.env.NEXT_PRIVATE_STANDALONE ? 'standalone' : undefined,
 
   // -- Performance --
   compress: true,
