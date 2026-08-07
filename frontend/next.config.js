@@ -64,6 +64,12 @@ const nextConfig = {
         'www.kingdomofchristministries.org',
       ],
     },
+    outputFileTracingExcludes: {
+      '*': [
+        'public/KCM_NGO_SERVICES/**/*',
+        './public/KCM_NGO_SERVICES/**/*',
+      ],
+    },
   },
 
   // -- Images --
