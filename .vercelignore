@@ -4,13 +4,11 @@ node_modules
 **/.next
 .git
 .github
-/KCM_NGO_SERVICES
 scratch
 .tempmediaStorage
 browser
 *.log
 *.txt
-**/*.mp4
 **/*.avi
 **/*.mov
 **/*.wmv
