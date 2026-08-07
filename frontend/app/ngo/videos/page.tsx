@@ -708,7 +708,7 @@ export default function NgoVideosPage() {
                 /* Manual Click-to-Play Poster Screen for MP4 Videos Section */
                 <div
                   onClick={() => setIsPlaying(true)}
-                  className="absolute inset-0 cursor-pointer group flex flex-col justify-between p-6 bg-slate-950 select-none z-10"
+                  className="absolute inset-0 cursor-pointer group flex flex-col justify-between p-3 sm:p-6 bg-slate-950 select-none z-10 overflow-hidden"
                 >
                   <img
                     src={activeMedia.thumbnail}
@@ -717,33 +717,30 @@ export default function NgoVideosPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30" />
 
-                  {/* Top Badge Tag */}
-                  <div className="relative z-10 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold text-white bg-emerald-600/90 backdrop-blur-md shadow-lg">
-                      <Film className="w-3.5 h-3.5" />
-                      Click to Play MP4 Video
+                  {/* Top Badges Tag */}
+                  <div className="relative z-10 flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black text-white bg-emerald-600/90 backdrop-blur-md shadow-lg border border-emerald-400/30">
+                      <Film className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      Field Video Log
                     </span>
-                    <span className="text-white/80 text-xs font-bold bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                    <span className="text-white/90 text-[10px] sm:text-xs font-extrabold bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15">
                       {activeMedia.date}
                     </span>
                   </div>
 
-                  {/* Center Big Animated Play Button */}
-                  <div className="relative z-10 flex flex-col items-center justify-center gap-3 my-auto">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white/70 flex items-center justify-center text-white shadow-2xl transition-all duration-300 bg-emerald-600/90 group-hover:bg-emerald-600 group-hover:shadow-emerald-600/60 group-hover:scale-110">
-                      <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-white ml-1" />
+                  {/* Center Single Play Button Circle */}
+                  <div className="relative z-10 flex items-center justify-center my-auto py-2">
+                    <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 sm:border-4 border-white/80 flex items-center justify-center text-white shadow-2xl transition-all duration-300 bg-emerald-600/90 group-hover:bg-emerald-500 group-hover:shadow-emerald-500/60 group-hover:scale-110">
+                      <Play className="w-6 h-6 sm:w-10 sm:h-10 text-white fill-white ml-0.5 sm:ml-1" />
                     </div>
-                    <span className="text-white font-extrabold text-xs sm:text-sm uppercase tracking-widest bg-black/60 px-3.5 py-1 rounded-full backdrop-blur-md border border-white/15">
-                      Click to Play Video
-                    </span>
                   </div>
 
                   {/* Bottom Title Preview */}
-                  <div className="relative z-10 space-y-1 max-w-2xl">
-                    <h3 className="text-white font-black text-lg sm:text-xl leading-snug drop-shadow-md">
+                  <div className="relative z-10 space-y-0.5 sm:space-y-1 max-w-2xl">
+                    <h3 className="text-white font-black text-sm sm:text-xl leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-2">
                       {activeMedia.title}
                     </h3>
-                    <p className="text-slate-300 text-xs line-clamp-1">
+                    <p className="text-slate-300 text-[10px] sm:text-xs line-clamp-1">
                       {activeMedia.description}
                     </p>
                   </div>
