@@ -311,8 +311,7 @@ export const FOOTER_NAV_FALLBACK: FooterNavGroups = {
   involved: [
     { id: "f-10", label: "Small Groups", labelTe: "చిన్న గుంపులు", labelHi: "छोटे समूह", href: "/get-involved/small-groups", placement: "FOOTER_INVOLVED", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
     { id: "f-11", label: "Volunteer", labelTe: "వాలంటీర్", labelHi: "स्वयंसेवक", href: "/get-involved/volunteer", placement: "FOOTER_INVOLVED", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-12", label: "Give", labelTe: "కానుకలు", labelHi: "दान दें", href: "/give", placement: "FOOTER_INVOLVED", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
-    { id: "f-13", label: "Membership", labelTe: "సభ్యత్వం", labelHi: "सदस्यता", href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-13", label: "Membership", labelTe: "సభ్యత్వం", labelHi: "सदस्यता", href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   connect: [
     { id: "f-14", label: "Contact Us", labelTe: "సంప్రదించండి", labelHi: "संपर्क करें", href: "#contact", placement: "FOOTER_CONNECT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
@@ -329,14 +328,16 @@ export function useFooterNavigation(initialData?: FooterNavGroups | Record<strin
     { initialData }
   );
 
-  // Normalize grouped data & filter out deleted blog links
+  // Normalize grouped data & filter out deleted blog links and Give page
   const groups = data as any;
   const filterBlog = (items: NavigationItem[] = []) =>
     items.filter(
       (item) =>
         item.href !== "/blog" &&
         !item.href?.includes("/blog") &&
-        item.label?.toLowerCase() !== "blog"
+        item.label?.toLowerCase() !== "blog" &&
+        item.href !== "/give" &&
+        item.label?.toLowerCase() !== "give"
     );
 
   const navigation: FooterNavGroups = {

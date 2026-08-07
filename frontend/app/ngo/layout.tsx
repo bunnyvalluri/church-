@@ -81,46 +81,88 @@ export default function NgoLayout({
       <div className="h-[52px] min-[360px]:h-[56px] sm:h-[60px] md:h-[64px] lg:h-[72px] xl:h-[108px] 2xl:h-[112px]" />
 
       {/* Dedicated NGO Sub-Navbar Bar */}
-      <div className="sticky top-[52px] min-[360px]:top-[56px] sm:top-[60px] md:top-[64px] lg:top-[72px] 2xl:top-[76px] z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 py-2 sm:py-2.5 shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3">
-            
-            {/* Title / Badge - hidden on small screens to prioritize clean tab scrolling */}
-            <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+      <div className="sticky top-[52px] min-[360px]:top-[56px] sm:top-[60px] md:top-[64px] lg:top-[72px] 2xl:top-[76px] z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700/60 shadow-sm">
+        <div className="max-w-7xl mx-auto">
+
+          {/* ── MOBILE: 6-column segmented control (all 6 visible without scrolling) ── */}
+          <div className="sm:hidden px-2 py-1.5">
+            <div className="grid grid-cols-6 gap-0.5 bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 border border-slate-200/60 dark:border-slate-700/60">
+              {subNavItems.map((item) => {
+                const isActive = mounted
+                  ? (item.href === "/ngo" ? pathname === "/ngo" : pathname.startsWith(item.href))
+                  : false;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg transition-all duration-200 min-w-0",
+                      isActive
+                        ? "bg-white dark:bg-purple-600 shadow-sm text-purple-700 dark:text-white"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    )}
+                  >
+                    <Icon className={cn(
+                      "w-3.5 h-3.5 flex-shrink-0",
+                      isActive ? "text-purple-600 dark:text-white" : item.colorClass
+                    )} />
+                    <span className={cn(
+                      "leading-none text-center w-full truncate px-0.5 font-bold",
+                      isActive ? "text-[9px]" : "text-[8.5px]"
+                    )}>
+                      {item.name}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── DESKTOP / TABLET: pill tab row ── */}
+          <div className="hidden sm:flex items-center gap-3 px-6 lg:px-8 py-2">
+
+            {/* Brand Badge */}
+            <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
               <div className="w-7 h-7 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
                 <Heart className="w-4 h-4 text-red-500 fill-red-500/20 animate-pulse" />
               </div>
-              <span className="font-extrabold tracking-tight text-xs sm:text-sm uppercase bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 dark:from-red-400 dark:via-pink-400 dark:to-purple-400 bg-clip-text text-transparent">
+              <span className="font-extrabold tracking-tight text-xs uppercase bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 dark:from-red-400 dark:via-pink-400 dark:to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
                 {navT.socialService || "KCM Social Service"}
               </span>
             </div>
 
-            {/* Horizontal Scrollable Tabs */}
-            <div className="w-full sm:w-auto overflow-x-auto no-scrollbar scroll-smooth -mx-3 px-3 sm:mx-0 sm:px-0">
-              <nav className="flex items-center gap-1.5 min-w-max py-0.5">
-                {subNavItems.map((item) => {
-                  const isActive = item.href === "/ngo" ? pathname === "/ngo" : pathname.startsWith(item.href);
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 whitespace-nowrap border",
-                        isActive
-                          ? "bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/20 dark:bg-purple-500 dark:border-purple-500"
-                          : "bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200/80 dark:border-white/10"
-                      )}
-                    >
-                      <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white" : item.colorClass)} />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
+            <div className="hidden lg:block w-px h-5 bg-slate-200 dark:bg-slate-700 flex-shrink-0" />
 
+            {/* Tab pills inside a tinted container */}
+            <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 rounded-xl px-1 py-1">
+              {subNavItems.map((item) => {
+                const isActive = mounted
+                  ? (item.href === "/ngo" ? pathname === "/ngo" : pathname.startsWith(item.href))
+                  : false;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap",
+                      isActive
+                        ? "bg-white dark:bg-purple-600 text-purple-700 dark:text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/60"
+                    )}
+                  >
+                    <Icon className={cn(
+                      "w-3.5 h-3.5 flex-shrink-0",
+                      isActive ? "text-purple-600 dark:text-white" : item.colorClass
+                    )} />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
+
         </div>
       </div>
 

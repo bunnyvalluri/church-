@@ -703,35 +703,62 @@ export default function NgoGalleryPage() {
           </div>
         </div>
 
-        {/* Category Filter Chips with Sticky Scroll & Ambient Backdrop Blur */}
-        <div className="sticky top-[104px] sm:top-[120px] z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-xl py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center gap-2.5 overflow-x-auto scrollbar-none border-y border-slate-200/60 dark:border-white/10 shadow-sm transition-all">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider flex-shrink-0">
-            <Filter className="w-3.5 h-3.5" />
-            <span>Filter</span>
+        {/* Category Filter Chips */}
+        <div className="sticky top-[104px] sm:top-[120px] z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-xl py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 border-y border-slate-200/60 dark:border-white/10 shadow-sm">
+
+          {/* Mobile: 2-column structured grid (3 neat rows of 2) */}
+          <div className="sm:hidden grid grid-cols-2 gap-1.5">
+            {CATEGORIES.map((cat) => {
+              const count = categoryCounts[cat.value] || 0;
+              const isSelected = selectedCategory === cat.value;
+              const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
+              return (
+                <button
+                  key={cat.value}
+                  id={`gallery-filter-${cat.value.toLowerCase()}`}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  className={`px-2.5 py-2 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 ${
+                    isSelected ? styles.active : styles.inactive
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 truncate min-w-0">
+                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isSelected ? "bg-white" : styles.dot}`} />
+                    <span className="truncate">{cat.label}</span>
+                  </div>
+                  <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono flex-shrink-0 ${isSelected ? styles.badgeActive : styles.badgeInactive}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          {CATEGORIES.map((cat) => {
-            const count = categoryCounts[cat.value] || 0;
-            const isSelected = selectedCategory === cat.value;
-            const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
-            return (
-              <button
-                key={cat.value}
-                id={`gallery-filter-${cat.value.toLowerCase()}`}
-                onClick={() => setSelectedCategory(cat.value)}
-                className={`px-4 py-2.5 text-xs font-bold rounded-2xl border transition-all duration-300 flex items-center gap-2.5 flex-shrink-0 cursor-pointer ${
-                  isSelected ? styles.active : styles.inactive
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-white animate-pulse" : styles.dot}`} />
-                <span>{cat.label}</span>
-                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${
-                  isSelected ? styles.badgeActive : styles.badgeInactive
-                }`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+
+          {/* Desktop: single-row scroll */}
+          <div className="hidden sm:flex items-center gap-2.5 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 mr-1 uppercase font-mono tracking-wider flex-shrink-0">
+              <Filter className="w-3.5 h-3.5" />
+              <span>Filter</span>
+            </div>
+            {CATEGORIES.map((cat) => {
+              const count = categoryCounts[cat.value] || 0;
+              const isSelected = selectedCategory === cat.value;
+              const styles = CATEGORY_STYLES[cat.value] || CATEGORY_STYLES["ALL"];
+              return (
+                <button
+                  key={cat.value}
+                  id={`gallery-filter-${cat.value.toLowerCase()}-desktop`}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  className={`px-4 py-2.5 text-xs font-bold rounded-2xl border transition-all duration-300 flex items-center gap-2.5 flex-shrink-0 cursor-pointer ${
+                    isSelected ? styles.active : styles.inactive
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-white animate-pulse" : styles.dot}`} />
+                  <span>{cat.label}</span>
+                  <span className={`px-2 py-0.5 rounded-lg text-[10px] font-mono transition-colors ${isSelected ? styles.badgeActive : styles.badgeInactive}`}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Gallery Grid */}

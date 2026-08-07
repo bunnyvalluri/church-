@@ -60,8 +60,8 @@ export default function NgoProjectsPage() {
       title: "Gandhi General Hospital Support",
       description: "Distributing nutritious milk food, basic medical supplies, sanitary clothes, and patient caretaker assistance kits in critical care wards.",
       imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800",
-      targetAmount: 150000,
-      raisedAmount: 95400,
+      targetAmount: null,
+      raisedAmount: 0,
       status: "ACTIVE",
       category: "HOSPITAL",
       location: "Gandhi Hospital, Secunderabad",
@@ -73,8 +73,8 @@ export default function NgoProjectsPage() {
       title: "Bethany Samrakshana Ashramam Care",
       description: "Supporting orphan children and elders in Bethany Ashramam with monthly groceries, school supplies, clean blankets, and care assistants.",
       imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800",
-      targetAmount: 200000,
-      raisedAmount: 180000,
+      targetAmount: null,
+      raisedAmount: 0,
       status: "ACTIVE",
       category: "ASHRAMAM",
       location: "Bethany Ashramam, Hyderabad",
@@ -86,8 +86,8 @@ export default function NgoProjectsPage() {
       title: "Home for the Disabled Ashramam Aid",
       description: "Assisting physical rehabilitation centers with wheelchairs, walkers, monthly provisions, and critical healthcare monitoring programs.",
       imageUrl: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=800",
-      targetAmount: 300000,
-      raisedAmount: 124000,
+      targetAmount: null,
+      raisedAmount: 0,
       status: "ACTIVE",
       category: "REHABILITATION",
       location: "Rehab Center, Jeedimetla",
@@ -134,18 +134,8 @@ export default function NgoProjectsPage() {
     });
   }, [projects, selectedCategory, searchQuery]);
 
-  // Overall Statistics Metrics
-  const totalRaised = useMemo(
-    () => projects.reduce((acc, curr) => acc + (curr.raisedAmount || 0), 0),
-    [projects]
-  );
-
-  const totalTarget = useMemo(
-    () => projects.reduce((acc, curr) => acc + (curr.targetAmount || 0), 0),
-    [projects]
-  );
-
-  const overallPercent = totalTarget > 0 ? Math.min(Math.round((totalRaised / totalTarget) * 100), 100) : 0;
+  // Active campaign count
+  const activeCampaigns = projects.filter((p) => p.status === "ACTIVE").length;
 
   return (
     <div className="py-10 sm:py-16">
@@ -180,63 +170,64 @@ export default function NgoProjectsPage() {
             </Link>
           </div>
 
-          {/* Real-Time Total Progress Card */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white border border-slate-800 shadow-2xl space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-widest">
-                  <TrendingUp className="w-4 h-4 text-emerald-400" />
-                  <span>Cumulative Relief Progress</span>
-                </div>
-                <div className="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono">
-                  ₹{totalRaised.toLocaleString("en-IN")}{" "}
-                  <span className="text-sm font-semibold text-slate-400">/ ₹{totalTarget.toLocaleString("en-IN")} Goal</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
-                  <div className="text-[10px] text-slate-300 uppercase font-bold tracking-wider">Overall Goal</div>
-                  <div className="text-xl font-black text-amber-400 font-mono">{overallPercent}% Funded</div>
-                </div>
-                <div className="px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
-                  <div className="text-[10px] text-slate-300 uppercase font-bold tracking-wider">Active Drives</div>
-                  <div className="text-xl font-black text-emerald-400 font-mono">{projects.length} Campaigns</div>
-                </div>
-              </div>
+          {/* Active Campaigns Banner */}
+          {activeCampaigns > 0 && (
+            <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20">
+              <TrendingUp className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                {activeCampaigns} Active Relief Campaign{activeCampaigns !== 1 ? "s" : ""} — Your support directly helps communities in need.
+              </span>
             </div>
-
-            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
-              <div
-                className="h-full bg-gradient-to-r from-emerald-400 via-purple-400 to-pink-500 rounded-full transition-all duration-1000 shadow-md"
-                style={{ width: `${overallPercent}%` }}
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* 2. Filter & Search Controls */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm">
           {/* Category Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full md:w-auto pb-1 md:pb-0">
-            {[
-              { id: "ALL", label: "All Projects" },
-              { id: "HOSPITAL", label: "Hospital Relief" },
-              { id: "ASHRAMAM", label: "Ashramam Care" },
-              { id: "REHABILITATION", label: "Handicap Aid" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedCategory(tab.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  selectedCategory === tab.id
-                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="w-full md:w-auto">
+            {/* Mobile: 2-col grid so all 4 category names are 100% visible */}
+            <div className="grid grid-cols-2 gap-2 sm:hidden w-full">
+              {[
+                { id: "ALL", label: "All Projects" },
+                { id: "HOSPITAL", label: "Hospital Relief" },
+                { id: "ASHRAMAM", label: "Ashramam Care" },
+                { id: "REHABILITATION", label: "Handicap Aid" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedCategory(tab.id)}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center truncate ${
+                    selectedCategory === tab.id
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop / Tablet: horizontal row */}
+            <div className="hidden sm:flex items-center gap-1.5">
+              {[
+                { id: "ALL", label: "All Projects" },
+                { id: "HOSPITAL", label: "Hospital Relief" },
+                { id: "ASHRAMAM", label: "Ashramam Care" },
+                { id: "REHABILITATION", label: "Handicap Aid" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedCategory(tab.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    selectedCategory === tab.id
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-500/20 dark:bg-purple-500"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-white/5"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Search Box */}
@@ -349,34 +340,6 @@ export default function NgoProjectsPage() {
                   </div>
 
                   <div className="p-6 pt-0 space-y-5">
-                    {/* Target progress */}
-                    {target > 0 && (
-                      <div className="space-y-2 text-left">
-                        <div className="flex items-center justify-between text-xs font-semibold">
-                          <span className="text-slate-500 dark:text-slate-400">{projectsPage.progressLabel || "Fundraising Progress"}</span>
-                          <span className="text-purple-600 dark:text-purple-300 font-extrabold">{percent}% {projectsPage.completeLabel || "Complete"}</span>
-                        </div>
-                        
-                        <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/50 dark:border-white/5">
-                          <div
-                            className="h-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 rounded-full transition-all duration-700 shadow-sm"
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                        
-                        <div className="flex justify-between text-xs pt-1">
-                          <div>
-                            <span className="text-slate-900 dark:text-white font-black text-sm">₹{raised.toLocaleString("en-IN")}</span>
-                            <span className="text-slate-500 text-[11px]"> {projectsPage.raised || "raised"}</span>
-                          </div>
-                          <div className="text-slate-500 text-[11px]">
-                            {projectsPage.target || "Target:"}{" "}
-                            <span className="font-bold text-slate-800 dark:text-slate-300 text-xs">₹{target.toLocaleString("en-IN")}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Actions */}
                     <div className="space-y-2.5">
                       <div className="flex gap-2.5">

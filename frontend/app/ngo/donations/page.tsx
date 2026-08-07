@@ -750,44 +750,44 @@ function NgoDonationsContent() {
         {step === 3 && <PaymentStateMonitor />}
 
         {/* ── TOP IMPACT METRICS BAR ────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 shadow-sm backdrop-blur-md text-slate-800 dark:text-slate-200">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <TrendingUp className="w-5 h-5" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md text-slate-800 dark:text-slate-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20">
+            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">₹14.8L+</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Total Raised</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Regd No: 206/2024</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Govt Registered NGO</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">12,500+</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Patients & Families</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">5,000+ Assisted</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Patients &amp; Families</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20">
+            <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
               <Flame className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">45,000+</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Hot Meals Served</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">100+ Volunteers</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Active Outreach Team</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-blue-500/5 border border-blue-500/10">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">100% Tax Exempt</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Section 80G Certified</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">80G Tax Exempt</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">50% IT Tax Benefits</p>
             </div>
           </div>
         </div>

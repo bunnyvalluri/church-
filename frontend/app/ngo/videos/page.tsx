@@ -7,7 +7,7 @@ import {
   Youtube, PlayCircle, Calendar, Maximize2,
   ListVideo, Clapperboard, Sparkles, Clock,
   ExternalLink, Share2, Search, Filter, Layers, Check,
-  SkipBack, SkipForward, ArrowUpRight, Volume2, Video
+  SkipBack, SkipForward, ArrowUpRight, Volume2, Video, Heart
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -557,16 +557,19 @@ export default function NgoVideosPage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-8">
           
-          {/* Header row */}
+          {/* Top Utility Row with Badge & Language Toggle */}
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
+              <Sparkles className="w-3.5 h-3.5" />
+              {vT.badge}
+            </span>
+            <LanguageToggle align="right" />
+          </div>
+
+          {/* Main Hero Title & Quick Stat Pill Cards */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             
             <div className="space-y-3 max-w-3xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  {vT.badge}
-                </span>
-              </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                 {vT.heroTitle}
               </h1>
@@ -575,24 +578,22 @@ export default function NgoVideosPage() {
               </p>
             </div>
 
-            {/* Quick Stat Pill Cards & Language Toggle */}
-            <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
-              <LanguageToggle align="right" />
-
+            {/* Quick Stat Pill Cards */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full sm:w-auto shrink-0">
               <button
                 onClick={() => { setPlaylistTab("yt"); setFilterCategory("yt"); }}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-left transition-all ${
                   filterCategory === "yt"
-                    ? "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-600/50 ring-2 ring-rose-500/30"
-                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-rose-400"
+                    ? "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-600/50 ring-2 ring-rose-500/30 shadow-md shadow-rose-500/10"
+                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-rose-400 shadow-sm"
                 }`}
               >
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white shadow-md shadow-rose-500/30">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white shadow-md shadow-rose-500/30 shrink-0">
                   <Youtube className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="text-lg font-black leading-none">{YOUTUBE_ITEMS.length}</p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">YouTube</p>
+                <div className="min-w-0">
+                  <p className="text-base sm:text-lg font-black leading-none">{YOUTUBE_ITEMS.length}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate">YouTube</p>
                 </div>
               </button>
 
@@ -600,16 +601,16 @@ export default function NgoVideosPage() {
                 onClick={() => { setPlaylistTab("mp4"); setFilterCategory("mp4"); }}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-left transition-all ${
                   filterCategory === "mp4"
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-600/50 ring-2 ring-emerald-500/30"
-                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-emerald-400"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-600/50 ring-2 ring-emerald-500/30 shadow-md shadow-emerald-500/10"
+                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-emerald-400 shadow-sm"
                 }`}
               >
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/30 shrink-0">
                   <Film className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="text-lg font-black leading-none">{MP4_ITEMS.length}</p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">MP4 Field Logs</p>
+                <div className="min-w-0">
+                  <p className="text-base sm:text-lg font-black leading-none">{MP4_ITEMS.length}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate">Field Logs</p>
                 </div>
               </button>
             </div>
@@ -619,79 +620,143 @@ export default function NgoVideosPage() {
           {/* ════════════ SEARCH & FILTER CATEGORY CONTROL BAR ════════════ */}
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-200/80 dark:border-slate-800">
             
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            {/* Filter Tabs - Step-by-Step Box Buttons */}
+            <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row lg:flex-wrap items-stretch gap-2.5 w-full md:w-auto">
+              
+              {/* 1. YouTube Series */}
               <button
                 onClick={() => { setFilterCategory("yt"); setPlaylistTab("yt"); }}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "yt"
-                    ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-rose-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
-                <Youtube className="w-3.5 h-3.5" />
-                {vT.filterYt} ({YOUTUBE_ITEMS.length})
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "yt" ? "bg-white/20 text-white" : "bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400"
+                  }`}>
+                    <Youtube className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterYt}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "yt" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {YOUTUBE_ITEMS.length}
+                </span>
               </button>
 
+              {/* 2. Ashramam Field Clips */}
               <button
                 onClick={() => { setFilterCategory("mp4"); setPlaylistTab("mp4"); }}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "mp4"
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-500/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
-                <Film className="w-3.5 h-3.5" />
-                {vT.filterAshramam} ({MP4_ITEMS.length})
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "mp4" ? "bg-white/20 text-white" : "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
+                  }`}>
+                    <Film className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterAshramam}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "mp4" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {MP4_ITEMS.length}
+                </span>
               </button>
 
+              {/* 3. All Videos */}
               <button
                 onClick={() => { setFilterCategory("all"); setPlaylistTab("all"); }}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "all"
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-lg ring-2 ring-slate-800/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
-                {vT.filterAll} ({ALL_MEDIA_DATABASE.length})
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "all" ? "bg-white/20 dark:bg-slate-800 text-white dark:text-slate-200" : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                  }`}>
+                    <Layers className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterAll}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "all" ? "bg-white/25 text-white dark:bg-slate-800 dark:text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {ALL_MEDIA_DATABASE.length}
+                </span>
               </button>
 
+              {/* 4. Hospital Drives */}
               <button
                 onClick={() => setFilterCategory("hospital")}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "hospital"
-                    ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30 ring-2 ring-violet-500/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-violet-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
-                {vT.filterHospital} ({ALL_MEDIA_DATABASE.filter(m => m.category === "hospital").length})
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "hospital" ? "bg-white/20 text-white" : "bg-violet-100 text-violet-600 dark:bg-violet-950/60 dark:text-violet-400"
+                  }`}>
+                    <Heart className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterHospital}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "hospital" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {ALL_MEDIA_DATABASE.filter(m => m.category === "hospital").length}
+                </span>
               </button>
 
+              {/* 5. Disabled Care */}
               <button
                 onClick={() => setFilterCategory("disabled")}
-                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "disabled"
-                    ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+                    ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500/30"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-rose-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
-                <Film className="w-3.5 h-3.5" />
-                {vT.filterDisabled} ({ALL_MEDIA_DATABASE.filter(m => m.category === "disabled").length})
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                    filterCategory === "disabled" ? "bg-white/20 text-white" : "bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400"
+                  }`}>
+                    <Film className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="whitespace-nowrap">{vT.filterDisabled}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
+                  filterCategory === "disabled" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                }`}>
+                  {ALL_MEDIA_DATABASE.filter(m => m.category === "disabled").length}
+                </span>
               </button>
+
             </div>
 
             {/* Search Input Box */}
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <div className="relative w-full md:w-96 lg:w-[420px] shrink-0">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder={vT.searchPlaceholder}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-slate-900 dark:text-white"
+                className="w-full pl-10 pr-9 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -781,14 +846,14 @@ export default function NgoVideosPage() {
             </div>
 
             {/* Video Control & Info Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-5">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5">
               
               {/* Controls & Badges Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                 
                 {/* Active Indicator & Category */}
-                <div className="flex items-center gap-2.5">
-                  <span className="relative flex h-3 w-3">
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <span className="relative flex h-3 w-3 shrink-0">
                     <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                       activeMedia.source === "yt" ? "bg-rose-400" : "bg-emerald-400"
                     }`}></span>
@@ -797,7 +862,7 @@ export default function NgoVideosPage() {
                     }`}></span>
                   </span>
 
-                  <span className={`text-xs font-black uppercase tracking-widest ${
+                  <span className={`text-xs font-black uppercase tracking-wider leading-tight ${
                     activeMedia.source === "yt" ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
                   }`}>
                     {activeMedia.source === "yt" ? "YouTube Documentary" : `Bethany Ashramam • Clip ${activeMedia.clipNumber || 1} of ${MP4_ITEMS.length}`}
@@ -805,7 +870,7 @@ export default function NgoVideosPage() {
                 </div>
 
                 {/* Interactive Player Action Buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   
                   {/* Prev/Next Video Controls */}
                   <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -814,9 +879,9 @@ export default function NgoVideosPage() {
                       title="Previous Video"
                       className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
                     >
-                      <SkipBack className="w-4 h-4" />
+                      <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
-                    <span className="text-[10px] px-2 font-bold text-slate-400 tabular-nums">
+                    <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 font-bold text-slate-500 dark:text-slate-400 tabular-nums">
                       {activeIndex + 1}/{ALL_MEDIA_DATABASE.length}
                     </span>
                     <button
@@ -824,7 +889,7 @@ export default function NgoVideosPage() {
                       title="Next Video"
                       className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
                     >
-                      <SkipForward className="w-4 h-4" />
+                      <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
 
@@ -832,20 +897,20 @@ export default function NgoVideosPage() {
                   {activeMedia.source === "mp4" && (
                     <button
                       onClick={() => setLightboxIndex(MP4_ITEMS.findIndex(m => m.id === activeMedia.id))}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-colors shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-colors shadow-sm"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
-                      Theater Mode
+                      <span>Theater Mode</span>
                     </button>
                   )}
 
                   {/* Share Link */}
                   <button
                     onClick={handleShare}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
                   >
                     {linkCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
-                    {linkCopied ? "Copied" : "Share"}
+                    <span>{linkCopied ? "Copied" : "Share"}</span>
                   </button>
 
                   {/* Watch on YouTube External */}
@@ -854,10 +919,10 @@ export default function NgoVideosPage() {
                       href={activeMedia.url.replace("/embed/", "/watch?v=")}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-sm"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      YouTube
+                      <span>YouTube</span>
                     </a>
                   )}
                 </div>
@@ -905,46 +970,49 @@ export default function NgoVideosPage() {
               </div>
 
               {/* ═════════ TOGGLE BUTTONS RIGHT ON PLAYLIST CARD ═════════ */}
-              <div className="p-3 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200/80 dark:border-slate-800">
-                <div className="grid grid-cols-3 gap-1.5 bg-slate-200/80 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-slate-300/60 dark:border-slate-700/60">
+              <div className="p-2.5 sm:p-3 bg-slate-100/90 dark:bg-slate-800/80 border-b border-slate-200/80 dark:border-slate-800">
+                <div className="grid grid-cols-3 gap-1 p-1 bg-slate-200/80 dark:bg-slate-900/90 rounded-2xl border border-slate-300/60 dark:border-slate-700/60 w-full overflow-hidden">
                   
                   {/* 1. YouTube Button */}
                   <button
                     onClick={() => setPlaylistTab("yt")}
-                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
                       playlistTab === "yt"
-                        ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 scale-[1.02]"
+                        ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Youtube className="w-3.5 h-3.5 flex-shrink-0" />
-                    YouTube ({YOUTUBE_ITEMS.length})
+                    <Youtube className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "yt" ? "text-white" : "text-rose-500"}`} />
+                    <span className="truncate">YouTube</span>
+                    <span className="opacity-80 font-bold shrink-0">({YOUTUBE_ITEMS.length})</span>
                   </button>
 
                   {/* 2. Videos Button */}
                   <button
                     onClick={() => setPlaylistTab("mp4")}
-                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
                       playlistTab === "mp4"
-                        ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/30 scale-[1.02]"
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/30"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Film className="w-3.5 h-3.5 flex-shrink-0" />
-                    Videos ({MP4_ITEMS.length})
+                    <Film className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "mp4" ? "text-white" : "text-emerald-500"}`} />
+                    <span className="truncate">Videos</span>
+                    <span className="opacity-80 font-bold shrink-0">({MP4_ITEMS.length})</span>
                   </button>
 
                   {/* 3. All Button */}
                   <button
                     onClick={() => setPlaylistTab("all")}
-                    className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-black transition-all duration-200 ${
+                    className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
                       playlistTab === "all"
-                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md scale-[1.02]"
+                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Layers className="w-3.5 h-3.5 flex-shrink-0" />
-                    {vT.filterAll} ({ALL_MEDIA_DATABASE.length})
+                    <Layers className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "all" ? "text-white dark:text-slate-900" : "text-slate-500 dark:text-slate-400"}`} />
+                    <span className="truncate">All</span>
+                    <span className="opacity-80 font-bold shrink-0">({ALL_MEDIA_DATABASE.length})</span>
                   </button>
 
                 </div>
