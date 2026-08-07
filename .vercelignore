@@ -23,5 +23,7 @@ kcm-church-infra/
 database/
 scripts/
 backend/
-docs/
-KCM_NGO_SERVICES/
+/KCM_NGO_SERVICES/
+!frontend/public/KCM_NGO_SERVICES/
+!frontend/public/KCM_NGO_SERVICES/**
+
