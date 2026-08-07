@@ -524,7 +524,6 @@ export default function NgoVideosPage() {
     }
   };
 
-  const { t } = useLanguage();
   const vT = (t as any).videosPage || {
     badge: "KCM NGO Field Service Video Logs",
     heroTitle: "Video Theater & Outreach Logs",
