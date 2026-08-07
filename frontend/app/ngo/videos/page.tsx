@@ -1222,6 +1222,7 @@ export default function NgoVideosPage() {
   const [copiedToast, setCopiedToast] = useState(false);
 
   const playerRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -1255,6 +1256,30 @@ export default function NgoVideosPage() {
   const handleSearchChange = (queryVal: string) => {
     setSearchQuery(queryVal);
     setDisplayLimit(16);
+  };
+
+  const handleMetricCardClick = (targetFilter: string, targetPlaylistTab?: "YOUTUBE" | "MP4") => {
+    if (targetFilter === "SERVICE_WARDS") {
+      if (filterCategory === "BETHANY-ASHRAMAM") {
+        setFilterCategory("DISABLED-ASHRAMAM");
+      } else if (filterCategory === "DISABLED-ASHRAMAM") {
+        setFilterCategory("HOSPITALS");
+      } else {
+        setFilterCategory("BETHANY-ASHRAMAM");
+      }
+    } else {
+      setFilterCategory(targetFilter);
+    }
+
+    if (targetPlaylistTab) {
+      setPlaylistTab(targetPlaylistTab);
+    }
+
+    setDisplayLimit(16);
+
+    if (galleryRef.current) {
+      galleryRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   // Filtered list for the video library grid
@@ -1358,48 +1383,130 @@ export default function NgoVideosPage() {
             </div>
           </div>
 
-          {/* Clean Metric Cards with Concise Non-Truncated Labels */}
+          {/* Interactive Metric Action Cards with Instant Filters */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2 border-t border-slate-100 dark:border-white/5">
             
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+            {/* Card 1: Total Collection */}
+            <button
+              type="button"
+              onClick={() => handleMetricCardClick("ALL")}
+              className={`p-3.5 sm:p-4 rounded-2xl text-left space-y-2 transition-all duration-200 cursor-pointer shadow-sm group hover:-translate-y-0.5 hover:shadow-md ${
+                filterCategory === "ALL" && !searchQuery
+                  ? "bg-purple-500/10 dark:bg-purple-500/20 border-2 border-purple-500 ring-2 ring-purple-500/30"
+                  : "bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50"
+              }`}
+            >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Total Collection</span>
-                <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-300">
+                  Total Collection
+                </span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                  filterCategory === "ALL" && !searchQuery
+                    ? "bg-purple-600 text-white"
+                    : "bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white"
+                }`}>
                   <MonitorPlay className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">105 Videos</p>
-            </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">105 Videos</p>
+                {filterCategory === "ALL" && !searchQuery && (
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-600 text-white">ALL</span>
+                )}
+              </div>
+            </button>
 
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+            {/* Card 2: Direct MP4 Logs */}
+            <button
+              type="button"
+              onClick={() => handleMetricCardClick("MP4_ONLY", "MP4")}
+              className={`p-3.5 sm:p-4 rounded-2xl text-left space-y-2 transition-all duration-200 cursor-pointer shadow-sm group hover:-translate-y-0.5 hover:shadow-md ${
+                filterCategory === "MP4_ONLY"
+                  ? "bg-indigo-500/10 dark:bg-indigo-500/20 border-2 border-indigo-500 ring-2 ring-indigo-500/30"
+                  : "bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-500/50"
+              }`}
+            >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Direct MP4 Logs</span>
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-300">
+                  Direct MP4 Logs
+                </span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                  filterCategory === "MP4_ONLY"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white"
+                }`}>
                   <Film className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">97 Field Logs</p>
-            </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">97 Field Logs</p>
+                {filterCategory === "MP4_ONLY" && (
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-600 text-white">MP4</span>
+                )}
+              </div>
+            </button>
 
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+            {/* Card 3: YouTube Coverages */}
+            <button
+              type="button"
+              onClick={() => handleMetricCardClick("YOUTUBE_ONLY", "YOUTUBE")}
+              className={`p-3.5 sm:p-4 rounded-2xl text-left space-y-2 transition-all duration-200 cursor-pointer shadow-sm group hover:-translate-y-0.5 hover:shadow-md ${
+                filterCategory === "YOUTUBE_ONLY"
+                  ? "bg-rose-500/10 dark:bg-rose-500/20 border-2 border-rose-500 ring-2 ring-rose-500/30"
+                  : "bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 hover:border-rose-300 dark:hover:border-rose-500/50"
+              }`}
+            >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">YouTube Coverages</span>
-                <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight group-hover:text-rose-600 dark:group-hover:text-rose-300">
+                  YouTube Coverages
+                </span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                  filterCategory === "YOUTUBE_ONLY"
+                    ? "bg-rose-600 text-white"
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 group-hover:bg-rose-500 group-hover:text-white"
+                }`}>
                   <Video className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">8 Streams</p>
-            </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">8 Streams</p>
+                {filterCategory === "YOUTUBE_ONLY" && (
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-600 text-white">YOUTUBE</span>
+                )}
+              </div>
+            </button>
 
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+            {/* Card 4: Service Wards */}
+            <button
+              type="button"
+              onClick={() => handleMetricCardClick("SERVICE_WARDS")}
+              className={`p-3.5 sm:p-4 rounded-2xl text-left space-y-2 transition-all duration-200 cursor-pointer shadow-sm group hover:-translate-y-0.5 hover:shadow-md ${
+                ["BETHANY-ASHRAMAM", "DISABLED-ASHRAMAM", "HOSPITALS"].includes(filterCategory)
+                  ? "bg-emerald-500/10 dark:bg-emerald-500/20 border-2 border-emerald-500 ring-2 ring-emerald-500/30"
+                  : "bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50"
+              }`}
+            >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Service Wards</span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-300">
+                  Service Wards
+                </span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                  ["BETHANY-ASHRAMAM", "DISABLED-ASHRAMAM", "HOSPITALS"].includes(filterCategory)
+                    ? "bg-emerald-600 text-white"
+                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white"
+                }`}>
                   <Building2 className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">5 Outreaches</p>
-            </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">5 Outreaches</p>
+                {["BETHANY-ASHRAMAM", "DISABLED-ASHRAMAM", "HOSPITALS"].includes(filterCategory) && (
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white truncate max-w-[85px]">
+                    {filterCategory === "BETHANY-ASHRAMAM" ? "Bethany" : filterCategory === "DISABLED-ASHRAMAM" ? "Disabled" : "Hospitals"}
+                  </span>
+                )}
+              </div>
+            </button>
 
           </div>
 
@@ -1621,7 +1728,7 @@ export default function NgoVideosPage() {
         {/* ========================================================================= */}
         {/* 3. UNIFIED VIDEO LIBRARY & RESPONSIVE CATEGORY TABS                        */}
         {/* ========================================================================= */}
-        <section className="space-y-6 pt-6 border-t border-slate-200 dark:border-white/10 text-left">
+        <section ref={galleryRef} className="space-y-6 pt-6 border-t border-slate-200 dark:border-white/10 text-left scroll-mt-24">
           
           <div className="space-y-4">
             <div className="space-y-1">
