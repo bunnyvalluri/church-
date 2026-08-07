@@ -66,8 +66,11 @@ const nextConfig = {
     },
     outputFileTracingExcludes: {
       '*': [
-        'public/KCM_NGO_SERVICES/**/*',
-        './public/KCM_NGO_SERVICES/**/*',
+        'public/KCM_NGO_SERVICES/**/*.mp4',
+        './public/KCM_NGO_SERVICES/**/*.mp4',
+        '**/*.avi',
+        '**/*.mov',
+        '**/*.wmv',
       ],
     },
   },

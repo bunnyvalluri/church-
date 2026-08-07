@@ -12,6 +12,16 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
 
+/* ════════════════════════════════ UTILS ════════════════════════════════ */
+function encodeSrc(src: string | null | undefined): string {
+  if (!src) return "";
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
 /* ════════════════════════════════ TYPES ════════════════════════════════ */
 export interface MediaItem {
   id: string;
@@ -300,7 +310,12 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
                   ? "border-emerald-400 scale-105 ring-4 ring-emerald-500/30 shadow-xl opacity-100"
                   : "border-transparent opacity-40 hover:opacity-85 hover:scale-102"
               }`} style={{ width: 84, aspectRatio: "16/9" }}>
-              <img src={v.thumbnail} alt="" className="w-full h-full object-cover" />
+              <img
+                src={encodeSrc(v.thumbnail)}
+                alt=""
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
+              />
               {i === index && (
                 <div className="absolute inset-0 bg-emerald-500/30 flex items-center justify-center">
                   <Play className="w-4 h-4 text-white drop-shadow-md fill-white" />
@@ -335,10 +350,11 @@ function MediaCard({ item, index, onPlay }: {
       {/* Thumbnail Aspect Box */}
       <div className="relative w-full overflow-hidden bg-slate-950" style={{ aspectRatio: "16/9" }}>
         <img
-          src={item.thumbnail}
+          src={encodeSrc(item.thumbnail)}
           alt={item.title}
           loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-500 ${hovered ? "scale-108" : "scale-100"}`}
+          onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
         />
 
         {/* Gradient Scrim */}
@@ -800,9 +816,10 @@ export default function NgoVideosPage() {
                   className="absolute inset-0 cursor-pointer group flex flex-col justify-between p-3 sm:p-6 bg-slate-950 select-none z-10 overflow-hidden"
                 >
                   <img
-                    src={activeMedia.thumbnail}
+                    src={encodeSrc(activeMedia.thumbnail)}
                     alt={activeMedia.title}
                     className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
+                    onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30" />
 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -296,12 +296,12 @@ export default function NgoOverviewPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
-                { label: "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", Ico: ImageIcon },
-                { label: "Ashramam Blanket Drive", sub: "Bethany Shelter Support", Ico: Video },
-              ].map(({ label, sub, Ico }, i) => (
+                { label: "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", image: "/ngo_outreach_drive_thumbnail.png", Ico: ImageIcon },
+                { label: "Ashramam Blanket Drive", sub: "Bethany Shelter Support", image: "/bethany_ashramam_thumbnail.png", Ico: Video },
+              ].map(({ label, sub, image, Ico }, i) => (
                 <div key={i} className="rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm">
                   <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden relative group">
-                    <img src="/kcm_society_ngo.jpg" alt={label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={image} alt={label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Ico className="w-6 h-6 text-white" />
                     </div>

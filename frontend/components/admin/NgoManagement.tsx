@@ -31,6 +31,15 @@ import { formatDate } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getPastorTranslation } from "@/lib/pastorTranslations";
 
+function encodeSrc(src: string | null): string {
+  if (!src) return "";
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
 interface Project {
   id: string;
   title: string;
@@ -449,7 +458,14 @@ export default function NgoManagement({ activeSubView }: { activeSubView?: "proj
                           {/* Image or Gradient Header */}
                           <div className="relative h-44 w-full bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 overflow-hidden">
                             {proj.imageUrl ? (
-                              <img src={proj.imageUrl} alt={proj.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
+                              <img
+                                src={encodeSrc(proj.imageUrl)}
+                                alt={proj.title}
+                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                                }}
+                              />
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center p-4 text-white/90 text-center space-y-1">
                                 <Heart className="w-8 h-8 text-white/80" />

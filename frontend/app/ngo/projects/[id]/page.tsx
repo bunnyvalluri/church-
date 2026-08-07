@@ -27,6 +27,16 @@ interface Project {
   _count: { volunteers: number };
 }
 
+// Encode a URL path so parentheses and spaces are safe for browsers
+function encodeSrc(src: string | null): string {
+  if (!src) return "";
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
 export default function NgoProjectDetailPage({
   params,
 }: {
@@ -61,11 +71,11 @@ export default function NgoProjectDetailPage({
                 title: "Gandhi General Hospital Support",
                 description: "Distributing nutritious milk food, basic medical supplies, and sanitary items to critical care wards and patient caretakers.",
                 details: "Every week, KCM volunteers visit Gandhi General Hospital in Hyderabad. Our primary activities include preparing and distributing fresh food packets, sanitary clothes, warm blankets, and direct financial aid to patients in cardiac, oncology, and general medicine wards. In addition to physical supplies, we offer counseling and emotional support to patient families.",
-                imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=1200",
+                imageUrl: "/gandhi_hospital_support_image.png",
                 targetAmount: 150000,
                 raisedAmount: 95400,
                 status: "ACTIVE",
-                createdAt: new Date().toISOString(),
+                createdAt: "2026-03-25T00:00:00.000Z",
                 media: [],
                 _count: { volunteers: 42 },
               },
@@ -74,11 +84,11 @@ export default function NgoProjectDetailPage({
                 title: "Bethany Samrakshana Ashramam Care",
                 description: "Supporting orphan children and elders in Bethany Ashramam with monthly groceries, school supplies, clean blankets, and care assistants.",
                 details: "Bethany Samrakshana Ashramam provides refuge to underprivileged orphan children and abandoned elders. KCM NGO services finance their primary operating costs. This includes purchasing monthly dry grocery bags (rice, wheat, pulses), school books and uniforms for the children, medical checkups for the elderly residents, and contributing toward helper salaries.",
-                imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1200",
+                imageUrl: "/bethany_ashramam_care_image.png",
                 targetAmount: 200000,
                 raisedAmount: 180000,
                 status: "ACTIVE",
-                createdAt: new Date().toISOString(),
+                createdAt: "2026-04-21T00:00:00.000Z",
                 media: [],
                 _count: { volunteers: 30 },
               },
@@ -87,11 +97,11 @@ export default function NgoProjectDetailPage({
                 title: "Home for the Disabled Ashramam Aid",
                 description: "Assisting physical rehabilitation centers with wheelchairs, walkers, monthly provisions, and critical healthcare monitoring programs.",
                 details: "We partner with local disabled rehabilitation centers to supply mobility aids. Our support covers the purchase of high-quality wheelchairs, walkers, crutches, and orthotic accessories. We also organize monthly provisions deliveries and fund visiting healthcare nurses to manage therapy, medical needs, and daily rehabilitation audits.",
-                imageUrl: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=1200",
+                imageUrl: "/home_for_disabled_rehab_care.png",
                 targetAmount: 300000,
                 raisedAmount: 124000,
                 status: "ACTIVE",
-                createdAt: new Date().toISOString(),
+                createdAt: "2026-06-17T00:00:00.000Z",
                 media: [],
                 _count: { volunteers: 25 },
               },
@@ -182,9 +192,19 @@ export default function NgoProjectDetailPage({
         {project.imageUrl && (
           <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl bg-slate-950">
             <img
-              src={project.imageUrl}
+              src={encodeSrc(project.imageUrl)}
               alt={project.title}
               className="object-cover w-full h-full"
+              onError={(e) => {
+                const targetEl = e.currentTarget;
+                if (project.title.toLowerCase().includes("bethany")) {
+                  targetEl.src = "/bethany_ashramam_care_image.png";
+                } else if (project.title.toLowerCase().includes("disabled")) {
+                  targetEl.src = "/home_for_disabled_rehab_care.png";
+                } else {
+                  targetEl.src = "/gandhi_hospital_support_image.png";
+                }
+              }}
             />
           </div>
         )}
@@ -260,9 +280,12 @@ export default function NgoProjectDetailPage({
                   className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-900 group shadow-md"
                 >
                   <img
-                    src={item.url}
+                    src={encodeSrc(item.url)}
                     alt={item.title || "Campaign media"}
                     className="object-cover w-full h-full group-hover:scale-102 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                    }}
                   />
                   {item.title && (
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity">

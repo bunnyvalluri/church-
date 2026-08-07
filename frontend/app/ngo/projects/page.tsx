@@ -36,6 +36,16 @@ interface Project {
   createdAt: string;
 }
 
+// Encode a URL path so parentheses and spaces are safe for browsers
+function encodeSrc(src: string | null): string {
+  if (!src) return "";
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  return src
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
 export default function NgoProjectsPage() {
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
@@ -59,40 +69,40 @@ export default function NgoProjectsPage() {
       id: "preset-gandhi",
       title: "Gandhi General Hospital Support",
       description: "Distributing nutritious milk food, basic medical supplies, sanitary clothes, and patient caretaker assistance kits in critical care wards.",
-      imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800",
+      imageUrl: "/gandhi_hospital_support_image.png",
       targetAmount: null,
       raisedAmount: 0,
       status: "ACTIVE",
       category: "HOSPITAL",
       location: "Gandhi Hospital, Secunderabad",
       beneficiaries: "1,500+ Patients & Families",
-      createdAt: new Date().toISOString(),
+      createdAt: "2026-03-25T00:00:00.000Z",
     },
     {
       id: "preset-bethany",
       title: "Bethany Samrakshana Ashramam Care",
       description: "Supporting orphan children and elders in Bethany Ashramam with monthly groceries, school supplies, clean blankets, and care assistants.",
-      imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800",
+      imageUrl: "/bethany_ashramam_care_image.png",
       targetAmount: null,
       raisedAmount: 0,
       status: "ACTIVE",
       category: "ASHRAMAM",
       location: "Bethany Ashramam, Hyderabad",
       beneficiaries: "120+ Elders & Children",
-      createdAt: new Date().toISOString(),
+      createdAt: "2026-04-21T00:00:00.000Z",
     },
     {
       id: "preset-disabled",
       title: "Home for the Disabled Ashramam Aid",
       description: "Assisting physical rehabilitation centers with wheelchairs, walkers, monthly provisions, and critical healthcare monitoring programs.",
-      imageUrl: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=800",
+      imageUrl: "/home_for_disabled_rehab_care.png",
       targetAmount: null,
       raisedAmount: 0,
       status: "ACTIVE",
       category: "REHABILITATION",
       location: "Rehab Center, Jeedimetla",
       beneficiaries: "85+ Disabled Individuals",
-      createdAt: new Date().toISOString(),
+      createdAt: "2026-06-17T00:00:00.000Z",
     },
   ];
 
@@ -285,9 +295,19 @@ export default function NgoProjectsPage() {
                     <div className="relative aspect-video overflow-hidden bg-slate-950">
                       {project.imageUrl ? (
                         <img
-                          src={project.imageUrl}
+                          src={encodeSrc(project.imageUrl)}
                           alt={project.title}
                           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (project.category === "ASHRAMAM") {
+                              target.src = "/bethany_ashramam_care_image.png";
+                            } else if (project.category === "REHABILITATION") {
+                              target.src = "/home_for_disabled_rehab_care.png";
+                            } else {
+                              target.src = "/ngo_outreach_drive_thumbnail.png";
+                            }
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-900">
@@ -303,8 +323,13 @@ export default function NgoProjectsPage() {
 
                       {/* Category Pill */}
                       {project.category && (
-                        <div className="absolute bottom-3.5 left-3.5 bg-purple-950/80 backdrop-blur-md border border-purple-400/30 text-purple-200 text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-md">
-                          {project.category}
+                        <div className="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider text-white bg-slate-950/90 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-1.5 font-mono">
+                          <span className={`w-2 h-2 rounded-full ${
+                            project.category.toUpperCase() === "HOSPITAL" ? "bg-blue-400" :
+                            project.category.toUpperCase() === "ASHRAMAM" ? "bg-pink-400" :
+                            "bg-emerald-400"
+                          }`} />
+                          <span>{project.category}</span>
                         </div>
                       )}
                     </div>
