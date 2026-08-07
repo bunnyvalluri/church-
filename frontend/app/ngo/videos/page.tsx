@@ -16,6 +16,15 @@ import {
   Layers,
   Volume2,
   ArrowUpRight,
+  ChevronDown,
+  RotateCcw,
+  Building2,
+  HeartHandshake,
+  MonitorPlay,
+  X,
+  Tag,
+  Check,
+  ExternalLink,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
@@ -1206,9 +1215,12 @@ export default function NgoVideosPage() {
   const [mounted, setMounted] = useState(false);
   const [activeVideo, setActiveVideo] = useState<VideoItem>(YOUTUBE_VIDEOS[0]);
   const [playlistTab, setPlaylistTab] = useState<"YOUTUBE" | "MP4">("YOUTUBE");
+  const [playlistSearch, setPlaylistSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  
+  const [displayLimit, setDisplayLimit] = useState<number>(16);
+  const [copiedToast, setCopiedToast] = useState(false);
+
   const playerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1222,10 +1234,30 @@ export default function NgoVideosPage() {
     }
   };
 
+  const handleShareVideo = () => {
+    if (typeof window !== "undefined") {
+      const shareUrl = `${window.location.origin}/ngo/videos?v=${activeVideo.id}`;
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedToast(true);
+      setTimeout(() => setCopiedToast(false), 3000);
+    }
+  };
+
   const isLocalMp4 = activeVideo.type === "VIDEO_LOCAL" || activeVideo.url.endsWith(".mp4");
   const ngoT = t.ngo || {};
 
-  // Filtered list for the video library grid below
+  // Reset pagination limit when filters change
+  const handleCategoryChange = (categoryVal: string) => {
+    setFilterCategory(categoryVal);
+    setDisplayLimit(16);
+  };
+
+  const handleSearchChange = (queryVal: string) => {
+    setSearchQuery(queryVal);
+    setDisplayLimit(16);
+  };
+
+  // Filtered list for the video library grid
   const filteredLibraryVideos = ALL_VIDEOS.filter((v) => {
     const matchesCategory =
       filterCategory === "ALL"
@@ -1244,38 +1276,133 @@ export default function NgoVideosPage() {
     return matchesCategory && matchesSearch;
   });
 
+  // Items to show on gallery grid based on displayLimit
+  const visibleGalleryVideos = filteredLibraryVideos.slice(0, displayLimit);
+
+  // Filtered list for the right sidebar playlist
+  const activePlaylistRaw = playlistTab === "YOUTUBE" ? YOUTUBE_VIDEOS : ALL_MP4_VIDEOS;
+  const filteredPlaylistItems = activePlaylistRaw.filter((v) =>
+    playlistSearch.trim() === ""
+      ? true
+      : v.title.toLowerCase().includes(playlistSearch.toLowerCase()) ||
+        v.description.toLowerCase().includes(playlistSearch.toLowerCase())
+  );
+
+  // Helper for category badges styling
+  const getCategoryBadgeStyle = (cat: string, isMp4: boolean) => {
+    if (!isMp4) return "bg-rose-600 text-white shadow-rose-500/20";
+    if (cat === "BETHANY-ASHRAMAM") return "bg-purple-600 text-white shadow-purple-500/20";
+    if (cat === "DISABLED-ASHRAMAM") return "bg-indigo-600 text-white shadow-indigo-500/20";
+    if (cat === "HOSPITALS") return "bg-emerald-600 text-white shadow-emerald-500/20";
+    return "bg-slate-800 text-white";
+  };
+
+  const getCategoryLabel = (cat: string, isMp4: boolean) => {
+    if (!isMp4) return "YouTube Stream";
+    if (cat === "BETHANY-ASHRAMAM") return "Bethany Log";
+    if (cat === "DISABLED-ASHRAMAM") return "Disabled Care";
+    if (cat === "HOSPITALS") return "Hospital Log";
+    return "MP4 Log";
+  };
+
   return (
-    <div className="py-8 sm:py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
+    <div className="py-6 sm:py-10 bg-slate-50/80 dark:bg-slate-950/80 min-h-screen relative">
+      
+      {/* Floating Share Copy Notification Toast */}
+      {copiedToast && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-2xl flex items-center gap-3 border border-slate-700 animate-bounce">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 dark:text-emerald-600" />
+          <span className="text-xs font-bold font-mono">Video link copied to clipboard!</span>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6 sm:space-y-10">
         
         {/* ========================================================================= */}
-        {/* 1. HERO PAGE HEADER & SEARCH BAR                                          */}
+        {/* 1. HERO PAGE HEADER & METRICS DASHBOARD BAR                               */}
         {/* ========================================================================= */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 dark:border-white/10 pb-8">
-          <div className="space-y-2 text-left max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-mono font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              <span>NGO Field Video Library</span>
+        <div className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 shadow-sm space-y-6 text-left">
+          
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <div className="space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>NGO Field Media Archives</span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                {ngoT.videosPage?.title || "Service Video Vault"}
+              </h1>
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">
+                Explore 97 raw MP4 field video logs from Bethany Ashramam, Home for Disabled, and Hospital outreach drives alongside official YouTube coverages.
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-normal leading-tight py-1">
-              {ngoT.videosPage?.title || "Service Video Logs"}
-            </h1>
-            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-              Watch 97 raw MP4 field video logs recorded during our Bethany Ashramam, Home for Disabled, and Hospital outreach drives alongside official YouTube coverages.
-            </p>
+
+            {/* Quick Search Input */}
+            <div className="relative w-full lg:w-96 flex-shrink-0">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search across all 105 service videos..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all shadow-inner"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => handleSearchChange("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Quick Search */}
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search 105 service videos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all shadow-sm"
-            />
+          {/* Clean Metric Cards with Concise Non-Truncated Labels */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2 border-t border-slate-100 dark:border-white/5">
+            
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Total Collection</span>
+                <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+                  <MonitorPlay className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">105 Videos</p>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Direct MP4 Logs</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                  <Film className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">97 Field Logs</p>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">YouTube Coverages</span>
+                <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center flex-shrink-0">
+                  <Video className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">8 Streams</p>
+            </div>
+
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-left space-y-2 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider leading-tight">Service Wards</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-none">5 Outreaches</p>
+            </div>
+
           </div>
+
         </div>
 
         {/* ========================================================================= */}
@@ -1289,7 +1416,7 @@ export default function NgoVideosPage() {
             <div className="lg:col-span-8 flex flex-col justify-between space-y-4">
               
               {/* Responsive 16:9 Video Display Container */}
-              <div className="relative aspect-video rounded-3xl overflow-hidden border border-slate-950/20 dark:border-white/15 shadow-2xl bg-slate-950 flex items-center justify-center group">
+              <div className="relative aspect-video rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-950/20 dark:border-white/15 shadow-2xl bg-slate-950 flex items-center justify-center group">
                 {isLocalMp4 ? (
                   <video
                     key={activeVideo.id}
@@ -1313,7 +1440,7 @@ export default function NgoVideosPage() {
               </div>
 
               {/* Active Video Meta Details Card */}
-              <div className="p-6 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 rounded-3xl text-left shadow-sm space-y-3">
+              <div className="p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 rounded-2xl sm:rounded-3xl text-left shadow-sm space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 relative">
@@ -1321,17 +1448,24 @@ export default function NgoVideosPage() {
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-600"></span>
                     </span>
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
-                      Now Playing
+                      Now Playing Cinema Stage
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full border ${
+                    <button
+                      onClick={handleShareVideo}
+                      className="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40 text-[10px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Share2 className="w-3 h-3" />
+                      <span>Share Video</span>
+                    </button>
+                    <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${
                       isLocalMp4
                         ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40"
                         : "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40"
                     }`}>
-                      {isLocalMp4 ? `Direct MP4 File (${activeVideo.fileSize || "Original Log"})` : "YouTube Stream"}
+                      {isLocalMp4 ? `Direct MP4 (${activeVideo.fileSize || "Original Log"})` : "YouTube Stream"}
                     </span>
                     {activeVideo.date && (
                       <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
@@ -1341,7 +1475,7 @@ export default function NgoVideosPage() {
                   </div>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-normal leading-snug break-words">
+                <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-normal leading-snug break-words">
                   {activeVideo.title}
                 </h2>
                 <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
@@ -1352,10 +1486,10 @@ export default function NgoVideosPage() {
             </div>
 
             {/* Right: Unified Cinema Playlist (4 Columns) */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between">
               
               {/* Playlist Header with Category Tabs */}
-              <div className="p-4 border-b border-slate-200 dark:border-white/10 space-y-3 bg-slate-50/80 dark:bg-slate-800/40">
+              <div className="p-3.5 sm:p-4 border-b border-slate-200 dark:border-white/10 space-y-3 bg-slate-50/80 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between text-left">
                   <div className="flex items-center gap-2">
                     <Tv className="w-4 h-4 text-purple-600 dark:text-purple-400" />
@@ -1363,12 +1497,12 @@ export default function NgoVideosPage() {
                       Playlist Console
                     </h3>
                   </div>
-                  <span className={`text-[10px] font-bold font-mono px-2.5 py-0.5 rounded-full border ${
+                  <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border ${
                     playlistTab === "YOUTUBE"
                       ? "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40"
                       : "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40"
                   }`}>
-                    {playlistTab === "YOUTUBE" ? `${YOUTUBE_VIDEOS.length} YouTube Streams` : `${ALL_MP4_VIDEOS.length} MP4 Video Logs`}
+                    {playlistTab === "YOUTUBE" ? `${YOUTUBE_VIDEOS.length} YouTube` : `${ALL_MP4_VIDEOS.length} MP4`}
                   </span>
                 </div>
 
@@ -1397,54 +1531,80 @@ export default function NgoVideosPage() {
                     <span>97 MP4 Logs</span>
                   </button>
                 </div>
+
+                {/* Playlist Quick Search */}
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder={`Filter ${playlistTab === "YOUTUBE" ? "8 YouTube" : "97 MP4"} items...`}
+                    value={playlistSearch}
+                    onChange={(e) => setPlaylistSearch(e.target.value)}
+                    className="w-full pl-8 pr-7 py-1.5 text-[11px] rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  />
+                  {playlistSearch && (
+                    <button
+                      onClick={() => setPlaylistSearch("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Scrollable Playlist Items */}
-              <div className="overflow-y-auto divide-y divide-slate-200 dark:divide-white/5 max-h-[500px] flex-1">
-                {(playlistTab === "YOUTUBE" ? YOUTUBE_VIDEOS : ALL_MP4_VIDEOS).map((vid, idx) => {
-                  const isActive = activeVideo.id === vid.id;
-                  return (
-                    <div
-                      key={vid.id}
-                      onClick={() => selectAndPlayVideo(vid)}
-                      className={`p-3.5 flex gap-3 cursor-pointer text-left transition-colors ${
-                        isActive
-                          ? "bg-purple-100/90 dark:bg-purple-950/50 border-l-4 border-purple-600"
-                          : "hover:bg-slate-50 dark:hover:bg-white/5"
-                      }`}
-                    >
-                      {/* Thumbnail */}
-                      <div className="relative w-24 aspect-video rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-200 dark:border-white/10 flex items-center justify-center group shadow-sm">
-                        <img
-                          src={vid.thumbnailUrl}
-                          alt={vid.title}
-                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 flex items-center justify-center">
-                          <Play className="w-5 h-5 text-white drop-shadow-md fill-white" />
+              <div className="overflow-y-auto divide-y divide-slate-200 dark:divide-white/5 max-h-[460px] sm:max-h-[540px] flex-1">
+                {filteredPlaylistItems.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
+                    No videos match your playlist search filter.
+                  </div>
+                ) : (
+                  filteredPlaylistItems.map((vid, idx) => {
+                    const isActive = activeVideo.id === vid.id;
+                    return (
+                      <div
+                        key={vid.id}
+                        onClick={() => selectAndPlayVideo(vid)}
+                        className={`p-3 flex gap-3 cursor-pointer text-left transition-colors ${
+                          isActive
+                            ? "bg-purple-100/90 dark:bg-purple-950/50 border-l-4 border-purple-600"
+                            : "hover:bg-slate-50 dark:hover:bg-white/5"
+                        }`}
+                      >
+                        {/* Thumbnail */}
+                        <div className="relative w-20 sm:w-24 aspect-video rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-200 dark:border-white/10 flex items-center justify-center group shadow-sm">
+                          <img
+                            src={vid.thumbnailUrl}
+                            alt={vid.title}
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 flex items-center justify-center">
+                            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow-md fill-white" />
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Details */}
-                      <div className="space-y-1 select-none flex-1 min-w-0">
-                        <h4 className={`text-xs font-bold leading-snug truncate ${
-                          isActive ? "text-purple-700 dark:text-purple-300 font-extrabold" : "text-slate-900 dark:text-slate-200"
-                        }`}>
-                          {idx + 1}. {vid.title}
-                        </h4>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                          <span>{vid.type === "VIDEO_LOCAL" ? "MP4 Log" : "YouTube"}</span>
-                          {vid.fileSize && (
-                            <>
-                              <span>•</span>
-                              <span>{vid.fileSize}</span>
-                            </>
-                          )}
+                        {/* Details */}
+                        <div className="space-y-1 select-none flex-1 min-w-0">
+                          <h4 className={`text-xs font-bold leading-snug truncate ${
+                            isActive ? "text-purple-700 dark:text-purple-300 font-extrabold" : "text-slate-900 dark:text-slate-200"
+                          }`}>
+                            {idx + 1}. {vid.title}
+                          </h4>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            <span>{vid.type === "VIDEO_LOCAL" ? "MP4 Log" : "YouTube"}</span>
+                            {vid.fileSize && (
+                              <>
+                                <span>•</span>
+                                <span>{vid.fileSize}</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
 
               {/* Playlist Footer status */}
@@ -1459,40 +1619,40 @@ export default function NgoVideosPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 3. UNIFIED VIDEO LIBRARY & FILTER BAR                                     */}
+        {/* 3. UNIFIED VIDEO LIBRARY & RESPONSIVE CATEGORY TABS                        */}
         {/* ========================================================================= */}
         <section className="space-y-6 pt-6 border-t border-slate-200 dark:border-white/10 text-left">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-4">
             <div className="space-y-1">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                 <Layers className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 <span>Service Video Vault Gallery</span>
               </h2>
               <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm">
-                Browse through all 105 service videos by category or type. Click any card to play it in the Cinema Stage above.
+                Showing {visibleGalleryVideos.length} of {filteredLibraryVideos.length} videos matching your filter.
               </p>
             </div>
 
-            {/* Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {/* Filter Pills Bar - Non-overflowing Responsive Wrap Grid */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {[
-                { label: "All Videos (105)", value: "ALL" },
-                { label: "YouTube Highlights (8)", value: "YOUTUBE_ONLY" },
-                { label: "Direct MP4s (97)", value: "MP4_ONLY" },
-                { label: "Bethany Ashramam", value: "BETHANY-ASHRAMAM" },
-                { label: "Home for Disabled", value: "DISABLED-ASHRAMAM" },
-                { label: "Hospitals (NIMS, Gandhi, Govt)", value: "HOSPITALS" },
+                { label: `All Videos (105)`, value: "ALL" },
+                { label: `YouTube Highlights (8)`, value: "YOUTUBE_ONLY" },
+                { label: `Direct MP4s (97)`, value: "MP4_ONLY" },
+                { label: `Bethany Ashramam (30)`, value: "BETHANY-ASHRAMAM" },
+                { label: `Home for Disabled (42)`, value: "DISABLED-ASHRAMAM" },
+                { label: `Hospitals (25)`, value: "HOSPITALS" },
               ].map((pill) => {
                 const isSelected = filterCategory === pill.value;
                 return (
                   <button
                     key={pill.value}
-                    onClick={() => setFilterCategory(pill.value)}
-                    className={`px-4 py-2 text-xs font-bold rounded-2xl border transition-all flex-shrink-0 cursor-pointer ${
+                    onClick={() => handleCategoryChange(pill.value)}
+                    className={`px-3.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-2xl border transition-all flex-shrink-0 cursor-pointer ${
                       isSelected
-                        ? "bg-purple-600 text-white border-transparent shadow-md shadow-purple-500/20 scale-[1.02]"
-                        : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5"
+                        ? "bg-purple-600 text-white border-transparent shadow-lg shadow-purple-500/25 scale-[1.02]"
+                        : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200/90 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
                     }`}
                   >
                     {pill.label}
@@ -1502,83 +1662,138 @@ export default function NgoVideosPage() {
             </div>
           </div>
 
-          {/* 4-Column Responsive Card Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-            {filteredLibraryVideos.map((vid, idx) => {
-              const isActive = activeVideo.id === vid.id;
-              const isMp4 = vid.type === "VIDEO_LOCAL" || vid.url.endsWith(".mp4");
-              return (
-                <div
-                  key={vid.id}
-                  onClick={() => selectAndPlayVideo(vid)}
-                  className={`group rounded-3xl overflow-hidden border bg-white dark:bg-slate-900 cursor-pointer transition-all duration-300 hover:scale-[1.02] shadow-sm hover:shadow-xl flex flex-col justify-between ${
-                    isActive
-                      ? "border-2 border-purple-600 ring-4 ring-purple-500/20 dark:border-purple-500 shadow-purple-500/10"
-                      : "border-slate-200 dark:border-white/10 hover:border-purple-400"
-                  }`}
-                >
-                  <div>
-                    {/* Card Thumbnail */}
-                    <div className="relative aspect-video bg-black overflow-hidden">
-                      <img
-                        src={vid.thumbnailUrl}
-                        alt={vid.title}
-                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      />
-                      
-                      {/* Play Overlay */}
-                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 ${
-                          isActive ? "bg-purple-600" : "bg-slate-900/80 group-hover:bg-purple-600"
-                        }`}>
-                          <Play className="w-5 h-5 fill-white ml-0.5" />
+          {/* Empty State when zero match */}
+          {filteredLibraryVideos.length === 0 ? (
+            <div className="py-16 text-center space-y-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-600 mx-auto flex items-center justify-center">
+                <Search className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">No videos found</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  No service videos matched "{searchQuery}". Try searching another keyword or reset filters.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setFilterCategory("ALL");
+                  setDisplayLimit(16);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition-colors shadow-md"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset All Filters</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Responsive Card Grid */}
+              <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
+                {visibleGalleryVideos.map((vid, idx) => {
+                  const isActive = activeVideo.id === vid.id;
+                  const isMp4 = vid.type === "VIDEO_LOCAL" || vid.url.endsWith(".mp4");
+                  const badgeClass = getCategoryBadgeStyle(vid.category, isMp4);
+                  const badgeLabel = getCategoryLabel(vid.category, isMp4);
+
+                  return (
+                    <div
+                      key={vid.id}
+                      onClick={() => selectAndPlayVideo(vid)}
+                      className={`group rounded-2xl sm:rounded-3xl overflow-hidden border bg-white dark:bg-slate-900 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 shadow-sm hover:shadow-xl flex flex-col justify-between ${
+                        isActive
+                          ? "border-2 border-purple-600 ring-4 ring-purple-500/20 dark:border-purple-500 shadow-purple-500/10"
+                          : "border-slate-200/90 dark:border-white/10 hover:border-purple-400"
+                      }`}
+                    >
+                      <div>
+                        {/* Card Thumbnail */}
+                        <div className="relative aspect-video bg-black overflow-hidden">
+                          <img
+                            src={vid.thumbnailUrl}
+                            alt={vid.title}
+                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                          />
+                          
+                          {/* Play Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-colors flex items-center justify-center">
+                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 ${
+                              isActive ? "bg-purple-600" : "bg-slate-900/80 group-hover:bg-purple-600"
+                            }`}>
+                              <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white ml-0.5" />
+                            </div>
+                          </div>
+
+                          {/* Category Badge */}
+                          <div className="absolute top-2.5 left-2.5">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold shadow-md backdrop-blur-md ${badgeClass}`}>
+                              {badgeLabel}
+                            </span>
+                          </div>
+
+                          {/* File Size or Tag */}
+                          {vid.fileSize && (
+                            <div className="absolute bottom-2.5 right-2.5">
+                              <span className="px-2 py-0.5 rounded-full bg-slate-950/80 text-white font-mono text-[9px] font-bold backdrop-blur-md border border-white/20">
+                                {vid.fileSize}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Card Details */}
+                        <div className="p-3.5 sm:p-4 space-y-1.5 text-left">
+                          <h3 className={`text-xs sm:text-sm font-bold leading-snug line-clamp-2 ${
+                            isActive ? "text-purple-600 dark:text-purple-300 font-extrabold" : "text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400"
+                          }`}>
+                            {vid.title}
+                          </h3>
+                          <p className="text-slate-600 dark:text-slate-300 text-[11px] line-clamp-2 leading-relaxed">
+                            {vid.description}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Type Badge */}
-                      <div className="absolute top-2.5 left-2.5">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-white shadow-md backdrop-blur-md ${
-                          isMp4 ? "bg-purple-600/90" : "bg-rose-600/90"
-                        }`}>
-                          {isMp4 ? "MP4 Direct Log" : "YouTube"}
+                      {/* Card Footer */}
+                      <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                        <span>{vid.date || "2026 Drive"}</span>
+                        <span className="flex items-center gap-1 text-purple-600 dark:text-purple-400 font-bold group-hover:underline">
+                          <span>Watch Video</span>
+                          <ArrowUpRight className="w-3 h-3" />
                         </span>
                       </div>
-
-                      {/* File Size or Tag */}
-                      {vid.fileSize && (
-                        <div className="absolute bottom-2.5 right-2.5">
-                          <span className="px-2 py-0.5 rounded-full bg-slate-950/80 text-white font-mono text-[9px] font-bold backdrop-blur-md border border-white/20">
-                            {vid.fileSize}
-                          </span>
-                        </div>
-                      )}
                     </div>
+                  );
+                })}
+              </div>
 
-                    {/* Card Details */}
-                    <div className="p-4 space-y-2 text-left">
-                      <h3 className={`text-xs sm:text-sm font-bold leading-snug line-clamp-2 ${
-                        isActive ? "text-purple-600 dark:text-purple-300" : "text-slate-900 dark:text-white"
-                      }`}>
-                        {vid.title}
-                      </h3>
-                      <p className="text-slate-500 dark:text-slate-400 text-[11px] line-clamp-2 leading-relaxed">
-                        {vid.description}
-                      </p>
-                    </div>
-                  </div>
+              {/* Progressive Loading Controls (Load More / Show All) */}
+              {filteredLibraryVideos.length > displayLimit && (
+                <div className="pt-6 sm:pt-8 pb-4 flex flex-col items-center justify-center gap-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                    Showing {visibleGalleryVideos.length} of {filteredLibraryVideos.length} service videos
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+                    <button
+                      onClick={() => setDisplayLimit((prev) => prev + 16)}
+                      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2 cursor-pointer hover:scale-105"
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                      <span>Load 16 More Videos</span>
+                    </button>
 
-                  {/* Card Footer */}
-                  <div className="px-4 pb-4 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                    <span>{vid.date || "11-03-2026"}</span>
-                    <span className="flex items-center gap-1 text-purple-600 dark:text-purple-400 font-bold group-hover:underline">
-                      <span>Watch Video</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </span>
+                    <button
+                      onClick={() => setDisplayLimit(filteredLibraryVideos.length)}
+                      className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <span>Show All ({filteredLibraryVideos.length})</span>
+                    </button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </>
+          )}
 
         </section>
 
