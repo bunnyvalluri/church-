@@ -22,13 +22,13 @@ interface ChurchEvent {
 }
 
 const CAT_STYLE: Record<string, { pill: string; bar: string }> = {
-  WORSHIP:     { pill: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40", bar: "bg-purple-500" },
-  PRAYER:      { pill: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40",           bar: "bg-rose-500"   },
-  YOUTH:       { pill: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/40",     bar: "bg-amber-500"  },
-  FELLOWSHIP:  { pill: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800/40",     bar: "bg-green-500"  },
-  OUTREACH:    { pill: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/40",           bar: "bg-blue-500"   },
+  WORSHIP:     { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500" },
+  PRAYER:      { pill: "bg-rose-600 dark:bg-rose-700 text-white border-rose-500 font-extrabold shadow-xs",           bar: "bg-rose-500"   },
+  YOUTH:       { pill: "bg-amber-600 dark:bg-amber-700 text-white border-amber-500 font-extrabold shadow-xs",     bar: "bg-amber-500"  },
+  FELLOWSHIP:  { pill: "bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-500 font-extrabold shadow-xs", bar: "bg-emerald-500" },
+  OUTREACH:    { pill: "bg-indigo-600 dark:bg-indigo-700 text-white border-indigo-500 font-extrabold shadow-xs",     bar: "bg-indigo-500"  },
 };
-const DEFAULT_STYLE = { pill: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40", bar: "bg-purple-500" };
+const DEFAULT_STYLE = { pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs", bar: "bg-purple-500" };
 
 type FilterTab = "ALL" | "UPCOMING" | "REGISTERED";
 

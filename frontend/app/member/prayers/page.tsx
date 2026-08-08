@@ -21,9 +21,9 @@ interface PrayerRequest {
 }
 
 const STATUS_CFG = {
-  PENDING:  { dot: "bg-amber-400",  pill: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/40" },
-  PRAYING:  { dot: "bg-purple-500 animate-pulse", pill: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/40" },
-  ANSWERED: { dot: "bg-emerald-500",  pill: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40" },
+  PENDING:  { dot: "bg-amber-300",  pill: "bg-amber-600 dark:bg-amber-700 text-white border-amber-500 font-extrabold shadow-xs" },
+  PRAYING:  { dot: "bg-white animate-pulse", pill: "bg-purple-600 dark:bg-purple-700 text-white border-purple-500 font-extrabold shadow-xs" },
+  ANSWERED: { dot: "bg-white",  pill: "bg-emerald-600 dark:bg-emerald-700 text-white border-emerald-500 font-extrabold shadow-xs" },
 };
 
 const CATS = [
