@@ -275,7 +275,7 @@ export default function MemberVolunteer() {
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 pb-12 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-6 pb-16 animate-in fade-in duration-300">
       {/* Floating Bottom Pop-Up Toast */}
       <AnimatePresence>
         {toast && (
@@ -297,7 +297,7 @@ export default function MemberVolunteer() {
       </AnimatePresence>
 
       {/* Header Section */}
-      <div className="relative overflow-hidden p-4 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
+      <div className="relative overflow-hidden p-5 sm:p-8 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm">
         <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative space-y-2 max-w-3xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-300 dark:border-indigo-600 text-[10px] font-extrabold uppercase tracking-wider shadow-xs">
@@ -339,7 +339,7 @@ export default function MemberVolunteer() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-[#121324] rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-xl p-6 sm:p-12 text-center relative overflow-hidden"
+          className="bg-white dark:bg-gray-900 rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-2xl p-6 sm:p-12 text-center relative overflow-hidden max-w-3xl mx-auto"
         >
           <div className="w-16 h-16 bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20 animate-bounce">
             <Check className="w-8 h-8 text-white" />
@@ -352,19 +352,30 @@ export default function MemberVolunteer() {
           
           <button
             onClick={() => { setSubmitted(false); setSelected(null); setSkills(""); }}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-indigo-500/20 active:scale-95"
+            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-indigo-500/20 hover:shadow-lg active:scale-95 cursor-pointer"
           >
             {vt.btnApplyAnother}
           </button>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 items-start">
-          {/* Ministry Cards Grid — 2 Columns on Mobile */}
-          <div className="lg:col-span-3 space-y-3 w-full">
-            <h2 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
-              {vt.step1}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
+        <div className="space-y-6">
+          {/* STEP 1: Department Grid — 3 Columns on Desktop */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                {vt.step1}
+              </h2>
+              {selected && (
+                <button
+                  onClick={() => setSelected(null)}
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                >
+                  Clear selection
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {MINISTRIES.map((m, i) => {
                 const Icon = m.icon;
                 const isSelected = selected === m.id;
@@ -374,33 +385,33 @@ export default function MemberVolunteer() {
                     key={m.id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ delay: i * 0.04 }}
                     onClick={() => setSelected(m.id)}
-                    className={`relative text-left p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between ${
+                    className={`relative text-left p-5 sm:p-6 rounded-3xl border-2 transition-all duration-300 group flex flex-col justify-between h-full cursor-pointer ${
                       isSelected
-                        ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-lg shadow-indigo-500/10"
-                        : "border-gray-100 dark:border-white/[0.04] bg-white dark:bg-[#121324] hover:border-gray-250 dark:hover:border-white/[0.1] hover:shadow-md"
+                        ? "border-indigo-500 bg-indigo-50/30 dark:bg-indigo-950/30 shadow-xl shadow-indigo-500/10 ring-2 ring-indigo-500/20"
+                        : "border-gray-200/80 dark:border-white/5 bg-white dark:bg-gray-900 hover:border-purple-300 dark:hover:border-purple-700/50 hover:shadow-xl hover:-translate-y-1"
                     }`}
                   >
                     {isSelected && (
-                      <div className="absolute top-3 right-3 w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center shadow-md shadow-indigo-500/30">
-                        <Check className="w-3 h-3 text-white" />
+                      <div className="absolute top-4 right-4 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-md">
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
                       </div>
                     )}
                     <div>
-                      <div className={`w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br ${m.gradient} rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3.5 shadow-md group-hover:scale-105 transition-transform`}>
-                        <Icon className="w-4 h-4 sm:w-5.5 sm:h-5.5 text-white" />
+                      <div className={`w-12 h-12 bg-gradient-to-br ${m.gradient} rounded-2xl flex items-center justify-center mb-4 shadow-md group-hover:scale-105 transition-transform shrink-0`}>
+                        <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="font-extrabold text-gray-900 dark:text-white text-xs sm:text-sm tracking-tight mb-1 leading-tight">{localDetails.name}</h3>
-                      <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 sm:line-clamp-3 mb-3 font-medium">{localDetails.desc}</p>
+                      <h3 className="font-extrabold text-gray-900 dark:text-white text-base tracking-tight mb-1.5 leading-tight">{localDetails.name}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 mb-4 font-medium">{localDetails.desc}</p>
                     </div>
                     
-                    <div className="flex items-center justify-between w-full mt-auto pt-2 border-t border-gray-100 dark:border-gray-800/60">
-                      <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${m.badgeBg} ${m.badgeText} ${m.badgeBorder}`}>
+                    <div className="flex items-center justify-between w-full pt-3 border-t border-gray-100 dark:border-gray-800/80 mt-auto">
+                      <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${m.badgeBg} ${m.badgeText} ${m.badgeBorder}`}>
                         {m.id}
                       </span>
-                      <span className="text-[9px] sm:text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
-                        <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 shrink-0">
+                        <Users className="w-3.5 h-3.5" />
                         {m.slots} {vt.slotsSuffix}
                       </span>
                     </div>
@@ -410,79 +421,98 @@ export default function MemberVolunteer() {
             </div>
           </div>
 
-          {/* Dynamic Form Panel */}
-          <div ref={formRef} className="lg:col-span-2 w-full pt-2 lg:pt-0">
+          {/* STEP 2: Application Form Panel */}
+          <div ref={formRef}>
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
                   key="form"
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white dark:bg-[#121324] rounded-3xl border border-gray-100 dark:border-white/[0.04] shadow-xl overflow-hidden lg:sticky lg:top-24 backdrop-blur-xl"
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.25 }}
+                  className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-2xl overflow-hidden max-w-4xl mx-auto backdrop-blur-xl"
                 >
-                  <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-white/[0.04] bg-indigo-50/20 dark:bg-indigo-950/10">
-                    <Briefcase className="w-4 h-4 text-indigo-500" />
-                    <h3 className="font-extrabold text-gray-900 dark:text-white text-xs uppercase tracking-wider">{vt.step2}</h3>
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-indigo-50/40 dark:bg-indigo-950/20">
+                    <div className="flex items-center gap-2.5">
+                      <Briefcase className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                      <h3 className="font-extrabold text-gray-900 dark:text-white text-sm uppercase tracking-wider">{vt.step2}</h3>
+                    </div>
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 shadow-xs">
+                      {selectedDetails?.name}
+                    </span>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                  <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
                     {/* Active Selection Display Banner */}
-                    <div className={`flex items-center gap-3 p-3 rounded-2xl border ${selectedData?.badgeBg} ${selectedData?.badgeBorder}`}>
-                      {selectedData && <selectedData.icon className={`w-5 h-5 ${selectedData.badgeText} flex-shrink-0`} />}
+                    <div className={`flex items-center gap-3.5 p-4 rounded-2xl border ${selectedData?.badgeBg} ${selectedData?.badgeBorder}`}>
+                      {selectedData && <selectedData.icon className={`w-6 h-6 ${selectedData.badgeText} shrink-0`} />}
                       <div className="min-w-0">
-                        <p className={`text-xs font-black ${selectedData?.badgeText} tracking-tight`}>{selectedDetails?.name}</p>
+                        <p className={`text-sm font-black ${selectedData?.badgeText} tracking-tight`}>{selectedDetails?.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{selectedDetails?.desc}</p>
                       </div>
                     </div>
 
-                    {/* Disabled Name Field */}
-                    <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.fullName}</label>
-                      <div className="relative">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Disabled Name Field */}
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{vt.fullName}</label>
+                        <div className="relative">
+                          <input 
+                            type="text" 
+                            value={user?.name || ""} 
+                            disabled
+                            className="w-full py-3 pl-10 pr-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-100/70 dark:bg-gray-800/40 text-gray-500 dark:text-gray-400 cursor-not-allowed text-xs sm:text-sm font-semibold"
+                          />
+                          <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        </div>
+                      </div>
+
+                      {/* Selected Ministry ID Field */}
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Target Ministry</label>
                         <input 
                           type="text" 
-                          value={user?.name || ""} 
+                          value={`${selectedDetails?.name} (${selectedData?.slots} slots open)`} 
                           disabled
-                          className="w-full py-2.5 pl-10 pr-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-gray-100 dark:bg-white/[0.02] text-gray-400 dark:text-gray-500 cursor-not-allowed text-xs font-bold"
+                          className="w-full py-3 px-4 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm cursor-not-allowed"
                         />
-                        <Lock className="w-3.5 h-3.5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       </div>
                     </div>
 
                     {/* Testimony TextArea */}
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">{vt.skillsLabel}</label>
+                      <label className="block text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{vt.skillsLabel}</label>
                       <textarea
                         value={skills} 
                         onChange={e => setSkills(e.target.value)} 
                         required 
                         rows={5}
                         placeholder={vt.skillsPlaceholder.replace("{name}", selectedDetails?.name || "")}
-                        className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/50 dark:bg-white/[0.01] text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all resize-none text-xs leading-relaxed font-medium"
+                        className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/40 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all resize-none text-xs sm:text-sm leading-relaxed font-medium"
                       />
                       <div className="flex justify-between items-center px-1">
-                        <span className="text-[9px] text-gray-400 flex items-center gap-1 font-semibold">
-                          <Info className="w-3.5 h-3.5 text-indigo-500" />
-                          {language === "te" ? "వివరాలు అత్యవసరం" : language === "hi" ? "विवरण आवश्यक है" : "Details mandatory"}
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 font-semibold">
+                          <Info className="w-4 h-4 text-indigo-500 shrink-0" />
+                          {language === "te" ? "వివరాలు అత్యవసరం" : language === "hi" ? "विवरण आवश्यक है" : "Details mandatory for ministry evaluation"}
                         </span>
-                        <p className="text-[9px] font-bold text-gray-400 uppercase">{skills.length} {vt.characters}</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase">{skills.length} {vt.characters}</p>
                       </div>
                     </div>
 
                     <button 
                       type="submit" 
                       disabled={loading || !skills.trim()}
-                      className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {loading ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-4.5 h-4.5 animate-spin" />
                           <span>{vt.btnSubmitting}</span>
                         </>
                       ) : (
                         <>
-                          <Send className="w-3.5 h-3.5" />
+                          <Send className="w-4 h-4" />
                           <span>{vt.btnSubmit}</span>
                         </>
                       )}
@@ -490,25 +520,11 @@ export default function MemberVolunteer() {
                   </form>
                 </motion.div>
               ) : (
-                <motion.div
-                  key="prompt"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="bg-white dark:bg-[#121324] rounded-3xl border border-dashed border-gray-200 dark:border-white/[0.08] p-6 sm:p-8 text-center flex flex-col items-center justify-center min-h-[260px] gap-3"
-                >
-                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shadow-md border border-indigo-200 dark:border-indigo-900/40">
-                    <ClipboardList className="w-7 h-7 animate-pulse" />
-                  </div>
-                  <div className="space-y-1 max-w-xs">
-                    <h4 className="font-extrabold text-sm text-gray-900 dark:text-white">
-                      {language === "te" ? "పరిచర్యను ఎంచుకోండి" : language === "hi" ? "मंत्रालय चुनें" : "No Department Configured"}
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                      {vt.promptSelect}
-                    </p>
-                  </div>
-                </motion.div>
+                <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 text-center">
+                  <p className="text-xs text-indigo-600 dark:text-indigo-300 font-bold">
+                    💡 Click on any of the ministry cards above to begin your volunteer application.
+                  </p>
+                </div>
               )}
             </AnimatePresence>
           </div>
