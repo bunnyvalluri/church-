@@ -292,17 +292,13 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
 
                     {/* Content */}
                     <div className="p-6 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="inline-block px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-700/60 text-[10px] font-black uppercase tracking-wider">
-                          {event.category}
-                        </span>
-                        
-                        {event.registrationRequired && typeof event.remainingSeats === "number" && (
+                      {event.registrationRequired && typeof event.remainingSeats === "number" && (
+                        <div className="flex items-center justify-end">
                           <span className={`text-[10px] font-bold ${event.remainingSeats > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                             {event.remainingSeats > 0 ? `${event.remainingSeats} seats left` : "Waitlist Open"}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
                       <h3 className="text-lg font-black text-slate-900 dark:text-white line-clamp-1 tracking-tight">
                         {event.title}
