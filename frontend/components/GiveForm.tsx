@@ -879,13 +879,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                 <IndianRupee className="w-4 h-4 text-purple-600" />
                                 {t.pages.give.presetsTitle}
                               </label>
-                              <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+                              <div className="grid grid-cols-3 min-[420px]:grid-cols-3 gap-2 sm:gap-2.5">
                                 {["500", "1000", "2500", "5000", "10000"].map((preset) => (
                                   <button
                                     key={preset}
                                     type="button"
                                     onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl border-2 text-center font-extrabold text-xs sm:text-base transition-all duration-200 overflow-hidden group ${
+                                    className={`relative py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl sm:rounded-2xl border-2 text-center font-extrabold text-xs sm:text-base transition-all duration-200 overflow-hidden group ${
                                       preset === "10000" ? "col-span-1" : ""
                                     } ${
                                       amount === preset && !customAmount
@@ -904,14 +904,14 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                                   </button>
                                 ))}
                                 {/* Custom amount */}
-                                <div className="relative col-span-1">
-                                  <span className={`absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 font-black text-xs sm:text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
+                                <div className="relative col-span-3 min-[420px]:col-span-1">
+                                  <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-xs sm:text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
                                   <input
                                     type="number"
                                     placeholder={t.pages.give.customPlaceholder}
                                     value={customAmount}
                                     onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-2.5 sm:py-3.5 pl-6 sm:pl-8 pr-1.5 rounded-xl sm:rounded-2xl border-2 font-black text-xs sm:text-base transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
+                                    className={`w-full py-2.5 sm:py-3 pl-7 sm:pl-8 pr-2 rounded-xl sm:rounded-2xl border-2 font-black text-base sm:text-sm transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
                                       customAmount
                                         ? "border-purple-600 dark:border-purple-400 ring-2 ring-purple-600/20 bg-purple-50/80 dark:bg-purple-950/60"
                                         : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400"
@@ -1424,7 +1424,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
               </div>
 
               {/* ── RIGHT: SIDEBAR ────────────────────────── */}
-              <div className="lg:col-span-5 space-y-4 sm:space-y-5">
+              <div className={`lg:col-span-5 space-y-4 sm:space-y-5 ${activeMobileTab === 'summary' ? 'block' : 'hidden lg:block'}`}>
 
                 {/* Giving Summary Card */}
                 <div className="relative bg-white dark:bg-[#0f1123] rounded-3xl shadow-xl border border-gray-200 dark:border-indigo-500/20 overflow-hidden transition-colors">
@@ -1609,7 +1609,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </section>
 
       {/* ── WHY WE GIVE ───────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30 border-t border-gray-100 dark:border-gray-800">
+      <section className={`py-12 sm:py-20 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30 border-t border-gray-100 dark:border-gray-800 ${activeMobileTab === 'summary' || activeMobileTab === 'ways' ? 'block' : 'hidden lg:block'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
@@ -1654,7 +1654,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       </section>
 
       {/* ── OTHER WAYS TO GIVE ────────────────────────────── */}
-      <section className="py-20">
+      <section className={`py-12 sm:py-20 ${activeMobileTab === 'ways' ? 'block' : 'hidden lg:block'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
