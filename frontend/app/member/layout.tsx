@@ -375,7 +375,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             {/* Right: online + profile */}
             <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
               {/* Unified Toggles Capsule for Desktop */}
-              <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-50/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-1 rounded-2xl shadow-sm backdrop-blur-md flex-shrink-0">
+              <div className="hidden md:flex scale-90 sm:scale-100 origin-right items-center gap-2 bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-sm backdrop-blur-md shrink-0">
                 <LanguageToggle />
                 <ThemeToggle />
                 <PaletteToggle />

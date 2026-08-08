@@ -90,14 +90,14 @@ export default function LanguageToggle({ align = "auto", className = "" }: Langu
         ref={buttonRef}
         type="button"
         onClick={handleToggle}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 hover:bg-gray-200/80 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 rounded-full text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 cursor-pointer shrink-0"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/90 text-gray-900 dark:text-white rounded-full text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 cursor-pointer shrink-0"
         aria-label="Select Language"
         aria-expanded={isOpen}
         suppressHydrationWarning
       >
-        <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-        <span className="font-extrabold uppercase" suppressHydrationWarning>{currentLang.short}</span>
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+        <Globe className="w-4 h-4 text-purple-600 dark:text-purple-300 shrink-0" />
+        <span className="font-extrabold uppercase text-gray-900 dark:text-white tracking-wide" suppressHydrationWarning>{currentLang.short}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-gray-500 dark:text-gray-300 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {/* Dropdown Menu Teleported via Portal */}

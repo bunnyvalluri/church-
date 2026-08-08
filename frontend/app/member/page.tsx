@@ -80,12 +80,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "Daily Scripture Promise",
     cards: [
-      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
-      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
-      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
-      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
-      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
-      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
+      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white border border-purple-200 dark:border-purple-600 font-extrabold" },
+      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-blue-100 text-blue-950 dark:bg-blue-800 dark:text-white border border-blue-200 dark:border-blue-600 font-extrabold" },
+      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-100 text-rose-950 dark:bg-rose-800 dark:text-white border border-rose-200 dark:border-rose-600 font-extrabold" },
+      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-200 dark:border-indigo-600 font-extrabold" },
+      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-100 text-amber-950 dark:bg-amber-800 dark:text-white border border-amber-200 dark:border-amber-600 font-extrabold" },
+      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-100 text-emerald-950 dark:bg-emerald-800 dark:text-white border border-emerald-200 dark:border-emerald-600 font-extrabold" },
     ],
     directoryHeading: "Believer Services Directory",
     statsHeading: "Quick Fellowship Overview",
@@ -139,12 +139,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "దైనందిన వాగ్దానం",
     cards: [
-      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
-      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
-      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
-      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
-      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
-      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
+      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white border border-purple-200 dark:border-purple-600 font-extrabold" },
+      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-blue-100 text-blue-950 dark:bg-blue-800 dark:text-white border border-blue-200 dark:border-blue-600 font-extrabold" },
+      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-100 text-rose-950 dark:bg-rose-800 dark:text-white border border-rose-200 dark:border-rose-600 font-extrabold" },
+      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-200 dark:border-indigo-600 font-extrabold" },
+      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-100 text-amber-950 dark:bg-amber-800 dark:text-white border border-amber-200 dark:border-amber-600 font-extrabold" },
+      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-100 text-emerald-950 dark:bg-emerald-800 dark:text-white border border-emerald-200 dark:border-emerald-600 font-extrabold" },
     ],
     directoryHeading: "విశ్వాసుల సేవల జాబితా",
     statsHeading: "పరిచర్య ముఖ్యాంశాలు",
@@ -198,12 +198,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "दैनिक बाइबिल वचन",
     cards: [
-      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
-      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
-      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
-      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
-      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
-      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
+      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white border border-purple-200 dark:border-purple-600 font-extrabold" },
+      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-blue-100 text-blue-950 dark:bg-blue-800 dark:text-white border border-blue-200 dark:border-blue-600 font-extrabold" },
+      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-100 text-rose-950 dark:bg-rose-800 dark:text-white border border-rose-200 dark:border-rose-600 font-extrabold" },
+      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-200 dark:border-indigo-600 font-extrabold" },
+      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-100 text-amber-950 dark:bg-amber-800 dark:text-white border border-amber-200 dark:border-amber-600 font-extrabold" },
+      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-100 text-emerald-950 dark:bg-emerald-800 dark:text-white border border-emerald-200 dark:border-emerald-600 font-extrabold" },
     ],
     directoryHeading: "विश्वास योग्य सेवाएं",
     statsHeading: "फैलोशिप सारांश",
@@ -408,9 +408,9 @@ export default function MemberDashboard() {
       {/* ── Refresh & Header Utility Bar ─────────────────── */}
       <div className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-purple-100/90 dark:bg-purple-900/80 text-purple-950 dark:text-purple-100 text-xs font-black px-3.5 py-1.5 rounded-xl border border-purple-300 dark:border-purple-500/60 shadow-xs">
-            <activeGreeting.icon className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
-            <span className="text-purple-950 dark:text-purple-50 font-black tracking-wide">{activeGreeting.text}</span>
+          <div className="flex items-center gap-2 bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white text-xs font-black px-3.5 py-1.5 rounded-xl border border-purple-200 dark:border-purple-600 shadow-xs">
+            <activeGreeting.icon className="w-4 h-4 text-amber-500 dark:text-amber-300 flex-shrink-0" />
+            <span className="text-purple-950 dark:text-white font-extrabold tracking-wide">{activeGreeting.text}</span>
           </div>
           {mounted && lastSynced && (
             <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
@@ -435,7 +435,7 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-6 sm:p-8 md:p-10 text-white shadow-xl shadow-purple-500/10 border border-white/10"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-5 sm:p-8 md:p-10 text-white shadow-xl shadow-purple-500/10 border border-white/10"
       >
         {/* Ambient Glows */}
         <div className="pointer-events-none absolute inset-0">
@@ -443,31 +443,30 @@ export default function MemberDashboard() {
           <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-indigo-400/20 rounded-full blur-2xl" />
         </div>
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+          <div className="space-y-2 sm:space-y-3 max-w-2xl">
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
               {dt.greetings.welcome},{" "}
               <span className="text-amber-300">{firstName}! 🙏</span>
             </h2>
-            <p className="text-violet-100/90 text-sm sm:text-base leading-relaxed font-medium">
+            <p className="text-xs sm:text-sm md:text-base text-purple-100/90 font-medium leading-relaxed max-w-xl">
               {dt.greetings.sub}
             </p>
           </div>
 
-          {/* Stat chips on desktop hero */}
-          <div className="grid grid-cols-2 gap-3 shrink-0">
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3">
-              <Calendar className="w-5 h-5 text-amber-300 flex-shrink-0" />
-              <div>
-                <p className="text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
-                <p className="text-[10px] text-white/80 font-bold uppercase tracking-wider mt-1">{dt.stats.events.label}</p>
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 shrink-0 w-full md:w-auto">
+            <div className="flex items-center gap-2.5 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3 min-w-0">
+              <Calendar className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-lg sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.events}</p>
+                <p className="text-[9.5px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.events.label}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3">
-              <Heart className="w-5 h-5 text-rose-300 flex-shrink-0" />
-              <div>
-                <p className="text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
-                <p className="text-[10px] text-white/80 font-bold uppercase tracking-wider mt-1">{dt.stats.prayers.label}</p>
+            <div className="flex items-center gap-2.5 sm:gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-3 sm:px-4 sm:py-3 min-w-0">
+              <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-rose-300 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-lg sm:text-xl font-black leading-none">{loadingFeeds ? "..." : stats.prayers}</p>
+                <p className="text-[9.5px] sm:text-[10.5px] text-white/90 font-extrabold uppercase tracking-wider mt-1 truncate">{dt.stats.prayers.label}</p>
               </div>
             </div>
           </div>
@@ -507,7 +506,7 @@ export default function MemberDashboard() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.12 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4.5"
       >
         {[
           {
@@ -554,20 +553,22 @@ export default function MemberDashboard() {
           <Link
             key={i}
             href={href}
-            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden`}
+            className={`group relative bg-white dark:bg-gray-900/60 border ${border} rounded-2xl p-3.5 sm:p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between`}
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                <Icon className={`w-5 h-5 ${iconColor}`} />
+            <div className="flex items-center justify-between gap-1.5 mb-2.5">
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 ${iconBg} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                <Icon className={`w-4.5 h-4.5 sm:w-5 sm:h-5 ${iconColor}`} />
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+              <span className="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 truncate max-w-[95px] shrink-0">
                 {badge}
               </span>
             </div>
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block">{label}</span>
-            <span className={`text-3xl font-black ${iconColor} block mt-1 tracking-tight`}>
-              {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
-            </span>
+            <div>
+              <span className="text-[10px] sm:text-xs font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider block truncate">{label}</span>
+              <span className={`text-2xl sm:text-3xl font-black ${iconColor} block mt-0.5 tracking-tight`}>
+                {loadingFeeds ? <span className="inline-block w-8 h-7 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" /> : value}
+              </span>
+            </div>
           </Link>
         ))}
       </motion.div>
@@ -724,22 +725,22 @@ export default function MemberDashboard() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.22 }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 p-5 text-white shadow-lg border border-white/10"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-700 p-4.5 sm:p-5 text-white shadow-lg border border-white/10"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <Zap className="w-4 h-4 text-amber-300" />
-              <h4 className="text-sm font-black">{dt.quickActionsTitle}</h4>
+            <div className="flex items-center gap-2 mb-3.5">
+              <Zap className="w-4 h-4 text-amber-300 shrink-0" />
+              <h4 className="text-sm font-black tracking-wide">{dt.quickActionsTitle}</h4>
             </div>
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5">
               {dt.quickActions.map(({ label, href, icon: Icon }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="group flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-xl border border-white/15 transition-all text-xs font-bold"
+                  className="group flex items-center gap-3 p-3 bg-white/12 hover:bg-white/22 rounded-xl border border-white/15 transition-all text-xs font-extrabold"
                 >
-                  <Icon className="w-4 h-4 text-purple-200 flex-shrink-0" />
-                  <span className="flex-1">{label}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-purple-200 group-hover:translate-x-1 transition-transform" />
+                  <Icon className="w-4 h-4 text-purple-200 shrink-0" />
+                  <span className="flex-1 truncate">{label}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-purple-200 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
               ))}
             </div>

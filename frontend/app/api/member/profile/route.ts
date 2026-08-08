@@ -4,11 +4,26 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
-    const email = searchParams.get('email');
+    let userId = searchParams.get('userId');
+    let email = searchParams.get('email');
 
+    // Extract session cookie if searchParams are missing
     if (!userId && !email) {
-      return NextResponse.json({ error: 'User ID or Email is required' }, { status: 400 });
+      const cookieHeader = req.headers.get('cookie') || '';
+      const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+      if (uidMatch && uidMatch[1]) {
+        userId = uidMatch[1];
+      }
+    }
+
+    // If still no identifiers provided (e.g. unauthenticated API status check probe)
+    if (!userId && !email) {
+      return NextResponse.json({
+        success: true,
+        authenticated: false,
+        user: null,
+        message: 'No active session or query parameters (userId/email) provided.'
+      }, { status: 200 });
     }
 
     let user = null;
@@ -20,10 +35,19 @@ export async function GET(req: Request) {
     }
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({
+        success: false,
+        authenticated: false,
+        user: null,
+        error: 'User not found'
+      }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, user });
+    return NextResponse.json({
+      success: true,
+      authenticated: true,
+      user
+    }, { status: 200 });
   } catch (err: any) {
     console.error('[PROFILE/GET] Error:', err);
     return NextResponse.json(
@@ -36,10 +60,19 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, email, name, phone, address, image } = body;
+    let { userId, email, name, phone, address, image } = body;
+
+    // Fallback to cookie if userId/email missing in body
+    if (!userId && !email) {
+      const cookieHeader = req.headers.get('cookie') || '';
+      const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+      if (uidMatch && uidMatch[1]) {
+        userId = uidMatch[1];
+      }
+    }
 
     if (!userId && !email) {
-      return NextResponse.json({ error: 'User ID or Email is required' }, { status: 400 });
+      return NextResponse.json({ error: 'User ID or Email is required for profile update' }, { status: 400 });
     }
 
     // Find existing user by ID or Email

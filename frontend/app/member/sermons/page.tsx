@@ -194,8 +194,8 @@ export default function MemberSermons() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{st.title}</h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-              <BookOpen className="w-3 h-3" /> Library
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white border border-purple-300 dark:border-purple-600 shadow-xs">
+              <BookOpen className="w-3 h-3 text-purple-700 dark:text-purple-200" /> Library
             </span>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{st.subtitle}</p>

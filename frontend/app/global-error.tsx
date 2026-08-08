@@ -83,11 +83,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           </button>
 
           {/* Technical Dump for Devs */}
-          {process.env.NODE_ENV === "development" && error.message && (
+          {process.env.NODE_ENV === "development" && error?.message && (
             <div className="mt-8 pt-6 border-t border-slate-800 w-full text-left">
               <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 block mb-2">Development Diagnostic</span>
               <pre className="text-xs text-red-400 font-mono bg-red-500/5 p-4 rounded-xl overflow-x-auto max-h-40 border border-red-500/10">
-                {error.stack || error.message}
+                {error?.stack || error?.message}
               </pre>
             </div>
           )}

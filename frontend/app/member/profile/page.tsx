@@ -363,9 +363,9 @@ export default function MemberProfile() {
   }, [name, phone, address, image, isOnline, saveState, handleSave]);
 
   const roleConfig: Record<string, { label: string; color: string; bg: string }> = {
-    ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/40" },
-    PASTOR: { label: pt.avatarRole.PASTOR, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-900/40" },
-    MEMBER: { label: pt.avatarRole.MEMBER, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/40" },
+    ADMIN: { label: pt.avatarRole.ADMIN, color: "text-red-700 dark:text-white font-extrabold", bg: "bg-red-100 dark:bg-red-800 border-red-300 dark:border-red-600 shadow-xs" },
+    PASTOR: { label: pt.avatarRole.PASTOR, color: "text-purple-700 dark:text-white font-extrabold", bg: "bg-purple-100 dark:bg-purple-800 border-purple-300 dark:border-purple-600 shadow-xs" },
+    MEMBER: { label: pt.avatarRole.MEMBER, color: "text-purple-700 dark:text-white font-extrabold", bg: "bg-purple-100 dark:bg-purple-800 border-purple-300 dark:border-purple-600 shadow-xs" },
   };
   const rc = roleConfig[role] || roleConfig.MEMBER;
 
@@ -398,8 +398,8 @@ export default function MemberProfile() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-              <Shield className="w-3 h-3" /> Member Portal
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-950 dark:bg-purple-800 dark:text-white border border-purple-300 dark:border-purple-600 shadow-xs">
+              <Shield className="w-3 h-3 text-purple-700 dark:text-purple-200" /> Member Portal
             </span>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{pt.subtitle}</p>

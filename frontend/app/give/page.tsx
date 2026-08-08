@@ -1,10 +1,14 @@
 "use client";
 
-import GiveForm from "@/components/GiveForm";
+import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import MemberLayout from "@/app/member/layout";
 import { useAuth } from "@/components/providers/AuthProvider";
 import Navbar from "@/components/layout/Navbar";
+
+const GiveForm = dynamic(() => import("@/components/GiveForm"), {
+  ssr: false,
+});
 
 export default function GivePage() {
   const { user } = useAuth();

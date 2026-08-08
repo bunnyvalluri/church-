@@ -1,6 +1,10 @@
-import GiveForm from "@/components/GiveForm";
+"use client";
 
-export const dynamic = "force-dynamic";
+import dynamic from "next/dynamic";
+
+const GiveForm = dynamic(() => import("@/components/GiveForm"), {
+  ssr: false,
+});
 
 export default function MemberGivePage() {
   return <GiveForm />;

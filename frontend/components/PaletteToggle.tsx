@@ -103,12 +103,12 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/60 dark:border-white/20 text-gray-700 dark:text-white hover:text-[hsl(var(--primary))] hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative"
+        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-300 hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative"
         title="Preferences & Theme Settings (Ctrl+K)"
         type="button"
         aria-label="Open preferences modal"
       >
-        <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-500" />
+        <Settings className="w-4.5 h-4.5 group-hover:rotate-45 transition-transform duration-500 text-purple-600 dark:text-purple-300" />
       </button>
 
       {/* Senior UI/UX Centered Preferences Modal */}

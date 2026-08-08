@@ -98,11 +98,11 @@ export default function Error({ error, reset }: ErrorProps) {
         </div>
 
         {/* Error reference for developers */}
-        {process.env.NODE_ENV === "development" && error.message && (
+        {process.env.NODE_ENV === "development" && error?.message && (
           <div className="mt-8 pt-6 border-t border-gray-200/50 dark:border-white/5 w-full text-left">
             <span className="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-gray-500 block mb-2">Development Diagnostic</span>
             <pre className="text-xs text-red-600 dark:text-red-400/90 font-mono bg-red-500/5 p-4 rounded-xl overflow-x-auto max-h-40 border border-red-500/10">
-              {error.stack || error.message}
+              {error?.stack || error?.message}
             </pre>
           </div>
         )}

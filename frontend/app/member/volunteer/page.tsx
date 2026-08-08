@@ -300,8 +300,8 @@ export default function MemberVolunteer() {
       <div className="relative overflow-hidden p-4 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
         <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative space-y-2 max-w-3xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/40 text-[10px] font-extrabold uppercase tracking-wider">
-            <Gift className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-300 dark:border-indigo-600 text-[10px] font-extrabold uppercase tracking-wider shadow-xs">
+            <Gift className="w-3.5 h-3.5 text-indigo-700 dark:text-indigo-200" />
             {language === "te" ? "పరిచర్య పిలుపు" : language === "hi" ? "मंत्रालय सेवा" : "Ministry Calling"}
           </div>
           <h1 className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
