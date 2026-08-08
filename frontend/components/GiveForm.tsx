@@ -160,6 +160,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [lastHistorySynced, setLastHistorySynced] = useState<Date | null>(null);
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type?: "success" | "error" } | null>(null);
+  const [activeMobileTab, setActiveMobileTab] = useState<'give' | 'summary' | 'ways'>('give');
   
   const [mounted, setMounted] = useState(false);
   const hasFetchedMetadataRef = useRef(false);
