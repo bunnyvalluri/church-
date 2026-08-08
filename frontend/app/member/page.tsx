@@ -80,12 +80,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "Daily Scripture Promise",
     cards: [
-      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
-      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
-      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
-      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
-      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
-      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+      { key: "profile", title: "My Profile", desc: "Update your details & photo", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "Update", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
+      { key: "events", title: "Church Events", desc: "Browse & RSVP for services", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "Browse", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
+      { key: "prayers", title: "Prayer Requests", desc: "Submit & track your prayers", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "Submit", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
+      { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
+      { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
+      { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
     ],
     directoryHeading: "Believer Services Directory",
     statsHeading: "Quick Fellowship Overview",
@@ -139,12 +139,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "దైనందిన వాగ్దానం",
     cards: [
-      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
-      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
-      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
-      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
-      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
-      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+      { key: "profile", title: "నా ప్రొఫైల్", desc: "మీ వివరాలు & ఫోటో అప్‌డేట్ చేయండి", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "అప్‌డేట్", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
+      { key: "events", title: "చర్చి కార్యక్రమాలు", desc: "కూడికల వివరాలు & షెడ్యూల్", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "చూడండి", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
+      { key: "prayers", title: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన పంపండి & ట్రాక్ చేయండి", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "పంపండి", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
+      { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
+      { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
+      { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
     ],
     directoryHeading: "విశ్వాసుల సేవల జాబితా",
     statsHeading: "పరిచర్య ముఖ్యాంశాలు",
@@ -198,12 +198,12 @@ const dashboardTranslations = {
     ],
     scriptureHeading: "दैनिक बाइबिल वचन",
     cards: [
-      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300" },
-      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" },
-      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" },
-      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300" },
-      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" },
-      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" },
+      { key: "profile", title: "मेरी प्रोफाइल", desc: "अपना विवरण और फोटो अपडेट करें", href: "/member/profile", icon: User, gradient: "from-violet-500 to-purple-700", glow: "shadow-purple-500/25", badge: "अपडेट", badgeColor: "bg-violet-100 text-violet-800 dark:bg-violet-900/70 dark:text-violet-100 border border-violet-200 dark:border-violet-500/40" },
+      { key: "events", title: "चर्च कार्यक्रम", desc: "सभाएं और कार्यक्रम देखें", href: "/member/events", icon: Calendar, gradient: "from-blue-500 to-indigo-700", glow: "shadow-blue-500/25", badge: "देखें", badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-100 border border-blue-200 dark:border-blue-500/40" },
+      { key: "prayers", title: "प्रार्थना निवेदन", desc: "प्रार्थना भेजें और ट्रैक करें", href: "/member/prayers", icon: Heart, gradient: "from-rose-500 to-pink-700", glow: "shadow-rose-500/25", badge: "भेजें", badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-900/70 dark:text-rose-100 border border-rose-200 dark:border-rose-500/40" },
+      { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/70 dark:text-indigo-100 border border-indigo-200 dark:border-indigo-500/40" },
+      { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-100 border border-amber-200 dark:border-amber-500/40" },
+      { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-500/40" },
     ],
     directoryHeading: "विश्वास योग्य सेवाएं",
     statsHeading: "फैलोशिप सारांश",
@@ -408,9 +408,9 @@ export default function MemberDashboard() {
       {/* ── Refresh & Header Utility Bar ─────────────────── */}
       <div className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900/60 p-3 sm:px-5 rounded-2xl border border-gray-200/80 dark:border-white/5 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-purple-200/60 dark:border-purple-800/40">
-            <activeGreeting.icon className="w-4 h-4 text-amber-500 flex-shrink-0" />
-            <span>{activeGreeting.text}</span>
+          <div className="flex items-center gap-2 bg-purple-100/90 dark:bg-purple-900/80 text-purple-950 dark:text-purple-100 text-xs font-black px-3.5 py-1.5 rounded-xl border border-purple-300 dark:border-purple-500/60 shadow-xs">
+            <activeGreeting.icon className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+            <span className="text-purple-950 dark:text-purple-50 font-black tracking-wide">{activeGreeting.text}</span>
           </div>
           {mounted && lastSynced && (
             <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
@@ -495,7 +495,7 @@ export default function MemberDashboard() {
             <p className="text-sm sm:text-base font-semibold italic text-gray-800 dark:text-gray-100 leading-relaxed">
               &ldquo;{scripture.text}&rdquo;
             </p>
-            <span className="inline-block mt-2.5 text-xs font-black text-amber-950 dark:text-amber-100 bg-amber-200/90 dark:bg-amber-900/60 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-700/60 shadow-xs">
+            <span className="inline-block mt-2.5 text-xs font-black text-amber-950 dark:text-amber-50 bg-amber-200 dark:bg-amber-800/80 px-3.5 py-1.5 rounded-full border border-amber-400 dark:border-amber-500/80 shadow-xs">
               — {scripture.ref}
             </span>
           </div>
