@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
-import SkipToContent from "@/components/ui/SkipToContent";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 
@@ -77,8 +76,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
-        {/* WCAG 2.2 AA Skip Navigation Link */}
-        <SkipToContent />
         <ServiceWorkerProvider />
         <OfflineBanner />
 
