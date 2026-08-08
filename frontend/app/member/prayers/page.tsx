@@ -310,31 +310,35 @@ export default function MemberPrayers() {
         )}
       </AnimatePresence>
 
-      {/* PAGE HEADER */}
-      <div className="flex items-center justify-between gap-3 mb-1 sm:mb-2">
-        <div>
+      {/* Header Section */}
+      <div className="relative overflow-hidden p-5 sm:p-8 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="space-y-2 max-w-2xl">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{pt.title}</h1>
+            <h1 className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">{pt.title}</h1>
             <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 dark:border-rose-500 shadow-xs">
               <Heart className="w-3 h-3 text-white fill-white/20" /> Prayer Wall
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 italic">{pt.subtitle}</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium italic border-l-2 border-rose-500 pl-3 py-0.5">
+            {pt.subtitle}
+          </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {mounted && lastSynced && (
-            <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
-              {pt.updated} {lastSynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          )}
+
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           <button
-            onClick={() => load()}
+            onClick={() => setIsFormOpenMobile(!isFormOpenMobile)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-black shadow-lg shadow-rose-500/25 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>{isFormOpenMobile ? "Close Form" : pt.formTitle}</span>
+          </button>
+          <button
+            onClick={() => load(false)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 dark:hover:border-rose-700 transition-all text-xs font-semibold shadow-sm active:scale-95"
+            className="p-2.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 dark:hover:border-rose-700 transition-all text-xs font-semibold shadow-sm active:scale-95 cursor-pointer"
             title="Refresh prayer wall"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-rose-600" : ""}`} />
-            <span className="hidden sm:inline">{pt.refresh}</span>
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin text-rose-600" : ""}`} />
           </button>
         </div>
       </div>
@@ -365,87 +369,89 @@ export default function MemberPrayers() {
         ))}
       </div>
 
-      {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* SUBMIT FORM — Sticky Sidebar on Desktop */}
-        <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-5 xl:col-span-4 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl lg:sticky lg:top-24"
-        >
-          <button
-            type="button"
-            onClick={() => setIsFormOpenMobile(!isFormOpenMobile)}
-            className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-rose-50/50 dark:bg-rose-950/20 cursor-pointer lg:cursor-default"
+      {/* COLLAPSIBLE NEW PRAYER FORM */}
+      <AnimatePresence>
+        {isFormOpenMobile && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
           >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
-                <Heart className="w-4 h-4 fill-rose-500/20" />
-              </div>
-              <h3 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base">{pt.formTitle}</h3>
-            </div>
-            <div className="flex items-center gap-1 lg:hidden text-rose-600 dark:text-rose-400 font-bold text-xs">
-              <span className="text-[10px] uppercase tracking-wider">{isFormOpenMobile ? "Close" : "New"}</span>
-              {isFormOpenMobile ? <ChevronUp className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-            </div>
-          </button>
-
-          <div className={`${isFormOpenMobile ? "block" : "hidden lg:block"}`}>
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 sm:space-y-5">
-              <div>
-                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
-                <input
-                  type="text" value={title} onChange={e => setTitle(e.target.value)} required
-                  placeholder={pt.placeholderTitle}
-                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
-                <select value={category} onChange={e => setCategory(e.target.value)}
-                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
-                  {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
-                <textarea
-                  value={description} onChange={e => setDescription(e.target.value)} required
-                  placeholder={pt.placeholderPrayer}
-                  rows={4}
-                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
-                />
-              </div>
-              <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                <div
-                  onClick={() => setIsAnonymous(!isAnonymous)}
-                  className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-rose-600 border-rose-600" : "border-gray-300 dark:border-gray-600"}`}
-                >
-                  {isAnonymous && <Check className="w-3.5 h-3.5 text-white" />}
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-rose-200 dark:border-rose-900/40 shadow-2xl p-6 sm:p-8 max-w-3xl mx-auto backdrop-blur-xl">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                    <Heart className="w-5 h-5 fill-rose-500/20" />
+                  </div>
+                  <h3 className="font-extrabold text-gray-900 dark:text-white text-base sm:text-lg">{pt.formTitle}</h3>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
-                  <EyeOff className="w-3.5 h-3.5 text-gray-400" /> {pt.anonymousLabel}
-                </span>
-              </label>
-              <button
-                type="submit" disabled={submitting}
-                className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-              >
-                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
-              </button>
-            </form>
-          </div>
-        </motion.div>
+                <button
+                  onClick={() => setIsFormOpenMobile(false)}
+                  className="text-xs font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+                >
+                  ✕ Close
+                </button>
+              </div>
 
-        {/* PRAYER LIST & FILTERS */}
-        <motion.div
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.05 }}
-          className="lg:col-span-7 xl:col-span-8 space-y-4 w-full min-w-0"
-        >
-          {/* Responsive Filter Tab Bar */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
+                    <input
+                      type="text" value={title} onChange={e => setTitle(e.target.value)} required
+                      placeholder={pt.placeholderTitle}
+                      className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all text-xs sm:text-sm font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
+                    <select value={category} onChange={e => setCategory(e.target.value)}
+                      className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all text-xs sm:text-sm font-medium">
+                      {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
+                  <textarea
+                    value={description} onChange={e => setDescription(e.target.value)} required
+                    placeholder={pt.placeholderPrayer}
+                    rows={4}
+                    className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4 pt-1">
+                  <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <div
+                      onClick={() => setIsAnonymous(!isAnonymous)}
+                      className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${isAnonymous ? "bg-rose-600 border-rose-600" : "border-gray-300 dark:border-gray-600"}`}
+                    >
+                      {isAnonymous && <Check className="w-3.5 h-3.5 text-white" />}
+                    </div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 font-medium">
+                      <EyeOff className="w-3.5 h-3.5 text-gray-400" /> {pt.anonymousLabel}
+                    </span>
+                  </label>
+                  <button
+                    type="submit" disabled={submitting}
+                    className="px-6 py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  >
+                    {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PRAYER LIST & FILTERS */}
+      <div className="space-y-4">
+        {/* Filter Tab Bar */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm flex items-center justify-between gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1.5">
             {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => {
               const count = f === "ALL" ? stats.total : f === "PRAYING" ? stats.praying : f === "ANSWERED" ? stats.answered : prayers.filter(p => p.status === "PENDING").length;
               const label = f === "ALL" ? pt.tabAll : f === "PRAYING" ? pt.tabPraying : f === "ANSWERED" ? pt.tabAnswered : pt.tabPending;
@@ -453,43 +459,51 @@ export default function MemberPrayers() {
                 <button
                   key={f}
                   onClick={() => setFilterStatus(f)}
-                  className={`px-3.5 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                  className={`px-3.5 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                     filterStatus === f
                       ? "bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-md"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
                   <span className="whitespace-nowrap font-black">{label}</span>
-                  <span className={`px-2 py-0.5 text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
+                  <span className={`px-2 py-0.5 text-[10px] rounded-full font-black ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
                     {count}
                   </span>
                 </button>
               );
             })}
           </div>
+        </div>
 
-          {/* List Content */}
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => <div key={i} className="h-28 bg-white dark:bg-gray-900 rounded-3xl animate-pulse border border-gray-100 dark:border-gray-800" />)}
+        {/* Grid Content — 3 Columns on Desktop */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => <div key={i} className="h-44 bg-white dark:bg-gray-900 rounded-3xl animate-pulse border border-gray-100 dark:border-gray-800" />)}
+          </div>
+        ) : filtered.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-12 sm:py-16 px-6 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl max-w-xl mx-auto"
+          >
+            <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-rose-600 dark:text-rose-400 shadow-md">
+              <Heart className="w-8 h-8 fill-rose-500/20" />
             </div>
-          ) : filtered.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12 sm:py-16 px-6 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 shadow-sm max-w-xl mx-auto"
+            <h3 className="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white mb-1">
+              {filterStatus === "ALL" ? pt.noPrayersAll : pt.noPrayersFilter.replace("{status}", filterStatus === "PRAYING" ? pt.tabPraying : filterStatus === "ANSWERED" ? pt.tabAnswered : pt.tabPending)}
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm mx-auto mb-5 font-medium">
+              Submit your prayer request using the form. Our pastors and prayer team intercede daily.
+            </p>
+            <button
+              onClick={() => setIsFormOpenMobile(true)}
+              className="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-purple-600 text-white rounded-2xl font-black text-xs shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-95 cursor-pointer"
             >
-              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-rose-600 dark:text-rose-400">
-                <Heart className="w-7 h-7 fill-rose-500/20" />
-              </div>
-              <h3 className="font-extrabold text-base text-gray-900 dark:text-white">
-                {filterStatus === "ALL" ? pt.noPrayersAll : pt.noPrayersFilter.replace("{status}", filterStatus === "PRAYING" ? pt.tabPraying : filterStatus === "ANSWERED" ? pt.tabAnswered : pt.tabPending)}
-              </h3>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
-                Submit your prayer request using the form. Our pastors and prayer team intercede daily.
-              </p>
-            </motion.div>
-          ) : (
+              + Submit First Request
+            </button>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <AnimatePresence mode="popLayout">
               {filtered.map((prayer, i) => {
                 const cfg = STATUS_CFG[prayer.status];
@@ -498,33 +512,35 @@ export default function MemberPrayers() {
                 return (
                   <motion.div
                     key={prayer.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97 }}
                     transition={{ delay: i * 0.04 }}
-                    className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-md hover:shadow-lg transition-all p-4.5 sm:p-5 backdrop-blur-xl ${
+                    className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-md hover:shadow-xl transition-all p-5 sm:p-6 flex flex-col justify-between backdrop-blur-xl h-full ${
                       prayer.status === "ANSWERED" ? "border-emerald-300 dark:border-emerald-900/40 shadow-emerald-500/5" :
                       prayer.status === "PRAYING"  ? "border-purple-300 dark:border-purple-900/40 shadow-purple-500/5" :
                                                      "border-gray-100 dark:border-gray-800"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3 mb-2.5 flex-wrap sm:flex-nowrap">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="text-xl flex-shrink-0">{cat?.emoji || "🙏"}</span>
-                        <div className="min-w-0">
-                          <h4 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base leading-tight truncate">{prayer.title}</h4>
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{catsDict[prayer.category as keyof typeof catsDict] || prayer.category}</p>
+                    <div>
+                      <div className="flex items-start justify-between gap-2.5 mb-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="text-2xl shrink-0">{cat?.emoji || "🙏"}</span>
+                          <div className="min-w-0">
+                            <h4 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base leading-tight truncate">{prayer.title}</h4>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{catsDict[prayer.category as keyof typeof catsDict] || prayer.category}</p>
+                          </div>
                         </div>
+                        <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border shrink-0 ${cfg.pill}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                          {statusDict.label}
+                        </span>
                       </div>
-                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border flex-shrink-0 ${cfg.pill}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                        {statusDict.label}
-                      </span>
+                      <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-l-2 border-rose-500/40 dark:border-rose-400/30 pl-3 mb-4 font-medium line-clamp-4">
+                        {prayer.description}
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-l-2 border-rose-500/40 dark:border-rose-400/30 pl-3 mb-3 font-medium">
-                      {prayer.description}
-                    </p>
-                    <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-500 font-semibold pt-1 border-t border-gray-100 dark:border-gray-800/80">
+                    <div className="flex justify-between items-center text-[10px] text-gray-400 dark:text-gray-500 font-semibold pt-3 border-t border-gray-100 dark:border-gray-800/80 mt-auto">
                       <span className="flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-rose-500" />
                         {new Date(prayer.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
@@ -539,8 +555,8 @@ export default function MemberPrayers() {
                 );
               })}
             </AnimatePresence>
-          )}
-        </motion.div>
+          </div>
+        )}
       </div>
     </div>
   );
