@@ -287,7 +287,7 @@ export default function MemberPrayers() {
   if (status === "unauthenticated" && mounted) return null;
 
   return (
-    <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-6 pb-16 animate-in fade-in duration-300">
       {/* Floating Bottom Pop-Up Toast */}
       <AnimatePresence>
         {toast && (
@@ -339,8 +339,8 @@ export default function MemberPrayers() {
         </div>
       </div>
 
-      {/* STATS ROW — 3-Column Compact Grid on Mobile */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+      {/* STATS ROW — 3-Column Compact Grid */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-6">
         {[
           { label: pt.totalSubmitted, value: stats.total, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/40", icon: Heart },
           { label: pt.beingPrayed,   value: stats.praying, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/40", icon: Sparkles },
@@ -348,16 +348,16 @@ export default function MemberPrayers() {
         ].map(({ label, value, color, bg, icon: Icon }) => (
           <div
             key={label}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-md p-2.5 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1.5 sm:gap-3.5 transition-transform active:scale-[0.98]"
+            className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-md p-3.5 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-2 sm:gap-4 transition-transform active:scale-[0.98]"
           >
-            <div className={`w-7 h-7 sm:w-10 sm:h-10 ${bg} border rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
-              <Icon className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${color}`} />
+            <div className={`w-9 h-9 sm:w-12 sm:h-12 ${bg} border rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm`}>
+              <Icon className={`w-4.5 h-4.5 sm:w-6 sm:h-6 ${color}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-base sm:text-2xl font-black text-gray-900 dark:text-white leading-none">
+              <p className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white leading-none">
                 {loading ? "—" : value}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 truncate">
+              <p className="text-[9.5px] sm:text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-extrabold mt-1 truncate">
                 {label}
               </p>
             </div>
@@ -366,12 +366,12 @@ export default function MemberPrayers() {
       </div>
 
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 items-start">
-        {/* SUBMIT FORM — Collapsible Accordion Header on Mobile, Fixed Sidebar on Desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* SUBMIT FORM — Sticky Sidebar on Desktop */}
         <motion.div
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl"
+          className="lg:col-span-5 xl:col-span-4 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-xl overflow-hidden backdrop-blur-xl lg:sticky lg:top-24"
         >
           <button
             type="button"
@@ -379,7 +379,7 @@ export default function MemberPrayers() {
             className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800/80 bg-rose-50/50 dark:bg-rose-950/20 cursor-pointer lg:cursor-default"
           >
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+              <div className="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
                 <Heart className="w-4 h-4 fill-rose-500/20" />
               </div>
               <h3 className="font-extrabold text-gray-900 dark:text-white text-sm sm:text-base">{pt.formTitle}</h3>
@@ -391,29 +391,29 @@ export default function MemberPrayers() {
           </button>
 
           <div className={`${isFormOpenMobile ? "block" : "hidden lg:block"}`}>
-            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
+                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputTitle}</label>
                 <input
                   type="text" value={title} onChange={e => setTitle(e.target.value)} required
                   placeholder={pt.placeholderTitle}
-                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
+                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium"
                 />
               </div>
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
+                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputCategory}</label>
                 <select value={category} onChange={e => setCategory(e.target.value)}
-                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
+                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all text-xs sm:text-sm font-medium">
                   {CATS.map(c => <option key={c.value} value={c.value}>{c.emoji} {catsDict[c.value as keyof typeof catsDict] || c.value}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
+                <label className="block text-xs font-extrabold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">{pt.inputYourPrayer}</label>
                 <textarea
                   value={description} onChange={e => setDescription(e.target.value)} required
                   placeholder={pt.placeholderPrayer}
                   rows={4}
-                  className="w-full py-2.5 px-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
+                  className="w-full py-3 px-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent focus:outline-none transition-all resize-none text-xs sm:text-sm font-medium leading-relaxed"
                 />
               </div>
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
@@ -429,7 +429,7 @@ export default function MemberPrayers() {
               </label>
               <button
                 type="submit" disabled={submitting}
-                className="w-full py-3 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50"
+                className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-500/20 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{pt.btnSubmitting}</> : <><Send className="w-4 h-4" />{pt.btnSubmit}</>}
               </button>
@@ -442,9 +442,9 @@ export default function MemberPrayers() {
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.05 }}
-          className="lg:col-span-3 space-y-3.5 w-full min-w-0"
+          className="lg:col-span-7 xl:col-span-8 space-y-4 w-full min-w-0"
         >
-          {/* Responsive Filter Tab Bar — Full Text Visibility with Zero Truncation */}
+          {/* Responsive Filter Tab Bar */}
           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-1.5 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
             {(["ALL", "PENDING", "PRAYING", "ANSWERED"] as FilterStatus[]).map(f => {
               const count = f === "ALL" ? stats.total : f === "PRAYING" ? stats.praying : f === "ANSWERED" ? stats.answered : prayers.filter(p => p.status === "PENDING").length;
@@ -453,14 +453,14 @@ export default function MemberPrayers() {
                 <button
                   key={f}
                   onClick={() => setFilterStatus(f)}
-                  className={`px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+                  className={`px-3.5 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 whitespace-nowrap flex-shrink-0 cursor-pointer ${
                     filterStatus === f
                       ? "bg-gradient-to-r from-rose-600 to-purple-600 text-white shadow-md"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
                   <span className="whitespace-nowrap font-black">{label}</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
+                  <span className={`px-2 py-0.5 text-[10px] rounded-full font-black flex-shrink-0 ${filterStatus === f ? "bg-white/25 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}>
                     {count}
                   </span>
                 </button>
@@ -477,7 +477,7 @@ export default function MemberPrayers() {
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12 sm:py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 shadow-sm"
+              className="text-center py-12 sm:py-16 px-6 bg-white dark:bg-gray-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 shadow-sm max-w-xl mx-auto"
             >
               <div className="w-14 h-14 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-rose-600 dark:text-rose-400">
                 <Heart className="w-7 h-7 fill-rose-500/20" />
