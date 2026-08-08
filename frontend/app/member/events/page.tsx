@@ -242,8 +242,8 @@ export default function MemberEvents() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">{et.title}</h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-950 dark:bg-indigo-800 dark:text-white border border-indigo-300 dark:border-indigo-600 shadow-xs">
-              <Calendar className="w-3 h-3 text-indigo-700 dark:text-indigo-200" /> Events
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-600 dark:bg-indigo-700 text-white border border-indigo-500 dark:border-indigo-500 shadow-xs">
+              <Calendar className="w-3 h-3 text-white" /> Events
             </span>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{et.subtitle}</p>
