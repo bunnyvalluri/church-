@@ -57,14 +57,27 @@ export async function POST(req: Request) {
     const { amount, purposeCode, branchId } = validation.data;
 
     // 1 & 2. Fetch dynamic donation purpose and branch in parallel to save database roundtrips
-    const [purpose, branchCheck] = await Promise.all([
+    let [purpose, branchCheck] = await Promise.all([
       prisma.donationPurpose.findFirst({
         where: { code: purposeCode, isActive: true, isArchived: false },
       }),
       branchId
         ? prisma.branch.findUnique({ where: { id: branchId } })
-        : Promise.resolve(true),
+        : Promise.resolve(null),
     ]);
+
+    // Fallback: If branchId was provided but ID lookup returned null (e.g. dummy ID 'b1'),
+    // attempt to match by name or get the default branch.
+    if (branchId && !branchCheck) {
+      branchCheck = await prisma.branch.findFirst({
+        where: {
+          OR: [
+            { id: branchId },
+            { name: { contains: "shapur", mode: "insensitive" } },
+          ],
+        },
+      }) || await prisma.branch.findFirst();
+    }
 
     if (!purpose) {
       return NextResponse.json({ error: 'Selected donation purpose is invalid or inactive.' }, { status: 400 });

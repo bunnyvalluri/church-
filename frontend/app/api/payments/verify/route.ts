@@ -280,52 +280,46 @@ export async function POST(req: Request) {
       return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
     }
 
-    // ── 10. DEVELOPMENT/SIMULATION PATH ───────────────────────────────────
-    // ⚠️  This path is EXPLICITLY blocked in production.
-    // Only runs when NODE_ENV=development AND ALLOW_PAYMENT_SIMULATION=true
-    if (!isSimulationAllowed()) {
-      return NextResponse.json(
-        { error: 'Payment simulation is disabled. Configure real Razorpay keys.' },
-        { status: 403 }
+    // ── 10. REAL PAYMENT ENFORCEMENT ────────────────────────────────────
+    // Without confirmed payment settlement from bank/gateway (or explicit simulateMode: true in dev body),
+    // strictly return PENDING. NEVER auto-approve or issue receipts without real payment!
+    if (simulateMode && process.env.NODE_ENV !== 'production' && process.env.ALLOW_PAYMENT_SIMULATION === 'true') {
+      const mockUtr = `SIMULATED_${session.referenceNumber}_${Date.now().toString(36).toUpperCase()}`;
+      const result = await completeDonationSession(
+        sessionId,
+        mockUtr,
+        `dev_sim_sig_${generateDevToken()}`,
+        { source: 'DEV_SIMULATION', ip, simulateMode: true }
       );
+
+      await writeAuditLog({
+        userId: session.memberId,
+        action: 'PAYMENT_SIMULATED_DEV',
+        details: sanitizeAuditField(`sessionId=${sessionId} mockUtr=${mockUtr} — DEV ONLY`),
+        ipAddress: ip,
+      });
+
+      const successBody = {
+        success: true,
+        status: 'COMPLETED',
+        message: '[DEV] Payment explicitly simulated.',
+        donationId: result.donation?.id,
+        alreadyProcessed: result.alreadyProcessed,
+        _devMode: true,
+      };
+      if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
+      return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
     }
 
-    // Simulated verification flow (dev only)
-    const sessionAgeMs = Date.now() - new Date(session.createdAt).getTime();
-    if (sessionAgeMs < 10_000) {
-      return NextResponse.json(
-        { success: false, status: 'PENDING', message: 'Payment not yet settled. Please wait.' },
-        { status: 202, headers: rateLimitHeaders(ip, RATE_OPTS) }
-      );
-    }
-
-    // Generate a deterministic mock UTR (dev only)
-    const mockUtr = `SIMULATED_${session.referenceNumber}_${Date.now().toString(36).toUpperCase()}`;
-
-    const result = await completeDonationSession(
-      sessionId,
-      mockUtr,
-      `dev_sim_sig_${generateDevToken()}`,
-      { source: 'DEV_SIMULATION', ip, simulateMode: true }
+    // Default: Payment is not completed by bank/webhook yet. Return PENDING.
+    return NextResponse.json(
+      { 
+        success: false, 
+        status: 'PENDING', 
+        message: 'Payment verification in progress. We are awaiting confirmation from your bank.' 
+      },
+      { status: 202, headers: rateLimitHeaders(ip, RATE_OPTS) }
     );
-
-    await writeAuditLog({
-      userId: session.memberId,
-      action: 'PAYMENT_SIMULATED_DEV',
-      details: sanitizeAuditField(`sessionId=${sessionId} mockUtr=${mockUtr} — DEV ONLY`),
-      ipAddress: ip,
-    });
-
-    const successBody = {
-      success: true,
-      status: 'COMPLETED',
-      message: '[DEV] Payment simulated successfully.',
-      donationId: result.donation?.id,
-      alreadyProcessed: result.alreadyProcessed,
-      _devMode: true,
-    };
-    if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
-    return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
   } catch (err: any) {
     recordPaymentFailure(ip);
     console.error('[API/PAYMENTS/VERIFY] Unhandled error:', err?.message || err);

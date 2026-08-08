@@ -8,24 +8,21 @@ export async function GET() {
   try {
     let dbBranches = await prisma.branch.findMany();
     
-    // Auto-seed if database is empty to ensure branches are never missing
-    if (dbBranches.length === 0) {
-      const defaultBranches = [
-        { name: "Shapur Nagar" },
-        { name: "Subhash Nagar" },
-        { name: "Bahadurpally" }
-      ];
-      
+    // Ensure all 3 standard branches exist in the database
+    const requiredBranchNames = ["Shapur Nagar", "Subhash Nagar", "Bahadurpally"];
+    const existingNames = new Set(dbBranches.map((b) => b.name.trim().toLowerCase()));
+    const missingBranches = requiredBranchNames.filter((name) => !existingNames.has(name.toLowerCase()));
+
+    if (missingBranches.length > 0) {
       await prisma.$transaction(
-        defaultBranches.map(b => 
+        missingBranches.map((name) =>
           prisma.branch.upsert({
-            where: { name: b.name },
+            where: { name },
             update: {},
-            create: b
+            create: { name },
           })
         )
       );
-      
       dbBranches = await prisma.branch.findMany();
     }
     

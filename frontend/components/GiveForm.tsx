@@ -15,7 +15,6 @@ import {
   IndianRupee,
   Globe,
   Gift,
-  PlusCircle,
   Copy,
   CheckCircle2,
   ShieldAlert,
@@ -30,10 +29,10 @@ import {
   Sparkles,
   ChevronRight,
   Star,
-  Zap,
   BookOpen,
-  Users,
-  Home
+  Home,
+  ShieldCheck,
+  CreditCard
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -65,45 +64,113 @@ interface GiveFormProps {
 const DEFAULT_PURPOSES: PurposeItem[] = [
   { id: "1", code: "TITHE", nameEn: "Tithe", nameTe: "దశమ భాగము (Tithe)", nameHi: "दशमांश (Tithe)", descEn: "10% of monthly income to support the ministry.", descTe: null, descHi: null },
   { id: "2", code: "OFFERING", nameEn: "Online Offering", nameTe: "ఆరాధన కానుక (Offering)", nameHi: "पूजा की भेंट (Offering)", descEn: "General offerings to support church operations and worship.", descTe: null, descHi: null },
-  { id: "3", code: "BUILDING", nameEn: "Building Fund", nameTe: "భవన నిర్మాణ నిధి (Building Fund)", nameHi: "भवन निर्माण निधि (Building Fund)", descEn: "For church construction, expansion, and facilities maintenance.", descTe: null, descHi: null },
+  { id: "3", code: "BUILDING", nameEn: "Building Fund", nameTe: "భవన నిర్మాణ నిధి (Building Fund)", nameHi: "భవన్ నిర్మాణ నిధి (Building Fund)", descEn: "For church construction, expansion, and facilities maintenance.", descTe: null, descHi: null },
   { id: "4", code: "MISSIONS", nameEn: "Missions", nameTe: "సువార్త సేవ నిధి (Missions)", nameHi: "मिशनरी सेवा (Missions)", descEn: "Supporting local evangelism and global outreach missions.", descTe: null, descHi: null },
   { id: "5", code: "CHARITY", nameEn: "Benevolence", nameTe: "ధర్మకార్యములు (Charity)", nameHi: "परोपकार (Charity)", descEn: "Assisting widows, orphans, and families in financial distress.", descTe: null, descHi: null },
   { id: "6", code: "SPECIAL", nameEn: "Special Offering", nameTe: "ప్రత్యేక కానుక (Special)", nameHi: "विशेष भेंट (Special)", descEn: "Vows, thanksgiving offerings, or special pledge gifts.", descTe: null, descHi: null },
 ];
 
+const DEFAULT_BRANCHES: BranchItem[] = [
+  { id: "b1", name: "Shapur Nagar" },
+  { id: "b2", name: "Subhash Nagar" },
+  { id: "b3", name: "Bahadurpally" }
+];
+
 // Purpose icon map
 const purposeIconMap: Record<string, React.ReactNode> = {
-  TITHE: <IndianRupee className="w-5 h-5" />,
-  OFFERING: <Gift className="w-5 h-5" />,
-  BUILDING_FUND: <Building className="w-5 h-5" />,
-  BUILDING: <Building className="w-5 h-5" />,
-  MISSIONS: <Globe className="w-5 h-5" />,
-  BENEVOLENCE: <Heart className="w-5 h-5" />,
-  CHARITY: <Heart className="w-5 h-5" />,
-  SPECIAL: <Star className="w-5 h-5" />,
+  TITHE: <IndianRupee className="w-4 h-4" />,
+  OFFERING: <Gift className="w-4 h-4" />,
+  BUILDING_FUND: <Building className="w-4 h-4" />,
+  BUILDING: <Building className="w-4 h-4" />,
+  MISSIONS: <Globe className="w-4 h-4" />,
+  BENEVOLENCE: <Heart className="w-4 h-4" />,
+  CHARITY: <Heart className="w-4 h-4" />,
+  SPECIAL: <Star className="w-4 h-4" />,
 };
 
 const purposeColorMap: Record<string, string> = {
-  TITHE: "from-violet-500 to-purple-600",
+  TITHE: "from-indigo-600 to-purple-600",
   OFFERING: "from-rose-500 to-pink-600",
   BUILDING_FUND: "from-amber-500 to-orange-600",
   BUILDING: "from-amber-500 to-orange-600",
-  MISSIONS: "from-blue-500 to-cyan-600",
+  MISSIONS: "from-blue-600 to-indigo-600",
   BENEVOLENCE: "from-emerald-500 to-teal-600",
   CHARITY: "from-emerald-500 to-teal-600",
-  SPECIAL: "from-fuchsia-500 to-violet-600",
+  SPECIAL: "from-fuchsia-500 to-purple-600",
 };
 
-const purposeBgMap: Record<string, string> = {
-  TITHE: "bg-purple-50 dark:bg-purple-950/70 border-purple-500 dark:border-purple-400 shadow-sm",
-  OFFERING: "bg-rose-50 dark:bg-rose-950/70 border-rose-500 dark:border-rose-400 shadow-sm",
-  BUILDING_FUND: "bg-amber-50 dark:bg-amber-950/70 border-amber-500 dark:border-amber-400 shadow-sm",
-  BUILDING: "bg-amber-50 dark:bg-amber-950/70 border-amber-500 dark:border-amber-400 shadow-sm",
-  MISSIONS: "bg-blue-50 dark:bg-blue-950/70 border-blue-500 dark:border-blue-400 shadow-sm",
-  BENEVOLENCE: "bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500 dark:border-emerald-400 shadow-sm",
-  CHARITY: "bg-emerald-50 dark:bg-emerald-950/70 border-emerald-500 dark:border-emerald-400 shadow-sm",
-  SPECIAL: "bg-fuchsia-50 dark:bg-fuchsia-950/70 border-fuchsia-500 dark:border-fuchsia-400 shadow-sm",
-};
+// Payment App Definitions with 100% inline SVG vectors
+const UPI_APPS = [
+  { 
+    name: "GPay", 
+    pkg: "com.google.android.apps.nbu.paisa.user", 
+    scheme: "tez://upi/pay",
+    color: "#4285F4",
+    bgClass: "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-400",
+    svg: (
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+      </svg>
+    )
+  },
+  { 
+    name: "PhonePe", 
+    pkg: "com.phonepe.app", 
+    scheme: "phonepe://pay",
+    color: "#5F259F",
+    bgClass: "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-400",
+    svg: (
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#5F259F"/>
+        <path d="M15.5 8.5H12V7h3.5a.5.5 0 000-1H9.5a.5.5 0 000 1H11v8.5a.5.5 0 001 0V13h2.5a3 3 0 000-6zm0 3.5H12V9.5h3.5a1.5 1.5 0 010 3z" fill="#FFF"/>
+      </svg>
+    )
+  },
+  { 
+    name: "Paytm", 
+    pkg: "net.one97.paytm", 
+    scheme: "paytmmp://upi/pay",
+    color: "#00BAF2",
+    bgClass: "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-400",
+    svg: (
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#002E6E"/>
+        <path d="M4.5 14.5L7 7h3l-2.5 7.5H4.5zm5.5 0L12.5 7h3L13 14.5h-3z" fill="#00BAF2"/>
+        <path d="M15 14.5l1.5-4.5h2l-1.5 4.5H15zm2.5-6h2L20 7h-2l-.5 1.5z" fill="#00BAF2"/>
+      </svg>
+    )
+  },
+  { 
+    name: "BHIM", 
+    pkg: "in.org.npci.upiapp", 
+    scheme: "upi://pay",
+    color: "#FF6B00",
+    bgClass: "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-400",
+    svg: (
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#008345"/>
+        <path d="M6 7h6a3.5 3.5 0 010 7H6V7zm3 2.5v2h3a1 1 0 000-2H9z" fill="#FFF"/>
+        <path d="M6 14h7a3.5 3.5 0 010 7H6v-7zm3 2.5v2h4a1 1 0 000-2H9z" fill="#F7931A"/>
+      </svg>
+    )
+  },
+  { 
+    name: "FamApp", 
+    pkg: "com.fampay.in", 
+    scheme: "fampay://upi/pay",
+    color: "#B8860B",
+    bgClass: "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-yellow-400 dark:hover:border-yellow-400",
+    svg: (
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#FFD700"/>
+        <path d="M7 8h10v2H7V8zm0 4h7v2H7v-2zm0 4h10v2H7v-2z" fill="#000"/>
+      </svg>
+    )
+  }
+];
 
 export default function GiveForm({ initialPurposes = [], initialBranches = [] }: GiveFormProps) {
   const { language, t } = useLanguage();
@@ -118,7 +185,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [purposes, setPurposes] = useState<PurposeItem[]>(
     initialPurposes.length > 0 ? initialPurposes : DEFAULT_PURPOSES
   );
-  const [branches, setBranches] = useState<BranchItem[]>(initialBranches);
+  const [branches, setBranches] = useState<BranchItem[]>(
+    initialBranches.length > 0 ? initialBranches : DEFAULT_BRANCHES
+  );
   const [loadingLists, setLoadingLists] = useState(initialPurposes.length === 0 || initialBranches.length === 0);
 
   // Form Inputs
@@ -128,7 +197,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     initialPurposes.length > 0 ? initialPurposes[0].code : "TITHE"
   );
   const [selectedBranch, setSelectedBranch] = useState<string>(
-    initialBranches.length > 0 ? initialBranches[0].id : ""
+    (initialBranches.length > 0 ? initialBranches[0].id : DEFAULT_BRANCHES[0].id)
   );
   const [donorName, setDonorName] = useState<string>("");
   const [donorEmail, setDonorEmail] = useState<string>("");
@@ -160,7 +229,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   const [lastHistorySynced, setLastHistorySynced] = useState<Date | null>(null);
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type?: "success" | "error" } | null>(null);
-  const [activeMobileTab, setActiveMobileTab] = useState<'give' | 'summary' | 'ways'>('give');
+  
+  // Mobile Tab Navigation ('form' | 'summary' | 'ways')
+  const [mobileTab, setMobileTab] = useState<'form' | 'summary' | 'ways'>('form');
   
   const [mounted, setMounted] = useState(false);
   const hasFetchedMetadataRef = useRef(false);
@@ -172,7 +243,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   const scrollToCard = () => {
     if (cardRef.current) {
-      const offset = 80; // offset for sticky header
+      const offset = 80;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = cardRef.current.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
@@ -185,7 +256,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
   };
 
-  // Prevent SSR mismatch
   useEffect(() => { setMounted(true); }, []);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
@@ -215,22 +285,30 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
           const purposesData = await purposesRes.json();
           if (purposesData.success && Array.isArray(purposesData.purposes) && purposesData.purposes.length > 0) {
             setPurposes(purposesData.purposes);
-            setSelectedPurpose((prev) => prev || (purposesData.purposes[0].code || "TITHE"));
+            const foundPurpose = purposesData.purposes.find((p: any) => p.code === selectedPurpose || p.id === selectedPurpose);
+            if (!foundPurpose) {
+              setSelectedPurpose(purposesData.purposes[0].code || "TITHE");
+            }
           } else {
             setPurposes(DEFAULT_PURPOSES);
-            setSelectedPurpose((prev) => prev || "TITHE");
           }
         } else {
           setPurposes(DEFAULT_PURPOSES);
-          setSelectedPurpose((prev) => prev || "TITHE");
         }
 
         if (branchesRes.ok) {
           const branchesData = await branchesRes.json();
           if (branchesData.success && Array.isArray(branchesData.branches) && branchesData.branches.length > 0) {
             setBranches(branchesData.branches);
-            setSelectedBranch((prev) => prev || branchesData.branches[0].id);
+            const foundBranch = branchesData.branches.find((b: any) => b.id === selectedBranch);
+            if (!foundBranch) {
+              setSelectedBranch(branchesData.branches[0].id);
+            }
+          } else {
+            setBranches(DEFAULT_BRANCHES);
           }
+        } else {
+          setBranches(DEFAULT_BRANCHES);
         }
       } catch (err) {
         console.error("Failed to load giving form configuration details:", err);
@@ -299,7 +377,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
   }, [user, loadHistory]);
 
-  // QR Code Expiration Countdown Timer
+  // Countdown timer for QR expiration
   useEffect(() => {
     if (!expiresAt) return;
 
@@ -325,7 +403,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     };
   }, [expiresAt]);
 
-  // 4. Polling Fallback status check
+  // Status Polling Fallback
   const startStatusPolling = useCallback((sid: string) => {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
 
@@ -349,16 +427,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }, 5000);
   }, [getIdToken]);
 
-  // 5. Connect Socket.IO for real-time success listener
+  // Connect Socket.IO for real-time success listener
   const connectSocket = useCallback((sid: string) => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "";
-
-    // Skip socket in production if no socket server is configured
-    // (polling fallback every 5s will still detect payment completion)
     const isProduction = process.env.NODE_ENV === "production";
     const isLocalhost = socketUrl.includes("localhost") || socketUrl.includes("127.0.0.1");
     if (!socketUrl || (isProduction && (isLocalhost || !socketUrl))) {
-      console.info("[Socket] No socket server configured for production — using polling only.");
       return () => {};
     }
 
@@ -375,10 +449,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       socket.emit("join", `member:${user?.uid || "guest"}`);
     });
 
-    socket.on("connect_error", () => {
-      // Quietly fall back to polling
-    });
-
     socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
         showToast("Payment verified! Redirecting...", "success");
@@ -388,18 +458,11 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       }
     });
 
-    socket.on("connect_error", (err: any) => {
-      console.warn("[Socket] Connection failed, using polling fallback:", err.message);
-      socket.disconnect();
-    });
-
     return () => {
       socket.disconnect();
     };
   }, [user, referenceNumber]);
 
-
-  // Cleanup connections
   useEffect(() => {
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
@@ -434,7 +497,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     return true;
   };
 
-  // Generate Donation Session + Dynamic UPI QR Code
   const handleGeneratePaymentSession = async () => {
     if (!validateDetails()) return;
     setActionLoading(true);
@@ -468,9 +530,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       setReferenceNumber(sessionData.session.referenceNumber);
       setExpiresAt(new Date(sessionData.session.expiresAt));
 
-      // The session API already generates and returns the QR code — use it directly.
-      // No need for a second /api/donations/generate-qr call (which was failing 403
-      // because the session was already PROCESSING by the time it arrived).
       if (!sessionData.session.qrCode || !sessionData.session.upiUri) {
         throw new Error("Payment session did not return QR data. Please try again.");
       }
@@ -487,20 +546,23 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       startStatusPolling(sid);
     } catch (err: any) {
       console.error("Payment session generation failed:", err);
-      setErrorMessage(err.message || "Failed to connect with payment gateway. Please try again.");
+      const rawMsg = err?.message || "";
+      const isFetchErr = rawMsg.toLowerCase().includes("failed to fetch") || rawMsg.toLowerCase().includes("networkerror");
+      const userMsg = isFetchErr
+        ? "Unable to connect to the payment server. Please check your network connection and try again."
+        : rawMsg || "Failed to connect with payment gateway. Please try again.";
+      setErrorMessage(userMsg);
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Manual payment verification query fallback
   const handleVerifyPayment = async () => {
     if (verificationLoading) return;
     setVerificationLoading(true);
     setErrorMessage("");
     setPollTimeoutReached(false);
 
-    // Clear any existing poll
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     if (pollTimeoutRef.current) clearTimeout(pollTimeoutRef.current);
 
@@ -543,11 +605,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         return;
       }
 
-      // PENDING — begin polling every 4 seconds
       setVerificationStatus("PENDING");
       setVerificationLoading(false);
 
-      // 60-second hard timeout
       pollTimeoutRef.current = setTimeout(() => {
         if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
         setVerificationStatus(null);
@@ -574,7 +634,7 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
             setErrorMessage("Session expired or payment failed. Please generate a new QR.");
           }
         } catch {
-          // Transient network error — keep polling
+          // Keep polling
         }
       }, 4_000);
     } catch (err: any) {
@@ -584,10 +644,6 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     }
   };
 
-  /**
-   * "Open in UPI App" — Android Chrome Intent URL (all UPI apps chooser).
-   * S.browser_fallback_url is required by Chrome on HTTPS for intent:// to work.
-   */
   const handleOpenUpiApp = () => {
     if (!upiUri) {
       setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
@@ -596,23 +652,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
     const ua = navigator.userAgent.toLowerCase();
     const isAndroid = ua.includes("android");
-    const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
     if (isAndroid) {
       const params = upiUri.includes("?") ? upiUri.split("?")[1] : "";
       const fallback = encodeURIComponent("https://play.google.com/store/search?q=UPI+payment&c=apps");
-      // Intent URL: no package → OS shows UPI app chooser
-      // S.browser_fallback_url → Chrome navigates here if no UPI app handles it
       window.location.href = `intent://pay?${params}#Intent;scheme=upi;S.browser_fallback_url=${fallback};end`;
     } else {
-      // On iOS and other platforms, raw upiUri triggers system chooser or default app
       window.location.href = upiUri;
     }
   };
 
-  /**
-   * Open a SPECIFIC UPI app. Uses intent URLs on Android and custom schemes on iOS.
-   */
   const handleOpenSpecificApp = (pkg: string, scheme: string) => {
     if (!upiUri) {
       setToast({ msg: "Payment session not ready. Please generate a QR first.", type: "error" });
@@ -625,14 +674,9 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     const isIOS = /ipad|iphone|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
     if (isAndroid) {
-      const playStoreUrl = encodeURIComponent(
-        `https://play.google.com/store/apps/details?id=${pkg}`
-      );
-      // Chrome resolves this intent and opens the specific app directly.
-      // If not installed, Chrome follows S.browser_fallback_url → Play Store.
+      const playStoreUrl = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkg}`);
       window.location.href = `intent://pay?${params}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${playStoreUrl};end`;
     } else if (isIOS) {
-      // iOS app custom scheme (e.g. phonepe://pay? or tez://upi/pay?)
       let targetUrl = scheme;
       if (!targetUrl.includes("?")) {
         targetUrl += targetUrl.endsWith("/") ? "?" : "/?";
@@ -641,24 +685,12 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       }
       window.location.href = `${targetUrl}${params}`;
     } else {
-      // General desktop / other fallback
       window.location.href = `upi://pay?${params}`;
     }
   };
 
-
-
-  // Legacy — kept for backward compatibility
-  const openPaymentApp = (appUrl: string, storeFallback: string) => {
-    window.location.href = appUrl;
-    setTimeout(() => {
-      if (!document.hidden) window.location.href = storeFallback;
-    }, 1800);
-  };
-
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).catch(() => {
-      // Fallback for older browsers
       const el = document.createElement("textarea");
       el.value = text;
       el.style.position = "fixed";
@@ -672,13 +704,13 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
     setTimeout(() => setCopiedLabel(null), 2500);
   };
 
-
   const activePurposeObj = purposes.find((p) => p.code === selectedPurpose);
   const getLanguagePurposeName = (p: PurposeItem) => {
     if (language === 'te' && p.nameTe) return p.nameTe;
     if (language === 'hi' && p.nameHi) return p.nameHi;
     return p.nameEn;
   };
+
   const getLanguagePurposeDesc = (p: PurposeItem) => {
     if (language === 'te' && p.descTe) return p.descTe;
     if (language === 'hi' && p.descHi) return p.descHi;
@@ -692,17 +724,17 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   return (
     <>
-      {/* ── TOAST ─────────────────────────────────────────── */}
+      {/* ── TOAST NOTIFICATION ─────────────────────────── */}
       <AnimatePresence>
         {toast && (
           <motion.div 
             initial={{ opacity: 0, y: -24, scale: 0.93 }} 
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: -12, scale: 0.95 }}
-            className={`fixed top-20 right-4 sm:right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-semibold border max-w-sm backdrop-blur-md ${
+            className={`fixed top-20 right-3 sm:right-6 z-[9999] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold border max-w-xs sm:max-w-sm backdrop-blur-md ${
               toast.type === "error"
-                ? "bg-red-900/95 text-white border-red-400/30"
-                : "bg-emerald-900/95 text-white border-emerald-400/30"
+                ? "bg-red-900/95 text-white border-red-400/40"
+                : "bg-emerald-900/95 text-white border-emerald-400/40"
             }`}
           >
             {toast.type === "error" ? (
@@ -717,58 +749,103 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
       {/* ── HERO SECTION ──────────────────────────────────── */}
       {isPortalRoute ? (
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-2 sm:pt-4">
-          <div className="relative overflow-hidden p-4 sm:p-8 rounded-3xl bg-white dark:bg-[#121324] border border-gray-100 dark:border-white/[0.04] shadow-sm">
-            <div className="absolute right-0 top-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative space-y-2 max-w-3xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40 text-[10px] font-extrabold uppercase tracking-wider">
-                <Heart className="w-3.5 h-3.5 text-pink-500" />
-                {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 sm:pt-5 pb-2">
+          <div className="relative overflow-hidden px-4 py-3.5 sm:px-8 sm:py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900 text-white border border-indigo-500/20 dark:border-indigo-500/30 shadow-lg shadow-indigo-600/10">
+            <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 dark:bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 text-[10px] font-black uppercase tracking-wider shadow-sm">
+                  <Heart className="w-3.5 h-3.5 text-pink-300 fill-pink-300" />
+                  {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  {t.pages.give.title}
+                </h1>
+                <p className="text-xs sm:text-sm text-indigo-100 dark:text-slate-100 font-medium italic opacity-95">
+                  {t.pages.give.subtitle}
+                </p>
               </div>
-              <h1 className="text-lg sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
-                {t.pages.give.title}
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium italic border-l-2 border-purple-500 pl-3 py-0.5">
-                {t.pages.give.subtitle}
-              </p>
+              <div className="hidden min-[640px]:flex items-center gap-3 bg-white/20 dark:bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/30 dark:border-white/20">
+                <ShieldCheck className="w-5 h-5 text-emerald-300 dark:text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-xs font-black text-white leading-none">Instant & Verified</p>
+                  <p className="text-[10px] text-indigo-100 dark:text-slate-200 mt-0.5 font-semibold">Real-time UPI Transfer</p>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* ── MOBILE SEGMENTED TAB CONTROLLER ───────────────────── */}
+          <div className="flex lg:hidden items-center justify-between gap-1 p-1 mt-3 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl border border-slate-300/70 dark:border-slate-700/70 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setMobileTab('form')}
+              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+                mobileTab === 'form'
+                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <QrCode className="w-3.5 h-3.5 shrink-0" />
+              <span>Give</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('summary')}
+              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+                mobileTab === 'summary'
+                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <Receipt className="w-3.5 h-3.5 shrink-0" />
+              <span>Summary</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('ways')}
+              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+                mobileTab === 'ways'
+                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <Building className="w-3.5 h-3.5 shrink-0" />
+              <span>Bank Info</span>
+            </button>
           </div>
         </div>
       ) : (
-        <section className="relative py-12 sm:py-20 md:py-24 overflow-hidden">
-          {/* Layered background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-950 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900" />
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.07]" />
+        <section className="relative py-8 sm:py-16 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.08]" />
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <motion.div 
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/20 dark:bg-white/15 backdrop-blur-md border border-white/30 rounded-full text-white text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl font-bold"
+                className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 backdrop-blur-md border border-white/20 rounded-full text-white text-xs mb-3 shadow-xl font-bold"
               >
                 <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <Heart className="h-4 w-4 text-pink-300" />
+                <Heart className="h-4 w-4 text-pink-400 fill-pink-400" />
                 <span className="font-medium tracking-wide">
                   {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
                 </span>
               </motion.div>
 
               <motion.h1 
-                initial={{ y: 24, opacity: 0 }}
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl min-[480px]:text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-4 sm:mb-6 tracking-tight font-heading leading-[1.05]"
+                className="text-2xl sm:text-5xl font-black text-white mb-2 tracking-tight leading-tight"
               >
                 {t.pages.give.title}
               </motion.h1>
 
               <motion.p 
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-sm min-[480px]:text-base sm:text-xl text-white dark:text-white font-extrabold max-w-xl mx-auto leading-relaxed px-2 shadow-sm"
+                className="text-xs sm:text-base text-slate-100 font-medium max-w-xl mx-auto leading-relaxed"
               >
                 {t.pages.give.subtitle}
               </motion.p>
@@ -778,16 +855,16 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
       )}
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
-      <section className="pt-2 sm:pt-6 pb-10 sm:pb-20 relative z-20">
-        <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8">
+      <section className="pt-2 sm:pt-6 pb-20 sm:pb-24 relative z-20">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           
           {loadingLists ? (
-            <div className="py-24 flex flex-col items-center justify-center space-y-5">
+            <div className="py-20 flex flex-col items-center justify-center space-y-5">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full border-4 border-purple-100 dark:border-purple-900/50" />
-                <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-purple-600 border-t-transparent animate-spin" />
+                <div className="w-14 h-14 rounded-full border-4 border-indigo-100 dark:border-indigo-900/50" />
+                <div className="absolute inset-0 w-14 h-14 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin" />
               </div>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">
+              <p className="text-slate-600 dark:text-slate-200 font-bold text-xs sm:text-sm">
                 {language === 'te' ? 'కానుక ఎంపికలను లోడ్ చేస్తోంది...' : language === 'hi' ? 'दान विकल्प लोड हो रहे हैं...' : 'Loading giving options...'}
               </p>
             </div>
@@ -795,56 +872,56 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
             <div className="grid lg:grid-cols-12 gap-5 lg:gap-8 xl:gap-12 max-w-6xl mx-auto items-start">
 
               {/* ── LEFT: FORM CARD ───────────────────────── */}
-              <div className="lg:col-span-7">
-                <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-sm sm:shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+              <div className={`lg:col-span-7 ${mobileTab === 'form' ? 'block' : 'hidden lg:block'}`}>
+                <div ref={cardRef} className="bg-white dark:bg-slate-900 rounded-3xl shadow-md sm:shadow-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden">
                   
-                  {/* Card header strip */}
-                  <div className="px-3.5 sm:px-8 pt-4 sm:pt-8 pb-3.5 sm:pb-5 border-b border-gray-100 dark:border-gray-800">
-                    <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-3 min-[480px]:gap-4">
+                  {/* Card Header Strip */}
+                  <div className="px-3.5 sm:px-8 pt-4 sm:pt-6 pb-3.5 sm:pb-4 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-600/25">
-                          <QrCode className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-600/20 text-white shrink-0">
+                          <QrCode className="w-5 h-5" />
                         </div>
                         <div>
-                          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                            {language === 'te' ? 'తక్షణ UPI కానుక' : language === 'hi' ? 'त्वरित यूपीआई दान' : 'Instant UPI Giving'}
+                          <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug">
+                            {language === 'te' ? 'తక్షణ UPI కానుక' : language === 'hi' ? 'త్వరిత్ యూపీఐ దాన్' : 'Instant UPI Giving'}
                           </h2>
-                          <p className="text-gray-400 dark:text-gray-500 text-xs mt-0.5">
+                          <p className="text-slate-500 dark:text-slate-300 text-[11px] sm:text-xs font-medium">
                             {language === 'te' ? 'సురక్షితమైన డైనమిక్ QR ద్వారా' : language === 'hi' ? 'सुरक्षित डायनेमिक क्यूआर द्वारा' : 'Secure real-time transfers via Dynamic QR'}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-full text-emerald-700 dark:text-emerald-400 text-[10px] font-bold tracking-wide border border-emerald-100 dark:border-emerald-800/40 self-start min-[480px]:self-auto">
-                        <Lock className="w-3 h-3" />
-                        Secure
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded-full text-[10px] sm:text-[11px] font-extrabold border border-emerald-200 dark:border-emerald-800/60 self-start sm:self-auto">
+                        <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                        256-bit Encrypted
                       </div>
                     </div>
 
-                    {/* Step progress bar */}
-                    <div className="flex items-center gap-3 mt-4 sm:mt-5">
-                      {[1, 2].map((s) => (
-                        <div key={s} className="flex-1 flex items-center gap-3">
-                          <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all duration-300 ${
-                            step >= s 
-                              ? "bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30"
-                              : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                    {/* Modern Step Progress Indicator */}
+                    <div className="mt-4 sm:mt-5 pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
+                      {[
+                        { num: 1, label: language === 'te' ? '1. వివరాలు నమోదు చేయండి' : language === 'hi' ? '1. विवरण दर्ज करें' : '1. Enter Details' },
+                        { num: 2, label: language === 'te' ? '2. స్కాన్ & చెల్లించండి' : language === 'hi' ? '2. स्कैन और भुगतान' : '2. Scan & Pay' },
+                      ].map((s) => (
+                        <div key={s.num} className="flex-1 flex items-center gap-2 min-w-0">
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 transition-all ${
+                            step >= s.num
+                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-105"
+                              : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
                           }`}>
-                            {step > s ? <Check className="w-3.5 h-3.5" /> : s}
+                            {step > s.num ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : s.num}
                           </div>
-                          <span className={`text-xs font-medium hidden sm:block ${step >= s ? "text-gray-800 dark:text-gray-200" : "text-gray-400"}`}>
-                            {s === 1 
-                              ? (language === 'te' ? 'వివరాలు నమోదు చేయండి' : language === 'hi' ? 'विवरण दर्ज करें' : 'Enter Details')
-                              : (language === 'te' ? 'స్కాన్ & చెల్లించండి' : language === 'hi' ? 'स्कैन करें और भुगतान करें' : 'Scan & Pay')}
+                          <span className={`text-xs truncate transition-colors ${
+                            step >= s.num ? "text-slate-900 dark:text-white font-black" : "text-slate-600 dark:text-slate-300 font-bold"
+                          }`}>
+                            {s.label}
                           </span>
-                          {s < 2 && (
-                            <div className={`flex-1 h-0.5 rounded-full transition-all duration-500 ${step >= 2 ? "bg-gradient-to-r from-purple-600 to-indigo-600" : "bg-gray-100 dark:bg-gray-800"}`} />
-                          )}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Error message */}
+                  {/* Error Banner */}
                   <AnimatePresence>
                     {errorMessage && (
                       <motion.div
@@ -853,704 +930,586 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                         exit={{ opacity: 0, height: 0 }}
                         className="mx-3.5 sm:mx-8 mt-3.5 overflow-hidden"
                       >
-                        <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-xs sm:text-sm rounded-2xl flex items-start gap-3">
-                          <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                          <span>{errorMessage}</span>
+                        <div className="p-3 sm:p-3.5 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/80 text-red-800 dark:text-red-200 text-xs sm:text-sm rounded-2xl flex items-start gap-2.5 shadow-sm">
+                          <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-500" />
+                          <span className="font-bold">{errorMessage}</span>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {/* Form Body */}
-                  <div className="px-4 sm:px-8 pt-5 sm:pt-6 pb-6 sm:pb-8">
-                    <div className="relative">
-                      <AnimatePresence>
-                        {step === 1 && (
-                          <motion.div
-                            key="step-1"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0, position: "absolute", top: 0, left: 0, right: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="space-y-7 w-full"
-                          >
-                            {/* ── AMOUNT SELECTOR ─────────────── */}
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                <IndianRupee className="w-4 h-4 text-purple-600" />
-                                {t.pages.give.presetsTitle}
-                              </label>
-                              <div className="grid grid-cols-3 min-[420px]:grid-cols-3 gap-2 sm:gap-2.5">
-                                {["500", "1000", "2500", "5000", "10000"].map((preset) => (
+                  <div className="px-3.5 sm:px-8 py-4 sm:py-6">
+                    <AnimatePresence mode="wait">
+                      {step === 1 && (
+                        <motion.div
+                          key="step-1"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-5 sm:space-y-6"
+                        >
+                          {/* ── AMOUNT SELECTOR ─────────────── */}
+                          <div>
+                            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-2 flex items-center gap-1.5">
+                              <IndianRupee className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                              {t.pages.give.presetsTitle}
+                            </label>
+                            <div className="grid grid-cols-3 sm:grid-cols-3 gap-2">
+                              {["500", "1000", "2500", "5000", "10000"].map((preset) => (
+                                <button
+                                  key={preset}
+                                  type="button"
+                                  onClick={() => { setAmount(preset); setCustomAmount(""); setErrorMessage(""); }}
+                                  className={`py-2.5 sm:py-3 px-1.5 rounded-2xl border-2 text-center font-black text-xs sm:text-sm transition-all duration-200 active:scale-95 ${
+                                    amount === preset && !customAmount
+                                      ? "border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-[1.02]"
+                                      : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white hover:border-indigo-400 dark:hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-700"
+                                  }`}
+                                >
+                                  ₹{Number(preset).toLocaleString('en-IN')}
+                                </button>
+                              ))}
+
+                              {/* Custom amount input */}
+                              <div className="relative col-span-3 sm:col-span-1">
+                                <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-sm z-10 ${customAmount ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`}>₹</span>
+                                <input
+                                  type="number"
+                                  placeholder={t.pages.give.customPlaceholder}
+                                  value={customAmount}
+                                  onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); setErrorMessage(""); }}
+                                  className={`w-full py-2.5 sm:py-3 pl-7 pr-2 rounded-2xl border-2 font-black text-xs sm:text-sm transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none ${
+                                    customAmount
+                                      ? "border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/70 ring-2 ring-indigo-500/20"
+                                      : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-500"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ── PURPOSE SELECTOR ────────────── */}
+                          <div>
+                            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-2 flex items-center gap-1.5">
+                              <Gift className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                              {t.pages.give.purposeLabel}
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                              {purposes.map((p) => {
+                                const codeKey = p.code || p.id;
+                                const isSelected = selectedPurpose === p.code || selectedPurpose === p.id || selectedPurpose === codeKey;
+                                const gradient = purposeColorMap[codeKey] || purposeColorMap[p.code] || "from-indigo-600 to-purple-600";
+                                const icon = purposeIconMap[codeKey] || purposeIconMap[p.code] || <IndianRupee className="w-4 h-4" />;
+                                const desc = getLanguagePurposeDesc(p);
+
+                                return (
                                   <button
-                                    key={preset}
+                                    key={p.id || p.code}
                                     type="button"
-                                    onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                                    className={`relative py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl sm:rounded-2xl border-2 text-center font-extrabold text-xs sm:text-base transition-all duration-200 overflow-hidden group ${
-                                      preset === "10000" ? "col-span-1" : ""
-                                    } ${
-                                      amount === preset && !customAmount
-                                        ? "border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/25 scale-[1.02]"
-                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950/40"
+                                    onClick={() => { setSelectedPurpose(codeKey); setErrorMessage(""); }}
+                                    className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-2.5 sm:gap-3 w-full cursor-pointer active:scale-[0.98] ${
+                                      isSelected
+                                        ? "bg-indigo-50/80 dark:bg-indigo-950/80 border-indigo-600 dark:border-indigo-400 text-slate-900 dark:text-white shadow-md ring-2 ring-indigo-500/20"
+                                        : "border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 text-slate-800 dark:text-white hover:border-indigo-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-800"
                                     }`}
                                   >
-                                    {amount === preset && !customAmount && (
-                                      <motion.div
-                                        layoutId="amount-selector"
-                                        className="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl"
-                                        transition={{ duration: 0.2 }}
-                                      />
-                                    )}
-                                    <span className="relative z-10">₹{Number(preset).toLocaleString('en-IN')}</span>
-                                  </button>
-                                ))}
-                                {/* Custom amount */}
-                                <div className="relative col-span-3 min-[420px]:col-span-1">
-                                  <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-black text-xs sm:text-sm z-10 ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-gray-500 dark:text-gray-400"}`}>₹</span>
-                                  <input
-                                    type="number"
-                                    placeholder={t.pages.give.customPlaceholder}
-                                    value={customAmount}
-                                    onChange={(e) => { setCustomAmount(e.target.value); setAmount(""); }}
-                                    className={`w-full py-2.5 sm:py-3 pl-7 sm:pl-8 pr-2 rounded-xl sm:rounded-2xl border-2 font-black text-base sm:text-sm transition-all duration-200 text-slate-900 dark:text-white placeholder-gray-400 focus:outline-none ${
-                                      customAmount
-                                        ? "border-purple-600 dark:border-purple-400 ring-2 ring-purple-600/20 bg-purple-50/80 dark:bg-purple-950/60"
-                                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400"
-                                    }`}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-
-                             {/* ── PURPOSE SELECTOR ────────────── */}
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                <Gift className="w-4 h-4 text-purple-600" />
-                                {t.pages.give.purposeLabel}
-                              </label>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                                {purposes.map((p) => {
-                                  const codeKey = p.code || p.id;
-                                  const isSelected = selectedPurpose === p.code || selectedPurpose === p.id || selectedPurpose === codeKey;
-                                  const gradient = purposeColorMap[codeKey] || purposeColorMap[p.code] || "from-purple-500 to-indigo-600";
-                                  const bgStyle = purposeBgMap[codeKey] || purposeBgMap[p.code] || "bg-purple-50 dark:bg-purple-950/70 border-purple-500 dark:border-purple-400 shadow-sm";
-                                  const icon = purposeIconMap[codeKey] || purposeIconMap[p.code] || <IndianRupee className="w-5 h-5" />;
-                                  const desc = getLanguagePurposeDesc(p);
-
-                                  return (
-                                    <button
-                                      key={p.id || p.code}
-                                      type="button"
-                                      onClick={() => setSelectedPurpose(codeKey)}
-                                      className={`relative p-3.5 sm:p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-3 w-full overflow-hidden min-h-[76px] sm:min-h-[84px] cursor-pointer touch-manipulation select-none active:scale-[0.98] ${
-                                        isSelected
-                                          ? `${bgStyle} shadow-md scale-[1.01] ring-2 ring-purple-500/20`
-                                          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/90 hover:border-purple-300 dark:hover:border-purple-500 hover:bg-purple-50/40 dark:hover:bg-gray-800"
-                                      }`}
-                                    >
-                                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-md transition-all duration-200 mt-0.5 pointer-events-none ${isSelected ? "scale-100" : "scale-95 opacity-85"}`}>
-                                        {icon}
-                                      </div>
-                                      <div className="min-w-0 flex-1 flex flex-col justify-center pointer-events-none">
-                                        <span className={`block font-extrabold text-xs sm:text-sm leading-tight tracking-tight ${isSelected ? "text-gray-950 dark:text-white" : "text-gray-900 dark:text-gray-100"}`}>
-                                          {getLanguagePurposeName(p)}
+                                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white bg-gradient-to-br ${gradient} shadow-sm mt-0.5`}>
+                                      {icon}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <span className="block font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white leading-tight">
+                                        {getLanguagePurposeName(p)}
+                                      </span>
+                                      {desc && (
+                                        <span className="block text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-200 font-medium leading-tight mt-1 line-clamp-2">
+                                          {desc}
                                         </span>
-                                        {desc && (
-                                          <span className="block text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-snug mt-0.5 line-clamp-2">
-                                            {desc}
-                                          </span>
-                                        )}
+                                      )}
+                                    </div>
+                                    {isSelected && (
+                                      <div className="w-5 h-5 bg-indigo-600 dark:bg-indigo-500 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                                        <Check className="w-3 h-3 stroke-[3]" />
                                       </div>
-                                      <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center ml-auto mt-0.5 pointer-events-none">
-                                        {isSelected ? (
-                                          <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                            <Check className="w-3 h-3 text-white" />
-                                          </div>
-                                        ) : null}
-                                      </div>
-                                    </button>
-                                  );
-                                })}
-                              </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
                             </div>
+                          </div>
 
-                            {/* ── BRANCH SELECTOR ─────────────── */}
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                <Home className="w-4 h-4 text-purple-600" />
-                                {language === 'te' ? 'చర్చి బ్రాంచ్' : language === 'hi' ? 'चर्च शाखा' : 'Church Branch'}
-                              </label>
-                              <div className="relative">
-                                <select
-                                  value={selectedBranch}
-                                  onChange={(e) => setSelectedBranch(e.target.value)}
-                                  className="w-full py-3 px-4 pr-10 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold focus:ring-2 focus:ring-purple-600/25 focus:border-purple-500 focus:outline-none appearance-none transition-all text-xs sm:text-sm"
-                                >
-                                  {branches.map((b) => (
-                                    <option key={b.id} value={b.id}>⛪ {b.name}</option>
-                                  ))}
-                                </select>
-                                <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 rotate-90 w-4 h-4 text-gray-400 pointer-events-none" />
-                              </div>
+                          {/* ── BRANCH SELECTOR ─────────────── */}
+                          <div>
+                            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5 flex items-center gap-1.5">
+                              <Home className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                              {language === 'te' ? 'చర్చి బ్రాంచ్' : language === 'hi' ? 'చర్చ శాఖ' : 'Church Branch'}
+                            </label>
+                            <div className="relative">
+                              <select
+                                value={selectedBranch}
+                                onChange={(e) => { setSelectedBranch(e.target.value); setErrorMessage(""); }}
+                                className="w-full py-2.5 sm:py-3 px-3.5 pr-10 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none appearance-none transition-all text-xs sm:text-sm"
+                              >
+                                {branches.map((b) => (
+                                  <option key={b.id} value={b.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold">
+                                    ⛪ {b.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 rotate-90 w-4 h-4 text-slate-400 pointer-events-none" />
                             </div>
+                          </div>
 
-                            {/* ── DONOR INFO ───────────────────── */}
-                            <div className="space-y-4 pt-2">
-                              <div className="flex items-center gap-2">
-                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-                                <span className="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                                  {t.pages.give.contactTitle}
-                                </span>
-                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
-                              </div>
-
-                              <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-3">
-                                <div className="min-[480px]:col-span-2">
-                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
-                                    {t.pages.give.fullNameLabel}
-                                  </label>
-                                  <div className="relative">
-                                    <input
-                                      type="text"
-                                      placeholder={t.pages.give.fullNamePlaceholder}
-                                      value={donorName}
-                                      onChange={(e) => setDonorName(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-extrabold placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
-                                    />
-                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
-                                    {t.pages.give.emailLabel}
-                                  </label>
-                                  <div className="relative">
-                                    <input
-                                      type="email"
-                                      placeholder={t.pages.give.emailPlaceholder}
-                                      value={donorEmail}
-                                      onChange={(e) => setDonorEmail(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
-                                    />
-                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 font-extrabold uppercase tracking-wide mb-1.5">
-                                    {t.pages.give.phoneLabel}
-                                  </label>
-                                  <div className="relative">
-                                    <input
-                                      type="tel"
-                                      placeholder={t.pages.give.phonePlaceholder}
-                                      value={donorPhone}
-                                      onChange={(e) => setDonorPhone(e.target.value)}
-                                      className="w-full py-2.5 sm:py-3 px-4 pl-10 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 text-gray-900 dark:text-white font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-purple-600/20 focus:border-purple-500 focus:outline-none transition-all text-xs sm:text-sm"
-                                    />
-                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-600 dark:text-purple-400 w-3.5 h-3.5" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* ── SUBMIT BUTTON ────────────────── */}
-                            <button
-                              type="button"
-                              disabled={actionLoading}
-                              onClick={handleGeneratePaymentSession}
-                              className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 hover:shadow-2xl hover:shadow-purple-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-60 relative overflow-hidden group"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
-                              <span className="relative z-10 flex items-center gap-2.5">
-                                {actionLoading ? (
-                                  <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    {language === 'te' ? 'QR కోడ్‌ని రూపొందిస్తోంది...' : language === 'hi' ? 'क्यूआर कोड जनरेट किया जा रहा है...' : 'Generating Secure QR Code...'}
-                                  </>
-                                ) : (
-                                  <>
-                                    <Sparkles className="w-5 h-5" />
-                                    {language === 'te' ? 'QR కోడ్ పొంది చెల్లించండి' : language === 'hi' ? 'क्यूआर कोड प्राप्त करें' : 'Generate QR & Pay'}
-                                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                  </>
-                                )}
+                          {/* ── DONOR CONTACT INFO ───────────── */}
+                          <div className="space-y-3 pt-1">
+                            <div className="flex items-center gap-2">
+                              <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                              <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">
+                                {t.pages.give.contactTitle}
                               </span>
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                              <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+                            </div>
 
-                      <AnimatePresence>
-                        {step === 2 && (
-                          /* ── STEP 2: SCAN & PAY ────────────── */
-                          <motion.div
-                            key="step-2"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="flex flex-col items-center space-y-5"
-                          >
-                            {/* ── SUCCESS ANIMATION ─────────────────── */}
-                            <AnimatePresence>
-                              {paymentSuccess && (
-                                <motion.div
-                                  key="success-overlay"
-                                  initial={{ opacity: 0, scale: 0.7 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 1.1 }}
-                                  transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                                  className="w-full max-w-sm flex flex-col items-center gap-4 py-6"
-                                >
-                                  <div className="relative">
-                                    <motion.div
-                                      className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-2xl shadow-emerald-500/40"
-                                      initial={{ scale: 0 }}
-                                      animate={{ scale: 1 }}
-                                      transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-                                    >
-                                      <CheckCircle2 className="w-12 h-12 text-white" />
-                                    </motion.div>
-                                    {/* Burst rings */}
-                                    {[1, 2, 3].map((i) => (
-                                      <motion.div
-                                        key={i}
-                                        className="absolute inset-0 rounded-full border-2 border-emerald-400"
-                                        initial={{ scale: 1, opacity: 0.6 }}
-                                        animate={{ scale: 2.5 + i * 0.5, opacity: 0 }}
-                                        transition={{ duration: 1.2, delay: i * 0.15, ease: "easeOut" }}
-                                      />
-                                    ))}
-                                  </div>
-                                  <div className="text-center space-y-1">
-                                    <p className="text-xl font-extrabold text-gray-900 dark:text-white">
-                                      {language === 'te' ? '🎉 దాతృత్వం ధృవీకరించబడింది!' : language === 'hi' ? '🎉 दान सत्यापित हो गया!' : '🎉 Donation Verified!'}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                      {language === 'te' ? 'రశీదుకు మళ్ళించబడుతోంది...' : language === 'hi' ? 'रसीद पर पुनर्निर्देशित किया जा रहा है...' : 'Redirecting to your receipt...'}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-full text-emerald-700 dark:text-emerald-400 text-xs font-bold">
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    {language === 'te' ? 'దయచేసి వేచి ఉండండి...' : language === 'hi' ? 'कृपया प्रतीक्षा करें...' : 'Please wait...'}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-
-                            {/* ── MAIN CONTENT (hidden after success) ───────── */}
-                            {!paymentSuccess && (
-                              <>
-                                {/* Countdown Timer */}
-                                <div className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold border transition-all ${
-                                  isExpired
-                                    ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/40"
-                                    : parseInt(timeLeft.split(':')[0]) === 0 && parseInt(timeLeft.split(':')[1]) < 60
-                                      ? "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/30 animate-pulse"
-                                      : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/30"
-                                }`}>
-                                  <Clock className="w-4 h-4" />
-                                  <span>{language === 'te' ? 'QR గడువు ముగిసే సమయం:' : language === 'hi' ? 'QR समाप्त होने में:' : 'QR Expires in:'}</span>
-                                  <span className="font-mono font-extrabold text-sm tracking-widest">{timeLeft}</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="sm:col-span-2">
+                                <label className="block text-[11px] font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-200 mb-1">
+                                  {t.pages.give.fullNameLabel}
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="text"
+                                    placeholder={t.pages.give.fullNamePlaceholder}
+                                    value={donorName}
+                                    onChange={(e) => { setDonorName(e.target.value); setErrorMessage(""); }}
+                                    className="w-full py-2.5 px-3.5 pl-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                  />
+                                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600 dark:text-indigo-400 w-4 h-4" />
                                 </div>
+                              </div>
 
-                                {/* QR Expired — regenerate prompt */}
-                                {isExpired ? (
-                                  <div className="w-full max-w-sm flex flex-col items-center gap-4 py-4">
-                                    <div className="w-20 h-20 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800/40 flex items-center justify-center">
-                                      <ShieldAlert className="w-9 h-9 text-red-500" />
-                                    </div>
-                                    <div className="text-center space-y-1">
-                                      <p className="font-bold text-gray-800 dark:text-gray-200">
-                                        {language === 'te' ? 'QR కోడ్ గడువు ముగిసింది' : language === 'hi' ? 'QR कोड समाप्त हो गया' : 'QR Code Expired'}
-                                      </p>
-                                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        {language === 'te' ? 'కొత్త QR కోడ్ రూపొందించడానికి దిగువ క్లిక్ చేయండి.' : language === 'hi' ? 'नया QR कोड जनरेट करने के लिए नीचे क्लिक करें।' : 'Generate a new QR code to proceed with your donation.'}
-                                      </p>
-                                    </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-                                        if (socketRef.current) socketRef.current.disconnect();
-                                        setQrCodeData("");
-                                        setUpiUri("");
-                                        setSessionId("");
-                                        setReferenceNumber("");
-                                        setExpiresAt(null);
-                                        setTimeLeft("");
-                                        setErrorMessage("");
-                                        setPollTimeoutReached(false);
-                                        setVerificationStatus(null);
-                                        setStep(1);
-                                        setTimeout(scrollToCard, 100);
-                                      }}
-                                      className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-purple-600/25 transition-all active:scale-[0.99]"
-                                    >
-                                      <RefreshCw className="w-4 h-4" />
-                                      {language === 'te' ? 'కొత్త QR రూపొందించండి' : language === 'hi' ? 'नया QR जनरेट करें' : 'Generate New QR'}
-                                    </button>
+                              <div>
+                                <label className="block text-[11px] font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-200 mb-1">
+                                  {t.pages.give.emailLabel}
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="email"
+                                    placeholder={t.pages.give.emailPlaceholder}
+                                    value={donorEmail}
+                                    onChange={(e) => { setDonorEmail(e.target.value); setErrorMessage(""); }}
+                                    className="w-full py-2.5 px-3.5 pl-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                  />
+                                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600 dark:text-indigo-400 w-4 h-4" />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="block text-[11px] font-extrabold uppercase tracking-wide text-slate-600 dark:text-slate-200 mb-1">
+                                  {t.pages.give.phoneLabel}
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="tel"
+                                    placeholder={t.pages.give.phonePlaceholder}
+                                    value={donorPhone}
+                                    onChange={(e) => setDonorPhone(e.target.value)}
+                                    className="w-full py-2.5 px-3.5 pl-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-500 focus:outline-none transition-all text-xs sm:text-sm"
+                                  />
+                                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600 dark:text-indigo-400 w-4 h-4" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ── SUBMIT BUTTON ────────────────── */}
+                          <button
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={handleGeneratePaymentSession}
+                            className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white rounded-2xl font-extrabold text-xs sm:text-base flex items-center justify-center gap-2.5 shadow-lg shadow-indigo-600/25 hover:shadow-xl hover:shadow-indigo-600/35 active:scale-[0.99] transition-all duration-300 disabled:opacity-60 relative overflow-hidden group"
+                          >
+                            {actionLoading ? (
+                              <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                {language === 'te' ? 'QR కోడ్‌ని రూపొందిస్తోంది...' : language === 'hi' ? 'क्यूఆర్ कोड जनरेट किया जा रहा है...' : 'Generating Dynamic QR...'}
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                                {language === 'te' ? 'QR కోడ్ పొంది చెల్లించండి' : language === 'hi' ? 'क्यूఆర్ कोड प्राप्त करें' : 'Generate Dynamic QR & Pay'}
+                                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                              </>
+                            )}
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {step === 2 && (
+                        /* ── STEP 2: SCAN & PAY ────────────── */
+                        <motion.div
+                          key="step-2"
+                          initial={{ opacity: 0, scale: 0.98 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-4 sm:space-y-5"
+                        >
+                          {/* ── SUCCESS ANIMATION OVERLAY ─────────────────── */}
+                          <AnimatePresence>
+                            {paymentSuccess && (
+                              <motion.div
+                                key="success-overlay"
+                                initial={{ opacity: 0, scale: 0.7 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.1 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                                className="w-full max-w-sm mx-auto flex flex-col items-center gap-4 py-8"
+                              >
+                                <div className="relative">
+                                  <motion.div
+                                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-2xl shadow-emerald-500/40"
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+                                  >
+                                    <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                                  </motion.div>
+                                </div>
+                                <div className="text-center space-y-1">
+                                  <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                                    {language === 'te' ? '🎉 దాతృత్వం ధృవీకరించబడింది!' : language === 'hi' ? '🎉 दान सत्यापित हो गया!' : '🎉 Donation Verified!'}
+                                  </p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-300 font-medium">
+                                    {language === 'te' ? 'రశీదుకు మళ్ళించబడుతోంది...' : language === 'hi' ? 'रसीद पर पुनर्निर्देशित किया जा रहा है...' : 'Generating official receipt...'}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {!paymentSuccess && (
+                            <>
+                              {/* ── EXPIRED STATE ───────────────────── */}
+                              {isExpired ? (
+                                <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4 py-6 text-center">
+                                  <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 flex items-center justify-center text-red-500">
+                                    <ShieldAlert className="w-8 h-8" />
                                   </div>
-                                ) : (
-                                  <>
-                                    {/* QR Container */}
-                                    <div className="w-full max-w-xs sm:max-w-sm">
-                                      <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-5 rounded-3xl border-2 border-gray-100 dark:border-gray-700 shadow-[0_4px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] flex flex-col items-center">
-                                        {/* Dynamic QR badge */}
-                                        <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md">
-                                          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                                          {language === 'te' ? 'డైనమిక్ QR' : language === 'hi' ? 'डायनेमिक QR' : 'Dynamic QR'}
-                                        </div>
+                                  <div>
+                                    <p className="font-extrabold text-base text-slate-900 dark:text-white">
+                                      {language === 'te' ? 'QR కోడ్ గడువు ముగిసింది' : language === 'hi' ? 'QR कोड समाप्त हो गया' : 'QR Code Expired'}
+                                    </p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-300 mt-1 font-medium">
+                                      {language === 'te' ? 'కొత్త QR కోడ్ రూపొందించడానికి దిగువ క్లిక్ చేయండి.' : language === 'hi' ? 'नया QR कोड जनरेट करने के लिए नीचे क्लिक करें।' : 'Generates fresh 15-minute secure dynamic QR.'}
+                                    </p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+                                      if (socketRef.current) socketRef.current.disconnect();
+                                      setStep(1);
+                                    }}
+                                    className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 text-xs sm:text-sm"
+                                  >
+                                    <RefreshCw className="w-4 h-4" />
+                                    {language === 'te' ? 'కొత్త QR రూపొందించండి' : language === 'hi' ? 'नया QR जनरेट करें' : 'Generate New QR'}
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  {/* ── ELEGANT INTEGRATED QR CARD ─────────── */}
+                                  <div className="w-full max-w-xs sm:max-w-sm mx-auto bg-slate-950 p-4 sm:p-5 rounded-3xl text-white shadow-2xl border border-slate-800 relative overflow-hidden">
+                                    
+                                    {/* Ambient top glow */}
+                                    <div className="absolute top-0 right-0 w-36 h-36 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
 
-                                        {/* QR Code Image */}
-                                        <div className="w-44 h-44 sm:w-52 sm:h-52 bg-white rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center mt-2">
-                                          {qrCodeData ? (
-                                            <img
-                                              src={qrCodeData}
-                                              alt="Dynamic UPI QR Code"
-                                              className="w-full h-full object-contain p-2"
-                                            />
-                                          ) : (
-                                            <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-                                          )}
-                                        </div>
+                                    {/* Timer & Status Header inside Card */}
+                                    <div className="flex items-center justify-between px-2.5 py-1.5 sm:px-3 sm:py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 mb-3.5">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="relative flex h-2.5 w-2.5">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                                        </span>
+                                        <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Live Dynamic QR</span>
+                                      </div>
 
-                                        {/* Church Name */}
-                                        <p className="mt-3 text-xs font-bold text-gray-600 dark:text-gray-400 text-center">{churchName}</p>
-
-                                        {/* UPI ID Row */}
-                                        <div className="mt-3 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-2xl flex items-center justify-between gap-3">
-                                          <div className="min-w-0">
-                                            <span className="block text-[9px] uppercase font-bold text-gray-400 tracking-widest">
-                                              {t.pages.give.upiIdLabel}
-                                            </span>
-                                            <span className="text-gray-800 dark:text-gray-200 font-bold font-mono text-xs select-all truncate block">
-                                              {upiId}
-                                            </span>
-                                          </div>
-                                          <button
-                                            type="button"
-                                            onClick={() => copyToClipboard(upiId, "UPI ID")}
-                                            className="p-2 bg-gray-50 dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl text-gray-500 hover:text-purple-600 transition-all border border-gray-200 dark:border-gray-700 flex-shrink-0"
-                                          >
-                                            {copiedLabel === "UPI ID" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                                          </button>
-                                        </div>
+                                      <div className="flex items-center gap-1 text-[11px] sm:text-xs font-mono font-black text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
+                                        <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                        <span>{timeLeft}</span>
                                       </div>
                                     </div>
 
-                                    {/* Payment App Quick-Launch */}
-                                    <div className="w-full max-w-xs sm:max-w-sm space-y-3">
-                                      {/* Open in UPI App — Android Intent chooser */}
+                                    {/* Framed QR Code */}
+                                    <div className="relative bg-white rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col items-center justify-center mx-auto max-w-[210px] sm:max-w-[230px]">
+                                      {/* Corner Crosshair Accents */}
+                                      <div className="absolute top-2 left-2 w-3.5 h-3.5 sm:w-4 sm:h-4 border-t-2 border-l-2 border-indigo-600 rounded-tl-sm" />
+                                      <div className="absolute top-2 right-2 w-3.5 h-3.5 sm:w-4 sm:h-4 border-t-2 border-r-2 border-indigo-600 rounded-tr-sm" />
+                                      <div className="absolute bottom-2 left-2 w-3.5 h-3.5 sm:w-4 sm:h-4 border-b-2 border-l-2 border-indigo-600 rounded-bl-sm" />
+                                      <div className="absolute bottom-2 right-2 w-3.5 h-3.5 sm:w-4 sm:h-4 border-b-2 border-r-2 border-indigo-600 rounded-br-sm" />
+
+                                      {qrCodeData ? (
+                                        <img
+                                          src={qrCodeData}
+                                          alt="Dynamic UPI QR Code"
+                                          className="w-40 h-40 sm:w-48 sm:h-48 object-contain"
+                                        />
+                                      ) : (
+                                        <div className="w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
+                                          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Church Name & Amount summary */}
+                                    <div className="mt-3 text-center">
+                                      <p className="text-[11px] sm:text-xs font-bold text-slate-300">{churchName}</p>
+                                      <p className="text-base sm:text-lg font-black text-white mt-0.5 tracking-tight">
+                                        ₹{displayAmount.toLocaleString("en-IN")}
+                                      </p>
+                                    </div>
+
+                                    {/* UPI Address Box - Responsive */}
+                                    <div className="mt-3 bg-white/10 backdrop-blur-md border border-white/15 p-2.5 sm:px-3.5 sm:py-2 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                                      <div className="min-w-0 flex-1">
+                                        <span className="block text-[9px] uppercase font-bold text-indigo-300 tracking-wider">
+                                          Official VPA / UPI ID
+                                        </span>
+                                        <span className="text-white font-mono font-bold text-xs truncate block select-all">
+                                          {upiId}
+                                        </span>
+                                      </div>
                                       <button
                                         type="button"
-                                        onClick={handleOpenUpiApp}
-                                        className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white font-bold text-sm hover:shadow-xl hover:shadow-purple-600/30 transition-all active:scale-[0.99] relative overflow-hidden group"
+                                        onClick={() => copyToClipboard(upiId, "UPI ID")}
+                                        className="w-full sm:w-auto px-2.5 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center gap-1 border border-white/20 flex-shrink-0 active:scale-95"
                                       >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <Smartphone className="w-5 h-5 relative z-10" />
-                                        <span className="relative z-10">
-                                          {language === 'te' ? 'UPI యాప్‌లో తెరవండి' : language === 'hi' ? 'UPI ऐप में खोलें' : 'Open in UPI App'}
-                                        </span>
-                                        <ExternalLink className="w-4 h-4 relative z-10 opacity-70" />
+                                        {copiedLabel === "UPI ID" ? (
+                                          <><Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" /> Copied</>
+                                        ) : (
+                                          <><Copy className="w-3.5 h-3.5" /> Copy VPA</>
+                                        )}
                                       </button>
+                                    </div>
+                                  </div>
 
-                                      {/* Per-app buttons */}
-                                      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center">
-                                        {language === 'te' ? '— లేదా నేరుగా తెరవండి —' : language === 'hi' ? '— या सीधे खोलें —' : '— Or open directly in —'}
+                                  {/* ── UNIFIED PAYMENT ACTION BLOCK ──────────── */}
+                                  <div className="w-full max-w-xs sm:max-w-sm mx-auto space-y-3">
+                                    
+                                    {/* Primary Mobile App Launcher */}
+                                    <button
+                                      type="button"
+                                      onClick={handleOpenUpiApp}
+                                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/30 hover:shadow-2xl hover:shadow-indigo-600/40 active:scale-[0.99] transition-all"
+                                    >
+                                      <Smartphone className="w-4 h-4 sm:w-5 sm:h-5" />
+                                      <span>
+                                        {language === 'te' ? 'UPI యాప్‌లో తెరవండి' : language === 'hi' ? 'UPI ऐप में खोलें' : 'Open in UPI App'}
+                                      </span>
+                                      <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                                    </button>
+
+                                    {/* Direct App Launch Grid */}
+                                    <div>
+                                      <p className="text-[10px] font-extrabold text-slate-500 dark:text-slate-300 uppercase tracking-widest text-center mb-2">
+                                        {language === 'te' ? '— లేదా నేరుగా యాప్ ద్వారా —' : language === 'hi' ? '— या सीधे ऐप द्वारा —' : '— Or launch directly with —'}
                                       </p>
+                                      
                                       <div className="grid grid-cols-5 gap-1 sm:gap-1.5">
-                                        {[
-                                          { name: "GPay",    initial: "G",  pkg: "com.google.android.apps.nbu.paisa.user", scheme: "tez://upi/pay",      logo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Google_Pay_Acceptance_Mark.svg",  color: "#4285F4", bg: "#e8f0fe" },
-                                          { name: "PhonePe", initial: "P",  pkg: "com.phonepe.app",                        scheme: "phonepe://pay",       logo: "https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg",               color: "#5f259f", bg: "#f3eaff" },
-                                          { name: "Paytm",   initial: "Pt", pkg: "net.one97.paytm",                        scheme: "paytmmp://upi/pay",  logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg", color: "#00BAF2", bg: "#e0f7fe" },
-                                          { name: "BHIM",    initial: "B",  pkg: "in.org.npci.upiapp",                     scheme: "upi://pay",          logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/BHIM_logo.svg",                  color: "#FF6B00", bg: "#fff3e0" },
-                                          { name: "FamApp",  initial: "F",  pkg: "com.fampay.in",                          scheme: "fampay://upi/pay",   logo: "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fampay.svg",                     color: "#b8860b", bg: "#fffde7", invert: true },
-                                        ].map((app) => (
+                                        {UPI_APPS.map((app) => (
                                           <button
                                             key={app.name}
                                             type="button"
-                                            title={`Pay with ${app.name}`}
                                             onClick={() => handleOpenSpecificApp(app.pkg, app.scheme)}
-                                            className="flex flex-col items-center justify-center gap-0.5 sm:gap-1 py-1.5 sm:py-2.5 px-0.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md active:scale-90 transition-all cursor-pointer"
+                                            className={`flex flex-col items-center justify-center gap-1 p-1.5 sm:p-2 rounded-2xl border transition-all active:scale-90 hover:shadow-md cursor-pointer ${app.bgClass}`}
+                                            title={`Pay with ${app.name}`}
                                           >
-                                            <img
-                                              src={app.logo}
-                                              className="w-5 h-5 sm:w-7 sm:h-7 object-contain rounded-md"
-                                              alt={app.name}
-                                              style={app.invert ? { filter: 'brightness(0) saturate(100%) invert(56%) sepia(85%) saturate(350%) hue-rotate(5deg) brightness(98%) contrast(90%)' } : {}}
-                                              onError={(e) => {
-                                                const img = e.currentTarget;
-                                                img.style.display = "none";
-                                                const badge = img.nextElementSibling as HTMLElement;
-                                                if (badge) badge.style.display = "flex";
-                                              }}
-                                            />
-                                            {/* Fallback letter badge (hidden by default, shown on img error) */}
-                                            <span
-                                              style={{
-                                                display: "none",
-                                                width: 20,
-                                                height: 20,
-                                                borderRadius: 6,
-                                                backgroundColor: app.bg,
-                                                color: app.color,
-                                                fontWeight: 800,
-                                                fontSize: app.initial.length > 1 ? 8 : 11,
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                flexShrink: 0,
-                                                letterSpacing: "-0.5px",
-                                              }}
-                                            >
-                                              {app.initial}
+                                            {app.svg}
+                                            <span className="text-[9px] sm:text-[10px] font-black tracking-tight leading-none truncate max-w-full text-slate-800 dark:text-slate-100">
+                                              {app.name}
                                             </span>
-                                            <span className="text-[8px] sm:text-[9px] font-extrabold tracking-tighter leading-none text-center truncate w-full block max-w-full" style={{ color: app.color }}>{app.name}</span>
                                           </button>
                                         ))}
                                       </div>
-
-                                      {/* Copy Payment Link */}
-                                      <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(upiUri, "LINK")}
-                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 font-semibold text-sm transition-all active:scale-95"
-                                      >
-                                        {copiedLabel === "LINK" ? (
-                                          <><Check className="w-4 h-4 text-emerald-500" /> {language === 'te' ? 'లింక్ కాపీ అయింది!' : language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Payment link copied!'}</>
-                                        ) : (
-                                          <><Copy className="w-4 h-4" /> {language === 'te' ? 'చెల్లింపు లింక్ కాపీ' : language === 'hi' ? 'भुगतान लिंक कॉपी' : 'Copy Payment Link'}</>
-                                        )}
-                                      </button>
                                     </div>
 
-                                    {/* Real-time verification status */}
-                                    {verificationStatus === 'PENDING' && (
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800/40 flex items-start gap-3"
-                                      >
-                                        <Loader2 className="w-5 h-5 text-amber-600 animate-spin flex-shrink-0 mt-0.5" />
-                                        <div>
-                                          <p className="font-bold text-sm text-amber-800 dark:text-amber-300">
-                                            {language === 'te' ? 'చెల్లింపు నిరీక్షిస్తోంది...' : language === 'hi' ? 'भुगतान प्रतीक्षित है...' : 'Payment pending...'}
-                                          </p>
-                                          <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                                            {language === 'te' ? 'స్వయంచాలకంగా తనిఖీ చేస్తోంది. దయచేసి వేచి ఉండండి.' : language === 'hi' ? 'स्वचालित रूप से जांच रहा है। कृपया प्रतीक्षा करें।' : 'Auto-checking every few seconds. Please wait.'}
-                                          </p>
-                                        </div>
-                                      </motion.div>
-                                    )}
+                                    {/* Copy Payment Link */}
+                                    <button
+                                      type="button"
+                                      onClick={() => copyToClipboard(upiUri, "LINK")}
+                                      className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2 active:scale-95"
+                                    >
+                                      {copiedLabel === "LINK" ? (
+                                        <><Check className="w-4 h-4 text-emerald-500 stroke-[3]" /> {language === 'te' ? 'లింక్ కాపీ అయింది!' : language === 'hi' ? 'लिंक कॉपी हो गया!' : 'Payment link copied!'}</>
+                                      ) : (
+                                        <><Copy className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> {language === 'te' ? 'చెల్లింపు లింక్ కాపీ' : language === 'hi' ? 'भुगतान लिंक कॉपी' : 'Copy Payment Link'}</>
+                                      )}
+                                    </button>
 
-                                    {pollTimeoutReached && (
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-800/40 flex items-start gap-3"
-                                      >
-                                        <ShieldAlert className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                                        <div>
-                                          <p className="font-bold text-sm text-orange-800 dark:text-orange-300">
-                                            {language === 'te' ? 'ధృవీకరణ సమయం ముగిసింది' : language === 'hi' ? 'सत्यापन टाइमआउट' : 'Verification timeout'}
-                                          </p>
-                                          <p className="text-xs text-orange-700 dark:text-orange-400 mt-0.5">
-                                            {language === 'te' ? 'చెల్లింపు పూర్తయినట్లయితే, మళ్ళీ ప్రయత్నించండి.' : language === 'hi' ? 'यदि भुगतान पूरा हो गया है, तो दोबारा प्रयास करें।' : "If you completed the payment, tap Verify Now again."}
-                                          </p>
-                                        </div>
-                                      </motion.div>
-                                    )}
-
-                                    {/* Real-time notice */}
-                                    {!verificationStatus && !pollTimeoutReached && (
-                                      <div className="w-full max-w-xs sm:max-w-sm p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl border border-blue-100 dark:border-blue-800/30">
-                                        <div className="flex items-start gap-3">
-                                          <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                                            <Activity className="w-4 h-4 text-white" />
-                                          </div>
-                                          <div>
-                                            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">
-                                              {language === 'te' ? 'నిజ-సమయ ధృవీకరణ సక్రియంగా ఉంది' : language === 'hi' ? 'वास्तविक समय सत्यापन सक्रिय' : 'Real-time verification active'}
-                                            </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
-                                              {language === 'te' ? 'చెల్లింపు పూర్తయిన తర్వాత స్వయంచాలకంగా ధృవీకరించబడుతుంది.' : language === 'hi' ? 'भुगतान पूरा होने के बाद स्वचालित रूप से सत्यापित किया जाएगा।' : "Once payment is completed, our server auto-verifies in real-time. If it doesn't redirect, tap the button below."}
-                                            </p>
-                                          </div>
-                                        </div>
+                                    {/* Auto-Verification Pulse Bar */}
+                                    <div className="p-2.5 sm:p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-700/60 flex items-center gap-2.5 sm:gap-3">
+                                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+                                        <Activity className="w-4 h-4 animate-pulse" />
                                       </div>
-                                    )}
+                                      <div className="text-left flex-1 min-w-0">
+                                        <p className="font-extrabold text-[11px] sm:text-xs text-emerald-900 dark:text-emerald-100">Real-Time Verification Active</p>
+                                        <p className="text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-200 leading-tight font-medium">Listening for payment confirmation from bank...</p>
+                                      </div>
+                                    </div>
 
-                                    {/* Action buttons */}
-                                    <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-xs sm:max-w-sm mx-auto">
+                                    {/* Verification & Navigation Buttons - Full-width stack on Mobile */}
+                                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
                                       <button
                                         type="button"
                                         disabled={verificationLoading || isExpired}
                                         onClick={handleVerifyPayment}
-                                        className="w-full sm:flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-emerald-500/25 transition-all active:scale-[0.99] disabled:opacity-60 text-sm min-h-[44px]"
+                                        className="w-full sm:flex-1 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 hover:shadow-xl active:scale-[0.99] disabled:opacity-60"
                                       >
                                         {verificationLoading ? (
-                                          <><Loader2 className="w-4 h-4 animate-spin" /> {language === 'te' ? 'ధృవీకరిస్తోంది...' : language === 'hi' ? 'सत्यापित हो रहा है...' : 'Verifying...'}</>
+                                          <><Loader2 className="w-4 h-4 animate-spin" /> Verifying...</>
                                         ) : (
-                                          <><CheckCircle2 className="h-4 w-4" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
+                                          <><CheckCircle2 className="h-4 w-4 stroke-[2.5]" /> {language === 'te' ? 'చెల్లించాను — ధృవీకరించు' : language === 'hi' ? 'भुगतान किया — सत्यापित करें' : "I've Paid — Verify Now"}</>
                                         )}
                                       </button>
+
                                       <button
                                         type="button"
                                         onClick={() => {
                                           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
                                           if (socketRef.current) socketRef.current.disconnect();
-                                          setVerificationStatus(null);
-                                          setPollTimeoutReached(false);
                                           setStep(1);
-                                          setTimeout(scrollToCard, 100);
                                         }}
-                                        className="w-full sm:w-auto py-3.5 px-5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98 text-sm min-h-[44px]"
+                                        className="w-full sm:w-auto px-4 py-2.5 sm:py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95"
                                       >
                                         <ArrowLeft className="w-4 h-4" />
                                         {t.pages.give.backBtn}
                                       </button>
                                     </div>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
 
               {/* ── RIGHT: SIDEBAR ────────────────────────── */}
-              <div className={`lg:col-span-5 space-y-4 sm:space-y-5 ${activeMobileTab === 'summary' ? 'block' : 'hidden lg:block'}`}>
+              <div className={`lg:col-span-5 space-y-4 ${mobileTab === 'summary' ? 'block' : 'hidden lg:block'}`}>
 
                 {/* Giving Summary Card */}
-                <div className="relative bg-white dark:bg-[#0f1123] rounded-3xl shadow-xl border border-gray-200 dark:border-indigo-500/20 overflow-hidden transition-colors">
-                  {/* Subtle Background Glow */}
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-36 h-36 bg-indigo-500/5 dark:bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-                  
-                  <div className="relative px-5 py-6 sm:px-6 sm:py-7 lg:p-8 space-y-6">
+                <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-md sm:shadow-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                  <div className="relative p-4 sm:p-6 space-y-4 sm:space-y-5">
                     {/* Header */}
-                    <div className="flex items-center gap-2.5 pb-4 border-b border-gray-100 dark:border-white/15">
-                      <div className="w-8 h-8 rounded-xl bg-purple-600 dark:bg-white/15 border border-purple-500/30 dark:border-white/25 flex items-center justify-center text-white shadow-md">
-                        <Receipt className="w-4 h-4 text-white" />
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                        <Receipt className="w-4 h-4" />
                       </div>
-                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-[0.2em] text-gray-900 dark:text-white">
+                      <h3 className="font-black text-xs uppercase tracking-widest text-slate-900 dark:text-white">
                         {t.pages.give.summaryTitle}
                       </h3>
                     </div>
 
                     {/* Details Rows */}
-                    <div className="space-y-3.5">
-                      <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-700 dark:text-gray-300 font-extrabold">{t.pages.give.summaryType}</span>
-                        <span className="font-black text-xs bg-purple-100 text-purple-700 dark:bg-purple-500/30 dark:text-white border border-purple-200 dark:border-purple-400/40 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-600 dark:text-slate-300 font-extrabold">{t.pages.give.summaryType}</span>
+                        <span className="font-black text-xs bg-indigo-600 text-white dark:bg-indigo-600 dark:text-white border border-indigo-500 px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                           {activePurposeObj ? getLanguagePurposeName(activePurposeObj) : selectedPurpose}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-700 dark:text-gray-300 font-extrabold">{t.pages.give.summaryMethod}</span>
-                        <span className="font-extrabold text-xs text-indigo-800 dark:text-white flex items-center gap-1.5 bg-indigo-50 dark:bg-white/20 border border-indigo-100 dark:border-white/25 px-2.5 py-1 rounded-xl shadow-sm">
-                          <QrCode className="w-3.5 h-3.5 text-indigo-600 dark:text-purple-200" />
-                          {language === 'te' ? 'డైనమిక్ UPI QR' : language === 'hi' ? 'डायनेमिक यूपीआई' : 'Dynamic UPI QR'}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-600 dark:text-slate-300 font-extrabold">{t.pages.give.summaryMethod}</span>
+                        <span className="font-extrabold text-xs bg-purple-600 text-white dark:bg-purple-600 dark:text-white flex items-center gap-1.5 border border-purple-500 px-2.5 py-1 rounded-xl shadow-sm">
+                          <QrCode className="w-3.5 h-3.5 text-white" />
+                          Dynamic UPI QR
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between py-1 text-xs">
-                        <span className="text-gray-700 dark:text-gray-300 font-extrabold">{t.pages.give.summaryTax}</span>
-                        <span className="font-black text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-400/40 px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-sm">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-300" />
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-600 dark:text-slate-300 font-extrabold">{t.pages.give.summaryTax}</span>
+                        <span className="font-black text-xs text-white bg-emerald-600 dark:bg-emerald-600 border border-emerald-500 px-2.5 py-1 rounded-xl flex items-center gap-1 shadow-sm">
+                          <CheckCircle className="w-3.5 h-3.5 text-white stroke-[2.5]" />
                           {t.pages.give.summaryTaxValue}
                         </span>
                       </div>
                     </div>
 
                     {/* Total Amount Row */}
-                    <div className="pt-4 border-t border-gray-100 dark:border-white/15 flex items-center justify-between">
-                      <span className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">{t.pages.give.summaryTotal}</span>
-                      <div className="text-right">
-                        <AnimatePresence mode="wait">
-                          <motion.span
-                            key={displayAmount}
-                            initial={{ y: -8, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 8, opacity: 0 }}
-                            transition={{ duration: 0.15 }}
-                            className="text-2xl sm:text-3xl font-black flex items-center gap-1 text-gray-950 dark:text-white tracking-tight"
-                          >
-                            <IndianRupee className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5] text-purple-600 dark:text-purple-200" />
-                            {displayAmount.toLocaleString("en-IN")}
-                          </motion.span>
-                        </AnimatePresence>
-                      </div>
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.pages.give.summaryTotal}</span>
+                      <span className="text-xl sm:text-2xl font-black flex items-center gap-0.5 text-indigo-600 dark:text-indigo-300">
+                        <IndianRupee className="w-5 h-5 stroke-[2.5]" />
+                        {displayAmount.toLocaleString("en-IN")}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Live Giving History */}
                 {mounted && user && (
-                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] overflow-hidden">
-                    <div className="px-5 py-4 sm:px-8 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-md sm:shadow-xl overflow-hidden">
+                    <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                       <div>
-                        <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
-                          <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                        <h4 className="font-extrabold text-slate-900 dark:text-white text-xs flex items-center gap-2">
+                          <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
                           {t.pages.give.liveHistoryTitle}
                         </h4>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{t.pages.give.liveHistorySubtitle}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{t.pages.give.liveHistorySubtitle}</p>
                       </div>
                       <button 
                         onClick={() => loadHistory()} 
                         disabled={historyLoading}
-                        className="w-11 h-11 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-700"
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-200 dark:border-slate-700"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? "animate-spin" : ""}`} />
                       </button>
                     </div>
 
-                    <div className="px-5 py-5 sm:px-8 sm:pb-6">
+                    <div className="px-4 sm:px-5 py-3.5 sm:py-4">
                       {historyLoading && history.length === 0 ? (
-                        <div className="py-8 flex items-center justify-center">
-                          <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                        <div className="py-6 flex items-center justify-center">
+                          <Loader2 className="w-5 h-5 text-indigo-600 animate-spin" />
                         </div>
                       ) : history.length === 0 ? (
-                        <div className="text-center py-6 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-2xl">
-                          <Receipt className="w-7 h-7 text-gray-200 dark:text-gray-700 mx-auto mb-2" />
-                          <p className="text-xs text-gray-400 dark:text-gray-500 font-semibold">{t.pages.give.noRecords}</p>
+                        <div className="text-center py-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                          <Receipt className="w-6 h-6 text-slate-300 dark:text-slate-700 mx-auto mb-1.5" />
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">{t.pages.give.noRecords}</p>
                         </div>
                       ) : (
-                        <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
+                        <div className="space-y-2 max-h-60 overflow-y-auto pr-0.5">
                           {history.map((item) => (
                             <div
                               key={item.id}
-                              className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-xl flex items-center justify-between text-xs hover:border-purple-200 dark:hover:border-purple-700/50 transition-all group"
+                              className="p-3 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-between text-xs hover:border-indigo-300 transition-all"
                             >
                               <div className="space-y-0.5 min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="font-bold text-gray-800 dark:text-gray-200 uppercase text-[10px]">
+                                  <span className="font-bold text-slate-900 dark:text-white uppercase text-[10px]">
                                     {item.purposeRelation?.nameEn || item.purpose}
                                   </span>
-                                  <span className="text-[9px] text-gray-400">
+                                  <span className="text-[9px] text-slate-500 dark:text-slate-400">
                                     {new Date(item.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                                   </span>
                                 </div>
-                                <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-mono leading-none truncate">
+                                <span className="block text-[9px] text-slate-500 dark:text-slate-400 font-mono truncate">
                                   UTR: {item.razorpayPaymentId || "Pending"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
-                                <span className="font-black text-gray-900 dark:text-white">
+                                <span className="font-black text-slate-900 dark:text-white">
                                   ₹{item.amount.toLocaleString("en-IN")}
                                 </span>
                                 <a
                                   href={`/give/receipt/${item.id}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all"
+                                  className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all"
                                 >
                                   <ExternalLink className="w-3 h-3" />
                                 </a>
@@ -1559,47 +1518,40 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
                           ))}
                         </div>
                       )}
-
-                      {mounted && lastHistorySynced && (
-                        <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800 text-[9px] text-gray-400 dark:text-gray-500 font-mono flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
-                            {t.pages.give.syncActive}
-                          </span>
-                          <span>{t.pages.give.updatedAt}: {lastHistorySynced.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 )}
 
-                {/* Scripture Card */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-amber-900/30 rounded-3xl px-5 py-6 sm:p-8 shadow-sm border border-amber-200 dark:border-amber-800/50">
+                {/* Scripture Card (Malachi 3:10) */}
+                <div className="bg-amber-50 dark:bg-amber-950/60 rounded-3xl p-4 sm:p-5 border border-amber-200 dark:border-amber-700/60 shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                      <BookOpen className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0 shadow-md text-white">
+                      <BookOpen className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-amber-950 dark:text-amber-200 text-sm mb-1">{t.pages.give.malachiTitle}</h4>
-                      <p className="text-amber-900/90 dark:text-amber-300 text-xs leading-relaxed italic font-medium">{t.pages.give.malachiDesc}</p>
+                      <h4 className="font-black text-amber-950 dark:text-amber-200 text-xs mb-1">{t.pages.give.malachiTitle}</h4>
+                      <p className="text-amber-900 dark:text-amber-100 text-xs leading-relaxed italic font-semibold">{t.pages.give.malachiDesc}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Help Card */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl px-5 py-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-800">
-                  <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-1">{t.pages.give.helpTitle}</h4>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-3 leading-relaxed">{t.pages.give.helpDesc}</p>
+                {/* Need Assistance Card */}
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-md">
+                  <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">{t.pages.give.helpTitle}</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs mb-3 font-medium">{t.pages.give.helpDesc}</p>
                   <div className="space-y-2">
-                    <a href="mailto:kingofchristministries23@gmail.com" className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline break-all">
-                      <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="truncate">kingofchristministries23@gmail.com</span>
+                    <a 
+                      href="mailto:kingofchristministries23@gmail.com" 
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-300 transition-all group"
+                    >
+                      <Mail className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                      <span className="truncate underline underline-offset-2">kingofchristministries23@gmail.com</span>
                     </a>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-purple-600 dark:text-purple-400 font-semibold">
-                      <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                      <a href="tel:+919704090069" className="hover:underline whitespace-nowrap">+91 97040 90069</a>
-                      <span className="text-gray-300 dark:text-gray-600 hidden min-[360px]:inline">|</span>
-                      <a href="tel:+919640943777" className="hover:underline whitespace-nowrap">+91 96409 43777</a>
+                    <div className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white">
+                      <Phone className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                      <a href="tel:+919704090069" className="hover:text-indigo-600 dark:hover:text-indigo-300 hover:underline">+91 97040 90069</a>
+                      <span className="text-slate-400 dark:text-slate-500">|</span>
+                      <a href="tel:+919640943777" className="hover:text-indigo-600 dark:hover:text-indigo-300 hover:underline">+91 96409 43777</a>
                     </div>
                   </div>
                 </div>
@@ -1609,148 +1561,79 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         </div>
       </section>
 
-      {/* ── WHY WE GIVE ───────────────────────────────────── */}
-      <section className={`py-12 sm:py-20 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30 border-t border-gray-100 dark:border-gray-800 ${activeMobileTab === 'summary' || activeMobileTab === 'ways' ? 'block' : 'hidden lg:block'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-14">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-xs font-bold uppercase tracking-widest mb-5">
-                  <Heart className="w-3.5 h-3.5" />
-                  Our Mission
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
-                  {t.pages.give.whyHeading}
-                </h2>
-                <p className="text-sm sm:text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
-                  {t.pages.give.whySubtitle}
-                </p>
-              </motion.div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {t.pages.give.whyItems.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.08 }}
-                  className="flex items-center gap-3 sm:gap-4 bg-white dark:bg-gray-900 rounded-2xl p-3.5 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md hover:border-purple-200 dark:hover:border-purple-800/40 transition-all duration-300 group"
-                >
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-600/20 group-hover:scale-110 transition-transform">
-                    <Check className="h-3.5 w-3.5 text-white stroke-[2.5]" />
-                  </div>
-                  <p className="text-gray-800 dark:text-gray-200 font-extrabold text-xs sm:text-sm leading-snug">{item}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── OTHER WAYS TO GIVE ────────────────────────────── */}
-      <section className={`py-12 sm:py-20 ${activeMobileTab === 'ways' ? 'block' : 'hidden lg:block'}`}>
+      <section className={`py-10 sm:py-16 border-t border-slate-200/80 dark:border-slate-800 ${mobileTab === 'ways' ? 'block' : 'hidden lg:block'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-14">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
-                  {language === 'te' ? 'కానుకలు ఇవ్వడానికి ఇతర మార్గాలు' : language === 'hi' ? 'दान करने के अन्य तरीके' : 'Other Ways to Give'}
-                </h2>
-                <p className="text-gray-500 dark:text-gray-400 text-base">
-                  {language === 'te' ? 'మీకు అనుకూలమైన పద్ధతిని ఎంచుకోండి' : language === 'hi' ? 'अपनी सुविधा के अनुसार तरीका चुनें' : 'Choose the method that works best for you'}
-                </p>
-              </motion.div>
+            <div className="text-center mb-8 sm:mb-10">
+              <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white mb-1.5 sm:mb-2">
+                {language === 'te' ? 'కానుకలు ఇవ్వడానికి ఇతర మార్గాలు' : language === 'hi' ? 'दान करने के अन्य तरीके' : 'Other Ways to Give'}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-medium">
+                {language === 'te' ? 'మీకు అనుకూలమైన పద్ధతిని ఎంచుకోండి' : language === 'hi' ? 'अपनी सुविधा के अनुसार तरीका चुनें' : 'Choose the method that works best for you'}
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
               {/* Bank Transfer Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-purple-100 dark:hover:border-purple-900/40 transition-all duration-300 flex flex-col"
-              >
-                <div className="flex items-start gap-4 mb-5">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
-                    <Building className="h-7 w-7 text-white" />
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-md border border-slate-200/80 dark:border-slate-800">
+                <div className="flex items-start gap-3.5 sm:gap-4 mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-md shadow-indigo-600/20 text-white flex-shrink-0">
+                    <Building className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold text-gray-900 dark:text-white">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
                       {language === 'te' ? 'బ్యాంక్ బదిలీ / NEFT / IMPS' : language === 'hi' ? 'बैंक ट्रांसफर / NEFT / IMPS' : 'Bank Transfer / NEFT / IMPS'}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                       {language === 'te' ? 'పెద్ద దశమభాగాలకు అనుకూలమైనది.' : language === 'hi' ? 'बड़े दान के लिए बिल्कुल सही।' : 'Perfect for larger tithings and bulk offerings.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-4 sm:p-5 space-y-2.5 sm:space-y-3 text-xs sm:text-sm border border-gray-100 dark:border-gray-700/50 mt-auto">
+                <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-3.5 sm:p-4 space-y-2 text-xs border border-slate-100 dark:border-slate-700">
                   {[
-                    { label: language === 'te' ? 'ఖాతాదారుని పేరు' : language === 'hi' ? 'खाता धारक का नाम' : 'Account Name', value: 'Kingdom of Christ Ministries', mono: false },
-                    { label: language === 'te' ? 'ఖాతా సంఖ్య' : language === 'hi' ? 'खाता संख्या' : 'Account Number', value: '12041203940129', mono: true },
-                    { label: language === 'te' ? 'IFSC కోడ్' : language === 'hi' ? 'IFSC कोड' : 'IFSC Code', value: 'UTIB0001092', mono: true },
-                    { label: language === 'te' ? 'బ్యాంక్ బ్రాంచ్' : language === 'hi' ? 'बैंक स्थान' : 'Bank Location', value: 'Axis Bank, Jeedimetla', mono: false },
+                    { label: 'Account Name', value: 'Kingdom of Christ Ministries' },
+                    { label: 'Account Number', value: '12041203940129', mono: true },
+                    { label: 'IFSC Code', value: 'UTIB0001092', mono: true },
+                    { label: 'Bank Branch', value: 'Axis Bank, Jeedimetla' },
                   ].map((row) => (
-                    <div key={row.label} className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-100 dark:border-gray-700/50 last:border-0 pb-2 sm:pb-2.5 last:pb-0">
-                      <span className="text-gray-500 dark:text-gray-400 font-medium text-[11px] sm:text-xs">{row.label}:</span>
-                      <span className={`font-bold text-gray-950 dark:text-white sm:text-right text-xs sm:text-sm ${row.mono ? "font-mono text-purple-700 dark:text-purple-400" : ""}`}>{row.value}</span>
+                    <div key={row.label} className="flex justify-between items-center border-b border-slate-200/60 dark:border-slate-700/50 last:border-0 pb-1.5 last:pb-0">
+                      <span className="text-slate-600 dark:text-slate-300 font-bold text-[11px] sm:text-xs">{row.label}:</span>
+                      <span className={`font-extrabold text-[11px] sm:text-xs text-slate-900 dark:text-white ${row.mono ? "font-mono text-indigo-600 dark:text-indigo-300" : ""}`}>{row.value}</span>
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
 
               {/* Envelope Giving Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xl border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-pink-100 dark:hover:border-pink-900/40 transition-all duration-300 flex flex-col"
-              >
-                <div className="flex items-start gap-4 mb-5">
-                  <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/25 flex-shrink-0">
-                    <Heart className="h-7 w-7 text-white" />
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-md border border-slate-200/80 dark:border-slate-800">
+                <div className="flex items-start gap-3.5 sm:gap-4 mb-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-md shadow-rose-500/20 text-white flex-shrink-0">
+                    <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold text-gray-900 dark:text-white">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
                       {language === 'te' ? 'వ్యక్తిగతంగా ఎన్వలప్ కానుక' : language === 'hi' ? 'व्यक्तिगत लिफाफा दान' : 'In-Person Envelope Giving'}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 leading-relaxed">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                       {language === 'te' ? 'మా చర్చిలలో ఆరాధన సమయంలో కానుకలు ఇవ్వండి.' : language === 'hi' ? 'किसी भी चर्च स्थान पर पूजा के दौरान अर्पित करें।' : 'Place your offering during any worship service at our locations.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-auto">
-                  <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
-                    {language === 'te' ? 'మా బ్రాంచ్‌లను సందర్శించండి' : language === 'hi' ? 'हमारी शाखाओं का दौरा करें' : 'Visit our branches'}
-                  </p>
-                  <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-2 sm:gap-3">
-                    {branches.map((b) => (
-                      <div
-                        key={b.id}
-                        className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 text-purple-700 dark:text-purple-300 p-2.5 sm:p-3.5 rounded-2xl border border-purple-100 dark:border-purple-900/30 shadow-sm flex flex-row min-[480px]:flex-col items-center justify-start min-[480px]:justify-center gap-2.5 sm:gap-2 w-full"
-                      >
-                        <span className="text-xl sm:text-2xl">⛪</span>
-                        <span className="text-xs sm:text-[11px] font-bold truncate max-w-full text-gray-800 dark:text-white">{b.name}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="grid grid-cols-3 gap-2 pt-2">
+                  {branches.map((b) => (
+                    <div
+                      key={b.id}
+                      className="bg-slate-50 dark:bg-slate-800/80 p-2.5 sm:p-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm"
+                    >
+                      <span className="text-lg sm:text-xl block mb-1">⛪</span>
+                      <span className="text-[10px] sm:text-xs font-black block truncate text-slate-900 dark:text-white tracking-wide">{b.name}</span>
+                    </div>
+                  ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>

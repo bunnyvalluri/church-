@@ -215,7 +215,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-extrabold text-sm truncate leading-tight text-white">{user?.name || "Member"}</p>
-              <p className="text-purple-100 text-[11px] truncate mt-0.5 leading-none font-medium">{user?.email}</p>
+              <p className="text-white text-xs truncate mt-0.5 leading-tight font-extrabold tracking-wide drop-shadow-xs">{user?.email}</p>
             </div>
           </div>
           <div className="relative flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-white/15">
@@ -452,7 +452,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                           </div>
                           <div className="min-w-0 flex-1">
                             <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate leading-tight">{user?.name || "Member"}</h4>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-300 truncate leading-none mt-0.5">{user?.email}</p>
+                            <p className="text-xs text-slate-700 dark:text-slate-100 font-bold truncate leading-tight mt-0.5">{user?.email}</p>
                             <span className="inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-purple-900 dark:text-white mt-1.5 px-2.5 py-0.5 bg-purple-100/90 dark:bg-purple-600/40 rounded-full border border-purple-300 dark:border-purple-400/60 shadow-xs">
                               <Shield className="w-2.5 h-2.5 text-purple-700 dark:text-purple-200" />
                               {lt.verifiedMember}
