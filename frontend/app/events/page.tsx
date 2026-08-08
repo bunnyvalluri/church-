@@ -50,6 +50,19 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string; border: string
   SPECIAL: { bg: "bg-indigo-600", text: "text-white font-black", border: "border-indigo-500" },
 };
 
+// Per-category gradient palettes for placeholder backgrounds
+const CATEGORY_GRADIENTS: Record<string, string> = {
+  WORSHIP:  "from-violet-600 via-purple-600 to-indigo-700",
+  PRAYER:   "from-blue-600 via-indigo-600 to-violet-700",
+  YOUTH:    "from-amber-500 via-orange-500 to-rose-600",
+  CHILDREN: "from-pink-500 via-rose-500 to-fuchsia-600",
+  WOMEN:    "from-rose-500 via-pink-500 to-purple-600",
+  MEN:      "from-sky-500 via-blue-600 to-indigo-700",
+  SPECIAL:  "from-indigo-600 via-violet-600 to-purple-700",
+  FELLOWSHIP: "from-emerald-500 via-teal-500 to-cyan-600",
+  OUTREACH: "from-orange-500 via-amber-500 to-yellow-500",
+};
+
 function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean }) {
   const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
@@ -58,6 +71,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
   }, []);
 
   const cat = CATEGORY_STYLES[event.category] || CATEGORY_STYLES.SPECIAL;
+  const gradientClass = CATEGORY_GRADIENTS[event.category] || CATEGORY_GRADIENTS.SPECIAL;
   const eventDate = new Date(event.date);
   const isUpcoming = mounted && eventDate > new Date();
   const thumbnail = event.image || event.media?.[0]?.imageUrl;
@@ -66,15 +80,25 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
   return (
     <div className={`group bg-white dark:bg-slate-900 border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${isNew ? "border-violet-500/50 ring-2 ring-violet-500/30 animate-in slide-in-from-bottom-4 duration-500" : "border-slate-200 dark:border-white/10 hover:border-violet-500/40 dark:hover:border-violet-500/40"}`}>
       {/* Thumbnail */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700">
+      <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${gradientClass}`}>
         {thumbnail ? (
           <img src={thumbnail} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center opacity-25">
-            <Calendar className="w-20 h-20 text-white" />
+          /* Decorative placeholder — visible, branded, never pitch-black */
+          <div className="absolute inset-0">
+            {/* Soft radial glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-white/15 blur-2xl" />
+            {/* Large faint icon */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Calendar className="w-16 h-16 text-white/30" />
+            </div>
+            {/* Decorative circles */}
+            <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+            <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-black/10" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Softer overlay — lets gradient breathe */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
 
         {/* Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between">

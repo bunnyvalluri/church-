@@ -7,34 +7,90 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function BackToTop() {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    const onScroll = () => setVisible(window.scrollY > 300);
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setVisible(scrollY > 300);
+      setProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   if (!mounted) return null;
+
+  // SVG progress ring dimensions
+  const size = 44;
+  const radius = 17;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          initial={{ opacity: 0, scale: 0.4, y: 24 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          exit={{ opacity: 0, scale: 0.4, y: 24 }}
+          transition={{ type: "spring", damping: 22, stiffness: 280 }}
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.88 }}
           onClick={scrollToTop}
-          className="fixed bottom-20 left-4 sm:bottom-6 sm:left-6 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gray-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-gray-900 shadow-xl flex items-center justify-center border border-gray-700/50 dark:border-gray-200/50 hover:shadow-2xl active:scale-95 transition-all"
           aria-label="Back to top"
+          className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
+          style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.4))" }}
         >
-          <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
+          {/* Glassmorphism base */}
+          <span className="absolute inset-0 rounded-full bg-gray-950/80 dark:bg-gray-900/85 backdrop-blur-xl border border-white/[0.08]" />
+
+          {/* Purple inner glow */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 via-transparent to-indigo-500/10 pointer-events-none" />
+
+          {/* Scroll progress ring */}
+          <svg
+            className="absolute inset-0 w-full h-full -rotate-90"
+            viewBox={`0 0 ${size} ${size}`}
+            fill="none"
+          >
+            {/* Track ring */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="2.5"
+            />
+            {/* Progress arc */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke="url(#btt-grad)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              style={{ transition: "stroke-dashoffset 0.2s ease" }}
+            />
+            <defs>
+              <linearGradient id="btt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#a855f7" />
+                <stop offset="100%" stopColor="#6366f1" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          {/* Icon */}
+          <ArrowUp
+            className="relative z-10 w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
+            strokeWidth={2.8}
+          />
         </motion.button>
       )}
     </AnimatePresence>

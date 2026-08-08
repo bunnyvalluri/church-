@@ -213,30 +213,6 @@ const EventCard = React.memo(function EventCard({
             </p>
           </div>
 
-          {/* Meta row */}
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <Calendar className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-              <span className="font-semibold" suppressHydrationWarning>{formattedDate}</span>
-              {event.time && (
-                <>
-                  <span className="text-slate-300 dark:text-slate-600">·</span>
-                  <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-                  <span>{event.time}</span>
-                </>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-              <span className="truncate font-medium">{event.location}</span>
-            </div>
-            {event.branch && (
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <Building2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                <span className="font-medium">{event.branch.name}</span>
-              </div>
-            )}
-          </div>
 
           {/* Media grid preview */}
           {event.media && event.media.length > 0 && (

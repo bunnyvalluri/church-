@@ -123,32 +123,45 @@ export default function AIChat() {
   // Floating trigger button when closed
   if (!isOpen) {
     return (
-      <div className="fixed bottom-20 right-3 sm:bottom-6 sm:right-6 z-40 group">
+      <div className="fixed bottom-5 right-3 sm:bottom-6 sm:right-6 z-40 group">
         <button
           onClick={() => setIsOpen(true)}
-          className="relative p-2.5 sm:p-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-white/20 dark:border-gray-800"
+          className="relative flex items-center justify-center w-14 h-14 sm:w-15 sm:h-15 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none"
           aria-label="Open KCM Assistant"
+          style={{ filter: "drop-shadow(0 8px 28px rgba(109,40,217,0.5))" }}
         >
-          {/* Animated pulsing status ring */}
-          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 bg-emerald-500 border-2 border-white dark:border-gray-900"></span>
+          {/* Outer animated halo ring */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-indigo-600 to-purple-700 opacity-20 animate-pulse scale-110 blur-sm pointer-events-none" />
+
+          {/* Main button shell — glassmorphism */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-800 border border-white/20 shadow-2xl" />
+
+          {/* Inner shimmer highlight */}
+          <span className="absolute top-0 left-0 right-0 h-1/2 rounded-t-full bg-white/10 pointer-events-none" />
+
+          {/* Online status dot — top right, crisp */}
+          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-[1.5px] border-white dark:border-gray-900 shadow-sm" />
           </span>
 
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm">
+          {/* Chatbot avatar */}
+          <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center">
             <Image
               src="/chatbot-bird-logo.png"
               alt="KCM AI Assistant"
-              width={36}
-              height={36}
+              width={40}
+              height={40}
               className="object-cover rounded-full"
             />
           </div>
         </button>
 
-        {/* Hover Tooltip */}
-        <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none border border-gray-700 hidden sm:block">
-          Chat with KCM Assistant ✨
+        {/* Glassmorphism tooltip */}
+        <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3.5 px-3 py-1.5 bg-gray-950/90 dark:bg-gray-900/90 backdrop-blur-xl text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none border border-white/10 hidden sm:block tracking-wide">
+          Chat with KCM Assistant ✦
+          {/* Arrow */}
+          <span className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[5px] border-l-gray-950/90 dark:border-l-gray-900/90" />
         </div>
       </div>
     );
