@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function BackToTop() {
@@ -14,14 +14,32 @@ export default function BackToTop() {
     const onScroll = () => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setVisible(scrollY > 300);
+      
+      // Visible whenever the page is scrollable (more than 200px overflow)
+      setVisible(docHeight > 200);
       setProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
     };
+
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const isNearTop = progress < 50;
+
+  const handleScrollAction = () => {
+    if (isNearTop) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
 
   if (!mounted) return null;
 
@@ -41,9 +59,10 @@ export default function BackToTop() {
           transition={{ type: "spring", damping: 22, stiffness: 280 }}
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.88 }}
-          onClick={scrollToTop}
-          aria-label="Back to top"
-          className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
+          onClick={handleScrollAction}
+          aria-label={isNearTop ? "Scroll to bottom" : "Scroll to top"}
+          title={isNearTop ? "Scroll to bottom" : "Scroll to top"}
+          className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group"
           style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.4))" }}
         >
           {/* Glassmorphism base */}
@@ -86,13 +105,30 @@ export default function BackToTop() {
             </defs>
           </svg>
 
-          {/* Icon */}
-          <ArrowUp
-            className="relative z-10 w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
-            strokeWidth={2.8}
-          />
+          {/* Animated Directional Icon */}
+          <motion.div
+            key={isNearTop ? "down" : "up"}
+            initial={{ rotate: isNearTop ? -180 : 180, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: isNearTop ? 180 : -180, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-10"
+          >
+            {isNearTop ? (
+              <ArrowDown
+                className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
+                strokeWidth={2.8}
+              />
+            ) : (
+              <ArrowUp
+                className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] text-white"
+                strokeWidth={2.8}
+              />
+            )}
+          </motion.div>
         </motion.button>
       )}
     </AnimatePresence>
   );
 }
+
