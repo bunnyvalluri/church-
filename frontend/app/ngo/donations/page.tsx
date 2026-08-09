@@ -754,44 +754,44 @@ function NgoDonationsContent() {
         {step === 3 && <PaymentStateMonitor />}
 
         {/* ── TOP IMPACT METRICS BAR ────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-lg text-slate-800 dark:text-slate-200">
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 hover:scale-[1.02] transition-transform duration-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-lg text-slate-800 dark:text-slate-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-purple-500/10 dark:bg-purple-500/25 border border-purple-500/20 hover:scale-[1.02] transition-transform duration-200">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-500/20 flex-shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Regd No: 206/2024</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Govt Registered NGO</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Govt Registered NGO</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 hover:scale-[1.02] transition-transform duration-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/25 border border-emerald-500/20 hover:scale-[1.02] transition-transform duration-200">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 flex-shrink-0">
               <Users className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">5,000+ Assisted</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Patients &amp; Families</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Patients &amp; Families</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 hover:scale-[1.02] transition-transform duration-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/25 border border-amber-500/20 hover:scale-[1.02] transition-transform duration-200">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 flex-shrink-0">
               <Flame className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">100+ Volunteers</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Active Outreach Team</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Active Outreach Team</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 hover:scale-[1.02] transition-transform duration-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-500/25 border border-blue-500/20 hover:scale-[1.02] transition-transform duration-200">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0">
               <Award className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">80G Tax Exempt</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">50% IT Tax Benefits</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">50% IT Tax Benefits</p>
             </div>
           </div>
         </div>
@@ -803,44 +803,44 @@ function NgoDonationsContent() {
 
           {/* ── LEFT COLUMN: Hero & Cause Explorer ─────────────────────────── */}
           <div className="lg:col-span-5 space-y-6 lg:space-y-7 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-wider shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-800 dark:text-purple-100 text-xs font-black uppercase tracking-wider shadow-sm">
               <Heart className="w-4 h-4 text-purple-500 animate-pulse fill-purple-500/20" />
               <span>{ngoT?.donationsPage?.tag || "KCM NGO SOCIAL SERVICE"}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-slate-900 dark:text-white">
-              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 dark:from-purple-300 dark:via-indigo-300 dark:to-rose-300 bg-clip-text text-transparent">Our Projects</span>
+              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 dark:from-purple-200 dark:via-indigo-200 dark:to-rose-300 bg-clip-text text-transparent">Our Projects</span>
             </h1>
 
-            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed font-medium">
+            <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-base leading-relaxed font-medium">
               {ngoT?.donationsPage?.desc || "Your financial contributions directly purchase fresh food packets, medical kits, support assistants, and essential gear for hospital patients and handicap shelters."}
             </p>
 
             {/* Interactive Giving Frequency Switcher */}
-            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-1.5 shadow-inner">
+            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/15 flex items-center justify-between gap-1.5 shadow-inner">
               <button
                 type="button"
                 onClick={() => setFrequency("ONE_TIME")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   frequency === "ONE_TIME"
-                    ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-md border border-slate-200/80 dark:border-white/10"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-white dark:bg-purple-600 text-purple-950 dark:text-white shadow-md border border-slate-200/80 dark:border-purple-400"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <Zap className="w-4 h-4 text-purple-500" />
+                <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-600 dark:text-white" : "text-purple-500"}`} />
                 <span>One-Time Donation</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setFrequency("MONTHLY")}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
                   frequency === "MONTHLY"
                     ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-500"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-4 h-4 text-white" />
                 <span>Monthly Partner</span>
                 <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full ml-1">
                   2x Impact
@@ -850,7 +850,7 @@ function NgoDonationsContent() {
 
             {/* Live Cause Explorer Selector */}
             <div className="space-y-3 pt-1">
-              <label className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-200 block">
                 Select Cause to Support
               </label>
 
@@ -867,15 +867,15 @@ function NgoDonationsContent() {
                       onClick={() => setSelectedCause(c.code)}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-purple-50/90 dark:bg-purple-950/50 border-purple-500 shadow-md ring-2 ring-purple-500/20"
-                          : "bg-white dark:bg-slate-900/70 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-700/50 hover:bg-slate-50 dark:hover:bg-slate-850"
+                          ? "bg-purple-50/90 dark:bg-purple-900/60 border-purple-500 dark:border-purple-400 shadow-md ring-2 ring-purple-500/30"
+                          : "bg-white dark:bg-slate-900/90 border-slate-200 dark:border-white/15 hover:border-purple-300 dark:hover:border-purple-500/50 hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className={`text-xs sm:text-sm font-extrabold ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-slate-900 dark:text-white"}`}>
+                        <span className={`text-xs sm:text-sm font-black ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-white"}`}>
                           {c.nameEn}
                         </span>
-                        <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400">
+                        <span className={`text-[11px] font-mono font-bold ${isSelected ? "text-purple-800 dark:text-purple-100" : "text-slate-600 dark:text-slate-300"}`}>
                           ₹{formatNumber(raised)} / ₹{formatNumber(target)} ({pct}%)
                         </span>
                       </div>
@@ -893,35 +893,35 @@ function NgoDonationsContent() {
             </div>
 
             {/* Impact Calculator Display */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 border border-purple-200 dark:border-purple-800/40 text-xs sm:text-sm space-y-2">
-              <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-extrabold">
-                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0 animate-spin" style={{ animationDuration: '6s' }} />
+            <div className="p-4 sm:p-5 rounded-2xl bg-purple-50 dark:bg-purple-950/70 border border-purple-200 dark:border-purple-500/40 text-xs sm:text-sm space-y-2">
+              <div className="flex items-center gap-2 text-purple-900 dark:text-purple-100 font-black">
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-300 flex-shrink-0 animate-spin" style={{ animationDuration: '6s' }} />
                 <span>Impact of ₹{formatNumber(currentNumAmount)}:</span>
               </div>
-              <p className="text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
+              <p className="text-slate-800 dark:text-white font-semibold leading-relaxed">
                 {currentImpactText}
               </p>
             </div>
 
             {/* Beneficiaries & Security Guarantee Card */}
-            <div className="p-5 border border-slate-200 dark:border-white/10 rounded-2xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-sm text-xs sm:text-sm space-y-3 text-slate-600 dark:text-slate-300 shadow-sm">
+            <div className="p-5 border border-slate-200 dark:border-white/15 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm text-xs sm:text-sm space-y-3 text-slate-700 dark:text-slate-200 shadow-sm">
               <div className="flex items-start gap-2.5">
                 <ShieldCheck className="w-4.5 h-4.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Primary Beneficiaries:</strong> Caretakers & patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
+                  <strong className="text-slate-900 dark:text-white font-bold">Primary Beneficiaries:</strong> Caretakers &amp; patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
                 </p>
               </div>
               <div className="flex items-start gap-2.5">
                 <Lock className="w-4.5 h-4.5 text-purple-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Secure & 80G Tax Exempt:</strong> 256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts.
+                  <strong className="text-slate-900 dark:text-white font-bold">Secure &amp; 80G Tax Exempt:</strong> 256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts.
                 </p>
               </div>
             </div>
 
             {/* Supported Payment App Logos */}
             <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
+              <p className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 mb-3">
                 Accepted Instant Payment Methods
               </p>
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -933,7 +933,7 @@ function NgoDonationsContent() {
                 ].map((app) => (
                   <span
                     key={app.name}
-                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
+                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-white shadow-sm flex items-center gap-2"
                   >
                     <app.icon />
                     <span>{app.name}</span>
@@ -944,10 +944,10 @@ function NgoDonationsContent() {
           </div>
 
           {/* ── RIGHT COLUMN: Interactive Donation Wizard Form ─────────────────────── */}
-          <div className="lg:col-span-7 lg:sticky lg:top-28 self-start bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-xl dark:shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-7 lg:sticky lg:top-28 self-start bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/15 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-xl dark:shadow-2xl relative overflow-hidden">
             
             {/* ── WIZARD STEP INDICATOR ────────────────────────────────────── */}
-            <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/5">
+            <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
               <div className="flex items-center justify-between relative">
                 {[
                   { num: 1, label: "Amount" },
@@ -966,18 +966,18 @@ function NgoDonationsContent() {
                             ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
                             : isCurrent
                             ? "bg-purple-600 text-white shadow-md shadow-purple-500/30 ring-4 ring-purple-100 dark:ring-purple-950"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-white/10"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                         }`}
                       >
                         {isDone ? <Check className="w-4 h-4" /> : s.num}
                       </div>
                       <span
-                        className={`text-[10px] font-extrabold uppercase tracking-wider ${
+                        className={`text-[10px] font-black uppercase tracking-wider ${
                           isCurrent
-                            ? "text-purple-600 dark:text-purple-400"
+                            ? "text-purple-600 dark:text-purple-300"
                             : isDone
                             ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-slate-400 dark:text-slate-500"
+                            : "text-slate-500 dark:text-slate-300"
                         }`}
                       >
                         {s.label}
@@ -987,7 +987,7 @@ function NgoDonationsContent() {
                 })}
 
                 {/* Stepper background line */}
-                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
+                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 dark:bg-slate-700 z-0" />
               </div>
             </div>
 
@@ -1012,10 +1012,10 @@ function NgoDonationsContent() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
                       Step 1: Choose Donation Amount
                     </label>
-                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">
+                    <span className="text-[11px] font-extrabold text-purple-600 dark:text-purple-300">
                       {frequency === "MONTHLY" ? "Monthly Recurring" : "One-Time Giving"}
                     </span>
                   </div>
@@ -1054,13 +1054,13 @@ function NgoDonationsContent() {
                           setCustomAmount(e.target.value);
                           setAmount("");
                         }}
-                        className={`w-full py-3.5 pl-8 pr-3 rounded-2xl border-2 text-sm sm:text-base font-black focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-full py-3.5 pl-6 sm:pl-7 pr-2 rounded-2xl border-2 text-xs sm:text-sm lg:text-base font-black focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           customAmount
-                            ? "bg-purple-50/80 dark:bg-purple-950/60 text-slate-900 dark:text-white border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
-                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/80 dark:hover:bg-slate-700/90 border-slate-200/90 dark:border-white/15 text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
+                            ? "bg-purple-50/90 dark:bg-purple-950/90 text-slate-900 dark:text-white border-purple-600 dark:border-purple-400 shadow-md shadow-purple-500/10 ring-2 ring-purple-600/20"
+                            : "bg-slate-50 hover:bg-purple-50/50 dark:bg-slate-800/90 dark:hover:bg-slate-700/90 border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-300 placeholder:font-extrabold focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20"
                         }`}
                       />
-                      <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm font-black ${customAmount ? "text-purple-700 dark:text-purple-300" : "text-purple-500 dark:text-purple-400"}`}>
+                      <span className={`absolute left-2.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-black pointer-events-none ${customAmount ? "text-purple-700 dark:text-purple-200" : "text-purple-600 dark:text-purple-300"}`}>
                         ₹
                       </span>
                     </div>
@@ -1068,13 +1068,13 @@ function NgoDonationsContent() {
 
                   {/* Quick Add Pills */}
                   <div className="pt-3 flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">Quick add:</span>
+                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-300">Quick add:</span>
                     {[500, 1000, 5000].map((addVal) => (
                       <button
                         key={addVal}
                         type="button"
                         onClick={() => handleQuickAdd(addVal)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-200 dark:border-white/10 transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-slate-800 dark:text-slate-100 dark:hover:text-white text-xs font-black border border-slate-200 dark:border-white/15 transition-colors"
                       >
                         +₹{formatNumber(addVal)}
                       </button>
@@ -1101,22 +1101,22 @@ function NgoDonationsContent() {
                 className="space-y-4 text-left"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
                     Step 2: Donor Information
                   </label>
-                  <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800/40">
+                  <span className="text-xs font-extrabold text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-950/80 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800/60">
                     Amount: ₹{formatNumber(getFinalAmount())}
                   </span>
                 </div>
 
                 {/* 80G Tax Exemption Request Toggle Card */}
-                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
+                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
                   <div>
                     <p className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                       <Award className="w-4 h-4 text-amber-500" />
                       <span>Request 80G Tax Exemption Receipt</span>
                     </p>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium mt-0.5">
                       Claim 50% tax deduction under Section 80G of Income Tax Act
                     </p>
                   </div>
@@ -1139,8 +1139,8 @@ function NgoDonationsContent() {
 
                     if (field.fieldType === "checkbox") {
                       return (
-                        <div key={field.id} className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10">
-                          <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
+                        <div key={field.id} className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/15">
+                          <span className="text-xs font-extrabold text-slate-800 dark:text-white">
                             {field.label}
                           </span>
                           <button
@@ -1165,7 +1165,7 @@ function NgoDonationsContent() {
 
                     return (
                       <div key={field.id} className={isFullWidth ? "sm:col-span-2" : "sm:col-span-1"}>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                        <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
                           {field.label} {field.isRequired ? "*" : "(Optional)"}
                         </label>
                         <input
@@ -1179,7 +1179,7 @@ function NgoDonationsContent() {
                             }))
                           }
                           placeholder={field.placeholder || ""}
-                          className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-60"
+                          className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-purple-500 disabled:opacity-60"
                         />
                       </div>
                     );
@@ -1190,9 +1190,9 @@ function NgoDonationsContent() {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="sm:col-span-2 space-y-1 bg-amber-500/5 p-3.5 rounded-2xl border border-amber-500/20"
+                      className="sm:col-span-2 space-y-1 bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/30"
                     >
-                      <label className="block text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                      <label className="block text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
                         PAN Card Number (Required for 80G Receipt) *
                       </label>
                       <input
@@ -1208,7 +1208,7 @@ function NgoDonationsContent() {
                         placeholder="e.g. ABCDE1234F"
                         className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30"
                       />
-                      <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">
+                      <p className="text-[10.5px] text-slate-600 dark:text-slate-300 font-medium">
                         Required by Govt of India Income Tax Dept for issuing Section 80G certificate.
                       </p>
                     </motion.div>
@@ -1218,13 +1218,13 @@ function NgoDonationsContent() {
                 {/* Purpose & Branch Selectors */}
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
                       Donation Cause
                     </label>
                     <select
                       value={selectedCause}
                       onChange={(e) => setSelectedCause(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
+                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
                     >
                       {causes.map((c) => (
                         <option key={c.id} value={c.code}>
@@ -1235,13 +1235,13 @@ function NgoDonationsContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
                       Branch
                     </label>
                     <select
                       value={selectedBranch}
                       onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
+                      className="w-full py-3 px-3 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:border-purple-500"
                     >
                       {branches.map((b) => (
                         <option key={b.id} value={b.id}>
@@ -1257,7 +1257,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Back</span>
@@ -1293,19 +1293,19 @@ function NgoDonationsContent() {
                 className="space-y-6 flex flex-col items-center text-center"
               >
                 {/* Status Bar */}
-                <div className="w-full flex items-center justify-between bg-purple-500/10 border border-purple-500/20 px-4 py-2.5 rounded-2xl text-xs font-bold text-purple-700 dark:text-purple-300">
+                <div className="w-full flex items-center justify-between bg-purple-500/10 border border-purple-500/30 px-4 py-2.5 rounded-2xl text-xs font-bold text-purple-800 dark:text-purple-200">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                    <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400" />
                     <span>Waiting for Payment…</span>
                   </div>
-                  <div className="flex items-center gap-1 text-slate-600 dark:text-slate-400 font-mono">
+                  <div className="flex items-center gap-1 text-slate-700 dark:text-slate-200 font-mono font-bold">
                     <Clock className="w-3.5 h-3.5 text-purple-500" />
                     <span>Expires in: {timeLeftStr}</span>
                   </div>
                 </div>
 
                 {/* Dynamic QR Code Container */}
-                <div className={`p-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-3xl flex flex-col items-center w-full max-w-sm relative transition-all ${
+                <div className={`p-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/15 rounded-3xl flex flex-col items-center w-full max-w-sm relative transition-all ${
                   paymentStatus === "EXPIRED" ? "opacity-40 grayscale pointer-events-none" : ""
                 }`}>
                   <div className="relative w-56 aspect-square bg-white rounded-2xl p-3 border border-slate-200 dark:border-white/20 shadow-inner flex items-center justify-center">
@@ -1320,23 +1320,23 @@ function NgoDonationsContent() {
                     )}
                   </div>
 
-                  <p className="mt-3 text-sm font-extrabold text-slate-900 dark:text-white">
+                  <p className="mt-3 text-sm font-black text-slate-900 dark:text-white">
                     Scan with any UPI App to Pay ₹{formatNumber(getFinalAmount())}
                   </p>
 
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 font-mono font-bold mt-0.5">
                     Order Ref: {referenceNumber || orderId}
                   </p>
 
                   {/* Merchant UPI ID Copy Box */}
-                  <div className="mt-4 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
-                    <span className="text-slate-700 dark:text-slate-300 font-extrabold font-mono">
+                  <div className="mt-4 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="text-slate-800 dark:text-white font-black font-mono">
                       UPI ID: {settings.upiId}
                     </span>
                     <button
                       type="button"
                       onClick={() => copyToClipboard(settings.upiId, "upi")}
-                      className="text-purple-600 dark:text-purple-400 font-bold hover:text-purple-700 flex items-center gap-1 min-h-[32px] px-2"
+                      className="text-purple-700 dark:text-purple-200 font-extrabold hover:text-purple-400 flex items-center gap-1 min-h-[32px] px-2"
                     >
                       <Copy className="w-3.5 h-3.5" />
                       <span>{copiedLabel === "upi" ? "Copied!" : "Copy"}</span>
@@ -1346,7 +1346,7 @@ function NgoDonationsContent() {
 
                 {/* Mobile Deep Link Apps */}
                 <div className="w-full max-w-sm space-y-2.5">
-                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
                     Tap to pay directly on mobile
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1360,7 +1360,7 @@ function NgoDonationsContent() {
                         key={app.name}
                         type="button"
                         onClick={() => handleOpenUpiApp(app.pkg, app.scheme)}
-                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-extrabold text-slate-800 dark:text-slate-200 hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
+                        className="py-2.5 px-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-xs font-black text-slate-800 dark:text-white hover:border-purple-500 hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]"
                       >
                         <app.icon />
                         <span>{app.name}</span>
@@ -1381,11 +1381,11 @@ function NgoDonationsContent() {
                 </div>
 
                 {/* Simulation Button for Testing */}
-                <div className="pt-3 w-full max-w-sm flex items-center justify-between border-t border-slate-100 dark:border-white/5 text-xs">
+                <div className="pt-3 w-full max-w-sm flex items-center justify-between border-t border-slate-100 dark:border-white/10 text-xs">
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-bold"
+                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold"
                   >
                     ← Edit Details
                   </button>
@@ -1393,7 +1393,7 @@ function NgoDonationsContent() {
                   <button
                     type="button"
                     onClick={() => handlePaymentSuccess(donationId)}
-                    className="text-purple-600 dark:text-purple-400 font-extrabold hover:underline"
+                    className="text-purple-700 dark:text-purple-200 font-black hover:underline"
                   >
                     [Simulate Successful Payment]
                   </button>
@@ -1434,7 +1434,7 @@ function NgoDonationsContent() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.35 }}
-                    className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs font-medium"
+                    className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 max-w-xs font-medium"
                   >
                     Thank you for your generous support. Your donation has been verified and recorded.
                   </motion.p>
@@ -1459,12 +1459,12 @@ function NgoDonationsContent() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.55 }}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm"
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 rounded-2xl overflow-hidden shadow-sm"
                 >
-                  <div className="bg-purple-600/10 dark:bg-purple-900/30 px-5 py-3 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+                  <div className="bg-purple-600/10 dark:bg-purple-900/40 px-5 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      <span className="text-xs font-extrabold uppercase tracking-widest text-purple-700 dark:text-purple-300">Official Receipt</span>
+                      <FileText className="w-4 h-4 text-purple-600 dark:text-purple-300" />
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-purple-800 dark:text-purple-200">Official Receipt</span>
                     </div>
                     {wantTaxExemption && (
                       <span className="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase">
@@ -1473,7 +1473,7 @@ function NgoDonationsContent() {
                     )}
                   </div>
 
-                  <div className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
+                  <div className="divide-y divide-slate-100 dark:divide-white/10 text-xs">
                     {[
                       { label: "Receipt Number", value: receiptData.receiptNumber, mono: true, highlight: true },
                       { label: "Donation ID", value: donationId, mono: true },
@@ -1485,13 +1485,13 @@ function NgoDonationsContent() {
                       { label: "Payment Method", value: "UPI (Instant Dynamic QR)" },
                     ].map((row) => (
                       <div key={row.label} className="flex justify-between items-center px-5 py-2.5 gap-3">
-                        <span className="text-slate-500 dark:text-slate-400 flex-shrink-0 font-medium">{row.label}</span>
+                        <span className="text-slate-600 dark:text-slate-300 flex-shrink-0 font-semibold">{row.label}</span>
                         <span className={`font-bold text-right break-all ${
                           row.highlight
-                            ? "text-purple-700 dark:text-purple-300 font-mono font-extrabold"
+                            ? "text-purple-700 dark:text-purple-200 font-mono font-extrabold"
                             : row.mono
-                            ? "font-mono text-slate-700 dark:text-slate-200"
-                            : "text-slate-800 dark:text-slate-200"
+                            ? "font-mono text-slate-800 dark:text-white"
+                            : "text-slate-900 dark:text-white"
                         }`}>
                           {row.value}
                         </span>
@@ -1521,9 +1521,9 @@ function NgoDonationsContent() {
                     <button
                       type="button"
                       onClick={handleShareReceipt}
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
-                      <Share2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <Share2 className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                       Share Receipt
                     </button>
 
@@ -1534,7 +1534,7 @@ function NgoDonationsContent() {
                           .then(() => showToast("📧 Receipt emailed successfully!", "success"))
                           .catch(() => showToast("Could not send email. Try again.", "error"));
                       }}
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Mail className="w-4 h-4 text-blue-500" />
                       Email Receipt
@@ -1544,7 +1544,7 @@ function NgoDonationsContent() {
                   <div className="grid grid-cols-2 gap-2.5">
                     <Link
                       href="/member/give"
-                      className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/40 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <FileText className="w-4 h-4" />
                       Donation History
@@ -1552,7 +1552,7 @@ function NgoDonationsContent() {
 
                     <Link
                       href="/ngo"
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Home className="w-4 h-4" />
                       Return Home
@@ -1576,7 +1576,7 @@ function NgoDonationsContent() {
             <h3 className="text-2xl font-black text-slate-900 dark:text-white">
               Frequently Asked Questions
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
               Everything you need to know about giving, 80G tax exemptions, and payment security.
             </p>
           </div>
@@ -1587,12 +1587,12 @@ function NgoDonationsContent() {
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all"
+                  className="rounded-2xl border border-slate-200 dark:border-white/15 bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all"
                 >
                   <button
                     type="button"
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-4 text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                    className="w-full p-4 text-left font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                   >
                     <span className="flex items-center gap-2.5">
                       <HelpCircle className="w-4 h-4 text-purple-500 flex-shrink-0" />
@@ -1607,7 +1607,7 @@ function NgoDonationsContent() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="px-4 pb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5 pt-3 font-medium"
+                        className="px-4 pb-4 text-xs sm:text-sm text-slate-700 dark:text-slate-100 leading-relaxed border-t border-slate-100 dark:border-white/10 pt-3 font-medium"
                       >
                         {item.answer}
                       </motion.div>

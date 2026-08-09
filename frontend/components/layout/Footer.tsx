@@ -150,10 +150,7 @@ export default function Footer() {
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16 relative z-10">
-        {loading ? (
-          <FooterSkeleton />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
             {/* Brand Column */}
             <div className="lg:col-span-1">
               <a href="/" className="flex items-center space-x-3 mb-6">
@@ -257,7 +254,7 @@ export default function Footer() {
                           >
                             {phone.number}
                             {phone.label && (
-                              <span className="text-xs text-gray-600 ml-1">({phone.label})</span>
+                              <span className="text-xs text-gray-400 dark:text-gray-300 font-medium ml-1">({phone.label})</span>
                             )}
                           </a>
                         </div>
@@ -279,7 +276,6 @@ export default function Footer() {
               )
             )}
           </div>
-        )}
       </div>
 
       {/* Bottom Bar */}
