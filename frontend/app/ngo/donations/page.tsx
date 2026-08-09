@@ -749,66 +749,66 @@ function NgoDonationsContent() {
       </AnimatePresence>
 
       {/* Top Banner: AI Agent Status & Payment Monitors */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <AgentStatusBar />
         {step === 3 && <PaymentStateMonitor />}
 
         {/* ── TOP IMPACT METRICS BAR ────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md text-slate-800 dark:text-slate-200">
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-lg text-slate-800 dark:text-slate-200">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 hover:scale-[1.02] transition-transform duration-200">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-500/20 flex-shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Regd No: 206/2024</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Govt Registered NGO</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Govt Registered NGO</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 hover:scale-[1.02] transition-transform duration-200">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 flex-shrink-0">
               <Users className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">5,000+ Assisted</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Patients &amp; Families</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Patients &amp; Families</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20">
-            <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 hover:scale-[1.02] transition-transform duration-200">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 flex-shrink-0">
               <Flame className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">100+ Volunteers</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Active Outreach Team</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Active Outreach Team</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 hover:scale-[1.02] transition-transform duration-200">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0">
               <Award className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">80G Tax Exempt</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">50% IT Tax Benefits</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">50% IT Tax Benefits</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Grid Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-6xl mx-auto items-start">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* ── LEFT COLUMN: Hero & Cause Explorer ─────────────────────────── */}
-          <div className="lg:col-span-5 space-y-6 text-left">
+          <div className="lg:col-span-5 space-y-6 lg:space-y-7 text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-wider shadow-sm">
               <Heart className="w-4 h-4 text-purple-500 animate-pulse fill-purple-500/20" />
               <span>{ngoT?.donationsPage?.tag || "KCM NGO SOCIAL SERVICE"}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-slate-900 dark:text-white">
               Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 dark:from-purple-300 dark:via-indigo-300 dark:to-rose-300 bg-clip-text text-transparent">Our Projects</span>
             </h1>
 
@@ -817,32 +817,32 @@ function NgoDonationsContent() {
             </p>
 
             {/* Interactive Giving Frequency Switcher */}
-            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-1 shadow-inner">
+            <div className="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-1.5 shadow-inner">
               <button
                 type="button"
                 onClick={() => setFrequency("ONE_TIME")}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   frequency === "ONE_TIME"
                     ? "bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-md border border-slate-200/80 dark:border-white/10"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <Zap className="w-3.5 h-3.5 text-purple-500" />
+                <Zap className="w-4 h-4 text-purple-500" />
                 <span>One-Time Donation</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setFrequency("MONTHLY")}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 relative ${
                   frequency === "MONTHLY"
                     ? "bg-purple-600 text-white shadow-md shadow-purple-500/25 border border-purple-500"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <Calendar className="w-3.5 h-3.5" />
+                <Calendar className="w-4 h-4" />
                 <span>Monthly Partner</span>
-                <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ml-1">
+                <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full ml-1">
                   2x Impact
                 </span>
               </button>
@@ -854,7 +854,7 @@ function NgoDonationsContent() {
                 Select Cause to Support
               </label>
 
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {causes.map((c) => {
                   const isSelected = selectedCause === c.code;
                   const target = c.targetAmount || 1;
@@ -865,24 +865,24 @@ function NgoDonationsContent() {
                     <div
                       key={c.id}
                       onClick={() => setSelectedCause(c.code)}
-                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-purple-50/80 dark:bg-purple-950/40 border-purple-500 shadow-md ring-1 ring-purple-500/20"
-                          : "bg-white dark:bg-slate-900/70 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-700/50"
+                          ? "bg-purple-50/90 dark:bg-purple-950/50 border-purple-500 shadow-md ring-2 ring-purple-500/20"
+                          : "bg-white dark:bg-slate-900/70 border-slate-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-700/50 hover:bg-slate-50 dark:hover:bg-slate-850"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className={`text-xs font-extrabold ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-slate-900 dark:text-white"}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-xs sm:text-sm font-extrabold ${isSelected ? "text-purple-700 dark:text-purple-300" : "text-slate-900 dark:text-white"}`}>
                           {c.nameEn}
                         </span>
                         <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400">
-                          ₹{formatNumber(raised)} / ₹{formatNumber(target)}
+                          ₹{formatNumber(raised)} / ₹{formatNumber(target)} ({pct}%)
                         </span>
                       </div>
 
-                      <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-gradient-to-r from-purple-600 to-indigo-600 h-full rounded-full transition-all duration-500"
+                          className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 h-full rounded-full transition-all duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -893,26 +893,26 @@ function NgoDonationsContent() {
             </div>
 
             {/* Impact Calculator Display */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200 dark:border-purple-800/40 text-xs space-y-1.5">
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 border border-purple-200 dark:border-purple-800/40 text-xs sm:text-sm space-y-2">
               <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-extrabold">
                 <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0 animate-spin" style={{ animationDuration: '6s' }} />
                 <span>Impact of ₹{formatNumber(currentNumAmount)}:</span>
               </div>
-              <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+              <p className="text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
                 {currentImpactText}
               </p>
             </div>
 
             {/* Beneficiaries & Security Guarantee Card */}
-            <div className="p-5 border border-slate-200 dark:border-white/10 rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm text-xs space-y-3 text-slate-600 dark:text-slate-300 shadow-sm">
+            <div className="p-5 border border-slate-200 dark:border-white/10 rounded-2xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-sm text-xs sm:text-sm space-y-3 text-slate-600 dark:text-slate-300 shadow-sm">
               <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4.5 h-4.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p>
                   <strong>Primary Beneficiaries:</strong> Caretakers & patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
                 </p>
               </div>
               <div className="flex items-start gap-2.5">
-                <Lock className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
+                <Lock className="w-4.5 h-4.5 text-purple-500 flex-shrink-0 mt-0.5" />
                 <p>
                   <strong>Secure & 80G Tax Exempt:</strong> 256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts.
                 </p>
@@ -924,7 +924,7 @@ function NgoDonationsContent() {
               <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
                 Accepted Instant Payment Methods
               </p>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 {[
                   { name: "GPay", icon: GPayIcon },
                   { name: "PhonePe", icon: PhonePeIcon },
@@ -933,7 +933,7 @@ function NgoDonationsContent() {
                 ].map((app) => (
                   <span
                     key={app.name}
-                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
+                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-2"
                   >
                     <app.icon />
                     <span>{app.name}</span>
@@ -944,7 +944,7 @@ function NgoDonationsContent() {
           </div>
 
           {/* ── RIGHT COLUMN: Interactive Donation Wizard Form ─────────────────────── */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-8 shadow-xl dark:shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-7 lg:sticky lg:top-28 self-start bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-8 lg:p-9 shadow-xl dark:shadow-2xl relative overflow-hidden">
             
             {/* ── WIZARD STEP INDICATOR ────────────────────────────────────── */}
             <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/5">
