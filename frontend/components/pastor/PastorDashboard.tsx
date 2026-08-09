@@ -1585,7 +1585,7 @@ export default function PastorDashboard() {
                           <button 
                             type="button" 
                             onClick={() => setActiveNav("Events")} 
-                            className="py-1.5 px-3 bg-slate-100/80 dark:bg-white/5 hover:bg-indigo-50 dark:hover:bg-white/10 text-[#6366F1] dark:text-indigo-400 border border-slate-200/40 dark:border-white/[0.05] rounded-xl text-[9px] font-bold shrink-0 transition-all active:scale-95"
+                            className="py-1.5 px-3 bg-indigo-50 dark:bg-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/35 text-indigo-700 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-500/30 rounded-xl text-[9px] font-extrabold shrink-0 transition-all active:scale-95 shadow-sm"
                           >
                             Manage
                           </button>

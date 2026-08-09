@@ -130,7 +130,7 @@ export default function UnifiedEventManagementPortal() {
   // Parse greeting name professionally
   const getGreetingName = (fullName?: string | null) => {
     if (!fullName) return "Event Manager";
-    const cleaned = fullName.replace(/Joseph/gi, "").trim();
+    const cleaned = fullName.trim();
     if (!cleaned) return "Event Manager";
     const parts = cleaned.split(" ");
     if (cleaned.toLowerCase().startsWith("event manager") && parts.length > 2) {
@@ -849,16 +849,17 @@ export default function UnifiedEventManagementPortal() {
   }).filter(b => b.count > 0);
 
   return (
-    <div className="min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-300 flex flex-col pb-4 relative"
-      style={{ background: "var(--color-bg, #f8fafc)" }}>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070814] text-slate-900 dark:text-slate-100 transition-colors duration-300 flex flex-col pb-8 relative overflow-x-hidden">
       
-      {/* Subtle static gradient background — NO animations for performance */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-violet-50/60 via-slate-50 to-indigo-50/40 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/30 transition-colors duration-500" />
+      {/* Dynamic Mesh Ambient Glow Background */}
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/25 via-slate-950 to-[#04050A] transition-colors duration-500" />
+      <div className="fixed top-0 left-1/4 w-96 h-96 rounded-full bg-violet-600/10 dark:bg-violet-600/15 blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed bottom-10 right-10 w-96 h-96 rounded-full bg-indigo-600/10 dark:bg-indigo-600/15 blur-[140px] pointer-events-none -z-10" />
 
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm" style={{ isolation: 'isolate' }}>
+      <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#0C0E22]/90 backdrop-blur-2xl border-b border-slate-200/80 dark:border-violet-500/20 px-4 sm:px-6 py-3 flex items-center justify-between shadow-md" style={{ isolation: 'isolate' }}>
         {/* Bottom Border Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500" />
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-indigo-500 to-purple-500" />
 
         <div className="flex items-center gap-2.5">
           <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm shrink-0">
@@ -902,7 +903,7 @@ export default function UnifiedEventManagementPortal() {
                   {(user.name || "EM").substring(0, 1).toUpperCase()}
                 </div>
                 <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 max-w-[80px] truncate uppercase tracking-wide">
-                  {user.name?.replace(/Joseph/gi, "").trim().split(" ")[0]}
+                  {user.name ? user.name.trim().split(" ")[0] : "Event Manager"}
                 </span>
               </div>
             )}
@@ -1005,16 +1006,16 @@ export default function UnifiedEventManagementPortal() {
             </div>
 
             {/* Offline Outbox */}
-            <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 border border-slate-200/60 dark:border-white/10 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col justify-between hover:border-violet-400/40 dark:hover:border-violet-500/40 transition-colors">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2.5 sm:pb-3 mb-2.5 sm:mb-3">
+            <div className="relative overflow-hidden bg-white/90 dark:bg-[#0E1026] border border-slate-200/80 dark:border-violet-500/20 backdrop-blur-xl rounded-2xl p-3.5 sm:p-4 shadow-md flex flex-col justify-between hover:border-violet-400/50 dark:hover:border-violet-400/40 transition-colors">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-2.5 sm:pb-3 mb-2.5 sm:mb-3">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.outboxTitle || "Offline Outbox"}</h3>
-                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{t.eventManager?.outboxSubtitle || "Queue status"}</p>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.eventManager?.outboxTitle || "Offline Outbox"}</h3>
+                  <p className="text-[9px] text-slate-500 dark:text-slate-300 font-bold mt-0.5">{t.eventManager?.outboxSubtitle || "Queue status"}</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                   queuedReports.length > 0
-                    ? "bg-amber-50 border-amber-300 text-amber-700 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400"
-                    : "bg-slate-50 border-slate-200 text-slate-500 dark:bg-white/5 dark:border-white/10 dark:text-slate-400"
+                    ? "bg-amber-50 border-amber-300 text-amber-700 dark:bg-amber-500/20 dark:border-amber-500/40 dark:text-amber-300"
+                    : "bg-slate-50 border-slate-200 text-slate-600 dark:bg-white/10 dark:border-white/10 dark:text-slate-300"
                 }`}>
                   {queuedReports.length} {t.eventManager?.pendingOpt ? t.eventManager.pendingOpt.toLowerCase() : "pending"}
                 </span>
@@ -1022,18 +1023,18 @@ export default function UnifiedEventManagementPortal() {
 
               {queuedReports.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-2 sm:py-4 text-center">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center mb-2">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center mb-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.eventManager?.outboxInSync || "All data in sync"}</p>
-                  <p className="text-[9px] text-slate-400 mt-0.5">{t.eventManager?.outboxInSyncSub || "Ready for offline usage"}</p>
+                  <p className="text-xs font-black text-slate-900 dark:text-white">{t.eventManager?.outboxInSync || "All data in sync"}</p>
+                  <p className="text-[9px] text-slate-500 dark:text-slate-300 font-bold mt-0.5">{t.eventManager?.outboxInSyncSub || "Ready for offline usage"}</p>
                 </div>
               ) : (
                 <div className="space-y-1.5 max-h-24 overflow-y-auto mb-3">
                   {queuedReports.map(report => (
-                    <div key={report.id} className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-2 rounded-lg flex items-center justify-between gap-2 text-[10px]">
-                      <span className="font-bold text-slate-700 dark:text-slate-300 truncate flex-1">{report.title}</span>
-                      <span className="text-[8px] text-amber-600 dark:text-amber-400 font-bold uppercase bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-500/20">Queued</span>
+                    <div key={report.id} className="bg-slate-50 dark:bg-violet-950/40 border border-slate-100 dark:border-violet-500/20 p-2 rounded-lg flex items-center justify-between gap-2 text-[10px]">
+                      <span className="font-bold text-slate-800 dark:text-slate-200 truncate flex-1">{report.title}</span>
+                      <span className="text-[8px] text-amber-700 dark:text-amber-300 font-bold uppercase bg-amber-50 dark:bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-500/30">Queued</span>
                     </div>
                   ))}
                 </div>
@@ -1043,13 +1044,13 @@ export default function UnifiedEventManagementPortal() {
                 <button
                   onClick={triggerManualSync}
                   disabled={isSyncing}
-                  className="w-full h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
+                  className="w-full h-9 bg-gradient-to-r from-violet-600 via-indigo-600 to-violet-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 active:scale-95 shadow-md shadow-violet-500/20"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
                   {t.eventManager?.syncNowBtn || "Sync Outbox Now"}
                 </button>
               ) : (
-                <div className="h-9 flex items-center justify-center text-[10px] text-slate-400 border border-dashed border-slate-200 dark:border-white/10 rounded-xl font-semibold">
+                <div className="h-9 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-300 border border-dashed border-slate-200 dark:border-violet-500/25 rounded-xl font-bold bg-slate-50/50 dark:bg-slate-950/40">
                   {isOnline ? (t.eventManager?.outboxDone || "Outbox in sync") : (t.eventManager?.outboxNeedsConn || "Sync requires connection")}
                 </div>
               )}
@@ -1060,7 +1061,7 @@ export default function UnifiedEventManagementPortal() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
 
             {/* Action Card 1: Event Reports */}
-            <div className="bg-white dark:bg-slate-900/50 border border-violet-200/60 dark:border-violet-500/20 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:justify-between hover:shadow-md hover:border-violet-400/60 dark:hover:border-violet-500/40 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-violet-500 sm:border-t-violet-500">
+            <div className="bg-white/90 dark:bg-[#0E1026] border border-violet-200/80 dark:border-violet-500/20 rounded-2xl p-3.5 sm:p-4 shadow-md flex flex-col sm:justify-between hover:shadow-xl hover:shadow-violet-500/10 hover:border-violet-400/60 dark:hover:border-violet-400/50 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-violet-500 sm:border-t-violet-500">
               <div className="flex items-center sm:items-start sm:flex-col gap-3 sm:gap-0 sm:space-y-2.5">
                 <div className="relative w-10 h-10 shrink-0">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/25">
@@ -1071,22 +1072,22 @@ export default function UnifiedEventManagementPortal() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Event Reports</h4>
-                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5 leading-normal hidden sm:block">Submit branch logs, attendance & daily tithes</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Event Reports</h4>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-300 font-semibold mt-0.5 leading-normal hidden sm:block">Submit branch logs, attendance & daily tithes</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-3 sm:mt-4">
-                <Link href="/event-manager/report" className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-sm text-center">
+                <Link href="/event-manager/report" className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-violet-600 via-indigo-600 to-violet-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-violet-500/20 text-center">
                   <ScrollText className="w-3 h-3" /> Create
                 </Link>
-                <button type="button" onClick={() => setShowManageEvents(true)} className="flex items-center justify-center gap-1 py-2 bg-violet-50 dark:bg-violet-500/10 hover:bg-violet-100 dark:hover:bg-violet-500/20 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95">
-                  <ListChecks className="w-3 h-3" /> Manage
+                <button type="button" onClick={() => setShowManageEvents(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-violet-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
+                  <ListChecks className="w-3 h-3 text-white" /> Manage
                 </button>
               </div>
             </div>
 
             {/* Action Card 2: Worship Services */}
-            <div className="bg-white dark:bg-slate-900/50 border border-indigo-200/60 dark:border-indigo-500/20 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:justify-between hover:shadow-md hover:border-indigo-400/60 dark:hover:border-indigo-500/40 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-indigo-500 sm:border-t-indigo-500">
+            <div className="bg-white/90 dark:bg-[#0E1026] border border-indigo-200/80 dark:border-indigo-500/20 rounded-2xl p-3.5 sm:p-4 shadow-md flex flex-col sm:justify-between hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-400/60 dark:hover:border-indigo-400/50 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-indigo-500 sm:border-t-indigo-500">
               <div className="flex items-center sm:items-start sm:flex-col gap-3 sm:gap-0 sm:space-y-2.5">
                 <div className="relative w-10 h-10 shrink-0">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shadow-md shadow-indigo-500/25">
@@ -1097,22 +1098,22 @@ export default function UnifiedEventManagementPortal() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Worship Services</h4>
-                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5 leading-normal hidden sm:block">Schedule new services or branch activities</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Worship Services</h4>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-300 font-semibold mt-0.5 leading-normal hidden sm:block">Schedule new services or branch activities</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-3 sm:mt-4">
-                <button onClick={() => setShowCreateService(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-sm">
+                <button onClick={() => setShowCreateService(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-indigo-600 via-cyan-600 to-indigo-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-indigo-500/20">
                   <Radio className="w-3 h-3" /> Schedule
                 </button>
-                <button type="button" onClick={() => setShowManageServices(true)} className="flex items-center justify-center gap-1 py-2 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95">
-                  <Layers className="w-3 h-3" /> Manage
+                <button type="button" onClick={() => setShowManageServices(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-indigo-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
+                  <Layers className="w-3 h-3 text-white" /> Manage
                 </button>
               </div>
             </div>
 
             {/* Action Card 3: Sermon Library */}
-            <div className="bg-white dark:bg-slate-900/50 border border-fuchsia-200/60 dark:border-fuchsia-500/20 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:justify-between hover:shadow-md hover:border-fuchsia-400/60 dark:hover:border-fuchsia-500/40 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-fuchsia-500 sm:border-t-fuchsia-500">
+            <div className="bg-white/90 dark:bg-[#0E1026] border border-fuchsia-200/80 dark:border-fuchsia-500/20 rounded-2xl p-3.5 sm:p-4 shadow-md flex flex-col sm:justify-between hover:shadow-xl hover:shadow-fuchsia-500/10 hover:border-fuchsia-400/60 dark:hover:border-fuchsia-400/50 transition-all duration-200 border-l-4 sm:border-l-0 sm:border-t-2 border-l-fuchsia-500 sm:border-t-fuchsia-500">
               <div className="flex items-center sm:items-start sm:flex-col gap-3 sm:gap-0 sm:space-y-2.5">
                 <div className="relative w-10 h-10 shrink-0">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shadow-md shadow-fuchsia-500/25">
@@ -1123,16 +1124,16 @@ export default function UnifiedEventManagementPortal() {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Sermon Library</h4>
-                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5 leading-normal hidden sm:block">Upload messages or record new sermons</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Sermon Library</h4>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-300 font-semibold mt-0.5 leading-normal hidden sm:block">Upload messages or record new sermons</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-3 sm:mt-4">
-                <button type="button" onClick={() => setShowCreateSermon(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-sm">
+                <button type="button" onClick={() => setShowCreateSermon(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-fuchsia-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-fuchsia-500/20">
                   <CloudUpload className="w-3 h-3" /> Upload
                 </button>
-                <button type="button" onClick={() => setShowManageSermons(true)} className="flex items-center justify-center gap-1 py-2 bg-fuchsia-50 dark:bg-fuchsia-500/10 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-[10px] font-black transition-all active:scale-95">
-                  <BookOpen className="w-3 h-3" /> Manage
+                <button type="button" onClick={() => setShowManageSermons(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-fuchsia-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
+                  <BookOpen className="w-3 h-3 text-white" /> Manage
                 </button>
               </div>
             </div>
@@ -1145,7 +1146,7 @@ export default function UnifiedEventManagementPortal() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-800/30 p-3.5 rounded-xl flex items-start gap-2.5 text-indigo-700 dark:text-indigo-300"
+                className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-500/30 p-3.5 rounded-xl flex items-start gap-2.5 text-indigo-700 dark:text-indigo-200 shadow-sm"
               >
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 <p className="text-xs font-semibold leading-relaxed">{syncMessage}</p>
@@ -1157,50 +1158,50 @@ export default function UnifiedEventManagementPortal() {
           {!mounted ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className={`h-24 bg-slate-100 dark:bg-slate-900/20 border border-slate-200/50 dark:border-white/5 rounded-2xl animate-pulse ${i === 3 ? 'col-span-2 sm:col-span-1' : ''}`} />
+                <div key={i} className={`h-24 bg-slate-100 dark:bg-[#0E1026] border border-slate-200/60 dark:border-violet-500/15 rounded-2xl animate-pulse ${i === 3 ? 'col-span-2 sm:col-span-1' : ''}`} />
               ))}
             </div>
           ) : (
             isManagerOrAdmin && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                 {/* Total Reports */}
-                <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-violet-50 to-indigo-50/50 dark:from-violet-950/20 dark:to-indigo-950/10 border border-violet-200/60 dark:border-violet-500/20 rounded-2xl p-3 sm:p-4 shadow-sm flex justify-between items-center border-l-4 border-l-violet-500">
+                <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-violet-50 to-indigo-50/50 dark:from-violet-950/40 dark:to-indigo-900/30 border border-violet-200 dark:border-violet-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-violet-500">
                   <div className="space-y-0.5">
-                    <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-widest block truncate">Total Reports</span>
+                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block truncate drop-shadow-sm">Total Reports</span>
                     <div className="flex items-baseline gap-1">
-                      <p className="text-xl sm:text-2xl font-black text-violet-700 dark:text-violet-300 tracking-tight">{stats.total}</p>
-                      <span className="text-[10px] font-bold text-violet-500 hidden sm:inline">{t.eventManager?.logsUnit || "logs"}</span>
+                      <p className="text-xl sm:text-2xl font-black text-violet-950 dark:text-white tracking-tight">{stats.total}</p>
+                      <span className="text-[10px] font-extrabold text-white dark:text-white hidden sm:inline">{t.eventManager?.logsUnit || "logs"}</span>
                     </div>
                   </div>
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/20 shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/25 shrink-0">
                     <BarChart3 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   </div>
                 </div>
 
                 {/* Pending Review */}
-                <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-200/60 dark:border-amber-500/20 rounded-2xl p-3 sm:p-4 shadow-sm flex justify-between items-center border-l-4 border-l-amber-500">
+                <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/40 dark:to-orange-900/30 border border-amber-200 dark:border-amber-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-amber-500">
                   <div className="space-y-0.5">
-                    <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block truncate">Pending Review</span>
+                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block truncate drop-shadow-sm">Pending Review</span>
                     <div className="flex items-baseline gap-1">
-                      <p className="text-xl sm:text-2xl font-black text-amber-700 dark:text-amber-300 tracking-tight">{stats.pending}</p>
-                      <span className="text-[10px] font-bold text-amber-500 hidden sm:inline">{t.eventManager?.needsActionUnit || "needs action"}</span>
+                      <p className="text-xl sm:text-2xl font-black text-amber-950 dark:text-white tracking-tight">{stats.pending}</p>
+                      <span className="text-[10px] font-extrabold text-white dark:text-white hidden sm:inline">{t.eventManager?.needsActionUnit || "needs action"}</span>
                     </div>
                   </div>
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
                     <WalletCards className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   </div>
                 </div>
 
                 {/* Total Attendance */}
-                <div className="col-span-2 sm:col-span-1 relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/10 border border-emerald-200/60 dark:border-emerald-500/20 rounded-2xl p-3 sm:p-4 shadow-sm flex justify-between items-center border-l-4 border-l-emerald-500">
+                <div className="col-span-2 sm:col-span-1 relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/40 dark:to-teal-900/30 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-emerald-500">
                   <div className="space-y-0.5">
-                    <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
+                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block drop-shadow-sm">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
                     <div className="flex items-baseline gap-1">
-                      <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight">{stats.attendance}</p>
-                      <span className="text-[10px] font-bold text-emerald-500">{t.eventManager?.peopleUnit || "people"}</span>
+                      <p className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-white tracking-tight">{stats.attendance}</p>
+                      <span className="text-[10px] font-extrabold text-white dark:text-white">{t.eventManager?.peopleUnit || "people"}</span>
                     </div>
                   </div>
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
                     <TrendingUp className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   </div>
                 </div>
@@ -1209,15 +1210,15 @@ export default function UnifiedEventManagementPortal() {
           )}
 
           {/* Filters and Search toolbar */}
-          <div className="bg-white dark:bg-slate-900/80 border border-slate-200/70 dark:border-white/10 rounded-2xl p-3.5 sm:px-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-white/90 dark:bg-[#0E1026] border border-slate-200/80 dark:border-violet-500/20 backdrop-blur-xl rounded-2xl p-3.5 sm:px-5 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm shadow-violet-500/20 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/20 shrink-0">
                 <LayoutDashboard className="w-4 h-4 text-white" />
               </div>
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   {t.eventManager?.dbTitle || "Reports Database"}
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-violet-600/30 dark:bg-violet-600/40 text-white dark:text-white border border-violet-400/50 shadow-sm">
                     {reports.length} {reports.length === 1 ? "Report" : "Reports"}
                   </span>
                 </h3>
@@ -1228,7 +1229,7 @@ export default function UnifiedEventManagementPortal() {
               {reports.length > 0 && (
                 <button
                   onClick={exportToCSV}
-                  className="h-9 px-3.5 rounded-xl bg-slate-900 dark:bg-violet-600 hover:bg-slate-700 dark:hover:bg-violet-500 text-white text-xs font-bold transition-colors shadow-sm flex items-center gap-1.5 active:scale-95"
+                  className="h-9 px-3.5 rounded-xl bg-slate-900 dark:bg-violet-600 hover:bg-slate-700 dark:hover:bg-violet-500 text-white text-xs font-bold transition-colors shadow-md shadow-violet-500/20 flex items-center gap-1.5 active:scale-95"
                 >
                   <Download className="w-3.5 h-3.5" />
                   {t.eventManager?.exportCsvBtn || "Export CSV"}
@@ -1239,26 +1240,26 @@ export default function UnifiedEventManagementPortal() {
                 <select
                   value={branchFilter}
                   onChange={e => setBranchFilter(e.target.value)}
-                  className="h-9 pl-3 pr-8 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 w-full appearance-none transition-all cursor-pointer"
+                  className="h-9 pl-3 pr-8 rounded-xl bg-slate-50 dark:bg-[#161836] border border-slate-200 dark:border-violet-500/30 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 w-full appearance-none transition-all cursor-pointer"
                 >
                   <option value="all">{t.eventManager?.allBranchesOpt || "All Branches"}</option>
                   {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none text-slate-400 dark:text-slate-300" />
               </div>
 
               <div className="relative flex items-center flex-1 sm:flex-initial min-w-[130px]">
                 <select
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value)}
-                  className="h-9 pl-3 pr-8 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 w-full appearance-none transition-all cursor-pointer"
+                  className="h-9 pl-3 pr-8 rounded-xl bg-slate-50 dark:bg-[#161836] border border-slate-200 dark:border-violet-500/30 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 w-full appearance-none transition-all cursor-pointer"
                 >
                   <option value="all">{t.eventManager?.allStatusesOpt || "All Statuses"}</option>
                   <option value="PENDING">{t.eventManager?.pendingOpt || "Pending Approval"}</option>
                   <option value="APPROVED">{t.eventManager?.approvedOpt || "Approved"}</option>
                   <option value="REJECTED">{t.eventManager?.rejectedOpt || "Rejected"}</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none text-slate-400 dark:text-slate-300" />
               </div>
             </div>
           </div>
@@ -1267,11 +1268,11 @@ export default function UnifiedEventManagementPortal() {
           {isLoadingReports ? (
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-36 bg-white dark:bg-slate-900/30 border border-slate-200/50 dark:border-white/5 rounded-2xl animate-pulse" />
+                <div key={i} className="h-36 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-violet-950/30 dark:via-[#0E1026] dark:to-violet-950/30 border border-slate-200/60 dark:border-violet-500/15 rounded-2xl animate-pulse" />
               ))}
             </div>
           ) : reports.length === 0 ? (
-            <div className="py-14 px-6 text-center bg-gradient-to-br from-white via-slate-50/90 to-indigo-50/30 dark:from-slate-900/90 dark:via-slate-900/60 dark:to-indigo-950/20 backdrop-blur-md border border-slate-200/80 dark:border-indigo-500/20 rounded-3xl shadow-xl space-y-5 max-w-lg mx-auto transition-all">
+            <div className="py-14 px-6 text-center bg-gradient-to-br from-white via-slate-50 to-indigo-50/30 dark:from-[#0E1026] dark:via-[#0E1026] dark:to-violet-950/30 backdrop-blur-xl border border-slate-200 dark:border-violet-500/25 rounded-3xl shadow-xl space-y-5 max-w-lg mx-auto transition-all">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-600 text-white border border-white/20 flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/25">
                 <ClipboardList className="w-8 h-8 text-white" />
               </div>
@@ -1279,23 +1280,23 @@ export default function UnifiedEventManagementPortal() {
                 <h4 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                   {t.eventManager?.noReportsTitle || "No Reports Found"}
                 </h4>
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
                   {t.eventManager?.noReportsDesc || "There are no submitted logs matching your filters. Submit an events report or check another branch."}
                 </p>
               </div>
               <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
                 <Link
                   href="/event-manager/report"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-md shadow-indigo-500/25 active:scale-95"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-black transition-all shadow-md shadow-indigo-500/25 active:scale-95"
                 >
                   <PlusCircle className="w-4 h-4" /> {t.eventManager?.createFirstReportBtn || "Create Events Report"}
                 </Link>
                 <button
                   type="button"
                   onClick={() => setShowManageEvents(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition-all border border-slate-200/80 dark:border-slate-700 active:scale-95"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-violet-600/40 hover:bg-slate-200 dark:hover:bg-violet-600/70 text-slate-800 dark:text-white rounded-xl text-xs font-black transition-all border border-slate-200 dark:border-violet-400/60 active:scale-95 shadow-sm"
                 >
-                  <Settings className="w-4 h-4" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
+                  <Settings className="w-4 h-4 text-white" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
                 </button>
               </div>
             </div>
@@ -1312,23 +1313,23 @@ export default function UnifiedEventManagementPortal() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.97 }}
                       transition={{ duration: 0.18 }}
-                      className={`relative bg-white dark:bg-slate-900/50 border border-slate-200/60 dark:border-white/10 rounded-2xl p-5 shadow-sm space-y-4 hover:shadow-md hover:border-violet-300/50 dark:hover:border-violet-500/20 transition-all duration-200 border-l-4 ${statusColor}`}
+                      className={`relative bg-white/90 dark:bg-[#0E1026] border border-slate-200/70 dark:border-violet-500/20 rounded-2xl p-5 shadow-md space-y-4 hover:shadow-xl hover:border-violet-400/50 dark:hover:border-violet-400/40 backdrop-blur-xl transition-all duration-200 border-l-4 ${statusColor}`}
                     >
                       {/* Header info */}
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/5 pb-3.5">
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-3.5">
                         <div className="space-y-1.5">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-500/20 rounded-lg">
+                            <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-violet-600/40 dark:bg-violet-600/50 text-white dark:text-white border border-violet-400/60 rounded-lg shadow-sm">
                               {report.branch.name}
                             </span>
                             <span className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-lg border flex items-center gap-1 ${
                               report.status === "APPROVED"
-                                ? "bg-emerald-600 text-white border-emerald-700"
+                                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
                                 : report.status === "REJECTED"
-                                ? "bg-rose-600 text-white border-rose-700"
-                                : "bg-amber-500 text-white border-amber-600"
+                                ? "bg-rose-600 text-white border-rose-700 shadow-sm"
+                                : "bg-amber-500 text-white border-amber-600 shadow-sm"
                             }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${report.status === "APPROVED" ? "bg-white" : report.status === "REJECTED" ? "bg-white" : "bg-white"}`} />
+                              <span className="w-1.5 h-1.5 rounded-full bg-white" />
                               {report.status === "APPROVED" ? (t.eventManager?.approvedOpt || "Approved")
                                 : report.status === "REJECTED" ? (t.eventManager?.rejectedOpt || "Rejected")
                                 : (t.eventManager?.pendingOpt || "Pending")}
@@ -1337,28 +1338,28 @@ export default function UnifiedEventManagementPortal() {
                           <h3 className="text-sm font-black text-slate-900 dark:text-white leading-tight">{report.title}</h3>
                         </div>
 
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 space-y-1">
+                        <div className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider shrink-0 space-y-1">
                           <div className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-violet-500" />
+                            <Calendar className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
                             <span>{new Date(report.reportDate).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                           </div>
                           <div className="text-[9px] flex items-center gap-1">
-                            <User className="w-3 h-3 text-indigo-500" />
-                            <span>{t.eventManager?.byLabel || "By"}: {report.createdBy.name}</span>
+                            <User className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
+                            <span className="font-extrabold text-slate-700 dark:text-slate-200">{t.eventManager?.byLabel || "By"}: {report.createdBy.name}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Complete report notes */}
-                      <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 font-medium whitespace-pre-wrap bg-slate-50/80 dark:bg-white/5 p-3 rounded-xl border border-slate-200/60 dark:border-white/5">
+                      <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 font-medium whitespace-pre-wrap bg-slate-50/80 dark:bg-[#151736] p-3 rounded-xl border border-slate-200/60 dark:border-violet-500/15">
                         {report.description || "No description provided."}
                       </p>
 
                       {/* Stats Grid */}
-                      <div className="bg-slate-50/80 dark:bg-slate-950/40 border border-slate-100/80 dark:border-white/5 p-3.5 rounded-xl text-xs">
+                      <div className="bg-slate-50/80 dark:bg-[#151736] border border-slate-100/80 dark:border-violet-500/15 p-3.5 rounded-xl text-xs">
                         <div className="space-y-0.5">
-                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">{t.eventManager?.gpsLabel || "GPS coordinates"}</span>
-                          <span className="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 text-xs">
+                          <span className="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider block">{t.eventManager?.gpsLabel || "GPS coordinates"}</span>
+                          <span className="font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 mt-0.5 text-xs">
                             <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
                             <span className="truncate">{report.gpsLocation || (t.eventManager?.notRecorded || "Not recorded")}</span>
                           </span>
@@ -1366,21 +1367,21 @@ export default function UnifiedEventManagementPortal() {
                       </div>
 
                       {/* Actions Row */}
-                      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center sm:justify-between border-t border-slate-100 dark:border-white/5 pt-3.5">
+                      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center sm:justify-between border-t border-slate-100 dark:border-white/10 pt-3.5">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => toggleReportExpanded(report.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-500/10 hover:bg-violet-100 dark:hover:bg-violet-500/20 text-[10px] font-bold text-violet-600 dark:text-violet-300 transition-colors border border-violet-200 dark:border-violet-500/20"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-600/30 dark:bg-violet-600/40 hover:bg-violet-600/60 text-[10px] font-extrabold text-white transition-all border border-violet-400/50 shadow-sm"
                           >
-                            <span>{isExpanded ? "Show Less" : "View Details"}</span>
-                            <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
+                            <span className="text-white font-bold">{isExpanded ? "Show Less" : "View Details"}</span>
+                            <ChevronRight className={`w-3.5 h-3.5 text-white transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
                           </button>
 
                           {(isManagerOrAdmin || (report.createdById === user?.uid && report.status === "PENDING")) && (
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => openEditModal(report)}
-                                className="p-1.5 bg-slate-100 hover:bg-violet-50 dark:bg-white/5 dark:hover:bg-violet-500/10 rounded-xl border border-slate-200/50 dark:border-white/10 transition-colors text-slate-500 hover:text-violet-600 dark:text-slate-400 dark:hover:text-violet-300"
+                                className="p-1.5 bg-slate-100 hover:bg-violet-50 dark:bg-white/10 dark:hover:bg-violet-500/20 rounded-xl border border-slate-200/50 dark:border-white/10 transition-colors text-slate-600 hover:text-violet-600 dark:text-slate-300 dark:hover:text-violet-200"
                                 title="Edit Report"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
@@ -1388,7 +1389,7 @@ export default function UnifiedEventManagementPortal() {
                               <button
                                 onClick={() => setDeletingReport(report)}
                                 disabled={actionLoadingId === report.id}
-                                className="p-1.5 bg-slate-100 hover:bg-rose-50 dark:bg-white/5 dark:hover:bg-rose-500/10 rounded-xl border border-slate-200/50 dark:border-white/10 transition-colors text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"
+                                className="p-1.5 bg-slate-100 hover:bg-rose-50 dark:bg-white/10 dark:hover:bg-rose-500/20 rounded-xl border border-slate-200/50 dark:border-white/10 transition-colors text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
                                 title="Delete Report"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1403,7 +1404,7 @@ export default function UnifiedEventManagementPortal() {
                             <button
                               onClick={() => handleStatusChange(report.id, "REJECTED")}
                               disabled={actionLoadingId === report.id}
-                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-rose-200 dark:border-rose-900/40 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 text-xs font-black hover:bg-rose-100 transition-colors disabled:opacity-50 active:scale-95 min-w-[90px]"
+                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-xs font-black hover:bg-rose-100 transition-colors disabled:opacity-50 active:scale-95 min-w-[90px]"
                             >
                               <X className="w-3.5 h-3.5 shrink-0" />
                               {t.eventManager?.rejectBtn || "Reject"}
@@ -1411,7 +1412,7 @@ export default function UnifiedEventManagementPortal() {
                             <button
                               onClick={() => handleStatusChange(report.id, "APPROVED")}
                               disabled={actionLoadingId === report.id}
-                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black shadow-md shadow-emerald-600/15 transition-all disabled:opacity-50 active:scale-95 min-w-[90px]"
+                              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50 active:scale-95 min-w-[90px]"
                             >
                               {actionLoadingId === report.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5 shrink-0" />}
                               {t.eventManager?.approveBtn || "Approve"}
@@ -1428,21 +1429,21 @@ export default function UnifiedEventManagementPortal() {
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2, ease: "easeInOut" }}
-                            className="overflow-hidden space-y-4 border-t border-slate-100 dark:border-white/5 pt-4"
+                            className="overflow-hidden space-y-4 border-t border-slate-100 dark:border-white/10 pt-4"
                           >
                             <div>
-                              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">{t.eventManager?.notesLabel || "Report Notes"}</span>
-                              <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 font-medium">
+                              <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-1">{t.eventManager?.notesLabel || "Report Notes"}</span>
+                              <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-200 font-semibold">
                                 {report.description || "No description provided."}
                               </p>
                             </div>
 
                             {report.volunteerNames.length > 0 && (
                               <div>
-                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">{t.eventManager?.attendingLabel || "Attending Volunteers"}</span>
+                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-1.5">{t.eventManager?.attendingLabel || "Attending Volunteers"}</span>
                                 <div className="flex flex-wrap gap-1.5">
                                   {report.volunteerNames.map((name, idx) => (
-                                    <span key={idx} className="bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 px-2 py-0.5 rounded-lg text-[9px] font-bold text-violet-600 dark:text-violet-400">
+                                    <span key={idx} className="bg-violet-50 dark:bg-violet-500/20 border border-violet-200 dark:border-violet-500/30 px-2.5 py-0.5 rounded-lg text-[9px] font-black text-violet-700 dark:text-violet-300">
                                       {name}
                                     </span>
                                   ))}
@@ -1451,14 +1452,14 @@ export default function UnifiedEventManagementPortal() {
                             )}
 
                             {report.media.length > 0 && (
-                              <div className="border-t border-slate-100 dark:border-white/5 pt-4">
-                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">{t.eventManager?.snapsLabel || "Event Snaps"} ({report.media.length})</span>
+                              <div className="border-t border-slate-100 dark:border-white/10 pt-4">
+                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-2">{t.eventManager?.snapsLabel || "Event Snaps"} ({report.media.length})</span>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                   {report.media.map(item => (
                                     <div
                                       key={item.id}
                                       onClick={() => setExpandedImage(item.url)}
-                                      className="relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-200/50 dark:border-white/10 cursor-pointer group shadow-sm"
+                                      className="relative aspect-[4/3] rounded-xl overflow-hidden border border-slate-200/50 dark:border-white/15 cursor-pointer group shadow-sm"
                                     >
                                       <img src={item.url} alt="Snap upload" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
@@ -1487,14 +1488,14 @@ export default function UnifiedEventManagementPortal() {
 
           {/* Branch metrics breakdown */}
           {branchStats.length > 0 && (
-            <div className="bg-white dark:bg-slate-900/50 border border-violet-200/50 dark:border-violet-500/20 rounded-2xl p-4 shadow-sm">
-              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm shadow-emerald-500/20">
+            <div className="bg-white/90 dark:bg-[#0E1026] border border-violet-200/80 dark:border-violet-500/20 backdrop-blur-xl rounded-2xl p-4 shadow-md">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-500/20">
                   <TrendingUp className="w-3.5 h-3.5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.branchShareTitle || "Branch Share"}</h3>
-                  <p className="text-[9px] text-slate-400 font-semibold">{t.eventManager?.branchShareDesc || "Offering & Log contribution"}</p>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.eventManager?.branchShareTitle || "Branch Share"}</h3>
+                  <p className="text-[9px] text-slate-500 dark:text-slate-300 font-bold">{t.eventManager?.branchShareDesc || "Offering & Log contribution"}</p>
                 </div>
               </div>
               <div className="space-y-3.5">
@@ -1502,14 +1503,14 @@ export default function UnifiedEventManagementPortal() {
                   const maxOffering = Math.max(...branchStats.map(b => b.offering), 1);
                   const percentage = (stat.offering / maxOffering) * 100;
                   const gradients = ["from-emerald-500 to-teal-500", "from-violet-500 to-pink-500", "from-amber-500 to-orange-500", "from-cyan-500 to-blue-500", "from-fuchsia-500 to-purple-500"];
-                  const textColors = ["text-emerald-600 dark:text-emerald-400", "text-violet-600 dark:text-violet-400", "text-amber-600 dark:text-amber-400", "text-cyan-600 dark:text-cyan-400", "text-fuchsia-600 dark:text-fuchsia-400"];
+                  const textColors = ["text-emerald-700 dark:text-emerald-300", "text-violet-700 dark:text-violet-300", "text-amber-700 dark:text-amber-300", "text-cyan-700 dark:text-cyan-300", "text-fuchsia-700 dark:text-fuchsia-300"];
                   return (
                     <div key={stat.name} className="space-y-1">
-                      <div className="flex justify-between text-[11px] font-bold">
-                        <span className="text-slate-700 dark:text-slate-300 truncate pr-2 max-w-[120px]">{stat.name}</span>
-                        <span className={`${textColors[idx % textColors.length]} shrink-0`}>₹{stat.offering.toLocaleString("en-IN")}</span>
+                      <div className="flex justify-between text-[11px] font-extrabold">
+                        <span className="text-slate-800 dark:text-slate-200 truncate pr-2 max-w-[120px]">{stat.name}</span>
+                        <span className={`${textColors[idx % textColors.length]} shrink-0 font-black`}>₹{stat.offering.toLocaleString("en-IN")}</span>
                       </div>
-                      <div className="w-full bg-slate-100 dark:bg-white/5 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
                         <div className={`bg-gradient-to-r ${gradients[idx % gradients.length]} h-full rounded-full transition-all duration-500`} style={{ width: `${percentage}%` }} />
                       </div>
                     </div>
@@ -1520,35 +1521,35 @@ export default function UnifiedEventManagementPortal() {
           )}
 
           {/* Live Activity Feed */}
-          <div className="bg-white dark:bg-slate-900/50 border border-violet-200/50 dark:border-violet-500/20 rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-3 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm shadow-violet-500/20">
+          <div className="bg-white/90 dark:bg-[#0E1026] border border-violet-200/80 dark:border-violet-500/20 backdrop-blur-xl rounded-2xl p-4 shadow-md">
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-white/10 pb-3 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/20">
                 <Radio className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">{t.eventManager?.liveUpdatesTitle || "Live Updates"}</h3>
-                <p className="text-[9px] text-slate-400 font-medium">{t.eventManager?.liveUpdatesDesc || "Real-time companion feed"}</p>
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">{t.eventManager?.liveUpdatesTitle || "Live Updates"}</h3>
+                <p className="text-[9px] text-slate-500 dark:text-slate-300 font-bold">{t.eventManager?.liveUpdatesDesc || "Real-time companion feed"}</p>
               </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 animate-pulse shadow-sm shadow-emerald-500/50" />
             </div>
 
-            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
               {feed.map(act => {
                 const colorConfig = {
-                  sys: { border: "border-sky-200 dark:border-sky-500/20", bullet: "bg-sky-500", text: "text-sky-700 dark:text-sky-300", bg: "bg-sky-50/80 dark:bg-sky-500/5" },
-                  upload: { border: "border-violet-200 dark:border-violet-500/20", bullet: "bg-violet-500", text: "text-violet-700 dark:text-violet-300", bg: "bg-violet-50/80 dark:bg-violet-500/5" },
-                  status: { border: "border-amber-200 dark:border-amber-500/20", bullet: "bg-amber-500", text: "text-amber-700 dark:text-amber-300", bg: "bg-amber-50/80 dark:bg-amber-500/5" }
+                  sys: { border: "border-sky-200 dark:border-sky-500/30", bullet: "bg-sky-500", text: "text-sky-800 dark:text-sky-200", bg: "bg-sky-50/80 dark:bg-sky-500/10" },
+                  upload: { border: "border-violet-200 dark:border-violet-500/30", bullet: "bg-violet-500", text: "text-violet-800 dark:text-violet-200", bg: "bg-violet-50/80 dark:bg-violet-500/10" },
+                  status: { border: "border-amber-200 dark:border-amber-500/30", bullet: "bg-amber-500", text: "text-amber-800 dark:text-amber-200", bg: "bg-amber-50/80 dark:bg-amber-500/10" }
                 };
                 const config = colorConfig[act.type] || colorConfig.sys;
                 return (
                   <div key={act.id} className={`text-xs p-2.5 rounded-xl border ${config.border} ${config.bg} space-y-1 border-l-2 pl-3`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-white dark:bg-slate-950/80 border border-slate-200/50 dark:border-white/5">
+                      <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-white dark:bg-[#161836] border border-slate-200/60 dark:border-violet-500/30 text-slate-800 dark:text-slate-200">
                         {act.type}
                       </span>
-                      <span className="text-[8px] text-slate-400 font-bold">{act.time}</span>
+                      <span className="text-[8px] text-slate-500 dark:text-slate-400 font-bold">{act.time}</span>
                     </div>
-                    <p className={`font-semibold ${config.text} leading-relaxed text-[11px]`}>{act.text}</p>
+                    <p className={`font-bold ${config.text} leading-relaxed text-[11px]`}>{act.text}</p>
                   </div>
                 );
               })}

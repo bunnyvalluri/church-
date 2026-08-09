@@ -6,10 +6,15 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
 
 export default function OfflineBanner() {
+  const [mounted, setMounted] = useState(false);
   const { status, isOffline, isSyncing, isSlowNetwork, isBackendUnavailable } = useNetworkStatus();
   const { pendingCount, triggerManualSync } = useOfflineSync();
   const [showReconnected, setShowReconnected] = useState(false);
   const [prevStatus, setPrevStatus] = useState(status);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (prevStatus === "OFFLINE" && (status === "ONLINE" || status === "SYNCING")) {
@@ -20,7 +25,7 @@ export default function OfflineBanner() {
     setPrevStatus(status);
   }, [status, prevStatus]);
 
-  if (!isOffline && !showReconnected) {
+  if (!mounted || (!isOffline && !showReconnected)) {
     return null;
   }
 

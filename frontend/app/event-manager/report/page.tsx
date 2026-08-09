@@ -529,10 +529,10 @@ function FieldReportFormContent() {
 
           <div className="hidden sm:flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-2.5 py-1.5 rounded-xl border border-slate-200/50 dark:border-white/5">
             <div className="w-5 h-5 rounded-lg bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center font-black text-xs">
-              {((user?.name?.replace(/Joseph/gi, "").trim() || "Event Manager"))[0].toUpperCase()}
+              {(user?.name?.trim() || "Event Manager")[0].toUpperCase()}
             </div>
             <div className="text-left">
-              <p className="text-[10px] font-black text-slate-700 dark:text-slate-200 leading-none truncate max-w-[80px]">{user?.name?.replace(/Joseph/gi, "").trim() || "Event Manager"}</p>
+              <p className="text-[10px] font-black text-slate-700 dark:text-slate-200 leading-none truncate max-w-[80px]">{user?.name?.trim() || "Event Manager"}</p>
             </div>
           </div>
         </div>

@@ -5,10 +5,10 @@ import { ConnectionStatus, offlineEventBus } from "@/lib/offline/offline-events"
 import { networkManager } from "@/lib/offline/network-manager";
 
 export function useNetworkStatus() {
-  const [status, setStatus] = useState<ConnectionStatus>(() => networkManager.getStatus());
+  const [status, setStatus] = useState<ConnectionStatus>("ONLINE");
 
   useEffect(() => {
-    // Initial sync check
+    // Initial sync check after hydration
     setStatus(networkManager.getStatus());
     networkManager.checkRealConnectivity();
 

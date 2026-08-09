@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
-import OfflineBanner from "@/components/ui/OfflineBanner";
+const OfflineBanner = dynamic(() => import("@/components/ui/OfflineBanner"), { ssr: false });
 import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 
 const inter  = Inter({
