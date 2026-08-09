@@ -573,9 +573,7 @@ export default function UnifiedEventManagementPortal() {
       if (response.ok && result.success) {
         setReports(prev => prev.filter(r => r.id !== reportId));
         setEventsReportList(prev => prev.filter(r => r.id !== reportId));
-        setLandingEvents(prev => prev.filter(e => e.slug !== `report-${reportId}`));
         showToast("🗑️ Report Deleted", "The field report and landing page event have been deleted.");
-        fetchLandingEvents();
       } else {
         alert(result.error || "Failed to delete report.");
       }

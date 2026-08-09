@@ -8,6 +8,7 @@
   "theme_color": "#8b5cf6",
   "orientation": "any",
   "scope": "/",
+  "categories": ["lifestyle", "social", "community"],
   "icons": [
     {
       "src": "/logo.png",
@@ -20,6 +21,26 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Sermons",
+      "short_name": "Sermons",
+      "description": "Listen to latest sermons and watch worship videos",
+      "url": "/sermons"
+    },
+    {
+      "name": "Events",
+      "short_name": "Events",
+      "description": "View upcoming services and church events",
+      "url": "/events"
+    },
+    {
+      "name": "Prayer Request",
+      "short_name": "Prayer",
+      "description": "Submit a prayer request to our prayer team",
+      "url": "/prayer"
     }
   ]
 }

@@ -498,6 +498,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
   };
 
   const handleGeneratePaymentSession = async () => {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setErrorMessage("You're currently offline. Internet connection is required to complete payment verification.");
+      return;
+    }
     if (!validateDetails()) return;
     setActionLoading(true);
     setErrorMessage("");

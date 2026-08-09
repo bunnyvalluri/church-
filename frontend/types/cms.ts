@@ -181,9 +181,17 @@ export interface PastorSocialLinks {
 export interface Pastor {
   id: string;
   name: string;
+  nameTe?: string | null;
+  nameHi?: string | null;
   title: string;
+  titleTe?: string | null;
+  titleHi?: string | null;
   designation: string | null;
+  designationTe?: string | null;
+  designationHi?: string | null;
   bio: string;
+  bioTe?: string | null;
+  bioHi?: string | null;
   image: string | null;
   imagePublicId: string | null;
   email: string | null;

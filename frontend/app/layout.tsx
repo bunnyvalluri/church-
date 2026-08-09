@@ -57,6 +57,8 @@ export const metadata: Metadata = {
   },
 };
 
+const ConflictDialog = dynamic(() => import("@/components/offline/ConflictDialog"), { ssr: false });
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -78,6 +80,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
         <ServiceWorkerProvider />
         <OfflineBanner />
+        <ConflictDialog />
 
         {/* Dynamic Premium Ambient Mesh Background (GPU hardware-accelerated, zero scrolling paint overhead) */}
         <div className="premium-glow-bg" />

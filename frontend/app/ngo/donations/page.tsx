@@ -472,6 +472,10 @@ function NgoDonationsContent() {
   };
 
   const handleCreatePaymentOrder = async () => {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setErrorMessage("You're currently offline. Internet connection is required to complete payment verification.");
+      return;
+    }
     if (!validateStep2()) return;
     setLoading(true);
     setErrorMessage("");
