@@ -86,11 +86,12 @@ const NavigationLogo = memo(function NavigationLogo() {
         <span
           suppressHydrationWarning
           className={cn(
-            "whitespace-nowrap leading-none mt-0.5",
+            "whitespace-nowrap leading-none mt-0.5 font-bold uppercase",
             language !== "en"
-              ? "text-[8px] min-[360px]:text-[9px] font-extrabold text-purple-600 dark:text-purple-400 tracking-normal"
-              : "text-[0.45rem] min-[360px]:text-[0.5rem] sm:text-[0.58rem] font-bold uppercase tracking-[0.18em] bg-gradient-to-r from-purple-500 to-violet-400 dark:from-purple-300 dark:to-violet-200 bg-clip-text text-transparent"
+              ? "text-[8px] min-[360px]:text-[9px] font-extrabold text-purple-600 dark:text-purple-300 tracking-normal"
+              : "text-[0.45rem] min-[360px]:text-[0.5rem] sm:text-[0.58rem] tracking-[0.18em] text-purple-600 dark:text-purple-300 sm:bg-gradient-to-r sm:from-purple-600 sm:to-indigo-500 dark:sm:from-purple-300 dark:sm:to-indigo-200 sm:bg-clip-text sm:text-transparent"
           )}
+          style={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "inherit" }}
         >
           {t.nav.ministries}
         </span>

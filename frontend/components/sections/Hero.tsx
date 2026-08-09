@@ -255,7 +255,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-transparent"
+      className="relative min-h-screen min-h-dvh flex items-center justify-center overflow-hidden bg-transparent"
     >
       {/* Animated Background Orbs (GPU accelerated) */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -265,7 +265,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-[360px]:py-20 md:py-28 lg:py-32">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -273,15 +273,15 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           className="max-w-5xl mx-auto text-center"
         >
           {/* Live pulsing tag badge */}
-          <motion.div variants={itemVariants} className="flex justify-center mb-6 md:mb-8">
-            <div className="inline-flex items-center gap-2.5 px-5 md:px-6 py-2 md:py-2.5 bg-white/40 dark:bg-black/20 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
+          <motion.div variants={itemVariants} className="flex justify-center mb-4 min-[360px]:mb-6 md:mb-8">
+            <div className="inline-flex items-center gap-2.5 px-4 min-[360px]:px-5 md:px-6 py-1.5 min-[360px]:py-2 md:py-2.5 bg-white/40 dark:bg-black/40 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-full text-foreground shadow-sm hover:border-primary/30 transition-all duration-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
               <span
                 suppressHydrationWarning
-                className="font-extrabold tracking-wider text-[10px] md:text-xs uppercase font-outfit text-gray-600 dark:text-gray-300"
+                className="font-extrabold tracking-wider text-[10px] md:text-xs uppercase font-outfit text-gray-700 dark:text-gray-200"
               >
                 {badgeText}
               </span>
@@ -292,22 +292,34 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           <motion.h1
             suppressHydrationWarning
             variants={itemVariants}
-            className="font-black text-foreground mb-4 leading-[1.1] drop-shadow-sm font-outfit tracking-tighter"
-            style={{ fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
+            className="font-black text-foreground mb-4 leading-[1.15] sm:leading-[1.1] drop-shadow-sm font-outfit tracking-tighter"
+            style={{
+              fontSize: "clamp(1.65rem, 6.5vw, 5.25rem)",
+              overflowWrap: "anywhere",
+              wordBreak: "normal",
+            }}
           >
-            <span suppressHydrationWarning>
+            <span suppressHydrationWarning className="text-gray-900 dark:text-white">
               {headline}{" "}
             </span>
             <span
               suppressHydrationWarning
-              className="block mt-2 bg-gradient-to-r from-primary via-amber-500 to-gradient-end bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer"
+              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 dark:from-purple-300 dark:via-amber-300 dark:to-pink-300 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer"
+              style={{
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
               {churchName}
             </span>
             <span
               suppressHydrationWarning
-              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.2em] bg-gradient-to-r from-primary via-gradient-start to-gradient-end bg-clip-text text-transparent"
-              style={{ fontSize: "clamp(1.1rem, 3.5vw, 2.25rem)" }}
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 dark:from-purple-300 dark:via-indigo-200 dark:to-purple-300 bg-clip-text text-transparent"
+              style={{
+                fontSize: "clamp(1rem, 3.2vw, 2.25rem)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
               {ministriesText}
             </span>

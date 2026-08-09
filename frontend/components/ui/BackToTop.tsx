@@ -62,7 +62,7 @@ export default function BackToTop() {
           onClick={handleScrollAction}
           aria-label={isNearTop ? "Scroll to bottom" : "Scroll to top"}
           title={isNearTop ? "Scroll to bottom" : "Scroll to top"}
-          className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group"
+          className="fixed bottom-safe left-3 min-[360px]:left-4 sm:bottom-6 sm:left-6 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center group"
           style={{ filter: "drop-shadow(0 6px 20px rgba(139,92,246,0.4))" }}
         >
           {/* Glassmorphism base */}

@@ -123,7 +123,7 @@ export default function AIChat() {
   // Floating trigger button when closed
   if (!isOpen) {
     return (
-      <div className="fixed bottom-5 right-3 sm:bottom-6 sm:right-6 z-40 group">
+      <div className="fixed bottom-safe right-3 sm:bottom-6 sm:right-6 z-40 group">
         <button
           onClick={() => setIsOpen(true)}
           className="relative flex items-center justify-center w-14 h-14 sm:w-15 sm:h-15 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none"
@@ -195,8 +195,8 @@ export default function AIChat() {
       className={cn(
         "fixed z-50 transition-all duration-300 ease-in-out shadow-2xl rounded-2xl overflow-hidden border border-gray-200/80 dark:border-gray-800",
         isMinimized
-          ? "bottom-4 right-4 sm:bottom-6 sm:right-6 w-72 sm:w-80 h-[64px]"
-          : "bottom-4 right-2 left-2 sm:left-auto sm:right-6 w-auto sm:w-[420px] h-[560px] sm:h-[620px] max-h-[85vh]"
+          ? "bottom-safe right-3 sm:bottom-6 sm:right-6 w-72 sm:w-80 h-[64px]"
+          : "bottom-safe right-2 left-2 sm:left-auto sm:right-6 w-auto sm:w-[420px] h-[520px] sm:h-[620px] max-h-[calc(100dvh-5rem)]"
       )}
     >
       <div className="relative w-full h-full bg-white dark:bg-gray-950 flex flex-col">

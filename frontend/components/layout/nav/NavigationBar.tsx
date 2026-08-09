@@ -98,6 +98,18 @@ const NavigationBar = memo(function NavigationBar() {
     return () => document.removeEventListener("keydown", handler);
   }, [isMobileOpen]);
 
+  // ── Lock body scroll when mobile drawer is open ──────────────────────────────
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileOpen]);
+
   // ── Close drawer on route change ────────────────────────────────────────────
   useEffect(() => {
     setMobileOpen(false);
