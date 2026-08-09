@@ -110,7 +110,7 @@ export default function EventVideoUploader({ eventId, onSuccess }: EventVideoUpl
             type="file"
             ref={fileInputRef}
             onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-            accept="video/mp4"
+            accept="video/*,video/mp4,video/quicktime,video/x-m4v"
             className="hidden"
           />
           <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-800/80 group-hover:bg-purple-600/20 flex items-center justify-center text-slate-400 group-hover:text-purple-400 transition-colors">
@@ -122,7 +122,7 @@ export default function EventVideoUploader({ eventId, onSuccess }: EventVideoUpl
       ) : (
         <div className="space-y-4">
           <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 max-h-56">
-            <video src={preview} controls className="w-full h-full object-contain max-h-56" />
+            <video src={preview} controls playsInline className="w-full h-full object-contain max-h-56" />
             <button
               onClick={clearSelection}
               disabled={isUploading}

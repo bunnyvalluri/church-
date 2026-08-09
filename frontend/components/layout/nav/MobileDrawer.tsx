@@ -46,7 +46,7 @@ const MobileDrawer = memo(function MobileDrawer({
     <div
       id="mobile-menu"
       className={cn(
-        "lg:hidden mt-2 mb-3 p-4",
+        "lg:hidden mt-2 mb-3 p-4 pb-safe",
         "bg-white dark:bg-[#120e22]",
         "backdrop-blur-2xl",
         "rounded-2xl shadow-2xl",

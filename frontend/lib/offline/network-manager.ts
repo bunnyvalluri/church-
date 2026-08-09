@@ -69,23 +69,31 @@ class NetworkManager {
     const startTime = performance.now();
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      // Perform a lightweight HEAD check
-      const res = await fetch("/favicon.ico?_t=" + Date.now(), {
-        method: "HEAD",
-        cache: "no-store",
-        signal: controller.signal,
-      });
+      // Perform a lightweight check against health endpoint or static favicon
+      let res: Response | null = null;
+      try {
+        res = await fetch("/api/health?_t=" + Date.now(), {
+          method: "GET",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+      } catch {
+        res = await fetch("/favicon.ico?_t=" + Date.now(), {
+          method: "HEAD",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+      }
 
       clearTimeout(timeoutId);
       const rtt = performance.now() - startTime;
 
-      if (res.ok || res.status === 304) {
+      if (res && (res.ok || res.status === 304)) {
         if (rtt > 2500) {
           this.setStatus("SLOW_NETWORK");
         } else {
-          // If previous was OFFLINE or SLOW, switch to ONLINE
           if (this.status === "OFFLINE" || this.status === "BACKEND_UNAVAILABLE" || this.status === "SLOW_NETWORK") {
             this.setStatus("ONLINE");
           }

@@ -1,5 +1,5 @@
 // Kingdom of Christ Ministries Service Worker — Enterprise Offline-First Edition
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const STATIC_CACHE_NAME = `kcm-static-${CACHE_VERSION}`;
 const PUBLIC_CONTENT_CACHE = `kcm-public-content-${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `kcm-dynamic-${CACHE_VERSION}`;

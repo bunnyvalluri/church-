@@ -49,6 +49,11 @@ export const metadata: Metadata = {
     ],
     shortcut: "/logo.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "KCM Church",
+  },
   openGraph: {
     title: "Kingdom of Christ Ministries",
     description: "A place of worship and community in Hyderabad",

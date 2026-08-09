@@ -113,7 +113,7 @@ export default function NGOUploader({ projectId, category, onSuccess }: NGOUploa
             type="file"
             ref={fileInputRef}
             onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-            accept="image/jpeg,image/png,image/webp,video/mp4"
+            accept="image/*,video/*,image/jpeg,image/png,image/heic,image/heif,image/webp,video/mp4,video/quicktime"
             className="hidden"
           />
           <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-800/80 group-hover:bg-emerald-600/20 flex items-center justify-center text-slate-400 group-hover:text-emerald-400 transition-colors">
@@ -126,7 +126,7 @@ export default function NGOUploader({ projectId, category, onSuccess }: NGOUploa
         <div className="space-y-4">
           <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 h-48">
             {file?.type.startsWith("video/") ? (
-              <video src={preview} controls className="w-full h-full object-contain" />
+              <video src={preview} controls playsInline className="w-full h-full object-contain" />
             ) : (
               <img src={preview} alt="NGO Preview" className="w-full h-full object-cover" />
             )}

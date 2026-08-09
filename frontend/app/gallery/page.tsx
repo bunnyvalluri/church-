@@ -286,6 +286,7 @@ export default function GalleryPage() {
                       src={lightboxItem.url}
                       controls
                       autoPlay
+                      playsInline
                       className="absolute inset-0 w-full h-full"
                     />
                   )

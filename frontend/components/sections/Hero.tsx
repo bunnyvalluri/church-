@@ -304,7 +304,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 dark:from-purple-300 dark:via-amber-300 dark:to-pink-300 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer"
+              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-500 via-amber-400 to-pink-500 dark:from-purple-200 dark:via-amber-200 dark:to-pink-200 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer text-purple-600 dark:text-purple-200"
               style={{
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -314,7 +314,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 dark:from-purple-300 dark:via-indigo-200 dark:to-purple-300 bg-clip-text text-transparent"
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-500 via-indigo-400 to-pink-500 dark:from-purple-200 dark:via-indigo-200 dark:to-purple-100 bg-clip-text text-transparent text-purple-500 dark:text-purple-300"
               style={{
                 fontSize: "clamp(1rem, 3.2vw, 2.25rem)",
                 WebkitBackgroundClip: "text",
@@ -329,7 +329,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           <motion.p
             suppressHydrationWarning
             variants={itemVariants}
-            className="text-slate-600 dark:text-gray-300 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-semibold px-4"
+            className="text-slate-700 dark:text-gray-200 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-semibold px-4"
             style={{ fontSize: "clamp(0.95rem, 2.5vw, 1.15rem)" }}
           >
             {subtitle}
@@ -342,7 +342,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           >
             <Link
               href={hero?.ctaPrimaryHref ?? "#services"}
-              className="w-full sm:w-auto min-h-[44px] group relative px-8 py-4 bg-gradient-to-r from-primary to-gradient-end text-white rounded-2xl font-bold overflow-hidden shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[48px] group relative px-8 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-600 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-purple-400/30"
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">
@@ -352,13 +352,13 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </Link>
             <Link
               href={hero?.ctaSecondaryHref ?? "#sermons"}
-              className="w-full sm:w-auto min-h-[44px] px-8 py-4 bg-white/40 dark:bg-white/5 backdrop-blur-md border border-gray-200/80 dark:border-white/10 text-slate-800 dark:text-gray-200 hover:text-slate-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center"
+              className="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-gray-300 dark:border-white/20 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-md"
             >
               {ctaSecondaryText}
             </Link>
             <Link
               href={hero?.ctaTertiaryHref ?? "/prayer"}
-              className="w-full sm:w-auto min-h-[44px] px-8 py-4 bg-rose-500/8 hover:bg-rose-500/12 border border-rose-500/20 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-350 rounded-2xl font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center"
+              className="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-rose-500/15 dark:bg-rose-500/20 hover:bg-rose-500/25 border border-rose-500/40 dark:border-rose-400/50 text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-sm"
             >
               {ctaTertiaryText}
             </Link>

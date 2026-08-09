@@ -80,6 +80,7 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html, body {
@@ -91,6 +92,10 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     position: relative;
+  }
+
+  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Performance-Optimized: SVG noise overlays cause massive paint lag on scroll.
@@ -121,6 +126,21 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   }
 
+  /* ── Graceful Fallback for browsers without backdrop-filter support ── */
+  @supports not (backdrop-filter: blur(1px)) and not (-webkit-backdrop-filter: blur(1px)) {
+    .glass-effect,
+    .admin-modal-bg,
+    .admin-card,
+    .backdrop-blur-xl,
+    .backdrop-blur-2xl,
+    .backdrop-blur-md,
+    .backdrop-blur-lg,
+    .backdrop-blur-sm,
+    .backdrop-blur {
+      background-color: hsl(var(--background) / 0.95) !important;
+    }
+  }
+
   .text-gradient {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -129,20 +149,25 @@
     background-image: linear-gradient(135deg, hsl(var(--primary-gradient-start)), hsl(var(--primary-gradient-end)));
   }
 
-  /* Prevent auto-zoom on input focus in mobile browsers (Samsung Internet / Chrome / Safari) */
+  /* Prevent auto-zoom on input focus in mobile browsers (Safari / Chrome / Samsung Internet) */
   @media (max-width: 767px) {
     input:not([type="checkbox"]):not([type="radio"]),
     select,
-    textarea {
+    textarea,
+    .admin-input,
+    .admin-select {
       font-size: 16px !important;
     }
   }
 
-  /* ── Safe Area Insets (iOS Dynamic Island & Android Notch Support) ── */
+  /* ── Safe Area Insets (iOS Dynamic Island, Notch & Home Indicator Support) ── */
   .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
   .pl-safe { padding-left: env(safe-area-inset-left, 0px); }
   .pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+  .top-safe { top: env(safe-area-inset-top, 0px); }
+  .mt-safe { margin-top: env(safe-area-inset-top, 0px); }
+  .mb-safe { margin-bottom: env(safe-area-inset-bottom, 0px); }
   .p-safe {
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -153,14 +178,24 @@
     bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
   }
 
-  /* ── Modern Dynamic Viewport Heights (Fixes mobile address bar collapse layout shifts) ── */
+  /* ── Modern Dynamic Viewport Heights (Robust iOS/Safari 100vh / 100svh / 100dvh Handling) ── */
   .min-h-dvh {
     min-height: 100vh;
+    min-height: 100svh;
     min-height: 100dvh;
   }
   .h-dvh {
     height: 100vh;
+    height: 100svh;
     height: 100dvh;
+  }
+  .min-h-svh {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+  .h-svh {
+    height: 100vh;
+    height: 100svh;
   }
 
   /* ── WCAG 2.2 AA Minimum Touch Target (44x44px minimum interactive area) ── */

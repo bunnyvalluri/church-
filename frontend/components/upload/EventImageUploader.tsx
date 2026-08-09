@@ -122,7 +122,7 @@ export default function EventImageUploader({ eventId, branchName, onSuccess }: E
             type="file"
             ref={fileInputRef}
             onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/*,image/jpeg,image/png,image/heic,image/heif,image/webp"
             className="hidden"
           />
           <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-800/80 group-hover:bg-indigo-600/20 flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
