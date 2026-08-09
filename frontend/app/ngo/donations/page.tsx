@@ -1104,62 +1104,116 @@ function NgoDonationsContent() {
                   <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Step 2: Donor Information
                   </label>
-                  <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400">
+                  <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800/40">
                     Amount: ₹{formatNumber(getFinalAmount())}
                   </span>
                 </div>
 
-                {/* Dynamic Form Fields */}
-                {formFields.map((field) => {
-                  if (!field.isVisible) return null;
-                  const val = donorDetails[field.fieldName] || "";
+                {/* 80G Tax Exemption Request Toggle Card */}
+                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
+                  <div>
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <Award className="w-4 h-4 text-amber-500" />
+                      <span>Request 80G Tax Exemption Receipt</span>
+                    </p>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">
+                      Claim 50% tax deduction under Section 80G of Income Tax Act
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setWantTaxExemption(!wantTaxExemption)}
+                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors flex-shrink-0 ${
+                      wantTaxExemption ? "bg-amber-500 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
+                    }`}
+                  >
+                    <motion.div layout className="w-4 h-4 rounded-full bg-white shadow-md" />
+                  </button>
+                </div>
 
-                  if (field.fieldType === "checkbox") {
+                {/* Dynamic Form Fields Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {formFields.map((field) => {
+                    if (!field.isVisible) return null;
+                    const val = donorDetails[field.fieldName] || "";
+
+                    if (field.fieldType === "checkbox") {
+                      return (
+                        <div key={field.id} className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10">
+                          <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
+                            {field.label}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDonorDetails((prev) => ({
+                                ...prev,
+                                [field.fieldName]: !prev[field.fieldName],
+                              }))
+                            }
+                            className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                              donorDetails[field.fieldName] ? "bg-purple-600 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
+                            }`}
+                          >
+                            <motion.div layout className="w-4 h-4 rounded-full bg-white shadow-md" />
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    const isFullWidth = field.fieldName === "donorName" || field.fieldName === "address";
+
                     return (
-                      <div key={field.id} className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/10">
-                        <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300">
-                          {field.label}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
+                      <div key={field.id} className={isFullWidth ? "sm:col-span-2" : "sm:col-span-1"}>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                          {field.label} {field.isRequired ? "*" : "(Optional)"}
+                        </label>
+                        <input
+                          type={field.fieldType || "text"}
+                          disabled={field.fieldName === "donorName" && donorDetails.isAnonymous}
+                          value={field.fieldName === "donorName" && donorDetails.isAnonymous ? "Anonymous Donor" : val}
+                          onChange={(e) =>
                             setDonorDetails((prev) => ({
                               ...prev,
-                              [field.fieldName]: !prev[field.fieldName],
+                              [field.fieldName]: e.target.value,
                             }))
                           }
-                          className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
-                            donorDetails[field.fieldName] ? "bg-purple-600 justify-end" : "bg-slate-300 dark:bg-slate-800 justify-start"
-                          }`}
-                        >
-                          <motion.div layout className="w-4 h-4 rounded-full bg-white shadow-md" />
-                        </button>
+                          placeholder={field.placeholder || ""}
+                          className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-60"
+                        />
                       </div>
                     );
-                  }
+                  })}
 
-                  return (
-                    <div key={field.id}>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                        {field.label} {field.isRequired ? "*" : "(Optional)"}
+                  {/* PAN Card Input field when 80G Tax Exemption is requested */}
+                  {wantTaxExemption && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="sm:col-span-2 space-y-1 bg-amber-500/5 p-3.5 rounded-2xl border border-amber-500/20"
+                    >
+                      <label className="block text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                        PAN Card Number (Required for 80G Receipt) *
                       </label>
                       <input
-                        type={field.fieldType || "text"}
-                        disabled={field.fieldName === "donorName" && donorDetails.isAnonymous}
-                        value={field.fieldName === "donorName" && donorDetails.isAnonymous ? "Anonymous Donor" : val}
+                        type="text"
+                        maxLength={10}
+                        value={donorDetails.panNumber || ""}
                         onChange={(e) =>
                           setDonorDetails((prev) => ({
                             ...prev,
-                            [field.fieldName]: e.target.value,
+                            panNumber: e.target.value.toUpperCase(),
                           }))
                         }
-                        placeholder={field.placeholder || ""}
-                        className="w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-60"
+                        placeholder="e.g. ABCDE1234F"
+                        className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30"
                       />
-                    </div>
-                  );
-                })}
-
+                      <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">
+                        Required by Govt of India Income Tax Dept for issuing Section 80G certificate.
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Purpose & Branch Selectors */}
                 <div className="grid grid-cols-2 gap-3 pt-1">
