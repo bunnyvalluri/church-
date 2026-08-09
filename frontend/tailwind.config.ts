@@ -50,9 +50,9 @@ const config = {
           500: "hsl(var(--primary))",
           600: "hsl(var(--primary))",
           700: "hsl(var(--primary))",
-          800: "hsl(var(--primary))",
-          900: "hsl(var(--primary))",
-          950: "hsl(var(--accent))",
+          800: "hsl(262 83% 32%)",
+          900: "hsl(262 83% 22%)",
+          950: "hsl(262 83% 14%)",
         },
         // Map indigo to the same theme primary variables to ensure all page layouts transform seamlessly
         indigo: {
@@ -64,9 +64,9 @@ const config = {
           500: "hsl(var(--primary))",
           600: "hsl(var(--primary))",
           700: "hsl(var(--primary))",
-          800: "hsl(var(--primary))",
-          900: "hsl(var(--primary))",
-          950: "hsl(var(--accent))",
+          800: "hsl(262 83% 32%)",
+          900: "hsl(262 83% 22%)",
+          950: "hsl(262 83% 14%)",
         },
         // Map violet to the same theme primary variables
         violet: {
@@ -78,9 +78,9 @@ const config = {
           500: "hsl(var(--primary))",
           600: "hsl(var(--primary))",
           700: "hsl(var(--primary))",
-          800: "hsl(var(--primary))",
-          900: "hsl(var(--primary))",
-          950: "hsl(var(--accent))",
+          800: "hsl(262 83% 32%)",
+          900: "hsl(262 83% 22%)",
+          950: "hsl(262 83% 14%)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

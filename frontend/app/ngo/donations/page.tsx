@@ -823,11 +823,11 @@ function NgoDonationsContent() {
                 onClick={() => setFrequency("ONE_TIME")}
                 className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   frequency === "ONE_TIME"
-                    ? "bg-white dark:bg-purple-600 text-purple-950 dark:text-white shadow-md border border-slate-200/80 dark:border-purple-400"
+                    ? "bg-white dark:bg-purple-600 text-purple-950 dark:text-white shadow-md border border-purple-200 dark:border-purple-400"
                     : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-600 dark:text-white" : "text-purple-500"}`} />
+                <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-700 dark:text-white" : "text-purple-500"}`} />
                 <span>One-Time Donation</span>
               </button>
 
