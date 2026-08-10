@@ -870,7 +870,7 @@ export default function EventManagement() {
 
       {/* ── Modals & Overlays ────────────────────────────────────────────────── */}
       {(modal === "create" || modal === "edit") && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", WebkitBackdropFilter: "blur(12px)", backdropFilter: "blur(12px)" }}>
           <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white dark:bg-[#0f1021] border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
               <div className="flex items-center gap-2.5">
@@ -945,7 +945,7 @@ export default function EventManagement() {
 
       {/* Delete confirmation modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(9,10,26,0.65)", WebkitBackdropFilter: "blur(12px)", backdropFilter: "blur(12px)" }}>
           <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-sm p-6 space-y-5">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center">

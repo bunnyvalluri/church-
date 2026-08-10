@@ -342,7 +342,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {showLogoutAlert && (
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 transition-opacity duration-300"
-          style={{ backdropFilter: "blur(4px)" }}
+          style={{ WebkitBackdropFilter: "blur(4px)", backdropFilter: "blur(4px)" }}
         >
           <div className="bg-[#201a18] border border-[#362b28] rounded-[24px] w-full max-w-[340px] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)] text-left transform scale-100 transition-all duration-300">
             <h3 className="text-white font-bold text-[15px] tracking-wide mb-1.5">

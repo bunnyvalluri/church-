@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     /* Premium Light Mode Palette */
     --background: 210 40% 98%;
     /* Soft cool white, not harsh #fff */
@@ -44,6 +45,7 @@
   }
 
   .dark {
+    color-scheme: dark;
     /* Premium Obsidian & Purple-tinted Dark Mode */
     --background: 260 20% 4%;
     --foreground: 210 40% 98%;
@@ -111,19 +113,26 @@
 
 @layer utilities {
   .gradient-primary {
+    background-color: hsl(var(--primary, 262 83% 58%));
     background: linear-gradient(135deg, hsl(var(--primary-gradient-start, 262 83% 58%)) 0%, hsl(var(--primary-gradient-end, 280 90% 65%)) 100%);
   }
 
   .gradient-secondary {
+    background-color: #2563eb;
     background: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(220 100% 60%) 100%);
   }
 
   .glass-effect {
+    background-color: rgba(255, 255, 255, 0.85);
     background: hsl(var(--background) / 0.6);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid hsl(var(--border) / 0.4);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-effect {
+    background-color: rgba(15, 16, 33, 0.85);
   }
 
   /* ── Graceful Fallback for browsers without backdrop-filter support ── */
@@ -141,12 +150,13 @@
     }
   }
 
-  .text-gradient {
+  .text-gradient,
+  .bg-clip-text {
+    color: hsl(var(--primary, 262 83% 58%));
+    background-image: linear-gradient(135deg, hsl(var(--primary-gradient-start, 262 83% 58%)), hsl(var(--primary-gradient-end, 280 90% 65%)));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: transparent;
-    background-image: linear-gradient(135deg, hsl(var(--primary-gradient-start)), hsl(var(--primary-gradient-end)));
+    -webkit-text-fill-color: transparent;
   }
 
   /* Prevent auto-zoom on input focus in mobile browsers (Safari / Chrome / Samsung Internet) */
@@ -729,9 +739,9 @@ button:hover .lucide,
   will-change: transform; /* promote to own compositor layer */
   transform: translateZ(0);
   background-image: 
-    radial-gradient(at 0% 0%, hsla(var(--primary-gradient-start) / 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 20%, hsla(var(--primary-gradient-end) / 0.05) 0px, transparent 50%),
-    radial-gradient(at 20% 100%, hsla(var(--primary) / 0.06) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, hsl(var(--primary-gradient-start) / 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 20%, hsl(var(--primary-gradient-end) / 0.05) 0px, transparent 50%),
+    radial-gradient(at 20% 100%, hsl(var(--primary) / 0.06) 0px, transparent 50%);
   background-color: transparent;
 }
 

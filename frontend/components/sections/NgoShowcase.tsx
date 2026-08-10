@@ -122,8 +122,8 @@ export default function NgoShowcase() {
           animation-play-state: paused;
         }
         .marquee-row {
-          -webkit-mask-image: linear-gradient(to right, transparent 0px, black 80px, black calc(100% - 80px), transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0px, black 80px, black calc(100% - 80px), transparent 100%);
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 80px, #000 calc(100% - 80px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 80px, #000 calc(100% - 80px), transparent 100%);
         }
         .ngo-img-card {
           transition: box-shadow 0.3s ease;

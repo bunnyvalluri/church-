@@ -355,7 +355,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
             aria-modal="true"
             aria-labelledby="modal-event-title"
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: "rgba(9,10,26,0.65)", backdropFilter: "blur(12px)" }}
+            style={{ backgroundColor: "rgba(9,10,26,0.65)", WebkitBackdropFilter: "blur(12px)", backdropFilter: "blur(12px)" }}
           >
             <div className="bg-white dark:bg-[#0f1021] border border-slate-200/50 dark:border-white/[0.06] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
               
