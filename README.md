@@ -3,6 +3,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.12-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
@@ -10,7 +11,7 @@
 [![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)](https://openai.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-A state-of-the-art, enterprise-grade digital ecosystem and web platform designed for **Kingdom of Christ Ministries (K.C.M)**. Built with Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, and intelligent AI capabilities—delivering bilingual support (English & Telugu), offline-first PWA resilience, seamless sermon media streaming, prayer requests, and secure online giving.
+A state-of-the-art, enterprise-grade digital ecosystem and web platform designed for **Kingdom of Christ Ministries (K.C.M)**. Built with Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, Firebase Auth, and intelligent AI capabilities—delivering multilingual support (English, Telugu & Hindi), offline-first PWA resilience, seamless sermon media streaming, prayer requests, and secure online giving.
 
 ---
 
@@ -40,7 +41,7 @@ A state-of-the-art, enterprise-grade digital ecosystem and web platform designed
 The **Kingdom of Christ Ministries Platform** serves as a digital gateway connecting church members, visitors, and global supporters. Designed with visual excellence, intuitive user navigation, and high availability, the platform streamlines sermon delivery, event management, prayer requests, community outreach, and secure financial contributions.
 
 > [!NOTE]  
-> The platform features full bilingual support (English & Telugu), adaptive offline-first sync capabilities, and zero-latency media playback.
+> The platform features full multilingual support (English, Telugu & Hindi), adaptive offline-first sync capabilities, and zero-latency media playback.
 
 ---
 
@@ -56,14 +57,14 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 - **Sermon & Media Archive**: Filterable sermon library with high-definition audio and video streaming, plus transcript support.
 - **Interactive Events Calendar**: Full event listing with category filters, schedule details, and RSVP capabilities.
 - **Prayer & Testimonials**: Online prayer request submissions and verified community testimony sharing.
-- **Bilingual Interface**: Seamless translation across English and Telugu.
+- **Multilingual Interface**: Seamless translation across English, Telugu, and Hindi.
 
 ### ⚡ Offline-First Architecture & Network Resilience
 - **PWA Service Worker**: Instant page load with offline caching and background synchronization.
 - **Real-Time Health Monitoring**: Automatic network quality detection and sync handling.
 
 ### 🤖 Intelligent AI Assistance
-- **Bilingual Conversational AI (English & Telugu)**: Provides 24/7 answers to church schedules, location details, and service information.
+- **Multilingual Conversational AI (English, Telugu & Hindi)**: Provides 24/7 answers to church schedules, location details, and service information.
 - **Semantic Sermon Search (RAG)**: Search over sermon archives using contextual vector embeddings.
 
 ### 💳 Secure Online Giving & NGO Support
@@ -81,6 +82,7 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 | **Styling** | Tailwind CSS 3.4 & Radix UI | Utility-first styling with accessible UI primitives |
 | **Animations** | Framer Motion | Smooth component micro-interactions and route transitions |
 | **Backend API** | Node.js / Express | High-performance modular REST API endpoints |
+| **Authentication** | Firebase Auth (Google & Email) | Secure identity provider with OAuth and session tokens |
 | **Database & ORM** | PostgreSQL 16 & Prisma | Relational database management with schema migrations |
 | **AI Engine** | OpenAI & Gemini API | Natural Language Processing (NLP) & Retrieval-Augmented Generation (RAG) |
 | **Payments** | Stripe API | Secure global donation gateway |
@@ -259,7 +261,7 @@ npm run k8s:apply
 ### Phase 1: Core Platform & Public Experience (Completed ✅)
 - [x] Responsive web interface with glassmorphism design system
 - [x] Public service, events, media, and contact sections
-- [x] Bilingual AI conversational chatbot (English & Telugu)
+- [x] Multilingual AI conversational chatbot (English, Telugu & Hindi)
 - [x] PWA offline caching & background sync infrastructure
 
 ### Phase 2: Community & Giving Enhancements (Completed ✅)

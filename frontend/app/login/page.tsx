@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { auth, googleProvider, getFirebaseAuth, getGoogleProvider } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -358,12 +358,19 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: any, name: string) => {
+  const handleSocialLogin = async (providerArg: any, name: string) => {
     setError("");
     setSocialLoading(name);
     setIsLoggingIn(true);
 
     try {
+      const activeAuth = getFirebaseAuth() || auth;
+      const activeProvider = (name === "Google" ? getGoogleProvider() : providerArg) || new GoogleAuthProvider();
+
+      if (!activeAuth) {
+        throw new Error("auth/internal-error");
+      }
+
       let u: any = null;
 
       // Detect mobile browsers where popups are blocked by OS/browser policies
@@ -371,58 +378,52 @@ export default function LoginPage() {
         typeof window !== "undefined" &&
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      if (isMobile && auth && typeof signInWithRedirect === "function") {
+      if (isMobile && typeof signInWithRedirect === "function") {
         try {
-          await signInWithRedirect(auth, provider);
+          await signInWithRedirect(activeAuth, activeProvider);
           return;
         } catch (mErr) {
           console.warn("[AUTH] Mobile redirect notice:", mErr);
         }
       }
 
-      // Try Google OAuth popup first on desktop browsers
+      // Try OAuth popup on desktop browsers
       try {
-        if (auth && typeof signInWithPopup === "function") {
-          const result = await signInWithPopup(auth, provider);
-          u = result.user;
+        if (typeof signInWithPopup === "function") {
+          const result = await signInWithPopup(activeAuth, activeProvider);
+          u = result?.user;
         }
       } catch (popupErr: any) {
         console.warn(`[AUTH/OAUTH] ${name} popup notice:`, popupErr?.code || popupErr);
+        const code = popupErr?.code || "";
 
         if (
-          popupErr?.code === "auth/popup-blocked" ||
-          popupErr?.code === "auth/cancelled-popup-request" ||
-          popupErr?.code === "auth/internal-error"
+          code === "auth/popup-blocked" ||
+          code === "auth/cancelled-popup-request"
         ) {
           // Fallback to full-page OAuth redirect
-          if (auth && typeof signInWithRedirect === "function") {
-            await signInWithRedirect(auth, provider);
+          if (typeof signInWithRedirect === "function") {
+            await signInWithRedirect(activeAuth, activeProvider);
             return;
           }
-        } else if (
-          popupErr?.code === "auth/popup-closed-by-user" ||
-          popupErr?.code === "auth/user-cancelled"
+        }
+
+        if (
+          code === "auth/popup-closed-by-user" ||
+          code === "auth/user-cancelled"
         ) {
-          // User closed popup window — reset loading states
+          // User closed popup window — reset loading state quietly
           setSocialLoading(null);
           setIsLoggingIn(false);
           return;
         }
+
+        // Throw actual error code to be caught and displayed
+        throw popupErr;
       }
 
-      // Seamless fallback authentication if Firebase Auth is unreachable or unconfigured
       if (!u) {
-        const fallbackEmail = email || "member@kcm-church.com";
-        let safeHash = "google-user";
-        try {
-          safeHash = btoa(fallbackEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
-        } catch {}
-        u = {
-          uid: `user-${safeHash}`,
-          email: fallbackEmail,
-          displayName: "Church Member",
-          photoURL: null,
-        };
+        throw new Error("social-generic-failed");
       }
 
       const initialRole = getRoleForEmail(u.email || "");
@@ -459,19 +460,12 @@ export default function LoginPage() {
 
       // 5. Redirect to the appropriate dashboard
       redirectForRole(initialRole);
-
     } catch (err: any) {
-      console.warn(`[AUTH/OAUTH] ${name} login notice:`, err?.code || err);
+      console.error(`[AUTH/OAUTH] ${name} login error:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
-      const fallbackEmail = email || "member@kcm-church.com";
-      const initialRole = getRoleForEmail(fallbackEmail);
-      let safeHash = "google-user";
-      try {
-        safeHash = btoa(fallbackEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
-      } catch {}
-      setAuthCookies(`user-${safeHash}`, initialRole);
-      redirectForRole(initialRole);
+      const errCode = err?.code || err?.message || "social-generic-failed";
+      setError(errCode);
     }
   };
 

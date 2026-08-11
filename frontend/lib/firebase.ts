@@ -39,12 +39,41 @@ try {
   twitterProvider = new TwitterAuthProvider();
 } catch (e) {
   console.error("Firebase Init Error:", e);
-  // Mock auth and db to prevent crash
-  auth = { currentUser: null };
   db = null;
   googleProvider = new GoogleAuthProvider();
   facebookProvider = new FacebookAuthProvider();
   twitterProvider = new TwitterAuthProvider();
+}
+
+/**
+ * Returns a guaranteed valid Firebase Auth instance on client-side.
+ */
+export function getFirebaseAuth() {
+  if (typeof window !== "undefined") {
+    if (!auth || typeof auth.onAuthStateChanged !== "function") {
+      try {
+        const currentApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+        auth = getAuth(currentApp);
+        if (typeof setPersistence === "function") {
+          setPersistence(auth, browserLocalPersistence).catch(() => {});
+        }
+      } catch (e) {
+        console.error("getFirebaseAuth client init error:", e);
+      }
+    }
+  }
+  return auth;
+}
+
+/**
+ * Returns a freshly configured GoogleAuthProvider instance.
+ */
+export function getGoogleProvider() {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  provider.addScope("email");
+  provider.addScope("profile");
+  return provider;
 }
 
 export { auth, db, googleProvider, facebookProvider, twitterProvider };
