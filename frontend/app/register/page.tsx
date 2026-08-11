@@ -189,10 +189,10 @@ export default function RegisterPage() {
   };
 
   const inputClass =
-    "w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all placeholder-gray-500 text-xs sm:text-sm";
+    "w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-100/70 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all placeholder-slate-400 dark:placeholder-gray-500 text-xs sm:text-sm";
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 font-sans antialiased text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-50 dark:bg-slate-950 font-sans antialiased text-slate-900 dark:text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden transition-colors duration-300">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#09051d] border-r border-white/10">
         {/* Glowing top accent border */}
@@ -246,7 +246,7 @@ export default function RegisterPage() {
             {registerT.quote}
           </h2>
 
-          {/* Benefits */}
+          {/* Benefits Grid */}
           <div className="space-y-4 p-6 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-xl shadow-xl">
             {[
               registerT.benefit1,
@@ -272,9 +272,9 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-100/90 dark:bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
         {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
         {/* Ambient glow spots */}
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
@@ -288,8 +288,8 @@ export default function RegisterPage() {
 
         {/* Mobile Top Header Bar */}
         <div className="w-full max-w-lg flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
-            <ChevronLeft className="w-4 h-4 text-purple-300" />
+          <Link href="/login" className="flex items-center gap-1.5 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
+            <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-300" />
             <span>{registerT.backToSignIn}</span>
           </Link>
           <div className="flex items-center gap-2">
@@ -299,7 +299,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Form Container Card */}
-        <div className="w-full max-w-lg mx-auto bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden">
+        <div className="w-full max-w-lg mx-auto bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300">
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
@@ -316,29 +316,29 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
               {loginT.churchName}
             </h1>
-            <p className="text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
+            <p className="text-purple-600 dark:text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
               {loginT.ministries}
             </p>
           </div>
 
           {/* Header */}
           <div className="mb-6 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm font-medium mt-1">
+            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-1">
               {registerT.subtitle}
             </p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-4 px-4 py-3 rounded-xl bg-red-950/50 border border-red-800/60 flex items-start gap-3 shadow-md">
-              <span className="text-red-400 text-lg mt-0.5">⚠</span>
-              <p className="text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
+            <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 flex items-start gap-3 shadow-md">
+              <span className="text-red-600 dark:text-red-400 text-lg mt-0.5">⚠</span>
+              <p className="text-red-700 dark:text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
             </div>
           )}
 
@@ -346,11 +346,11 @@ export default function RegisterPage() {
             {/* Name Row - Always 2 Columns for Mobile Efficiency */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label htmlFor="firstName" className="text-xs font-semibold text-gray-300">
+                <label htmlFor="firstName" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                   {registerT.firstName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -364,11 +364,11 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="lastName" className="text-xs font-semibold text-gray-300">
+                <label htmlFor="lastName" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                   {registerT.lastName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -385,11 +385,11 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-xs font-semibold text-gray-300">
+              <label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                 {registerT.email}
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                 <input
                   id="email"
                   name="email"
@@ -406,11 +406,11 @@ export default function RegisterPage() {
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <label htmlFor="phone" className="text-xs font-semibold text-gray-300">
+              <label htmlFor="phone" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                 {registerT.phone}
               </label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                 <input
                   id="phone"
                   name="phone"
@@ -425,11 +425,11 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-semibold text-gray-300">
+              <label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                 {registerT.password}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                 <input
                   id="password"
                   name="password"
@@ -444,7 +444,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -457,12 +457,12 @@ export default function RegisterPage() {
                       <div
                         key={i}
                         className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          i <= pwScore ? strengthColor[pwScore] : "bg-gray-800"
+                          i <= pwScore ? strengthColor[pwScore] : "bg-slate-200 dark:bg-gray-800"
                         }`}
                       />
                     ))}
                   </div>
-                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-400" : pwScore <= 2 ? "text-orange-400" : pwScore <= 3 ? "text-yellow-400" : "text-emerald-400"}`}>
+                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-500 dark:text-red-400" : pwScore <= 2 ? "text-orange-500 dark:text-orange-400" : pwScore <= 3 ? "text-amber-500 dark:text-yellow-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                     {registerT.strengthLabel} {getStrengthLabel(pwScore)}
                   </p>
                 </div>
@@ -471,11 +471,11 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div className="space-y-1.5">
-              <label htmlFor="confirmPassword" className="text-xs font-semibold text-gray-300">
+              <label htmlFor="confirmPassword" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
                 {registerT.confirmPassword}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -496,13 +496,13 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-[10px] sm:text-xs text-red-400">{registerT.mismatch}</p>
+                <p className="text-[10px] sm:text-xs text-red-500 dark:text-red-400">{registerT.mismatch}</p>
               )}
             </div>
 
@@ -512,13 +512,13 @@ export default function RegisterPage() {
                 id="terms"
                 type="checkbox"
                 required
-                className="w-4 h-4 mt-0.5 accent-purple-500 rounded bg-slate-950 border-gray-800"
+                className="w-4 h-4 mt-0.5 accent-purple-600 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-gray-800"
               />
-              <label htmlFor="terms" className="text-xs text-gray-400 leading-tight">
+              <label htmlFor="terms" className="text-xs text-slate-600 dark:text-gray-400 leading-tight">
                 {registerT.agreeTo}{" "}
-                <Link href="/terms" className="text-purple-400 hover:text-purple-300 font-semibold">{registerT.terms}</Link>
+                <Link href="/terms" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">{registerT.terms}</Link>
                 {" "}{registerT.and}{" "}
-                <Link href="/privacy" className="text-purple-400 hover:text-purple-300 font-semibold">{registerT.privacy}</Link>
+                <Link href="/privacy" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">{registerT.privacy}</Link>
               </label>
             </div>
 
@@ -526,7 +526,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 border border-purple-400/20"
+              className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 border border-purple-400/20 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -542,9 +542,9 @@ export default function RegisterPage() {
             </button>
 
             {/* Login Link */}
-            <p className="text-center pt-2 text-sm text-gray-400 font-medium">
+            <p className="text-center pt-2 text-sm text-slate-600 dark:text-gray-400 font-medium">
               {registerT.alreadyHaveAccount}{" "}
-              <Link href="/login" className="text-purple-400 font-bold hover:text-purple-300 hover:underline transition-all">
+              <Link href="/login" className="text-purple-600 dark:text-purple-400 font-bold hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-all">
                 {registerT.signInLink}
               </Link>
             </p>

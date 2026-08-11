@@ -569,7 +569,7 @@ export default function LoginPage() {
   // ── Removed to prevent hydration mismatch
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 font-sans antialiased text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-[100dvh] flex flex-col lg:grid lg:grid-cols-2 bg-slate-50 dark:bg-slate-950 font-sans antialiased text-slate-900 dark:text-gray-100 selection:bg-purple-500 selection:text-white relative overflow-x-hidden transition-colors duration-300">
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#3b0764] to-[#09051d] border-r border-white/10">
         {/* Glowing top accent border */}
@@ -672,9 +672,9 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-100/90 dark:bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
         {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
         {/* Ambient glow spots */}
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
@@ -688,8 +688,8 @@ export default function LoginPage() {
 
         {/* Mobile Header Bar */}
         <div className="w-full max-w-md flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
-          <Link href="/" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-all duration-300 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
-            <ChevronLeft className="w-4 h-4 text-purple-300" />
+          <Link href="/" className="flex items-center gap-1.5 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
+            <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-300" />
             <span>{loginT.backToHome}</span>
           </Link>
           <div className="flex items-center gap-2">
@@ -703,7 +703,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden"
+          className="w-full max-w-md mx-auto bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300"
         >
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
@@ -721,20 +721,20 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
               {loginT.churchName}
             </h1>
-            <p className="text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
+            <p className="text-purple-600 dark:text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
               {loginT.ministries}
             </p>
           </div>
 
           {/* Form Header */}
           <div className="mb-6 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loginT.title}
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm font-medium mt-1">
+            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-1">
               {loginT.subtitle}
             </p>
           </div>
@@ -744,10 +744,10 @@ export default function LoginPage() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 px-4 py-3 rounded-xl bg-red-950/50 border border-red-800/60 flex items-start gap-3 shadow-md"
+              className="mb-6 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 flex items-start gap-3 shadow-md"
             >
-              <span className="text-red-400 text-lg mt-0.5">⚠</span>
-              <p className="text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
+              <span className="text-red-600 dark:text-red-400 text-lg mt-0.5">⚠</span>
+              <p className="text-red-700 dark:text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
             </motion.div>
           )}
 
@@ -761,11 +761,11 @@ export default function LoginPage() {
             >
               {/* Email Input */}
               <motion.div variants={itemVariants} className="space-y-1.5 group">
-                <label htmlFor="email" className="text-xs font-semibold text-gray-300 group-focus-within:text-purple-400 transition-colors duration-300">
+                <label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-gray-300 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors duration-300">
                   {loginT.email}
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors duration-300" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-gray-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors duration-300" />
                   <input
                     id="email"
                     type="email"
@@ -773,7 +773,7 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-gray-500 text-sm"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-100/70 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-slate-400 dark:placeholder-gray-500 text-sm"
                     placeholder={loginT.emailPlaceholder}
                   />
                 </div>
@@ -782,18 +782,18 @@ export default function LoginPage() {
               {/* Password Input */}
               <motion.div variants={itemVariants} className="space-y-1.5 group">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-xs font-semibold text-gray-300 group-focus-within:text-purple-400 transition-colors duration-300">
+                  <label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-gray-300 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors duration-300">
                     {loginT.password}
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-purple-400 hover:text-purple-300 font-semibold transition-colors"
+                    className="text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-semibold transition-colors"
                   >
                     {loginT.forgotPassword}
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors duration-300" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-gray-400 group-focus-within:text-purple-600 dark:group-focus-within:text-purple-400 transition-colors duration-300" />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -801,13 +801,13 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
-                    className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-800 bg-slate-950/60 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-gray-500 text-sm"
+                    className="w-full pl-11 pr-12 py-3 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-100/70 dark:bg-slate-950/60 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-300 placeholder-slate-400 dark:placeholder-gray-500 text-sm"
                     placeholder={loginT.passwordPlaceholder}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors"
                     aria-label="Toggle password visibility"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -820,7 +820,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 group border border-purple-400/20"
+                  className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 group border border-purple-400/20 cursor-pointer"
                 >
                   {/* Gloss sheen overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
@@ -842,10 +842,10 @@ export default function LoginPage() {
               {/* Divider */}
               <motion.div variants={itemVariants} className="relative my-6 pt-1">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-800" />
+                  <div className="w-full border-t border-slate-200 dark:border-gray-800" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-slate-900 text-xs font-bold text-gray-400 uppercase tracking-widest">{loginT.orContinueWith}</span>
+                  <span className="px-4 bg-white dark:bg-slate-900 text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest">{loginT.orContinueWith}</span>
                 </div>
               </motion.div>
 
@@ -857,7 +857,7 @@ export default function LoginPage() {
                   disabled={!!socialLoading}
                   whileHover={!socialLoading ? { scale: 1.01, y: -1 } : {}}
                   whileTap={!socialLoading ? { scale: 0.99 } : {}}
-                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-gray-800 bg-slate-950/80 hover:bg-slate-800/80 hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-lg disabled:opacity-85 disabled:cursor-wait group overflow-hidden"
+                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-slate-200 dark:border-gray-800 bg-white hover:bg-slate-100 dark:bg-slate-950/80 dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-85 disabled:cursor-wait group overflow-hidden cursor-pointer"
                   title={loginT.googleSignIn}
                 >
                   <AnimatePresence mode="wait">
@@ -869,8 +869,8 @@ export default function LoginPage() {
                         exit={{ opacity: 0, y: -6 }}
                         className="flex items-center justify-center gap-3"
                       >
-                        <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-                        <span className="text-sm font-semibold text-gray-300 animate-pulse">
+                        <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400" />
+                        <span className="text-sm font-semibold text-slate-700 dark:text-gray-300 animate-pulse">
                           {language === "te" ? "Google తో అనుసంధానిస్తోంది..." : language === "hi" ? "Google से जुड़ रहा है..." : "Connecting to Google..."}
                         </span>
                       </motion.div>
@@ -888,7 +888,7 @@ export default function LoginPage() {
                           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
                           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors duration-300">
+                        <span className="text-sm font-bold text-slate-700 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-300">
                           {loginT.googleSignIn}
                         </span>
                       </motion.div>
@@ -898,9 +898,9 @@ export default function LoginPage() {
               </motion.div>
 
               {/* Register Link */}
-              <motion.p variants={itemVariants} className="text-center pt-2 text-sm text-gray-400 font-medium">
+              <motion.p variants={itemVariants} className="text-center pt-2 text-sm text-slate-600 dark:text-gray-400 font-medium">
                 {loginT.newToMinistry}{" "}
-                <Link href="/register" className="text-purple-400 font-bold hover:text-purple-300 hover:underline transition-all">
+                <Link href="/register" className="text-purple-600 dark:text-purple-400 font-bold hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-all">
                   {loginT.createAccountLink}
                 </Link>
               </motion.p>
