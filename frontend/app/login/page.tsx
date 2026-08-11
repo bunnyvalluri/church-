@@ -673,7 +673,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-3 pt-3 pb-16 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-100/90 dark:bg-slate-950 relative overflow-y-auto min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
+      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center p-3 sm:p-6 lg:p-12 w-full min-w-0 bg-slate-50 dark:bg-slate-950 relative overflow-y-auto min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
         {/* Subtle grid pattern background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
@@ -688,7 +688,7 @@ export default function LoginPage() {
         </div>
 
         {/* Mobile Header Bar */}
-        <div className="w-full max-w-md flex items-center justify-between pt-1 px-1 mb-3 lg:hidden z-20 shrink-0">
+        <div className="w-full max-w-md flex items-center justify-between pb-2 px-1 lg:hidden z-20 shrink-0">
           <Link href="/" className="flex items-center gap-1 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-md text-[11px] sm:text-xs font-semibold shrink-0">
             <ChevronLeft className="w-3.5 h-3.5 text-purple-600 dark:text-purple-300" />
             <span>{loginT.backToHome}</span>
@@ -704,7 +704,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 mb-6 lg:my-auto"
+          className="w-full max-w-md mx-auto bg-white/95 dark:bg-slate-900/90 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 my-auto"
         >
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
