@@ -81,11 +81,10 @@ const CATEGORIES = [
     label: "Church",
     icon: Heart,
     questions: [
-      { icon: Clock,          label: "Service Times",    msg: "What are the Sunday service timings at KCM?" },
-      { icon: MapPin,         label: "Location",         msg: "Where is Kingdom of Christ Ministries located?" },
-      { icon: User,           label: "Senior Pastor",    msg: "Who is the Senior Pastor of KCM?" },
-      { icon: HeartHandshake, label: "Prayer Request",   msg: "How can I submit a prayer request?" },
-      { icon: Phone,          label: "Contact",          msg: "What is the church contact number?" },
+      { icon: Clock,          label: "Service Times",  msg: "What are the Sunday service timings at KCM?" },
+      { icon: MapPin,         label: "Location",       msg: "Where is Kingdom of Christ Ministries located?" },
+      { icon: User,           label: "Senior Pastor",  msg: "Who is the Senior Pastor of KCM?" },
+      { icon: HeartHandshake, label: "Prayer Request", msg: "How can I submit a prayer request?" },
     ],
   },
   {
@@ -266,23 +265,18 @@ export default function AIChat() {
             >
               {/* Empty / welcome state */}
               {messages.length === 0 && (
-                <div className="p-3 space-y-3">
-                  {/* Compact greeting */}
-                  <div className="text-center bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/30 dark:to-gray-900/40 px-4 py-4 rounded-2xl border border-purple-100 dark:border-purple-900/40">
-                    <div className="relative inline-block mb-2">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 p-0.5 shadow-lg mx-auto flex items-center justify-center">
-                        <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full p-0.5 overflow-hidden">
-                          <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={44} height={44} className="object-cover rounded-full w-full h-full" />
-                        </div>
+                <div className="p-3 space-y-2">
+                  {/* Ultra-compact greeting */}
+                  <div className="flex items-center gap-3 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/20 px-3 py-2.5 rounded-xl border border-purple-100 dark:border-purple-900/40">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 p-0.5 shadow-md shrink-0">
+                      <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full overflow-hidden">
+                        <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={32} height={32} className="object-cover rounded-full w-full h-full" />
                       </div>
-                      <span className="absolute -bottom-0.5 -right-0.5 p-0.5 bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-full">
-                        <Sparkles className="w-2.5 h-2.5" />
-                      </span>
                     </div>
-                    <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">Hi, I'm KCM Assistant! 👋</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
-                      KCM's AI — ask me <span className="text-purple-600 dark:text-purple-400 font-semibold">anything</span>
-                    </p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm leading-tight">KCM Assistant <span className="text-base">👋</span></h4>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400">Ask me <span className="text-purple-600 dark:text-purple-400 font-semibold">anything</span></p>
+                    </div>
                   </div>
 
                   {/* Category tabs — icon + short label, no overflow */}
@@ -313,7 +307,7 @@ export default function AIChat() {
                       <button
                         key={label}
                         onClick={() => { setHasError(false); append({ role: "user", content: msg }); }}
-                        className="w-full text-left px-3 py-2.5 bg-white dark:bg-gray-900/90 border border-gray-200/80 dark:border-gray-800 rounded-xl hover:border-purple-400 dark:hover:border-purple-600 hover:bg-purple-50/60 dark:hover:bg-purple-900/20 flex items-center justify-between gap-2 transition-all group"
+                        className="w-full text-left px-3 py-2 bg-white dark:bg-gray-900/90 border border-gray-200/80 dark:border-gray-800 rounded-xl hover:border-purple-400 dark:hover:border-purple-600 hover:bg-purple-50/60 dark:hover:bg-purple-900/20 flex items-center justify-between gap-2 transition-all group"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="w-7 h-7 rounded-lg bg-purple-100/70 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
