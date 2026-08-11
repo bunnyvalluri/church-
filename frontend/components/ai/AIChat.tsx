@@ -146,13 +146,14 @@ export default function AIChat() {
           </span>
 
           {/* Chatbot avatar */}
-          <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center">
+          <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center bg-purple-800/40">
             <Image
               src="/chatbot-bird-logo.png"
               alt="KCM AI Assistant"
               width={40}
               height={40}
-              className="object-cover rounded-full"
+              unoptimized
+              className="object-cover rounded-full w-full h-full"
             />
           </div>
         </button>

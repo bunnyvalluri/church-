@@ -721,7 +721,7 @@ export default function Contact() {
                       className={cn(
                         "w-full py-3.5 sm:py-4 rounded-xl font-black tracking-wide text-sm transition-all duration-300",
                         "flex items-center justify-center gap-2.5 shadow-lg",
-                        "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500 text-white shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.01] active:scale-[0.99]"
+                        "bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:via-blue-500 hover:to-indigo-600 text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.01] active:scale-[0.99]"
                       )}
                     >
                       {isSubmitting ? (

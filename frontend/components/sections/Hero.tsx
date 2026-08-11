@@ -304,7 +304,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-500 via-amber-400 to-pink-500 dark:from-purple-200 dark:via-amber-200 dark:to-pink-200 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer text-purple-600 dark:text-purple-200"
+              className="block mt-1 sm:mt-2 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 dark:from-amber-300 dark:via-rose-300 dark:to-indigo-300 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer text-indigo-600 dark:text-indigo-200"
               style={{
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -314,7 +314,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-500 via-indigo-400 to-pink-500 dark:from-purple-200 dark:via-indigo-200 dark:to-purple-100 bg-clip-text text-transparent text-purple-500 dark:text-purple-300"
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-300 dark:via-purple-300 dark:to-blue-300 bg-clip-text text-transparent text-indigo-600 dark:text-indigo-300"
               style={{
                 fontSize: "clamp(1rem, 3.2vw, 2.25rem)",
                 WebkitBackgroundClip: "text",
@@ -342,7 +342,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           >
             <Link
               href={hero?.ctaPrimaryHref ?? "#services"}
-              className="w-full sm:w-auto min-h-[48px] group relative px-8 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-600 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-purple-400/30"
+              className="w-full sm:w-auto min-h-[48px] group relative px-8 py-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-indigo-400/30"
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">

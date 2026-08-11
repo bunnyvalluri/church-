@@ -8,11 +8,7 @@ import ScrollToTopOnMount from "@/components/ui/ScrollToTopOnMount";
 import dynamic from "next/dynamic";
 
 // ── Lazy-load below-the-fold and heavy sections ───────────────────────────────
-// NgoShowcase imports a 48KB image manifest — must not be in the critical bundle
-const NgoShowcase = dynamic(() => import("@/components/sections/NgoShowcase"), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-slate-50/50 dark:bg-slate-950/20" />,
-});
+const NgoShowcase = dynamic(() => import("@/components/sections/NgoShowcase"), { ssr: true });
 const Events = dynamic(() => import("@/components/sections/Events"), { ssr: true });
 const Sermons = dynamic(() => import("@/components/sections/Sermons"), { ssr: true });
 const Contact = dynamic(() => import("@/components/sections/Contact"), { ssr: true });

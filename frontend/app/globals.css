@@ -17,8 +17,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 262 83% 58%;
-    /* Vibrant Purple */
+    --primary: 224 76% 48%;
+    /* Rich Royal Indigo */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 90%;
@@ -28,54 +28,54 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 262 83% 96%;
-    /* Very light purple tint for hover states */
-    --accent-foreground: 262 83% 58%;
+    --accent: 224 76% 96%;
+    /* Very light indigo tint for hover states */
+    --accent-foreground: 224 76% 48%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 58%;
+    --ring: 224 76% 48%;
     --radius: 0.75rem;
     /* Slightly rounder corners for modern feel */
-    --primary-gradient-start: 262 83% 58%;
-    --primary-gradient-end: 280 90% 65%;
+    --primary-gradient-start: 224 76% 48%;
+    --primary-gradient-end: 262 83% 58%;
   }
 
   .dark {
     color-scheme: dark;
-    /* Premium Obsidian & Purple-tinted Dark Mode */
-    --background: 260 20% 4%;
+    /* Premium Obsidian & Royal Indigo Dark Mode */
+    --background: 224 71% 4%;
     --foreground: 210 40% 98%;
     
-    --card: 260 20% 6%;
+    --card: 224 71% 6%;
     --card-foreground: 210 40% 98%;
     
-    --popover: 260 20% 6%;
+    --popover: 224 71% 6%;
     --popover-foreground: 210 40% 98%;
     
-    --primary: 262 83% 65%;
+    --primary: 239 84% 67%;
     --primary-foreground: 210 40% 98%;
     
-    --secondary: 260 20% 12%;
+    --secondary: 224 40% 12%;
     --secondary-foreground: 210 40% 98%;
     
-    --muted: 260 20% 12%;
-    --muted-foreground: 260 10% 65%;
+    --muted: 224 40% 12%;
+    --muted-foreground: 215 16% 65%;
     
-    --accent: 262 40% 16%;
+    --accent: 224 40% 16%;
     --accent-foreground: 210 40% 98%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     
-    --border: 260 20% 14%;
-    --input: 260 20% 14%;
-    --ring: 262 83% 65%;
-    --primary-gradient-start: 262 83% 65%;
-    --primary-gradient-end: 280 90% 70%;
+    --border: 224 30% 14%;
+    --input: 224 30% 14%;
+    --ring: 239 84% 67%;
+    --primary-gradient-start: 239 84% 67%;
+    --primary-gradient-end: 262 83% 65%;
   }
 }
 

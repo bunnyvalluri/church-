@@ -388,13 +388,13 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                       className="object-cover"
                     />
                   </div>
-                  <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-2">
                     {ledByLabel}
                   </p>
                   <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">
                     {pastorTitle}
                   </h3>
-                  <p className="text-xl md:text-3xl font-black tracking-wide text-violet-600 dark:text-amber-300">
+                  <p className="text-xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">
                     {pastorName}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
@@ -406,9 +406,9 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                   <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
                     <Image src="/pastor.png" alt="Bishop Kurra Kristhu Raju" fill sizes="112px" className="object-cover" />
                   </div>
-                  <p className="text-violet-600/80 dark:text-amber-400/80 font-bold uppercase tracking-[0.2em] text-xs mb-2">{ledByLabel}</p>
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-2">{ledByLabel}</p>
                   <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
-                  <p className="text-xl md:text-3xl font-black tracking-wide text-violet-600 dark:text-amber-300">{t.about.pastorName}</p>
+                  <p className="text-xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">{t.about.pastorName}</p>
                 </div>
               )}
 
@@ -416,7 +416,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                 {/* Contact Details */}
                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
                   <h3 className="text-xl font-bold mb-6 tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-violet-600 dark:text-violet-400">📍</span>
+                    <span className="text-indigo-600 dark:text-indigo-400">📍</span>
                     {t.hero.ctaPrimary}
                   </h3>
                   {contactsLoading ? (
