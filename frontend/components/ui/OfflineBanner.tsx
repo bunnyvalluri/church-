@@ -25,7 +25,7 @@ export default function OfflineBanner() {
     setPrevStatus(status);
   }, [status, prevStatus]);
 
-  if (!mounted || (!isOffline && !showReconnected) || isBackendUnavailable) {
+  if (!mounted || (!isOffline && !showReconnected)) {
     return null;
   }
 
