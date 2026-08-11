@@ -475,27 +475,28 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true);
     setIsLoggingIn(true);
+    const sanitizedEmail = (email || "").toLowerCase().trim();
+    const initialRole = getRoleForEmail(sanitizedEmail);
+
     try {
       let u: any = null;
       try {
         const credential = await signInWithEmailAndPassword(auth, email, password);
         u = credential.user;
       } catch (fbErr: any) {
-        if (fbErr.code === "auth/user-not-found" || fbErr.code === "auth/invalid-credential") {
+        console.warn("[AUTH] Firebase sign-in notice:", fbErr?.code || fbErr);
+        if (fbErr?.code === "auth/user-not-found" || fbErr?.code === "auth/invalid-credential") {
           try {
             const newCred = await createUserWithEmailAndPassword(auth, email, password);
             u = newCred.user;
           } catch (createErr) {
             console.warn("[AUTH] Create user failed, using fallback authentication:", createErr);
           }
-        } else {
-          console.warn("[AUTH] Sign in failed, using fallback authentication:", fbErr);
         }
       }
 
       // Seamless fallback if Firebase Auth is unreachable or unconfigured
       if (!u) {
-        const sanitizedEmail = (email || "").toLowerCase().trim();
         let safeHash = "user";
         try {
           safeHash = btoa(sanitizedEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
@@ -504,13 +505,11 @@ export default function LoginPage() {
         }
         u = {
           uid: `user-${safeHash}`,
-          email: email,
-          displayName: email.split("@")[0] || "User",
+          email: sanitizedEmail,
+          displayName: sanitizedEmail.split("@")[0] || "User",
           photoURL: null,
         };
       }
-
-      const initialRole = getRoleForEmail(u.email || email);
 
       // 1. Instantly set session cookies with calculated role
       setAuthCookies(u.uid, initialRole);
@@ -519,50 +518,52 @@ export default function LoginPage() {
       if (updateUser) {
         updateUser({
           uid: u.uid,
-          email: u.email || email,
-          name: u.displayName || email.split('@')[0],
+          email: u.email || sanitizedEmail,
+          name: u.displayName || sanitizedEmail.split('@')[0],
           image: u.photoURL || null,
           role: initialRole as any,
         });
       }
 
-      // 3. Fire-and-forget: background database sync
-      fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: u.uid,
-          email: u.email || email,
-          name: u.displayName || email.split('@')[0],
-          photoURL: u.photoURL,
-          phoneNumber: u.phoneNumber || null,
-        }),
-      })
-        .then((res) => res.json())
-        .then((syncData) => {
+      // 3. Database sync (with fallback resilience)
+      try {
+        const syncRes = await fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: u.uid,
+            email: u.email || sanitizedEmail,
+            name: u.displayName || sanitizedEmail.split('@')[0],
+            photoURL: u.photoURL,
+            phoneNumber: u.phoneNumber || null,
+          }),
+        });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
           if (syncData?.success && syncData?.user?.role) {
             const syncedRole = syncData.user.role;
-            if (typeof document !== "undefined") {
-              document.cookie = `__kcm_session_role=${syncedRole}; path=/; max-age=604800; SameSite=Lax`;
-            }
+            setAuthCookies(u.uid, syncedRole);
             if (updateUser) updateUser({ role: syncedRole });
-            if (syncedRole !== initialRole) {
-              redirectForRole(syncedRole);
-            }
+            sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split('@')[0], 'email');
+            redirectForRole(syncedRole);
+            return;
           }
-        })
-        .catch(() => {});
+        }
+      } catch (syncErr) {
+        console.warn("[AUTH] Database sync warning:", syncErr);
+      }
 
       // 4. Non-blocking login email notification
-      sendLoginEmail(u.email || email, u.displayName || email.split('@')[0], 'email');
+      sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split('@')[0], 'email');
 
       // 5. INSTANT ROLE-BASED REDIRECT
       redirectForRole(initialRole);
     } catch (err: any) {
       console.warn("[AUTH] Login fallback activated:", err);
-      const initialRole = getRoleForEmail(email);
       setAuthCookies("user-session", initialRole);
       redirectForRole(initialRole);
+    } finally {
+      setIsLoading(false);
     }
   };
 
