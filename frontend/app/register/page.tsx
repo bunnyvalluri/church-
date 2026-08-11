@@ -10,6 +10,7 @@ import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ChevronLeft, CheckCir
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const passwordStrength = (pw: string) => {
   let score = 0;
@@ -279,9 +280,10 @@ export default function RegisterPage() {
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
         
-        {/* Top Controls Bar */}
-        <div className="hidden lg:block absolute top-6 right-6 z-20">
+        {/* Top Controls Bar (Desktop Language Toggle & Theme Toggle) */}
+        <div className="hidden lg:flex items-center gap-3 absolute top-6 right-6 z-20">
           <LanguageToggle />
+          <ThemeToggle />
         </div>
 
         {/* Mobile Top Header Bar */}
@@ -290,7 +292,10 @@ export default function RegisterPage() {
             <ChevronLeft className="w-4 h-4 text-purple-300" />
             <span>{registerT.backToSignIn}</span>
           </Link>
-          <LanguageToggle />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Form Container Card */}

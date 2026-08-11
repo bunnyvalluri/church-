@@ -11,6 +11,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Client-side image compressor (canvas, 300×300, 75% JPEG) ────────────────
@@ -679,9 +680,10 @@ export default function LoginPage() {
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
         
-        {/* Top Controls Bar (Desktop Language Toggle & Mobile Header) */}
-        <div className="hidden lg:block absolute top-6 right-6 z-20">
+        {/* Top Controls Bar (Desktop Language Toggle & Theme Toggle) */}
+        <div className="hidden lg:flex items-center gap-3 absolute top-6 right-6 z-20">
           <LanguageToggle />
+          <ThemeToggle />
         </div>
 
         {/* Mobile Header Bar */}
@@ -690,7 +692,10 @@ export default function LoginPage() {
             <ChevronLeft className="w-4 h-4 text-purple-300" />
             <span>{loginT.backToHome}</span>
           </Link>
-          <LanguageToggle />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Form Container Card */}
