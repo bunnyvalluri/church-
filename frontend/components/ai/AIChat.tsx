@@ -161,7 +161,7 @@ export default function AIChat() {
         <button
           onClick={() => setIsOpen(true)}
           className="relative flex items-center justify-center w-14 h-14 rounded-full focus:outline-none"
-          aria-label="Open Grace AI"
+          aria-label="Open KCM Assistant"
           style={{ filter: "drop-shadow(0 6px 20px rgba(109,40,217,0.55))" }}
         >
           <span className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 to-indigo-700 opacity-25 animate-pulse scale-110 blur-sm pointer-events-none" />
@@ -172,11 +172,11 @@ export default function AIChat() {
             <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-[1.5px] border-white shadow-sm" />
           </span>
           <div className="relative z-10 w-9 h-9 rounded-full overflow-hidden bg-purple-800/40">
-            <Image src="/chatbot-bird-logo.png" alt="Grace AI" width={36} height={36} unoptimized className="object-cover rounded-full w-full h-full" />
+            <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={36} height={36} unoptimized className="object-cover rounded-full w-full h-full" />
           </div>
         </button>
         <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-2.5 py-1.5 bg-gray-950/90 text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none border border-white/10 hidden sm:block">
-          Ask Grace anything ✦
+          Ask KCM anything ✦
           <span className="absolute right-[-5px] top-1/2 -translate-y-1/2 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[5px] border-l-gray-950/90" />
         </div>
       </div>
@@ -213,13 +213,13 @@ export default function AIChat() {
           <div className="flex items-center gap-2.5 text-white min-w-0">
             <div className="relative shrink-0">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-white/20 p-0.5 border border-white/30">
-                <Image src="/chatbot-bird-logo.png" alt="Grace" width={28} height={28} className="object-cover rounded-full w-full h-full" />
+                <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full w-full h-full" />
               </div>
               <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-indigo-700" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-[13px] text-white">Grace</span>
+                <span className="font-bold text-[13px] text-white">KCM Assistant</span>
                 <span className="px-1.5 py-0.5 text-[9px] font-bold bg-white/20 text-white rounded border border-white/30 flex items-center gap-0.5 shrink-0">
                   <Sparkles className="w-2 h-2" /> AI
                 </span>
@@ -272,14 +272,14 @@ export default function AIChat() {
                     <div className="relative inline-block mb-2">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 p-0.5 shadow-lg mx-auto flex items-center justify-center">
                         <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full p-0.5 overflow-hidden">
-                          <Image src="/chatbot-bird-logo.png" alt="Grace" width={44} height={44} className="object-cover rounded-full w-full h-full" />
+                          <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={44} height={44} className="object-cover rounded-full w-full h-full" />
                         </div>
                       </div>
                       <span className="absolute -bottom-0.5 -right-0.5 p-0.5 bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-full">
                         <Sparkles className="w-2.5 h-2.5" />
                       </span>
                     </div>
-                    <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">Hi, I'm Grace! 👋</h4>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">Hi, I'm KCM Assistant! 👋</h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">
                       KCM's AI — ask me <span className="text-purple-600 dark:text-purple-400 font-semibold">anything</span>
                     </p>
@@ -346,7 +346,7 @@ export default function AIChat() {
                       {/* Bot avatar */}
                       {m.role === "assistant" && (
                         <div className="w-7 h-7 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shrink-0 mt-0.5">
-                          <Image src="/chatbot-bird-logo.png" alt="Grace" width={28} height={28} className="object-cover rounded-full" />
+                          <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full" />
                         </div>
                       )}
 
@@ -380,7 +380,7 @@ export default function AIChat() {
                   {isLoading && (
                     <div className="flex gap-2 justify-start">
                       <div className="w-7 h-7 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shrink-0">
-                        <Image src="/chatbot-bird-logo.png" alt="Grace" width={28} height={28} className="object-cover rounded-full" />
+                        <Image src="/chatbot-bird-logo.png" alt="KCM Assistant" width={28} height={28} className="object-cover rounded-full" />
                       </div>
                       <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -417,7 +417,7 @@ export default function AIChat() {
                     value={input}
                     onChange={handleInputChange}
                     onKeyDown={onKey}
-                    placeholder="Ask Grace anything…"
+                    placeholder="Ask KCM anything…"
                     className="w-full max-h-24 min-h-[42px] px-3 py-2.5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition-all text-[13px] outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600"
                     disabled={isLoading}
                     rows={1}
@@ -441,7 +441,7 @@ export default function AIChat() {
               <div className="flex items-center justify-between mt-1.5">
                 <span className="text-[10px] text-gray-400 dark:text-gray-600">Enter to send</span>
                 <span className="text-[10px] text-purple-500/60 font-medium flex items-center gap-0.5">
-                  <Sparkles className="w-2.5 h-2.5" /> Grace AI
+                  <Sparkles className="w-2.5 h-2.5" /> KCM Assistant
                 </span>
               </div>
             </div>
