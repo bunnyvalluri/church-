@@ -92,55 +92,55 @@ export async function POST(req: Request) {
   const safeMessages = messages.filter((m) => m.role !== 'system');
 
   try {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) throw new Error('API_KEY missing');
+    const apiKeys = [
+      process.env.OPENROUTER_API_KEY,
+      process.env.OPENROUTER_API_KEY_2,
+      process.env.OPENROUTER_API_KEY_3,
+    ].filter(Boolean) as string[];
 
-    let response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://kcmchurch.vercel.app',
-        'X-Title': 'KCM Assistant AI',  
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-lite',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          ...safeMessages,
-        ],
-        max_tokens: 400,
-        temperature: 0.3,
-        stream: true,
-      }),
-    });
+    if (apiKeys.length === 0) throw new Error('API_KEY missing');
 
-    // Fallback if primary model fails
-    if (!response.ok) {
-      response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://kcmchurch.vercel.app',
-          'X-Title': 'KCM Assistant AI',  
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-4o-mini',
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            ...safeMessages,
-          ],
-          max_tokens: 400,
-          temperature: 0.3,
-          stream: true,
-        }),
-      });
+    const models = ['google/gemini-2.5-flash-lite', 'openai/gpt-4o-mini'];
+    let response: Response | null = null;
+
+    // Try keys & models with automatic failover
+    for (const key of apiKeys) {
+      for (const model of models) {
+        try {
+          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${key}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://kcmchurch.vercel.app',
+              'X-Title': 'KCM Assistant AI',
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: 'system', content: SYSTEM_PROMPT },
+                ...safeMessages,
+              ],
+              max_tokens: 400,
+              temperature: 0.3,
+              stream: true,
+            }),
+          });
+
+          if (res.ok) {
+            response = res;
+            break;
+          }
+        } catch {
+          // Continue to next key/model
+        }
+      }
+      if (response && response.ok) break;
     }
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`OpenRouter error ${response.status}: ${errText}`);
+    if (!response || !response.ok) {
+      const errText = response ? await response.text() : 'All API key failover attempts failed';
+      throw new Error(`OpenRouter error: ${errText}`);
     }
 
     const reader = response.body?.getReader();
