@@ -185,7 +185,7 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Settings + Login + Hamburger ── */}
-              <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
                 {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
@@ -197,10 +197,10 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-expanded={isMobileOpen}
                   aria-controls="mobile-drawer"
                   className={cn(
-                    "lg:hidden",
+                    "lg:hidden flex-shrink-0",
                     "flex items-center justify-center",
                     // Touch target sizing
-                    "w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 sm:w-11 sm:h-11 rounded-xl",
+                    "w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10 rounded-xl",
                     "bg-gray-100/80 dark:bg-white/10",
                     "border border-gray-200 dark:border-white/20",
                     "text-gray-700 dark:text-white",

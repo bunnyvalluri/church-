@@ -72,7 +72,7 @@ const NavigationLogo = memo(function NavigationLogo() {
         <span
           suppressHydrationWarning
           className={cn(
-            "font-black text-gray-900 dark:text-white leading-tight whitespace-nowrap",
+            "font-black text-gray-900 dark:text-white leading-tight truncate max-w-[105px] min-[360px]:max-w-[135px] sm:max-w-none",
             // Responsive sizes across 6 viewports
             "text-[9.5px] min-[360px]:text-[11px] sm:text-xs md:text-xs lg:text-sm xl:text-base 2xl:text-lg",
             language !== "en" ? "tracking-normal" : "tracking-tight",
