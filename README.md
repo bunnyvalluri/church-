@@ -1,14 +1,16 @@
-# 🏛️ Kingdom of Christ Ministries - Web & Digital Platform
+# 🏛️ Kingdom of Christ Ministries - Digital Platform
 
-![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)
-![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.12-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)](https://kubernetes.io/)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)](https://openai.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-A modern, enterprise-grade, AI-powered web application and digital ecosystem designed for Kingdom of Christ Ministries (K.C.M). Built using Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, and advanced AI technologies, featuring bilingual support (English & Telugu), secure online donations, comprehensive media archives, and intelligent conversational assistance.
+A state-of-the-art, enterprise-grade digital ecosystem and web platform designed for **Kingdom of Christ Ministries (K.C.M)**. Built with Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, and intelligent AI capabilities—delivering bilingual support (English & Telugu), offline-first PWA resilience, seamless sermon media streaming, prayer requests, and secure online giving.
 
 ---
 
@@ -19,8 +21,13 @@ A modern, enterprise-grade, AI-powered web application and digital ecosystem des
 - [Technology Stack](#-technology-stack)
 - [Monorepo Architecture](#-monorepo-architecture)
 - [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Setup](#1-installation--setup)
+  - [Environment Configuration](#2-environment-configuration)
+  - [Database & Migrations](#3-database--migrations)
+  - [Development Server](#4-development-server)
 - [Database Schema & Models](#-database-schema--models)
-- [AI Capabilities & Integration](#-ai-capabilities--integration)
+- [AI & Network Resilience](#-ai--network-resilience)
 - [Deployment & Infrastructure](#-deployment--infrastructure)
 - [Project Roadmap](#-project-roadmap)
 - [Contributing](#-contributing)
@@ -30,36 +37,38 @@ A modern, enterprise-grade, AI-powered web application and digital ecosystem des
 
 ## 🌟 Overview
 
-Kingdom of Christ Ministries digital platform brings a state-of-the-art web experience to church members, visitors, and global supporters. The platform combines visual elegance, responsive design, multi-language conversational AI, and robust cloud infrastructure to streamline community connection, sermon delivery, event management, and online giving.
+The **Kingdom of Christ Ministries Platform** serves as a digital gateway connecting church members, visitors, and global supporters. Designed with visual excellence, intuitive user navigation, and high availability, the platform streamlines sermon delivery, event management, prayer requests, community outreach, and secure financial contributions.
+
+> [!NOTE]  
+> The platform features full bilingual support (English & Telugu), adaptive offline-first sync capabilities, and zero-latency media playback.
 
 ---
 
 ## ✨ Key Features
 
-### 🎨 **Modern Design & User Experience**
-- **Sleek Interface**: Built with modern gradient accents, glassmorphism UI components, and clean typography.
-- **Fully Responsive Layout**: Optimized across desktop, tablet, and mobile displays.
-- **Theme Flexibility**: Dark mode and light mode visual themes.
-- **Fluid Animations**: Smooth page transitions and interactive micro-animations powered by Framer Motion.
+### 🎨 Modern Design & Experience
+- **Premium Interface**: Crafted with modern typography, glassmorphism UI components, fluid gradients, and dark/light mode customization.
+- **Fully Responsive**: Flawless responsive layout optimized across mobile, tablet, and widescreen displays.
+- **Micro-Animations**: Framer Motion powered transitions for an interactive user interface.
 
-### 🏠 **Public Experience & Community Hub**
-- **Hero & Ministry Showcase**: Highlights mission statements, key statistics, and upcoming service schedules.
-- **Sermon & Media Library**: Filterable video and audio sermon archives with transcript integration.
-- **Event Management**: Interactive events calendar with attendee registration.
-- **Prayer Requests**: Online submission for prayer requests with category selection.
-- **Testimonials & Gallery**: Interactive community stories, photo galleries, and news updates.
-- **Multilingual Support**: Seamless English and Telugu content presentation.
+### 🌐 Community Hub & Media Library
+- **Hero & Ministry Showcase**: Displays mission statements, weekly service schedules, and ministry highlights.
+- **Sermon & Media Archive**: Filterable sermon library with high-definition audio and video streaming, plus transcript support.
+- **Interactive Events Calendar**: Full event listing with category filters, schedule details, and RSVP capabilities.
+- **Prayer & Testimonials**: Online prayer request submissions and verified community testimony sharing.
+- **Bilingual Interface**: Seamless translation across English and Telugu.
 
-### 🤖 **Intelligent AI Assistant**
-- **Bilingual AI Chatbot (English & Telugu)**: 24/7 automated assistance for church inquiries.
-- **Service & Location Info**: Instant answers regarding service timings, map directions, and contact details.
-- **Event & Prayer Guidance**: Interactive prompts for event registration and prayer requests.
-- **RAG Sermon Search**: Semantic vector search over sermon transcripts for scripture and topic inquiries.
+### ⚡ Offline-First Architecture & Network Resilience
+- **PWA Service Worker**: Instant page load with offline caching and background synchronization.
+- **Real-Time Health Monitoring**: Automatic network quality detection and sync handling.
 
-### 💳 **Online Giving & NGO Support**
-- **Secure Payment Processing**: Integrated with Stripe for smooth, PCI-compliant transactions.
-- **Flexible Giving Options**: Support for one-time donations, recurring giving, and specific ministry funds.
-- **Instant Receipts**: Digital donation confirmations and summary history.
+### 🤖 Intelligent AI Assistance
+- **Bilingual Conversational AI (English & Telugu)**: Provides 24/7 answers to church schedules, location details, and service information.
+- **Semantic Sermon Search (RAG)**: Search over sermon archives using contextual vector embeddings.
+
+### 💳 Secure Online Giving & NGO Support
+- **PCI-Compliant Payment Processing**: Powered by Stripe for single and recurring tithes, offerings, and outreach funding.
+- **Digital Receipting**: Instant transaction confirmations and giving history summary.
 
 ---
 
@@ -67,17 +76,16 @@ Kingdom of Christ Ministries digital platform brings a state-of-the-art web expe
 
 | Category | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend Framework** | Next.js 14 (App Router) | React framework for server rendering and optimal performance |
-| **Language** | TypeScript 5.4 | Type-safe development across frontend and backend |
-| **Styling** | Tailwind CSS & Radix UI | Utility-first styling with accessible UI primitives |
-| **Animations** | Framer Motion | Dynamic UI transitions and micro-interactions |
-| **Backend API** | Node.js / Express | Modular REST and API route infrastructure |
-| **Database & ORM** | PostgreSQL & Prisma ORM | Relational database with type-safe schema migrations |
-| **AI Orchestration** | LangChain, OpenAI & Gemini | LLM integration and vector retrieval pipelines |
-| **Vector DB** | Pinecone | High-dimensional vector database for semantic sermon search |
-| **Payments** | Stripe API | Global secure payment processing |
-| **DevOps & Containers** | Docker & Kubernetes | Containerized workloads with k8s orchestration manifests |
-| **Monitoring** | Prometheus & Grafana | Real-time observability and metrics tracking |
+| **Frontend** | Next.js 14 (App Router) | React framework with Server Side Rendering (SSR) & Static Site Generation (SSG) |
+| **Language** | TypeScript 5.4 | End-to-end type safety across client and server |
+| **Styling** | Tailwind CSS 3.4 & Radix UI | Utility-first styling with accessible UI primitives |
+| **Animations** | Framer Motion | Smooth component micro-interactions and route transitions |
+| **Backend API** | Node.js / Express | High-performance modular REST API endpoints |
+| **Database & ORM** | PostgreSQL 16 & Prisma | Relational database management with schema migrations |
+| **AI Engine** | OpenAI & Gemini API | Natural Language Processing (NLP) & Retrieval-Augmented Generation (RAG) |
+| **Payments** | Stripe API | Secure global donation gateway |
+| **DevOps & Infrastructure** | Docker & Kubernetes | Containerized microservices and automated deployment manifests |
+| **Observability** | Prometheus & Grafana | Monitoring, alert metrics, and application health dashboards |
 
 ---
 
@@ -86,20 +94,21 @@ Kingdom of Christ Ministries digital platform brings a state-of-the-art web expe
 ```
 church-platform/
 ├── frontend/                 # Next.js 14 Web Application
-│   ├── app/                  # App Router pages and API endpoints
-│   ├── components/           # UI components, layout, and AI interface
-│   ├── lib/                  # Client utilities and state management
-│   └── public/               # Static assets and media
-├── backend/                  # Node.js API Service & Workers
-│   ├── src/                  # Controllers, services, and business logic
-│   └── prisma/               # Database schema and migration scripts
-├── database/                 # Database initialization and scripts
-├── docker/                   # Docker Compose environment configurations
-├── k8s/                      # Kubernetes deployment manifests & network policies
-├── monitoring/               # Prometheus & Grafana dashboards
-├── platform/                 # Shared platform manifests and network policies
+│   ├── app/                  # App Router pages and API routes
+│   ├── components/           # UI components, cards, and AI chat interface
+│   ├── hooks/                # Custom React hooks (Network, Audio, PWA)
+│   ├── lib/                  # Utilities, translations, API clients
+│   └── public/               # Public static assets, icons, service worker
+├── backend/                  # Node.js Express API Engine
+│   ├── src/                  # Controllers, services, and middleware
+│   └── prisma/               # Prisma database schema & seeds
+├── database/                 # Database initialization and migration scripts
+├── docker/                   # Docker Compose development and production configs
+├── k8s/                      # Kubernetes manifests & Helm charts
+├── monitoring/               # Prometheus alert rules & Grafana dashboards
+├── platform/                 # Shared platform configs & gateway routes
 ├── package.json              # Workspace root configuration
-└── README.md                 # Project documentation
+└── README.md                 # Documentation
 ```
 
 ---
@@ -108,117 +117,116 @@ church-platform/
 
 ### Prerequisites
 
-Ensure you have the following installed on your machine:
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
-- **PostgreSQL**: v14.0 or higher (or a cloud PostgreSQL instance)
-- **Docker**: (Optional) For containerized local development
+Ensure the following tools are installed:
+- **Node.js**: `v18.0.0` or higher
+- **npm**: `v9.0.0` or higher
+- **PostgreSQL**: `v14.0` or higher (or cloud database connection)
+- **Docker**: (Optional) For containerized development
 
 ---
 
-### 1. Clone the Repository
+### 1. Installation & Setup
+
+Clone the repository and install all workspace dependencies:
 
 ```bash
 git clone https://github.com/your-org/church-platform.git
 cd church-platform
-```
-
----
-
-### 2. Install Dependencies
-
-Install all monorepo dependencies:
-
-```bash
 npm install
 ```
 
 ---
 
-### 3. Environment Configuration
+### 2. Environment Configuration
 
-Copy `.env.example` to `.env.local` in `frontend/` and `.env` in `backend/`, then update the variables:
+Create environment configuration files:
+
+```bash
+# Frontend setup
+cp frontend/.env.example frontend/.env.local
+
+# Backend setup
+cp backend/.env.example backend/.env
+```
+
+Configure your environment variables in `frontend/.env.local`:
 
 ```env
 # Database Connection
 DATABASE_URL="postgresql://user:password@localhost:5432/kcm_db"
 
-# NextAuth / Authentication
+# NextAuth / App Secret
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secure-secret-key"
 
-# Stripe Payments
+# Payments (Stripe)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_SECRET_KEY="sk_test_..."
 
-# AI Services
+# AI Integration
 OPENAI_API_KEY="sk-..."
 GEMINI_API_KEY="..."
-PINECONE_API_KEY="..."
-PINECONE_INDEX="kcm-sermons"
 
-# Communications (Optional)
+# Communications
 RESEND_API_KEY="re_..."
-TWILIO_ACCOUNT_SID="..."
-TWILIO_AUTH_TOKEN="..."
 ```
 
 ---
 
-### 4. Database Setup & Migrations
+### 3. Database & Migrations
 
-Initialize the PostgreSQL database schema with Prisma:
+Set up the PostgreSQL database schema and seed initial data using Prisma:
 
 ```bash
 # Generate Prisma Client
 npm run db:generate
 
-# Push schema changes to database
+# Push database schema
 npm run db:push
 
-# Seed initial database data
+# Seed initial data
 npm run db:seed
 ```
 
 ---
 
-### 5. Run Development Server
+### 4. Development Server
 
-Start both the frontend application and backend service concurrently:
+Run the development server for both frontend and backend concurrently:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+Navigate to [http://localhost:3000](http://localhost:3000) in your web browser.
 
 ---
 
 ## 📊 Database Schema & Models
 
-The PostgreSQL database powering the platform includes key models managed via Prisma:
+Managed seamlessly via Prisma ORM:
 
-- **User**: User profiles, credentials, and access permissions.
-- **Event**: Church events, service schedules, venue details, and categories.
+- **User**: User accounts, authentication credentials, and preferences.
+- **Event**: Church services, community events, location details, and dates.
 - **Sermon**: Video/audio sermon media links, speaker information, and searchable transcripts.
-- **PrayerRequest**: Community prayer requests with categorization and privacy controls.
-- **Donation**: Financial giving history, payment reference IDs, and transaction statuses.
-- **Announcement**: Church updates, bulletin posts, and highlights.
-- **Testimonial**: User feedback, stories, and verified community testimonials.
-- **Ministry**: Ministry teams, mission groups, and outreach initiatives.
-- **Gallery**: Event photo albums and media archives.
+- **PrayerRequest**: Community prayer requests with privacy controls.
+- **Donation**: Giving records, transaction reference IDs, and payment status tracking.
+- **Announcement**: Bulletin notices and church news updates.
+- **Testimonial**: Community testimonies and stories.
+- **Ministry**: Ministry teams and community outreach programs.
+- **Gallery**: Event photos and media archives.
 
 ---
 
-## 🤖 AI Capabilities & Integration
+## 🤖 AI & Network Resilience
 
-### RAG-Powered Sermon Search & Chatbot
+### RAG-Powered Sermon Search
+- Converts sermon transcripts into high-dimensional vector embeddings.
+- Enables semantic search so users can query sermon topics and scripture references naturally.
 
-The platform incorporates Retrieval-Augmented Generation (RAG) to allow visitors and members to interact with church content seamlessly:
-
-1. **Transcript Indexing**: Sermon transcripts are processed and converted into vector embeddings using OpenAI / Gemini embedding models.
-2. **Vector Storage**: Embeddings are indexed in Pinecone for semantic similarity matching.
-3. **Conversational Assistant**: The bilingual AI engine queries the vector database to provide contextual scriptural answers and service details.
+### Network Quality Manager
+- Monitors connection speed and availability in real-time.
+- Automatically handles temporary offline states, caching content locally and syncing back gracefully.
 
 ---
 
@@ -226,32 +234,22 @@ The platform incorporates Retrieval-Augmented Generation (RAG) to allow visitors
 
 ### Containerization with Docker
 
-Run the entire application stack locally using Docker Compose:
+Start local containerized environment:
 
 ```bash
-# Start development container stack
+# Development stack
 npm run docker:dev
 
-# Stop development containers
-npm run docker:dev:down
-
-# Build and run production containers
+# Production stack
 npm run docker:prod
 ```
 
-### Kubernetes Orchestration
+### Kubernetes Cluster Deployment
 
-Deploy to a Kubernetes cluster using the provided manifests:
+Deploy manifests to your Kubernetes cluster:
 
 ```bash
-# Apply Kubernetes manifests
 npm run k8s:apply
-
-# Check namespace status
-npm run k8s:status
-
-# Remove Kubernetes resources
-npm run k8s:delete
 ```
 
 ---
@@ -259,46 +257,39 @@ npm run k8s:delete
 ## 🎯 Project Roadmap
 
 ### Phase 1: Core Platform & Public Experience (Completed ✅)
-- [x] Responsive web application design with glassmorphism styling
+- [x] Responsive web interface with glassmorphism design system
 - [x] Public service, events, media, and contact sections
 - [x] Bilingual AI conversational chatbot (English & Telugu)
-- [x] Monorepo workspace structure setup
+- [x] PWA offline caching & background sync infrastructure
 
-### Phase 2: Community & Giving Enhancements (In Progress 🔄)
-- [x] Secure Stripe donation integration & NGO campaign support
-- [ ] User profile dashboard and registration workflow
-- [ ] Enhanced prayer request submission and tracking
-- [ ] Event registration with confirmation notifications
+### Phase 2: Community & Giving Enhancements (Completed ✅)
+- [x] Stripe payment gateway for online donations & NGO campaigns
+- [x] Prayer request submissions and community stories
+- [x] Dynamic sermon media player with filtering
 
-### Phase 3: Content Management & Analytics (Planned 📋)
+### Phase 3: Analytics & Expansion (In Progress 🔄)
 - [ ] Centralized media upload pipeline for sermons
-- [ ] Engagement analytics dashboard for church operations
-- [ ] Automated newsletter dispatch via email service
-- [ ] Automated sermon transcript generation
-
-### Phase 4: Advanced AI Features (Planned 🤖)
-- [ ] Voice-assisted interactive chatbot interface
-- [ ] Automated sermon summarization and quote extraction
-- [ ] Multilingual expansion (Telugu, Hindi, English)
+- [ ] Automated email bulletins and announcements
+- [ ] Voice-enabled interactive AI assistant
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome to help enhance the Kingdom of Christ Ministries platform!
+We welcome contributions to help improve the Kingdom of Christ Ministries platform!
 
 1. Fork the repository
-2. Create a dedicated feature branch (`git checkout -b feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to your branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request for code review
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
 ## 📄 License & Support
 
 ### License
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ### Contact & Location
 - 🌐 **Website**: [kingdomofchrist.org](http://localhost:3000)

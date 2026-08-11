@@ -36,7 +36,7 @@ export default function OfflineBanner() {
       className={`fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-[9999] max-w-md p-4 rounded-2xl shadow-2xl backdrop-blur-xl border transition-all duration-300 transform translate-y-0 ${
         isOffline
           ? "bg-amber-500/90 text-slate-950 border-amber-400/50 dark:bg-amber-950/90 dark:text-amber-100 dark:border-amber-700/50"
-          : isSlowNetwork || isBackendUnavailable
+          : isSlowNetwork
           ? "bg-orange-500/90 text-slate-950 border-orange-400/50 dark:bg-orange-950/90 dark:text-orange-100 dark:border-orange-700/50"
           : isSyncing
           ? "bg-blue-500/90 text-white border-blue-400/50 dark:bg-blue-950/90 dark:text-blue-100 dark:border-blue-700/50"
@@ -49,7 +49,7 @@ export default function OfflineBanner() {
             <WifiOff className="w-5 h-5 shrink-0 animate-pulse text-amber-950 dark:text-amber-300" />
           ) : isSyncing ? (
             <RefreshCw className="w-5 h-5 shrink-0 animate-spin text-blue-100" />
-          ) : isSlowNetwork || isBackendUnavailable ? (
+          ) : isSlowNetwork ? (
             <AlertTriangle className="w-5 h-5 shrink-0 animate-bounce text-orange-950 dark:text-orange-300" />
           ) : (
             <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-950 dark:text-emerald-300" />
@@ -62,8 +62,6 @@ export default function OfflineBanner() {
               <span>Synchronizing offline changes...</span>
             ) : isSlowNetwork ? (
               <span>Slow network connection detected. Using local cache.</span>
-            ) : isBackendUnavailable ? (
-              <span>Server temporarily unreachable. Operating in offline mode.</span>
             ) : (
               <span>Connection restored. All systems online.</span>
             )}
