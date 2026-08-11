@@ -16,7 +16,7 @@ const chatSchema = z.object({
 const RL_OPTS = { windowMs: 60_000, maxRequests: 20 };
 
 // ── KCM System Prompt ─────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are "Grace" — AI assistant for Kingdom of Christ Ministries (KCM), Hyderabad.
+const SYSTEM_PROMPT = `You are "KCM Assistant" — the official AI assistant for Kingdom of Christ Ministries (KCM), Hyderabad.
 
 ━━ RESPONSE RULES — FOLLOW STRICTLY ━━
 1. ALWAYS answer in 1-3 sentences MAX for simple questions. Never write paragraphs.
@@ -101,16 +101,16 @@ export async function POST(req: Request) {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://kcmchurch.vercel.app',
-        'X-Title': 'KCM Grace AI Assistant',
+        'X-Title': 'KCM Assistant AI',  
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.0-flash-lite',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...safeMessages,
         ],
-        max_tokens: 500,
-        temperature: 0.6,
+        max_tokens: 300,
+        temperature: 0.3,
         stream: true,
       }),
     });
@@ -147,6 +147,14 @@ export async function POST(req: Request) {
               }
             }
           }
+          // Flush any remaining buffer
+          if (buffer.trim() && buffer.trim().startsWith('data: ')) {
+            try {
+              const data = JSON.parse(buffer.trim().slice(6));
+              const delta = data.choices?.[0]?.delta?.content;
+              if (delta) controller.enqueue(encoder.encode(`0:${JSON.stringify(delta)}\n`));
+            } catch {}
+          }
           controller.enqueue(encoder.encode(`d:{"finishReason":"stop"}\n`));
           controller.close();
         } catch (err) {
@@ -166,7 +174,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('[CHAT] Error:', error?.message);
     const message =
-      error?.message?.includes('API_KEY') ? 'Grace AI is temporarily unavailable. Call us at 97040 90069.' :
+      error?.message?.includes('API_KEY') ? 'KCM Assistant is temporarily unavailable. Call us at 97040 90069.' :
       'Connection issue. Please try again in a moment.';
     return new Response(
       JSON.stringify({ error: message }),
