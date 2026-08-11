@@ -95,7 +95,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) throw new Error('API_KEY missing');
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    let response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -104,16 +104,39 @@ export async function POST(req: Request) {
         'X-Title': 'KCM Assistant AI',  
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-lite',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...safeMessages,
         ],
-        max_tokens: 300,
+        max_tokens: 400,
         temperature: 0.3,
         stream: true,
       }),
     });
+
+    // Fallback if primary model fails
+    if (!response.ok) {
+      response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://kcmchurch.vercel.app',
+          'X-Title': 'KCM Assistant AI',  
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...safeMessages,
+          ],
+          max_tokens: 400,
+          temperature: 0.3,
+          stream: true,
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errText = await response.text();
