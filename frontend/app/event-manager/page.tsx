@@ -1167,10 +1167,10 @@ export default function UnifiedEventManagementPortal() {
                 {/* Total Reports */}
                 <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-violet-50 to-indigo-50/50 dark:from-violet-950/40 dark:to-indigo-900/30 border border-violet-200 dark:border-violet-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-violet-500">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block truncate drop-shadow-sm">Total Reports</span>
+                    <span className="text-[10px] font-black text-violet-800 dark:text-violet-200 uppercase tracking-widest block truncate">Total Reports</span>
                     <div className="flex items-baseline gap-1">
                       <p className="text-xl sm:text-2xl font-black text-violet-950 dark:text-white tracking-tight">{stats.total}</p>
-                      <span className="text-[10px] font-extrabold text-white dark:text-white hidden sm:inline">{t.eventManager?.logsUnit || "logs"}</span>
+                      <span className="text-[10px] font-extrabold text-violet-700 dark:text-violet-300 hidden sm:inline">{t.eventManager?.logsUnit || "logs"}</span>
                     </div>
                   </div>
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/25 shrink-0">
@@ -1181,10 +1181,10 @@ export default function UnifiedEventManagementPortal() {
                 {/* Pending Review */}
                 <div className="col-span-1 relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/40 dark:to-orange-900/30 border border-amber-200 dark:border-amber-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-amber-500">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block truncate drop-shadow-sm">Pending Review</span>
+                    <span className="text-[10px] font-black text-amber-800 dark:text-amber-200 uppercase tracking-widest block truncate">Pending Review</span>
                     <div className="flex items-baseline gap-1">
                       <p className="text-xl sm:text-2xl font-black text-amber-950 dark:text-white tracking-tight">{stats.pending}</p>
-                      <span className="text-[10px] font-extrabold text-white dark:text-white hidden sm:inline">{t.eventManager?.needsActionUnit || "needs action"}</span>
+                      <span className="text-[10px] font-extrabold text-amber-700 dark:text-amber-300 hidden sm:inline">{t.eventManager?.needsActionUnit || "needs action"}</span>
                     </div>
                   </div>
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
@@ -1195,10 +1195,10 @@ export default function UnifiedEventManagementPortal() {
                 {/* Total Attendance */}
                 <div className="col-span-2 sm:col-span-1 relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/40 dark:to-teal-900/30 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-3 sm:p-4 shadow-md flex justify-between items-center border-l-4 border-l-emerald-500">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] font-black text-white dark:text-white uppercase tracking-widest block drop-shadow-sm">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
+                    <span className="text-[10px] font-black text-emerald-800 dark:text-emerald-200 uppercase tracking-widest block">{t.eventManager?.totalAttendance || "Total Attendance"}</span>
                     <div className="flex items-baseline gap-1">
                       <p className="text-xl sm:text-2xl font-black text-emerald-950 dark:text-white tracking-tight">{stats.attendance}</p>
-                      <span className="text-[10px] font-extrabold text-white dark:text-white">{t.eventManager?.peopleUnit || "people"}</span>
+                      <span className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300">{t.eventManager?.peopleUnit || "people"}</span>
                     </div>
                   </div>
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
@@ -1218,7 +1218,7 @@ export default function UnifiedEventManagementPortal() {
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   {t.eventManager?.dbTitle || "Reports Database"}
-                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-violet-600/30 dark:bg-violet-600/40 text-white dark:text-white border border-violet-400/50 shadow-sm">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-violet-600 dark:bg-violet-600 text-white dark:text-white border border-violet-500 shadow-sm">
                     {reports.length} {reports.length === 1 ? "Report" : "Reports"}
                   </span>
                 </h3>
@@ -1319,7 +1319,7 @@ export default function UnifiedEventManagementPortal() {
                       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-100 dark:border-white/10 pb-3.5">
                         <div className="space-y-1.5">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-violet-600/40 dark:bg-violet-600/50 text-white dark:text-white border border-violet-400/60 rounded-lg shadow-sm">
+                            <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-violet-600 dark:bg-violet-600 text-white dark:text-white border border-violet-500 rounded-lg shadow-sm">
                               {report.branch.name}
                             </span>
                             <span className={`px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-lg border flex items-center gap-1 ${
@@ -1371,7 +1371,7 @@ export default function UnifiedEventManagementPortal() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => toggleReportExpanded(report.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-600/30 dark:bg-violet-600/40 hover:bg-violet-600/60 text-[10px] font-extrabold text-white transition-all border border-violet-400/50 shadow-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-[10px] font-extrabold text-white transition-all shadow-md shadow-violet-500/20 active:scale-95"
                           >
                             <span className="text-white font-bold">{isExpanded ? "Show Less" : "View Details"}</span>
                             <ChevronRight className={`w-3.5 h-3.5 text-white transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
