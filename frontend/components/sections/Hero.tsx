@@ -28,49 +28,49 @@ const COLOR_SCHEMES: Record<string, { border: string; glow: string; num: string;
   violet: {
     border: "from-violet-500/30 to-indigo-500/10 dark:from-violet-500/40 dark:to-indigo-500/10",
     glow: "group-hover:shadow-violet-500/20",
-    num: "from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400",
-    icon: "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/20",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
+    icon: "bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20",
   },
   emerald: {
     border: "from-emerald-500/30 to-teal-500/10 dark:from-emerald-500/40 dark:to-teal-500/10",
     glow: "group-hover:shadow-emerald-500/20",
-    num: "from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20",
   },
   amber: {
     border: "from-amber-500/30 to-orange-500/10 dark:from-amber-500/40 dark:to-orange-500/10",
     glow: "group-hover:shadow-amber-500/20",
-    num: "from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20",
   },
   rose: {
     border: "from-rose-500/30 to-red-500/10 dark:from-rose-500/40 dark:to-red-500/10",
     glow: "group-hover:shadow-rose-500/20",
-    num: "from-rose-600 to-red-600 dark:from-rose-400 dark:to-red-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/20",
   },
   blue: {
     border: "from-blue-500/30 to-cyan-500/10 dark:from-blue-500/40 dark:to-cyan-500/10",
     glow: "group-hover:shadow-blue-500/20",
-    num: "from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg shadow-blue-500/20",
   },
   teal: {
     border: "from-teal-500/30 to-emerald-500/10 dark:from-teal-500/40 dark:to-emerald-500/10",
     glow: "group-hover:shadow-teal-500/20",
-    num: "from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/20",
   },
   orange: {
     border: "from-orange-500/30 to-red-500/10 dark:from-orange-500/40 dark:to-red-500/10",
     glow: "group-hover:shadow-orange-500/20",
-    num: "from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-orange-500 to-red-600 shadow-lg shadow-orange-500/20",
   },
   purple: {
     border: "from-purple-500/30 to-fuchsia-500/10 dark:from-purple-500/40 dark:to-fuchsia-500/10",
     glow: "group-hover:shadow-purple-500/20",
-    num: "from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400",
+    num: "from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-400 dark:to-indigo-400",
     icon: "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-lg shadow-purple-500/20",
   },
 };
@@ -304,7 +304,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-500 via-amber-400 to-pink-500 dark:from-purple-200 dark:via-amber-200 dark:to-pink-200 bg-clip-text text-transparent pb-1 bg-[length:200%_auto] animate-shimmer text-purple-600 dark:text-purple-200"
+              className="block mt-1 sm:mt-2 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 dark:from-purple-300 dark:via-violet-300 dark:to-indigo-300 bg-clip-text text-transparent pb-1 text-purple-600 dark:text-purple-200"
               style={{
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -314,7 +314,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </span>
             <span
               suppressHydrationWarning
-              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-500 via-indigo-400 to-pink-500 dark:from-purple-200 dark:via-indigo-200 dark:to-purple-100 bg-clip-text text-transparent text-purple-500 dark:text-purple-300"
+              className="block font-black mt-1 pb-1 leading-normal uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600 dark:from-purple-300 dark:to-indigo-300 bg-clip-text text-transparent text-purple-500 dark:text-purple-300"
               style={{
                 fontSize: "clamp(1rem, 3.2vw, 2.25rem)",
                 WebkitBackgroundClip: "text",

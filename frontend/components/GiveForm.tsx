@@ -38,6 +38,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import BANK_DETAILS from "@/lib/bankDetails";
 import io from "socket.io-client";
 
 interface PurposeItem {
@@ -1597,10 +1598,10 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
                 <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-3.5 sm:p-4 space-y-2 text-xs border border-slate-100 dark:border-slate-700">
                   {[
-                    { label: 'Account Name', value: 'Kingdom of Christ Ministries' },
-                    { label: 'Account Number', value: '12041203940129', mono: true },
-                    { label: 'IFSC Code', value: 'UTIB0001092', mono: true },
-                    { label: 'Bank Branch', value: 'Axis Bank, Jeedimetla' },
+                    { label: 'Account Name', value: BANK_DETAILS.accountName },
+                    { label: 'Account Number', value: BANK_DETAILS.accountNumber, mono: true },
+                    { label: 'IFSC Code', value: BANK_DETAILS.ifscCode, mono: true },
+                    { label: 'Bank Branch', value: BANK_DETAILS.branch },
                   ].map((row) => (
                     <div key={row.label} className="flex justify-between items-center border-b border-slate-200/60 dark:border-slate-700/50 last:border-0 pb-1.5 last:pb-0">
                       <span className="text-slate-600 dark:text-slate-300 font-bold text-[11px] sm:text-xs">{row.label}:</span>

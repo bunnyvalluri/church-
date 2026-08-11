@@ -629,8 +629,10 @@ Secure, convenient online donations
 ### Bank Transfer
 Direct bank transfer details:
 - Account Name: Kingdom of Christ Ministries
-- Account Number: [To be added]
-- IFSC Code: [To be added]
+- Account Number: 1273102000011334
+- IFSC Code: IBKL0001273
+- Bank Name: IDBI
+- Branch: IDBI Bank, Jeedimetla
 
 ### In-Person
 Give during any service at:
