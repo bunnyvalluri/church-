@@ -704,34 +704,13 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 mb-6 lg:my-auto"
+          className="w-full max-w-md mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 mb-6 lg:my-auto"
         >
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
-          {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-4 text-center">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-purple-500/30 mb-1.5 shadow-xl bg-purple-950/50 p-1">
-              <div className="relative w-full h-full rounded-full overflow-hidden">
-                <Image
-                  src="/logo.png"
-                  alt="Kingdom of Christ Ministries Logo"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-            <h1 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
-              {loginT.churchName}
-            </h1>
-            <p className="text-purple-600 dark:text-purple-300 text-[10px] font-bold tracking-widest uppercase mt-0.5 drop-shadow-sm">
-              {loginT.ministries}
-            </p>
-          </div>
-
           {/* Form Header */}
-          <div className="mb-4 text-center lg:text-left">
+          <div className="mb-3 sm:mb-4 text-center lg:text-left">
             <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loginT.title}
             </h2>

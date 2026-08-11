@@ -287,8 +287,8 @@ export default function RegisterPage() {
         </div>
 
         {/* Mobile Top Header Bar */}
-        <div className="w-full max-w-lg flex items-center justify-between pt-1 px-1 mb-3 lg:hidden z-20 shrink-0">
-          <Link href="/login" className="flex items-center gap-1 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-md text-[11px] sm:text-xs font-semibold shrink-0">
+        <div className="w-full max-w-lg flex items-center justify-between pt-1 px-1 mb-2 lg:hidden z-20 shrink-0">
+          <Link href="/login" className="flex items-center gap-1 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-2.5 py-1 rounded-full shadow-md text-[11px] font-semibold shrink-0">
             <ChevronLeft className="w-3.5 h-3.5 text-purple-600 dark:text-purple-300" />
             <span>{registerT.backToSignIn}</span>
           </Link>
@@ -299,58 +299,37 @@ export default function RegisterPage() {
         </div>
 
         {/* Form Container Card */}
-        <div className="w-full max-w-lg mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 mb-6 lg:my-auto">
+        <div className="w-full max-w-lg mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 mb-6 lg:my-auto">
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
-          {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-4 text-center">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-purple-500/30 mb-1.5 shadow-xl bg-purple-950/50 p-1">
-              <div className="relative w-full h-full rounded-full overflow-hidden">
-                <Image
-                  src="/logo.png"
-                  alt="Kingdom of Christ Ministries Logo"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-            <h1 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
-              {loginT.churchName}
-            </h1>
-            <p className="text-purple-600 dark:text-purple-300 text-[10px] font-bold tracking-widest uppercase mt-0.5 drop-shadow-sm">
-              {loginT.ministries}
-            </p>
-          </div>
-
           {/* Header */}
-          <div className="mb-4 text-center lg:text-left">
-            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <div className="mb-3 sm:mb-4 text-center lg:text-left">
+            <h2 className="text-lg sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-0.5">
+            <p className="text-slate-600 dark:text-gray-400 text-[11px] sm:text-sm font-medium mt-0.5">
               {registerT.subtitle}
             </p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 flex items-start gap-3 shadow-md">
-              <span className="text-red-600 dark:text-red-400 text-lg mt-0.5">⚠</span>
-              <p className="text-red-700 dark:text-red-200 text-sm font-medium">{getLocalizedError(error)}</p>
+            <div className="mb-3 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 flex items-start gap-2 shadow-md">
+              <span className="text-red-600 dark:text-red-400 text-sm mt-0.5">⚠</span>
+              <p className="text-red-700 dark:text-red-200 text-xs font-medium">{getLocalizedError(error)}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            {/* Name Row - Always 2 Columns for Mobile Efficiency */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label htmlFor="firstName" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
+          <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-4">
+            {/* Name Row - Always 2 Columns */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              <div className="space-y-1">
+                <label htmlFor="firstName" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
                   {registerT.firstName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -363,12 +342,12 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label htmlFor="lastName" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
+              <div className="space-y-1">
+                <label htmlFor="lastName" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
                   {registerT.lastName}
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -383,138 +362,139 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
-                {registerT.email}
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                  className={inputClass}
-                  placeholder={registerT.emailPlaceholder}
-                />
-              </div>
-            </div>
-
-            {/* Phone */}
-            <div className="space-y-1.5">
-              <label htmlFor="phone" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
-                {registerT.phone}
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="+91 1234567890"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
-                {registerT.password}
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  className={`${inputClass} pr-10`}
-                  placeholder={registerT.passwordPlaceholder}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {/* Password Strength Meter */}
-              {formData.password && (
-                <div className="pt-0.5 space-y-1">
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          i <= pwScore ? strengthColor[pwScore] : "bg-slate-200 dark:bg-gray-800"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <p className={`text-[10px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-500 dark:text-red-400" : pwScore <= 2 ? "text-orange-500 dark:text-orange-400" : pwScore <= 3 ? "text-amber-500 dark:text-yellow-400" : "text-emerald-600 dark:text-emerald-400"}`}>
-                    {registerT.strengthLabel} {getStrengthLabel(pwScore)}
-                  </p>
+            {/* Email & Phone Row on SM, stacked on Mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div className="space-y-1">
+                <label htmlFor="email" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
+                  {registerT.email}
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                    className={inputClass}
+                    placeholder={registerT.emailPlaceholder}
+                  />
                 </div>
-              )}
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="phone" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
+                  {registerT.phone}
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="+91 1234567890"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="space-y-1.5">
-              <label htmlFor="confirmPassword" className="text-xs font-semibold text-slate-700 dark:text-gray-300">
-                {registerT.confirmPassword}
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-400" />
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirm ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  className={`${inputClass} pr-10 ${
-                    formData.confirmPassword && formData.password !== formData.confirmPassword
-                      ? "border-red-500 focus:ring-red-500"
-                      : formData.confirmPassword && formData.password === formData.confirmPassword
-                      ? "border-emerald-500 focus:ring-emerald-500"
-                      : ""
-                  }`}
-                  placeholder={registerT.confirmPasswordPlaceholder}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
-                >
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+            {/* Password & Confirm Password Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div className="space-y-1">
+                <label htmlFor="password" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
+                  {registerT.password}
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    className={`${inputClass} pr-9`}
+                    placeholder={registerT.passwordPlaceholder}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                {/* Password Strength Meter */}
+                {formData.password && (
+                  <div className="pt-0.5 space-y-0.5">
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${
+                            i <= pwScore ? strengthColor[pwScore] : "bg-slate-200 dark:bg-gray-800"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-[9px] sm:text-xs font-medium ${pwScore <= 1 ? "text-red-500 dark:text-red-400" : pwScore <= 2 ? "text-orange-500 dark:text-orange-400" : pwScore <= 3 ? "text-amber-500 dark:text-yellow-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+                      {registerT.strengthLabel} {getStrengthLabel(pwScore)}
+                    </p>
+                  </div>
+                )}
               </div>
-              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p className="text-[10px] sm:text-xs text-red-500 dark:text-red-400">{registerT.mismatch}</p>
-              )}
+
+              <div className="space-y-1">
+                <label htmlFor="confirmPassword" className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-gray-300">
+                  {registerT.confirmPassword}
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-gray-400" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirm ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    className={`${inputClass} pr-9 ${
+                      formData.confirmPassword && formData.password !== formData.confirmPassword
+                        ? "border-red-500 focus:ring-red-500"
+                        : formData.confirmPassword && formData.password === formData.confirmPassword
+                        ? "border-emerald-500 focus:ring-emerald-500"
+                        : ""
+                    }`}
+                    placeholder={registerT.confirmPasswordPlaceholder}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    {showConfirm ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-[9px] sm:text-xs text-red-500 dark:text-red-400">{registerT.mismatch}</p>
+                )}
+              </div>
             </div>
 
             {/* Terms */}
-            <div className="flex items-start gap-2 py-1">
+            <div className="flex items-start gap-2 py-0.5">
               <input
                 id="terms"
                 type="checkbox"
                 required
-                className="w-4 h-4 mt-0.5 accent-purple-600 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-gray-800"
+                className="w-3.5 h-3.5 mt-0.5 accent-purple-600 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-gray-800"
               />
-              <label htmlFor="terms" className="text-xs text-slate-600 dark:text-gray-400 leading-tight">
+              <label htmlFor="terms" className="text-[11px] sm:text-xs text-slate-600 dark:text-gray-400 leading-tight">
                 {registerT.agreeTo}{" "}
                 <Link href="/terms" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold">{registerT.terms}</Link>
                 {" "}{registerT.and}{" "}
@@ -526,7 +506,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 border border-purple-400/20 cursor-pointer"
+              className="relative overflow-hidden w-full py-2.5 sm:py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 border border-purple-400/20 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -542,7 +522,7 @@ export default function RegisterPage() {
             </button>
 
             {/* Login Link */}
-            <p className="text-center pt-2 text-sm text-slate-600 dark:text-gray-400 font-medium">
+            <p className="text-center pt-1 text-xs sm:text-sm text-slate-600 dark:text-gray-400 font-medium">
               {registerT.alreadyHaveAccount}{" "}
               <Link href="/login" className="text-purple-600 dark:text-purple-400 font-bold hover:text-purple-700 dark:hover:text-purple-300 hover:underline transition-all">
                 {registerT.signInLink}
