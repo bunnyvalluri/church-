@@ -46,7 +46,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import io from "socket.io-client";
+// socket.io-client is dynamically imported inside connectSocket (browser-only, prevents SSR hydration errors)
 import { DonationAgentProvider, useDonationAgent } from "@/components/donations/DonationAgentProvider";
 import { AgentStatusBar } from "@/components/donations/AgentStatusBar";
 import { PaymentStateMonitor } from "@/components/donations/PaymentStateMonitor";
@@ -572,29 +572,27 @@ function NgoDonationsContent() {
     }, 3000);
   }, []);
 
-  // Socket.IO Listener
+  // Socket.IO Listener — dynamically imported to avoid SSR hydration issues
   const connectSocket = useCallback((sid: string, refNum: string) => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-    });
-    socketRef.current = socket;
+    import("socket.io-client").then(({ default: io }) => {
+      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+      const socket = io(socketUrl, {
+        transports: ["websocket", "polling"],
+        reconnection: true,
+      });
+      socketRef.current = socket;
 
-    socket.on("connect", () => {
-      socket.emit("join", `member:${user?.uid || "guest"}`);
-      socket.emit("join", "ngo:donations");
-    });
+      socket.on("connect", () => {
+        socket.emit("join", `member:${user?.uid || "guest"}`);
+        socket.emit("join", "ngo:donations");
+      });
 
-    socket.on("donation.success", (data: any) => {
-      if (data.sessionId === sid || data.referenceNumber === refNum) {
-        handlePaymentSuccess(data.donationId || donationId);
-      }
+      socket.on("donation.success", (data: any) => {
+        if (data.sessionId === sid || data.referenceNumber === refNum) {
+          handlePaymentSuccess(data.donationId || donationId);
+        }
+      });
     });
-
-    return () => {
-      socket.disconnect();
-    };
   }, [user, donationId]);
 
   useEffect(() => {
