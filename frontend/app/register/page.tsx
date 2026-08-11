@@ -272,7 +272,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 py-6 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-100/90 dark:bg-slate-950 relative overflow-y-auto overflow-x-hidden min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
+      <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-3 py-4 sm:px-8 sm:py-10 lg:p-12 w-full min-w-0 bg-slate-100/90 dark:bg-slate-950 relative overflow-y-auto min-h-[100dvh] lg:min-h-0 transition-colors duration-300">
         {/* Subtle grid pattern background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
@@ -287,25 +287,25 @@ export default function RegisterPage() {
         </div>
 
         {/* Mobile Top Header Bar */}
-        <div className="w-full max-w-lg flex items-center justify-between pt-2 px-1 mb-4 lg:hidden z-20">
-          <Link href="/login" className="flex items-center gap-1.5 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-semibold">
-            <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-300" />
+        <div className="w-full max-w-lg flex items-center justify-between pt-1 px-1 mb-3 lg:hidden z-20 shrink-0">
+          <Link href="/login" className="flex items-center gap-1 text-slate-800 dark:text-white/90 hover:text-slate-950 dark:hover:text-white transition-all duration-300 bg-white/80 dark:bg-white/10 border border-slate-200 dark:border-white/15 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-md text-[11px] sm:text-xs font-semibold shrink-0">
+            <ChevronLeft className="w-3.5 h-3.5 text-purple-600 dark:text-purple-300" />
             <span>{registerT.backToSignIn}</span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
 
         {/* Form Container Card */}
-        <div className="w-full max-w-lg mx-auto bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300">
+        <div className="w-full max-w-lg mx-auto bg-white/95 dark:bg-slate-900/80 p-4 sm:p-8 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-10 min-w-0 box-border relative overflow-hidden transition-colors duration-300 my-auto">
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
           {/* Mobile Branding Header */}
-          <div className="lg:hidden flex flex-col items-center mb-6 text-center">
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-500/30 mb-2 shadow-xl bg-purple-950/50 p-1">
+          <div className="lg:hidden flex flex-col items-center mb-4 text-center">
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-purple-500/30 mb-1.5 shadow-xl bg-purple-950/50 p-1">
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
@@ -316,20 +316,20 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
+            <h1 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
               {loginT.churchName}
             </h1>
-            <p className="text-purple-600 dark:text-purple-300 text-xs font-bold tracking-widest uppercase mt-1 drop-shadow-sm">
+            <p className="text-purple-600 dark:text-purple-300 text-[10px] font-bold tracking-widest uppercase mt-0.5 drop-shadow-sm">
               {loginT.ministries}
             </p>
           </div>
 
           {/* Header */}
-          <div className="mb-6 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <div className="mb-4 text-center lg:text-left">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {registerT.title}
             </h2>
-            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-1">
+            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-0.5">
               {registerT.subtitle}
             </p>
           </div>
@@ -342,7 +342,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Name Row - Always 2 Columns for Mobile Efficiency */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
