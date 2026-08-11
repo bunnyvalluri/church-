@@ -58,7 +58,6 @@ const NavigationLogo = memo(function NavigationLogo() {
             src="/logo.png"
             alt="KCM Logo"
             fill
-            unoptimized
             sizes="(max-width: 375px) 28px, (max-width: 540px) 32px, (max-width: 768px) 34px, (max-width: 1024px) 36px, 44px"
             className="object-contain p-0.5"
             priority
