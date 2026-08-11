@@ -6,12 +6,17 @@
 [![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.12-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)](https://kubernetes.io/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://kcmchurch.vercel.app)
 [![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)](https://openai.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 A state-of-the-art, enterprise-grade digital ecosystem and web platform designed for **Kingdom of Christ Ministries (K.C.M)**. Built with Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, Firebase Auth, and intelligent AI capabilities—delivering multilingual support (English, Telugu & Hindi), offline-first PWA resilience, seamless sermon media streaming, prayer requests, and secure online giving.
+
+---
+
+## 🌐 Live Application
+- **Production Website**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)
+- **Source Code**: [GitHub Repository](https://github.com/bunnyvalluri/church-)
 
 ---
 
@@ -23,16 +28,14 @@ A state-of-the-art, enterprise-grade digital ecosystem and web platform designed
 - [Monorepo Architecture](#-monorepo-architecture)
 - [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation & Setup](#1-installation--setup)
+  - [Installation \& Setup](#1-installation--setup)
   - [Environment Configuration](#2-environment-configuration)
-  - [Database & Migrations](#3-database--migrations)
+  - [Database \& Migrations](#3-database--migrations)
   - [Development Server](#4-development-server)
-- [Database Schema & Models](#-database-schema--models)
-- [AI & Network Resilience](#-ai--network-resilience)
-- [Deployment & Infrastructure](#-deployment--infrastructure)
-- [Project Roadmap](#-project-roadmap)
-- [Contributing](#-contributing)
-- [License & Support](#-license--support)
+- [Database Schema \& Models](#-database-schema--models)
+- [AI \& Network Resilience](#-ai--network-resilience)
+- [Deployment \& Infrastructure](#-deployment--infrastructure)
+- [License \& Support](#-license--support)
 
 ---
 
@@ -41,21 +44,22 @@ A state-of-the-art, enterprise-grade digital ecosystem and web platform designed
 The **Kingdom of Christ Ministries Platform** serves as a digital gateway connecting church members, visitors, and global supporters. Designed with visual excellence, intuitive user navigation, and high availability, the platform streamlines sermon delivery, event management, prayer requests, community outreach, and secure financial contributions.
 
 > [!NOTE]  
-> The platform features full multilingual support (English, Telugu & Hindi), adaptive offline-first sync capabilities, and zero-latency media playback.
+> The platform features full multilingual support (English, Telugu & Hindi), adaptive offline-first sync capabilities, dynamic accent theme switching, and zero-latency media playback.
 
 ---
 
 ## ✨ Key Features
 
 ### 🎨 Modern Design & Experience
-- **Premium Interface**: Crafted with modern typography, glassmorphism UI components, fluid gradients, and dark/light mode customization.
-- **Fully Responsive**: Flawless responsive layout optimized across mobile, tablet, and widescreen displays.
-- **Micro-Animations**: Framer Motion powered transitions for an interactive user interface.
+- **Apple Glassmorphism Interface**: Crafted with modern typography, glassmorphism UI components, fluid gradients, and dark/light mode customization.
+- **Dynamic Accent Themes**: 10 customizable color accent themes (Purple, Emerald, Holy Blue, Crimson, Royal Gold, Rose, Sky, Olive, Earth, Platinum).
+- **Fully Responsive**: Flawless responsive layout optimized across mobile, tablet, laptop, and widescreen displays.
+- **Micro-Animations**: Smooth component micro-interactions and route transitions.
 
 ### 🌐 Community Hub & Media Library
 - **Hero & Ministry Showcase**: Displays mission statements, weekly service schedules, and ministry highlights.
 - **Sermon & Media Archive**: Filterable sermon library with high-definition audio and video streaming, plus transcript support.
-- **Interactive Events Calendar**: Full event listing with category filters, schedule details, and RSVP capabilities.
+- **Interactive Events Calendar**: Full event listing with category filters, schedule details, and location maps.
 - **Prayer & Testimonials**: Online prayer request submissions and verified community testimony sharing.
 - **Multilingual Interface**: Seamless translation across English, Telugu, and Hindi.
 
@@ -63,9 +67,9 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 - **PWA Service Worker**: Instant page load with offline caching and background synchronization.
 - **Real-Time Health Monitoring**: Automatic network quality detection and sync handling.
 
-### 🤖 Intelligent AI Assistance
-- **Multilingual Conversational AI (English, Telugu & Hindi)**: Provides 24/7 answers to church schedules, location details, and service information.
-- **Semantic Sermon Search (RAG)**: Search over sermon archives using contextual vector embeddings.
+### 🤖 Intelligent AI Assistant
+- **Multilingual Conversational AI (English, Telugu & Hindi)**: Provides 24/7 answers to church schedules, location details, sermon insights, and service information.
+- **Dynamic Color Theme Sync**: Chatbot interface automatically synchronizes with active accent themes.
 
 ### 💳 Secure Online Giving & NGO Support
 - **PCI-Compliant Payment Processing**: Powered by Stripe for single and recurring tithes, offerings, and outreach funding.
@@ -86,8 +90,7 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 | **Database & ORM** | PostgreSQL 16 & Prisma | Relational database management with schema migrations |
 | **AI Engine** | OpenAI & Gemini API | Natural Language Processing (NLP) & Retrieval-Augmented Generation (RAG) |
 | **Payments** | Stripe API | Secure global donation gateway |
-| **DevOps & Infrastructure** | Docker & Kubernetes | Containerized microservices and automated deployment manifests |
-| **Observability** | Prometheus & Grafana | Monitoring, alert metrics, and application health dashboards |
+| **Deployment** | Vercel & Docker | Automated CI/CD edge deployment and containerization |
 
 ---
 
@@ -123,7 +126,7 @@ Ensure the following tools are installed:
 - **Node.js**: `v18.0.0` or higher
 - **npm**: `v9.0.0` or higher
 - **PostgreSQL**: `v14.0` or higher (or cloud database connection)
-- **Docker**: (Optional) For containerized development
+- **Git**: Installed for version control
 
 ---
 
@@ -132,8 +135,8 @@ Ensure the following tools are installed:
 Clone the repository and install all workspace dependencies:
 
 ```bash
-git clone https://github.com/your-org/church-platform.git
-cd church-platform
+git clone https://github.com/bunnyvalluri/church-.git
+cd church-
 npm install
 ```
 
@@ -168,9 +171,6 @@ STRIPE_SECRET_KEY="sk_test_..."
 # AI Integration
 OPENAI_API_KEY="sk-..."
 GEMINI_API_KEY="..."
-
-# Communications
-RESEND_API_KEY="re_..."
 ```
 
 ---
@@ -210,7 +210,7 @@ Managed seamlessly via Prisma ORM:
 
 - **User**: User accounts, authentication credentials, and preferences.
 - **Event**: Church services, community events, location details, and dates.
-- **Sermon**: Video/audio sermon media links, speaker information, and searchable transcripts.
+- **Sermon**: Video/audio sermon media links, speaker information, and transcripts.
 - **PrayerRequest**: Community prayer requests with privacy controls.
 - **Donation**: Giving records, transaction reference IDs, and payment status tracking.
 - **Announcement**: Bulletin notices and church news updates.
@@ -222,9 +222,9 @@ Managed seamlessly via Prisma ORM:
 
 ## 🤖 AI & Network Resilience
 
-### RAG-Powered Sermon Search
-- Converts sermon transcripts into high-dimensional vector embeddings.
-- Enables semantic search so users can query sermon topics and scripture references naturally.
+### Intelligent AI Assistant
+- Interactive multilingual chat assistance for service timings, prayer requests, and biblical inquiries.
+- Real-time theme synchronization with the user's active visual palette.
 
 ### Network Quality Manager
 - Monitors connection speed and availability in real-time.
@@ -234,10 +234,10 @@ Managed seamlessly via Prisma ORM:
 
 ## 🐳 Deployment & Infrastructure
 
+### Production Vercel Deployment
+Automatically builds and deploys on every push to `main` branch.
+
 ### Containerization with Docker
-
-Start local containerized environment:
-
 ```bash
 # Development stack
 npm run docker:dev
@@ -245,46 +245,6 @@ npm run docker:dev
 # Production stack
 npm run docker:prod
 ```
-
-### Kubernetes Cluster Deployment
-
-Deploy manifests to your Kubernetes cluster:
-
-```bash
-npm run k8s:apply
-```
-
----
-
-## 🎯 Project Roadmap
-
-### Phase 1: Core Platform & Public Experience (Completed ✅)
-- [x] Responsive web interface with glassmorphism design system
-- [x] Public service, events, media, and contact sections
-- [x] Multilingual AI conversational chatbot (English, Telugu & Hindi)
-- [x] PWA offline caching & background sync infrastructure
-
-### Phase 2: Community & Giving Enhancements (Completed ✅)
-- [x] Stripe payment gateway for online donations & NGO campaigns
-- [x] Prayer request submissions and community stories
-- [x] Dynamic sermon media player with filtering
-
-### Phase 3: Analytics & Expansion (In Progress 🔄)
-- [ ] Centralized media upload pipeline for sermons
-- [ ] Automated email bulletins and announcements
-- [ ] Voice-enabled interactive AI assistant
-
----
-
-## 🤝 Contributing
-
-We welcome contributions to help improve the Kingdom of Christ Ministries platform!
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ---
 
@@ -294,7 +254,7 @@ We welcome contributions to help improve the Kingdom of Christ Ministries platfo
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ### Contact & Location
-- 🌐 **Website**: [kingdomofchrist.org](http://localhost:3000)
+- 🌐 **Website**: [https://kcmchurch.vercel.app](https://kcmchurch.vercel.app)
 - 📧 **Email**: info@kingdomofchrist.org
 - 📱 **Phone**: +91 96409 43777
 - 📍 **Address**: 15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, Telangana 500055
