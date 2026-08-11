@@ -1,335 +1,311 @@
-# 🏛️ Kingdom of Christ Ministries - Professional Church Web Application
+# 🏛️ Kingdom of Christ Ministries - Web & Digital Platform
 
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)
 ![AI Powered](https://img.shields.io/badge/AI-Powered-purple?style=for-the-badge&logo=openai)
 
-A modern, professional, and AI-powered church web application built with Next.js 14, TypeScript, and Tailwind CSS. Features bilingual support (English & Telugu), online donations, member portal, and an intelligent AI chatbot.
+A modern, enterprise-grade, AI-powered web application and digital ecosystem designed for Kingdom of Christ Ministries (K.C.M). Built using Next.js 14, TypeScript, Tailwind CSS, Node.js, PostgreSQL, and advanced AI technologies, featuring bilingual support (English & Telugu), secure online donations, comprehensive media archives, and intelligent conversational assistance.
 
-## ✨ Features
+---
 
-### 🎨 **Professional Design**
-- **Modern UI/UX** with gradient backgrounds and glassmorphism effects
-- **Responsive Design** - Works perfectly on all devices
-- **Dark Mode Support** - Automatic theme switching
-- **Smooth Animations** - Framer Motion powered transitions
-- **Premium Components** - Built with Radix UI and shadcn/ui
+## 📋 Table of Contents
 
-### 🏠 **Public Website**
-- ✅ **Hero Section** - Stunning gradient background with stats
-- ✅ **About Church** - Mission, values, and church information
-- ✅ **Services** - All ministry programs and service times
-- ✅ **Events Calendar** - Upcoming events with registration
-- ✅ **Sermons Library** - Video/audio sermons with search
-- ✅ **Testimonials** - Member testimonials with ratings
-- ✅ **Contact Form** - Integrated contact form with map
-- ✅ **Gallery** - Photo gallery of church events
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [Monorepo Architecture](#-monorepo-architecture)
+- [Getting Started](#-getting-started)
+- [Database Schema & Models](#-database-schema--models)
+- [AI Capabilities & Integration](#-ai-capabilities--integration)
+- [Deployment & Infrastructure](#-deployment--infrastructure)
+- [Project Roadmap](#-project-roadmap)
+- [Contributing](#-contributing)
+- [License & Support](#-license--support)
 
-### 👤 **Member Portal** (Coming Soon)
-- Login/Register system
-- Member dashboard
-- Prayer request submission
-- Event registration
-- Donation history
-- Profile management
+---
 
-### 🧑‍💼 **Admin Dashboard** (Coming Soon)
-- Event management
-- Sermon uploads
-- Member management
-- Announcement posting
-- Donation tracking
-- Analytics dashboard
+## 🌟 Overview
 
-### 🤖 **AI Features**
-- ✅ **Bilingual AI Chatbot** (English & Telugu)
-  - 24/7 automated support
-  - Service time inquiries
-  - Location and contact information
-  - Event information
-  - Prayer request guidance
-  - Membership information
+Kingdom of Christ Ministries digital platform brings a state-of-the-art web experience to church members, visitors, and global supporters. The platform combines visual elegance, responsive design, multi-language conversational AI, and robust cloud infrastructure to streamline community connection, sermon delivery, event management, and online giving.
 
-### 💳 **Online Donations**
-- Stripe integration for secure payments
-- Multiple donation purposes
-- Recurring donations support
-- Donation receipts
+---
 
-## 🚀 Tech Stack
+## ✨ Key Features
 
-### **Frontend**
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework
-- **shadcn/ui** - Premium UI components
-- **Framer Motion** - Animation library
-- **Lucide React** - Beautiful icons
+### 🎨 **Modern Design & User Experience**
+- **Sleek Interface**: Built with modern gradient accents, glassmorphism UI components, and clean typography.
+- **Fully Responsive Layout**: Optimized across desktop, tablet, and mobile displays.
+- **Theme Flexibility**: Dark mode and light mode visual themes.
+- **Fluid Animations**: Smooth page transitions and interactive micro-animations powered by Framer Motion.
 
-### **Backend**
-- **Next.js API Routes** - Serverless API endpoints
-- **Prisma** - Type-safe ORM
-- **PostgreSQL** - Production database
-- **NextAuth.js** - Authentication system
+### 🏠 **Public Experience & Community Hub**
+- **Hero & Ministry Showcase**: Highlights mission statements, key statistics, and upcoming service schedules.
+- **Sermon & Media Library**: Filterable video and audio sermon archives with transcript integration.
+- **Event Management**: Interactive events calendar with attendee registration.
+- **Prayer Requests**: Online submission for prayer requests with category selection.
+- **Testimonials & Gallery**: Interactive community stories, photo galleries, and news updates.
+- **Multilingual Support**: Seamless English and Telugu content presentation.
 
-### **AI Integration**
-- **LangChain** - AI orchestration framework
-- **OpenAI GPT** - Language model
-- **Pinecone** - Vector database for RAG
-- **Gemini AI** - Google's AI model
-- **Anthropic Claude** - Alternative AI model
+### 🤖 **Intelligent AI Assistant**
+- **Bilingual AI Chatbot (English & Telugu)**: 24/7 automated assistance for church inquiries.
+- **Service & Location Info**: Instant answers regarding service timings, map directions, and contact details.
+- **Event & Prayer Guidance**: Interactive prompts for event registration and prayer requests.
+- **RAG Sermon Search**: Semantic vector search over sermon transcripts for scripture and topic inquiries.
 
-### **Payment & Communication**
-- **Stripe** - Payment processing
-- **Resend** - Email service
-- **Twilio** - SMS notifications
+### 💳 **Online Giving & NGO Support**
+- **Secure Payment Processing**: Integrated with Stripe for smooth, PCI-compliant transactions.
+- **Flexible Giving Options**: Support for one-time donations, recurring giving, and specific ministry funds.
+- **Instant Receipts**: Digital donation confirmations and summary history.
 
-## 📦 Installation
+---
 
-### Prerequisites
-- Node.js 18+ installed
-- PostgreSQL database (local or cloud)
-- API keys for AI services (optional for basic features)
+## 🚀 Technology Stack
 
-### 1. Clone the Repository
-```bash
-git clone <your-repo-url>
-cd church
+| Category | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend Framework** | Next.js 14 (App Router) | React framework for server rendering and optimal performance |
+| **Language** | TypeScript 5.4 | Type-safe development across frontend and backend |
+| **Styling** | Tailwind CSS & Radix UI | Utility-first styling with accessible UI primitives |
+| **Animations** | Framer Motion | Dynamic UI transitions and micro-interactions |
+| **Backend API** | Node.js / Express | Modular REST and API route infrastructure |
+| **Database & ORM** | PostgreSQL & Prisma ORM | Relational database with type-safe schema migrations |
+| **AI Orchestration** | LangChain, OpenAI & Gemini | LLM integration and vector retrieval pipelines |
+| **Vector DB** | Pinecone | High-dimensional vector database for semantic sermon search |
+| **Payments** | Stripe API | Global secure payment processing |
+| **DevOps & Containers** | Docker & Kubernetes | Containerized workloads with k8s orchestration manifests |
+| **Monitoring** | Prometheus & Grafana | Real-time observability and metrics tracking |
+
+---
+
+## 🏗️ Monorepo Architecture
+
+```
+church-platform/
+├── frontend/                 # Next.js 14 Web Application
+│   ├── app/                  # App Router pages and API endpoints
+│   ├── components/           # UI components, layout, and AI interface
+│   ├── lib/                  # Client utilities and state management
+│   └── public/               # Static assets and media
+├── backend/                  # Node.js API Service & Workers
+│   ├── src/                  # Controllers, services, and business logic
+│   └── prisma/               # Database schema and migration scripts
+├── database/                 # Database initialization and scripts
+├── docker/                   # Docker Compose environment configurations
+├── k8s/                      # Kubernetes deployment manifests & network policies
+├── monitoring/               # Prometheus & Grafana dashboards
+├── platform/                 # Shared platform manifests and network policies
+├── package.json              # Workspace root configuration
+└── README.md                 # Project documentation
 ```
 
+---
+
+## 📦 Getting Started
+
+### Prerequisites
+
+Ensure you have the following installed on your machine:
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+- **PostgreSQL**: v14.0 or higher (or a cloud PostgreSQL instance)
+- **Docker**: (Optional) For containerized local development
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-org/church-platform.git
+cd church-platform
+```
+
+---
+
 ### 2. Install Dependencies
+
+Install all monorepo dependencies:
+
 ```bash
 npm install
 ```
 
-### 3. Setup Environment Variables
-Copy `.env.local` and update with your credentials:
+---
+
+### 3. Environment Configuration
+
+Copy `.env.example` to `.env.local` in `frontend/` and `.env` in `backend/`, then update the variables:
 
 ```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/church_db"
+# Database Connection
+DATABASE_URL="postgresql://user:password@localhost:5432/kcm_db"
 
-# NextAuth
+# NextAuth / Authentication
 NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key"
+NEXTAUTH_SECRET="your-secure-secret-key"
 
-# Stripe (for donations)
+# Stripe Payments
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_SECRET_KEY="sk_test_..."
 
-# AI Services (optional)
+# AI Services
 OPENAI_API_KEY="sk-..."
 GEMINI_API_KEY="..."
 PINECONE_API_KEY="..."
+PINECONE_INDEX="kcm-sermons"
 
-# Email & SMS (optional)
+# Communications (Optional)
 RESEND_API_KEY="re_..."
 TWILIO_ACCOUNT_SID="..."
 TWILIO_AUTH_TOKEN="..."
 ```
 
-### 4. Setup Database
+---
+
+### 4. Database Setup & Migrations
+
+Initialize the PostgreSQL database schema with Prisma:
+
 ```bash
-# Generate Prisma client
-npx prisma generate
+# Generate Prisma Client
+npm run db:generate
 
-# Run migrations
-npx prisma migrate dev
+# Push schema changes to database
+npm run db:push
 
-# (Optional) Seed database
-npx prisma db seed
+# Seed initial database data
+npm run db:seed
 ```
 
+---
+
 ### 5. Run Development Server
+
+Start both the frontend application and backend service concurrently:
+
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## 🏗️ Project Structure
+---
 
+## 📊 Database Schema & Models
+
+The PostgreSQL database powering the platform includes key models managed via Prisma:
+
+- **User**: User profiles, credentials, and access permissions.
+- **Event**: Church events, service schedules, venue details, and categories.
+- **Sermon**: Video/audio sermon media links, speaker information, and searchable transcripts.
+- **PrayerRequest**: Community prayer requests with categorization and privacy controls.
+- **Donation**: Financial giving history, payment reference IDs, and transaction statuses.
+- **Announcement**: Church updates, bulletin posts, and highlights.
+- **Testimonial**: User feedback, stories, and verified community testimonials.
+- **Ministry**: Ministry teams, mission groups, and outreach initiatives.
+- **Gallery**: Event photo albums and media archives.
+
+---
+
+## 🤖 AI Capabilities & Integration
+
+### RAG-Powered Sermon Search & Chatbot
+
+The platform incorporates Retrieval-Augmented Generation (RAG) to allow visitors and members to interact with church content seamlessly:
+
+1. **Transcript Indexing**: Sermon transcripts are processed and converted into vector embeddings using OpenAI / Gemini embedding models.
+2. **Vector Storage**: Embeddings are indexed in Pinecone for semantic similarity matching.
+3. **Conversational Assistant**: The bilingual AI engine queries the vector database to provide contextual scriptural answers and service details.
+
+---
+
+## 🐳 Deployment & Infrastructure
+
+### Containerization with Docker
+
+Run the entire application stack locally using Docker Compose:
+
+```bash
+# Start development container stack
+npm run docker:dev
+
+# Stop development containers
+npm run docker:dev:down
+
+# Build and run production containers
+npm run docker:prod
 ```
-church/
-├── app/                      # Next.js App Router
-│   ├── api/                 # API routes
-│   │   ├── auth/           # Authentication endpoints
-│   │   ├── events/         # Event management
-│   │   ├── sermons/        # Sermon management
-│   │   └── donations/      # Payment processing
-│   ├── (auth)/             # Auth pages (login, register)
-│   ├── admin/              # Admin dashboard
-│   ├── member/             # Member portal
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Homepage
-├── components/
-│   ├── ai/                 # AI chatbot components
-│   ├── layout/             # Layout components (Navbar, Footer)
-│   ├── sections/           # Page sections (Hero, About, etc.)
-│   └── ui/                 # Reusable UI components
-├── lib/
-│   ├── prisma.ts           # Prisma client
-│   └── utils.ts            # Utility functions
-├── prisma/
-│   └── schema.prisma       # Database schema
-├── public/                  # Static assets
-└── .env.local              # Environment variables
+
+### Kubernetes Orchestration
+
+Deploy to a Kubernetes cluster using the provided manifests:
+
+```bash
+# Apply Kubernetes manifests
+npm run k8s:apply
+
+# Check namespace status
+npm run k8s:status
+
+# Remove Kubernetes resources
+npm run k8s:delete
 ```
 
-## 📊 Database Schema
+---
 
-The application uses PostgreSQL with Prisma ORM. Key models include:
+## 🎯 Project Roadmap
 
-- **User** - Member accounts with roles (Admin, Pastor, Member)
-- **Event** - Church events with categories
-- **Sermon** - Video/audio sermons with transcripts
-- **PrayerRequest** - Prayer requests with categories
-- **Donation** - Online donations with Stripe integration
-- **Announcement** - Church announcements
-- **Testimonial** - Member testimonials
-- **Ministry** - Ministry information
-- **Pastor** - Pastor profiles
-- **Gallery** - Photo gallery
+### Phase 1: Core Platform & Public Experience (Completed ✅)
+- [x] Responsive web application design with glassmorphism styling
+- [x] Public service, events, media, and contact sections
+- [x] Bilingual AI conversational chatbot (English & Telugu)
+- [x] Monorepo workspace structure setup
 
-## 🤖 AI Integration Guide
+### Phase 2: Community & Giving Enhancements (In Progress 🔄)
+- [x] Secure Stripe donation integration & NGO campaign support
+- [ ] User profile dashboard and registration workflow
+- [ ] Enhanced prayer request submission and tracking
+- [ ] Event registration with confirmation notifications
 
-### Setting up the AI Chatbot
+### Phase 3: Content Management & Analytics (Planned 📋)
+- [ ] Centralized media upload pipeline for sermons
+- [ ] Engagement analytics dashboard for church operations
+- [ ] Automated newsletter dispatch via email service
+- [ ] Automated sermon transcript generation
 
-1. **OpenAI Setup**
-   ```bash
-   # Get API key from https://platform.openai.com
-   OPENAI_API_KEY="sk-..."
-   ```
+### Phase 4: Advanced AI Features (Planned 🤖)
+- [ ] Voice-assisted interactive chatbot interface
+- [ ] Automated sermon summarization and quote extraction
+- [ ] Multilingual expansion (Telugu, Hindi, English)
 
-2. **Pinecone Vector Database**
-   ```bash
-   # Create index at https://www.pinecone.io
-   PINECONE_API_KEY="..."
-   PINECONE_INDEX="church-sermons"
-   ```
-
-3. **Sermon Indexing** (for RAG)
-   - Upload sermon transcripts
-   - Generate embeddings
-   - Store in Pinecone for semantic search
-
-### AI Features Roadmap
-
-- ✅ Basic chatbot with keyword responses
-- 🔄 RAG-based sermon search
-- 🔄 Prayer request auto-categorization
-- 🔄 Bible verse recommendations
-- 🔄 Multilingual support (Telugu, Hindi, etc.)
-- 🔄 Voice input/output
-
-## 💳 Payment Integration
-
-### Stripe Setup
-
-1. Create account at [stripe.com](https://stripe.com)
-2. Get API keys from Dashboard
-3. Configure webhook endpoint: `/api/webhooks/stripe`
-4. Test with test cards:
-   - Success: `4242 4242 4242 4242`
-   - Decline: `4000 0000 0000 0002`
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. **Push to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
-
-2. **Deploy to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Import your repository
-   - Add environment variables
-   - Deploy!
-
-3. **Setup Database**
-   - Use Vercel Postgres or Railway
-   - Update `DATABASE_URL` in Vercel environment variables
-   - Run migrations: `npx prisma migrate deploy`
-
-### Alternative Deployment Options
-
-- **Netlify** - Great for static sites
-- **Railway** - Full-stack deployment with database
-- **AWS Amplify** - Enterprise-grade hosting
-- **DigitalOcean** - VPS deployment
-
-## 📱 Mobile App (Future)
-
-Convert to mobile app using:
-- **React Native** - Cross-platform mobile app
-- **Expo** - Faster development
-- **Capacitor** - Web to native
-
-## 🎯 Roadmap
-
-### Phase 1: MVP (Completed ✅)
-- [x] Professional website design
-- [x] All public pages
-- [x] Basic AI chatbot
-- [x] Responsive design
-
-### Phase 2: Member Features (In Progress 🔄)
-- [ ] Authentication system
-- [ ] Member dashboard
-- [ ] Prayer request system
-- [ ] Event registration
-- [ ] Online donations
-
-### Phase 3: Admin Dashboard (Planned 📋)
-- [ ] Event management
-- [ ] Sermon uploads
-- [ ] Member management
-- [ ] Analytics
-- [ ] Email campaigns
-
-### Phase 4: Advanced AI (Planned 🤖)
-- [ ] RAG-based sermon search
-- [ ] Multilingual chatbot
-- [ ] Voice assistant
-- [ ] Auto sermon transcription
-- [ ] Smart recommendations
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome to help enhance the Kingdom of Christ Ministries platform!
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a dedicated feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to your branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request for code review
 
-## 📄 License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 License & Support
 
-## 📞 Support
+### License
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
 
-For support, email info@kingdomofchrist.org or call +91 96409 43777.
-
-## 🙏 Acknowledgments
-
-- **Church Leadership** - For their vision and support
-- **Development Team** - For building this amazing platform
-- **Community** - For their feedback and contributions
+### Contact & Location
+- 🌐 **Website**: [kingdomofchrist.org](http://localhost:3000)
+- 📧 **Email**: info@kingdomofchrist.org
+- 📱 **Phone**: +91 96409 43777
+- 📍 **Address**: 15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, Telangana 500055
 
 ---
 
 **Built with ❤️ for Kingdom of Christ Ministries, Hyderabad**
-
-🌐 **Website**: [http://localhost:3000](http://localhost:3000)  
-📧 **Email**: info@kingdomofchrist.org  
-📱 **Phone**: +91 96409 43777  
-📍 **Address**: 15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, Telangana 500055
