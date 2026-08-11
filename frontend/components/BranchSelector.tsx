@@ -30,12 +30,12 @@ interface BranchStyle {
 
 const getBranchStyles = (_branchKey: "all" | "shapur" | "subhash" | "bahadur"): BranchStyle => {
   return {
-    active: "bg-gray-900 dark:bg-white/20 text-white dark:text-white shadow-sm hover:bg-gray-800 dark:hover:bg-white/30",
-    inactive: "text-gray-700 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-white/10",
-    mapPin: "text-gray-500 dark:text-white",
-    border: "border-gray-200/60 dark:border-white/20",
-    activeText: "text-gray-700 dark:text-white",
-    triggerBg: "bg-gray-100/60 dark:bg-white/10 hover:bg-gray-200/60 dark:hover:bg-white/20"
+    active: "bg-violet-600 dark:bg-violet-600 text-white dark:text-white shadow-md hover:bg-violet-700",
+    inactive: "text-gray-700 dark:text-slate-200 hover:bg-gray-100/80 dark:hover:bg-slate-800/80",
+    mapPin: "text-violet-600 dark:text-violet-400",
+    border: "border-white/60 dark:border-white/20",
+    activeText: "text-gray-900 dark:text-white",
+    triggerBg: "bg-white/60 dark:bg-slate-900/60 hover:bg-white/80 dark:hover:bg-slate-800/80"
   };
 };
 
@@ -89,30 +89,32 @@ export default function BranchSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
-        className={`h-8 min-[360px]:h-9 px-1.5 min-[360px]:px-2.5 md:px-3 flex items-center gap-1 min-[360px]:gap-1.5 md:gap-2 ${currentStyles.triggerBg} backdrop-blur-md rounded-xl border ${currentStyles.border} text-[11px] min-[360px]:text-xs font-black ${currentStyles.activeText} transition-all shadow-sm hover:scale-[1.01] active:scale-95`}
+        className={`apple-liquid-glass-btn h-8 min-[360px]:h-9 px-2 min-[360px]:px-3 md:px-3.5 flex items-center gap-1.5 min-[360px]:gap-2 ${currentStyles.triggerBg} backdrop-blur-xl rounded-xl border ${currentStyles.border} text-[11px] min-[360px]:text-xs font-black ${currentStyles.activeText} transition-all duration-300 shadow-sm hover:scale-[1.02] active:scale-95`}
       >
-        <MapPin className={`w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 ${currentStyles.mapPin} flex-shrink-0 transition-colors`} />
-        <span className="truncate max-w-[54px] min-[360px]:max-w-[72px] sm:max-w-[100px] xl:max-w-none">{activeBranchName}</span>
-        <ChevronDown className={`w-3 h-3 text-gray-400 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <div className="apple-liquid-shimmer" />
+        <MapPin className={`w-3.5 h-3.5 ${currentStyles.mapPin} flex-shrink-0 relative z-10 transition-colors`} />
+        <span className="whitespace-nowrap relative z-10 font-extrabold tracking-tight max-w-[130px] min-[360px]:max-w-[160px] sm:max-w-none">{activeBranchName}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-gray-400 flex-shrink-0 relative z-10 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl rounded-2xl border border-gray-200/60 dark:border-violet-500/20 shadow-2xl dark:shadow-[0_8px_40px_rgba(109,40,217,0.2)] p-1.5 z-[99] animate-scale-in">
+        <div className="absolute right-0 mt-2 min-w-[180px] bg-white/85 dark:bg-[#0d091e]/90 backdrop-blur-3xl rounded-2xl border border-white/60 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-2 z-[99] animate-scale-in space-y-1">
           <button
             onClick={() => {
               setSelectedBranchId("all");
               setIsOpen(false);
             }}
-            className={`w-full text-left px-3 py-2 text-xs font-bold rounded-xl transition-all ${
+            className={`apple-liquid-glass-btn w-full text-left px-3 py-2 text-xs font-bold rounded-xl transition-all ${
               selectedBranchId === "all"
                 ? getBranchStyles("all").active
                 : getBranchStyles("all").inactive
             }`}
           >
-            All Branches
+            <div className="apple-liquid-shimmer" />
+            <span className="relative z-10">All Branches</span>
           </button>
           
-          <div className="h-px bg-gray-100 dark:bg-white/5 my-1" />
+          <div className="h-px bg-gray-200/60 dark:bg-white/10 my-1" />
 
           <div className="space-y-0.5">
             {displayBranches.map((branch) => {
@@ -145,11 +147,12 @@ export default function BranchSelector() {
                       }
                     }
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs font-bold rounded-xl transition-all truncate ${
+                  className={`apple-liquid-glass-btn w-full text-left px-3 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                     isActive ? styles.active : styles.inactive
                   }`}
                 >
-                  {branch.name}
+                  <div className="apple-liquid-shimmer" />
+                  <span className="relative z-10">{branch.name}</span>
                 </button>
               );
             })}

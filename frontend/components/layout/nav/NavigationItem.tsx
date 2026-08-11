@@ -37,65 +37,57 @@ const NavigationItem = memo(function NavigationItem({
       href={resolvedHref}
       onClick={onClick}
       className={cn(
-        // Base
-        "relative group flex items-center gap-1 font-medium",
-        "whitespace-nowrap select-none",
-        // Typography & Spacing — scaled per viewport
-        "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
+        // Base Apple Liquid Glass button
+        "apple-liquid-glass-btn relative group flex items-center gap-1.5 font-bold",
+        "whitespace-nowrap select-none overflow-hidden rounded-full",
+        "text-[12px] lg:text-[12.5px] xl:text-[13.5px] 2xl:text-[14px]",
         variant === "desktop"
-          ? "px-1 py-1 lg:px-2 lg:py-1.5 xl:px-2.5"
-          : "px-1 py-1.5 md:px-1.5 md:py-2",
+          ? "px-2.5 py-1.5 lg:px-3 lg:py-1.5 xl:px-3.5 xl:py-2"
+          : "px-2 py-1 md:px-2.5 md:py-1.5",
         // Transitions
-        "transition-colors duration-150 ease-out",
-        // Active state — colored text only, no background box
+        "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",
+        // Active vs Inactive Liquid Glass Styling
         isActive
-          ? cn(styles.activeText, "font-semibold")
+          ? cn(
+              "bg-white/95 dark:bg-white/20",
+              styles.activeText,
+              styles.liquidBorderGlow,
+              "border shadow-sm font-extrabold"
+            )
           : cn(
-              "text-gray-600 dark:text-gray-200",
-              styles.hoverText,
-              "dark:hover:text-white"
+              "text-gray-700 dark:text-gray-200",
+              "border border-transparent",
+              "hover:bg-white/60 dark:hover:bg-white/12",
+              "hover:scale-[1.03] active:scale-[0.97]",
+              styles.hoverText
             ),
-        // Focus visible
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-lg",
-        // Hover lift
-        "hover:-translate-y-px",
+        // Focus visible ring
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
         className
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {/* Emoji or Icon — hidden on tight lg desktop screens, visible on xl+ or mobile drawer */}
-      {item.emoji ? (
-        <span className={cn(
-          "text-xs xl:text-sm flex-shrink-0",
-          variant === "desktop" ? "hidden xl:inline-block" : "inline-block"
-        )} role="img" aria-hidden="true">
-          {item.emoji}
-        </span>
-      ) : (
-        <Icon
-          className={cn(
-            "flex-shrink-0 w-3.5 h-3.5 transition-all duration-150",
-            variant === "desktop" ? "hidden xl:inline-block" : "inline-block",
-            isActive
-              ? styles.activeText
-              : "text-gray-400 dark:text-gray-300 group-hover:scale-110",
-          )}
-          aria-hidden="true"
-        />
-      )}
+      {/* Morphing Liquid Fluid Blob Background */}
+      <div
+        className={cn(
+          "absolute -inset-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md bg-gradient-to-r animate-liquid-blob pointer-events-none",
+          styles.liquidBlobGradient,
+          isActive && "opacity-75"
+        )}
+      />
 
       {/* Label */}
-      <span className="relative">{item.name}</span>
+      <span className="relative z-10 tracking-tight font-extrabold">{item.name}</span>
 
-      {/* Bottom active indicator — sleek underline bar */}
+      {/* Bottom active indicator bar */}
       <span
         className={cn(
-          "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full",
-          "transition-[width,opacity] duration-200 ease-out",
+          "absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full z-10",
+          "transition-[width,opacity] duration-300 ease-out",
           styles.activeIndicator,
           isActive
-            ? "w-4/5 opacity-100"
-            : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-40"
+            ? "w-3/4 opacity-100 shadow-[0_0_8px_rgba(139,92,246,0.6)]"
+            : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-50"
         )}
         aria-hidden="true"
       />

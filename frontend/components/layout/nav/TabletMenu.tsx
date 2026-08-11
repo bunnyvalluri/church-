@@ -34,12 +34,13 @@ const TabletMenu = memo(function TabletMenu({
       aria-label="Primary navigation"
       className={cn(
         "hidden md:flex xl:hidden",
-        "flex-1 items-center justify-center",
-        "min-w-0 max-w-full px-2"
+        "flex-shrink-0 items-center justify-center",
+        "px-1 md:px-2"
       )}
     >
-      <div className="flex items-center gap-1 sm:gap-1.5 mx-auto max-w-full">
-        {/* Primary 3 items */}
+      {/* Apple Floating Liquid Glass Segmented Dock */}
+      <div className="flex items-center gap-1 p-1 rounded-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/60 dark:border-white/15 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.06)]">
+        {/* Primary items */}
         {primaryItems.map((item) => {
           const isActive = item.href.startsWith("/")
             ? pathname === item.href || pathname.startsWith(item.href + "/")

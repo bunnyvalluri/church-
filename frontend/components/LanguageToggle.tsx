@@ -90,7 +90,7 @@ export default function LanguageToggle({ align = "auto", className = "" }: Langu
         ref={buttonRef}
         type="button"
         onClick={handleToggle}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/90 text-gray-900 dark:text-white rounded-full text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 cursor-pointer shrink-0"
+        className="flex items-center gap-1.5 px-3 h-9 bg-gray-100 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/90 text-gray-900 dark:text-white rounded-full text-xs font-bold shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shrink-0"
         aria-label="Select Language"
         aria-expanded={isOpen}
         suppressHydrationWarning

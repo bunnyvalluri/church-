@@ -76,21 +76,19 @@ const MoreDropdown = memo(function MoreDropdown({
         aria-haspopup="menu"
         aria-label="More navigation items"
         className={cn(
-          "flex items-center gap-1.5 px-2.5 py-2 rounded-xl",
-          "text-[13px] font-semibold whitespace-nowrap select-none",
-          "transition-[color,background-color,border-color,transform] duration-[150ms] ease-out",
-          "border",
+          "apple-liquid-glass-btn relative flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+          "text-[12.5px] font-bold whitespace-nowrap select-none overflow-hidden",
+          "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
-          "hover:-translate-y-px",
           hasActiveOverflow
-            ? "text-violet-600 dark:text-violet-400 bg-violet-50/80 dark:bg-violet-500/10 border-violet-200/60 dark:border-violet-500/20"
-            : "text-gray-600 dark:text-gray-400 border-transparent hover:bg-gray-100/60 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+            ? "text-violet-600 dark:text-violet-300 bg-white/95 dark:bg-white/20 border border-violet-400/50 dark:border-violet-400/40 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            : "text-gray-700 dark:text-gray-200 border border-transparent hover:bg-white/60 dark:hover:bg-white/12 hover:scale-[1.03] active:scale-[0.97]"
         )}
       >
-        <span>More</span>
+        <span className="relative z-10">More</span>
         <ChevronDown
           className={cn(
-            "w-3.5 h-3.5 transition-transform duration-200 ease-out",
+            "w-3.5 h-3.5 relative z-10 transition-transform duration-300 ease-out",
             isOpen ? "rotate-180" : "rotate-0"
           )}
           aria-hidden="true"
@@ -103,14 +101,14 @@ const MoreDropdown = memo(function MoreDropdown({
         aria-orientation="vertical"
         className={cn(
           // Position
-          "absolute right-0 mt-2 min-w-[180px]",
+          "absolute right-0 mt-2 min-w-[200px]",
           // Glass card
-          "bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl",
-          "rounded-2xl border border-gray-200/60 dark:border-white/10",
-          "shadow-2xl shadow-black/10 dark:shadow-black/30",
-          "p-1.5 z-50",
+          "bg-white/85 dark:bg-[#0d091e]/90 backdrop-blur-3xl",
+          "rounded-2xl border border-white/60 dark:border-white/15",
+          "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]",
+          "p-2 z-50 space-y-1",
           // Animation — GPU: transform + opacity
-          "transition-[opacity,transform] duration-200 ease-out origin-top-right",
+          "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) origin-top-right",
           isOpen
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 -translate-y-2 scale-95 pointer-events-none"
@@ -130,28 +128,45 @@ const MoreDropdown = memo(function MoreDropdown({
               role="menuitem"
               onClick={close}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-semibold",
-                "transition-[color,background-color] duration-[150ms] ease-out",
+                "apple-liquid-glass-btn relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-bold overflow-hidden",
+                "transition-all duration-300",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 isActive
-                  ? cn(styles.activeText, styles.activeBg, "border", styles.activeBorder)
+                  ? cn(styles.activeText, styles.activeBg, "border", styles.liquidBorderGlow)
                   : cn(
-                      "text-gray-600 dark:text-gray-400",
+                      "text-gray-700 dark:text-gray-200",
                       "border border-transparent",
-                      styles.hoverText,
-                      styles.hoverBg
+                      "hover:bg-white/60 dark:hover:bg-white/10 hover:scale-[1.02]",
+                      styles.hoverText
                     )
               )}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon
-                className={cn(
-                  "w-4 h-4 flex-shrink-0",
-                  isActive ? styles.activeText : "text-gray-400 dark:text-gray-500"
-                )}
-                aria-hidden="true"
-              />
-              <span>{item.name}</span>
+              <div className="apple-liquid-shimmer" />
+              <div className="relative z-10 flex items-center gap-2.5">
+                {item.emoji ? (
+                  <span className="text-sm" role="img" aria-hidden="true">
+                    {item.emoji}
+                  </span>
+                ) : Icon ? (
+                  <Icon
+                    className={cn(
+                      "w-4 h-4 flex-shrink-0",
+                      isActive ? styles.activeText : "text-gray-400 dark:text-gray-500"
+                    )}
+                    aria-hidden="true"
+                  />
+                ) : null}
+                <span>{item.name}</span>
+              </div>
+              {isActive && (
+                <span
+                  className={cn(
+                    "w-2 h-2 rounded-full relative z-10 animate-pulse",
+                    styles.activeIndicator
+                  )}
+                />
+              )}
             </Link>
           );
         })}

@@ -24,20 +24,19 @@ const MemberLoginButton = memo(function MemberLoginButton({
   label = "Member Login",
 }: MemberLoginButtonProps) {
   const baseClasses = cn(
-    "relative font-bold text-white overflow-hidden",
-    "rounded-xl shadow-md",
-    // GPU transitions only
-    "transition-[transform,box-shadow,opacity] duration-[150ms] ease-out",
-    "hover:shadow-violet-500/30 hover:shadow-lg",
-    "hover:-translate-y-px active:translate-y-0 active:scale-95",
+    "relative font-extrabold text-white overflow-hidden backdrop-blur-2xl inline-flex items-center justify-center",
+    "rounded-full shadow-[0_4px_16px_rgba(124,58,237,0.4)]",
+    "border border-white/40 dark:border-white/20",
+    "transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)",
+    "hover:scale-[1.03] active:scale-[0.97]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
     "whitespace-nowrap select-none group"
   );
 
   const sizeClasses = {
     desktop: "px-4 py-2 text-[13px] xl:text-sm",
-    tablet: "px-3 py-1.5 text-xs",
-    drawer: "w-full py-3 text-sm flex items-center justify-center",
+    tablet: "px-3.5 py-1.5 text-xs",
+    drawer: "w-full py-3.5 text-sm flex items-center justify-center tracking-wide",
   }[variant];
 
   return (
@@ -47,24 +46,13 @@ const MemberLoginButton = memo(function MemberLoginButton({
       className={cn(baseClasses, sizeClasses)}
       aria-label="Member Login"
     >
-      {/* Gradient background layer */}
+      {/* Liquid background gradient layer */}
       <span
-        className={cn(
-          "absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600",
-          "bg-[length:200%_100%] bg-left",
-          "group-hover:bg-right transition-[background-position] duration-500 ease-out"
-        )}
+        className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 group-hover:from-violet-500 group-hover:to-indigo-500 transition-all duration-300"
         aria-hidden="true"
       />
-      {/* Shimmer overlay */}
-      <span
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{
-          background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)",
-        }}
-        aria-hidden="true"
-      />
-      <span className="relative z-10">{label}</span>
+
+      <span className="relative z-10 font-black tracking-wide">{label}</span>
     </Link>
   );
 });

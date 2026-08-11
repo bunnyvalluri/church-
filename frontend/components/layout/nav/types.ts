@@ -15,6 +15,12 @@ export interface NavStyles {
   hoverBg: string;
   mobileActiveBorder: string;
   activeIndicator: string;
+  // Apple Liquid Glass Extended Tokens
+  glowColor: string;
+  liquidBlobGradient: string;
+  liquidBorderGlow: string;
+  iconBg: string;
+  activeIconText: string;
 }
 
 export interface NavContextValue {

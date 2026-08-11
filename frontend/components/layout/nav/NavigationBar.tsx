@@ -98,15 +98,20 @@ const NavigationBar = memo(function NavigationBar() {
     return () => document.removeEventListener("keydown", handler);
   }, [isMobileOpen]);
 
-  // ── Lock body scroll when mobile drawer is open ──────────────────────────────
+  // ── Lock body scroll & hide chat when mobile drawer is open ──────────────────
   useEffect(() => {
     if (isMobileOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.setAttribute("data-mobile-menu-open", "true");
     } else {
       document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-mobile-menu-open");
     }
+    window.dispatchEvent(new CustomEvent("mobile-menu-toggle", { detail: { isOpen: isMobileOpen } }));
+
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-mobile-menu-open");
     };
   }, [isMobileOpen]);
 
@@ -176,7 +181,15 @@ const NavigationBar = memo(function NavigationBar() {
               {/* Logo */}
               <NavigationLogo />
 
-              {/* ── Primary Desktop Nav (lg+: Laptop, Desktop, Ultra-wide) ── */}
+              {/* ── Tablet Nav (md–xl: 768px–1279px Laptops & Tablets) ── */}
+              <TabletMenu
+                navItems={navItems}
+                activeSection={activeSection}
+                pathname={pathname}
+                resolveHref={resolveHref}
+              />
+
+              {/* ── Primary Desktop Nav (xl+: ≥1280px Desktop & Widescreen) ── */}
               <DesktopMenu
                 navItems={navItems}
                 activeSection={activeSection}
@@ -189,7 +202,7 @@ const NavigationBar = memo(function NavigationBar() {
                 {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
-                {/* Hamburger — mobile & tablet (<1024px) */}
+                {/* Hamburger — mobile only (<768px) */}
                 <button
                   type="button"
                   onClick={() => setMobileOpen(!isMobileOpen)}
@@ -197,7 +210,7 @@ const NavigationBar = memo(function NavigationBar() {
                   aria-expanded={isMobileOpen}
                   aria-controls="mobile-drawer"
                   className={cn(
-                    "lg:hidden flex-shrink-0",
+                    "md:hidden flex-shrink-0",
                     "flex items-center justify-center",
                     // Touch target sizing
                     "w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10 rounded-xl",

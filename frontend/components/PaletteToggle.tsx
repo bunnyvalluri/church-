@@ -103,7 +103,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
       {/* Settings Toggle Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-300 hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative"
+        className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 text-purple-600 dark:text-purple-300 hover:bg-gray-200 dark:hover:bg-gray-700/90 hover:scale-105 active:scale-95 transition-all shadow-sm group cursor-pointer relative shrink-0"
         title="Preferences & Theme Settings (Ctrl+K)"
         type="button"
         aria-label="Open preferences modal"
@@ -124,28 +124,28 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[92vw] max-w-md rounded-3xl bg-white dark:bg-[#12132A] border border-slate-200 dark:border-white/10 shadow-2xl shadow-purple-500/10 p-5 sm:p-6 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             {/* Header */}
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
+            <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-white/10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-purple-500/20 text-white">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-purple-500/20 text-white shrink-0">
                   <Settings className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                    <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                       Portal Preferences
                     </h3>
                     <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-gray-400 font-bold">
                       Ctrl+K
                     </kbd>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-300 font-medium">
                     Customize your experience & color theme
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-500 dark:text-gray-300 flex items-center justify-center transition-all cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-500 dark:text-gray-200 flex items-center justify-center transition-all cursor-pointer shrink-0"
                 aria-label="Close preferences"
               >
                 <X className="w-4 h-4" />
@@ -153,14 +153,14 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
             </div>
 
             {/* Quick Controls Section */}
-            <div className="space-y-4 mb-5">
+            <div className="space-y-4 mb-4">
               {/* Language Selector */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
                     <Globe className="w-3.5 h-3.5 text-indigo-500" /> Language
                   </label>
-                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-500">
+                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-400">
                     Alt+L
                   </kbd>
                 </div>
@@ -172,10 +172,10 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                         key={lang.code}
                         type="button"
                         onClick={() => setLanguage(lang.code as any)}
-                        className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                        className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                           isActive
                             ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-md"
-                            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10"
+                            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                         }`}
                       >
                         <span className="font-extrabold text-[10px] opacity-75">{lang.short}</span>
@@ -189,10 +189,10 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               {/* Mode Toggle */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
                     <Sun className="w-3.5 h-3.5 text-amber-500" /> Mode / Appearance
                   </label>
-                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-500">
+                  <kbd className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-gray-400">
                     Alt+D
                   </kbd>
                 </div>
@@ -203,7 +203,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                     className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
                       mode === "light"
                         ? "bg-slate-900 text-white border-transparent shadow-md"
-                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10"
+                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     }`}
                   >
                     <Sun className="w-3.5 h-3.5 text-amber-500" />
@@ -215,7 +215,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                     className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
                       mode === "dark"
                         ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-md"
-                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10"
+                        : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     }`}
                   >
                     <Moon className="w-3.5 h-3.5 text-indigo-300" />
@@ -227,15 +227,15 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
 
             {/* Color Theme Palette */}
             <div>
-              <div className="flex items-center justify-between mb-2.5">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 flex items-center gap-1.5">
                   <Palette className="w-3.5 h-3.5 text-purple-500" /> Color Accent Theme
                 </label>
-                <span className="hidden sm:inline-block text-[9px] font-mono text-slate-400 dark:text-gray-500">
+                <span className="hidden sm:inline-block text-[9px] font-mono text-slate-400 dark:text-gray-400">
                   Alt + 1-5
                 </span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {colorThemes.map((item) => {
                   const isActive = colorTheme === item.code;
                   return (
@@ -244,10 +244,10 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                       onClick={() => {
                         setColorTheme(item.code as ColorTheme);
                       }}
-                      className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all text-left cursor-pointer border ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer border ${
                         isActive
-                          ? "bg-purple-500/10 border-purple-500/40 shadow-sm"
-                          : "bg-slate-50/70 dark:bg-white/5 border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10"
+                          ? "bg-purple-500/15 dark:bg-purple-500/25 border-purple-500/60 shadow-sm"
+                          : "bg-slate-50/80 dark:bg-white/5 border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10"
                       }`}
                       type="button"
                     >
@@ -260,21 +260,21 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className={`block text-xs font-bold ${isActive ? "text-purple-600 dark:text-purple-400" : "text-slate-800 dark:text-gray-200"}`}>
+                            <span className="block text-xs font-black text-slate-900 dark:text-white">
                               {item.label}
                             </span>
                             <kbd className="hidden sm:inline-block text-[9px] font-mono px-1 rounded bg-slate-200/60 dark:bg-white/10 text-slate-500 dark:text-gray-400">
                               Alt+{item.keyNum}
                             </kbd>
                           </div>
-                          <span className="block text-[10px] text-slate-500 dark:text-gray-400">
+                          <span className="block text-[10px] text-slate-500 dark:text-slate-300 font-medium">
                             {item.desc}
                           </span>
                         </div>
                       </div>
 
                       {isActive && (
-                        <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-md">
+                        <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-md shrink-0">
                           <Check className="w-3 h-3 stroke-[3]" />
                         </div>
                       )}
@@ -284,8 +284,8 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
               </div>
             </div>
 
-            {/* Laptop / PC Keyboard Shortcuts Footer Legend */}
-            <div className="mt-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-[11px] text-slate-600 dark:text-gray-400 space-y-1.5">
+            {/* Laptop / PC Keyboard Shortcuts Footer Legend (Hidden on Mobile) */}
+            <div className="hidden sm:block mt-4 p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-[11px] text-slate-600 dark:text-gray-400 space-y-1.5">
               <span className="font-extrabold text-[10px] uppercase tracking-wider text-slate-400 dark:text-gray-400 block mb-1">
                 ⌨ Laptop / PC Keyboard Shortcuts
               </span>
@@ -298,7 +298,7 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
             </div>
 
             {/* Done Button */}
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/10">
+            <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-white/10 shrink-0">
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-full py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.99] transition-all cursor-pointer"
