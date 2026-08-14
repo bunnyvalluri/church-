@@ -20,6 +20,17 @@ const sanitize = (s: string) =>
     disallowedTagsMode: 'discard',
   });
 
+// ── Role helper (module-scope so it's available throughout the file) ──────────
+function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' {
+  const e = email.toLowerCase().trim();
+  if (e.includes('superadmin')) return 'SUPER_ADMIN';
+  if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
+  if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
+  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
+  if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
+  return 'MEMBER';
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -39,16 +50,6 @@ export async function POST(req: Request) {
     const sanitizedName = name ? sanitize(name) : null;
     const sanitizedPhotoURL = photoURL ? sanitize(photoURL) : null;
     const sanitizedPhoneNumber = phoneNumber ? sanitize(phoneNumber) : null;
-
-function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' {
-  const e = email.toLowerCase().trim();
-  if (e.includes('superadmin')) return 'SUPER_ADMIN';
-  if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
-  if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
-  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
-  if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
-  return 'MEMBER';
-}
 
     // 3. Sync with the database
     // Find by ID and Email in parallel
