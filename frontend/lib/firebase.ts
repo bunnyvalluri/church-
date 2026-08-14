@@ -6,14 +6,17 @@ import { getFirestore } from "firebase/firestore";
 // so that Google OAuth popup/redirect routes through Firebase's authorized handler.
 // Custom domains (e.g. kcmchurch.vercel.app) must be added to Firebase Console →
 // Authentication → Settings → Authorized Domains for Google Sign-In to work.
+//
+// ⚠️ SECURITY: All credentials come from environment variables only.
+// Set these in .env.local (local dev) and Vercel dashboard (production).
+// NEVER hardcode API keys here — GitHub secret scanning will flag them.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBaNc9dgk4StKQsY2L73d2H4Hk_QnwAzN0",
-  // Always use the Firebase-hosted auth domain for OAuth to work from any deployment
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "kcm-church-7d324.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "kcm-church-7d324",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "kcm-church-7d324.firebasestorage.app",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "410280994688",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:410280994688:web:3c2e458191024fab890365",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Safety check for missing config
