@@ -2,9 +2,14 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// IMPORTANT: authDomain MUST be the firebaseapp.com domain (not a custom domain)
+// so that Google OAuth popup/redirect routes through Firebase's authorized handler.
+// Custom domains (e.g. kcmchurch.vercel.app) must be added to Firebase Console →
+// Authentication → Settings → Authorized Domains for Google Sign-In to work.
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyC8T9sYPcS6NlCoz6e2RG5pQleLxmNOixI",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "kcm-church-2f3d5.firebaseapp.com",
+  // Always use the Firebase-hosted auth domain for OAuth to work from any deployment
+  authDomain: "kcm-church-2f3d5.firebaseapp.com",
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "kcm-church-2f3d5",
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "kcm-church-2f3d5.firebasestorage.app",
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "850005700914",

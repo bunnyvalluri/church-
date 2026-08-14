@@ -419,9 +419,24 @@ export default function LoginPage() {
           return;
         }
 
+        // auth/unauthorized-domain: current domain not in Firebase Authorized Domains list.
+        // Fall back to signInWithRedirect which routes through Firebase's own auth handler
+        // at kcm-church-2f3d5.firebaseapp.com/__/auth/handler (always authorized).
+        if (
+          code === "auth/unauthorized-domain" ||
+          code === "auth/auth-domain-config-required"
+        ) {
+          console.warn("[AUTH/OAUTH] Domain not authorized — falling back to redirect flow");
+          if (typeof signInWithRedirect === "function") {
+            await signInWithRedirect(activeAuth, activeProvider);
+            return;
+          }
+        }
+
         // Throw actual error code to be caught and displayed
         throw popupErr;
       }
+
 
       if (!u) {
         throw new Error("social-generic-failed");
