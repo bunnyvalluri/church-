@@ -254,7 +254,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
         ) : events.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {events.map((event, index) => {
-              const displayImage = event.image || "https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&w=800&q=80";
+              const displayImage = event.image || "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80";
               const branchName = event.branch?.name;
               
               // Only render countdown on the absolute soonest event (index 0)

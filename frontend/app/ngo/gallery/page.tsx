@@ -31,12 +31,27 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import io from "socket.io-client";
 
 // Encode a URL path so parentheses and spaces are safe for browsers
-function encodeSrc(src: string): string {
+function encodeSrc(src: string | null | undefined): string {
   if (!src) return "";
-  return src
-    .split("/")
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("//") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:")
+  ) {
+    return src;
+  }
+  try {
+    const [path, ...queryAndHash] = src.split(/(?=[?#])/);
+    const encodedPath = path
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+    return [encodedPath, ...queryAndHash].join("");
+  } catch {
+    return src;
+  }
 }
 
 // Session-wide cache of loaded image URLs to prevent skeleton flashes

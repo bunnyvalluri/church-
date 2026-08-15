@@ -118,7 +118,7 @@ export async function uploadBufferToCloudinary(
       const isVid = resourceType === "video";
       const mockUrl = isVid
         ? `https://res.cloudinary.com/demo/video/upload/v1234567890/${mockPublicId}.mp4`
-        : `https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&w=1000&q=80`;
+        : `https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=1000&q=80`;
 
       return resolve({
         public_id: mockPublicId,

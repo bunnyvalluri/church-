@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { CURATED_GALLERY_ITEMS } from "@/lib/galleryData";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,13 @@ export async function GET(
       );
     }
 
-    // Retrieve media linked to approved events under this branch
+    // Retrieve direct gallery items for this branch
+    const dbGallery = await prisma.gallery.findMany({
+      where: { branchId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Also retrieve media linked to approved events under this branch
     const eventMedia = await prisma.eventMedia.findMany({
       where: {
         event: {
@@ -40,7 +47,7 @@ export async function GET(
     });
 
     // Format into standard Gallery structure
-    const galleryItems = eventMedia.map((m) => {
+    const eventGalleryItems = eventMedia.map((m) => {
       const ext = m.imageUrl.split(".").pop()?.toLowerCase() || "";
       const type = ["mp4", "webm"].includes(ext) ? "video" : "image";
       return {
@@ -48,18 +55,46 @@ export async function GET(
         title: m.event.title,
         description: m.caption || m.event.description || "Branch Activity Media",
         url: m.imageUrl,
+        thumbnailUrl: m.imageUrl,
         category: type === "video" ? "Outreach" : "Events",
         type,
-        createdAt: m.uploadedAt,
+        branchId,
+        createdAt: m.uploadedAt.toISOString(),
       };
     });
 
-    return NextResponse.json({ success: true, galleryItems });
+    const directGalleryItems = dbGallery.map((g) => ({
+      id: g.id,
+      title: g.title,
+      description: g.description || "",
+      url: g.imageUrl,
+      thumbnailUrl: g.thumbnailUrl || g.imageUrl,
+      category: g.category,
+      type: "image" as const,
+      branchId: g.branchId,
+      createdAt: g.createdAt.toISOString(),
+    }));
+
+    let combined: any[] = [...directGalleryItems, ...eventGalleryItems];
+
+    if (combined.length === 0) {
+      combined = CURATED_GALLERY_ITEMS.filter((it) => it.branchId === branchId);
+    }
+
+    return NextResponse.json({
+      success: true,
+      galleryItems: combined,
+      images: combined,
+      total: combined.length,
+    });
   } catch (err: any) {
     console.error("[API/BRANCH/GALLERY/GET] Error:", err);
-    return NextResponse.json(
-      { error: err.message || "Failed to load branch gallery." },
-      { status: 500 }
-    );
+    const fallback = CURATED_GALLERY_ITEMS.filter((it) => it.branchId === params.branchId);
+    return NextResponse.json({
+      success: true,
+      galleryItems: fallback,
+      images: fallback,
+      total: fallback.length,
+    });
   }
 }

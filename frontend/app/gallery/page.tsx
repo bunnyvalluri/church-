@@ -1,322 +1,1197 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Video, Play, X, Maximize2, ArrowLeft, Loader2 } from "lucide-react";
+import {
+  Camera,
+  Video,
+  Play,
+  Pause,
+  X,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Share2,
+  Heart,
+  Search,
+  SlidersHorizontal,
+  LayoutGrid,
+  Grid3X3,
+  Columns,
+  Sparkles,
+  Calendar,
+  MapPin,
+  Tag,
+  Check,
+  Info,
+  Loader2,
+  Flame,
+  Layers,
+} from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
 import { useBranch } from "@/components/providers/BranchProvider";
 import Navbar from "@/components/layout/Navbar";
+import { CURATED_GALLERY_ITEMS, GalleryItem } from "@/lib/galleryData";
 
-interface GalleryItem {
-  id: string;
-  title: string;
-  description: string;
-  url: string;
-  category: string;
-  type: "image" | "video";
-  videoId?: string;
-  createdAt: string;
-}
+// Session cache to prevent re-flashing loaded images
+const loadedCache = new Set<string>();
 
-// Encode a URL path so parentheses and spaces are safe for browsers
-function encodeSrc(src: string): string {
+// Helper to encode safe URLs
+function encodeSrc(src: string | null | undefined): string {
   if (!src) return "";
-  return src
-    .split("/")
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("//") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:")
+  ) {
+    return src;
+  }
+  try {
+    const [path, ...queryAndHash] = src.split(/(?=[?#])/);
+    const encodedPath = path
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+    return [encodedPath, ...queryAndHash].join("");
+  } catch {
+    return src;
+  }
 }
 
-// Session-wide cache of loaded image URLs to prevent skeleton flashes
-const loadedImagesCache = new Set<string>();
-
-function GalleryGridImage({ src, title }: { src: string; title: string }) {
-  const [isLoaded, setIsLoaded] = useState(() => loadedImagesCache.has(src));
-
-  return (
-    <div className="relative w-full h-full">
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800/50 animate-pulse z-10" />
-      )}
-      <Image
-        src={encodeSrc(src)}
-        alt={title}
-        fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        loading="lazy"
-        className={`object-cover transform group-hover:scale-105 transition-all duration-700 ease-out ${
-          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-        }`}
-        onLoad={() => {
-          loadedImagesCache.add(src);
-          setIsLoaded(true);
-        }}
-      />
-    </div>
-  );
+// Toast notification interface
+interface ToastMessage {
+  id: string;
+  text: string;
+  type?: "success" | "info" | "heart";
 }
 
-export default function GalleryPage() {
-  const { selectedBranchId } = useBranch();
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
-  const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
+export default function ChurchGalleryPage() {
+  const { selectedBranchId, setSelectedBranchId, branches } = useBranch();
 
-  // Fetch gallery items depending on selected branch
+  // Core state
+  const [items, setItems] = useState<GalleryItem[]>(CURATED_GALLERY_ITEMS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"masonry" | "standard" | "compact">("masonry");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Progressive batch rendering for instant 60fps performance
+  const INITIAL_BATCH = 24;
+  const BATCH_SIZE = 16;
+  const [displayCount, setDisplayCount] = useState(INITIAL_BATCH);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Lightbox & Slideshow state
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isSlideshowPlaying, setIsSlideshowPlaying] = useState(false);
+  const [slideshowProgress, setSlideshowProgress] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showInfoPanel, setShowInfoPanel] = useState(true);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+
+  // Load favorites from localStorage
   useEffect(() => {
-    const fetchGallery = async () => {
-      setIsLoading(true);
+    try {
+      const saved = localStorage.getItem("kcm-gallery-favorites");
+      if (saved) {
+        setFavorites(new Set(JSON.parse(saved)));
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
+
+  // Save favorites to localStorage
+  const toggleFavorite = useCallback((id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        showToast("Removed from saved photos", "info");
+      } else {
+        next.add(id);
+        showToast("Saved to your favorites ❤️", "heart");
+      }
       try {
-        const url =
-          selectedBranchId === "all"
-            ? "/api/gallery"
-            : `/api/branch/${selectedBranchId}/gallery`;
-        const res = await fetch(url);
+        localStorage.setItem("kcm-gallery-favorites", JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  // Show Toast
+  const showToast = (text: string, type: "success" | "info" | "heart" = "success") => {
+    const id = Math.random().toString(36).substring(7);
+    setToast({ id, text, type });
+    setTimeout(() => {
+      setToast((current) => (current?.id === id ? null : current));
+    }, 2800);
+  };
+
+  // Reset pagination when active filter changes
+  useEffect(() => {
+    setDisplayCount(INITIAL_BATCH);
+  }, [activeCategory, searchQuery, selectedBranch, favoritesOnly]);
+
+  // Fetch gallery items from API (non-blocking background sync)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchGallery = async () => {
+      if (items.length === 0) {
+        setIsLoading(true);
+      }
+      try {
+        const branchParam = selectedBranch === "all" ? "" : `&branch=${encodeURIComponent(selectedBranch)}`;
+        const res = await fetch(`/api/gallery?limit=200${branchParam}`);
         if (res.ok) {
           const data = await res.json();
-          if (data.success) {
-            setGalleryItems(data.galleryItems || data.media || []);
+          if (isMounted && data.success && Array.isArray(data.galleryItems) && data.galleryItems.length > 0) {
+            setItems(data.galleryItems);
           }
         }
       } catch (err) {
-        console.error("[Gallery] Failed to fetch media:", err);
+        console.error("[Gallery] API fetch error:", err);
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
     fetchGallery();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedBranch]);
+
+  // Sync with global branch provider if set
+  useEffect(() => {
+    if (selectedBranchId && selectedBranchId !== "all") {
+      setSelectedBranch(selectedBranchId);
+    }
   }, [selectedBranchId]);
 
-  // Derive categories dynamically from the loaded items
-  const categories = [
-    "All",
-    ...Array.from(new Set(galleryItems.map((item) => item.category))),
-  ];
+  // Derive categories dynamically with count
+  const categories = useMemo(() => {
+    const counts: Record<string, number> = {};
+    items.forEach((item) => {
+      counts[item.category] = (counts[item.category] || 0) + 1;
+    });
+    const unique = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    return [
+      { name: "All", count: items.length },
+      ...unique.map((cat) => ({ name: cat, count: counts[cat] })),
+    ];
+  }, [items]);
 
-  const filteredItems = galleryItems.filter(
-    (item) => filter === "All" || item.category === filter
-  );
+  // Filter items based on activeCategory, search, branch, and favorites
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      // Category filter
+      if (activeCategory !== "All" && item.category !== activeCategory) {
+        return false;
+      }
+      // Favorites filter
+      if (favoritesOnly && !favorites.has(item.id)) {
+        return false;
+      }
+      // Search query filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesTitle = item.title.toLowerCase().includes(q);
+        const matchesDesc = item.description?.toLowerCase().includes(q);
+        const matchesCat = item.category.toLowerCase().includes(q);
+        const matchesEvent = item.eventName?.toLowerCase().includes(q);
+        const matchesTags = item.tags?.some((t) => t.toLowerCase().includes(q));
+        if (!matchesTitle && !matchesDesc && !matchesCat && !matchesEvent && !matchesTags) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [items, activeCategory, favoritesOnly, favorites, searchQuery]);
+
+  // Derived visible items for progressive rendering
+  const visibleItems = useMemo(() => {
+    return filteredItems.slice(0, displayCount);
+  }, [filteredItems, displayCount]);
+
+  const hasMore = filteredItems.length > displayCount;
+
+  // Infinite scroll intersection observer
+  useEffect(() => {
+    if (!hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayCount((prev) => Math.min(prev + BATCH_SIZE, filteredItems.length));
+        }
+      },
+      { rootMargin: "350px" }
+    );
+    const target = sentinelRef.current;
+    if (target) observer.observe(target);
+    return () => {
+      if (target) observer.unobserve(target);
+    };
+  }, [hasMore, filteredItems.length]);
+
+  // Current lightbox item
+  const currentLightboxItem = lightboxIndex !== null ? filteredItems[lightboxIndex] : null;
+
+  // Navigate lightbox
+  const nextPhoto = useCallback(() => {
+    if (lightboxIndex === null || filteredItems.length === 0) return;
+    setZoomLevel(1);
+    setLightboxIndex((prev) => ((prev ?? 0) + 1) % filteredItems.length);
+    setSlideshowProgress(0);
+  }, [lightboxIndex, filteredItems.length]);
+
+  const prevPhoto = useCallback(() => {
+    if (lightboxIndex === null || filteredItems.length === 0) return;
+    setZoomLevel(1);
+    setLightboxIndex((prev) => ((prev ?? 0) - 1 + filteredItems.length) % filteredItems.length);
+    setSlideshowProgress(0);
+  }, [lightboxIndex, filteredItems.length]);
+
+  // Slideshow auto-advance timer
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    let progressInterval: NodeJS.Timeout;
+
+    if (isSlideshowPlaying && lightboxIndex !== null) {
+      const stepMs = 50;
+      const durationMs = 4000;
+      setSlideshowProgress(0);
+
+      progressInterval = setInterval(() => {
+        setSlideshowProgress((prev) => {
+          if (prev >= 100) return 0;
+          return prev + (stepMs / durationMs) * 100;
+        });
+      }, stepMs);
+
+      timer = setInterval(() => {
+        nextPhoto();
+      }, durationMs);
+    } else {
+      setSlideshowProgress(0);
+    }
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(progressInterval);
+    };
+  }, [isSlideshowPlaying, lightboxIndex, nextPhoto]);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (lightboxIndex === null) return;
+      if (e.key === "Escape") {
+        setLightboxIndex(null);
+        setIsSlideshowPlaying(false);
+      } else if (e.key === "ArrowRight") {
+        nextPhoto();
+      } else if (e.key === "ArrowLeft") {
+        prevPhoto();
+      } else if (e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        setIsSlideshowPlaying((prev) => !prev);
+      } else if (e.key === "+" || e.key === "=") {
+        setZoomLevel((prev) => Math.min(prev + 0.5, 3));
+      } else if (e.key === "-") {
+        setZoomLevel((prev) => Math.max(prev - 0.5, 1));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIndex, nextPhoto, prevPhoto]);
+
+  // Auto-scroll thumbnail strip
+  useEffect(() => {
+    if (lightboxIndex !== null && thumbnailContainerRef.current) {
+      const activeThumb = thumbnailContainerRef.current.children[lightboxIndex] as HTMLElement;
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+    }
+  }, [lightboxIndex]);
+
+  // Touch Swipe Handlers for Lightbox
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      nextPhoto();
+    } else if (diff < -50) {
+      prevPhoto();
+    }
+    touchStartX.current = null;
+  };
+
+  // Download Handler
+  const handleDownload = async (item: GalleryItem, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    showToast("Downloading high-resolution photo...", "info");
+    try {
+      const response = await fetch(item.url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${item.title.replace(/[^a-zA-Z0-9_-]/g, "_")}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      showToast("Photo downloaded successfully!", "success");
+    } catch {
+      window.open(item.url, "_blank");
+    }
+  };
+
+  // Share Handler
+  const handleShare = async (item: GalleryItem, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const fullUrl = `${window.location.origin}/gallery?photo=${encodeURIComponent(item.id)}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: item.title,
+          text: `${item.title} — Kingdom of Christ Ministries Gallery`,
+          url: fullUrl,
+        });
+        showToast("Shared successfully!", "success");
+      } catch {}
+    } else {
+      navigator.clipboard.writeText(fullUrl);
+      showToast("Link copied to clipboard!", "success");
+    }
+  };
+
+  // Subhash Nagar event stats
+  const subhashPhotosCount = items.filter(
+    (i) => i.branchName?.includes("Subhash") || i.url.includes("subhash-nagar")
+  ).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] transition-colors duration-300">
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-purple-500 selection:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* Hero Header Section */}
-      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-500/20 blur-[100px] pointer-events-none" />
+      {/* Floating Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="fixed bottom-8 right-8 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-slate-900/95 border border-purple-500/30 text-white shadow-2xl backdrop-blur-xl pointer-events-none"
+          >
+            {toast.type === "heart" ? (
+              <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
+            ) : toast.type === "info" ? (
+              <Info className="w-5 h-5 text-sky-400" />
+            ) : (
+              <Check className="w-5 h-5 text-emerald-400" />
+            )}
+            <span className="text-sm font-semibold tracking-wide">{toast.text}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="mb-6 flex justify-center">
-            <BackToHome />
+      {/* HERO SECTION - Deep Atmospheric Glow & Glassmorphism */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-purple-950/40 via-slate-950 to-slate-950 border-b border-white/5">
+        {/* Animated Background Mesh & Lights */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.35),rgba(255,255,255,0))]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-purple-600/15 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-10 right-10 w-72 h-72 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <div className="flex items-center justify-center gap-3">
+              <BackToHome variant="glass" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-400/30 text-purple-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
+                <span>Captured Moments of Faith</span>
+              </div>
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white font-outfit">
+              Church <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">Gallery</span>
+            </h1>
+
+            <p className="text-base sm:text-lg md:text-xl text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
+              Relive the powerful moments of revival, family blessings, vibrant worship, and heartfelt fellowship across all Kingdom of Christ branches.
+            </p>
+
+            {/* Live Stats Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
+                <Camera className="w-4 h-4 text-purple-400" />
+                <span className="text-xs sm:text-sm font-bold text-white">
+                  {items.length}+ Photos Captured
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
+                <MapPin className="w-4 h-4 text-amber-400" />
+                <span className="text-xs sm:text-sm font-bold text-white">
+                  Subhash Nagar & Multi-Branch
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
+                <Calendar className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs sm:text-sm font-bold text-white">
+                  Family Blessing Gathering
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Hero CTA Button */}
+            {filteredItems.length > 0 && (
+              <div className="pt-2 flex justify-center">
+                <button
+                  onClick={() => {
+                    setLightboxIndex(0);
+                    setIsSlideshowPlaying(true);
+                  }}
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-size-200 hover:bg-right text-white font-bold text-sm shadow-xl shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.03] active:scale-95 transition-all duration-300"
+                >
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                  <span>Launch Cinematic Slideshow ({filteredItems.length} Photos)</span>
+                </button>
+              </div>
+            )}
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight font-outfit">
-            Church Gallery
-          </h1>
-          <p className="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto leading-relaxed">
-            Capturing the vibrant moments, fellowship, service, and moves of God at Kingdom of Christ Ministries.
-          </p>
         </div>
       </section>
 
-      {/* Main Content Area */}
-      <main className="container mx-auto px-4 py-16">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 space-y-3">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-            <p className="text-sm font-bold text-gray-500">Loading gallery items...</p>
+      {/* FEATURED EVENT HIGHLIGHT CARD - Subhash Nagar Family Blessing Gathering */}
+      <section className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-950/80 via-slate-900/90 to-indigo-950/80 border border-purple-500/20 shadow-2xl backdrop-blur-xl p-6 sm:p-8">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 blur-[90px] pointer-events-none" />
+          
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+            <div className="space-y-3 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase">
+                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  Featured Revival Event
+                </span>
+                <span className="text-xs text-purple-300 font-semibold">Subhash Nagar Branch</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Family Blessing Gathering — 78 Photos Logged
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                An unforgettable service with Bishop Kurra Kristhu Raju ministering prayers of blessing, unity, healing, and generational grace over every family in attendance.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto">
+              <button
+                onClick={() => {
+                  setActiveCategory("Family Blessings");
+                  setSelectedBranch("all");
+                  setFavoritesOnly(false);
+                }}
+                className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95"
+              >
+                <Camera className="w-4 h-4" />
+                <span>Filter 78 Photos</span>
+              </button>
+              <button
+                onClick={() => {
+                  const subhashFirstIdx = items.findIndex((i) => i.branchName?.includes("Subhash") || i.url.includes("subhash-nagar"));
+                  setLightboxIndex(subhashFirstIdx !== -1 ? subhashFirstIdx : 0);
+                  setIsSlideshowPlaying(false);
+                }}
+                className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold border border-white/10 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+              >
+                <Maximize2 className="w-4 h-4 text-purple-300" />
+                <span>View Fullscreen</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MASTER CONTROL HUB - Filter Tabs, Search, View Switcher */}
+      <main className="container mx-auto px-4 sm:px-6 py-12">
+        <div className="space-y-6 mb-10">
+          {/* Top Bar: Search Bar & Branch Switcher & Layout Buttons */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-2 sm:p-3 rounded-2xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-lg">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search moments by event, title, prayer, or keyword..."
+                className="w-full pl-11 pr-10 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/80 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Branch Selector Dropdown */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-semibold text-slate-300">
+                <MapPin className="w-3.5 h-3.5 text-purple-400" />
+                <select
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                  aria-label="Filter photos by church branch"
+                  className="bg-transparent text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm"
+                >
+                  <option value="all" className="bg-slate-900 text-white">
+                    All Church Branches ({items.length})
+                  </option>
+                  <option value="cmrgwqhc30001fsk8mysbmp50" className="bg-slate-900 text-white">
+                    Subhash Nagar Branch ({subhashPhotosCount})
+                  </option>
+                  <option value="cmskewevf0000lz9gnoh1n8ve" className="bg-slate-900 text-white">
+                    Shapur Nagar Branch
+                  </option>
+                  <option value="cmrgwqhc30002fsk8ncn255w5" className="bg-slate-900 text-white">
+                    Bahadurpally Branch
+                  </option>
+                </select>
+              </div>
+
+              {/* View Layout Switcher */}
+              <div className="hidden sm:flex items-center p-1 bg-white/[0.04] border border-white/10 rounded-xl">
+                <button
+                  onClick={() => setViewMode("masonry")}
+                  title="Masonry View"
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === "masonry"
+                      ? "bg-purple-600 text-white shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <Columns className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("standard")}
+                  title="Standard Grid"
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === "standard"
+                      ? "bg-purple-600 text-white shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("compact")}
+                  title="Compact Grid"
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === "compact"
+                      ? "bg-purple-600 text-white shadow-md"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Filter Pills (Horizontal Scrollable) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.name && !favoritesOnly;
+              return (
+                <button
+                  key={cat.name}
+                  onClick={() => {
+                    setActiveCategory(cat.name);
+                    setFavoritesOnly(false);
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border ${
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500/50 shadow-lg shadow-purple-900/30 scale-[1.02]"
+                      : "bg-slate-900/60 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  <span
+                    className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                      isActive ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
+                    }`}
+                  >
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+
+            {/* Saved Favorites Toggle */}
+            <button
+              onClick={() => setFavoritesOnly((prev) => !prev)}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border ${
+                favoritesOnly
+                  ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-lg shadow-rose-900/30 scale-[1.02]"
+                  : "bg-slate-900/60 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
+              }`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-400"}`} />
+              <span>Saved Photos</span>
+              <span
+                className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                  favoritesOnly ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
+                }`}
+              >
+                {favorites.size}
+              </span>
+            </button>
+          </div>
+
+          {/* Active Filter Info Bar */}
+          <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+            <div>
+              Showing <span className="font-bold text-white">{filteredItems.length}</span>{" "}
+              {filteredItems.length === 1 ? "moment" : "moments"}
+              {activeCategory !== "All" && (
+                <span>
+                  {" "}
+                  in <span className="text-purple-400 font-semibold">{activeCategory}</span>
+                </span>
+              )}
+              {searchQuery && (
+                <span>
+                  {" "}
+                  matching &ldquo;<span className="text-amber-400 font-semibold">{searchQuery}</span>&rdquo;
+                </span>
+              )}
+            </div>
+
+            {(activeCategory !== "All" || searchQuery || favoritesOnly) && (
+              <button
+                onClick={() => {
+                  setActiveCategory("All");
+                  setSearchQuery("");
+                  setFavoritesOnly(false);
+                }}
+                className="text-purple-400 hover:text-purple-300 font-bold underline transition-colors"
+              >
+                Reset filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* GALLERY ITEMS GRID */}
+        {isLoading && items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+            <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+            <p className="text-sm font-bold text-slate-400 tracking-wide">
+              Loading high-resolution gallery moments...
+            </p>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-24 px-4 rounded-3xl bg-slate-900/40 border border-dashed border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mx-auto">
+              <Camera className="w-8 h-8 opacity-60" />
+            </div>
+            <h3 className="text-lg font-bold text-white">No gallery moments found</h3>
+            <p className="text-sm text-slate-400">
+              Try adjusting your search keywords or switching category filters to see more photos.
+            </p>
+            <button
+              onClick={() => {
+                setActiveCategory("All");
+                setSearchQuery("");
+                setFavoritesOnly(false);
+                setSelectedBranch("all");
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md"
+            >
+              Reset All Filters
+            </button>
           </div>
         ) : (
-          <>
-            {/* Category Filters - Glassmorphic Horizontal Scroll */}
-            {galleryItems.length > 0 && (
-              <div className="flex justify-center mb-12">
-                <div className="flex gap-2 p-1.5 bg-white/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-2xl shadow-sm backdrop-blur-md overflow-x-auto max-w-full scrollbar-none">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setFilter(cat)}
-                      className={`px-6 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all whitespace-nowrap ${
-                        filter === cat
-                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-900/10"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-white/5"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Gallery Grid */}
-            <motion.div
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+          <div>
+            <div
+              className={
+                viewMode === "masonry"
+                  ? "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
+                  : viewMode === "compact"
+                  ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+                  : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              }
             >
-              <AnimatePresence mode="popLayout">
-                {filteredItems.map((item) => (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3 }}
+              {visibleItems.map((item, index) => {
+                const isFav = favorites.has(item.id);
+                const globalIndex = filteredItems.findIndex((fi) => fi.id === item.id);
+                const actualLightboxIndex = globalIndex !== -1 ? globalIndex : index;
+
+                return (
+                  <div
                     key={item.id}
-                    className="group relative bg-white dark:bg-white/[0.02] rounded-3xl overflow-hidden border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-2xl dark:hover:shadow-primary/5 transition-all duration-300 flex flex-col justify-between"
+                    onClick={() => {
+                      setLightboxIndex(actualLightboxIndex);
+                      setIsSlideshowPlaying(false);
+                    }}
+                    className={`group relative bg-slate-900/80 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 shadow-lg hover:shadow-2xl hover:shadow-purple-900/20 transition-all duration-300 hover:-translate-y-1 transform-gpu cursor-pointer flex flex-col justify-between ${
+                      viewMode === "masonry" ? "break-inside-avoid mb-6" : ""
+                    }`}
                   >
                     {/* Media Container */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
-                      <GalleryGridImage
+                    <div
+                      className={`relative w-full overflow-hidden bg-slate-950 ${
+                        viewMode === "compact"
+                          ? "aspect-square"
+                          : viewMode === "standard"
+                          ? "aspect-[4/3]"
+                          : "aspect-[4/3] sm:aspect-auto sm:min-h-[220px]"
+                      }`}
+                    >
+                      <GalleryCardImage
                         src={item.url}
                         title={item.title}
+                        priority={index < 6}
                       />
-                      {/* Glass Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">
-                        <button
-                          onClick={() => setLightboxItem(item)}
-                          className="w-12 h-12 rounded-2xl bg-white text-gray-900 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform"
-                          title={item.type === "video" ? "Watch Video" : "View Image"}
-                        >
-                          {item.type === "video" ? (
-                            <Play className="w-6 h-6 text-purple-600 fill-current ml-0.5" />
-                          ) : (
-                            <Maximize2 className="w-5 h-5 text-purple-600" />
-                          )}
-                        </button>
+
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-white/10">
+                          #{index + 1}
+                        </span>
+                        <span className="px-2.5 py-1 rounded-full bg-purple-600/90 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-purple-400/30">
+                          {item.category.toUpperCase()}
+                        </span>
                       </div>
 
-                      {/* Type Badge */}
-                      <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-wider flex items-center gap-1.5">
-                        {item.type === "video" ? (
-                          <>
-                            <Video className="w-3 h-3" />
-                            VIDEO
-                          </>
-                        ) : (
-                          <>
-                            <Camera className="w-3 h-3" />
-                            PHOTO
-                          </>
-                        )}
-                      </div>
+                      {/* Glass Hover Overlay with Action Buttons */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 backdrop-blur-[2px]">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          {/* Zoom / Lightbox */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLightboxIndex(actualLightboxIndex);
+                            }}
+                            title="Expand Lightbox"
+                            className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
+                          >
+                            <Maximize2 className="w-4 h-4" />
+                          </button>
 
-                      {/* Category Badge */}
-                      <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-purple-600 rounded-full text-white text-[10px] font-bold tracking-wider">
-                        {item.category.toUpperCase()}
+                          {/* Quick Download */}
+                          <button
+                            onClick={(e) => handleDownload(item, e)}
+                            title="Download High-Res"
+                            className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+
+                          {/* Share */}
+                          <button
+                            onClick={(e) => handleShare(item, e)}
+                            title="Share Photo"
+                            className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </button>
+
+                          {/* Favorite Heart */}
+                          <button
+                            onClick={(e) => toggleFavorite(item.id, e)}
+                            title={isFav ? "Remove Favorite" : "Save Favorite"}
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border ${
+                              isFav
+                                ? "bg-rose-600 text-white border-rose-400"
+                                : "bg-white/20 hover:bg-white text-white hover:text-rose-500 border-white/20"
+                            }`}
+                          >
+                            <Heart className={`w-4 h-4 ${isFav ? "fill-white" : ""}`} />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Info Text Area */}
-                    <div className="p-6 md:p-8">
-                      <h3 className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white mb-2 leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
-                        {item.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+                    {/* Card Footer Caption (for non-compact views) */}
+                    {viewMode !== "compact" && (
+                      <div className="p-4 sm:p-5 bg-slate-900/90 border-t border-white/5 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                          <span className="flex items-center gap-1 text-purple-300">
+                            <MapPin className="w-3 h-3" />
+                            {item.branchName || "Subhash Nagar"}
+                          </span>
+                          <span>{item.eventDate || "July 2026"}</span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white leading-tight group-hover:text-purple-300 transition-colors line-clamp-1">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                          {item.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
-            {/* Empty State */}
-            {filteredItems.length === 0 && (
-              <div className="text-center py-20 bg-white/40 dark:bg-white/[0.01] border border-dashed border-gray-300 dark:border-white/10 rounded-3xl backdrop-blur-md">
-                <p className="text-gray-500 dark:text-gray-400 font-medium">No items found in this category.</p>
+            {/* Infinite Scroll Sentinel & Load More button */}
+            {hasMore && (
+              <div ref={sentinelRef} className="pt-12 pb-6 flex flex-col items-center justify-center gap-3">
+                <button
+                  onClick={() => setDisplayCount((prev) => Math.min(prev + BATCH_SIZE, filteredItems.length))}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-lg hover:scale-105 active:scale-95"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Load More Moments ({filteredItems.length - displayCount} remaining)</span>
+                </button>
+                <span className="text-[11px] text-slate-500 font-medium">
+                  Showing {visibleItems.length} of {filteredItems.length} photos
+                </span>
               </div>
             )}
-          </>
+          </div>
         )}
       </main>
 
-      {/* Lightbox Modal / Player */}
+      {/* FULLSCREEN CINEMATIC LIGHTBOX & SLIDESHOW MODAL */}
       <AnimatePresence>
-        {lightboxItem && (
+        {lightboxIndex !== null && currentLightboxItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex flex-col bg-black/95 backdrop-blur-2xl select-none"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
-            <div className="absolute inset-0" onClick={() => setLightboxItem(null)} />
-
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-4xl bg-gray-950/80 border border-white/10 rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-white/10">
-                <span className="text-xs font-bold tracking-widest text-purple-400 uppercase">
-                  {lightboxItem.category} • {lightboxItem.type}
+            {/* Top Toolbar */}
+            <div className="relative z-30 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+              {/* Photo Index Counter & Category */}
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-300 text-xs font-black tracking-widest uppercase">
+                  {lightboxIndex + 1} / {filteredItems.length}
                 </span>
+                <span className="hidden sm:inline-block text-xs font-semibold text-slate-400">
+                  {currentLightboxItem.category} • {currentLightboxItem.eventName || "Subhash Nagar Event"}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Slideshow Play / Pause Button */}
                 <button
-                  onClick={() => setLightboxItem(null)}
-                  className="p-1 rounded-xl hover:bg-white/10 text-white transition-colors"
+                  onClick={() => setIsSlideshowPlaying((prev) => !prev)}
+                  title={isSlideshowPlaying ? "Pause Slideshow (Space)" : "Play Slideshow (Space)"}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    isSlideshowPlaying
+                      ? "bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/30"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                  }`}
                 >
-                  <X className="w-6 h-6" />
+                  {isSlideshowPlaying ? (
+                    <>
+                      <Pause className="w-3.5 h-3.5 fill-current" />
+                      <span className="hidden sm:inline">Pause</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                      <span className="hidden sm:inline">Slideshow</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Zoom Controls */}
+                <div className="hidden sm:flex items-center bg-white/10 rounded-xl p-0.5 border border-white/10">
+                  <button
+                    onClick={() => setZoomLevel((z) => Math.min(z + 0.5, 3))}
+                    title="Zoom In (+)"
+                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setZoomLevel((z) => Math.max(z - 0.5, 1))}
+                    title="Zoom Out (-)"
+                    className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  {zoomLevel > 1 && (
+                    <button
+                      onClick={() => setZoomLevel(1)}
+                      title="Reset Zoom"
+                      className="p-1.5 hover:bg-white/10 rounded-lg text-purple-300"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Download */}
+                <button
+                  onClick={(e) => handleDownload(currentLightboxItem, e)}
+                  title="Download High-Res"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+
+                {/* Share */}
+                <button
+                  onClick={(e) => handleShare(currentLightboxItem, e)}
+                  title="Share Link"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+
+                {/* Favorite */}
+                <button
+                  onClick={(e) => toggleFavorite(currentLightboxItem.id, e)}
+                  title="Save Favorite"
+                  className={`p-2 rounded-xl border transition-colors ${
+                    favorites.has(currentLightboxItem.id)
+                      ? "bg-rose-600 text-white border-rose-400"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                  }`}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${
+                      favorites.has(currentLightboxItem.id) ? "fill-white" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Toggle Info */}
+                <button
+                  onClick={() => setShowInfoPanel((prev) => !prev)}
+                  title="Toggle Info"
+                  className={`p-2 rounded-xl border transition-colors ${
+                    showInfoPanel
+                      ? "bg-purple-600 text-white border-purple-400"
+                      : "bg-white/10 hover:bg-white/20 text-slate-200 border-white/10"
+                  }`}
+                >
+                  <Info className="w-4 h-4" />
+                </button>
+
+                {/* Close Lightbox */}
+                <button
+                  onClick={() => {
+                    setLightboxIndex(null);
+                    setIsSlideshowPlaying(false);
+                  }}
+                  title="Close (Esc)"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-rose-600 hover:text-white text-slate-200 border border-white/10 transition-colors ml-1"
+                >
+                  <X className="w-5 h-5" />
                 </button>
               </div>
+            </div>
 
-              {/* Media Display */}
-              <div className="relative w-full aspect-video bg-black flex items-center justify-center">
-                {lightboxItem.type === "video" ? (
-                  lightboxItem.url.includes("youtube.com") || lightboxItem.url.includes("youtu.be") ? (
-                    <iframe
-                      src={
-                        lightboxItem.url.includes("embed")
-                          ? lightboxItem.url
-                          : `https://www.youtube.com/embed/${lightboxItem.videoId || lightboxItem.url.split("v=")[1]}`
-                      }
-                      title="Church Video Player"
-                      className="absolute inset-0 w-full h-full border-none"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <video
-                      src={lightboxItem.url}
-                      controls
-                      autoPlay
-                      playsInline
-                      className="absolute inset-0 w-full h-full"
-                    />
-                  )
-                ) : (
+            {/* Slideshow Progress Bar */}
+            {isSlideshowPlaying && (
+              <div className="w-full h-1 bg-white/10">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 transition-all duration-75"
+                  style={{ width: `${slideshowProgress}%` }}
+                />
+              </div>
+            )}
+
+            {/* Main Lightbox Display Area */}
+            <div className="relative flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
+              {/* Previous Photo Button */}
+              <button
+                onClick={prevPhoto}
+                title="Previous Photo (Left Arrow)"
+                className="absolute left-3 sm:left-6 z-30 w-12 h-12 rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+
+              {/* Next Photo Button */}
+              <button
+                onClick={nextPhoto}
+                title="Next Photo (Right Arrow)"
+                className="absolute right-3 sm:right-6 z-30 w-12 h-12 rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              {/* Active Photo Container */}
+              <motion.div
+                key={currentLightboxItem.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
+                className="relative w-full h-full flex items-center justify-center overflow-hidden"
+              >
+                <div
+                  className="relative w-full h-full max-w-6xl max-h-[75vh] flex items-center justify-center transition-transform duration-200"
+                  style={{ transform: `scale(${zoomLevel})` }}
+                >
                   <Image
-                    src={lightboxItem.url}
-                    alt={lightboxItem.title}
+                    src={encodeSrc(currentLightboxItem.url)}
+                    alt={currentLightboxItem.title}
                     fill
                     unoptimized
-                    className="object-contain"
                     priority
+                    className="object-contain drop-shadow-2xl"
                   />
-                )}
-              </div>
+                </div>
+              </motion.div>
 
-              {/* Footer Information */}
-              <div className="p-6 md:p-8 bg-black/40">
-                <h4 className="text-xl md:text-2xl font-black text-white mb-2 leading-tight">
-                  {lightboxItem.title}
-                </h4>
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  {lightboxItem.description}
-                </p>
+              {/* Floating Info Drawer */}
+              {showInfoPanel && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="absolute bottom-2 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-md p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-white/15 backdrop-blur-2xl shadow-2xl z-20 space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-purple-400">
+                      {currentLightboxItem.category}
+                    </span>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      {currentLightboxItem.eventDate || "July 15, 2026"}
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                    {currentLightboxItem.title}
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                    {currentLightboxItem.description}
+                  </p>
+                  <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                    <span className="flex items-center gap-1 text-amber-300 font-bold">
+                      <MapPin className="w-3 h-3" />
+                      {currentLightboxItem.branchName || "Subhash Nagar Branch"}
+                    </span>
+                    <button
+                      onClick={(e) => handleDownload(currentLightboxItem, e)}
+                      className="text-purple-400 hover:text-purple-300 font-bold inline-flex items-center gap-1"
+                    >
+                      <Download className="w-3 h-3" />
+                      Download High-Res
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Bottom Interactive Thumbnail Reel */}
+            <div className="relative z-30 px-4 py-3 bg-slate-950 border-t border-white/10">
+              <div
+                ref={thumbnailContainerRef}
+                className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-purple-600/50 scrollbar-track-transparent scroll-smooth max-w-full"
+              >
+                {filteredItems.map((thumbItem, tIdx) => {
+                  const isSelected = tIdx === lightboxIndex;
+                  return (
+                    <button
+                      key={thumbItem.id}
+                      onClick={() => {
+                        setLightboxIndex(tIdx);
+                        setZoomLevel(1);
+                        setSlideshowProgress(0);
+                      }}
+                      className={`relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                        isSelected
+                          ? "border-purple-500 scale-105 shadow-lg shadow-purple-600/40 ring-2 ring-purple-400/50"
+                          : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/40"
+                      }`}
+                    >
+                      <Image
+                        src={encodeSrc(thumbItem.thumbnailUrl || thumbItem.url)}
+                        alt={thumbItem.title}
+                        fill
+                        sizes="64px"
+                        loading="lazy"
+                        quality={50}
+                        className="object-cover"
+                      />
+                    </button>
+                  );
+                })}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <Footer />
+    </div>
+  );
+}
+
+// Progressive Image Component with Shimmer Placeholder & Fast Decoding
+function GalleryCardImage({
+  src,
+  title,
+  priority = false,
+}: {
+  src: string;
+  title: string;
+  priority?: boolean;
+}) {
+  const [isLoaded, setIsLoaded] = useState(() => loadedCache.has(src));
+  const safeSrc = encodeSrc(src);
+
+  return (
+    <div className="relative w-full h-full min-h-[200px] bg-slate-900">
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-slate-800 animate-pulse flex items-center justify-center">
+          <Camera className="w-8 h-8 text-slate-600" />
+        </div>
+      )}
+      <Image
+        src={safeSrc}
+        alt={title}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 25vw"
+        loading={priority ? undefined : "lazy"}
+        priority={priority}
+        quality={75}
+        className={`object-cover transform group-hover:scale-105 transition-all duration-300 ease-out ${
+          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+        onLoad={() => {
+          loadedCache.add(src);
+          setIsLoaded(true);
+        }}
+      />
     </div>
   );
 }

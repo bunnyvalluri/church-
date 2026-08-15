@@ -61,6 +61,7 @@ eslint-report*.txt
 
 # large raw media in root folder
 /KCM_NGO_SERVICES/
+/kcm-gallery/
 **/*.avi
 **/*.mov
 **/*.wmv

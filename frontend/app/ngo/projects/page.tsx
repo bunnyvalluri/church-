@@ -37,13 +37,27 @@ interface Project {
 }
 
 // Encode a URL path so parentheses and spaces are safe for browsers
-function encodeSrc(src: string | null): string {
+function encodeSrc(src: string | null | undefined): string {
   if (!src) return "";
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  return src
-    .split("/")
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("//") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:")
+  ) {
+    return src;
+  }
+  try {
+    const [path, ...queryAndHash] = src.split(/(?=[?#])/);
+    const encodedPath = path
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+    return [encodedPath, ...queryAndHash].join("");
+  } catch {
+    return src;
+  }
 }
 
 export default function NgoProjectsPage() {
