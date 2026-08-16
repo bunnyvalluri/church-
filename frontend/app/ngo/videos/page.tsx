@@ -496,9 +496,14 @@ function PlaylistRow({ item, index, active, onSelect }: {
   );
 }
 
-/* ════════════════════════════ MAIN PAGE COMPONENT ════════════════════════════ */
 export default function NgoVideosPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+
+  const searchPlaceholderText = useMemo(() => {
+    if (language === "te") return "వీడియోలను శోధించండి...";
+    if (language === "hi") return "वीडियो खोजें...";
+    return "Search 77+ videos...";
+  }, [language]);
 
   // Active state
   const [activeMediaId, setActiveMediaId] = useState<string>(YOUTUBE_ITEMS[0].id);
@@ -549,10 +554,15 @@ export default function NgoVideosPage() {
 
   // Playlist items filtering for sidebar
   const playlistItems = useMemo(() => {
+    if (filterCategory === "yt") return YOUTUBE_ITEMS;
+    if (filterCategory === "mp4") return MP4_ITEMS;
+    if (filterCategory === "hospital") return ALL_MEDIA_DATABASE.filter(m => m.category === "hospital");
+    if (filterCategory === "ashramam") return ALL_MEDIA_DATABASE.filter(m => m.category === "ashramam");
+    if (filterCategory === "disabled") return ALL_MEDIA_DATABASE.filter(m => m.category === "disabled");
     if (playlistTab === "yt") return YOUTUBE_ITEMS;
     if (playlistTab === "mp4") return MP4_ITEMS;
     return ALL_MEDIA_DATABASE;
-  }, [playlistTab]);
+  }, [playlistTab, filterCategory]);
 
   // Filtered Media for bottom showcase
   const filteredShowcaseMedia = useMemo(() => {
@@ -571,6 +581,33 @@ export default function NgoVideosPage() {
 
     return items;
   }, [filterCategory, searchQuery]);
+
+  // Category switch handler that updates player to 1st video, updates playlist, and focuses screen
+  const handleSelectCategory = (cat: "all" | "yt" | "mp4" | "hospital" | "ashramam" | "disabled") => {
+    setFilterCategory(cat);
+
+    let items = ALL_MEDIA_DATABASE;
+    if (cat === "yt") items = YOUTUBE_ITEMS;
+    else if (cat === "mp4") items = MP4_ITEMS;
+    else if (cat === "hospital") items = ALL_MEDIA_DATABASE.filter(m => m.category === "hospital");
+    else if (cat === "ashramam") items = ALL_MEDIA_DATABASE.filter(m => m.category === "ashramam");
+    else if (cat === "disabled") items = ALL_MEDIA_DATABASE.filter(m => m.category === "disabled");
+
+    if (items.length > 0) {
+      setActiveMediaId(items[0].id);
+      setIsPlaying(true);
+    }
+
+    if (cat === "yt" || cat === "mp4") {
+      setPlaylistTab(cat);
+    } else {
+      setPlaylistTab("all");
+    }
+
+    setTimeout(() => {
+      playerStageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
 
   // Handlers
   const handlePlayMedia = (media: MediaItem) => {
@@ -603,7 +640,7 @@ export default function NgoVideosPage() {
     badge: "KCM NGO Field Service Video Logs",
     heroTitle: "Video Theater & Outreach Logs",
     heroSubtitle: "Watch live video recordings of KCM's Bethany Samrakshana Ashramam, Home for Disabled Care, and Hospital food & relief distribution drives.",
-    searchPlaceholder: "Search videos by title, date, or hospital...",
+    searchPlaceholder: searchPlaceholderText,
     filterAll: "All Videos",
     filterYt: "YouTube Series",
     filterAshramam: "Ashramam Field Clips",
@@ -656,7 +693,7 @@ export default function NgoVideosPage() {
             {/* Quick Stat Pill Cards */}
             <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full sm:w-auto shrink-0">
               <button
-                onClick={() => { setPlaylistTab("yt"); setFilterCategory("yt"); }}
+                onClick={() => handleSelectCategory("yt")}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-left transition-all ${
                   filterCategory === "yt"
                     ? "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-600/50 ring-2 ring-rose-500/30 shadow-md shadow-rose-500/10"
@@ -673,7 +710,7 @@ export default function NgoVideosPage() {
               </button>
 
               <button
-                onClick={() => { setPlaylistTab("mp4"); setFilterCategory("mp4"); }}
+                onClick={() => handleSelectCategory("mp4")}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border text-left transition-all ${
                   filterCategory === "mp4"
                     ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-600/50 ring-2 ring-emerald-500/30 shadow-md shadow-emerald-500/10"
@@ -700,7 +737,7 @@ export default function NgoVideosPage() {
               
               {/* 1. YouTube Series */}
               <button
-                onClick={() => { setFilterCategory("yt"); setPlaylistTab("yt"); }}
+                onClick={() => handleSelectCategory("yt")}
                 className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "yt"
                     ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500/30"
@@ -724,31 +761,31 @@ export default function NgoVideosPage() {
 
               {/* 2. Ashramam Field Clips */}
               <button
-                onClick={() => { setFilterCategory("mp4"); setPlaylistTab("mp4"); }}
+                onClick={() => handleSelectCategory("ashramam")}
                 className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
-                  filterCategory === "mp4"
+                  filterCategory === "ashramam"
                     ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-500/30"
                     : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700/90 shadow-sm"
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
-                    filterCategory === "mp4" ? "bg-white/20 text-white" : "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
+                    filterCategory === "ashramam" ? "bg-white/20 text-white" : "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
                   }`}>
                     <Film className="w-3.5 h-3.5" />
                   </div>
                   <span className="whitespace-nowrap">{vT.filterAshramam}</span>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shrink-0 ${
-                  filterCategory === "mp4" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                  filterCategory === "ashramam" ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
                 }`}>
-                  {MP4_ITEMS.length}
+                  {ALL_MEDIA_DATABASE.filter(m => m.category === "ashramam").length}
                 </span>
               </button>
 
               {/* 3. All Videos */}
               <button
-                onClick={() => { setFilterCategory("all"); setPlaylistTab("all"); }}
+                onClick={() => handleSelectCategory("all")}
                 className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "all"
                     ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-lg ring-2 ring-slate-800/30"
@@ -772,7 +809,7 @@ export default function NgoVideosPage() {
 
               {/* 4. Hospital Drives */}
               <button
-                onClick={() => setFilterCategory("hospital")}
+                onClick={() => handleSelectCategory("hospital")}
                 className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "hospital"
                     ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30 ring-2 ring-violet-500/30"
@@ -796,7 +833,7 @@ export default function NgoVideosPage() {
 
               {/* 5. Disabled Care */}
               <button
-                onClick={() => setFilterCategory("disabled")}
+                onClick={() => handleSelectCategory("disabled")}
                 className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl font-extrabold text-xs transition-all w-full lg:w-auto ${
                   filterCategory === "disabled"
                     ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500/30"
@@ -825,7 +862,7 @@ export default function NgoVideosPage() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               <input
                 type="text"
-                placeholder={vT.searchPlaceholder}
+                placeholder={searchPlaceholderText}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-9 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
