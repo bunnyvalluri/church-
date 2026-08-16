@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import {
-  Film, X, ChevronLeft, ChevronRight, Play,
+  Film, X, ChevronLeft, ChevronRight, Play, Pause,
   Youtube, PlayCircle, Calendar, Maximize2,
   ListVideo, Clapperboard, Sparkles, Clock,
   ExternalLink, Share2, Search, Filter, Layers, Check,
@@ -11,6 +11,14 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
+
+/* ══════════════════════════ YOUTUBE BRAND LOGO ══════════════════════════ */
+const YouTubeLogoIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="24" height="24" rx="6" fill="#FF0000" />
+    <path d="M9.5 8.5L16.5 12L9.5 15.5V8.5Z" fill="white" />
+  </svg>
+);
 
 /* ════════════════════════════════ UTILS ════════════════════════════════ */
 function encodeSrc(src: string | null | undefined): string {
@@ -42,6 +50,7 @@ export interface MediaItem {
   title: string;
   description: string;
   source: "yt" | "mp4";
+  videoId?: string;
   url?: string;
   src?: string;
   thumbnail: string;
@@ -59,6 +68,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     title: "Gandhi Hospital Food & Care Outreach",
     description: "Detailed video coverage of KCM volunteers distributing warm milk, food boxes, and basic sanitary kits to patient caretakers and critical care wards at Gandhi Hospital.",
     source: "yt",
+    videoId: "cugBnrzyPF4",
     url: "https://www.youtube.com/embed/cugBnrzyPF4?si=JRM4VEcma5_hRW8r",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/25-03-2026(GANDHI-HOSPITAL)/IMG-20260325-WA0031.jpg",
     category: "hospital",
@@ -70,6 +80,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     title: "NIMS Hospital Care & Support Campaign",
     description: "Watch our volunteers distribute specialized medications, patient clothes, and nutritional foods to patients in the oncology and orthopedic departments at NIMS.",
     source: "yt",
+    videoId: "y7gLEkS9CcI",
     url: "https://www.youtube.com/embed/y7gLEkS9CcI?si=YRzU4aaeORdjaGLw",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/11-03-2026(NIMS-HOSPITAL)/IMG-20260311-WA0037.jpg",
     category: "hospital",
@@ -81,6 +92,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     title: "Government General Hospital Distribution Drive",
     description: "Direct footage showing wheelchair provisions, walkers, patient beds, and food packet distribution drives organized at the local government hospital.",
     source: "yt",
+    videoId: "u4-lrU41HAc",
     url: "https://www.youtube.com/embed/u4-lrU41HAc?si=vgAb5MnRZhG2Awwd",
     thumbnail: "/KCM_NGO_SERVICES/HOSPITALS/23-02-2026(GOVT-HOSPITAL)/IMG-20260223-WA0018.jpg",
     category: "hospital",
@@ -92,6 +104,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     title: "Bethany Samrakshana Ashramam Support",
     description: "Delivering monthly groceries, rice bags, academic books, and healthy food items to children and residents at Bethany Samrakshana Ashramam.",
     source: "yt",
+    videoId: "IhcbOLPMmM8",
     url: "https://www.youtube.com/embed/IhcbOLPMmM8?si=tOGhSKfBExTLmAT0",
     thumbnail: "/KCM_NGO_SERVICES/BETHANY_SAMRAKSHANA_ASHRAMAM/21-04-2026(AASHRAMAM)/IMG-20260421-WA0013.jpg",
     category: "ashramam",
@@ -103,6 +116,7 @@ const YOUTUBE_ITEMS: MediaItem[] = [
     title: "Disabled Care Ashramam Visitation",
     description: "Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to the residents of the Home for the Disabled.",
     source: "yt",
+    videoId: "mE5NiqLGVSw",
     url: "https://www.youtube.com/embed/mE5NiqLGVSw?si=Fm7E9ViV7TL57mzi",
     thumbnail: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED_AASHRAMAM/IMG-20260617-WA0010.jpg",
     category: "disabled",
@@ -294,10 +308,16 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
 
       {/* Main Video Stage */}
       <div className="flex-1 relative flex items-center justify-center px-4 sm:px-16 py-6 min-h-0 bg-black/90">
-        {item.source === "yt" && item.url ? (
-          <iframe src={item.url} title={item.title} className="w-full max-w-5xl h-full rounded-2xl border border-white/10 shadow-2xl" allowFullScreen />
+        {item.source === "yt" ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${item.videoId || item.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&enablejsapi=1`}
+            title={item.title}
+            className="w-full max-w-5xl h-full rounded-2xl border border-white/10 shadow-2xl"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+            allowFullScreen
+          />
         ) : (
-          <video ref={vRef} src={item.src} controls autoPlay className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain bg-black" />
+          <video ref={vRef} src={encodeSrc(item.src)} controls autoPlay playsInline className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain bg-black" />
         )}
 
         {index > 0 && (
@@ -491,6 +511,31 @@ export default function NgoVideosPage() {
 
   // Smooth scroll reference to top stage
   const playerStageRef = useRef<HTMLDivElement>(null);
+  const cinemaIframeRef = useRef<HTMLIFrameElement>(null);
+
+  const pauseCinemaVideo = () => {
+    try {
+      if (cinemaIframeRef.current?.contentWindow) {
+        cinemaIframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
+          "*"
+        );
+      }
+    } catch {}
+    setIsPlaying(false);
+  };
+
+  const playCinemaVideo = () => {
+    try {
+      if (cinemaIframeRef.current?.contentWindow) {
+        cinemaIframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "playVideo", args: [] }),
+          "*"
+        );
+      }
+    } catch {}
+    setIsPlaying(true);
+  };
 
   // Selected media object
   const activeMedia = useMemo(() => {
@@ -530,20 +575,20 @@ export default function NgoVideosPage() {
   // Handlers
   const handlePlayMedia = (media: MediaItem) => {
     setActiveMediaId(media.id);
-    setIsPlaying(false);
+    setIsPlaying(true);
     playerStageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleNextMedia = () => {
     const nextIdx = (activeIndex + 1) % ALL_MEDIA_DATABASE.length;
     setActiveMediaId(ALL_MEDIA_DATABASE[nextIdx].id);
-    setIsPlaying(false);
+    setIsPlaying(true);
   };
 
   const handlePrevMedia = () => {
     const prevIdx = (activeIndex - 1 + ALL_MEDIA_DATABASE.length) % ALL_MEDIA_DATABASE.length;
     setActiveMediaId(ALL_MEDIA_DATABASE[prevIdx].id);
-    setIsPlaying(false);
+    setIsPlaying(true);
   };
 
   const handleShare = () => {
@@ -806,24 +851,83 @@ export default function NgoVideosPage() {
           <div className="lg:col-span-8 space-y-5">
             
             {/* Player Container */}
-            <div className={`relative rounded-3xl overflow-hidden bg-black border shadow-2xl transition-all duration-300 ${
-              activeMedia.source === "yt"
-                ? "border-slate-200 dark:border-slate-800 shadow-rose-950/15"
-                : "border-emerald-500/30 shadow-emerald-950/25"
-            }`} style={{ aspectRatio: "16/9" }}>
+            <div
+              className={`relative rounded-3xl overflow-hidden bg-black border shadow-2xl transition-all duration-300 ${
+                activeMedia.source === "yt"
+                  ? "border-slate-200 dark:border-slate-800 shadow-rose-950/15"
+                  : "border-emerald-500/30 shadow-emerald-950/25"
+              }`}
+              style={{ aspectRatio: "16/9" }}
+            >
+              {activeMedia.source === "yt" ? (
+                isPlaying ? (
+                  <iframe
+                    ref={cinemaIframeRef}
+                    key={activeMedia.id + "-playing"}
+                    src={`https://www.youtube.com/embed/${activeMedia.videoId || activeMedia.url?.split("/embed/")[1]?.split("?")[0]}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                    title={activeMedia.title}
+                    className="absolute inset-0 w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div
+                    onClick={() => setIsPlaying(true)}
+                    className="absolute inset-0 cursor-pointer group flex flex-col justify-between p-3 sm:p-6 bg-slate-950 select-none z-10 overflow-hidden"
+                  >
+                    <img
+                      src={encodeSrc(activeMedia.thumbnail)}
+                      alt={activeMedia.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-all duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />
 
-              {activeMedia.source === "yt" && activeMedia.url ? (
-                <iframe
+                    {/* Top Badges */}
+                    <div className="relative z-10 flex items-center justify-between gap-2 pointer-events-none">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black text-white bg-rose-600/90 backdrop-blur-md shadow-lg border border-rose-400/30">
+                        <YouTubeLogoIcon className="w-3.5 h-3.5" />
+                        YouTube Broadcast
+                      </span>
+                      <span className="text-white/90 text-xs font-extrabold bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15 font-mono">
+                        {activeMedia.date}
+                      </span>
+                    </div>
+
+                    {/* Center Animated High-Contrast Red YouTube Play Button */}
+                    <div className="relative z-10 flex items-center justify-center my-auto py-2 pointer-events-none">
+                      <div className="relative flex items-center justify-center">
+                        <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-600/40 animate-ping" />
+                        <div className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-2xl bg-red-600 hover:bg-red-500 active:scale-90 flex items-center justify-center shadow-2xl shadow-red-600/60 transition-all duration-200 border border-white/20">
+                          <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white fill-white ml-1" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Title Preview & Tap Prompt */}
+                    <div className="relative z-10 space-y-1 max-w-2xl pointer-events-none">
+                      <h3 className="text-white font-black text-sm sm:text-xl leading-snug drop-shadow-md line-clamp-2">
+                        {activeMedia.title}
+                      </h3>
+                      <p className="text-white/80 text-xs font-semibold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                        <span>Tap anywhere to play video • 1080p HD</span>
+                      </p>
+                    </div>
+                  </div>
+                )
+              ) : isPlaying ? (
+                <video
                   key={activeMedia.id}
-                  src={activeMedia.url}
-                  title={activeMedia.title}
-                  className="absolute inset-0 w-full h-full"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
+                  src={encodeSrc(activeMedia.src)}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-contain bg-black"
                 />
-              ) : !isPlaying ? (
+              ) : (
                 /* Manual Click-to-Play Poster Screen for MP4 Videos Section */
                 <div
                   onClick={() => setIsPlaying(true)}
@@ -833,12 +937,14 @@ export default function NgoVideosPage() {
                     src={encodeSrc(activeMedia.thumbnail)}
                     alt={activeMedia.title}
                     className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
-                    onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
+                    onError={(e) => {
+                      e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png";
+                    }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />
 
                   {/* Top Badges Tag */}
-                  <div className="relative z-10 flex items-center justify-between gap-2">
+                  <div className="relative z-10 flex items-center justify-between gap-2 pointer-events-none">
                     <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black text-white bg-emerald-600/90 backdrop-blur-md shadow-lg border border-emerald-400/30">
                       <Film className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       Field Video Log
@@ -849,30 +955,23 @@ export default function NgoVideosPage() {
                   </div>
 
                   {/* Center Single Play Button Circle */}
-                  <div className="relative z-10 flex items-center justify-center my-auto py-2">
+                  <div className="relative z-10 flex items-center justify-center my-auto py-2 pointer-events-none">
                     <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 sm:border-4 border-white/80 flex items-center justify-center text-white shadow-2xl transition-all duration-300 bg-emerald-600/90 group-hover:bg-emerald-500 group-hover:shadow-emerald-500/60 group-hover:scale-110">
                       <Play className="w-6 h-6 sm:w-10 sm:h-10 text-white fill-white ml-0.5 sm:ml-1" />
                     </div>
                   </div>
 
                   {/* Bottom Title Preview */}
-                  <div className="relative z-10 space-y-0.5 sm:space-y-1 max-w-2xl">
+                  <div className="relative z-10 space-y-0.5 sm:space-y-1 max-w-2xl pointer-events-none">
                     <h3 className="text-white font-black text-sm sm:text-xl leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-2">
                       {activeMedia.title}
                     </h3>
-                    <p className="text-slate-300 text-[10px] sm:text-xs line-clamp-1">
-                      {activeMedia.description}
+                    <p className="text-white/80 text-xs font-semibold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>Tap to play field recording</span>
                     </p>
                   </div>
                 </div>
-              ) : (
-                <video
-                  key={activeMedia.id}
-                  src={activeMedia.src}
-                  controls
-                  autoPlay
-                  className="absolute inset-0 w-full h-full object-contain bg-black"
-                />
               )}
             </div>
 
@@ -896,31 +995,55 @@ export default function NgoVideosPage() {
                   <span className={`text-xs font-black uppercase tracking-wider leading-tight ${
                     activeMedia.source === "yt" ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
                   }`}>
-                    {activeMedia.source === "yt" ? "YouTube Documentary" : `Bethany Ashramam • Clip ${activeMedia.clipNumber || 1} of ${MP4_ITEMS.length}`}
+                    {activeMedia.source === "yt" ? "YouTube Broadcast" : `Bethany Ashramam • Clip ${activeMedia.clipNumber || 1} of ${MP4_ITEMS.length}`}
                   </span>
                 </div>
 
                 {/* Interactive Player Action Buttons */}
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Play / Pause Toggle Button */}
+                  <button
+                    onClick={isPlaying ? pauseCinemaVideo : playCinemaVideo}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-xl text-xs font-black transition-all shadow-md active:scale-95 ${
+                      isPlaying
+                        ? "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/25 ring-2 ring-amber-400/50"
+                        : activeMedia.source === "yt"
+                        ? "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/25 ring-2 ring-rose-500/30"
+                        : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/25 ring-2 ring-emerald-500/30"
+                    }`}
+                    title={isPlaying ? "Pause Video" : "Play Video"}
+                  >
+                    {isPlaying ? (
+                      <>
+                        <Pause className="w-3.5 h-3.5 fill-current" />
+                        <span>Pause Video</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                        <span>Play Video</span>
+                      </>
+                    )}
+                  </button>
                   
                   {/* Prev/Next Video Controls */}
-                  <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
                     <button
                       onClick={handlePrevMedia}
                       title="Previous Video"
-                      className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
                     >
-                      <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <SkipBack className="w-4 h-4" />
                     </button>
-                    <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 font-bold text-slate-500 dark:text-slate-400 tabular-nums">
+                    <span className="text-xs px-2.5 font-bold text-slate-600 dark:text-slate-300 tabular-nums">
                       {activeIndex + 1}/{ALL_MEDIA_DATABASE.length}
                     </span>
                     <button
                       onClick={handleNextMedia}
                       title="Next Video"
-                      className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
                     >
-                      <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <SkipForward className="w-4 h-4" />
                     </button>
                   </div>
 
@@ -928,7 +1051,7 @@ export default function NgoVideosPage() {
                   {activeMedia.source === "mp4" && (
                     <button
                       onClick={() => setLightboxIndex(MP4_ITEMS.findIndex(m => m.id === activeMedia.id))}
-                      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-colors shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-colors shadow-sm active:scale-95"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
                       <span>Theater Mode</span>
@@ -938,21 +1061,21 @@ export default function NgoVideosPage() {
                   {/* Share Link */}
                   <button
                     onClick={handleShare}
-                    className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors active:scale-95"
                   >
                     {linkCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
                     <span>{linkCopied ? "Copied" : "Share"}</span>
                   </button>
 
                   {/* Watch on YouTube External */}
-                  {activeMedia.source === "yt" && activeMedia.url && (
+                  {activeMedia.source === "yt" && (
                     <a
-                      href={activeMedia.url.replace("/embed/", "/watch?v=")}
+                      href={`https://www.youtube.com/watch?v=${activeMedia.videoId || activeMedia.url?.split("/embed/")[1]?.split("?")[0]}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-sm active:scale-95"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <YouTubeLogoIcon className="w-3.5 h-3.5" />
                       <span>YouTube</span>
                     </a>
                   )}
