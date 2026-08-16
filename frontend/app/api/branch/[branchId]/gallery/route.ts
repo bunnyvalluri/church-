@@ -20,10 +20,13 @@ export async function GET(
       );
     }
 
+    const { searchParams } = new URL(req.url);
+    const sortParam = searchParams.get("sort") || "order-asc";
+
     // Retrieve direct gallery items for this branch
     const dbGallery = await prisma.gallery.findMany({
       where: { branchId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: sortParam === "desc" || sortParam === "newest" ? "desc" : "asc" },
     });
 
     // Also retrieve media linked to approved events under this branch

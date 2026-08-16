@@ -32,31 +32,33 @@ export default function BackToHome({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 select-none group min-h-[44px] min-w-[44px]",
-        // Glassmorphism Variant (for dark Hero backgrounds)
+        "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 select-none group min-h-[44px] min-w-[44px]",
+        // Adaptive Glassmorphism Variant (works seamlessly in both Light & Dark modes)
         variant === "glass" && [
-          "text-white bg-white/10 hover:bg-white/20",
-          "border border-white/25 hover:border-white/40",
+          "text-slate-900 dark:text-white",
+          "bg-white/90 hover:bg-white dark:bg-white/10 dark:hover:bg-white/20",
+          "border border-slate-300/80 dark:border-white/20 hover:border-purple-500/50 dark:hover:border-white/40",
           "backdrop-blur-md shadow-sm hover:shadow-md",
           "hover:-translate-x-0.5 hover:scale-[1.02]",
           "active:scale-95 active:translate-x-0",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-purple-900",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2",
         ],
-        // Default Variant (for standard light backgrounds)
+        // Default Variant (for standard light/dark backgrounds)
         variant === "default" && [
-          "text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700",
-          "border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600",
+          "text-slate-900 dark:text-slate-100",
+          "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700",
+          "border border-slate-300 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500/50",
           "shadow-sm hover:shadow-md",
           "hover:-translate-x-0.5 hover:scale-[1.02]",
           "active:scale-95 active:translate-x-0",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2",
         ],
         className
       )}
       aria-label={displayLabel}
     >
-      <ChevronLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-      <span>{displayLabel}</span>
+      <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-300 transition-transform duration-200 group-hover:-translate-x-1" />
+      <span className="font-bold tracking-tight">{displayLabel}</span>
     </Link>
   );
 }

@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
     const isNgo = searchParams.get("ngo") === "true";
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
+    const sortParam = searchParams.get("sort") || "order-asc";
+
     const limit = limitParam
       ? Math.min(isNgo ? 1000 : 500, Math.max(1, parseInt(limitParam)))
       : 200;
@@ -25,6 +27,18 @@ export async function GET(request: NextRequest) {
 
     let items: any[] = [];
 
+    // Determine database sorting direction
+    let orderByClause: any = { createdAt: "asc" };
+    if (sortParam === "desc" || sortParam === "order-desc" || sortParam === "newest") {
+      orderByClause = { createdAt: "desc" };
+    } else if (sortParam === "title-asc") {
+      orderByClause = { title: "asc" };
+    } else if (sortParam === "title-desc") {
+      orderByClause = { title: "desc" };
+    } else {
+      orderByClause = { createdAt: "asc" };
+    }
+
     if (isNgo) {
       where.type = "IMAGE";
 
@@ -32,7 +46,7 @@ export async function GET(request: NextRequest) {
         take: limit + 1,
         ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: orderByClause,
         select: {
           id: true,
           url: true,
@@ -74,7 +88,7 @@ export async function GET(request: NextRequest) {
         take: limit + 1,
         ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: orderByClause,
         include: {
           branch: {
             select: { name: true },
@@ -98,7 +112,7 @@ export async function GET(request: NextRequest) {
         }));
       } else {
         // Fallback to curated static data
-        let fallback = CURATED_GALLERY_ITEMS;
+        let fallback = [...CURATED_GALLERY_ITEMS];
         if (branchId && branchId !== "all") {
           fallback = fallback.filter((it) => it.branchId === branchId);
         }
@@ -114,6 +128,15 @@ export async function GET(request: NextRequest) {
               it.description.toLowerCase().includes(searchQuery) ||
               it.category.toLowerCase().includes(searchQuery)
           );
+        }
+        if (sortParam === "desc" || sortParam === "order-desc" || sortParam === "newest") {
+          fallback.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        } else if (sortParam === "title-asc") {
+          fallback.sort((a, b) => a.title.localeCompare(b.title));
+        } else if (sortParam === "title-desc") {
+          fallback.sort((a, b) => b.title.localeCompare(a.title));
+        } else {
+          fallback.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         }
         items = fallback.slice(0, limit + 1);
       }

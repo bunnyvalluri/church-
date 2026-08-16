@@ -16,13 +16,58 @@ import {
   X,
   Bell,
   Wifi,
+  Flame,
+  Maximize2,
+  Phone,
+  User,
+  Share2,
 } from "lucide-react";
+import Image from "next/image";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
 import { useBranch } from "@/components/providers/BranchProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
+
+// Helper to encode safe URLs
+function encodeSrc(src: string | null | undefined): string {
+  if (!src) return "";
+  let clean = src.trim();
+  if (clean.startsWith("https%3A") || clean.startsWith("http%3A")) {
+    try {
+      clean = decodeURIComponent(clean);
+    } catch {}
+  }
+  if (
+    clean.startsWith("http://") ||
+    clean.startsWith("https://") ||
+    clean.startsWith("//") ||
+    clean.startsWith("data:") ||
+    clean.startsWith("blob:")
+  ) {
+    return clean;
+  }
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
+  }
+  try {
+    const [path, ...queryAndHash] = clean.split(/(?=[?#])/);
+    const encodedPath = path
+      .split("/")
+      .map((segment) => {
+        try {
+          return encodeURIComponent(decodeURIComponent(segment));
+        } catch {
+          return encodeURIComponent(segment);
+        }
+      })
+      .join("/");
+    return [encodedPath, ...queryAndHash].join("");
+  } catch {
+    return clean;
+  }
+}
 
 // ── Inline EventCard for landing page (simpler, public-facing) ──────────────
 interface PublicEvent {
@@ -82,7 +127,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
       {/* Thumbnail */}
       <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${gradientClass}`}>
         {thumbnail ? (
-          <img src={thumbnail} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={encodeSrc(thumbnail)} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           /* Decorative placeholder — visible, branded, never pitch-black */
           <div className="absolute inset-0">
@@ -171,6 +216,7 @@ export default function EventsPage() {
   const [notification, setNotification] = useState<NotificationData | null>(null);
   const [liveCount, setLiveCount] = useState(0);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [previewPoster, setPreviewPoster] = useState<string | null>(null);
 
   // ── Fetch events ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -279,6 +325,8 @@ export default function EventsPage() {
   const upcoming = filtered.filter((e) => new Date(e.date) > new Date());
   const past = filtered.filter((e) => new Date(e.date) <= new Date());
 
+  const specialCount = events.filter((e) => e.category === "SPECIAL").length;
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
@@ -286,92 +334,260 @@ export default function EventsPage() {
       {/* Notification popup */}
       <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
 
+      {/* Poster Zoom Modal */}
+      {previewPoster && (
+        <div
+          onClick={() => setPreviewPoster(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer select-none"
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+            <button
+              onClick={() => setPreviewPoster(null)}
+              className="absolute -top-12 right-0 sm:right-2 p-2 rounded-full bg-white/20 hover:bg-white text-white hover:text-slate-900 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={previewPoster}
+              alt="Special Event Poster"
+              className="max-h-[85vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/20"
+            />
+          </div>
+        </div>
+      )}
+
       {/* ── Hero Header ──────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-slate-900 dark:bg-[#080811] text-white pt-36 pb-20 md:pt-40 md:pb-24 border-b border-slate-800/80 dark:border-white/5">
+      <div className="relative overflow-hidden bg-gradient-to-b from-purple-50/80 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 text-slate-900 dark:text-white pt-36 pb-20 md:pt-40 md:pb-24 border-b border-slate-200/80 dark:border-white/5 transition-colors duration-300">
         {/* Background orbs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-8 left-1/4 w-96 h-96 rounded-full bg-violet-600/20 blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-indigo-500/20 blur-[120px]" />
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+          <div className="absolute top-8 left-1/4 w-96 h-96 rounded-full bg-violet-500/10 dark:bg-violet-600/20 blur-[120px]" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 blur-[120px]" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 dark:opacity-10" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 text-center z-10">
           <div className="mb-6 flex justify-center">
             <BackToHome />
           </div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/70 border border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-white mb-6 backdrop-blur-md shadow-md">
-            <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300/30" />
-            <span className="text-white font-extrabold tracking-wider">{t.nav?.churchName || "Kingdom of Christ"} {t.nav?.ministries || "Ministries"}</span>
-            {isSocketConnected && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-1" />}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-900/70 border border-purple-500/30 dark:border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-white mb-6 backdrop-blur-md shadow-sm">
+            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-300 fill-amber-500/30" />
+            <span className="font-extrabold tracking-wider">{t.nav?.churchName || "Kingdom of Christ"} {t.nav?.ministries || "Ministries"}</span>
+            {isSocketConnected && <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse ml-1" />}
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none mb-4 font-outfit">
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-4 font-outfit">
             {(t.events as any)?.pageTitle1 || "Events &"}{" "}
-            <span className="bg-gradient-to-r from-violet-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-violet-300 dark:via-indigo-300 dark:to-purple-300 bg-clip-text text-transparent">
               {(t.events as any)?.pageTitle2 || "Gatherings"}
             </span>
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
             {(t.events as any)?.pageSubtitle || "Stay connected with what's happening across all three branches — Shapur Nagar, Subhash Nagar, and Bahadurpally."}
           </p>
 
           {liveCount > 0 && (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-violet-900/60 border border-violet-400/40 rounded-full text-xs font-extrabold text-white shadow-md backdrop-blur-md">
-              <Bell className="w-3.5 h-3.5 text-amber-300" />
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-violet-900/60 border border-purple-300 dark:border-violet-400/40 rounded-full text-xs font-extrabold text-purple-900 dark:text-white shadow-sm backdrop-blur-md">
+              <Bell className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
               {liveCount} {(t.events as any)?.liveAdded || "new event(s) added live tonight"}
             </div>
           )}
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto mt-10 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-xl">
+          <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto mt-10 p-4 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md shadow-lg dark:shadow-xl">
             {[
               { label: (t.events as any)?.totalEvents || "Total Events", value: events.length },
               { label: (t.events as any)?.upcoming || "Upcoming", value: upcoming.length },
-              { label: (t.events as any)?.branches || "Branches", value: 3 },
+              { label: "Special Events", value: specialCount || 2 },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
-                <p className="text-[10px] sm:text-xs text-slate-300 font-bold uppercase tracking-wider mt-1">{s.label}</p>
+                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{s.value}</p>
+                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-300 font-bold uppercase tracking-wider mt-1">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── Sticky Search + Filter Bar ────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#080811]/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 shadow-md transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={(t.events as any)?.searchPlaceholder || "Search events by name or location..."}
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all"
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                <X className="w-4 h-4" />
-              </button>
-            )}
+      {/* ── SPECIAL EVENTS SPOTLIGHT BANNER ───────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-20">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900/90 via-indigo-950/95 to-slate-900/95 border border-purple-500/30 shadow-2xl backdrop-blur-xl p-6 sm:p-8 text-white">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/15 blur-[90px] pointer-events-none" />
+          
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
+            {/* Left Info Column */}
+            <div className="space-y-4 max-w-2xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black tracking-wider uppercase">
+                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  Special Revival Events
+                </span>
+                <span className="text-xs font-bold text-purple-300 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30">
+                  Subhash Nagar Branch
+                </span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight font-outfit">
+                కుటుంబ ఆశీర్వాద కూడిక & ప్రార్థన పండుగ 2026
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
+                ముఖ్య ప్రసంగీకులు <strong className="text-amber-300">రెవ. డా|| బి. శేఖర్ డానియెల్ గారు</strong> మరియు హోస్ట్ <strong className="text-purple-300">బిషప్ కుర్ర క్రీస్తు రాజు గారు</strong> సమక్షంలో కుటుంబ దీవెనల మహోత్సవం. తప్పకుండా కుటుంబ సమేతంగా పాల్గొని దేవుని ఆశీర్వాదాలను పొందండి.
+              </p>
+
+              {/* Event Metadata Chips */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
+                  <Calendar className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="font-bold">15 ఆగస్టు 2026, శనివారం || ఉదయం 10:00 గం</span>
+                </div>
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
+                  <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span className="font-bold">కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్, సుభాష్ నగర్</span>
+                </div>
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
+                  <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-bold">ఫోన్: 9704090069, 7396433856, 9640943777</span>
+                </div>
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
+                  <User className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span className="font-bold">ప్రేమతో ఆహ్వానించువారు: బిషప్ కుర్ర క్రీస్తు రాజు గారు</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    setCategoryFilter("SPECIAL");
+                    const el = document.getElementById("events-grid-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>View Special Events ({specialCount || 2})</span>
+                </button>
+                <Link
+                  href="/gallery"
+                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                >
+                  <Calendar className="w-4 h-4 text-purple-300" />
+                  <span>View Gathering Gallery</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Poster Images Showcase */}
+            <div className="grid grid-cols-2 gap-3 w-full lg:w-auto shrink-0 max-w-sm">
+              {/* Poster 1 */}
+              <div
+                onClick={() => setPreviewPoster("/images/events/family-blessing-poster-1.jpg")}
+                className="group relative rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-black"
+              >
+                <img
+                  src="/images/events/family-blessing-poster-1.jpg"
+                  alt="కుటుంబ ఆశీర్వాద కూడిక Poster 1"
+                  className="w-full h-56 object-cover object-top group-hover:opacity-90 transition-opacity"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] font-bold text-white drop-shadow truncate">కూడిక పోస్టర్ 1</span>
+                    <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Poster 2 */}
+              <div
+                onClick={() => setPreviewPoster("/images/events/family-blessing-poster-2.jpg")}
+                className="group relative rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-black"
+              >
+                <img
+                  src="/images/events/family-blessing-poster-2.jpg"
+                  alt="కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ Poster 2"
+                  className="w-full h-56 object-cover object-top group-hover:opacity-90 transition-opacity"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] font-bold text-white drop-shadow truncate">ప్రార్థన పండుగ 2026</span>
+                    <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="h-10 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all cursor-pointer"
-          >
-            <option value="ALL" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{(t.events as any)?.allCategories || "All Categories"}</option>
-            {["WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN", "SPECIAL"].map((c) => (
-              <option key={c} value={c} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                {(t.events?.categories as any)?.[c] || c.charAt(0) + c.slice(1).toLowerCase()}
-              </option>
-            ))}
-          </select>
+        </div>
+      </section>
+
+      {/* ── Sticky Search + Filter Bar ────────────────────────────────────────── */}
+      <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#080811]/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 shadow-md transition-colors duration-300 mt-8">
+        <div className="max-w-7xl mx-auto px-6 py-3.5 space-y-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events..."
+                className="w-full h-10 pl-9 sm:pl-10 pr-9 sm:pr-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="h-10 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all cursor-pointer"
+            >
+              <option value="ALL" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{(t.events as any)?.allCategories || "All Categories"}</option>
+              {["SPECIAL", "WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN"].map((c) => (
+                <option key={c} value={c} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                  {c === "SPECIAL" ? `Special Events (${specialCount || 2})` : (t.events?.categories as any)?.[c] || c.charAt(0) + c.slice(1).toLowerCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Quick Category Chips */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
+            {[
+              { key: "ALL", label: "All Events", count: events.length },
+              { key: "SPECIAL", label: "Special Events", count: specialCount || 2, isSpecial: true },
+              { key: "WORSHIP", label: "Worship", count: events.filter((e) => e.category === "WORSHIP").length },
+              { key: "PRAYER", label: "Prayer", count: events.filter((e) => e.category === "PRAYER").length },
+              { key: "YOUTH", label: "Youth", count: events.filter((e) => e.category === "YOUTH").length },
+              { key: "CHILDREN", label: "Children", count: events.filter((e) => e.category === "CHILDREN").length },
+            ].map((cat) => {
+              const isActive = categoryFilter === cat.key;
+              return (
+                <button
+                  key={cat.key}
+                  onClick={() => setCategoryFilter(cat.key)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
+                    isActive
+                      ? "bg-purple-600 text-white border-purple-500 shadow-md"
+                      : cat.isSpecial
+                      ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20"
+                      : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                  }`}
+                >
+                  {cat.isSpecial && <Flame className="w-3 h-3 text-amber-500 fill-amber-500" />}
+                  <span>{cat.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${isActive ? "bg-white/20 text-white" : "bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400"}`}>
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* ── Events Content ────────────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
+      <div id="events-grid-section" className="max-w-7xl mx-auto px-6 py-12 space-y-12">
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -52,6 +52,29 @@ function parseTargetDate(dateStr: string, timeStr?: string): Date | null {
   return null;
 }
 
+function safeImgSrc(src: string | null | undefined): string {
+  if (!src) return "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80";
+  let clean = src.trim();
+  if (clean.startsWith("https%3A") || clean.startsWith("http%3A")) {
+    try {
+      clean = decodeURIComponent(clean);
+    } catch {}
+  }
+  if (
+    clean.startsWith("http://") ||
+    clean.startsWith("https://") ||
+    clean.startsWith("//") ||
+    clean.startsWith("data:") ||
+    clean.startsWith("blob:")
+  ) {
+    return clean;
+  }
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
+  }
+  return clean;
+}
+
 // Countdown hook
 function useCountdown(targetDate: string, targetTime?: string) {
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
@@ -254,7 +277,7 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
         ) : events.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {events.map((event, index) => {
-              const displayImage = event.image || "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=80";
+              const displayImage = safeImgSrc(event.image);
               const branchName = event.branch?.name;
               
               // Only render countdown on the absolute soonest event (index 0)

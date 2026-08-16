@@ -4,19 +4,21 @@ const path = require('path');
 const dir = path.join(__dirname, 'public/gallery/subhash-nagar-family-blessing');
 const files = fs.readdirSync(dir).filter(f => f.endsWith('.jpeg') || f.endsWith('.jpg') || f.endsWith('.png'));
 
-// Sort logically: 1.jpeg, 1.0.jpeg, 1.2.jpeg ... 2.jpeg ... 67.jpeg
-files.sort((a, b) => {
-  const cleanA = a.replace('.jpeg', '').replace('.jpg', '').replace('.png', '');
-  const cleanB = b.replace('.jpeg', '').replace('.jpg', '').replace('.png', '');
-  const numA = parseFloat(cleanA);
-  const numB = parseFloat(cleanB);
-  if (numA !== numB) return numA - numB;
-  return a.localeCompare(b);
-});
+// Integer files sorted 1..68
+const integerFiles = files.filter(f => /^\d+\.(jpeg|jpg|png)$/.test(f));
+integerFiles.sort((a, b) => parseInt(a) - parseInt(b));
 
-console.log('Found total Subhash Nagar files:', files.length);
+// Decimal/other files (excluding 1.2.jpeg)
+const targetLast = '1.2.jpeg';
+const decimalFiles = files.filter(f => !/^\d+\.(jpeg|jpg|png)$/.test(f) && f !== targetLast);
+decimalFiles.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-const subhashItems = files.map((file, idx) => {
+// Ordered list: integer photos 1..68, decimal photos, and 1.2.jpeg at the very end
+const orderedFiles = [...integerFiles, ...decimalFiles, ...(files.includes(targetLast) ? [targetLast] : [])];
+
+console.log('Total files ordered:', orderedFiles.length, '| Last file:', orderedFiles[orderedFiles.length - 1]);
+
+const subhashItems = orderedFiles.map((file, idx) => {
   const num = idx + 1;
   let category = 'Family Blessings';
   let title = 'Family Blessing Gathering #' + num;
@@ -79,70 +81,40 @@ const bannerItem = {
   createdAt: new Date('2026-07-15T09:00:00.000Z').toISOString()
 };
 
-const otherChurchItems = [
-  {
-    id: 'gal_001',
-    title: 'Sunday Worship Celebration',
-    description: 'Beautiful moments of bilingual Telugu and English worship in the presence of the Lord.',
-    url: '/images/gallery/worship-june-2024.jpg',
-    thumbnailUrl: '/images/gallery/worship-june-2024.jpg',
-    category: 'Worship & Praise',
-    branchId: 'cmskewevf0000lz9gnoh1n8ve',
-    branchName: 'Shapur Nagar',
-    eventName: 'Sunday Service',
-    eventDate: 'June 2024',
-    type: 'image',
-    tags: ['Shapur Nagar', 'Sunday Worship', 'Praise'],
-    createdAt: new Date('2026-06-15T10:00:00.000Z').toISOString()
-  },
-  {
-    id: 'gal_002',
-    title: 'Youth Camp & Leadership Summit',
-    description: 'Empowering the next generation with faith, character, discipleship, and spiritual fire.',
-    url: '/images/gallery/youth-camp-2023.jpg',
-    thumbnailUrl: '/images/gallery/youth-camp-2023.jpg',
-    category: 'Youth & Children',
-    branchId: 'cmrgwqhc30002fsk8ncn255w5',
-    branchName: 'Bahadurpally',
-    eventName: 'Youth Camp',
-    eventDate: 'May 2024',
-    type: 'image',
-    tags: ['Bahadurpally', 'Youth Camp', 'Discipleship'],
-    createdAt: new Date('2026-05-20T10:00:00.000Z').toISOString()
-  },
-  {
-    id: 'gal_004',
-    title: 'Community Outreach & Care Drive',
-    description: 'Serving underprivileged families with food provisions, medical assistance, and love of Christ.',
-    url: '/images/gallery/outreach-slum.jpg',
-    thumbnailUrl: '/images/gallery/outreach-slum.jpg',
-    category: 'Outreach & Missions',
-    branchId: null,
-    branchName: 'All Branches',
-    eventName: 'Slum Outreach Ministry',
-    eventDate: 'April 2024',
-    type: 'image',
-    tags: ['Outreach', 'Charity', 'Food Drive'],
-    createdAt: new Date('2026-04-10T10:00:00.000Z').toISOString()
-  },
-  {
-    id: 'gal_006',
-    title: 'Water Baptism Service',
-    description: 'Rejoicing with new believers as they make their public confession of faith through biblical baptism.',
-    url: '/images/gallery/baptism-april-2024.jpg',
-    thumbnailUrl: '/images/gallery/baptism-april-2024.jpg',
-    category: 'Sacraments & Baptism',
-    branchId: 'cmrgwqhc30001fsk8mysbmp50',
-    branchName: 'Subhash Nagar',
-    eventName: 'Baptism Sunday',
-    eventDate: 'April 2024',
-    type: 'image',
-    tags: ['Baptism', 'Salvation', 'New Life'],
-    createdAt: new Date('2026-04-05T10:00:00.000Z').toISOString()
-  }
-];
+const specialEventPoster1 = {
+  id: 'subhash-family-blessing-poster-1',
+  title: 'కుటుంబ ఆశీర్వాద కూడిక — Official Revival Poster',
+  description: 'Special revival event poster with keynote speaker Rev. Dr. B. Shekhar Daniel Garu & Bishop Kurra Kristhu Raju Garu at Subhash Nagar.',
+  url: '/images/events/family-blessing-poster-1.jpg',
+  thumbnailUrl: '/images/events/family-blessing-poster-1.jpg',
+  category: 'Special Events',
+  branchId: 'cmrgwqhc30001fsk8mysbmp50',
+  branchName: 'Subhash Nagar',
+  eventName: 'Family Blessing Gathering',
+  eventDate: 'August 15, 2026',
+  type: 'image',
+  tags: ['Subhash Nagar', 'Special Events', 'Family Blessing', 'Rev. Dr. B. Shekhar Daniel', 'Bishop Kurra Kristhu Raju'],
+  createdAt: new Date('2026-08-15T09:00:00.000Z').toISOString()
+};
 
-const allGalleryItems = [bannerItem, ...subhashItems, ...otherChurchItems];
+const specialEventPoster2 = {
+  id: 'subhash-family-blessing-poster-2',
+  title: '2026 కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ — Festival Poster',
+  description: 'Official 2026 Family Blessing Prayer Festival poster welcoming families across Hyderabad for heavenly grace.',
+  url: '/images/events/family-blessing-poster-2.jpg',
+  thumbnailUrl: '/images/events/family-blessing-poster-2.jpg',
+  category: 'Special Events',
+  branchId: 'cmrgwqhc30001fsk8mysbmp50',
+  branchName: 'Subhash Nagar',
+  eventName: 'Family Blessing Prayer Festival',
+  eventDate: 'August 15, 2026',
+  type: 'image',
+  tags: ['Subhash Nagar', 'Special Events', 'Prayer Festival', 'Bishop Kurra Kristhu Raju'],
+  createdAt: new Date('2026-08-15T09:01:00.000Z').toISOString()
+};
+
+// Only authentic, verified church media and photos
+const allGalleryItems = [bannerItem, specialEventPoster1, specialEventPoster2, ...subhashItems];
 
 // Write JSON
 fs.writeFileSync(path.join(__dirname, 'lib/galleryData.json'), JSON.stringify(allGalleryItems, null, 2), 'utf8');

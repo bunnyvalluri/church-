@@ -34,6 +34,7 @@ import {
   Loader2,
   Flame,
   Layers,
+  ArrowUpDown,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
@@ -47,25 +48,104 @@ const loadedCache = new Set<string>();
 // Helper to encode safe URLs
 function encodeSrc(src: string | null | undefined): string {
   if (!src) return "";
+  let clean = src.trim();
+  if (clean.startsWith("https%3A") || clean.startsWith("http%3A")) {
+    try {
+      clean = decodeURIComponent(clean);
+    } catch {}
+  }
   if (
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("//") ||
-    src.startsWith("data:") ||
-    src.startsWith("blob:")
+    clean.startsWith("http://") ||
+    clean.startsWith("https://") ||
+    clean.startsWith("//") ||
+    clean.startsWith("data:") ||
+    clean.startsWith("blob:")
   ) {
-    return src;
+    return clean;
+  }
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
   }
   try {
-    const [path, ...queryAndHash] = src.split(/(?=[?#])/);
+    const [path, ...queryAndHash] = clean.split(/(?=[?#])/);
     const encodedPath = path
       .split("/")
-      .map((segment) => encodeURIComponent(segment))
+      .map((segment) => {
+        try {
+          return encodeURIComponent(decodeURIComponent(segment));
+        } catch {
+          return encodeURIComponent(segment);
+        }
+      })
       .join("/");
     return [encodedPath, ...queryAndHash].join("");
   } catch {
-    return src;
+    return clean;
   }
+}
+
+// 8 Distinct Vibrant Color Themes for all 8 Category Buttons
+const CATEGORY_BUTTON_THEMES: Record<
+  string,
+  {
+    active: string;
+    inactive: string;
+    badgeActive: string;
+    badgeInactive: string;
+  }
+> = {
+  All: {
+    active: "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white border-violet-500 shadow-md shadow-violet-600/30 scale-[1.02]",
+    inactive: "bg-violet-500/10 hover:bg-violet-500/20 text-violet-800 dark:text-violet-200 border-violet-300 dark:border-violet-500/30 hover:border-violet-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-violet-200/80 dark:bg-violet-500/25 text-violet-900 dark:text-violet-200",
+  },
+  "Family Blessings": {
+    active: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-md shadow-emerald-600/30 scale-[1.02]",
+    inactive: "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-500/30 hover:border-emerald-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-emerald-200/80 dark:bg-emerald-500/25 text-emerald-900 dark:text-emerald-200",
+  },
+  "Worship & Praise": {
+    active: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-500 shadow-md shadow-blue-600/30 scale-[1.02]",
+    inactive: "bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-500/30 hover:border-blue-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-blue-200/80 dark:bg-blue-500/25 text-blue-900 dark:text-blue-200",
+  },
+  "Pastoral Ministry": {
+    active: "bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 text-white border-amber-500 shadow-md shadow-amber-600/30 scale-[1.02]",
+    inactive: "bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-500/30 hover:border-amber-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-amber-200/80 dark:bg-amber-500/25 text-amber-900 dark:text-amber-200",
+  },
+  "Fellowship & Joy": {
+    active: "bg-gradient-to-r from-orange-500 via-orange-600 to-rose-500 text-white border-orange-500 shadow-md shadow-orange-600/30 scale-[1.02]",
+    inactive: "bg-orange-500/10 hover:bg-orange-500/20 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-500/30 hover:border-orange-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-orange-200/80 dark:bg-orange-500/25 text-orange-900 dark:text-orange-200",
+  },
+  "Youth & Children": {
+    active: "bg-gradient-to-r from-pink-500 via-rose-500 to-fuchsia-600 text-white border-pink-500 shadow-md shadow-pink-600/30 scale-[1.02]",
+    inactive: "bg-pink-500/10 hover:bg-pink-500/20 text-pink-800 dark:text-pink-200 border-pink-300 dark:border-pink-500/30 hover:border-pink-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-pink-200/80 dark:bg-pink-500/25 text-pink-900 dark:text-pink-200",
+  },
+  "Special Events": {
+    active: "bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white border-red-500 shadow-md shadow-red-600/30 scale-[1.02]",
+    inactive: "bg-red-500/10 hover:bg-red-500/20 text-red-800 dark:text-red-200 border-red-300 dark:border-red-500/30 hover:border-red-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-red-200/80 dark:bg-red-500/25 text-red-900 dark:text-red-200",
+  },
+  "Saved Photos": {
+    active: "bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white border-rose-500 shadow-md shadow-rose-600/30 scale-[1.02]",
+    inactive: "bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 dark:text-rose-200 border-rose-300 dark:border-rose-500/30 hover:border-rose-400",
+    badgeActive: "bg-white/25 text-white",
+    badgeInactive: "bg-rose-200/80 dark:bg-rose-500/25 text-rose-900 dark:text-rose-200",
+  },
+};
+
+function getCategoryTheme(name: string) {
+  return CATEGORY_BUTTON_THEMES[name] || CATEGORY_BUTTON_THEMES["All"];
 }
 
 // Toast notification interface
@@ -84,6 +164,7 @@ export default function ChurchGalleryPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
+  const [sortOrder, setSortOrder] = useState<"order-asc" | "order-desc" | "newest" | "title-asc">("order-asc");
   const [viewMode, setViewMode] = useState<"masonry" | "standard" | "compact">("masonry");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -99,7 +180,7 @@ export default function ChurchGalleryPage() {
   const [isSlideshowPlaying, setIsSlideshowPlaying] = useState(false);
   const [slideshowProgress, setSlideshowProgress] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [showInfoPanel, setShowInfoPanel] = useState(true);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
@@ -145,10 +226,10 @@ export default function ChurchGalleryPage() {
     }, 2800);
   };
 
-  // Reset pagination when active filter changes
+  // Reset pagination when active filter or sort changes
   useEffect(() => {
     setDisplayCount(INITIAL_BATCH);
-  }, [activeCategory, searchQuery, selectedBranch, favoritesOnly]);
+  }, [activeCategory, searchQuery, selectedBranch, favoritesOnly, sortOrder]);
 
   // Fetch gallery items from API (non-blocking background sync)
   useEffect(() => {
@@ -159,7 +240,7 @@ export default function ChurchGalleryPage() {
       }
       try {
         const branchParam = selectedBranch === "all" ? "" : `&branch=${encodeURIComponent(selectedBranch)}`;
-        const res = await fetch(`/api/gallery?limit=200${branchParam}`);
+        const res = await fetch(`/api/gallery?limit=300&sort=${sortOrder}${branchParam}`);
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.success && Array.isArray(data.galleryItems) && data.galleryItems.length > 0) {
@@ -176,7 +257,7 @@ export default function ChurchGalleryPage() {
     return () => {
       isMounted = false;
     };
-  }, [selectedBranch]);
+  }, [selectedBranch, sortOrder]);
 
   // Sync with global branch provider if set
   useEffect(() => {
@@ -198,9 +279,9 @@ export default function ChurchGalleryPage() {
     ];
   }, [items]);
 
-  // Filter items based on activeCategory, search, branch, and favorites
+  // Filter & sort items based on activeCategory, search, branch, favorites, and sortOrder
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    const result = items.filter((item) => {
       // Category filter
       if (activeCategory !== "All" && item.category !== activeCategory) {
         return false;
@@ -223,7 +304,21 @@ export default function ChurchGalleryPage() {
       }
       return true;
     });
-  }, [items, activeCategory, favoritesOnly, favorites, searchQuery]);
+
+    // Apply strict order-wise sorting
+    return [...result].sort((a, b) => {
+      if (sortOrder === "order-desc") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      } else if (sortOrder === "newest") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      } else if (sortOrder === "title-asc") {
+        return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" });
+      } else {
+        // "order-asc" (Default chronological order: Photo #1 to #80)
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+    });
+  }, [items, activeCategory, favoritesOnly, favorites, searchQuery, sortOrder]);
 
   // Derived visible items for progressive rendering
   const visibleItems = useMemo(() => {
@@ -394,7 +489,7 @@ export default function ChurchGalleryPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-purple-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-purple-500 selection:text-white transition-colors duration-300">
       <Navbar />
 
       {/* Floating Toast Notification */}
@@ -419,48 +514,48 @@ export default function ChurchGalleryPage() {
       </AnimatePresence>
 
       {/* HERO SECTION - Deep Atmospheric Glow & Glassmorphism */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-purple-950/40 via-slate-950 to-slate-950 border-b border-white/5">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-purple-50/80 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
         {/* Animated Background Mesh & Lights */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.35),rgba(255,255,255,0))]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-purple-600/15 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.12),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.35),rgba(255,255,255,0))]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-purple-500/10 dark:bg-purple-600/15 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute top-10 right-10 w-72 h-72 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/10 dark:bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center gap-3">
               <BackToHome variant="glass" />
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-400/30 text-purple-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/30 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
                 <span>Captured Moments of Faith</span>
               </div>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white font-outfit">
-              Church <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">Gallery</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
+              Church <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-purple-400 dark:via-pink-400 dark:to-amber-300 bg-clip-text text-transparent">Gallery</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
               Relive the powerful moments of revival, family blessings, vibrant worship, and heartfelt fellowship across all Kingdom of Christ branches.
             </p>
 
             {/* Live Stats Chips */}
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
-                <Camera className="w-4 h-4 text-purple-400" />
-                <span className="text-xs sm:text-sm font-bold text-white">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+                <Camera className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
                   {items.length}+ Photos Captured
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
-                <MapPin className="w-4 h-4 text-amber-400" />
-                <span className="text-xs sm:text-sm font-bold text-white">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+                <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
                   Subhash Nagar & Multi-Branch
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md">
-                <Calendar className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs sm:text-sm font-bold text-white">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+                <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
                   Family Blessing Gathering
                 </span>
               </div>
@@ -487,22 +582,22 @@ export default function ChurchGalleryPage() {
 
       {/* FEATURED EVENT HIGHLIGHT CARD - Subhash Nagar Family Blessing Gathering */}
       <section className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-950/80 via-slate-900/90 to-indigo-950/80 border border-purple-500/20 shadow-2xl backdrop-blur-xl p-6 sm:p-8">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-white/95 to-indigo-100/90 dark:from-purple-950/80 dark:via-slate-900/90 dark:to-indigo-950/80 border border-purple-200 dark:border-purple-500/20 shadow-xl dark:shadow-2xl backdrop-blur-xl p-6 sm:p-8">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 blur-[90px] pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
             <div className="space-y-3 max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase">
-                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 dark:border-amber-400/30 text-amber-700 dark:text-amber-300 text-xs font-black tracking-wider uppercase">
+                  <Flame className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
                   Featured Revival Event
                 </span>
-                <span className="text-xs text-purple-300 font-semibold">Subhash Nagar Branch</span>
+                <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Subhash Nagar Branch</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 Family Blessing Gathering — 78 Photos Logged
               </h2>
-              <p className="text-sm text-slate-300 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 An unforgettable service with Bishop Kurra Kristhu Raju ministering prayers of blessing, unity, healing, and generational grace over every family in attendance.
               </p>
             </div>
@@ -525,9 +620,9 @@ export default function ChurchGalleryPage() {
                   setLightboxIndex(subhashFirstIdx !== -1 ? subhashFirstIdx : 0);
                   setIsSlideshowPlaying(false);
                 }}
-                className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold border border-white/10 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+                className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 text-slate-900 dark:text-white text-xs sm:text-sm font-bold border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md transition-all hover:scale-105 active:scale-95"
               >
-                <Maximize2 className="w-4 h-4 text-purple-300" />
+                <Maximize2 className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                 <span>View Fullscreen</span>
               </button>
             </div>
@@ -539,61 +634,83 @@ export default function ChurchGalleryPage() {
       <main className="container mx-auto px-4 sm:px-6 py-12">
         <div className="space-y-6 mb-10">
           {/* Top Bar: Search Bar & Branch Switcher & Layout Buttons */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-2 sm:p-3 rounded-2xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-lg">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-2 sm:p-3 rounded-2xl bg-white/90 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-lg">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search moments by event, title, prayer, or keyword..."
-                className="w-full pl-11 pr-10 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/80 transition-all"
+                placeholder="Search photos..."
+                className="w-full pl-9 sm:pl-11 pr-9 sm:pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            {/* Branch Selector Dropdown */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-semibold text-slate-300">
-                <MapPin className="w-3.5 h-3.5 text-purple-400" />
+            {/* Branch & Sort Selectors Dropdowns */}
+            <div className="grid grid-cols-1 sm:flex sm:flex-nowrap items-center gap-2">
+              {/* Branch Selector */}
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                 <select
                   value={selectedBranch}
                   onChange={(e) => setSelectedBranch(e.target.value)}
                   aria-label="Filter photos by church branch"
-                  className="bg-transparent text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm"
+                  className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
                 >
-                  <option value="all" className="bg-slate-900 text-white">
+                  <option value="all" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                     All Church Branches ({items.length})
                   </option>
-                  <option value="cmrgwqhc30001fsk8mysbmp50" className="bg-slate-900 text-white">
+                  <option value="cmrgwqhc30001fsk8mysbmp50" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                     Subhash Nagar Branch ({subhashPhotosCount})
                   </option>
-                  <option value="cmskewevf0000lz9gnoh1n8ve" className="bg-slate-900 text-white">
+                  <option value="cmskewevf0000lz9gnoh1n8ve" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                     Shapur Nagar Branch
                   </option>
-                  <option value="cmrgwqhc30002fsk8ncn255w5" className="bg-slate-900 text-white">
+                  <option value="cmrgwqhc30002fsk8ncn255w5" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
                     Bahadurpally Branch
                   </option>
                 </select>
               </div>
 
+              {/* Sort Order Selector */}
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <ArrowUpDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as any)}
+                  aria-label="Sort gallery photos"
+                  className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
+                >
+                  <option value="order-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
+                    Order Wise (Photo 1 → {items.length})
+                  </option>
+                  <option value="order-desc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
+                    Reverse Order ({items.length} → 1)
+                  </option>
+                  <option value="title-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
+                    Title (A → Z)
+                  </option>
+                </select>
+              </div>
+
               {/* View Layout Switcher */}
-              <div className="hidden sm:flex items-center p-1 bg-white/[0.04] border border-white/10 rounded-xl">
+              <div className="hidden sm:flex items-center p-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl">
                 <button
                   onClick={() => setViewMode("masonry")}
                   title="Masonry View"
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "masonry"
                       ? "bg-purple-600 text-white shadow-md"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   <Columns className="w-4 h-4" />
@@ -604,7 +721,7 @@ export default function ChurchGalleryPage() {
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "standard"
                       ? "bg-purple-600 text-white shadow-md"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -615,7 +732,7 @@ export default function ChurchGalleryPage() {
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "compact"
                       ? "bg-purple-600 text-white shadow-md"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
@@ -624,83 +741,151 @@ export default function ChurchGalleryPage() {
             </div>
           </div>
 
-          {/* Category Filter Pills (Horizontal Scrollable) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat.name && !favoritesOnly;
-              return (
-                <button
-                  key={cat.name}
-                  onClick={() => {
-                    setActiveCategory(cat.name);
-                    setFavoritesOnly(false);
-                  }}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border ${
-                    isActive
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500/50 shadow-lg shadow-purple-900/30 scale-[1.02]"
-                      : "bg-slate-900/60 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
-                  }`}
-                >
-                  <span>{cat.name}</span>
-                  <span
-                    className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold ${
-                      isActive ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
+          {/* Category Filter Section */}
+          <div>
+            {/* Mobile View: Structured 2-column grid showing ALL categories & Saved Photos with 8 distinct vibrant colors */}
+            <div className="sm:hidden grid grid-cols-2 gap-1.5">
+              {categories.map((cat) => {
+                const isActive = activeCategory === cat.name && !favoritesOnly;
+                const theme = getCategoryTheme(cat.name);
+                return (
+                  <button
+                    key={cat.name}
+                    id={`gallery-filter-m-${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
+                    onClick={() => {
+                      setActiveCategory(cat.name);
+                      setFavoritesOnly(false);
+                    }}
+                    className={`px-3 py-2.5 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 shadow-sm ${
+                      isActive ? theme.active : theme.inactive
                     }`}
                   >
-                    {cat.count}
-                  </span>
-                </button>
-              );
-            })}
+                    <span className="truncate">{cat.name}</span>
+                    <span
+                      className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
+                        isActive ? theme.badgeActive : theme.badgeInactive
+                      }`}
+                    >
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
 
-            {/* Saved Favorites Toggle */}
-            <button
-              onClick={() => setFavoritesOnly((prev) => !prev)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border ${
-                favoritesOnly
-                  ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-lg shadow-rose-900/30 scale-[1.02]"
-                  : "bg-slate-900/60 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
-              }`}
-            >
-              <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-400"}`} />
-              <span>Saved Photos</span>
-              <span
-                className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold ${
-                  favoritesOnly ? "bg-white/20 text-white" : "bg-white/5 text-slate-400"
-                }`}
-              >
-                {favorites.size}
-              </span>
-            </button>
+              {/* Mobile Saved Photos Button */}
+              {(() => {
+                const theme = getCategoryTheme("Saved Photos");
+                return (
+                  <button
+                    id="gallery-filter-m-saved"
+                    onClick={() => setFavoritesOnly((prev) => !prev)}
+                    className={`px-3 py-2.5 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 shadow-sm ${
+                      favoritesOnly ? theme.active : theme.inactive
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <Heart className={`w-3.5 h-3.5 flex-shrink-0 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
+                      <span className="truncate">Saved Photos</span>
+                    </div>
+                    <span
+                      className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
+                        favoritesOnly ? theme.badgeActive : theme.badgeInactive
+                      }`}
+                    >
+                      {favorites.size}
+                    </span>
+                  </button>
+                );
+              })()}
+            </div>
+
+            {/* Desktop & Tablet: Horizontal Scrollable Pills with 8 distinct theme colors */}
+            <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
+              {categories.map((cat) => {
+                const isActive = activeCategory === cat.name && !favoritesOnly;
+                const theme = getCategoryTheme(cat.name);
+                return (
+                  <button
+                    key={cat.name}
+                    onClick={() => {
+                      setActiveCategory(cat.name);
+                      setFavoritesOnly(false);
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
+                      isActive ? theme.active : theme.inactive
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    <span
+                      className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                        isActive ? theme.badgeActive : theme.badgeInactive
+                      }`}
+                    >
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+
+              {/* Saved Favorites Toggle */}
+              {(() => {
+                const theme = getCategoryTheme("Saved Photos");
+                return (
+                  <button
+                    onClick={() => setFavoritesOnly((prev) => !prev)}
+                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
+                      favoritesOnly ? theme.active : theme.inactive
+                    }`}
+                  >
+                    <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
+                    <span>Saved Photos</span>
+                    <span
+                      className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                        favoritesOnly ? theme.badgeActive : theme.badgeInactive
+                      }`}
+                    >
+                      {favorites.size}
+                    </span>
+                  </button>
+                );
+              })()}
+            </div>
           </div>
 
           {/* Active Filter Info Bar */}
-          <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
             <div>
-              Showing <span className="font-bold text-white">{filteredItems.length}</span>{" "}
+              Showing <span className="font-bold text-slate-900 dark:text-white">{filteredItems.length}</span>{" "}
               {filteredItems.length === 1 ? "moment" : "moments"}
               {activeCategory !== "All" && (
                 <span>
                   {" "}
-                  in <span className="text-purple-400 font-semibold">{activeCategory}</span>
+                  in <span className="text-purple-600 dark:text-purple-400 font-semibold">{activeCategory}</span>
                 </span>
               )}
               {searchQuery && (
                 <span>
                   {" "}
-                  matching &ldquo;<span className="text-amber-400 font-semibold">{searchQuery}</span>&rdquo;
+                  matching &ldquo;<span className="text-amber-600 dark:text-amber-400 font-semibold">{searchQuery}</span>&rdquo;
+                </span>
+              )}
+              {sortOrder !== "order-asc" && (
+                <span className="text-slate-500 dark:text-slate-400">
+                  {" "}
+                  • Sorted: <span className="text-amber-600 dark:text-amber-300 font-semibold">{sortOrder === "order-desc" ? "Reverse" : "Title A-Z"}</span>
                 </span>
               )}
             </div>
 
-            {(activeCategory !== "All" || searchQuery || favoritesOnly) && (
+            {(activeCategory !== "All" || searchQuery || favoritesOnly || sortOrder !== "order-asc") && (
               <button
                 onClick={() => {
                   setActiveCategory("All");
                   setSearchQuery("");
                   setFavoritesOnly(false);
+                  setSortOrder("order-asc");
                 }}
-                className="text-purple-400 hover:text-purple-300 font-bold underline transition-colors"
+                className="text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 font-bold underline transition-colors"
               >
                 Reset filters
               </button>
@@ -712,17 +897,17 @@ export default function ChurchGalleryPage() {
         {isLoading && items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
-            <p className="text-sm font-bold text-slate-400 tracking-wide">
+            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 tracking-wide">
               Loading high-resolution gallery moments...
             </p>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="text-center py-24 px-4 rounded-3xl bg-slate-900/40 border border-dashed border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mx-auto">
+          <div className="text-center py-24 px-4 rounded-3xl bg-slate-100/70 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-white/10 backdrop-blur-md max-w-xl mx-auto space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto">
               <Camera className="w-8 h-8 opacity-60" />
             </div>
-            <h3 className="text-lg font-bold text-white">No gallery moments found</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">No gallery moments found</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Try adjusting your search keywords or switching category filters to see more photos.
             </p>
             <button
@@ -731,6 +916,7 @@ export default function ChurchGalleryPage() {
                 setSearchQuery("");
                 setFavoritesOnly(false);
                 setSelectedBranch("all");
+                setSortOrder("order-asc");
               }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md"
             >
@@ -760,13 +946,13 @@ export default function ChurchGalleryPage() {
                       setLightboxIndex(actualLightboxIndex);
                       setIsSlideshowPlaying(false);
                     }}
-                    className={`group relative bg-slate-900/80 rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 shadow-lg hover:shadow-2xl hover:shadow-purple-900/20 transition-all duration-300 hover:-translate-y-1 transform-gpu cursor-pointer flex flex-col justify-between ${
+                    className={`group relative bg-white dark:bg-slate-900/80 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 hover:border-purple-500/50 shadow-md hover:shadow-xl dark:shadow-lg dark:hover:shadow-2xl dark:hover:shadow-purple-900/20 transition-all duration-300 hover:-translate-y-1 transform-gpu cursor-pointer flex flex-col justify-between ${
                       viewMode === "masonry" ? "break-inside-avoid mb-6" : ""
                     }`}
                   >
                     {/* Media Container */}
                     <div
-                      className={`relative w-full overflow-hidden bg-slate-950 ${
+                      className={`relative w-full overflow-hidden bg-slate-100 dark:bg-slate-950 ${
                         viewMode === "compact"
                           ? "aspect-square"
                           : viewMode === "standard"
@@ -777,13 +963,13 @@ export default function ChurchGalleryPage() {
                       <GalleryCardImage
                         src={item.url}
                         title={item.title}
-                        priority={index < 6}
+                        priority={index < 12}
                       />
 
                       {/* Top Badges */}
                       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-white/10">
-                          #{index + 1}
+                        <span className="px-2.5 py-1 rounded-full bg-slate-900/70 dark:bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-white/20">
+                          #{actualLightboxIndex + 1}
                         </span>
                         <span className="px-2.5 py-1 rounded-full bg-purple-600/90 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-purple-400/30">
                           {item.category.toUpperCase()}
@@ -841,18 +1027,18 @@ export default function ChurchGalleryPage() {
 
                     {/* Card Footer Caption (for non-compact views) */}
                     {viewMode !== "compact" && (
-                      <div className="p-4 sm:p-5 bg-slate-900/90 border-t border-white/5 space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
-                          <span className="flex items-center gap-1 text-purple-300">
+                      <div className="p-4 sm:p-5 bg-white/95 dark:bg-slate-900/90 border-t border-slate-100 dark:border-white/5 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                          <span className="flex items-center gap-1 text-purple-600 dark:text-purple-300">
                             <MapPin className="w-3 h-3" />
                             {item.branchName || "Subhash Nagar"}
                           </span>
                           <span>{item.eventDate || "July 2026"}</span>
                         </div>
-                        <h4 className="text-sm font-bold text-white leading-tight group-hover:text-purple-300 transition-colors line-clamp-1">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors line-clamp-1">
                           {item.title}
                         </h4>
-                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed font-normal">
                           {item.description}
                         </p>
                       </div>
@@ -867,7 +1053,7 @@ export default function ChurchGalleryPage() {
               <div ref={sentinelRef} className="pt-12 pb-6 flex flex-col items-center justify-center gap-3">
                 <button
                   onClick={() => setDisplayCount((prev) => Math.min(prev + BATCH_SIZE, filteredItems.length))}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-lg hover:scale-105 active:scale-95"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-50 dark:bg-purple-600/20 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white border border-purple-200 dark:border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-md hover:scale-105 active:scale-95"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Load More Moments ({filteredItems.length - displayCount} remaining)</span>
@@ -1029,36 +1215,36 @@ export default function ChurchGalleryPage() {
             )}
 
             {/* Main Lightbox Display Area */}
-            <div className="relative flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
+            <div className="relative flex-1 flex items-center justify-center p-1 sm:p-4 overflow-hidden">
               {/* Previous Photo Button */}
               <button
                 onClick={prevPhoto}
                 title="Previous Photo (Left Arrow)"
-                className="absolute left-3 sm:left-6 z-30 w-12 h-12 rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+                className="absolute left-2 sm:left-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               {/* Next Photo Button */}
               <button
                 onClick={nextPhoto}
                 title="Next Photo (Right Arrow)"
-                className="absolute right-3 sm:right-6 z-30 w-12 h-12 rounded-2xl bg-black/60 hover:bg-purple-600 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
+                className="absolute right-2 sm:right-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               {/* Active Photo Container */}
               <motion.div
                 key={currentLightboxItem.id}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.25 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
                 className="relative w-full h-full flex items-center justify-center overflow-hidden"
               >
                 <div
-                  className="relative w-full h-full max-w-6xl max-h-[75vh] flex items-center justify-center transition-transform duration-200"
+                  className="relative w-full h-full max-w-6xl max-h-[82vh] sm:max-h-[85vh] flex items-center justify-center transition-transform duration-200"
                   style={{ transform: `scale(${zoomLevel})` }}
                 >
                   <Image
@@ -1067,28 +1253,48 @@ export default function ChurchGalleryPage() {
                     fill
                     unoptimized
                     priority
-                    className="object-contain drop-shadow-2xl"
+                    className="object-contain drop-shadow-2xl select-none"
                   />
                 </div>
               </motion.div>
 
-              {/* Floating Info Drawer */}
+              {/* Discreet Floating Photo Info Pill (when panel is collapsed) */}
+              {!showInfoPanel && (
+                <button
+                  onClick={() => setShowInfoPanel(true)}
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1.5 rounded-full bg-slate-950/70 hover:bg-purple-600 text-white/90 hover:text-white border border-white/20 backdrop-blur-md text-[11px] font-bold shadow-lg transition-all hover:scale-105 flex items-center gap-1.5"
+                >
+                  <Info className="w-3.5 h-3.5 text-purple-300" />
+                  <span>Photo Info</span>
+                </button>
+              )}
+
+              {/* Floating Info Drawer (collapsible) */}
               {showInfoPanel && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  className="absolute bottom-2 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-md p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-white/15 backdrop-blur-2xl shadow-2xl z-20 space-y-2"
+                  exit={{ opacity: 0, y: 15 }}
+                  className="absolute bottom-2 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-4 sm:max-w-md p-4 rounded-2xl bg-slate-950/90 border border-white/20 backdrop-blur-2xl shadow-2xl z-30 space-y-2"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-purple-400">
-                      {currentLightboxItem.category}
-                    </span>
-                    <span className="text-[11px] font-semibold text-slate-400">
-                      {currentLightboxItem.eventDate || "July 15, 2026"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">
+                        {currentLightboxItem.category}
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400">
+                        {currentLightboxItem.eventDate || "July 15, 2026"}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setShowInfoPanel(false)}
+                      className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                      title="Hide Info"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                  <h3 className="text-sm sm:text-base font-bold text-white leading-snug">
                     {currentLightboxItem.title}
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed font-normal">
@@ -1104,7 +1310,7 @@ export default function ChurchGalleryPage() {
                       className="text-purple-400 hover:text-purple-300 font-bold inline-flex items-center gap-1"
                     >
                       <Download className="w-3 h-3" />
-                      Download High-Res
+                      Download
                     </button>
                   </div>
                 </motion.div>
@@ -1137,9 +1343,9 @@ export default function ChurchGalleryPage() {
                         src={encodeSrc(thumbItem.thumbnailUrl || thumbItem.url)}
                         alt={thumbItem.title}
                         fill
+                        unoptimized
                         sizes="64px"
                         loading="lazy"
-                        quality={50}
                         className="object-cover"
                       />
                     </button>
@@ -1156,7 +1362,7 @@ export default function ChurchGalleryPage() {
   );
 }
 
-// Progressive Image Component with Shimmer Placeholder & Fast Decoding
+// Progressive Image Component with Instant Direct Loading & Fast Decoding
 function GalleryCardImage({
   src,
   title,
@@ -1170,22 +1376,22 @@ function GalleryCardImage({
   const safeSrc = encodeSrc(src);
 
   return (
-    <div className="relative w-full h-full min-h-[200px] bg-slate-900">
+    <div className="relative w-full h-full min-h-[200px] bg-slate-100 dark:bg-slate-900 overflow-hidden">
       {!isLoaded && (
-        <div className="absolute inset-0 bg-slate-800 animate-pulse flex items-center justify-center">
-          <Camera className="w-8 h-8 text-slate-600" />
+        <div className="absolute inset-0 bg-slate-200/80 dark:bg-slate-800/80 animate-pulse flex items-center justify-center">
+          <Camera className="w-8 h-8 text-slate-400 dark:text-slate-600" />
         </div>
       )}
       <Image
         src={safeSrc}
         alt={title}
         fill
+        unoptimized
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 25vw"
-        loading={priority ? undefined : "lazy"}
+        loading={priority ? "eager" : "lazy"}
         priority={priority}
-        quality={75}
-        className={`object-cover transform group-hover:scale-105 transition-all duration-300 ease-out ${
-          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        className={`object-cover transform group-hover:scale-105 transition-transform duration-300 ease-out ${
+          isLoaded ? "opacity-100" : "opacity-0"
         }`}
         onLoad={() => {
           loadedCache.add(src);

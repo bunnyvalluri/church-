@@ -33,24 +33,39 @@ import io from "socket.io-client";
 // Encode a URL path so parentheses and spaces are safe for browsers
 function encodeSrc(src: string | null | undefined): string {
   if (!src) return "";
+  let clean = src.trim();
+  if (clean.startsWith("https%3A") || clean.startsWith("http%3A")) {
+    try {
+      clean = decodeURIComponent(clean);
+    } catch {}
+  }
   if (
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("//") ||
-    src.startsWith("data:") ||
-    src.startsWith("blob:")
+    clean.startsWith("http://") ||
+    clean.startsWith("https://") ||
+    clean.startsWith("//") ||
+    clean.startsWith("data:") ||
+    clean.startsWith("blob:")
   ) {
-    return src;
+    return clean;
+  }
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
   }
   try {
-    const [path, ...queryAndHash] = src.split(/(?=[?#])/);
+    const [path, ...queryAndHash] = clean.split(/(?=[?#])/);
     const encodedPath = path
       .split("/")
-      .map((segment) => encodeURIComponent(segment))
+      .map((segment) => {
+        try {
+          return encodeURIComponent(decodeURIComponent(segment));
+        } catch {
+          return encodeURIComponent(segment);
+        }
+      })
       .join("/");
     return [encodedPath, ...queryAndHash].join("");
   } catch {
-    return src;
+    return clean;
   }
 }
 
