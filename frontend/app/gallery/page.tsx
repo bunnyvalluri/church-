@@ -1490,7 +1490,9 @@ export default function ChurchGalleryPage() {
               <div className="lg:col-span-8 space-y-5">
                 {/* 16:9 Screen - Direct Embedded YouTube Cinema Player with Mobile Touch Controls */}
                 <div
-                  className="relative rounded-3xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-2xl shadow-rose-950/20 transition-all duration-300 w-full group cursor-pointer select-none"
+                  className={`relative rounded-3xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-2xl shadow-rose-950/20 transition-all duration-300 w-full select-none ${
+                    !isVideoPlaying ? "group cursor-pointer" : ""
+                  }`}
                   style={{ aspectRatio: "16/9" }}
                   onClick={() => {
                     if (!isVideoPlaying) setIsVideoPlaying(true);
@@ -1582,6 +1584,28 @@ export default function ChurchGalleryPage() {
 
                     {/* Interactive Player Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
+                      {/* Play / Stop Toggle Button */}
+                      <button
+                        onClick={() => setIsVideoPlaying((p) => !p)}
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl text-xs font-black transition-all active:scale-95 shadow-sm ${
+                          isVideoPlaying
+                            ? "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20"
+                            : "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/20"
+                        }`}
+                      >
+                        {isVideoPlaying ? (
+                          <>
+                            <Pause className="w-3.5 h-3.5 fill-current" />
+                            <span>Stop / Pause</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                            <span>Play Video</span>
+                          </>
+                        )}
+                      </button>
+
                       {/* Prev/Next Video Controls */}
                       <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
                         <button
