@@ -487,6 +487,7 @@ export default function ChurchGalleryPage() {
   // Refs for smooth navigation
   const photoGalleryRef = useRef<HTMLDivElement>(null);
   const videoTheaterRef = useRef<HTMLDivElement>(null);
+  const cinemaIframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1490,28 +1491,39 @@ export default function ChurchGalleryPage() {
               <div className="lg:col-span-8 space-y-5">
                 {/* 16:9 Screen - Direct Embedded YouTube Cinema Player with Mobile Touch Controls */}
                 <div
-                  className={`relative rounded-3xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-2xl shadow-rose-950/20 transition-all duration-300 w-full select-none ${
-                    !isVideoPlaying ? "group cursor-pointer" : ""
-                  }`}
+                  className="relative rounded-3xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-2xl shadow-rose-950/20 transition-all duration-300 w-full"
                   style={{ aspectRatio: "16/9" }}
-                  onClick={() => {
-                    if (!isVideoPlaying) setIsVideoPlaying(true);
-                  }}
-                  onTouchEnd={() => {
-                    if (!isVideoPlaying) setIsVideoPlaying(true);
-                  }}
                 >
                   {isVideoPlaying ? (
-                    <iframe
-                      key={activeVideo.id + "-playing"}
-                      src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3`}
-                      title={activeVideo.title}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                      allowFullScreen
-                    />
+                    <div className="relative w-full h-full">
+                      <iframe
+                        ref={cinemaIframeRef}
+                        key={activeVideo.id + "-playing"}
+                        src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                        title={activeVideo.title}
+                        className="absolute inset-0 w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                        allowFullScreen
+                      />
+
+                      {/* On-Screen Floating Pause / Stop Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsVideoPlaying(false);
+                        }}
+                        className="absolute top-3 right-3 z-30 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/85 hover:bg-black text-white text-xs font-black border border-white/20 shadow-2xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                        title="Pause / Stop Video"
+                      >
+                        <Pause className="w-3.5 h-3.5 fill-current text-amber-400" />
+                        <span>Pause / Stop</span>
+                      </button>
+                    </div>
                   ) : (
-                    <div className="absolute inset-0 w-full h-full">
+                    <div
+                      className="absolute inset-0 w-full h-full group cursor-pointer"
+                      onClick={() => setIsVideoPlaying(true)}
+                    >
                       {/* High-definition Cover Thumbnail */}
                       <YouTubeThumbnail
                         videoId={activeVideo.videoId}
@@ -1540,16 +1552,9 @@ export default function ChurchGalleryPage() {
                           <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-600/40 animate-ping" />
 
                           {/* Authentic YouTube Play Pill Button */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIsVideoPlaying(true);
-                            }}
-                            className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-2xl bg-red-600 hover:bg-red-500 active:scale-90 flex items-center justify-center shadow-2xl shadow-red-600/60 transition-all duration-200 border border-white/20 pointer-events-auto cursor-pointer"
-                          >
+                          <div className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-2xl bg-red-600 hover:bg-red-500 active:scale-90 flex items-center justify-center shadow-2xl shadow-red-600/60 transition-all duration-200 border border-white/20">
                             <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white fill-white ml-1" />
-                          </button>
+                          </div>
                         </div>
                       </div>
 
@@ -1560,7 +1565,7 @@ export default function ChurchGalleryPage() {
                         </p>
                         <p className="text-white/85 text-xs font-bold flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          <span>Tap to play live YouTube video</span>
+                          <span>Tap anywhere to play video</span>
                         </p>
                       </div>
                     </div>
