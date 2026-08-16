@@ -32,13 +32,13 @@ export default function BackToHome({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 select-none group min-h-[44px] min-w-[44px]",
+        "inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all duration-200 select-none group whitespace-nowrap shrink-0 shadow-sm",
         // Adaptive Glassmorphism Variant (works seamlessly in both Light & Dark modes)
         variant === "glass" && [
           "text-slate-900 dark:text-white",
-          "bg-white/90 hover:bg-white dark:bg-white/10 dark:hover:bg-white/20",
-          "border border-slate-300/80 dark:border-white/20 hover:border-purple-500/50 dark:hover:border-white/40",
-          "backdrop-blur-md shadow-sm hover:shadow-md",
+          "bg-white/95 hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800",
+          "border border-slate-300/90 dark:border-white/20 hover:border-purple-500/50 dark:hover:border-purple-400/40",
+          "backdrop-blur-xl hover:shadow-md",
           "hover:-translate-x-0.5 hover:scale-[1.02]",
           "active:scale-95 active:translate-x-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2",
@@ -48,7 +48,7 @@ export default function BackToHome({
           "text-slate-900 dark:text-slate-100",
           "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700",
           "border border-slate-300 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500/50",
-          "shadow-sm hover:shadow-md",
+          "hover:shadow-md",
           "hover:-translate-x-0.5 hover:scale-[1.02]",
           "active:scale-95 active:translate-x-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2",
@@ -57,8 +57,8 @@ export default function BackToHome({
       )}
       aria-label={displayLabel}
     >
-      <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-300 transition-transform duration-200 group-hover:-translate-x-1" />
-      <span className="font-bold tracking-tight">{displayLabel}</span>
+      <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-400 transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
+      <span className="font-extrabold tracking-tight whitespace-nowrap">{displayLabel}</span>
     </Link>
   );
 }

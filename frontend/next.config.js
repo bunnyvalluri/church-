@@ -4,17 +4,17 @@
 // ─── Content Security Policy ────────────────────────────────────────────────
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com;
-  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://*.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com;
-  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://www.google.com https://maps.google.com;
-  frame-ancestors 'none';
+  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com https://*.youtube.com https://youtube.com https://*.googlevideo.com https://*.google.com https://*.doubleclick.net;
+  media-src 'self' blob: data: https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.ytimg.com https://res.cloudinary.com https://firebasestorage.googleapis.com;
+  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://*.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://img.youtube.com https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.google.com https://googleads.g.doubleclick.net https://*.doubleclick.net;
+  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://*.youtube.com https://*.firebaseapp.com https://kcm-church-2f3d5.firebaseapp.com https://accounts.google.com https://www.google.com https://maps.google.com;
+  frame-ancestors 'self';
   base-uri 'self';
   form-action 'self';
   object-src 'none';
-  upgrade-insecure-requests;
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig = {
@@ -86,6 +86,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      { protocol: 'https', hostname: 'img.youtube.com' },
+      { protocol: 'https', hostname: '**.ytimg.com' },
+      { protocol: 'https', hostname: '**.youtube.com' },
     ],
   },
 
