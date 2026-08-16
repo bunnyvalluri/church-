@@ -39,6 +39,8 @@ import {
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
 import { useBranch } from "@/components/providers/BranchProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { translations } from "@/lib/translations";
 import Navbar from "@/components/layout/Navbar";
 import { CURATED_GALLERY_ITEMS, GalleryItem } from "@/lib/galleryData";
 
@@ -91,7 +93,51 @@ interface ToastMessage {
   type?: "success" | "info" | "heart";
 }
 
+// Localize gallery item titles and descriptions dynamically
+function getLocalizedItem(
+  item: GalleryItem,
+  language: "en" | "te" | "hi",
+  gt: typeof translations.en.galleryPage
+) {
+  let title = item.title;
+  let description = item.description;
+  let category = gt.categoryTranslations?.[item.category as keyof typeof gt.categoryTranslations] || item.category;
+  let branchName = item.branchName || "Subhash Nagar";
+
+  if (language === "te") {
+    if (branchName.includes("Subhash")) branchName = "సుభాష్ నగర్ బ్రాంచ్";
+    else if (branchName.includes("Shapur")) branchName = "షాపూర్ నగర్ బ్రాంచ్";
+    else if (branchName.includes("Bahadur")) branchName = "బహదూర్‌పల్లి బ్రాంచ్";
+
+    if (item.id.startsWith("subhash-family-blessing-") && !item.id.includes("poster")) {
+      const numMatch = item.title.match(/#(\d+)/);
+      const num = numMatch ? numMatch[1] : "";
+      if (item.title.includes("Family Dedication & Covenant Blessing")) {
+        title = `కుటుంబ సమర్పణ & ఆశీర్వాద ప్రార్థన ${num ? `#${num}` : ""}`;
+        description = "కుటుంబాలపై దైవిక సంరక్షణ, ఆరోగ్యం మరియు గృహ అభివృద్ధి కొరకు ప్రత్యేక పాస్టరల్ ప్రార్థన.";
+      }
+    }
+  } else if (language === "hi") {
+    if (branchName.includes("Subhash")) branchName = "सुभाष नगर शाखा";
+    else if (branchName.includes("Shapur")) branchName = "शापुर नगर शाखा";
+    else if (branchName.includes("Bahadur")) branchName = "बहादुरपल्ली शाखा";
+
+    if (item.id.startsWith("subhash-family-blessing-") && !item.id.includes("poster")) {
+      const numMatch = item.title.match(/#(\d+)/);
+      const num = numMatch ? numMatch[1] : "";
+      if (item.title.includes("Family Dedication & Covenant Blessing")) {
+        title = `पारिवारिक समर्पण एवं आशीष प्रार्थना ${num ? `#${num}` : ""}`;
+        description = "परिवारों पर ईश्वरीय सुरक्षा, उत्तम स्वास्थ्य और समृद्धि के लिए विशेष पास्टोरल प्रार्थना।";
+      }
+    }
+  }
+
+  return { title, description, category, branchName };
+}
+
 export default function ChurchGalleryPage() {
+  const { language, t } = useLanguage();
+  const gt = t?.galleryPage || translations.en.galleryPage;
   const { selectedBranchId, setSelectedBranchId, branches } = useBranch();
 
   // Core state
@@ -141,17 +187,17 @@ export default function ChurchGalleryPage() {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
-        showToast("Removed from saved photos", "info");
+        showToast(gt.removeFavorite, "info");
       } else {
         next.add(id);
-        showToast("Saved to your favorites ❤️", "heart");
+        showToast(gt.saveFavorite, "heart");
       }
       try {
         localStorage.setItem("kcm-gallery-favorites", JSON.stringify(Array.from(next)));
       } catch {}
       return next;
     });
-  }, []);
+  }, [gt.removeFavorite, gt.saveFavorite]);
 
   // Show Toast
   const showToast = (text: string, type: "success" | "info" | "heart" = "success") => {
@@ -210,10 +256,14 @@ export default function ChurchGalleryPage() {
     });
     const unique = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
     return [
-      { name: "All", count: items.length },
-      ...unique.map((cat) => ({ name: cat, count: counts[cat] })),
+      { name: "All", label: gt.categoryTranslations?.["All"] || gt.allCategory, count: items.length },
+      ...unique.map((cat) => ({
+        name: cat,
+        label: gt.categoryTranslations?.[cat as keyof typeof gt.categoryTranslations] || cat,
+        count: counts[cat],
+      })),
     ];
-  }, [items]);
+  }, [items, gt]);
 
   // Filter & sort items based on activeCategory, search, branch, favorites, and sortOrder
   const filteredItems = useMemo(() => {
@@ -229,9 +279,10 @@ export default function ChurchGalleryPage() {
       // Search query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(q);
-        const matchesDesc = item.description?.toLowerCase().includes(q);
-        const matchesCat = item.category.toLowerCase().includes(q);
+        const loc = getLocalizedItem(item, language, gt);
+        const matchesTitle = item.title.toLowerCase().includes(q) || loc.title.toLowerCase().includes(q);
+        const matchesDesc = (item.description?.toLowerCase() || "").includes(q) || loc.description.toLowerCase().includes(q);
+        const matchesCat = item.category.toLowerCase().includes(q) || loc.category.toLowerCase().includes(q);
         const matchesEvent = item.eventName?.toLowerCase().includes(q);
         const matchesTags = item.tags?.some((t) => t.toLowerCase().includes(q));
         if (!matchesTitle && !matchesDesc && !matchesCat && !matchesEvent && !matchesTags) {
@@ -254,7 +305,7 @@ export default function ChurchGalleryPage() {
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
     });
-  }, [items, activeCategory, favoritesOnly, favorites, searchQuery, sortOrder]);
+  }, [items, activeCategory, favoritesOnly, favorites, searchQuery, sortOrder, language, gt]);
 
   // Derived visible items for progressive rendering
   const visibleItems = useMemo(() => {
@@ -382,7 +433,7 @@ export default function ChurchGalleryPage() {
   // Download Handler
   const handleDownload = async (item: GalleryItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    showToast("Downloading high-resolution photo...", "info");
+    showToast(gt.downloadHighRes, "info");
     try {
       const response = await fetch(item.url);
       const blob = await response.blob();
@@ -394,7 +445,7 @@ export default function ChurchGalleryPage() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
-      showToast("Photo downloaded successfully!", "success");
+      showToast(gt.download, "success");
     } catch {
       window.open(item.url, "_blank");
     }
@@ -403,19 +454,20 @@ export default function ChurchGalleryPage() {
   // Share Handler
   const handleShare = async (item: GalleryItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    const loc = getLocalizedItem(item, language, gt);
     const fullUrl = `${window.location.origin}/gallery?photo=${encodeURIComponent(item.id)}`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: item.title,
-          text: `${item.title} — Kingdom of Christ Ministries Gallery`,
+          title: loc.title,
+          text: `${loc.title} — Kingdom of Christ Ministries Gallery`,
           url: fullUrl,
         });
-        showToast("Shared successfully!", "success");
+        showToast(gt.sharePhoto, "success");
       } catch {}
     } else {
       navigator.clipboard.writeText(fullUrl);
-      showToast("Link copied to clipboard!", "success");
+      showToast(gt.linkCopied, "success");
     }
   };
 
@@ -423,6 +475,10 @@ export default function ChurchGalleryPage() {
   const subhashPhotosCount = items.filter(
     (i) => i.branchName?.includes("Subhash") || i.url.includes("subhash-nagar")
   ).length;
+
+  const currentLightboxLocalized = currentLightboxItem
+    ? getLocalizedItem(currentLightboxItem, language, gt)
+    : null;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-purple-500 selection:text-white transition-colors duration-300">
@@ -463,16 +519,16 @@ export default function ChurchGalleryPage() {
               <BackToHome variant="glass" />
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/30 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
-                <span>Captured Moments of Faith</span>
+                <span>{gt.badge}</span>
               </div>
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
-              Church <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-purple-400 dark:via-pink-400 dark:to-amber-300 bg-clip-text text-transparent">Gallery</span>
+              {gt.titleMain} <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-purple-400 dark:via-pink-400 dark:to-amber-300 bg-clip-text text-transparent">{gt.titleHighlight}</span>
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300/90 leading-relaxed font-medium max-w-2xl mx-auto">
-              Relive the powerful moments of revival, family blessings, vibrant worship, and heartfelt fellowship across all Kingdom of Christ branches.
+              {gt.subtitle}
             </p>
 
             {/* Live Stats Chips */}
@@ -480,19 +536,19 @@ export default function ChurchGalleryPage() {
               <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
                 <Camera className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
-                  {items.length}+ Photos Captured
+                  {items.length}+ {gt.photosCaptured}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
                 <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
-                  Subhash Nagar & Multi-Branch
+                  {gt.subhashAndBranches}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
                 <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">
-                  Family Blessing Gathering
+                  {gt.familyBlessingTitle}
                 </span>
               </div>
             </div>
@@ -508,7 +564,7 @@ export default function ChurchGalleryPage() {
                   className="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-size-200 hover:bg-right text-white font-bold text-sm shadow-xl shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.03] active:scale-95 transition-all duration-300"
                 >
                   <Play className="w-4 h-4 fill-current ml-0.5" />
-                  <span>Launch Cinematic Slideshow ({filteredItems.length} Photos)</span>
+                  <span>{gt.launchSlideshow} ({filteredItems.length} {gt.photosWord})</span>
                 </button>
               </div>
             )}
@@ -526,15 +582,15 @@ export default function ChurchGalleryPage() {
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 dark:border-amber-400/30 text-amber-700 dark:text-amber-300 text-xs font-black tracking-wider uppercase">
                   <Flame className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
-                  Featured Revival Event
+                  {gt.featuredRevival}
                 </span>
-                <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Subhash Nagar Branch</span>
+                <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">{gt.subhashBranch}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                Family Blessing Gathering — 78 Photos Logged
+                {gt.featuredCardTitle}
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                An unforgettable service with Bishop Kurra Kristhu Raju ministering prayers of blessing, unity, healing, and generational grace over every family in attendance.
+                {gt.featuredCardDesc}
               </p>
             </div>
 
@@ -548,7 +604,7 @@ export default function ChurchGalleryPage() {
                 className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95"
               >
                 <Camera className="w-4 h-4" />
-                <span>Filter 78 Photos</span>
+                <span>{gt.filterPhotosBtn}</span>
               </button>
               <button
                 onClick={() => {
@@ -559,7 +615,7 @@ export default function ChurchGalleryPage() {
                 className="flex-1 sm:flex-initial justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 text-slate-900 dark:text-white text-xs sm:text-sm font-bold border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md transition-all hover:scale-105 active:scale-95"
               >
                 <Maximize2 className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                <span>View Fullscreen</span>
+                <span>{gt.viewFullscreenBtn}</span>
               </button>
             </div>
           </div>
@@ -578,7 +634,7 @@ export default function ChurchGalleryPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search photos..."
+                placeholder={gt.searchPlaceholder}
                 className="w-full pl-9 sm:pl-11 pr-9 sm:pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
               />
               {searchQuery && (
@@ -603,16 +659,16 @@ export default function ChurchGalleryPage() {
                   className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
                 >
                   <option value="all" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    All Church Branches ({items.length})
+                    {gt.allBranches} ({items.length})
                   </option>
                   <option value="cmrgwqhc30001fsk8mysbmp50" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Subhash Nagar Branch ({subhashPhotosCount})
+                    {gt.subhashBranch} ({subhashPhotosCount})
                   </option>
                   <option value="cmskewevf0000lz9gnoh1n8ve" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Shapur Nagar Branch
+                    {gt.shapurBranch}
                   </option>
                   <option value="cmrgwqhc30002fsk8ncn255w5" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Bahadurpally Branch
+                    {gt.bahadurBranch}
                   </option>
                 </select>
               </div>
@@ -627,13 +683,13 @@ export default function ChurchGalleryPage() {
                   className="bg-transparent text-slate-900 dark:text-white font-bold focus:outline-none cursor-pointer pr-2 text-xs sm:text-sm w-full truncate"
                 >
                   <option value="order-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Order Wise (Photo 1 → {items.length})
+                    {gt.sortOrderAsc.replace("{count}", items.length.toString())}
                   </option>
                   <option value="order-desc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Reverse Order ({items.length} → 1)
+                    {gt.sortOrderDesc.replace("{count}", items.length.toString())}
                   </option>
                   <option value="title-asc" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
-                    Title (A → Z)
+                    {gt.sortTitleAsc}
                   </option>
                 </select>
               </div>
@@ -642,7 +698,7 @@ export default function ChurchGalleryPage() {
               <div className="hidden sm:flex items-center p-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl">
                 <button
                   onClick={() => setViewMode("masonry")}
-                  title="Masonry View"
+                  title={gt.viewMasonry}
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "masonry"
                       ? "bg-purple-600 text-white shadow-md"
@@ -653,7 +709,7 @@ export default function ChurchGalleryPage() {
                 </button>
                 <button
                   onClick={() => setViewMode("standard")}
-                  title="Standard Grid"
+                  title={gt.viewStandard}
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "standard"
                       ? "bg-purple-600 text-white shadow-md"
@@ -664,7 +720,7 @@ export default function ChurchGalleryPage() {
                 </button>
                 <button
                   onClick={() => setViewMode("compact")}
-                  title="Compact Grid"
+                  title={gt.viewCompact}
                   className={`p-2 rounded-lg transition-all ${
                     viewMode === "compact"
                       ? "bg-purple-600 text-white shadow-md"
@@ -697,7 +753,7 @@ export default function ChurchGalleryPage() {
                         : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
                     }`}
                   >
-                    <span className="truncate">{cat.name}</span>
+                    <span className="truncate">{cat.label}</span>
                     <span
                       className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
                         isActive
@@ -723,7 +779,7 @@ export default function ChurchGalleryPage() {
               >
                 <div className="flex items-center gap-1.5 truncate">
                   <Heart className={`w-3.5 h-3.5 flex-shrink-0 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
-                  <span className="truncate">Saved Photos</span>
+                  <span className="truncate">{gt.savedPhotos}</span>
                 </div>
                 <span
                   className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
@@ -754,7 +810,7 @@ export default function ChurchGalleryPage() {
                         : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
                     }`}
                   >
-                    <span>{cat.name}</span>
+                    <span>{cat.label}</span>
                     <span
                       className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
                         isActive
@@ -778,7 +834,7 @@ export default function ChurchGalleryPage() {
                 }`}
               >
                 <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
-                <span>Saved Photos</span>
+                <span>{gt.savedPhotos}</span>
                 <span
                   className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
                     favoritesOnly
@@ -795,24 +851,24 @@ export default function ChurchGalleryPage() {
           {/* Active Filter Info Bar */}
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
             <div>
-              Showing <span className="font-bold text-slate-900 dark:text-white">{filteredItems.length}</span>{" "}
-              {filteredItems.length === 1 ? "moment" : "moments"}
+              {gt.showing} <span className="font-bold text-slate-900 dark:text-white">{filteredItems.length}</span>{" "}
+              {filteredItems.length === 1 ? gt.moment : gt.moments}
               {activeCategory !== "All" && (
                 <span>
                   {" "}
-                  in <span className="text-purple-600 dark:text-purple-400 font-semibold">{activeCategory}</span>
+                  {gt.inCategory} <span className="text-purple-600 dark:text-purple-400 font-semibold">{gt.categoryTranslations?.[activeCategory as keyof typeof gt.categoryTranslations] || activeCategory}</span>
                 </span>
               )}
               {searchQuery && (
                 <span>
                   {" "}
-                  matching &ldquo;<span className="text-amber-600 dark:text-amber-400 font-semibold">{searchQuery}</span>&rdquo;
+                  {gt.matching} &ldquo;<span className="text-amber-600 dark:text-amber-400 font-semibold">{searchQuery}</span>&rdquo;
                 </span>
               )}
               {sortOrder !== "order-asc" && (
                 <span className="text-slate-500 dark:text-slate-400">
                   {" "}
-                  • Sorted: <span className="text-amber-600 dark:text-amber-300 font-semibold">{sortOrder === "order-desc" ? "Reverse" : "Title A-Z"}</span>
+                  • {gt.sorted}: <span className="text-amber-600 dark:text-amber-300 font-semibold">{sortOrder === "order-desc" ? gt.reverse : gt.titleAZ}</span>
                 </span>
               )}
             </div>
@@ -827,7 +883,7 @@ export default function ChurchGalleryPage() {
                 }}
                 className="text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 font-bold underline transition-colors"
               >
-                Reset filters
+                {gt.resetFilters}
               </button>
             )}
           </div>
@@ -838,7 +894,7 @@ export default function ChurchGalleryPage() {
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
             <p className="text-sm font-bold text-slate-500 dark:text-slate-400 tracking-wide">
-              Loading high-resolution gallery moments...
+              {gt.loadingPhotos}
             </p>
           </div>
         ) : filteredItems.length === 0 ? (
@@ -846,9 +902,9 @@ export default function ChurchGalleryPage() {
             <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto">
               <Camera className="w-8 h-8 opacity-60" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">No gallery moments found</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{gt.noMomentsFound}</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Try adjusting your search keywords or switching category filters to see more photos.
+              {gt.adjustSearchTip}
             </p>
             <button
               onClick={() => {
@@ -860,7 +916,7 @@ export default function ChurchGalleryPage() {
               }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md"
             >
-              Reset All Filters
+              {gt.resetAllFilters}
             </button>
           </div>
         ) : (
@@ -878,6 +934,7 @@ export default function ChurchGalleryPage() {
                 const isFav = favorites.has(item.id);
                 const globalIndex = filteredItems.findIndex((fi) => fi.id === item.id);
                 const actualLightboxIndex = globalIndex !== -1 ? globalIndex : index;
+                const localizedItem = getLocalizedItem(item, language, gt);
 
                 return (
                   <div
@@ -902,7 +959,7 @@ export default function ChurchGalleryPage() {
                     >
                       <GalleryCardImage
                         src={item.url}
-                        title={item.title}
+                        title={localizedItem.title}
                         priority={index < 12}
                       />
 
@@ -912,7 +969,7 @@ export default function ChurchGalleryPage() {
                           #{actualLightboxIndex + 1}
                         </span>
                         <span className="px-2.5 py-1 rounded-full bg-purple-600/90 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-purple-400/30">
-                          {item.category.toUpperCase()}
+                          {localizedItem.category.toUpperCase()}
                         </span>
                       </div>
 
@@ -925,7 +982,7 @@ export default function ChurchGalleryPage() {
                               e.stopPropagation();
                               setLightboxIndex(actualLightboxIndex);
                             }}
-                            title="Expand Lightbox"
+                            title={gt.expandLightbox}
                             className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
                           >
                             <Maximize2 className="w-4 h-4" />
@@ -934,7 +991,7 @@ export default function ChurchGalleryPage() {
                           {/* Quick Download */}
                           <button
                             onClick={(e) => handleDownload(item, e)}
-                            title="Download High-Res"
+                            title={gt.downloadHighRes}
                             className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
                           >
                             <Download className="w-4 h-4" />
@@ -943,7 +1000,7 @@ export default function ChurchGalleryPage() {
                           {/* Share */}
                           <button
                             onClick={(e) => handleShare(item, e)}
-                            title="Share Photo"
+                            title={gt.sharePhoto}
                             className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white text-white hover:text-slate-950 flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border border-white/20"
                           >
                             <Share2 className="w-4 h-4" />
@@ -952,7 +1009,7 @@ export default function ChurchGalleryPage() {
                           {/* Favorite Heart */}
                           <button
                             onClick={(e) => toggleFavorite(item.id, e)}
-                            title={isFav ? "Remove Favorite" : "Save Favorite"}
+                            title={isFav ? gt.removeFavorite : gt.saveFavorite}
                             className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all backdrop-blur-md border ${
                               isFav
                                 ? "bg-rose-600 text-white border-rose-400"
@@ -971,15 +1028,15 @@ export default function ChurchGalleryPage() {
                         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                           <span className="flex items-center gap-1 text-purple-600 dark:text-purple-300">
                             <MapPin className="w-3 h-3" />
-                            {item.branchName || "Subhash Nagar"}
+                            {localizedItem.branchName}
                           </span>
                           <span>{item.eventDate || "July 2026"}</span>
                         </div>
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
-                          {item.title}
+                          {localizedItem.title}
                         </h4>
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-                          {item.description}
+                          {localizedItem.description}
                         </p>
                       </div>
                     )}
@@ -996,10 +1053,10 @@ export default function ChurchGalleryPage() {
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-50 dark:bg-purple-600/20 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white border border-purple-200 dark:border-purple-500/30 text-xs sm:text-sm font-bold transition-all shadow-md hover:scale-105 active:scale-95"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Load More Moments ({filteredItems.length - displayCount} remaining)</span>
+                  <span>{gt.loadMore} ({filteredItems.length - displayCount} {gt.remaining})</span>
                 </button>
                 <span className="text-[11px] text-slate-500 font-medium">
-                  Showing {visibleItems.length} of {filteredItems.length} photos
+                  {gt.showingOf.replace("{visible}", visibleItems.length.toString()).replace("{total}", filteredItems.length.toString())}
                 </span>
               </div>
             )}
@@ -1026,7 +1083,7 @@ export default function ChurchGalleryPage() {
                   {lightboxIndex + 1} / {filteredItems.length}
                 </span>
                 <span className="hidden sm:inline-block text-xs font-semibold text-slate-400">
-                  {currentLightboxItem.category} • {currentLightboxItem.eventName || "Subhash Nagar Event"}
+                  {currentLightboxLocalized?.category} • {currentLightboxItem.eventName || currentLightboxLocalized?.branchName}
                 </span>
               </div>
 
@@ -1035,7 +1092,7 @@ export default function ChurchGalleryPage() {
                 {/* Slideshow Play / Pause Button */}
                 <button
                   onClick={() => setIsSlideshowPlaying((prev) => !prev)}
-                  title={isSlideshowPlaying ? "Pause Slideshow (Space)" : "Play Slideshow (Space)"}
+                  title={isSlideshowPlaying ? gt.pauseSlideshow : gt.playSlideshow}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                     isSlideshowPlaying
                       ? "bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-600/30"
@@ -1045,12 +1102,12 @@ export default function ChurchGalleryPage() {
                   {isSlideshowPlaying ? (
                     <>
                       <Pause className="w-3.5 h-3.5 fill-current" />
-                      <span className="hidden sm:inline">Pause</span>
+                      <span className="hidden sm:inline">{gt.pauseSlideshow}</span>
                     </>
                   ) : (
                     <>
                       <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                      <span className="hidden sm:inline">Slideshow</span>
+                      <span className="hidden sm:inline">{gt.playSlideshow}</span>
                     </>
                   )}
                 </button>
@@ -1059,14 +1116,14 @@ export default function ChurchGalleryPage() {
                 <div className="hidden sm:flex items-center bg-white/10 rounded-xl p-0.5 border border-white/10">
                   <button
                     onClick={() => setZoomLevel((z) => Math.min(z + 0.5, 3))}
-                    title="Zoom In (+)"
+                    title={gt.zoomIn}
                     className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
                   >
                     <ZoomIn className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setZoomLevel((z) => Math.max(z - 0.5, 1))}
-                    title="Zoom Out (-)"
+                    title={gt.zoomOut}
                     className="p-1.5 hover:bg-white/10 rounded-lg text-slate-200"
                   >
                     <ZoomOut className="w-4 h-4" />
@@ -1074,7 +1131,7 @@ export default function ChurchGalleryPage() {
                   {zoomLevel > 1 && (
                     <button
                       onClick={() => setZoomLevel(1)}
-                      title="Reset Zoom"
+                      title={gt.resetZoom}
                       className="p-1.5 hover:bg-white/10 rounded-lg text-purple-300"
                     >
                       <RotateCcw className="w-4 h-4" />
@@ -1085,7 +1142,7 @@ export default function ChurchGalleryPage() {
                 {/* Download */}
                 <button
                   onClick={(e) => handleDownload(currentLightboxItem, e)}
-                  title="Download High-Res"
+                  title={gt.downloadHighRes}
                   className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors"
                 >
                   <Download className="w-4 h-4" />
@@ -1094,7 +1151,7 @@ export default function ChurchGalleryPage() {
                 {/* Share */}
                 <button
                   onClick={(e) => handleShare(currentLightboxItem, e)}
-                  title="Share Link"
+                  title={gt.sharePhoto}
                   className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition-colors"
                 >
                   <Share2 className="w-4 h-4" />
@@ -1103,7 +1160,7 @@ export default function ChurchGalleryPage() {
                 {/* Favorite */}
                 <button
                   onClick={(e) => toggleFavorite(currentLightboxItem.id, e)}
-                  title="Save Favorite"
+                  title={favorites.has(currentLightboxItem.id) ? gt.removeFavorite : gt.saveFavorite}
                   className={`p-2 rounded-xl border transition-colors ${
                     favorites.has(currentLightboxItem.id)
                       ? "bg-rose-600 text-white border-rose-400"
@@ -1120,7 +1177,7 @@ export default function ChurchGalleryPage() {
                 {/* Toggle Info */}
                 <button
                   onClick={() => setShowInfoPanel((prev) => !prev)}
-                  title="Toggle Info"
+                  title={showInfoPanel ? gt.hideInfo : gt.photoInfo}
                   className={`p-2 rounded-xl border transition-colors ${
                     showInfoPanel
                       ? "bg-purple-600 text-white border-purple-400"
@@ -1136,7 +1193,7 @@ export default function ChurchGalleryPage() {
                     setLightboxIndex(null);
                     setIsSlideshowPlaying(false);
                   }}
-                  title="Close (Esc)"
+                  title={gt.closeEsc}
                   className="p-2 rounded-xl bg-white/10 hover:bg-rose-600 hover:text-white text-slate-200 border border-white/10 transition-colors ml-1"
                 >
                   <X className="w-5 h-5" />
@@ -1159,7 +1216,7 @@ export default function ChurchGalleryPage() {
               {/* Previous Photo Button */}
               <button
                 onClick={prevPhoto}
-                title="Previous Photo (Left Arrow)"
+                title={gt.prevPhoto}
                 className="absolute left-2 sm:left-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
               >
                 <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1168,7 +1225,7 @@ export default function ChurchGalleryPage() {
               {/* Next Photo Button */}
               <button
                 onClick={nextPhoto}
-                title="Next Photo (Right Arrow)"
+                title={gt.nextPhoto}
                 className="absolute right-2 sm:right-5 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-black/40 hover:bg-purple-600 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 active:scale-95"
               >
                 <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1189,7 +1246,7 @@ export default function ChurchGalleryPage() {
                 >
                   <Image
                     src={encodeSrc(currentLightboxItem.url)}
-                    alt={currentLightboxItem.title}
+                    alt={currentLightboxLocalized?.title || currentLightboxItem.title}
                     fill
                     unoptimized
                     priority
@@ -1205,7 +1262,7 @@ export default function ChurchGalleryPage() {
                   className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1.5 rounded-full bg-slate-950/70 hover:bg-purple-600 text-white/90 hover:text-white border border-white/20 backdrop-blur-md text-[11px] font-bold shadow-lg transition-all hover:scale-105 flex items-center gap-1.5"
                 >
                   <Info className="w-3.5 h-3.5 text-purple-300" />
-                  <span>Photo Info</span>
+                  <span>{gt.photoInfo}</span>
                 </button>
               )}
 
@@ -1220,7 +1277,7 @@ export default function ChurchGalleryPage() {
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-black uppercase tracking-wider text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">
-                        {currentLightboxItem.category}
+                        {currentLightboxLocalized?.category}
                       </span>
                       <span className="text-[10px] font-semibold text-slate-400">
                         {currentLightboxItem.eventDate || "July 15, 2026"}
@@ -1229,28 +1286,28 @@ export default function ChurchGalleryPage() {
                     <button
                       onClick={() => setShowInfoPanel(false)}
                       className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                      title="Hide Info"
+                      title={gt.hideInfo}
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-white leading-snug">
-                    {currentLightboxItem.title}
+                    {currentLightboxLocalized?.title}
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                    {currentLightboxItem.description}
+                    {currentLightboxLocalized?.description}
                   </p>
                   <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400 font-medium">
                     <span className="flex items-center gap-1 text-amber-300 font-bold">
                       <MapPin className="w-3 h-3" />
-                      {currentLightboxItem.branchName || "Subhash Nagar Branch"}
+                      {currentLightboxLocalized?.branchName}
                     </span>
                     <button
                       onClick={(e) => handleDownload(currentLightboxItem, e)}
                       className="text-purple-400 hover:text-purple-300 font-bold inline-flex items-center gap-1"
                     >
                       <Download className="w-3 h-3" />
-                      Download
+                      {gt.download}
                     </button>
                   </div>
                 </motion.div>
@@ -1265,6 +1322,7 @@ export default function ChurchGalleryPage() {
               >
                 {filteredItems.map((thumbItem, tIdx) => {
                   const isSelected = tIdx === lightboxIndex;
+                  const thumbLocalized = getLocalizedItem(thumbItem, language, gt);
                   return (
                     <button
                       key={thumbItem.id}
@@ -1281,7 +1339,7 @@ export default function ChurchGalleryPage() {
                     >
                       <Image
                         src={encodeSrc(thumbItem.thumbnailUrl || thumbItem.url)}
-                        alt={thumbItem.title}
+                        alt={thumbLocalized.title}
                         fill
                         unoptimized
                         sizes="64px"
