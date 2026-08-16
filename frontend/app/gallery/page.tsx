@@ -1495,30 +1495,15 @@ export default function ChurchGalleryPage() {
                   style={{ aspectRatio: "16/9" }}
                 >
                   {isVideoPlaying ? (
-                    <div className="relative w-full h-full">
-                      <iframe
-                        ref={cinemaIframeRef}
-                        key={activeVideo.id + "-playing"}
-                        src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
-                        title={activeVideo.title}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                        allowFullScreen
-                      />
-
-                      {/* On-Screen Floating Pause / Stop Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsVideoPlaying(false);
-                        }}
-                        className="absolute top-3 right-3 z-30 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/85 hover:bg-black text-white text-xs font-black border border-white/20 shadow-2xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-                        title="Pause / Stop Video"
-                      >
-                        <Pause className="w-3.5 h-3.5 fill-current text-amber-400" />
-                        <span>Pause / Stop</span>
-                      </button>
-                    </div>
+                    <iframe
+                      ref={cinemaIframeRef}
+                      key={activeVideo.id + "-playing"}
+                      src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                      title={activeVideo.title}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                      allowFullScreen
+                    />
                   ) : (
                     <div
                       className="absolute inset-0 w-full h-full group cursor-pointer"
@@ -1589,28 +1574,6 @@ export default function ChurchGalleryPage() {
 
                     {/* Interactive Player Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
-                      {/* Play / Stop Toggle Button */}
-                      <button
-                        onClick={() => setIsVideoPlaying((p) => !p)}
-                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl text-xs font-black transition-all active:scale-95 shadow-sm ${
-                          isVideoPlaying
-                            ? "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20"
-                            : "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/20"
-                        }`}
-                      >
-                        {isVideoPlaying ? (
-                          <>
-                            <Pause className="w-3.5 h-3.5 fill-current" />
-                            <span>Stop / Pause</span>
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                            <span>Play Video</span>
-                          </>
-                        )}
-                      </button>
-
                       {/* Prev/Next Video Controls */}
                       <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
                         <button
