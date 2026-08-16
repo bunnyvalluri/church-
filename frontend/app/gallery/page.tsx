@@ -705,6 +705,30 @@ export default function ChurchGalleryPage() {
     }
   };
 
+  const pauseCinemaVideo = useCallback(() => {
+    try {
+      if (cinemaIframeRef.current?.contentWindow) {
+        cinemaIframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
+          "*"
+        );
+      }
+    } catch {}
+    setIsVideoPlaying(false);
+  }, []);
+
+  const playCinemaVideo = useCallback(() => {
+    try {
+      if (cinemaIframeRef.current?.contentWindow) {
+        cinemaIframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "playVideo", args: [] }),
+          "*"
+        );
+      }
+    } catch {}
+    setIsVideoPlaying(true);
+  }, []);
+
   const handlePrevVideo = () => {
     const idx = GALLERY_VIDEO_ITEMS.findIndex((v) => v.id === activeVideo.id);
     const prevIdx = idx > 0 ? idx - 1 : GALLERY_VIDEO_ITEMS.length - 1;
@@ -1574,6 +1598,29 @@ export default function ChurchGalleryPage() {
 
                     {/* Interactive Player Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
+                      {/* Play / Pause Toggle Button */}
+                      <button
+                        onClick={isVideoPlaying ? pauseCinemaVideo : playCinemaVideo}
+                        className={`inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-xl text-xs font-black transition-all shadow-md active:scale-95 ${
+                          isVideoPlaying
+                            ? "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/25 ring-2 ring-amber-400/50"
+                            : "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/25 ring-2 ring-rose-500/30"
+                        }`}
+                        title={isVideoPlaying ? "Pause Video" : "Play Video"}
+                      >
+                        {isVideoPlaying ? (
+                          <>
+                            <Pause className="w-3.5 h-3.5 fill-current" />
+                            <span>Pause Video</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                            <span>Play Video</span>
+                          </>
+                        )}
+                      </button>
+
                       {/* Prev/Next Video Controls */}
                       <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
                         <button
