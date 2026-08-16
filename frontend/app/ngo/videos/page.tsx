@@ -1166,42 +1166,42 @@ export default function NgoVideosPage() {
                   
                   {/* 1. YouTube Button */}
                   <button
-                    onClick={() => setPlaylistTab("yt")}
+                    onClick={() => handleSelectCategory("yt")}
                     className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
-                      playlistTab === "yt"
+                      filterCategory === "yt" || playlistTab === "yt"
                         ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Youtube className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "yt" ? "text-white" : "text-rose-500"}`} />
+                    <YouTubeLogoIcon className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="truncate">YouTube</span>
                     <span className="opacity-80 font-bold shrink-0">({YOUTUBE_ITEMS.length})</span>
                   </button>
 
                   {/* 2. Videos Button */}
                   <button
-                    onClick={() => setPlaylistTab("mp4")}
+                    onClick={() => handleSelectCategory("mp4")}
                     className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
-                      playlistTab === "mp4"
+                      filterCategory === "mp4" || filterCategory === "ashramam" || playlistTab === "mp4"
                         ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/30"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Film className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "mp4" ? "text-white" : "text-emerald-500"}`} />
+                    <Film className={`w-3.5 h-3.5 flex-shrink-0 ${filterCategory === "mp4" || filterCategory === "ashramam" || playlistTab === "mp4" ? "text-white" : "text-emerald-500"}`} />
                     <span className="truncate">Videos</span>
                     <span className="opacity-80 font-bold shrink-0">({MP4_ITEMS.length})</span>
                   </button>
 
                   {/* 3. All Button */}
                   <button
-                    onClick={() => setPlaylistTab("all")}
+                    onClick={() => handleSelectCategory("all")}
                     className={`w-full py-2 px-1 sm:px-1.5 rounded-xl text-[11px] font-black transition-all duration-200 flex items-center justify-center gap-1 min-w-0 ${
-                      playlistTab === "all"
+                      filterCategory === "all" && playlistTab === "all"
                         ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Layers className={`w-3.5 h-3.5 flex-shrink-0 ${playlistTab === "all" ? "text-white dark:text-slate-900" : "text-slate-500 dark:text-slate-400"}`} />
+                    <Layers className={`w-3.5 h-3.5 flex-shrink-0 ${filterCategory === "all" && playlistTab === "all" ? "text-white dark:text-slate-900" : "text-slate-500 dark:text-slate-400"}`} />
                     <span className="truncate">All</span>
                     <span className="opacity-80 font-bold shrink-0">({ALL_MEDIA_DATABASE.length})</span>
                   </button>
