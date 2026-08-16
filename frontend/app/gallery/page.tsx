@@ -975,10 +975,10 @@ export default function ChurchGalleryPage() {
                           </span>
                           <span>{item.eventDate || "July 2026"}</span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors line-clamp-1">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                           {item.title}
                         </h4>
-                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
                           {item.description}
                         </p>
                       </div>
