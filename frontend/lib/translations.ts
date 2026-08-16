@@ -25,7 +25,7 @@ export const translations = {
       prayerBoxSub: "We are here for you 24/7",
       ctaWait: "Join Us This Sunday",
       ctaPrimary: "Plan A Visit",
-      ctaSecondary: "Watch Sermon",
+      ctaSecondary: "Watch Gallery",
     },
     services: {
       title: "Our Services",
@@ -1265,7 +1265,7 @@ export const translations = {
       prayerBoxSub: "మేము మీ కొరకు ఉన్నాము",
       ctaWait: "ఈ ఆదివారం మాతో చేరండి",
       ctaPrimary: "మా చిరునామా",
-      ctaSecondary: "ప్రసంగం చూడండి",
+      ctaSecondary: "గ్యాలరీ చూడండి",
     },
     services: {
       title: "మా ఆరాధనలు",
@@ -2505,7 +2505,7 @@ export const translations = {
       prayerBoxSub: "हम 24/7 आपके लिए यहाँ हैं",
       ctaWait: "इस रविवार हमारे साथ जुड़ें",
       ctaPrimary: "यात्रा की योजना बनाएं",
-      ctaSecondary: "प्रवचन देखें",
+      ctaSecondary: "गैलरी देखें",
     },
     services: {
       title: "हमारी सेवाएं",

@@ -240,10 +240,17 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
 
   const ctaSecondaryText =
     language === "te"
-      ? "ప్రసంగాలు చూడండి"
+      ? (hero as any)?.ctaSecondaryTextTe || t.hero.ctaSecondary || "గ్యాలరీ చూడండి"
       : language === "hi"
-      ? "उपदेश देखें"
-      : hero?.ctaSecondaryText ?? "Watch Sermons";
+      ? (hero as any)?.ctaSecondaryTextHi || t.hero.ctaSecondary || "गैलरी देखें"
+      : hero?.ctaSecondaryText && hero.ctaSecondaryText !== "Watch Sermons"
+      ? hero.ctaSecondaryText
+      : t.hero.ctaSecondary ?? "Watch Gallery";
+
+  const ctaSecondaryHref =
+    hero?.ctaSecondaryHref && hero.ctaSecondaryHref !== "#sermons"
+      ? hero.ctaSecondaryHref
+      : "/gallery";
 
   const ctaTertiaryText =
     language === "te"
@@ -351,7 +358,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
               </span>
             </Link>
             <Link
-              href={hero?.ctaSecondaryHref ?? "#sermons"}
+              href={ctaSecondaryHref}
               className="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-gray-300 dark:border-white/20 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-md"
             >
               {ctaSecondaryText}

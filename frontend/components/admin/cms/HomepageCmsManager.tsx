@@ -404,7 +404,7 @@ export default function HomepageCmsManager() {
                   value={hero.ctaSecondaryHref || ""}
                   onChange={(e) => setHero({ ...hero, ctaSecondaryHref: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
-                  placeholder="Link Href (#sermons)"
+                  placeholder="Link Href (/gallery)"
                 />
               </div>
 
