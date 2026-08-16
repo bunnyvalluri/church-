@@ -369,7 +369,7 @@ export default function HomepageCmsManager() {
 
           <div className="border-t border-slate-100 dark:border-white/10 pt-6">
             <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4">CTA Buttons Configuration</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Primary CTA */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
                 <span className="text-xs font-bold text-violet-500 uppercase tracking-wider">Primary Button</span>
@@ -424,6 +424,25 @@ export default function HomepageCmsManager() {
                   onChange={(e) => setHero({ ...hero, ctaTertiaryHref: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
                   placeholder="Link Href (/prayer)"
+                />
+              </div>
+
+              {/* NGO Portal CTA */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+                <span className="text-xs font-bold text-fuchsia-500 uppercase tracking-wider">NGO Portal Button</span>
+                <input
+                  type="text"
+                  value={hero.ctaNgoText || ""}
+                  onChange={(e) => setHero({ ...hero, ctaNgoText: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs font-semibold"
+                  placeholder="Button Text (Visit NGO Portal)"
+                />
+                <input
+                  type="text"
+                  value={hero.ctaNgoHref || ""}
+                  onChange={(e) => setHero({ ...hero, ctaNgoHref: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-xs text-slate-500"
+                  placeholder="Link Href (/ngo)"
                 />
               </div>
             </div>

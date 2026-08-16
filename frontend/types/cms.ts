@@ -18,6 +18,8 @@ export interface HeroContent {
   ctaSecondaryHref: string;
   ctaTertiaryText: string;
   ctaTertiaryHref: string;
+  ctaNgoText?: string;
+  ctaNgoHref?: string;
   backgroundImageUrl: string | null;
   backgroundImageId: string | null;
   backgroundVideoUrl: string | null;

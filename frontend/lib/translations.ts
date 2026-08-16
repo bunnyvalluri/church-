@@ -26,6 +26,7 @@ export const translations = {
       ctaWait: "Join Us This Sunday",
       ctaPrimary: "Plan A Visit",
       ctaSecondary: "Watch Gallery",
+      ctaNgo: "Visit NGO Portal",
     },
     services: {
       title: "Our Services",
@@ -1293,6 +1294,7 @@ export const translations = {
       ctaWait: "ఈ ఆదివారం మాతో చేరండి",
       ctaPrimary: "మా చిరునామా",
       ctaSecondary: "గ్యాలరీ చూడండి",
+      ctaNgo: "NGO పోర్టల్ సందర్శించండి",
     },
     services: {
       title: "మా ఆరాధనలు",
@@ -2560,6 +2562,7 @@ export const translations = {
       ctaWait: "इस रविवार हमारे साथ जुड़ें",
       ctaPrimary: "यात्रा की योजना बनाएं",
       ctaSecondary: "गैलरी देखें",
+      ctaNgo: "NGO पोर्टल पर जाएं",
     },
     services: {
       title: "हमारी सेवाएं",

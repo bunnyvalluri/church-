@@ -25,6 +25,8 @@ const HERO_DEFAULTS = {
   ctaSecondaryHref: "/gallery",
   ctaTertiaryText: "Prayer Request",
   ctaTertiaryHref: "/prayer",
+  ctaNgoText: "Visit NGO Portal",
+  ctaNgoHref: "/ngo",
   backgroundImageUrl: null,
   backgroundImageId: null,
   backgroundVideoUrl: null,

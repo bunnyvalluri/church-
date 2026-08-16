@@ -259,6 +259,15 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       ? "प्राथना अनुरोध"
       : hero?.ctaTertiaryText ?? "Prayer Request";
 
+  const ctaNgoText =
+    language === "te"
+      ? (hero as any)?.ctaNgoTextTe || (t.hero as any)?.ctaNgo || "NGO పోర్టల్ సందర్శించండి"
+      : language === "hi"
+      ? (hero as any)?.ctaNgoTextHi || (t.hero as any)?.ctaNgo || "NGO पोर्टल पर जाएं"
+      : (hero as any)?.ctaNgoText ?? (t.hero as any)?.ctaNgo ?? "Visit NGO Portal";
+
+  const ctaNgoHref = (hero as any)?.ctaNgoHref ?? "/ngo";
+
   return (
     <section
       id="home"
@@ -345,11 +354,11 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
           {/* CTA Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center items-center mb-16 md:mb-24 max-w-2xl mx-auto px-4"
+            className="flex flex-col sm:flex-row flex-wrap gap-3.5 sm:gap-4 justify-center items-center mb-16 md:mb-24 max-w-5xl mx-auto px-4"
           >
             <Link
               href={hero?.ctaPrimaryHref ?? "#services"}
-              className="w-full sm:w-auto min-h-[48px] group relative px-8 py-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-indigo-400/30"
+              className="w-full sm:w-auto min-h-[48px] group relative px-7 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-indigo-400/30"
             >
               <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
               <span className="relative flex items-center justify-center gap-2">
@@ -359,15 +368,25 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             </Link>
             <Link
               href={ctaSecondaryHref}
-              className="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-gray-300 dark:border-white/20 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-md"
+              className="w-full sm:w-auto min-h-[48px] px-7 sm:px-8 py-3.5 sm:py-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-gray-300 dark:border-white/20 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-md"
             >
               {ctaSecondaryText}
             </Link>
             <Link
               href={hero?.ctaTertiaryHref ?? "/prayer"}
-              className="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-rose-500/15 dark:bg-rose-500/20 hover:bg-rose-500/25 border border-rose-500/40 dark:border-rose-400/50 text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-sm"
+              className="w-full sm:w-auto min-h-[48px] px-7 sm:px-8 py-3.5 sm:py-4 bg-rose-500/15 dark:bg-rose-500/20 hover:bg-rose-500/25 border border-rose-500/40 dark:border-rose-400/50 text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 rounded-2xl font-extrabold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center shadow-sm"
             >
               {ctaTertiaryText}
+            </Link>
+            <Link
+              href={ctaNgoHref}
+              className="w-full sm:w-auto min-h-[48px] group relative px-7 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-rose-500 via-fuchsia-600 to-purple-600 hover:from-rose-400 hover:via-fuchsia-500 hover:to-purple-500 text-white rounded-2xl font-extrabold overflow-hidden shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-2 border border-pink-400/30"
+            >
+              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
+              <span className="relative flex items-center justify-center gap-2">
+                {ctaNgoText}
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
           </motion.div>
 

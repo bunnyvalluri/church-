@@ -93,6 +93,8 @@ export const HERO_FALLBACK: HeroContent = {
   ctaSecondaryHref: "/gallery",
   ctaTertiaryText: "Prayer Request",
   ctaTertiaryHref: "/prayer",
+  ctaNgoText: "Visit NGO Portal",
+  ctaNgoHref: "/ngo",
   backgroundImageUrl: null,
   backgroundImageId: null,
   backgroundVideoUrl: null,
