@@ -35,6 +35,11 @@ import {
   Flame,
   Layers,
   ArrowUpDown,
+  Youtube,
+  ExternalLink,
+  PlayCircle,
+  Film,
+  ChevronDown,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
@@ -43,6 +48,15 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import Navbar from "@/components/layout/Navbar";
 import { CURATED_GALLERY_ITEMS, GalleryItem } from "@/lib/galleryData";
+import {
+  GALLERY_VIDEO_ITEMS,
+  VIDEO_CATEGORIES,
+  CATEGORY_COLORS,
+  filterAndSearchVideos,
+  type GalleryVideoItem,
+  type VideoCategory,
+} from "@/lib/galleryVideosData";
+
 
 // Session cache to prevent re-flashing loaded images
 const loadedCache = new Set<string>();
@@ -148,6 +162,14 @@ export default function ChurchGalleryPage() {
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"order-asc" | "order-desc" | "newest" | "title-asc">("order-asc");
   const [viewMode, setViewMode] = useState<"masonry" | "standard" | "compact">("masonry");
+
+  // Video section state
+  const [videoCategory, setVideoCategory] = useState<VideoCategory>("All");
+  const [videoSearch, setVideoSearch] = useState("");
+  const [cinemaVideo, setCinemaVideo] = useState<GalleryVideoItem | null>(null);
+  const [videoModalIndex, setVideoModalIndex] = useState<number | null>(null);
+  const [videoModalActive, setVideoModalActive] = useState(false);
+
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
@@ -187,17 +209,19 @@ export default function ChurchGalleryPage() {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
-        showToast(gt.removeFavorite, "info");
+        showToast(gt?.removeFavorite || "Removed", "info");
       } else {
         next.add(id);
-        showToast(gt.saveFavorite, "heart");
+        showToast(gt?.saveFavorite || "Saved ❤️", "heart");
       }
       try {
         localStorage.setItem("kcm-gallery-favorites", JSON.stringify(Array.from(next)));
       } catch {}
       return next;
     });
-  }, [gt.removeFavorite, gt.saveFavorite]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gt?.removeFavorite, gt?.saveFavorite]);
+
 
   // Show Toast
   const showToast = (text: string, type: "success" | "info" | "heart" = "success") => {
@@ -624,6 +648,7 @@ export default function ChurchGalleryPage() {
 
       {/* MASTER CONTROL HUB - Filter Tabs, Search, View Switcher */}
       <main className="container mx-auto px-4 sm:px-6 py-12">
+
         <div className="space-y-6 mb-10">
           {/* Top Bar: Search Bar & Branch Switcher & Layout Buttons */}
           <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-2 sm:p-3 rounded-2xl bg-white/90 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-lg">
@@ -1065,6 +1090,370 @@ export default function ChurchGalleryPage() {
           </div>
         )}
       </main>
+
+      {/* ══════════════════════════════════════════════════════════════════════════════
+           VIDEOS & EMBEDDED YOUTUBE SECTION
+      ══════════════════════════════════════════════════════════════════════════════ */}
+      <section
+        className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-t border-white/5 py-14"
+      >
+            <div className="container mx-auto px-4 sm:px-6">
+
+              {/* ─── Section Header ─── */}
+              <div className="text-center mb-10 space-y-3">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-black uppercase tracking-widest">
+                  <Youtube className="w-3.5 h-3.5" />
+                  {gt.videosSectionBadge || "Live Church Videos"}
+                </div>
+                <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                  {gt.videosSectionTitle || "KCM Video"}{" "}
+                  <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+                    {gt.videosSectionTitleHighlight || "Archive"}
+                  </span>
+                </h2>
+                <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                  {gt.videosSectionSubtitle || "Watch 44 embedded YouTube videos from Kingdom of Christ Ministries."}
+                </p>
+              </div>
+
+              {/* ─── Cinema Stage ─── */}
+              {cinemaVideo ? (
+                <div className="mb-10 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black">
+                  <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                    <iframe
+                      key={cinemaVideo.id}
+                      src={cinemaVideo.embedUrl + "&autoplay=1"}
+                      title={cinemaVideo.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                      style={{ border: 0 }}
+                    />
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 bg-slate-900 border-t border-white/10">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-600/30 border border-rose-500/30 text-rose-400 font-black uppercase tracking-wider">
+                          {cinemaVideo.category}
+                        </span>
+                        <span className="text-xs text-slate-500 font-medium">{cinemaVideo.date}</span>
+                      </div>
+                      <h3 className="text-sm sm:text-base font-bold text-white leading-snug">
+                        {
+                          language === "te" ? (cinemaVideo.titleTe || cinemaVideo.title)
+                          : language === "hi" ? (cinemaVideo.titleHi || cinemaVideo.title)
+                          : cinemaVideo.title
+                        }
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <a
+                        href={`https://www.youtube.com/watch?v=${cinemaVideo.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all hover:scale-105"
+                      >
+                        <Youtube className="w-3.5 h-3.5" />
+                        <span>{gt.watchOnYoutube || "Watch on YouTube"}</span>
+                      </a>
+                      <button
+                        onClick={() => {
+                          const idx = GALLERY_VIDEO_ITEMS.findIndex(v => v.id === cinemaVideo.id);
+                          setVideoModalIndex(idx !== -1 ? idx : 0);
+                          setVideoModalActive(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/10 transition-all hover:scale-105"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>Fullscreen</span>
+                      </button>
+                      <button
+                        onClick={() => setCinemaVideo(null)}
+                        className="p-1.5 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-400 hover:text-white border border-white/10 transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-10 rounded-3xl border border-white/10 bg-slate-900/60 flex flex-col items-center justify-center py-14 gap-4 backdrop-blur-sm">
+                  <div className="w-16 h-16 rounded-2xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center">
+                    <PlayCircle className="w-8 h-8 text-rose-400" />
+                  </div>
+                  <p className="text-slate-400 text-sm font-semibold">{gt.cinemaStageSubtitle || "Click any video card below to play here"}</p>
+                </div>
+              )}
+
+              {/* ─── Search & Category Filters ─── */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-8">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    value={videoSearch}
+                    onChange={(e) => setVideoSearch(e.target.value)}
+                    placeholder={gt.videoSearchPlaceholder || "Search videos by title, date, or category..."}
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-800/80 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/60 transition-all"
+                  />
+                  {videoSearch && (
+                    <button
+                      onClick={() => setVideoSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                  {VIDEO_CATEGORIES.map((cat) => {
+                    const isActive = videoCategory === cat.name;
+                    const catCount = cat.name === "All"
+                      ? GALLERY_VIDEO_ITEMS.length
+                      : GALLERY_VIDEO_ITEMS.filter(v => v.category === cat.name).length;
+                    return (
+                      <button
+                        key={cat.name}
+                        onClick={() => setVideoCategory(cat.name)}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 border transition-all ${
+                          isActive
+                            ? "bg-rose-600 text-white border-rose-500/50 shadow-md"
+                            : "bg-slate-800/80 border-white/10 text-slate-300 hover:bg-slate-700 hover:text-white"
+                        }`}
+                      >
+                        {cat.name}
+                        <span className={`text-[10px] font-mono font-black px-1 rounded ${
+                          isActive ? "text-white/70" : "text-slate-500"
+                        }`}>{catCount}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ─── Video Grid ─── */}
+              {(() => {
+                const filtered = filterAndSearchVideos(GALLERY_VIDEO_ITEMS, videoCategory, videoSearch, language as "en" | "te" | "hi");
+                if (filtered.length === 0) {
+                  return (
+                    <div className="text-center py-20 text-slate-500">
+                      <Film className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                      <p className="font-semibold">{gt.noVideosFound || "No videos match your search"}</p>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {filtered.map((video, idx) => {
+                      const isActive = cinemaVideo?.id === video.id;
+                      const localizedTitle = language === "te" ? (video.titleTe || video.title)
+                        : language === "hi" ? (video.titleHi || video.title)
+                        : video.title;
+                      return (
+                        <motion.div
+                          key={video.id}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: Math.min(idx * 0.04, 0.6) }}
+                          className={`group relative rounded-2xl overflow-hidden bg-slate-900 border transition-all duration-300 cursor-pointer hover:-translate-y-1 ${
+                            isActive
+                              ? "border-rose-500/70 shadow-xl shadow-rose-500/20 ring-2 ring-rose-500/40"
+                              : "border-white/10 hover:border-rose-500/40 hover:shadow-xl hover:shadow-rose-900/20"
+                          }`}
+                          onClick={() => setCinemaVideo(video)}
+                        >
+                          {/* Video Thumbnail */}
+                          <div className="relative w-full aspect-video overflow-hidden bg-slate-950">
+                            <img
+                              src={video.thumbnail}
+                              alt={localizedTitle}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            {/* Play button */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 ${
+                                isActive
+                                  ? "bg-rose-600 scale-110"
+                                  : "bg-black/60 group-hover:bg-rose-600 group-hover:scale-110 backdrop-blur-sm"
+                              }`}>
+                                <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                              </div>
+                            </div>
+                            {/* Index badge */}
+                            <div className="absolute top-2 left-2">
+                              <span className="px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-white text-[10px] font-black border border-white/20">
+                                #{GALLERY_VIDEO_ITEMS.indexOf(video) + 1}
+                              </span>
+                            </div>
+                            {/* Category badge */}
+                            <div className="absolute top-2 right-2">
+                              <span className="px-2 py-0.5 rounded-full bg-rose-600/90 backdrop-blur-md text-white text-[9px] font-extrabold tracking-wider border border-rose-400/40">
+                                {video.category.split(" & ")[0].toUpperCase()}
+                              </span>
+                            </div>
+                            {/* Active indicator */}
+                            {isActive && (
+                              <div className="absolute bottom-2 left-2 right-2">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-rose-600/95 text-white text-[10px] font-black">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                  Playing in Cinema Stage
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Card Footer */}
+                          <div className="p-3.5 space-y-1.5">
+                            <p className="text-[10px] text-slate-500 font-semibold">{video.date}</p>
+                            <h4 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-rose-300 transition-colors">
+                              {localizedTitle}
+                            </h4>
+                            <div className="flex items-center gap-2 pt-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCinemaVideo(video);
+                                  window.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                                className="flex-1 text-[11px] font-bold text-rose-400 hover:text-white bg-rose-600/20 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1"
+                              >
+                                <Play className="w-3 h-3 fill-current" />
+                                {gt.playInStage || "Play in Stage"}
+                              </button>
+                              <a
+                                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-1.5 rounded-lg bg-white/5 hover:bg-red-600 text-slate-400 hover:text-white border border-white/10 transition-all"
+                                title={gt.watchOnYoutube || "Watch on YouTube"}
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
+            </div>
+      </section>
+
+      {/* ══════════ CINEMA VIDEO MODAL PLAYER ══════════ */}
+      <AnimatePresence>
+        {videoModalActive && videoModalIndex !== null && (() => {
+          const filtered = filterAndSearchVideos(GALLERY_VIDEO_ITEMS, videoCategory, videoSearch, language as "en" | "te" | "hi");
+          const allVids = GALLERY_VIDEO_ITEMS;
+          const vid = allVids[videoModalIndex];
+          if (!vid) return null;
+          const localizedTitle = language === "te" ? (vid.titleTe || vid.title)
+            : language === "hi" ? (vid.titleHi || vid.title)
+            : vid.title;
+          return (
+            <motion.div
+              key="video-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-2xl flex flex-col"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 rounded-full bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-black">
+                    {videoModalIndex + 1} / {allVids.length}
+                  </span>
+                  <span className="hidden sm:block text-xs text-slate-400 font-semibold truncate max-w-xs">
+                    {localizedTitle}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setVideoModalIndex(i => i !== null ? Math.max(0, i - 1) : 0)}
+                    disabled={videoModalIndex === 0}
+                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 border border-white/10 transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setVideoModalIndex(i => i !== null ? Math.min(allVids.length - 1, i + 1) : 0)}
+                    disabled={videoModalIndex === allVids.length - 1}
+                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 border border-white/10 transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${vid.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-xl bg-red-600 hover:bg-red-500 text-white border border-red-400/30 transition-all"
+                  >
+                    <Youtube className="w-4 h-4" />
+                  </a>
+                  <button
+                    onClick={() => { setVideoModalActive(false); setVideoModalIndex(null); }}
+                    className="p-2 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-200 border border-white/10 transition-all ml-1"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Video */}
+              <div className="flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
+                <div className="w-full max-w-5xl">
+                  <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl" style={{ paddingTop: "56.25%" }}>
+                    <iframe
+                      key={vid.id + "-modal"}
+                      src={vid.embedUrl + "&autoplay=1"}
+                      title={localizedTitle}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full rounded-2xl"
+                      style={{ border: 0 }}
+                    />
+                  </div>
+                  <div className="mt-4 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-600/30 text-rose-400 font-black border border-rose-500/30">{vid.category}</span>
+                      <span className="text-xs text-slate-500">{vid.date}</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold text-white">{localizedTitle}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">{vid.description}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Thumbnail Strip */}
+              <div className="flex-shrink-0 px-4 py-3 bg-slate-950 border-t border-white/10">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scroll-smooth" style={{ scrollbarWidth: "thin" }}>
+                  {allVids.map((v, i) => (
+                    <button
+                      key={v.id}
+                      onClick={() => setVideoModalIndex(i)}
+                      className={`relative flex-shrink-0 w-16 h-10 sm:w-20 sm:h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                        i === videoModalIndex
+                          ? "border-rose-500 scale-105 shadow-lg shadow-rose-600/40 ring-2 ring-rose-400/50"
+                          : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/40"
+                      }`}
+                    >
+                      <img src={v.thumbnail} alt={v.title} loading="lazy" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
 
       {/* FULLSCREEN CINEMATIC LIGHTBOX & SLIDESHOW MODAL */}
       <AnimatePresence>
