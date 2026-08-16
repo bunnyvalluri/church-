@@ -84,70 +84,6 @@ function encodeSrc(src: string | null | undefined): string {
   }
 }
 
-// 8 Distinct Vibrant Color Themes for all 8 Category Buttons
-const CATEGORY_BUTTON_THEMES: Record<
-  string,
-  {
-    active: string;
-    inactive: string;
-    badgeActive: string;
-    badgeInactive: string;
-  }
-> = {
-  All: {
-    active: "bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white font-extrabold border-transparent shadow-lg shadow-purple-600/40 ring-2 ring-purple-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-violet-100/90 dark:bg-violet-950/40 text-violet-900 dark:text-violet-200 border-violet-300/80 dark:border-violet-500/30 hover:bg-violet-200/80 hover:border-violet-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-violet-200/90 dark:bg-violet-500/30 text-violet-950 dark:text-violet-200",
-  },
-  "Family Blessings": {
-    active: "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white font-extrabold border-transparent shadow-lg shadow-emerald-600/40 ring-2 ring-emerald-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-emerald-100/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border-emerald-300/80 dark:border-emerald-500/30 hover:bg-emerald-200/80 hover:border-emerald-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-emerald-200/90 dark:bg-emerald-500/30 text-emerald-950 dark:text-emerald-200",
-  },
-  "Worship & Praise": {
-    active: "bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-extrabold border-transparent shadow-lg shadow-blue-600/40 ring-2 ring-blue-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-blue-100/90 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 border-blue-300/80 dark:border-blue-500/30 hover:bg-blue-200/80 hover:border-blue-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-blue-200/90 dark:bg-blue-500/30 text-blue-950 dark:text-blue-200",
-  },
-  "Pastoral Ministry": {
-    active: "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-extrabold border-transparent shadow-lg shadow-amber-500/40 ring-2 ring-amber-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-amber-100/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border-amber-300/80 dark:border-amber-500/30 hover:bg-amber-200/80 hover:border-amber-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-amber-200/90 dark:bg-amber-500/30 text-amber-950 dark:text-amber-200",
-  },
-  "Fellowship & Joy": {
-    active: "bg-gradient-to-r from-orange-500 via-rose-500 to-orange-600 text-white font-extrabold border-transparent shadow-lg shadow-orange-500/40 ring-2 ring-orange-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-orange-100/90 dark:bg-orange-950/40 text-orange-900 dark:text-orange-200 border-orange-300/80 dark:border-orange-500/30 hover:bg-orange-200/80 hover:border-orange-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-orange-200/90 dark:bg-orange-500/30 text-orange-950 dark:text-orange-200",
-  },
-  "Youth & Children": {
-    active: "bg-gradient-to-r from-pink-500 via-fuchsia-600 to-rose-600 text-white font-extrabold border-transparent shadow-lg shadow-pink-500/40 ring-2 ring-pink-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-pink-100/90 dark:bg-pink-950/40 text-pink-900 dark:text-pink-200 border-pink-300/80 dark:border-pink-500/30 hover:bg-pink-200/80 hover:border-pink-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-pink-200/90 dark:bg-pink-500/30 text-pink-950 dark:text-pink-200",
-  },
-  "Special Events": {
-    active: "bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-extrabold border-transparent shadow-lg shadow-red-600/40 ring-2 ring-red-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-red-100/90 dark:bg-red-950/40 text-red-900 dark:text-red-200 border-red-300/80 dark:border-red-500/30 hover:bg-red-200/80 hover:border-red-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-red-200/90 dark:bg-red-500/30 text-red-950 dark:text-red-200",
-  },
-  "Saved Photos": {
-    active: "bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white font-extrabold border-transparent shadow-lg shadow-rose-600/40 ring-2 ring-rose-400 ring-offset-2 dark:ring-offset-slate-900 scale-[1.03]",
-    inactive: "bg-rose-100/90 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border-rose-300/80 dark:border-rose-500/30 hover:bg-rose-200/80 hover:border-rose-400",
-    badgeActive: "bg-white/30 text-white shadow-inner",
-    badgeInactive: "bg-rose-200/90 dark:bg-rose-500/30 text-rose-950 dark:text-rose-200",
-  },
-};
-
-function getCategoryTheme(name: string) {
-  return CATEGORY_BUTTON_THEMES[name] || CATEGORY_BUTTON_THEMES["All"];
-}
-
 // Toast notification interface
 interface ToastMessage {
   id: string;
@@ -743,11 +679,10 @@ export default function ChurchGalleryPage() {
 
           {/* Category Filter Section */}
           <div>
-            {/* Mobile View: Structured 2-column grid showing ALL categories & Saved Photos with 8 distinct vibrant colors */}
+            {/* Mobile View: Structured 2-column grid showing ALL categories & Saved Photos clearly */}
             <div className="sm:hidden grid grid-cols-2 gap-1.5">
               {categories.map((cat) => {
                 const isActive = activeCategory === cat.name && !favoritesOnly;
-                const theme = getCategoryTheme(cat.name);
                 return (
                   <button
                     key={cat.name}
@@ -757,13 +692,17 @@ export default function ChurchGalleryPage() {
                       setFavoritesOnly(false);
                     }}
                     className={`px-3 py-2.5 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 shadow-sm ${
-                      isActive ? theme.active : theme.inactive
+                      isActive
+                        ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white border-purple-500/50 shadow-md shadow-purple-900/25"
+                        : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
                     }`}
                   >
                     <span className="truncate">{cat.name}</span>
                     <span
                       className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
-                        isActive ? theme.badgeActive : theme.badgeInactive
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {cat.count}
@@ -773,37 +712,35 @@ export default function ChurchGalleryPage() {
               })}
 
               {/* Mobile Saved Photos Button */}
-              {(() => {
-                const theme = getCategoryTheme("Saved Photos");
-                return (
-                  <button
-                    id="gallery-filter-m-saved"
-                    onClick={() => setFavoritesOnly((prev) => !prev)}
-                    className={`px-3 py-2.5 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 shadow-sm ${
-                      favoritesOnly ? theme.active : theme.inactive
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 truncate">
-                      <Heart className={`w-3.5 h-3.5 flex-shrink-0 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
-                      <span className="truncate">Saved Photos</span>
-                    </div>
-                    <span
-                      className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
-                        favoritesOnly ? theme.badgeActive : theme.badgeInactive
-                      }`}
-                    >
-                      {favorites.size}
-                    </span>
-                  </button>
-                );
-              })()}
+              <button
+                id="gallery-filter-m-saved"
+                onClick={() => setFavoritesOnly((prev) => !prev)}
+                className={`px-3 py-2.5 text-[11px] font-bold rounded-xl border transition-all duration-200 flex items-center justify-between gap-1 cursor-pointer min-w-0 shadow-sm ${
+                  favoritesOnly
+                    ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-md shadow-rose-900/25"
+                    : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 truncate">
+                  <Heart className={`w-3.5 h-3.5 flex-shrink-0 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
+                  <span className="truncate">Saved Photos</span>
+                </div>
+                <span
+                  className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono flex-shrink-0 font-extrabold ${
+                    favoritesOnly
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400"
+                  }`}
+                >
+                  {favorites.size}
+                </span>
+              </button>
             </div>
 
-            {/* Desktop & Tablet: Horizontal Scrollable Pills with 8 distinct theme colors */}
+            {/* Desktop & Tablet: Horizontal Scrollable Pills */}
             <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
               {categories.map((cat) => {
                 const isActive = activeCategory === cat.name && !favoritesOnly;
-                const theme = getCategoryTheme(cat.name);
                 return (
                   <button
                     key={cat.name}
@@ -812,13 +749,17 @@ export default function ChurchGalleryPage() {
                       setFavoritesOnly(false);
                     }}
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
-                      isActive ? theme.active : theme.inactive
+                      isActive
+                        ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white border-purple-500/50 shadow-md shadow-purple-900/25 scale-[1.02]"
+                        : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
                     }`}
                   >
                     <span>{cat.name}</span>
                     <span
                       className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
-                        isActive ? theme.badgeActive : theme.badgeInactive
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {cat.count}
@@ -828,27 +769,26 @@ export default function ChurchGalleryPage() {
               })}
 
               {/* Saved Favorites Toggle */}
-              {(() => {
-                const theme = getCategoryTheme("Saved Photos");
-                return (
-                  <button
-                    onClick={() => setFavoritesOnly((prev) => !prev)}
-                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
-                      favoritesOnly ? theme.active : theme.inactive
-                    }`}
-                  >
-                    <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
-                    <span>Saved Photos</span>
-                    <span
-                      className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
-                        favoritesOnly ? theme.badgeActive : theme.badgeInactive
-                      }`}
-                    >
-                      {favorites.size}
-                    </span>
-                  </button>
-                );
-              })()}
+              <button
+                onClick={() => setFavoritesOnly((prev) => !prev)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all whitespace-nowrap flex items-center gap-2 border shadow-sm ${
+                  favoritesOnly
+                    ? "bg-gradient-to-r from-rose-600 to-pink-600 text-white border-rose-500/50 shadow-md shadow-rose-900/25 scale-[1.02]"
+                    : "bg-white dark:bg-slate-900/70 border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20"
+                }`}
+              >
+                <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? "fill-white" : "text-rose-500 dark:text-rose-400"}`} />
+                <span>Saved Photos</span>
+                <span
+                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-extrabold font-mono ${
+                    favoritesOnly
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                  }`}
+                >
+                  {favorites.size}
+                </span>
+              </button>
             </div>
           </div>
 
