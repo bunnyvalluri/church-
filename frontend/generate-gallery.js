@@ -24,7 +24,15 @@ const subhashItems = orderedFiles.map((file, idx) => {
   let title = 'Family Blessing Gathering #' + num;
   let description = 'Special prayers of blessing, covenant grace, and spiritual breakthrough over families at Subhash Nagar Branch.';
 
-  if (idx % 5 === 0) {
+  if (file === '69.jpeg') {
+    category = 'Youth & Children';
+    title = 'Youth & Choir Fellowship Team #' + num;
+    description = 'Joyful young leaders and choir team of Subhash Nagar sanctuary united in celebration and worship.';
+  } else if (file === '70.jpeg') {
+    category = 'Pastoral Ministry';
+    title = "Women's Fellowship Blessing with Bishop Kurra Kristhu Raju #" + num;
+    description = 'Women\'s fellowship group gathered with Bishop Kurra Kristhu Raju under the divine promise "భయపడకుము నేను నీకు తోడైయున్నాను".';
+  } else if (idx % 5 === 0) {
     category = 'Family Blessings';
     title = 'Family Dedication & Covenant Blessing #' + num;
     description = 'Pastoral hands laid in prayer over families seeking divine protection, health, and household prosperity.';
