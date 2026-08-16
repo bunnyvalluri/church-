@@ -65,56 +65,40 @@ const subhashItems = orderedFiles.map((file, idx) => {
   };
 });
 
-const bannerItem = {
-  id: 'subhash-family-blessing-banner',
-  title: 'Family Blessing Gathering Official Banner',
-  description: 'Official promotional poster and theme banner for the Family Blessing Gathering at Subhash Nagar Sanctuary.',
-  url: '/events/family-blessing-subhash-banner.png',
-  thumbnailUrl: '/events/family-blessing-subhash-banner.png',
-  category: 'Family Blessings',
-  branchId: 'cmrgwqhc30001fsk8mysbmp50',
-  branchName: 'Subhash Nagar',
-  eventName: 'Family Blessing Gathering',
-  eventDate: 'July 15, 2026',
-  type: 'image',
-  tags: ['Subhash Nagar', 'Family Blessing', 'Banner', 'Bishop Kurra Kristhu Raju'],
-  createdAt: new Date('2026-07-15T09:00:00.000Z').toISOString()
-};
-
 const specialEventPoster1 = {
   id: 'subhash-family-blessing-poster-1',
   title: 'కుటుంబ ఆశీర్వాద కూడిక — Official Revival Poster',
-  description: 'Special revival event poster with keynote speaker Rev. Dr. B. Shekhar Daniel Garu & Bishop Kurra Kristhu Raju Garu at Subhash Nagar.',
+  description: 'కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ సుభాష్ నగర్ బ్రాంచ్ ఆధ్వర్యంలో జరుగు ప్రత్యేక కుటుంబ ఆశీర్వాద కూడిక అధికారిక ఆహ్వాన పత్రిక. ముఖ్య వక్తలు: రెవ. డా. బి. శేఖర్ డానియేల్ గారు & బిషప్ కుర్ర క్రీస్తు రాజు గారు.',
   url: '/images/events/family-blessing-poster-1.jpg',
   thumbnailUrl: '/images/events/family-blessing-poster-1.jpg',
   category: 'Special Events',
   branchId: 'cmrgwqhc30001fsk8mysbmp50',
   branchName: 'Subhash Nagar',
-  eventName: 'Family Blessing Gathering',
+  eventName: 'కుటుంబ ఆశీర్వాద కూడిక',
   eventDate: 'August 15, 2026',
   type: 'image',
-  tags: ['Subhash Nagar', 'Special Events', 'Family Blessing', 'Rev. Dr. B. Shekhar Daniel', 'Bishop Kurra Kristhu Raju'],
+  tags: ['Subhash Nagar', 'Special Events', 'కుటుంబ ఆశీర్వాద కూడిక', 'Rev. Dr. B. Shekhar Daniel', 'Bishop Kurra Kristhu Raju'],
   createdAt: new Date('2026-08-15T09:00:00.000Z').toISOString()
 };
 
 const specialEventPoster2 = {
   id: 'subhash-family-blessing-poster-2',
   title: '2026 కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ — Festival Poster',
-  description: 'Official 2026 Family Blessing Prayer Festival poster welcoming families across Hyderabad for heavenly grace.',
+  description: '2026 ఆగస్టు 15న సుభాష్ నగర్‌లో జరుగు కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ అధికారిక పోస్టర్.',
   url: '/images/events/family-blessing-poster-2.jpg',
   thumbnailUrl: '/images/events/family-blessing-poster-2.jpg',
   category: 'Special Events',
   branchId: 'cmrgwqhc30001fsk8mysbmp50',
   branchName: 'Subhash Nagar',
-  eventName: 'Family Blessing Prayer Festival',
+  eventName: 'కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ',
   eventDate: 'August 15, 2026',
   type: 'image',
-  tags: ['Subhash Nagar', 'Special Events', 'Prayer Festival', 'Bishop Kurra Kristhu Raju'],
+  tags: ['Subhash Nagar', 'Special Events', 'ప్రార్థన పండుగ', 'Bishop Kurra Kristhu Raju'],
   createdAt: new Date('2026-08-15T09:01:00.000Z').toISOString()
 };
 
-// Only authentic, verified church media and photos
-const allGalleryItems = [bannerItem, specialEventPoster1, specialEventPoster2, ...subhashItems];
+// Only authentic Telugu revival posters followed by genuine church event photos
+const allGalleryItems = [specialEventPoster1, specialEventPoster2, ...subhashItems];
 
 // Write JSON
 fs.writeFileSync(path.join(__dirname, 'lib/galleryData.json'), JSON.stringify(allGalleryItems, null, 2), 'utf8');
