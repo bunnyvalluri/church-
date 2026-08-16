@@ -482,14 +482,20 @@ export default function EventsPage() {
               {/* Poster 1 */}
               <div
                 onClick={() => setPreviewPoster("/images/events/family-blessing-poster-1.jpg")}
-                className="group relative rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-black"
+                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-950 flex items-center justify-center"
               >
                 <img
                   src="/images/events/family-blessing-poster-1.jpg"
-                  alt="కుటుంబ ఆశీర్వాద కూడిక Poster 1"
-                  className="w-full h-56 object-cover object-top group-hover:opacity-90 transition-opacity"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none select-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                <img
+                  src="/images/events/family-blessing-poster-1.jpg"
+                  alt="కుటుంబ ఆశీర్వాద కూడిక Poster 1"
+                  className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-md"
+                />
+                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[10px] font-bold text-white drop-shadow truncate">కూడిక పోస్టర్ 1</span>
                     <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />
@@ -500,14 +506,20 @@ export default function EventsPage() {
               {/* Poster 2 */}
               <div
                 onClick={() => setPreviewPoster("/images/events/family-blessing-poster-2.jpg")}
-                className="group relative rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-black"
+                className="group relative h-56 rounded-2xl overflow-hidden border border-purple-400/30 shadow-xl cursor-pointer hover:border-amber-400 transition-all duration-300 hover:scale-[1.03] bg-slate-950 flex items-center justify-center"
               >
                 <img
                   src="/images/events/family-blessing-poster-2.jpg"
-                  alt="కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ Poster 2"
-                  className="w-full h-56 object-cover object-top group-hover:opacity-90 transition-opacity"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none select-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                <img
+                  src="/images/events/family-blessing-poster-2.jpg"
+                  alt="కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ Poster 2"
+                  className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-md"
+                />
+                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[10px] font-bold text-white drop-shadow truncate">ప్రార్థన పండుగ 2026</span>
                     <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />

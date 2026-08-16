@@ -949,12 +949,14 @@ export default function ChurchGalleryPage() {
                   >
                     {/* Media Container */}
                     <div
-                      className={`relative w-full overflow-hidden bg-slate-100 dark:bg-slate-950 ${
+                      className={`relative w-full overflow-hidden bg-slate-950 ${
                         viewMode === "compact"
                           ? "aspect-square"
                           : viewMode === "standard"
                           ? "aspect-[4/3]"
-                          : "aspect-[4/3] sm:aspect-auto sm:min-h-[220px]"
+                          : item.url.includes("poster") || item.category === "Special Events"
+                          ? "aspect-[3/4] sm:min-h-[280px]"
+                          : "aspect-[4/3] sm:min-h-[220px]"
                       }`}
                     >
                       <GalleryCardImage
@@ -963,18 +965,18 @@ export default function ChurchGalleryPage() {
                         priority={index < 12}
                       />
 
-                      {/* Top Badges */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-                        <span className="px-2.5 py-1 rounded-full bg-slate-900/70 dark:bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-white/20">
+                      {/* Top Badges with Subtle Protective Gradient */}
+                      <div className="absolute top-0 inset-x-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent p-2.5 sm:p-3 flex items-center justify-between pointer-events-none z-20">
+                        <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-extrabold tracking-wider border border-white/20 shadow-sm">
                           #{actualLightboxIndex + 1}
                         </span>
-                        <span className="px-2.5 py-1 rounded-full bg-purple-600/90 backdrop-blur-md text-white text-[10px] font-extrabold tracking-wider border border-purple-400/30">
+                        <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-purple-600/90 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-extrabold tracking-wider border border-purple-400/40 shadow-sm">
                           {localizedItem.category.toUpperCase()}
                         </span>
                       </div>
 
                       {/* Glass Hover Overlay with Action Buttons */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 backdrop-blur-[2px]">
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-30 backdrop-blur-[2px]">
                         <div className="flex items-center justify-center gap-2 mb-3">
                           {/* Zoom / Lightbox */}
                           <button
@@ -1371,15 +1373,28 @@ function GalleryCardImage({
   priority?: boolean;
 }) {
   const [isLoaded, setIsLoaded] = useState(() => loadedCache.has(src));
+  const [hasError, setHasError] = useState(false);
   const safeSrc = encodeSrc(src);
 
   return (
-    <div className="relative w-full h-full min-h-[200px] bg-slate-100 dark:bg-slate-900 overflow-hidden">
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-slate-200/80 dark:bg-slate-800/80 animate-pulse flex items-center justify-center">
-          <Camera className="w-8 h-8 text-slate-400 dark:text-slate-600" />
+    <div className="relative w-full h-full min-h-[200px] bg-slate-950 overflow-hidden flex items-center justify-center">
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 bg-slate-900/80 animate-pulse flex items-center justify-center z-10">
+          <Camera className="w-8 h-8 text-slate-500" />
         </div>
       )}
+
+      {/* Ambient Blurred Background Layer to seamlessly fill letterboxes with authentic colors */}
+      <Image
+        src={safeSrc}
+        alt=""
+        fill
+        unoptimized
+        aria-hidden="true"
+        className="object-cover blur-xl opacity-40 scale-110 pointer-events-none select-none"
+      />
+
+      {/* Crisp Contained Foreground Image - Full 100% visibility of faces, posters & Telugu typography */}
       <Image
         src={safeSrc}
         alt={title}
@@ -1388,11 +1403,15 @@ function GalleryCardImage({
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 25vw"
         loading={priority ? "eager" : "lazy"}
         priority={priority}
-        className={`object-cover transform group-hover:scale-105 transition-transform duration-300 ease-out ${
+        className={`object-contain z-10 transform group-hover:scale-105 transition-all duration-500 ease-out drop-shadow-md ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
         onLoad={() => {
           loadedCache.add(src);
+          setIsLoaded(true);
+        }}
+        onError={() => {
+          setHasError(true);
           setIsLoaded(true);
         }}
       />
