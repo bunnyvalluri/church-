@@ -156,9 +156,84 @@ export default function LoginPage() {
 
   const skipPhotoAndContinue = () => router.replace("/member");
   
+  // Handle Google OAuth Redirect Returns (e.g. on Mobile devices where popups redirect)
+  useEffect(() => {
+    if (mounted && auth) {
+      const handleRedirectResult = async () => {
+        try {
+          const { getRedirectResult } = await import("firebase/auth");
+          const activeAuth = getFirebaseAuth() || auth;
+          if (!activeAuth) return;
+          const result = await getRedirectResult(activeAuth);
+          if (result?.user) {
+            const u = result.user;
+            // Database sync
+            let role = "MEMBER";
+            try {
+              const syncRes = await fetch("/api/auth/sync", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  uid: u.uid,
+                  email: u.email || "",
+                  name: u.displayName || u.email?.split("@")[0] || "Member",
+                  photoURL: u.photoURL,
+                  phoneNumber: u.phoneNumber || null,
+                }),
+              });
+              if (syncRes.ok) {
+                const syncData = await syncRes.json();
+                if (syncData?.success && syncData?.user?.role) {
+                  role = syncData.user.role;
+                }
+              }
+            } catch (syncErr) {
+              console.warn("[AUTH] Redirect sync error:", syncErr);
+            }
+
+            setAuthCookies(u.uid, role);
+
+            if (updateUser) {
+              updateUser({
+                uid: u.uid,
+                email: u.email || "",
+                name: u.displayName || u.email?.split("@")[0] || "Member",
+                image: u.photoURL || null,
+                role: role as any,
+              });
+            }
+
+            sendLoginEmail(u.email || "", u.displayName || "Member", "google");
+            redirectForRole(role);
+          }
+        } catch (err: any) {
+          console.warn("[AUTH] Redirect check notice:", err);
+          if (
+            err?.code === "auth/popup-closed-by-user" ||
+            err?.code === "auth/user-cancelled" ||
+            err?.code === "auth/cancelled-popup-request"
+          ) {
+            return;
+          }
+          if (err?.code) {
+            setError(err.code);
+          }
+        }
+      };
+      handleRedirectResult();
+    }
+  }, [mounted, updateUser]);
+
   // Resolve localized error dynamically so it changes instantly when language toggles
   const getLocalizedError = (errStr: string) => {
     if (!errStr) return "";
+    if (
+      errStr === "auth/popup-closed-by-user" ||
+      errStr === "auth/user-cancelled" ||
+      errStr === "auth/cancelled-popup-request"
+    ) {
+      return "";
+    }
     
     // Map of raw codes or exact English strings to their translated keys
     const errorMap: Record<string, string> = {
@@ -168,9 +243,6 @@ export default function LoginPage() {
       "auth/too-many-requests": loginT.errors.tooManyRequests,
       "auth/operation-not-allowed": loginT.errors.operationNotAllowed,
       "auth/popup-blocked": loginT.errors.popupBlocked,
-      "auth/cancelled-popup-request": loginT.errors.popupClosed,
-      "auth/popup-closed-by-user": loginT.errors.popupClosed,
-      "auth/user-cancelled": loginT.errors.popupClosed,
       "auth/network-request-failed": loginT.errors.networkFailed,
       "auth/unauthorized-domain": loginT.errors.unauthorizedDomain || "This domain is not authorized for Google Sign-In. Please add your domain to the Authorized Domains list in Firebase Console.",
       "auth/auth-domain-config-required": loginT.errors.unauthorizedDomain || "This domain is not authorized for Google Sign-In. Please add your domain to the Authorized Domains list in Firebase Console.",
@@ -308,7 +380,8 @@ export default function LoginPage() {
 
         if (
           code === "auth/popup-closed-by-user" ||
-          code === "auth/user-cancelled"
+          code === "auth/user-cancelled" ||
+          code === "auth/cancelled-popup-request"
         ) {
           setSocialLoading(null);
           setIsLoggingIn(false);
@@ -319,7 +392,9 @@ export default function LoginPage() {
       }
 
       if (!u) {
-        throw new Error("social-generic-failed");
+        setSocialLoading(null);
+        setIsLoggingIn(false);
+        return;
       }
 
       // Authoritative database sync
@@ -363,9 +438,16 @@ export default function LoginPage() {
 
       redirectForRole(role);
     } catch (err: any) {
-      console.error(`[AUTH/OAUTH] ${name} login error:`, err?.code || err);
+      console.warn(`[AUTH/OAUTH] ${name} login error:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
+      if (
+        err?.code === "auth/popup-closed-by-user" ||
+        err?.code === "auth/user-cancelled" ||
+        err?.code === "auth/cancelled-popup-request"
+      ) {
+        return;
+      }
       setError(err?.code || err?.message || "social-generic-failed");
     }
   };
