@@ -140,8 +140,8 @@ const NavigationBar = memo(function NavigationBar() {
           aria-label="Main navigation"
           className={cn(
             "w-full",
-            // Transition: backdrop, border, shadow — 180ms GPU
-            "transition-[background-color,backdrop-filter,border-color,box-shadow] duration-[180ms] ease-out",
+            // Transition: backdrop, border, shadow — 200ms GPU
+            "transition-[background-color,backdrop-filter,border-color,box-shadow] duration-200 ease-out",
             "border-b",
             isScrolled
               ? [

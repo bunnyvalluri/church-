@@ -29,8 +29,8 @@ const TopInfoBar = memo(function TopInfoBar({ isScrolled }: TopInfoBarProps) {
         "hidden xl:block relative overflow-hidden",
         "bg-gradient-to-r from-violet-700/90 via-purple-700/90 to-violet-700/90",
         "text-purple-100 text-xs",
-        // Collapse transition — 180ms
-        "transition-[max-height,opacity] duration-[180ms] ease-in-out",
+        // Collapse transition — 200ms
+        "transition-[max-height,opacity] duration-200 ease-in-out",
         isScrolled ? "max-h-0 opacity-0 pointer-events-none" : "max-h-9 opacity-100"
       )}
     >
