@@ -1,4 +1,5 @@
 # 🏛️ Kingdom of Christ Ministries - Digital Platform
+<!-- cache sync -->
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
