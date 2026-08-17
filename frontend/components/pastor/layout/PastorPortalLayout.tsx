@@ -57,7 +57,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
   ];
 
   return (
-    <div className="h-[100dvh] max-h-[100dvh] flex bg-slate-50/40 dark:bg-[#05060e] text-slate-900 dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300">
+    <div className="h-[100dvh] max-h-[100dvh] flex bg-slate-50/40 dark:bg-[#05060e] text-slate-900 dark:text-gray-200 font-sans antialiased overflow-hidden relative transition-colors duration-300" suppressHydrationWarning>
       {/* Background Glow */}
       <div className="premium-glow-bg pointer-events-none" />
 

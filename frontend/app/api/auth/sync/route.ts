@@ -143,7 +143,7 @@ export async function POST(req: Request) {
         });
 
         return newUser;
-      });
+      }, { timeout: 20000, maxWait: 10000 });
     } else {
       // Brand new user: strictly assign DEFAULT_ROLE (MEMBER)
       isNewUser = true;
@@ -167,7 +167,7 @@ export async function POST(req: Request) {
           type: 'NEW_MEMBER',
           title: 'New Member Registered',
           content: `${sanitizedName || 'A new member'} (${sanitizedEmail}) registered.`,
-          link: 'members',
+          link: '/admin/members',
         });
       } catch (notifErr) {
         console.warn('[AUTH/SYNC] Notification creation failed:', notifErr);

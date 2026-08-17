@@ -45,7 +45,7 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen bg-slate-100/80 dark:bg-[#080914] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased transition-colors duration-200 selection:bg-indigo-500/30 selection:text-indigo-600 dark:selection:text-indigo-300">
+    <div className="min-h-screen bg-slate-100/80 dark:bg-[#080914] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased transition-colors duration-200 selection:bg-indigo-500/30 selection:text-indigo-600 dark:selection:text-indigo-300" suppressHydrationWarning>
       <div className="flex-1 flex w-full relative">
         {/* Shared Enterprise Sidebar */}
         <AdminSidebar

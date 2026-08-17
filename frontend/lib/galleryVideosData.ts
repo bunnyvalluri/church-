@@ -30,16 +30,16 @@ export interface GalleryVideoItem {
 export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   {
     id: "kcm-video-01",
-    videoId: "4VRXw2bUbSM",
+    videoId: "B1M_Ls_vi4o",
     title: "KCM August 2026 — Blessing Gathering Making Video",
     titleTe: "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ 2026 ఆగస్టు ఆశీర్వాద కూడిక 🙏",
     titleHi: "KCM 2026 अगस्त — आशीष सभा मेकिंग वीडियो",
     description: "A special making video of the Kingdom of Christ Ministries August 2026 blessing gathering service.",
     category: "Revival & Blessings",
     date: "August 2026",
-    embedUrl: "https://www.youtube.com/embed/4VRXw2bUbSM?si=xp6QU1xfcEDGOCFT",
-    thumbnail: "https://i.ytimg.com/vi/4VRXw2bUbSM/hqdefault.jpg",
-    siParam: "xp6QU1xfcEDGOCFT",
+    embedUrl: "https://www.youtube.com/embed/B1M_Ls_vi4o?si=UKv6_U8btJNI751K",
+    thumbnail: "https://i.ytimg.com/vi/B1M_Ls_vi4o/hqdefault.jpg",
+    siParam: "UKv6_U8btJNI751K",
   },
   {
     id: "kcm-video-02",

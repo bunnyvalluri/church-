@@ -322,9 +322,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex" suppressHydrationWarning>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 xl:w-72 flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-white/5 shadow-sm fixed top-0 left-0 h-full z-30">
+      <aside className="hidden lg:flex w-64 xl:w-72 flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-white/5 shadow-sm fixed top-0 left-0 h-full z-30" suppressHydrationWarning>
         <Sidebar />
       </aside>
 
