@@ -20,16 +20,9 @@ const sanitize = (s: string) =>
     disallowedTagsMode: 'discard',
   });
 
-// ── Role helper (module-scope so it's available throughout the file) ──────────
-function getRoleForEmail(email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' {
-  const e = email.toLowerCase().trim();
-  if (e.includes('superadmin')) return 'SUPER_ADMIN';
-  if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
-  if (e.includes('pastor') || e.includes('bishop')) return 'PASTOR';
-  if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
-  if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
-  return 'MEMBER';
-}
+// ── Default Role Helper ──────────────────────────────────────────────────────
+// Strictly default new users to MEMBER. Role elevations can only be assigned by administrators in DB.
+const DEFAULT_ROLE: 'MEMBER' = 'MEMBER';
 
 export async function POST(req: Request) {
   try {
@@ -60,14 +53,16 @@ export async function POST(req: Request) {
 
     let user;
     let isNewUser = false;
-    const computedRole = getRoleForEmail(sanitizedEmail);
 
     if (userByUid) {
       // User already exists with this Firebase UID.
-      // If email has changed or role needs upgrading, update it.
-      const shouldUpgradeRole = userByUid.role === 'MEMBER' && computedRole !== 'MEMBER';
-      if (userByUid.email !== sanitizedEmail || shouldUpgradeRole) {
-        console.info(`[AUTH/SYNC] Updating user ${sanitizedUid} (Email: ${sanitizedEmail}, Role: ${shouldUpgradeRole ? computedRole : userByUid.role})`);
+      // Update profile info (name, image, phone) while preserving their authoritative role.
+      if (
+        userByUid.email !== sanitizedEmail ||
+        (sanitizedName && userByUid.name !== sanitizedName) ||
+        (sanitizedPhotoURL && userByUid.image !== sanitizedPhotoURL) ||
+        (sanitizedPhoneNumber && userByUid.phone !== sanitizedPhoneNumber)
+      ) {
         user = await prisma.user.update({
           where: { id: sanitizedUid },
           data: {
@@ -75,7 +70,6 @@ export async function POST(req: Request) {
             name: sanitizedName || userByUid.name,
             image: sanitizedPhotoURL || userByUid.image,
             phone: sanitizedPhoneNumber || userByUid.phone,
-            ...(shouldUpgradeRole ? { role: computedRole } : {}),
           },
         });
       } else {
@@ -108,15 +102,14 @@ export async function POST(req: Request) {
           data: { email: tempEmail },
         });
 
-        // 2. Create the new user record
-        const finalRole = oldUser.role !== 'MEMBER' ? oldUser.role : computedRole;
+        // 2. Create the new user record with the existing role preserved
         const newUser = await tx.user.create({
           data: {
             id: sanitizedUid,
             email: sanitizedEmail,
             name: sanitizedName || oldUser.name || 'Member',
             password: 'firebase-authenticated',
-            role: finalRole,
+            role: oldUser.role || DEFAULT_ROLE,
             phone: sanitizedPhoneNumber || oldUser.phone || null,
             address: oldUser.address || null,
             image: sanitizedPhotoURL || oldUser.image || null,
@@ -152,7 +145,7 @@ export async function POST(req: Request) {
         return newUser;
       });
     } else {
-      // Brand new user, create it with computed role
+      // Brand new user: strictly assign DEFAULT_ROLE (MEMBER)
       isNewUser = true;
       user = await prisma.user.create({
         data: {
@@ -160,7 +153,7 @@ export async function POST(req: Request) {
           email: sanitizedEmail,
           name: sanitizedName || 'Member',
           password: 'firebase-authenticated',
-          role: computedRole,
+          role: DEFAULT_ROLE,
           image: sanitizedPhotoURL || null,
           phone: sanitizedPhoneNumber || null,
         },

@@ -130,114 +130,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
 
-    // ── DEV AUTO-LOGIN SHORTCUT ──────────────────────────────────────────────
-    // Priority: localStorage (DevToolbar) → env var → Firebase
-    // Has ZERO effect in production (env var never set there).
-    const isDev = process.env.NODE_ENV !== "production";
-    const envRole = isDev ? process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN : "";
-    const lsRole  = isDev && typeof window !== "undefined" ? (localStorage.getItem("__dev_role__") || "").toUpperCase() : "";
-    const devRole = lsRole || (envRole?.toUpperCase() ?? "");
-    const validRoles = ["PASTOR", "ADMIN", "SUPER_ADMIN", "MEMBER", "EVENT_MANAGER", "FIELD_VOLUNTEER"];
-    if (devRole && validRoles.includes(devRole)) {
-      const roleMap: Record<string, AuthUser["role"]> = {
-        PASTOR: "PASTOR",
-        ADMIN: "ADMIN",
-        SUPER_ADMIN: "SUPER_ADMIN",
-        MEMBER: "MEMBER",
-        EVENT_MANAGER: "EVENT_MANAGER",
-        FIELD_VOLUNTEER: "FIELD_VOLUNTEER",
-      };
-      const mockUser: AuthUser = {
-        uid: "dev-auto-login-uid",
-        email: "bishop.kraju@kcmchurch.org",
-        name: "Bishop Kurra Kristhu Raju",
-        image: "/pastor.png",
-        role: roleMap[devRole],
-      };
-      console.info(`%c[DEV] Auto-login active → role: ${mockUser.role}`, "color: #6366f1; font-weight: bold;");
-      setSessionCookies(mockUser.uid, mockUser.role);
-      setUser(mockUser);
-      setLoading(false);
-      return;
-    }
-    // ────────────────────────────────────────────────────────────────────────
-
-    // ── COOKIE-BASED FAST AUTHENTICATION STATE ───────────────────────────────
-    // Before full Firebase verification completes, check for presence cookies
-    // to instantly render the authenticated shell and avoid blank-screen flashing.
-    if (typeof document !== "undefined") {
-      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
-      const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
-      if (uidMatch && uidMatch[1] && roleMatch && roleMatch[1]) {
-        const role = roleMatch[1].toUpperCase();
-        const validRolesList = ["MEMBER", "PASTOR", "ADMIN", "SUPER_ADMIN", "EVENT_MANAGER", "FIELD_VOLUNTEER", "NGO_ADMIN"];
-        if (validRolesList.includes(role)) {
-          const initialUser: AuthUser = {
-            uid: uidMatch[1],
-            email: null,
-            name: "Member",
-            image: null,
-            role: role as any,
-          };
-          setUser(initialUser);
-          setLoading(false);
-          console.info(`[AUTH] Instant render from presence cookie -> role: ${initialUser.role}`);
-        }
-      } else {
-        // Instant 0ms status resolution for unauthenticated visitors
-        setLoading(false);
-      }
-    }
-    // ────────────────────────────────────────────────────────────────────────
-
     let unsubscribe: (() => void) | undefined;
 
     if (!auth || typeof onAuthStateChanged !== "function") {
       console.warn("[AUTH] Firebase Auth not available. Running in offline fallback mode.");
       setLoading(false);
     } else {
-      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
-          // 1. Instantly set user state from Firebase to avoid dynamic load blocking
-          const getEmailRole = (emailStr: string | null): AuthUser["role"] => {
-            if (!emailStr) return "MEMBER";
-            const e = emailStr.toLowerCase().trim();
-            if (e.includes("superadmin")) return "SUPER_ADMIN";
-            if (e.includes("admin") || e === "bishop.kraju@kcmchurch.org") return "ADMIN";
-            if (e.includes("pastor") || e.includes("bishop") || e === "pastor.kristhuraju@kcm-church.com" || e.includes("kristhuraju")) return "PASTOR";
-            if (e.includes("eventmanager") || e === "eventmanager@kcm-church.com") return "EVENT_MANAGER";
-            if (e.includes("volunteer") || e === "volunteer@kcm-church.com") return "FIELD_VOLUNTEER";
-            return "MEMBER";
-          };
-
-          const calculatedRole = getEmailRole(firebaseUser.email);
-          const initialUser: AuthUser = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName || "Member",
-            image: firebaseUser.photoURL || null,
-            role: calculatedRole,
-          };
-
-          // Try to retrieve role from session cookies to prevent layout flashing
+          // Read presence cookie role if available during hydration, default to MEMBER
+          let initialRole: AuthUser["role"] = "MEMBER";
           if (typeof document !== "undefined") {
             const matches = document.cookie.match(/__kcm_session_role=([^;]+)/);
             if (matches && matches[1]) {
               const cookieRole = matches[1].toUpperCase();
               const validRolesList = ["MEMBER", "PASTOR", "ADMIN", "SUPER_ADMIN", "EVENT_MANAGER", "FIELD_VOLUNTEER", "NGO_ADMIN"];
               if (validRolesList.includes(cookieRole)) {
-                initialUser.role = cookieRole as any;
+                initialRole = cookieRole as any;
               }
             }
           }
 
+          const initialUser: AuthUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: firebaseUser.displayName || "Member",
+            image: firebaseUser.photoURL || null,
+            role: initialRole,
+          };
+
           setUser(initialUser);
           setLoading(false);
 
-          // 2. Perform database sync in the background
-          syncUserToDatabase(firebaseUser).then((dbUser) => {
+          // Perform authoritative database sync
+          try {
+            const dbUser = await syncUserToDatabase(firebaseUser);
             if (dbUser) {
-              const syncedRole = dbUser.role || initialUser.role || "MEMBER";
+              const syncedRole = dbUser.role || "MEMBER";
               const updatedUser: AuthUser = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
@@ -248,17 +177,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setSessionCookies(updatedUser.uid, updatedUser.role);
               setUser(updatedUser);
             }
-          });
-        } else {
-          // Preserve valid active session cookies when running fallback or custom session auth
-          if (typeof document !== "undefined") {
-            const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
-            const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
-            if (uidMatch && uidMatch[1] && roleMatch && roleMatch[1]) {
-              setLoading(false);
-              return;
-            }
+          } catch (syncErr) {
+            console.warn("[AUTH] Database role sync error:", syncErr);
           }
+        } else {
           clearSessionCookies();
           setUser(null);
           setLoading(false);
@@ -293,12 +215,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       clearSessionCookies();
       setUser(null);
-      window.location.href = "/";
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      }
     } catch (err) {
       console.error("[AUTH] Sign out error:", err);
       clearSessionCookies();
       setUser(null);
-      window.location.href = "/";
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      }
     }
   };
 
@@ -324,10 +250,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        handleConfirmLogoutAlert();
+        setShowLogoutAlert(false);
+        if (pendingLogoutResolve) {
+          pendingLogoutResolve(true);
+          setPendingLogoutResolve(null);
+        }
       } else if (e.key === "Escape") {
         e.preventDefault();
-        handleCancelLogoutAlert();
+        setShowLogoutAlert(false);
+        if (pendingLogoutResolve) {
+          pendingLogoutResolve(false);
+          setPendingLogoutResolve(null);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);

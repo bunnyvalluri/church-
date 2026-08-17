@@ -25,7 +25,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
   useEffect(() => {
     if (!mounted) return;
     if (status === "unauthenticated") {
-      router.replace("/login");
+      router.replace("/login?next=/pastor/main/dashboard");
     } else if (
       status === "authenticated" &&
       user &&
@@ -33,7 +33,7 @@ export default function PastorPortalLayout({ children }: { children: React.React
       user.role !== "ADMIN" &&
       user.role !== "SUPER_ADMIN"
     ) {
-      router.replace("/dashboard");
+      router.replace("/member");
     }
   }, [mounted, status, user, router]);
 
@@ -49,11 +49,11 @@ export default function PastorPortalLayout({ children }: { children: React.React
   }
 
   const mobileBottomNavItems = [
-    { name: t.mobileDashboard || "Dashboard", href: "/pastor/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
+    { name: t.mobileDashboard || "Dashboard", href: "/pastor/main/dashboard", icon: Layers, color: "text-indigo-600 dark:text-indigo-400" },
     { name: t.mobileSermons || "Sermons", href: "/pastor/main/sermons", icon: Play, color: "text-pink-600 dark:text-pink-400" },
     { name: t.mobileMembers || "Members", href: "/pastor/main/member-requests", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
     { name: t.mobilePrayers || "Prayers", href: "/pastor/main/prayer-requests", icon: Heart, color: "text-rose-600 dark:text-rose-400" },
-    { name: t.mobileProfile || "Profile", href: "/pastor/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
+    { name: t.mobileProfile || "Profile", href: "/pastor/main/profile", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" }
   ];
 
   return (

@@ -368,7 +368,9 @@ export default function PastorDashboard() {
         "bible-study-groups": "Bible Study Groups",
         "small-groups": "Small Groups",
         "volunteers": "Volunteers",
+        "ngo-projects": "NGO Projects",
         "projects": "NGO Projects",
+        "ngo-media": "NGO Media",
         "media": "NGO Media",
         "ngo-volunteers": "NGO Volunteers",
         "attendance": "Attendance Reports",
@@ -380,6 +382,7 @@ export default function PastorDashboard() {
         "videos": "Video Archives",
         "documents": "Document Library",
         "profile": "Profile",
+        "church-settings": "General Settings",
         "general": "General Settings",
         "security": "Security",
         "notifications": "Notifications",
@@ -424,12 +427,13 @@ export default function PastorDashboard() {
 
   // Client-side session check & route protection
   useEffect(() => {
+    if (!mounted) return;
     if (status === "unauthenticated") {
-      router.replace("/login");
+      router.replace("/login?next=/pastor/main/dashboard");
     } else if (status === "authenticated" && user && user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
-      router.replace("/dashboard");
+      router.replace("/member");
     }
-  }, [status, user, router]);
+  }, [mounted, status, user, router]);
 
   const fetchNotifications = async () => {
     try {

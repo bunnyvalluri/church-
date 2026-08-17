@@ -6,6 +6,7 @@ import AdminHeader from "./AdminHeader";
 import AdminFooter from "./AdminFooter";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export default function AdminPortalLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -17,16 +18,31 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
   useEffect(() => {
     if (!mounted) return;
     if (status === "unauthenticated") {
-      router.replace("/login");
+      router.replace("/login?next=/admin/dashboard");
     } else if (
       status === "authenticated" &&
       user &&
       user.role !== "ADMIN" &&
       user.role !== "SUPER_ADMIN"
     ) {
-      router.replace("/dashboard");
+      if (user.role === "PASTOR") {
+        router.replace("/pastor/main/dashboard");
+      } else {
+        router.replace("/member");
+      }
     }
   }, [mounted, status, user, router]);
+
+  if (!mounted || status === "loading" || (user && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-100 dark:bg-[#080914]">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-10 h-10 animate-spin text-purple-600 dark:text-purple-400 mx-auto" />
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Verifying Admin Privileges...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-100/80 dark:bg-[#080914] text-slate-900 dark:text-slate-100 flex flex-col font-sans antialiased transition-colors duration-200 selection:bg-indigo-500/30 selection:text-indigo-600 dark:selection:text-indigo-300">

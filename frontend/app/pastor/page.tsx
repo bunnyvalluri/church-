@@ -1,5 +1,5 @@
-import PastorDashboardPage from "./dashboard/page";
+import { redirect } from "next/navigation";
 
 export default function PastorRootPage() {
-  return <PastorDashboardPage />;
+  redirect("/pastor/main/dashboard");
 }

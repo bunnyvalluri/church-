@@ -146,18 +146,10 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
 
 // ── Public: Require any valid Firebase auth ────────────────────────────────────
 /**
- * Returns AuthenticatedUser if the request carries a valid Firebase ID token.
+ * Returns AuthenticatedUser if the request carries a valid Firebase ID token or session.
  * Returns NextResponse(401) if unauthenticated.
  */
 export async function requireAuth(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev User',
-      role: 'SUPER_ADMIN',
-    };
-  }
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return NextResponse.json(
@@ -174,14 +166,6 @@ export async function requireAuth(req: Request): Promise<AuthenticatedUser | Nex
  * Returns NextResponse(401) if unauthenticated, NextResponse(403) if insufficient role.
  */
 export async function requireAdmin(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Administrator',
-      role: 'SUPER_ADMIN',
-    };
-  }
   const user = await getAuthenticatedUser(req);
 
   if (!user) {
@@ -208,14 +192,6 @@ export async function requireAdmin(req: Request): Promise<AuthenticatedUser | Ne
  * Returns NextResponse(401/403) otherwise.
  */
 export async function requireStaff(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Staff Member',
-      role: 'SUPER_ADMIN',
-    };
-  }
   const user = await getAuthenticatedUser(req);
 
   if (!user) {
@@ -269,62 +245,22 @@ export function getDevBypassUser(): AuthenticatedUser | null {
 }
 
 /**
- * Same as requireAdmin but with dev bypass support for local development.
+ * Same as requireAdmin for endpoints.
  */
 export async function requireAdminOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  // Dev bypass — local dev only
-  if (process.env.NODE_ENV !== 'production') {
-    const devUser = getDevBypassUser();
-    if (devUser && (devUser.role === 'ADMIN' || devUser.role === 'SUPER_ADMIN' || devUser.role === 'PASTOR')) {
-      return devUser;
-    }
-    
-    // Automatically bypass if Firebase Admin is not configured locally
-    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-      return {
-        uid: 'dev_bypass_uid',
-        email: 'dev@kcm.local',
-        name: 'Dev Administrator',
-        role: 'SUPER_ADMIN',
-      };
-    }
-  }
   return requireAdmin(req);
 }
 
 /**
- * Same as requireStaff (PASTOR + ADMIN + SUPER_ADMIN) but with dev bypass.
+ * Same as requireStaff (PASTOR + ADMIN + SUPER_ADMIN).
  * Use for endpoints that Pastors should also be able to access.
  */
 export async function requireStaffOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  // Dev bypass — local dev only
-  if (process.env.NODE_ENV !== 'production') {
-    const devUser = getDevBypassUser();
-    if (devUser) return devUser;
-
-    // Automatically bypass if Firebase Admin is not configured locally
-    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-      return {
-        uid: 'dev_bypass_uid',
-        email: 'dev@kcm.local',
-        name: 'Dev Staff',
-        role: 'SUPER_ADMIN',
-      };
-    }
-  }
   return requireStaff(req);
 }
 
 // ── Public: Require EVENT_MANAGER, ADMIN, or SUPER_ADMIN role ─────────────────
 export async function requireEventManager(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Event Manager',
-      role: 'EVENT_MANAGER',
-    };
-  }
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return NextResponse.json(
@@ -344,14 +280,6 @@ export async function requireEventManager(req: Request): Promise<AuthenticatedUs
 
 // ── Public: Require FIELD_VOLUNTEER, EVENT_MANAGER, ADMIN, or SUPER_ADMIN role ──
 export async function requireFieldVolunteer(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production' && !process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Field Volunteer',
-      role: 'FIELD_VOLUNTEER',
-    };
-  }
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return NextResponse.json(
@@ -370,41 +298,9 @@ export async function requireFieldVolunteer(req: Request): Promise<Authenticated
 }
 
 export async function requireEventManagerOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production') {
-    const devUser = getDevBypassUser();
-    if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER'].includes(devUser.role)) {
-      return devUser;
-    }
-    const user = await getAuthenticatedUser(req);
-    if (user && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER'].includes(user.role)) {
-      return user;
-    }
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Event Manager',
-      role: 'EVENT_MANAGER',
-    };
-  }
   return requireEventManager(req);
 }
 
 export async function requireFieldVolunteerOrDev(req: Request): Promise<AuthenticatedUser | NextResponse> {
-  if (process.env.NODE_ENV !== 'production') {
-    const devUser = getDevBypassUser();
-    if (devUser && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER', 'FIELD_VOLUNTEER'].includes(devUser.role)) {
-      return devUser;
-    }
-    const user = await getAuthenticatedUser(req);
-    if (user && ['ADMIN', 'SUPER_ADMIN', 'PASTOR', 'EVENT_MANAGER', 'FIELD_VOLUNTEER'].includes(user.role)) {
-      return user;
-    }
-    return {
-      uid: 'dev_bypass_uid',
-      email: 'dev@kcm.local',
-      name: 'Dev Field Volunteer',
-      role: 'FIELD_VOLUNTEER',
-    };
-  }
   return requireFieldVolunteer(req);
 }

@@ -1,46 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 import { auth, googleProvider, getFirebaseAuth, getGoogleProvider } from "@/lib/firebase";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, Upload, X, CheckCircle2, Loader2, SkipForward, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2, Info } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
-
-// ── Client-side image compressor (canvas, 300×300, 75% JPEG) ────────────────
-const compressImage = (file: File, maxPx = 300): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (ev) => {
-      const img = new window.Image();
-      img.src = ev.target?.result as string;
-      img.onload = () => {
-        const scale = Math.min(maxPx / img.width, maxPx / img.height, 1);
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
-        const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.75));
-        } else {
-          resolve(ev.target?.result as string);
-        }
-      };
-      img.onerror = reject;
-    };
-    reader.onerror = reject;
-  });
 
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -65,6 +37,9 @@ const itemVariants = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isRegisteredSuccess = searchParams?.get("registered") === "true";
+
   const authContext = useAuth();
   const mounted = authContext?.mounted ?? false;
   const status = authContext?.status ?? "unauthenticated";
@@ -83,17 +58,6 @@ export default function LoginPage() {
 
   const loginT = t?.pages?.login || translations.en.pages.login;
 
-  // Local helper functions inside component closure to guarantee retention in production JS bundles
-  const getRoleForEmail = (email: string): 'MEMBER' | 'PASTOR' | 'ADMIN' | 'SUPER_ADMIN' | 'EVENT_MANAGER' | 'FIELD_VOLUNTEER' => {
-    const e = (email || "").toLowerCase().trim();
-    if (e.includes('superadmin')) return 'SUPER_ADMIN';
-    if (e.includes('admin') || e === 'bishop.kraju@kcmchurch.org') return 'ADMIN';
-    if (e.includes('pastor') || e.includes('bishop') || e === 'pastor.kristhuraju@kcm-church.com' || e.includes('kristhuraju')) return 'PASTOR';
-    if (e.includes('eventmanager') || e === 'eventmanager@kcm-church.com') return 'EVENT_MANAGER';
-    if (e.includes('volunteer') || e === 'volunteer@kcm-church.com') return 'FIELD_VOLUNTEER';
-    return 'MEMBER';
-  };
-
   const sendLoginEmail = (email: string, name: string, method: string) => {
     if (!email) return;
     fetch('/api/auth/send-email', {
@@ -109,27 +73,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  // ── Passport photo upload step ─────────────────────────────────────────────
-  const [showPhotoStep, setShowPhotoStep] = useState(false);
-  const [pendingUid, setPendingUid] = useState<string | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoUploading, setPhotoUploading] = useState(false);
-  const [photoDone, setPhotoDone] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setIsClient(true);
     setError("");
     // Instant prefetch of dashboard routes for 0ms page transitions
     router.prefetch("/member");
-    router.prefetch("/admin");
+    router.prefetch("/admin/dashboard");
+    router.prefetch("/pastor/main/dashboard");
     router.prefetch("/event-manager");
-    router.prefetch("/pastor");
-    router.prefetch("/portal-select");
 
     // Redirect 127.0.0.1 to localhost to prevent Firebase auth/unauthorized-domain error
     if (typeof window !== "undefined" && window.location.hostname === "127.0.0.1") {
@@ -138,19 +90,27 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  // Redirect already-authenticated users (skip photo step for returning sessions)
+  // Redirect already-authenticated users
   useEffect(() => {
-    if (mounted && status === "authenticated" && user && !showPhotoStep && !isLoggingIn) {
+    if (mounted && status === "authenticated" && user && !isLoggingIn) {
       switch (user.role) {
-        case "SUPER_ADMIN": router.replace("/portal-select"); break;
-        case "ADMIN":       router.replace("/admin");          break;
-        case "PASTOR":      router.replace("/pastor");         break;
+        case "ADMIN":
+        case "SUPER_ADMIN":
+          router.replace("/admin/dashboard");
+          break;
+        case "PASTOR":
+          router.replace("/pastor/main/dashboard");
+          break;
         case "EVENT_MANAGER":
-        case "FIELD_VOLUNTEER": router.replace("/event-manager"); break;
-        default:            router.replace("/member");
+        case "FIELD_VOLUNTEER":
+          router.replace("/event-manager");
+          break;
+        default:
+          router.replace("/member");
+          break;
       }
     }
-  }, [mounted, status, user, router, showPhotoStep, isLoggingIn]);
+  }, [mounted, status, user, router, isLoggingIn]);
 
   // ── Photo upload helpers ───────────────────────────────────────────────────
   const handleFileSelect = useCallback(async (file: File) => {
@@ -249,69 +209,6 @@ export default function LoginPage() {
     return errStr;
   };
 
-  // Handle social redirect result (popup fallbacks/compatibility)
-  useEffect(() => {
-    if (mounted && auth) {
-      const handleRedirectResult = async () => {
-        try {
-          if (typeof getRedirectResult !== "function") return;
-          const result = await getRedirectResult(auth);
-          if (result?.user) {
-            console.info("[AUTH] Mobile redirect sign-in successful for:", result.user?.email);
-            const u = result.user;
-            const initialRole = getRoleForEmail(u.email || "");
-
-            setAuthCookies(u.uid, initialRole);
-
-            if (updateUser) {
-              updateUser({
-                uid: u.uid,
-                email: u.email,
-                name: u.displayName || "Member",
-                image: u.photoURL || null,
-                role: initialRole as any,
-              });
-            }
-
-            // Background database sync
-            fetch("/api/auth/sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                uid: u.uid,
-                email: u.email,
-                name: u.displayName,
-                photoURL: u.photoURL,
-                phoneNumber: u.phoneNumber,
-              }),
-            })
-              .then((res) => res.json())
-              .then((syncData) => {
-                if (syncData?.success && syncData?.user?.role) {
-                  const role = syncData.user.role;
-                  setAuthCookies(u.uid, role);
-                  if (updateUser) updateUser({ role });
-                  if (role !== initialRole) {
-                    redirectForRole(role);
-                  }
-                }
-              })
-              .catch(() => {});
-
-            // Non-blocking notification email
-            sendLoginEmail(u.email || "", u.displayName || "Member", "google");
-
-            // Instant redirect
-            redirectForRole(initialRole);
-          }
-        } catch (err: any) {
-          console.error("[AUTH] Redirect sign-in check:", err);
-        }
-      };
-      handleRedirectResult();
-    }
-  }, [mounted, updateUser]);
-
   // Cookie setter with Secure attribute for mobile HTTPS compatibility (iOS Safari & Chrome Android)
   const setAuthCookies = (uid: string, role: string) => {
     if (typeof document === "undefined") return;
@@ -330,15 +227,14 @@ export default function LoginPage() {
       if (nextParam && nextParam.startsWith("/")) {
         targetPath = nextParam;
       } else {
-        switch (targetRole) {
-          case "SUPER_ADMIN":
-            targetPath = "/portal-select";
-            break;
+        const normalized = (targetRole || "MEMBER").toUpperCase();
+        switch (normalized) {
           case "ADMIN":
-            targetPath = "/admin";
+          case "SUPER_ADMIN":
+            targetPath = "/admin/dashboard";
             break;
           case "PASTOR":
-            targetPath = "/pastor";
+            targetPath = "/pastor/main/dashboard";
             break;
           case "EVENT_MANAGER":
           case "FIELD_VOLUNTEER":
@@ -355,7 +251,7 @@ export default function LoginPage() {
       try {
         router.push(targetPath);
       } catch {}
-      window.location.href = targetPath;
+      window.location.replace(targetPath);
     }
   };
 
@@ -400,9 +296,10 @@ export default function LoginPage() {
 
         if (
           code === "auth/popup-blocked" ||
-          code === "auth/cancelled-popup-request"
+          code === "auth/cancelled-popup-request" ||
+          code === "auth/unauthorized-domain" ||
+          code === "auth/auth-domain-config-required"
         ) {
-          // Fallback to full-page OAuth redirect
           if (typeof signInWithRedirect === "function") {
             await signInWithRedirect(activeAuth, activeProvider);
             return;
@@ -413,75 +310,63 @@ export default function LoginPage() {
           code === "auth/popup-closed-by-user" ||
           code === "auth/user-cancelled"
         ) {
-          // User closed popup window — reset loading state quietly
           setSocialLoading(null);
           setIsLoggingIn(false);
           return;
         }
 
-        // auth/unauthorized-domain: current domain not in Firebase Authorized Domains list.
-        // Fall back to signInWithRedirect which routes through Firebase's own auth handler
-        // at kcm-church-2f3d5.firebaseapp.com/__/auth/handler (always authorized).
-        if (
-          code === "auth/unauthorized-domain" ||
-          code === "auth/auth-domain-config-required"
-        ) {
-          console.warn("[AUTH/OAUTH] Domain not authorized — falling back to redirect flow");
-          if (typeof signInWithRedirect === "function") {
-            await signInWithRedirect(activeAuth, activeProvider);
-            return;
-          }
-        }
-
-        // Throw actual error code to be caught and displayed
         throw popupErr;
       }
-
 
       if (!u) {
         throw new Error("social-generic-failed");
       }
 
-      const initialRole = getRoleForEmail(u.email || "");
+      // Authoritative database sync
+      let role = "MEMBER";
+      try {
+        const syncRes = await fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: u.uid,
+            email: u.email || "",
+            name: u.displayName || u.email?.split("@")[0] || "Member",
+            photoURL: u.photoURL,
+            phoneNumber: u.phoneNumber || null,
+          }),
+        });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
+          if (syncData?.success && syncData?.user?.role) {
+            role = syncData.user.role;
+          }
+        }
+      } catch (syncErr) {
+        console.warn("[AUTH] Social sync error:", syncErr);
+      }
 
-      // 1. Set session cookies
-      setAuthCookies(u.uid, initialRole);
+      // Set presence cookies & user state
+      setAuthCookies(u.uid, role);
 
-      // 2. Update client-side auth state
       if (updateUser) {
         updateUser({
           uid: u.uid,
           email: u.email || "",
           name: u.displayName || u.email?.split("@")[0] || "Member",
           image: u.photoURL || null,
-          role: initialRole as any,
+          role: role as any,
         });
       }
 
-      // 3. Background database sync (fire-and-forget)
-      fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: u.uid,
-          email: u.email || "",
-          name: u.displayName || u.email?.split("@")[0] || "Member",
-          photoURL: u.photoURL,
-          phoneNumber: u.phoneNumber || null,
-        }),
-      }).catch(() => {});
-
-      // 4. Non-blocking login notification email
       sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
 
-      // 5. Redirect to the appropriate dashboard
-      redirectForRole(initialRole);
+      redirectForRole(role);
     } catch (err: any) {
       console.error(`[AUTH/OAUTH] ${name} login error:`, err?.code || err);
       setIsLoggingIn(false);
       setSocialLoading(null);
-      const errCode = err?.code || err?.message || "social-generic-failed";
-      setError(errCode);
+      setError(err?.code || err?.message || "social-generic-failed");
     }
   };
 
@@ -491,56 +376,17 @@ export default function LoginPage() {
     setIsLoading(true);
     setIsLoggingIn(true);
     const sanitizedEmail = (email || "").toLowerCase().trim();
-    const initialRole = getRoleForEmail(sanitizedEmail);
 
     try {
-      let u: any = null;
-      try {
-        const credential = await signInWithEmailAndPassword(auth, email, password);
-        u = credential.user;
-      } catch (fbErr: any) {
-        console.warn("[AUTH] Firebase sign-in notice:", fbErr?.code || fbErr);
-        if (fbErr?.code === "auth/user-not-found" || fbErr?.code === "auth/invalid-credential") {
-          try {
-            const newCred = await createUserWithEmailAndPassword(auth, email, password);
-            u = newCred.user;
-          } catch (createErr) {
-            console.warn("[AUTH] Create user failed, using fallback authentication:", createErr);
-          }
-        }
-      }
+      const credential = await signInWithEmailAndPassword(auth, sanitizedEmail, password);
+      const u = credential.user;
 
-      // Seamless fallback if Firebase Auth is unreachable or unconfigured
       if (!u) {
-        let safeHash = "user";
-        try {
-          safeHash = btoa(sanitizedEmail).replace(/=/g, "").replace(/[^a-zA-Z0-9]/g, "");
-        } catch {
-          safeHash = sanitizedEmail.replace(/[^a-zA-Z0-9]/g, "");
-        }
-        u = {
-          uid: `user-${safeHash}`,
-          email: sanitizedEmail,
-          displayName: sanitizedEmail.split("@")[0] || "User",
-          photoURL: null,
-        };
+        throw new Error("auth/invalid-credential");
       }
 
-      // 1. Instantly set session cookies with calculated role
-      setAuthCookies(u.uid, initialRole);
-
-      // 2. Instantly update client-side AuthProvider state
-      if (updateUser) {
-        updateUser({
-          uid: u.uid,
-          email: u.email || sanitizedEmail,
-          name: u.displayName || sanitizedEmail.split('@')[0],
-          image: u.photoURL || null,
-          role: initialRole as any,
-        });
-      }
-
-      // 3. Database sync (with fallback resilience)
+      // 1. Authoritative database sync to fetch assigned role
+      let role = "MEMBER";
       try {
         const syncRes = await fetch("/api/auth/sync", {
           method: "POST",
@@ -548,7 +394,7 @@ export default function LoginPage() {
           body: JSON.stringify({
             uid: u.uid,
             email: u.email || sanitizedEmail,
-            name: u.displayName || sanitizedEmail.split('@')[0],
+            name: u.displayName || sanitizedEmail.split("@")[0],
             photoURL: u.photoURL,
             phoneNumber: u.phoneNumber || null,
           }),
@@ -556,29 +402,37 @@ export default function LoginPage() {
         if (syncRes.ok) {
           const syncData = await syncRes.json();
           if (syncData?.success && syncData?.user?.role) {
-            const syncedRole = syncData.user.role;
-            setAuthCookies(u.uid, syncedRole);
-            if (updateUser) updateUser({ role: syncedRole });
-            sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split('@')[0], 'email');
-            redirectForRole(syncedRole);
-            return;
+            role = syncData.user.role;
           }
         }
       } catch (syncErr) {
-        console.warn("[AUTH] Database sync warning:", syncErr);
+        console.warn("[AUTH] Sync error:", syncErr);
+      }
+
+      // 2. Set secure presence session cookies
+      setAuthCookies(u.uid, role);
+
+      // 3. Update client AuthProvider state
+      if (updateUser) {
+        updateUser({
+          uid: u.uid,
+          email: u.email || sanitizedEmail,
+          name: u.displayName || sanitizedEmail.split("@")[0],
+          image: u.photoURL || null,
+          role: role as any,
+        });
       }
 
       // 4. Non-blocking login email notification
-      sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split('@')[0], 'email');
+      sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split("@")[0], "email");
 
-      // 5. INSTANT ROLE-BASED REDIRECT
-      redirectForRole(initialRole);
+      // 5. Role-based redirect
+      redirectForRole(role);
     } catch (err: any) {
-      console.warn("[AUTH] Login fallback activated:", err);
-      setAuthCookies("user-session", initialRole);
-      redirectForRole(initialRole);
-    } finally {
+      console.error("[AUTH] Login error:", err?.code || err);
       setIsLoading(false);
+      setIsLoggingIn(false);
+      setError(err?.code || "auth/invalid-credential");
     }
   };
 
@@ -733,6 +587,26 @@ export default function LoginPage() {
               {loginT.subtitle}
             </p>
           </div>
+
+          {/* Registration Success Alert */}
+          {isRegisteredSuccess && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-4 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 flex items-start gap-3 shadow-md"
+            >
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-emerald-800 dark:text-emerald-200 text-xs sm:text-sm font-bold">
+                  {language === "te"
+                    ? "ఖాతా విజయవంతంగా సృష్టించబడింది. దయచేసి సైన్ ఇన్ చేయండి."
+                    : language === "hi"
+                    ? "खाता सफलतापूर्वक बनाया गया। कृपया साइन इन करें।"
+                    : "Account created successfully. Please sign in."}
+                </p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Error Alert */}
           {error && (

@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        getUserDoc().role == 'ADMIN' || 
+        getUserDoc().role == 'SUPER_ADMIN' ||
+        getUserDoc().role == 'admin' ||
+        getUserDoc().role == 'super_admin'
+      );
+    }
+
+    function isPastor() {
+      return isAuthenticated() && (
+        isAdmin() || 
+        getUserDoc().role == 'PASTOR' ||
+        getUserDoc().role == 'pastor'
+      );
+    }
+
+    // ── USERS COLLECTION ──────────────────────────────────────────────
+    // Self can read/update non-sensitive profile attributes.
+    // Role privilege escalation is strictly forbidden for non-admins.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isPastor();
+      
+      allow create: if isAuthenticated() && (
+        (isOwner(userId) && (!('role' in request.resource.data) || request.resource.data.role == 'member' || request.resource.data.role == 'MEMBER')) ||
+        isAdmin()
+      );
+      
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (isOwner(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isSuperAdmin', 'permissions'])))
+      );
+      
+      allow delete: if isAdmin();
+    }
+
+    // ── SERMONS COLLECTION ───────────────────────────────────────────
+    // Public read, only pastor or admin can create/update/delete.
+    match /sermons/{sermonId} {
+      allow read: if true;
+      allow write: if isPastor();
+    }
+
+    // ── EVENTS COLLECTION ────────────────────────────────────────────
+    // Public read, only pastor or admin can modify events.
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isPastor();
+    }
+
+    // ── PRAYER REQUESTS ──────────────────────────────────────────────
+    // Authenticated users can create and read their own requests.
+    // Pastors and admins can view and manage all prayer requests.
+    match /prayerRequests/{requestId} {
+      allow read: if isPastor() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isPastor() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isPastor() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+
+    // ── MEMBER REQUESTS ──────────────────────────────────────────────
+    // Members can submit membership/baptism requests; pastors/admins review.
+    match /memberRequests/{requestId} {
+      allow read: if isPastor() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if isPastor();
+    }
+
+    // ── DONATIONS & FINANCE ──────────────────────────────────────────
+    // Highly sensitive financial records restricted strictly to staff.
+    match /donations/{donationId} {
+      allow read: if isPastor() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /finance/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── NOTIFICATIONS ────────────────────────────────────────────────
+    match /notifications/{notifId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isPastor());
+      allow write: if isPastor();
+    }
+
+    // ── DEFAULT DENY ALL OTHERS ──────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

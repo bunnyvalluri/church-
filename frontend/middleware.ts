@@ -1,55 +1,32 @@
 /**
  * middleware.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Next.js Edge Middleware — runs BEFORE a page or API route is rendered.
+ * Next.js Edge Middleware — Centralized route protection and role-based access.
  *
- * Role Access Matrix:
- *  SUPER_ADMIN  → /admin, /pastor, /member (full access)
- *  ADMIN        → /admin, /member
- *  PASTOR       → /pastor, /member
- *  MEMBER       → /member only
- *
- * Protections:
- *  • /admin/*       → ADMIN or SUPER_ADMIN only
- *  • /pastor/*      → PASTOR, ADMIN, or SUPER_ADMIN only
- *  • /api/admin/*   → ADMIN or SUPER_ADMIN; others get 401/403
- *  • /api/pastor/*  → PASTOR, ADMIN, or SUPER_ADMIN; others get 401/403
- *  • /member/*      → any authenticated session required
- *
- * NOTE: Firebase ID tokens are short-lived JWTs. Full cryptographic verification
- * requires the Firebase Admin SDK which cannot run in the Edge runtime.
- * Here we do a lightweight "presence + expiry" check on the session cookie set
- * by the client. The API routes still perform full verification via firebaseAdmin.
+ * Role Matrix:
+ *  SUPER_ADMIN  → /admin/*, /pastor/main/*, /member/*
+ *  ADMIN        → /admin/*, /pastor/main/*, /member/*
+ *  PASTOR       → /pastor/main/*, /member/*
+ *  MEMBER       → /member/* only
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
-// ── Admin-only pages ───────────────────────────────────────────────────────
+// ── Role Protected Prefixes ──────────────────────────────────────────────────
 const ADMIN_PREFIXES = ['/admin'];
-
-// ── Pastor pages (PASTOR, ADMIN, SUPER_ADMIN) ─────────────────────────────
 const PASTOR_PREFIXES = ['/pastor'];
-
-// ── Event Manager pages ───────────────────────────────────────────────────
 const EVENT_MANAGER_PREFIXES = ['/event-manager'];
+const FIELD_VOLUNTEER_PREFIXES = ['/field-volunteer'];
+const MEMBER_PREFIXES = ['/member', '/church-member', '/memberships'];
 
-// ── API paths that are admin-only ─────────────────────────────────────────
+// ── API Protected Prefixes ───────────────────────────────────────────────────
 const ADMIN_API_PREFIXES = ['/api/admin'];
-
-// ── API paths that are pastor-accessible ──────────────────────────────────
 const PASTOR_API_PREFIXES = ['/api/pastor'];
-
-// ── API paths that are event-manager accessible ───────────────────────────
 const EVENT_MANAGER_API_PREFIXES = ['/api/event-manager'];
-
-// ── API paths that are volunteer accessible ───────────────────────────────
 const FIELD_VOLUNTEER_API_PREFIXES = ['/api/field-volunteer'];
 
-// ── Paths that require at minimum a signed-in session ─────────────────────
-const AUTH_REQUIRED_PREFIXES = ['/member', '/pastor-portal', '/church-member', '/memberships'];
-
-// ── Public paths that are always allowed ─────────────────────────────────
+// ── Public Paths ─────────────────────────────────────────────────────────────
 const PUBLIC_PATHS = [
   '/login',
   '/register',
@@ -57,6 +34,14 @@ const PUBLIC_PATHS = [
   '/admin/login',
   '/admin/register',
   '/api/auth',
+  '/api/member/profile',
+  '/api/donations',
+  '/api/sermons',
+  '/api/events',
+  '/api/contact',
+  '/api/cms',
+  '/api/health',
+  '/api/ready',
   '/_next',
   '/favicon',
   '/apple-icon',
@@ -83,84 +68,125 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(httpsUrl, 301);
   }
 
-  // ── Dev bypass (non-production only) ────────────────────────────────────
-  const isDev = process.env.NODE_ENV !== 'production';
-  const devAutoLogin = process.env.NEXT_PUBLIC_DEV_AUTO_LOGIN?.toLowerCase();
-
-  // Always allow public paths and static assets
-  if (isPublicPath(pathname) || pathname.startsWith('/_next/') || pathname.includes('.')) {
+  // Always allow static files & next internals
+  if (pathname.startsWith('/_next/') || pathname.includes('.')) {
     return NextResponse.next();
   }
 
-  // ── Check session presence via cookie ────────────────────────────────────
+  // ── Check Session Presence via Cookies ───────────────────────────────────
   const sessionRole = req.cookies.get('__kcm_session_role')?.value?.toUpperCase() ?? null;
   const sessionUid  = req.cookies.get('__kcm_session_uid')?.value ?? null;
   const hasSession  = !!(sessionUid && sessionRole);
 
-  const effectiveRole = (() => {
-    if (hasSession) return sessionRole!;
-    if (isDev) return devAutoLogin ? devAutoLogin.toUpperCase() : 'SUPER_ADMIN';
-    return null;
-  })();
-
+  const effectiveRole = hasSession ? sessionRole : null;
   const isAuthenticated = !!effectiveRole;
   const isSuperAdmin    = effectiveRole === 'SUPER_ADMIN';
   const isAdminRole     = effectiveRole === 'ADMIN' || isSuperAdmin;
-  // PASTOR, ADMIN, and SUPER_ADMIN can all access pastor routes
   const isPastorRole    = effectiveRole === 'PASTOR' || isAdminRole;
   const isEventManagerRole = effectiveRole === 'EVENT_MANAGER' || isAdminRole;
   const isVolunteerRole = effectiveRole === 'FIELD_VOLUNTEER' || isEventManagerRole;
 
   // ── Helper: redirect unauthenticated to login ───────────────────────────
-  function redirectToLogin(next: string) {
+  function redirectToLogin(next?: string) {
     const loginUrl = req.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', next);
+    if (next && next !== '/' && next !== '/login' && next !== '/register') {
+      loginUrl.searchParams.set('next', next);
+    }
     return NextResponse.redirect(loginUrl);
   }
 
-  // ── Helper: redirect authenticated-but-insufficient to their own dashboard
-  function redirectToDashboard(reason: string) {
-    const dashUrl = req.nextUrl.clone();
-    dashUrl.pathname = '/dashboard';
-    dashUrl.searchParams.set('error', reason);
-    return NextResponse.redirect(dashUrl);
+  // ── Helper: redirect authenticated user to their authorized portal ──────
+  function redirectToAuthorizedPortal() {
+    const portalUrl = req.nextUrl.clone();
+    if (isAdminRole) {
+      portalUrl.pathname = '/admin/dashboard';
+    } else if (effectiveRole === 'PASTOR') {
+      portalUrl.pathname = '/pastor/main/dashboard';
+    } else if (isVolunteerRole) {
+      portalUrl.pathname = '/event-manager';
+    } else {
+      portalUrl.pathname = '/member';
+    }
+    return NextResponse.redirect(portalUrl);
+  }
+
+  // ── Logged-In User Redirects on /login and /register ──────────────────────
+  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+    const nextParam = req.nextUrl.searchParams.get('next');
+    // If next is specified and user has permission, let them proceed
+    if (nextParam && nextParam.startsWith('/')) {
+      if (nextParam.startsWith('/admin') && isAdminRole) return NextResponse.redirect(new URL(nextParam, req.url));
+      if (nextParam.startsWith('/pastor') && isPastorRole) return NextResponse.redirect(new URL(nextParam, req.url));
+      if (nextParam.startsWith('/member')) return NextResponse.redirect(new URL(nextParam, req.url));
+    }
+    return redirectToAuthorizedPortal();
+  }
+
+  // If public path, allow through
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  // ── Root /pastor redirect ────────────────────────────────────────────────
+  if (pathname === '/pastor' || pathname === '/pastor/') {
+    if (!isAuthenticated) return redirectToLogin('/pastor/main/dashboard');
+    if (!isPastorRole) return redirectToAuthorizedPortal();
+    const target = req.nextUrl.clone();
+    target.pathname = '/pastor/main/dashboard';
+    return NextResponse.redirect(target);
+  }
+
+  // ── Root /admin redirect ─────────────────────────────────────────────────
+  if (pathname === '/admin' || pathname === '/admin/') {
+    if (!isAuthenticated) return redirectToLogin('/admin/dashboard');
+    if (!isAdminRole) return redirectToAuthorizedPortal();
+    const target = req.nextUrl.clone();
+    target.pathname = '/admin/dashboard';
+    return NextResponse.redirect(target);
   }
 
   // ── Guard: /admin/* pages ─────────────────────────────────────────────────
   if (ADMIN_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
-    if (!isAdminRole)     return redirectToDashboard('insufficient_permissions');
+    if (!isAdminRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
   // ── Guard: /pastor/* pages ────────────────────────────────────────────────
   if (PASTOR_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
-    if (!isPastorRole)    return redirectToDashboard('pastor_access_required');
+    if (!isPastorRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
   // ── Guard: /event-manager/* pages ──────────────────────────────────────────
   if (EVENT_MANAGER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
-    if (!isVolunteerRole) return redirectToDashboard('insufficient_permissions');
+    if (!isVolunteerRole) return redirectToAuthorizedPortal();
+    return NextResponse.next();
+  }
+
+  // ── Guard: /field-volunteer/* pages ────────────────────────────────────────
+  if (FIELD_VOLUNTEER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+    if (!isAuthenticated) return redirectToLogin(pathname);
+    if (!isVolunteerRole) return redirectToAuthorizedPortal();
+    return NextResponse.next();
+  }
+
+  // ── Guard: /member/* pages ────────────────────────────────────────────────
+  if (MEMBER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+    if (!isAuthenticated) return redirectToLogin(pathname);
     return NextResponse.next();
   }
 
   // ── Guard: /api/admin/* endpoints ─────────────────────────────────────────
   if (ADMIN_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
-      return NextResponse.json(
-        { error: 'Authentication required. Please sign in.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
     }
     if (!isAdminRole) {
-      return NextResponse.json(
-        { error: 'Access denied. Admin privileges required.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Access denied. Admin privileges required.' }, { status: 403 });
     }
     return NextResponse.next();
   }
@@ -170,20 +196,12 @@ export function middleware(req: NextRequest) {
     const isGetSermons = req.method === 'GET' && pathname.startsWith('/api/pastor/sermons');
     if (!isGetSermons) {
       if (!isAuthenticated) {
-        return NextResponse.json(
-          { error: 'Authentication required. Please sign in.' },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
       }
-      // Sermon endpoints: also allow EVENT_MANAGER and FIELD_VOLUNTEER so they
-      // can create / manage sermons from the event-manager dashboard.
       const isSermonEndpoint = pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/clear-seeded-sermons');
       const canAccess = isPastorRole || (isSermonEndpoint && isVolunteerRole);
       if (!canAccess) {
-        return NextResponse.json(
-          { error: 'Access denied. Pastor or Admin privileges required.' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: 'Access denied. Pastor or Admin privileges required.' }, { status: 403 });
       }
     }
     return NextResponse.next();
@@ -192,16 +210,10 @@ export function middleware(req: NextRequest) {
   // ── Guard: /api/event-manager/* endpoints ──────────────────────────────────
   if (EVENT_MANAGER_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
-      return NextResponse.json(
-        { error: 'Authentication required. Please sign in.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
     }
     if (!isVolunteerRole) {
-      return NextResponse.json(
-        { error: 'Access denied. Event Management privileges required.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Access denied. Event Management privileges required.' }, { status: 403 });
     }
     return NextResponse.next();
   }
@@ -209,23 +221,11 @@ export function middleware(req: NextRequest) {
   // ── Guard: /api/field-volunteer/* endpoints ─────────────────────────────────
   if (FIELD_VOLUNTEER_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
-      return NextResponse.json(
-        { error: 'Authentication required. Please sign in.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
     }
     if (!isVolunteerRole) {
-      return NextResponse.json(
-        { error: 'Access denied. Volunteer privileges required.' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Access denied. Volunteer privileges required.' }, { status: 403 });
     }
-    return NextResponse.next();
-  }
-
-  // ── Guard: other auth-required pages ──────────────────────────────────────
-  if (AUTH_REQUIRED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
-    if (!isAuthenticated) return redirectToLogin(pathname);
     return NextResponse.next();
   }
 

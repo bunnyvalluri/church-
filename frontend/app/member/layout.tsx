@@ -12,7 +12,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Calendar, Heart, BookOpen, Briefcase, Gift,
   LogOut, Menu, X, ChevronRight, ChevronDown, Bell, Wifi, WifiOff,
-  Home, Activity, Star, Shield, Sparkles, TrendingUp, Sliders
+  Home, Activity, Star, Shield, Sparkles, TrendingUp, Sliders, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MemberFooter from "@/components/layout/MemberFooter";
@@ -116,8 +116,10 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
 
   // Auth redirect — always runs (hooks must be before any return)
   useEffect(() => {
-    if (mounted && status === "unauthenticated") router.replace("/login");
-  }, [mounted, status, router]);
+    if (mounted && status === "unauthenticated") {
+      router.replace(`/login?next=${encodeURIComponent(pathname || "/member")}`);
+    }
+  }, [mounted, status, router, pathname]);
 
   // Warm up Next.js client router cache by prefetching all member route bundles aggressively
   useEffect(() => {
@@ -173,8 +175,15 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const activeLink = translatedLinks.find(l => pathname.startsWith(l.href)) || translatedLinks[0];
   const isMainDashboard = pathname === "/member";
 
-  if (status === "unauthenticated" && mounted) {
-    return null;
+  if (!mounted || status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-10 h-10 animate-spin text-purple-600 dark:text-purple-400 mx-auto" />
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Securing Member Fellowship Space...</p>
+        </div>
+      </div>
+    );
   }
 
   const Sidebar = ({ onClose }: { onClose?: () => void }) => (

@@ -25,8 +25,8 @@ const strengthColor = ["bg-gray-200", "bg-red-500", "bg-orange-400", "bg-yellow-
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { mounted, status, user, updateUser } = useAuth();
-  const { t, language } = useLanguage();
+  const { mounted, status, user } = useAuth();
+  const { t } = useLanguage();
   const registerT = t.pages.register;
   const loginT = t.pages.login;
 
@@ -37,32 +37,26 @@ export default function RegisterPage() {
     phone: "",
     password: "",
     confirmPassword: "",
+    termsAccepted: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   // Redirect if already logged in to their authorized page
   useEffect(() => {
     if (mounted && status === "authenticated" && user && !isRegistering) {
       if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
-        router.replace("/admin");
+        router.replace("/admin/dashboard");
       } else if (user.role === "PASTOR") {
-        router.replace("/pastor");
+        router.replace("/pastor/main/dashboard");
       } else {
         router.replace("/member");
       }
     }
   }, [mounted, status, user, router, isRegistering]);
-
-  // Removed to prevent hydration mismatch
 
   const pwScore = passwordStrength(formData.password);
 
@@ -85,6 +79,8 @@ export default function RegisterPage() {
     const errorMap: Record<string, string> = {
       "passwords-mismatch": registerT.errors.mismatch,
       "password-too-short": registerT.errors.tooShort,
+      "invalid-email-format": registerT.errors.invalidEmail,
+      "terms-required": "Please accept the Terms of Service to continue.",
       "auth/email-already-in-use": registerT.errors.emailInUse,
       "auth/weak-password": registerT.errors.weakPassword,
       "auth/invalid-email": registerT.errors.invalidEmail,
@@ -108,81 +104,114 @@ export default function RegisterPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setError("invalid-email-format");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("passwords-mismatch");
       return;
     }
+
     if (formData.password.length < 8) {
       setError("password-too-short");
       return;
     }
 
+    if (!formData.termsAccepted) {
+      setError("terms-required");
+      return;
+    }
+
     setIsLoading(true);
     setIsRegistering(true);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      // 1. Create Firebase Authentication Account
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email.trim(), formData.password);
+      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
       const u = userCredential.user;
-      const maxAge = 7 * 24 * 60 * 60; // 7 days
 
       if (u) {
-        updateProfile(u, { displayName: fullName }).catch(() => {});
+        await updateProfile(u, { displayName: fullName }).catch(() => {});
       }
 
-      // 1. Instantly set session cookies
-      if (typeof document !== "undefined") {
-        document.cookie = `__kcm_session_uid=${u.uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        document.cookie = `__kcm_session_role=MEMBER; path=/; max-age=${maxAge}; SameSite=Lax`;
+      // 2. Create User Profile in Firestore
+      try {
+        const { db } = await import("@/lib/firebase");
+        if (db) {
+          const { doc, setDoc, serverTimestamp } = await import("firebase/firestore");
+          await setDoc(doc(db, "users", u.uid), {
+            uid: u.uid,
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            email: formData.email.toLowerCase().trim(),
+            phone: formData.phone.trim() || null,
+            role: "member",
+            status: "active",
+            photoURL: null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+        }
+      } catch (fsErr) {
+        console.warn("[AUTH] Firestore profile write:", fsErr);
       }
 
-      // 2. Instantly update client-side AuthProvider state
-      if (updateUser) {
-        updateUser({
-          uid: u.uid,
-          email: formData.email,
-          name: fullName,
-          image: null,
-          role: "MEMBER",
+      // 3. Sync User Record to Backend Database (Default Role: MEMBER)
+      try {
+        await fetch("/api/auth/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: u.uid,
+            email: formData.email.toLowerCase().trim(),
+            name: fullName,
+            photoURL: null,
+            phoneNumber: formData.phone.trim() || null,
+          }),
         });
+      } catch (syncErr) {
+        console.warn("[AUTH] Server sync warning:", syncErr);
       }
 
-      // 3. Fire-and-forget: background database sync
-      fetch("/api/auth/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: u.uid,
-          email: formData.email,
-          name: fullName,
-          photoURL: null,
-          phoneNumber: formData.phone || null,
-        }),
-      }).catch(() => {});
-
-      // 4. Fire-and-forget: welcome email to member + new member alert to admin
+      // 4. Send Welcome Notification Email (Non-blocking)
       fetch('/api/auth/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'REGISTER',
           name: fullName,
-          email: formData.email,
-          phone: formData.phone || '',
+          email: formData.email.toLowerCase().trim(),
+          phone: formData.phone.trim() || '',
         }),
       }).catch(() => {});
 
-      // 5. INSTANT REDIRECT WITHOUT WAIT
-      router.replace("/member");
+      // 5. Explicitly Sign Out from Firebase Auth so login is required
+      const { signOut } = await import("firebase/auth");
+      await signOut(auth);
+
+      // Clear any session cookies
+      if (typeof document !== "undefined") {
+        document.cookie = "__kcm_session_uid=; path=/; max-age=0; SameSite=Lax";
+        document.cookie = "__kcm_session_role=; path=/; max-age=0; SameSite=Lax";
+      }
+
+      // 6. Redirect to /login with registered=true flag
+      router.replace("/login?registered=true");
     } catch (err: any) {
       console.error("[AUTH] Registration error:", err);
-      setError(err.code || "registration-failed");
+      setError(err?.code || "registration-failed");
       setIsLoading(false);
       setIsRegistering(false);
     }
@@ -490,7 +519,10 @@ export default function RegisterPage() {
             <div className="flex items-start gap-2 py-0.5">
               <input
                 id="terms"
+                name="termsAccepted"
                 type="checkbox"
+                checked={formData.termsAccepted}
+                onChange={handleChange}
                 required
                 className="w-3.5 h-3.5 mt-0.5 accent-purple-600 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-gray-800"
               />

@@ -72,7 +72,7 @@ export default function PastorSidebar({
     {
       group: t.groupMain,
       items: [
-        { name: t.navDashboard, href: "/pastor/dashboard", icon: Layers, iconColor: "text-indigo-500", activeBg: "bg-indigo-500/10 dark:bg-indigo-500/20", activeText: "text-indigo-600 dark:text-indigo-400", activeBar: "bg-indigo-500" },
+        { name: t.navDashboard, href: "/pastor/main/dashboard", icon: Layers, iconColor: "text-indigo-500", activeBg: "bg-indigo-500/10 dark:bg-indigo-500/20", activeText: "text-indigo-600 dark:text-indigo-400", activeBar: "bg-indigo-500" },
         { name: "OpenClaw AI Skills", href: "/admin/openclaw-orchestrator", icon: Cpu, iconColor: "text-purple-500", activeBg: "bg-purple-500/10 dark:bg-purple-500/20", activeText: "text-purple-600 dark:text-purple-400", activeBar: "bg-purple-500" },
         { name: t.navSermons, href: "/pastor/main/sermons", icon: Play, iconColor: "text-violet-500", activeBg: "bg-violet-500/10 dark:bg-violet-500/20", activeText: "text-violet-600 dark:text-violet-400", activeBar: "bg-violet-500" },
         { name: t.navDonations, href: "/pastor/main/donations", icon: IndianRupee, iconColor: "text-emerald-500", activeBg: "bg-emerald-500/10 dark:bg-emerald-500/20", activeText: "text-emerald-600 dark:text-emerald-400", activeBar: "bg-emerald-500" },
@@ -85,17 +85,17 @@ export default function PastorSidebar({
     {
       group: t.groupMinistry,
       items: [
-        { name: t.navBibleStudy, href: "/pastor/ministry/bible-study-groups", icon: BookOpen, iconColor: "text-cyan-500", activeBg: "bg-cyan-500/10 dark:bg-cyan-500/20", activeText: "text-cyan-600 dark:text-cyan-400", activeBar: "bg-cyan-500" },
-        { name: t.navSmallGroups, href: "/pastor/ministry/small-groups", icon: Users, iconColor: "text-teal-500", activeBg: "bg-teal-500/10 dark:bg-teal-500/20", activeText: "text-teal-600 dark:text-teal-400", activeBar: "bg-teal-500" },
-        { name: t.navVolunteers, href: "/pastor/ministry/volunteers", icon: UserCheck, iconColor: "text-blue-500", activeBg: "bg-blue-500/10 dark:bg-blue-500/20", activeText: "text-blue-600 dark:text-blue-400", activeBar: "bg-blue-500" }
+        { name: t.navBibleStudy, href: "/pastor/main/bible-study-groups", icon: BookOpen, iconColor: "text-cyan-500", activeBg: "bg-cyan-500/10 dark:bg-cyan-500/20", activeText: "text-cyan-600 dark:text-cyan-400", activeBar: "bg-cyan-500" },
+        { name: t.navSmallGroups, href: "/pastor/main/small-groups", icon: Users, iconColor: "text-teal-500", activeBg: "bg-teal-500/10 dark:bg-teal-500/20", activeText: "text-teal-600 dark:text-teal-400", activeBar: "bg-teal-500" },
+        { name: t.navVolunteers, href: "/pastor/main/volunteers", icon: UserCheck, iconColor: "text-blue-500", activeBg: "bg-blue-500/10 dark:bg-blue-500/20", activeText: "text-blue-600 dark:text-blue-400", activeBar: "bg-blue-500" }
       ]
     },
     {
       group: t.groupNgo,
       items: [
-        { name: t.navNgoProjects, href: "/pastor/ngo/projects", icon: Heart, iconColor: "text-fuchsia-500", activeBg: "bg-fuchsia-500/10 dark:bg-fuchsia-500/20", activeText: "text-fuchsia-600 dark:text-fuchsia-400", activeBar: "bg-fuchsia-500" },
-        { name: t.navNgoMedia, href: "/pastor/ngo/media", icon: ImageIcon, iconColor: "text-pink-500", activeBg: "bg-pink-500/10 dark:bg-pink-500/20", activeText: "text-pink-600 dark:text-pink-400", activeBar: "bg-pink-500" },
-        { name: t.navNgoVolunteers, href: "/pastor/ngo/volunteers", icon: Users, iconColor: "text-lime-500", activeBg: "bg-lime-500/10 dark:bg-lime-500/20", activeText: "text-lime-600 dark:text-lime-400", activeBar: "bg-lime-500" }
+        { name: t.navNgoProjects, href: "/pastor/main/ngo-projects", icon: Heart, iconColor: "text-fuchsia-500", activeBg: "bg-fuchsia-500/10 dark:bg-fuchsia-500/20", activeText: "text-fuchsia-600 dark:text-fuchsia-400", activeBar: "bg-fuchsia-500" },
+        { name: t.navNgoMedia, href: "/pastor/main/ngo-media", icon: ImageIcon, iconColor: "text-pink-500", activeBg: "bg-pink-500/10 dark:bg-pink-500/20", activeText: "text-pink-600 dark:text-pink-400", activeBar: "bg-pink-500" },
+        { name: t.navNgoVolunteers, href: "/pastor/main/ngo-volunteers", icon: Users, iconColor: "text-lime-500", activeBg: "bg-lime-500/10 dark:bg-lime-500/20", activeText: "text-lime-600 dark:text-lime-400", activeBar: "bg-lime-500" }
       ]
     },
     {
@@ -119,11 +119,10 @@ export default function PastorSidebar({
     {
       group: t.groupSettings,
       items: [
-        { name: t.navProfile, href: "/pastor/profile", icon: UserCheck, iconColor: "text-cyan-400", activeBg: "bg-cyan-400/10 dark:bg-cyan-400/20", activeText: "text-cyan-500 dark:text-cyan-300", activeBar: "bg-cyan-400" },
-        { name: t.navGeneralSettings, href: "/pastor/settings/general", icon: Settings, iconColor: "text-amber-400", activeBg: "bg-amber-400/10 dark:bg-amber-400/20", activeText: "text-amber-500 dark:text-amber-300", activeBar: "bg-amber-400" },
+        { name: t.navProfile, href: "/pastor/main/profile", icon: UserCheck, iconColor: "text-cyan-400", activeBg: "bg-cyan-400/10 dark:bg-cyan-400/20", activeText: "text-cyan-500 dark:text-cyan-300", activeBar: "bg-cyan-400" },
+        { name: "Church Settings", href: "/pastor/main/church-settings", icon: Settings, iconColor: "text-amber-400", activeBg: "bg-amber-400/10 dark:bg-amber-400/20", activeText: "text-amber-500 dark:text-amber-300", activeBar: "bg-amber-400" },
         { name: t.navSecurity, href: "/pastor/settings/security", icon: ShieldCheck, iconColor: "text-teal-400", activeBg: "bg-teal-400/10 dark:bg-teal-400/20", activeText: "text-teal-500 dark:text-teal-300", activeBar: "bg-teal-400" },
-        { name: t.navNotifications, href: "/pastor/settings/notifications", icon: Bell, iconColor: "text-yellow-400", activeBg: "bg-yellow-400/10 dark:bg-yellow-400/20", activeText: "text-yellow-500 dark:text-yellow-300", activeBar: "bg-yellow-400" },
-        { name: t.navPreferences, href: "/pastor/settings/preferences", icon: Settings, iconColor: "text-violet-400", activeBg: "bg-violet-400/10 dark:bg-violet-400/20", activeText: "text-violet-500 dark:text-violet-300", activeBar: "bg-violet-400" }
+        { name: t.navNotifications, href: "/pastor/settings/notifications", icon: Bell, iconColor: "text-yellow-400", activeBg: "bg-yellow-400/10 dark:bg-yellow-400/20", activeText: "text-yellow-500 dark:text-yellow-300", activeBar: "bg-yellow-400" }
       ]
     }
   ];
