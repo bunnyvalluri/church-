@@ -46,15 +46,10 @@ export default function LoginPage() {
   const user = authContext?.user ?? null;
   const updateUser = authContext?.updateUser;
 
-  let t = translations.en;
-  let language = "en";
-  try {
-    const langContext = useLanguage();
-    if (langContext?.t) t = langContext.t;
-    if (langContext?.language) language = langContext.language;
-  } catch (err) {
-    console.warn("[AUTH/UI] Fallback to default English translations:", err);
-  }
+  // ── Language context — hooks cannot be inside try/catch (Rules of Hooks) ──
+  const langContext = useLanguage();
+  const t = langContext?.t ?? translations.en;
+  const language = langContext?.language ?? "en";
 
   const loginT = t?.pages?.login || translations.en.pages.login;
 
@@ -274,6 +269,8 @@ export default function LoginPage() {
       "auth/invalid-credential": loginT.errors.invalidCredential,
       "auth/user-not-found": loginT.errors.userNotFound,
       "auth/wrong-password": loginT.errors.wrongPassword,
+      "auth/user-disabled": "Your account has been disabled. Please contact the church administrator.",
+      "auth/invalid-email": "Please enter a valid email address.",
       "auth/too-many-requests": loginT.errors.tooManyRequests,
       "auth/operation-not-allowed": loginT.errors.operationNotAllowed,
       "auth/popup-blocked": loginT.errors.popupBlocked,
@@ -282,9 +279,12 @@ export default function LoginPage() {
       "auth/auth-domain-config-required": loginT.errors.unauthorizedDomain || "This domain is not authorized for Google Sign-In. Please add your domain to the Authorized Domains list in Firebase Console.",
       "auth/account-exists-with-different-credential": "An account already exists with this email using a different sign-in method.",
       "auth/internal-error": loginT.errors.genericFailed,
+      "auth/configuration-not-found": "Authentication service not configured. Please contact support.",
       "social-redirect-failed": loginT.errors.socialFailed,
       "social-generic-failed": loginT.errors.socialFailed,
       "sign-in-failed": loginT.errors.genericFailed,
+      "network-offline": "You are offline. Please check your internet connection and try again.",
+      "auth-not-ready": "Authentication service is temporarily unavailable. Please try again.",
     };
 
     if (errorMap[errStr]) return errorMap[errStr];
@@ -326,39 +326,49 @@ export default function LoginPage() {
   };
 
   const redirectForRole = (targetRole: string) => {
+    // ── Determine role-based default destination ─────────────────────────────
+    const normalized = (targetRole || "MEMBER").toUpperCase();
     let targetPath = "/member";
+    switch (normalized) {
+      case "ADMIN":
+      case "SUPER_ADMIN":
+        targetPath = "/admin/dashboard";
+        break;
+      case "PASTOR":
+        targetPath = "/pastor/main/dashboard";
+        break;
+      case "EVENT_MANAGER":
+      case "FIELD_VOLUNTEER":
+        targetPath = "/event-manager";
+        break;
+      default:
+        targetPath = "/member";
+        break;
+    }
+
+    // ── Honor ?next= param only if it is same-origin and a protected path ────
+    // Prevents open-redirect attacks. Only allow paths the user's role permits.
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const nextParam = params.get("next");
-      if (nextParam && nextParam.startsWith("/")) {
-        targetPath = nextParam;
-      } else {
-        const normalized = (targetRole || "MEMBER").toUpperCase();
-        switch (normalized) {
-          case "ADMIN":
-          case "SUPER_ADMIN":
-            targetPath = "/admin/dashboard";
-            break;
-          case "PASTOR":
-            targetPath = "/pastor/main/dashboard";
-            break;
-          case "EVENT_MANAGER":
-          case "FIELD_VOLUNTEER":
-            targetPath = "/event-manager";
-            break;
-          default:
-            targetPath = "/member";
-            break;
+      if (
+        nextParam &&
+        nextParam.startsWith("/") &&
+        !nextParam.startsWith("//") && // block protocol-relative redirects
+        !nextParam.includes(":")       // block javascript: and data: URIs
+      ) {
+        // Role-guard the next param so members can't bypass to /admin
+        const isAdminNext = nextParam.startsWith("/admin") || nextParam.startsWith("/pastor");
+        if (!isAdminNext || normalized === "ADMIN" || normalized === "SUPER_ADMIN" || normalized === "PASTOR") {
+          targetPath = nextParam;
         }
       }
     }
 
-    if (typeof window !== "undefined") {
-      try {
-        router.push(targetPath);
-      } catch {}
-      window.location.replace(targetPath);
-    }
+    // ── Single navigation — NO double-fire race condition ─────────────────────
+    // Using router.replace() only. window.location.replace() alongside router.push()
+    // caused the popup/auth to abort mid-flight, producing the generic 'sign-in failed' error.
+    router.replace(targetPath);
   };
 
   const handleSocialLogin = async (providerArg: any, name: string) => {
@@ -505,12 +515,37 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // ── Client-side validation ────────────────────────────────────────────────
+    const sanitizedEmail = (email || "").toLowerCase().trim();
+    if (!sanitizedEmail || !password) {
+      setError("auth/invalid-credential");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sanitizedEmail)) {
+      setError("auth/invalid-email");
+      return;
+    }
+
+    // ── Pre-flight: network check ─────────────────────────────────────────────
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setError("network-offline");
+      return;
+    }
+
+    // ── Pre-flight: ensure Firebase Auth is initialised ───────────────────────
+    const activeAuth = getFirebaseAuth() || auth;
+    if (!activeAuth || typeof activeAuth.onAuthStateChanged !== "function") {
+      setError("auth-not-ready");
+      return;
+    }
+
     setIsLoading(true);
     setIsLoggingIn(true);
-    const sanitizedEmail = (email || "").toLowerCase().trim();
 
     try {
-      const credential = await signInWithEmailAndPassword(auth, sanitizedEmail, password);
+      const credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, password);
       const u = credential.user;
 
       if (!u) {

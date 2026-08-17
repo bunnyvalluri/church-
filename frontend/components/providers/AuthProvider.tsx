@@ -38,15 +38,20 @@ const AuthContext = createContext<AuthContextType>({
 // ── Cookie helpers (lightweight presence cookies for Edge Middleware) ──────────
 function setSessionCookies(uid: string, role: string) {
   if (typeof document === "undefined") return;
-  const maxAge = 7 * 24 * 60 * 60; // 7 days — prevents premature session cookie expiration issues
-  document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax`;
-  document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  const maxAge = 7 * 24 * 60 * 60; // 7 days
+  // Add Secure flag on HTTPS (production). Omit on HTTP (local dev) so it still works.
+  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+  const secureFlag = isSecure ? "; Secure" : "";
+  document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
+  document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
 }
 
 function clearSessionCookies() {
   if (typeof document === "undefined") return;
-  document.cookie = "__kcm_session_uid=; path=/; max-age=0; SameSite=Lax";
-  document.cookie = "__kcm_session_role=; path=/; max-age=0; SameSite=Lax";
+  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+  const secureFlag = isSecure ? "; Secure" : "";
+  document.cookie = `__kcm_session_uid=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
+  document.cookie = `__kcm_session_role=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
 }
 
 async function syncUserToDatabase(firebaseUser: any): Promise<any | null> {
