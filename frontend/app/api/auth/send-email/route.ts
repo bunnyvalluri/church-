@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY || 're_dummy_key_build_fallback');
+const PORTAL_URL = process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app';
+
 
 const CHURCH_NAME   = 'Kingdom of Christ Ministries';
 const CHURCH_EMAIL  = 'kingofchristministries23@gmail.com';
@@ -146,7 +148,7 @@ function welcomeEmailHtml(name: string, email: string): string {
 
     <!-- CTA Button -->
     <div style="text-align:center;margin-bottom:28px;">
-      <a href="https://kcm-portal.vercel.app/member" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;box-shadow:0 4px 14px ${BRAND.primary}40;">
+      <a href="${PORTAL_URL}/member" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;box-shadow:0 4px 14px ${BRAND.primary}40;">
         Access Member Portal →
       </a>
     </div>
@@ -231,7 +233,7 @@ function newMemberAdminHtml(name: string, email: string, phone: string, regTime:
 
     <!-- Action Button -->
     <div style="text-align:center;margin-bottom:24px;">
-      <a href="https://kcm-portal.vercel.app/admin?tab=members" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:13px;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
+      <a href="${PORTAL_URL}/admin?tab=members" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:13px;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
         View in Admin Panel →
       </a>
     </div>
