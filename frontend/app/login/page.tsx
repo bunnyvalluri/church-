@@ -332,6 +332,14 @@ export default function LoginPage() {
     setSocialLoading(name);
     setIsLoggingIn(true);
 
+    // ── Pre-flight: check network connectivity before opening popup ───────────
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setSocialLoading(null);
+      setIsLoggingIn(false);
+      setError("auth/network-request-failed");
+      return;
+    }
+
     try {
       const activeAuth = getFirebaseAuth() || auth;
       const activeProvider = (name === "Google" ? getGoogleProvider() : providerArg) || new GoogleAuthProvider();
@@ -377,6 +385,22 @@ export default function LoginPage() {
         ) {
           setSocialLoading(null);
           setIsLoggingIn(false);
+          return;
+        }
+
+        // Network failure during popup — surface a clear message
+        if (code === "auth/network-request-failed") {
+          setSocialLoading(null);
+          setIsLoggingIn(false);
+          setError("auth/network-request-failed");
+          return;
+        }
+
+        // Domain not authorized in Firebase Console
+        if (code === "auth/unauthorized-domain") {
+          setSocialLoading(null);
+          setIsLoggingIn(false);
+          setError("auth/unauthorized-domain");
           return;
         }
 

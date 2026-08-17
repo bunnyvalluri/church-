@@ -42,7 +42,6 @@ try {
   googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({
     prompt: "select_account",
-    display: "popup",
   });
   googleProvider.addScope("email");
   googleProvider.addScope("profile");
@@ -83,7 +82,6 @@ export function getGoogleProvider() {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({
     prompt: "select_account",
-    display: "popup",
   });
   provider.addScope("email");
   provider.addScope("profile");
