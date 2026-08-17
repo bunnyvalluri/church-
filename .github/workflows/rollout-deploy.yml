@@ -13,15 +13,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build & Push Frontend Image
+        run: |
+          docker build -t ghcr.io/bunnyvalluri/kcm-frontend:${{ github.sha }} -t ghcr.io/bunnyvalluri/kcm-frontend:latest -f ./docker/Dockerfile .
+          docker push ghcr.io/bunnyvalluri/kcm-frontend:${{ github.sha }}
+          docker push ghcr.io/bunnyvalluri/kcm-frontend:latest
 
       - name: Run Trivy Security Scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -31,16 +30,6 @@ jobs:
           format: 'table'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
-
-      - name: Build & Push Frontend Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/bunnyvalluri/kcm-frontend:${{ github.sha }}
-            ghcr.io/bunnyvalluri/kcm-frontend:latest
 
       - name: Install kubectl argo rollouts CLI
         run: |
