@@ -342,42 +342,34 @@ export default function LoginPage() {
 
       let u: any = null;
 
-      // Detect mobile browsers where popups are blocked by OS/browser policies
-      const isMobile =
-        typeof window !== "undefined" &&
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-      if (isMobile && typeof signInWithRedirect === "function") {
-        try {
-          await signInWithRedirect(activeAuth, activeProvider);
-          return;
-        } catch (mErr) {
-          console.warn("[AUTH] Mobile redirect notice:", mErr);
-        }
-      }
-
-      // Try OAuth popup on desktop browsers
+      // Use signInWithPopup for ALL devices (mobile + desktop).
+      // signInWithRedirect is broken on Vercel/custom domains with Firebase's firebaseapp.com
+      // authDomain because modern mobile browsers (Chrome 115+, Safari 17+) block
+      // third-party cookies required for the cross-origin redirect flow.
+      // signInWithPopup works reliably on all modern mobile browsers.
       try {
         if (typeof signInWithPopup === "function") {
           const result = await signInWithPopup(activeAuth, activeProvider);
           u = result?.user;
         }
       } catch (popupErr: any) {
-        console.warn(`[AUTH/OAUTH] ${name} popup notice:`, popupErr?.code || popupErr);
+        console.warn(`[AUTH/OAUTH] ${name} popup error:`, popupErr?.code || popupErr);
         const code = popupErr?.code || "";
 
-        if (
-          code === "auth/popup-blocked" ||
-          code === "auth/cancelled-popup-request" ||
-          code === "auth/unauthorized-domain" ||
-          code === "auth/auth-domain-config-required"
-        ) {
-          if (typeof signInWithRedirect === "function") {
-            await signInWithRedirect(activeAuth, activeProvider);
-            return;
+        // Popup was blocked by browser — fall back to redirect
+        if (code === "auth/popup-blocked") {
+          try {
+            if (typeof signInWithRedirect === "function") {
+              await signInWithRedirect(activeAuth, activeProvider);
+              return;
+            }
+          } catch (redirectErr) {
+            console.warn("[AUTH] Redirect fallback failed:", redirectErr);
+            throw redirectErr;
           }
         }
 
+        // User closed popup — do nothing silently
         if (
           code === "auth/popup-closed-by-user" ||
           code === "auth/user-cancelled" ||
