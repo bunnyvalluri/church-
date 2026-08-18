@@ -83,7 +83,7 @@ export default async function Home() {
     <>
       <ScrollToTopOnMount />
       <Navbar />
-      <main id="main-content" className="min-h-screen overflow-x-hidden relative">
+      <main className="min-h-screen overflow-x-hidden relative">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
 
         <SectionDivider />

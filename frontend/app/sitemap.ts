@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://church-valluri-rahuls-projects.vercel.app"; // Fallback production URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kcmchurch.vercel.app";
   
   const routes = [
     "",

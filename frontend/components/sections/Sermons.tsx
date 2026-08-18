@@ -240,7 +240,8 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
                   src={selectedVideo}
                   controls
                   autoPlay
-                  className="absolute inset-0 w-full h-full"
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-contain"
                 />
               ) : (
                 <iframe

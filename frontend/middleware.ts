@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // ── Role Protected Prefixes ──────────────────────────────────────────────────
 const ADMIN_PREFIXES = ['/admin'];
 const PASTOR_PREFIXES = ['/pastor'];
-const EVENT_MANAGER_PREFIXES = ['/event-manager'];
+const EVENT_MANAGER_PREFIXES = ['/event-manager', '/event-management'];
 const FIELD_VOLUNTEER_PREFIXES = ['/field-volunteer'];
 const MEMBER_PREFIXES = ['/member', '/church-member', '/memberships'];
 

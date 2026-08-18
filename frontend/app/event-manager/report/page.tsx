@@ -1046,7 +1046,7 @@ function FieldReportFormContent() {
                 {previewMediaItem.type === "IMAGE" ? (
                   <img src={previewMediaItem.base64} alt={previewMediaItem.name} className="max-h-[60vh] w-auto max-w-full object-contain rounded-lg" />
                 ) : (
-                  <video src={previewMediaItem.base64} controls autoPlay className="max-h-[60vh] w-auto max-w-full rounded-lg" />
+                  <video src={previewMediaItem.base64} controls autoPlay playsInline className="max-h-[60vh] w-auto max-w-full rounded-lg" />
                 )}
               </div>
             </motion.div>
