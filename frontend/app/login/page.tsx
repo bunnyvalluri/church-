@@ -707,7 +707,7 @@ export default function LoginPage() {
 
               {/* Google Sign-In via official Google Identity Services */}
               <motion.div variants={itemVariants} className="w-full">
-                <GoogleSignInButton onError={(err) => setError(err)} />
+                <GoogleSignInButton />
               </motion.div>
 
               {/* Register Link */}
