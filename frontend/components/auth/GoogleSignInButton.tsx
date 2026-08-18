@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { Loader2, AlertCircle, RefreshCw, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   loadGoogleGsiScript,
   resetGoogleGsiScriptPromise,
@@ -27,9 +28,27 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
   const [state, setState] = useState<ButtonState>("IDLE");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showCancelHint, setShowCancelHint] = useState(false);
+
+  const stateRef = useRef<ButtonState>("IDLE");
+  stateRef.current = state;
 
   const isAuthenticatingRef = useRef(false);
   const isMountedRef = useRef(true);
+  const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cancelHintTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearTimers = () => {
+    if (safetyTimeoutRef.current) {
+      clearTimeout(safetyTimeoutRef.current);
+      safetyTimeoutRef.current = null;
+    }
+    if (cancelHintTimeoutRef.current) {
+      clearTimeout(cancelHintTimeoutRef.current);
+      cancelHintTimeoutRef.current = null;
+    }
+    setShowCancelHint(false);
+  };
 
   // Multilingual translations for button states and errors
   const getLocalizedText = useCallback(
@@ -44,12 +63,13 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       | "authFailed"
       | "serverError"
       | "retry"
+      | "cancel"
     ) => {
       const texts = {
         en: {
           signInWithGoogle: "Sign in with Google",
           loadingGoogle: "Connecting to Google...",
-          authenticating: "Signing in...",
+          authenticating: "Signing in with Google...",
           unavailable: "Google Sign-In is temporarily unavailable. Please try again.",
           networkError: "Unable to connect to Google. Please check your internet connection.",
           popupBlocked: "Google popup was blocked. Please allow popups and try again.",
@@ -57,11 +77,12 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           authFailed: "Google authentication failed. Please try again.",
           serverError: "Unable to complete Google Sign-In. Please try again.",
           retry: "Try Again",
+          cancel: "Cancel",
         },
         te: {
           signInWithGoogle: "Google తో సైన్ ఇన్ చేయండి",
           loadingGoogle: "Google తో కనెక్ట్ అవుతోంది...",
-          authenticating: "సైన్ ఇన్ అవుతోంది...",
+          authenticating: "Google తో సైన్ ఇన్ అవుతోంది...",
           unavailable: "Google సైన్-ఇన్ ప్రస్తుతం అందుబాటులో లేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           networkError: "Google తో కనెక్ట్ కాలేదు. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి.",
           popupBlocked: "Google పాపప్ నిరోధించబడింది. దయచేసి పాపప్‌లను అనుమతించండి.",
@@ -69,11 +90,12 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           authFailed: "Google ప్రమాణీకరణ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           serverError: "Google సైన్-ఇన్ పూర్తి కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           retry: "మళ్ళీ ప్రయత్నించండి",
+          cancel: "రద్దు చేయి",
         },
         hi: {
           signInWithGoogle: "गूगल से साइन इन करें",
           loadingGoogle: "गूगल से कनेक्ट हो रहा है...",
-          authenticating: "साइन इन हो रहा है...",
+          authenticating: "गूगल से साइन इन हो रहा है...",
           unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया पुनः प्रयास करें।",
           networkError: "गूगल से कनेक्ट नहीं हो सका। कृपया अपना इंटरनेट कनेक्शन जांचें।",
           popupBlocked: "गूगल पॉपअप अवरुद्ध हो गया। कृपया पॉपअप की अनुमति दें।",
@@ -81,6 +103,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           authFailed: "गूगल प्रमाणीकरण विफल रहा। कृपया पुनः प्रयास करें।",
           serverError: "गूगल साइन-इन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
           retry: "पुनः प्रयास करें",
+          cancel: "रद्द करें",
         },
       };
 
@@ -121,13 +144,18 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       setErrorMessage(null);
       logGoogleAuthDiagnostic("CREDENTIAL_CALLBACK_RECEIVED");
 
+      const abortController = new AbortController();
+      const fetchTimeout = setTimeout(() => abortController.abort(), 10000);
+
       try {
         const res = await fetch("/api/auth/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          signal: abortController.signal,
         });
 
+        clearTimeout(fetchTimeout);
         const data = await res.json().catch(() => null);
 
         if (!res.ok || !data?.success) {
@@ -138,6 +166,8 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           userId: data.user?.id,
           role: data.user?.role,
         });
+
+        clearTimers();
 
         // 1. Set presence session cookies
         if (data.user?.id && data.user?.role) {
@@ -179,13 +209,17 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         // 5. Navigate to member portal
         router.replace(targetPath);
       } catch (err: any) {
+        clearTimeout(fetchTimeout);
+        clearTimers();
         logGoogleAuthDiagnostic("BACKEND_VERIFICATION_FAILED", {
           error: err?.message || String(err),
         });
         if (isMountedRef.current) {
           isAuthenticatingRef.current = false;
           setState("ERROR");
-          const msg = err?.message || getLocalizedText("serverError");
+          const msg = err?.name === "AbortError" 
+            ? getLocalizedText("networkError") 
+            : err?.message || getLocalizedText("serverError");
           setErrorMessage(msg);
           onError?.(msg);
         }
@@ -208,6 +242,8 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       const idToken = await result.user.getIdToken();
       await verifyWithBackend({ idToken });
     } catch (firebaseErr: any) {
+      clearTimers();
+      isAuthenticatingRef.current = false;
       if (
         firebaseErr?.code === "auth/popup-closed-by-user" ||
         firebaseErr?.code === "auth/cancelled-popup-request"
@@ -229,6 +265,13 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     }
   };
 
+  const handleCancel = useCallback(() => {
+    clearTimers();
+    isAuthenticatingRef.current = false;
+    setState("IDLE");
+    setErrorMessage(null);
+  }, []);
+
   // Main Google Sign-In Click Handler
   const handleGoogleSignInClick = async () => {
     if (state === "AUTHENTICATING" || state === "LOADING_GOOGLE") return;
@@ -248,8 +291,24 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     setState("LOADING_GOOGLE");
     setErrorMessage(null);
 
+    // Setup safety timeout: automatically reset if stuck for 12 seconds
+    clearTimers();
+    cancelHintTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) setShowCancelHint(true);
+    }, 3500);
+
+    safetyTimeoutRef.current = setTimeout(() => {
+      if (
+        isMountedRef.current &&
+        (stateRef.current === "LOADING_GOOGLE" || stateRef.current === "AUTHENTICATING")
+      ) {
+        console.warn("[GOOGLE_AUTH] Safety timeout reached, resetting state to IDLE");
+        handleCancel();
+      }
+    }, 12000);
+
     // Preload GIS script
-    const loaded = await loadGoogleGsiScript(6000);
+    const loaded = await loadGoogleGsiScript(5000);
 
     // If GIS OAuth2 client is available and client ID is configured, use GIS Token Client
     if (loaded && window.google?.accounts?.oauth2 && clientId) {
@@ -259,8 +318,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           scope: "openid email profile",
           callback: async (tokenResponse) => {
             if (tokenResponse.error) {
+              clearTimers();
+              isAuthenticatingRef.current = false;
               if (tokenResponse.error === "access_denied") {
-                // User closed popup
+                // User closed popup or cancelled
                 setState("IDLE");
                 return;
               }
@@ -274,6 +335,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
             if (tokenResponse.access_token) {
               await verifyWithBackend({ accessToken: tokenResponse.access_token });
             } else {
+              clearTimers();
               setState("IDLE");
             }
           },
@@ -297,6 +359,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
   };
 
   const handleRetry = () => {
+    clearTimers();
     isAuthenticatingRef.current = false;
     resetGoogleGsiScriptPromise();
     setState("IDLE");
@@ -306,9 +369,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
   useEffect(() => {
     isMountedRef.current = true;
     // Pre-load GIS script in the background silently
-    loadGoogleGsiScript(5000).catch(() => {});
+    loadGoogleGsiScript(4000).catch(() => {});
     return () => {
       isMountedRef.current = false;
+      clearTimers();
     };
   }, []);
 
@@ -319,9 +383,9 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       {/* ── Error Banner if any ── */}
       {state === "ERROR" && (
         <div className="w-full flex flex-col gap-2 mb-1">
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-200 text-xs font-medium shadow-xs">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-200 text-xs font-medium shadow-xs">
             <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
-            <span className="flex-1">{errorMessage || getLocalizedText("serverError")}</span>
+            <span className="flex-1 leading-relaxed">{errorMessage || getLocalizedText("serverError")}</span>
           </div>
           <button
             type="button"
@@ -334,24 +398,27 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         </div>
       )}
 
-      {/* ── Custom High-Fidelity Google Sign-In Button ── */}
+      {/* ── High-Fidelity Google Sign-In Button with Continuous Branding ── */}
       <button
         type="button"
         onClick={handleGoogleSignInClick}
         disabled={isLoading}
         aria-label={getLocalizedText("signInWithGoogle")}
-        className="w-full h-[46px] flex items-center justify-center gap-3 px-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-purple-300 dark:hover:border-purple-700/60 font-semibold text-xs sm:text-sm shadow-xs hover:shadow-sm transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed"
+        className={`relative overflow-hidden w-full h-[48px] flex items-center justify-center px-4 rounded-xl border font-semibold text-xs sm:text-sm shadow-xs transition-all duration-300 cursor-pointer select-none active:scale-[0.99] disabled:cursor-not-allowed ${
+          isLoading
+            ? "border-purple-400/60 dark:border-purple-600/60 bg-purple-50/60 dark:bg-purple-950/30 text-purple-900 dark:text-purple-100 shadow-md shadow-purple-500/10"
+            : "border-slate-300 dark:border-slate-700/80 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-md hover:shadow-purple-500/5"
+        }`}
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
-            <span className="text-xs sm:text-sm font-semibold text-purple-700 dark:text-purple-300">
-              {state === "AUTHENTICATING" ? getLocalizedText("authenticating") : getLocalizedText("loadingGoogle")}
-            </span>
-          </>
-        ) : (
-          <>
-            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+        {/* Animated glossy shimmer bar during loading */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/15 dark:via-purple-400/25 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+        )}
+
+        <div className="relative z-10 flex items-center justify-center gap-3 w-full">
+          {/* Always-visible official 4-color Google G Icon */}
+          <div className="relative flex items-center justify-center shrink-0 w-5 h-5">
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -369,10 +436,47 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>{getLocalizedText("signInWithGoogle")}</span>
-          </>
-        )}
+
+            {/* Glowing active spinner ring overlay when connecting */}
+            {isLoading && (
+              <span className="absolute -inset-1 rounded-full border-2 border-purple-500/30 border-t-purple-600 dark:border-t-purple-400 animate-spin" />
+            )}
+          </div>
+
+          {/* Button Text with Smooth Transition */}
+          <span className="truncate font-semibold tracking-wide">
+            {isLoading ? (
+              <span className="inline-flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+                <span>
+                  {state === "AUTHENTICATING"
+                    ? getLocalizedText("authenticating")
+                    : getLocalizedText("loadingGoogle")}
+                </span>
+              </span>
+            ) : (
+              getLocalizedText("signInWithGoogle")
+            )}
+          </span>
+        </div>
       </button>
+
+      {/* ── Cancel recovery option if popup is taking a moment ── */}
+      <AnimatePresence>
+        {isLoading && showCancelHint && (
+          <motion.button
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            type="button"
+            onClick={handleCancel}
+            className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline font-medium transition-colors cursor-pointer pt-0.5"
+          >
+            <X className="w-3 h-3" />
+            <span>{getLocalizedText("cancel")}</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
