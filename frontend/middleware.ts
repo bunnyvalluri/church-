@@ -193,13 +193,19 @@ export function middleware(req: NextRequest) {
 
   // ── Guard: /api/pastor/* endpoints ────────────────────────────────────────
   if (PASTOR_API_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const isGetSermons = req.method === 'GET' && pathname.startsWith('/api/pastor/sermons');
-    if (!isGetSermons) {
+    const isGetPublicPastorResource = req.method === 'GET' && (
+      pathname.startsWith('/api/pastor/sermons') || 
+      pathname.startsWith('/api/pastor/announcements')
+    );
+    if (!isGetPublicPastorResource) {
       if (!isAuthenticated) {
         return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
       }
-      const isSermonEndpoint = pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/clear-seeded-sermons');
-      const canAccess = isPastorRole || (isSermonEndpoint && isVolunteerRole);
+      const isSermonOrAnnouncementEndpoint = 
+        pathname.startsWith('/api/pastor/sermons') || 
+        pathname.startsWith('/api/pastor/announcements') || 
+        pathname.startsWith('/api/pastor/clear-seeded-sermons');
+      const canAccess = isPastorRole || (isSermonOrAnnouncementEndpoint && isVolunteerRole);
       if (!canAccess) {
         return NextResponse.json({ error: 'Access denied. Pastor or Admin privileges required.' }, { status: 403 });
       }

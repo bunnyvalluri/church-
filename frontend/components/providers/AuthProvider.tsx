@@ -135,6 +135,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
 
+    // 0. Immediate synchronous hydration from presence cookies (0ms delay)
+    if (typeof document !== "undefined") {
+      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
+      const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
+      if (uidMatch && uidMatch[1]) {
+        const sessionUid = uidMatch[1];
+        const sessionRole = (roleMatch?.[1]?.toUpperCase() || "MEMBER") as AuthUser["role"];
+        setUser((prev) => prev || {
+          uid: sessionUid,
+          email: "",
+          name: "Member",
+          image: null,
+          role: sessionRole,
+        });
+        setLoading(false);
+
+        // Validate and refresh profile details from server in background
+        fetch(`/api/member/profile?userId=${encodeURIComponent(sessionUid)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.success && data?.user) {
+              const profileRole = (data.user.role || sessionRole || "MEMBER") as AuthUser["role"];
+              setUser({
+                uid: data.user.id,
+                email: data.user.email || "",
+                name: data.user.name || "Member",
+                image: data.user.image || null,
+                role: profileRole,
+              });
+              setSessionCookies(data.user.id, profileRole);
+            }
+          })
+          .catch((err) => {
+            console.warn("[AUTH] Profile revalidation notice:", err);
+          });
+      }
+    }
+
     let unsubscribe: (() => void) | undefined;
 
     if (!auth || typeof onAuthStateChanged !== "function") {
@@ -197,7 +235,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const sessionRole = (roleMatch?.[1]?.toUpperCase() || "MEMBER") as AuthUser["role"];
 
               // Immediately set preliminary user so UI renders authenticated
-              setUser({
+              setUser((prev) => prev || {
                 uid: sessionUid,
                 email: "",
                 name: "Member",

@@ -319,10 +319,10 @@ export default function MemberDashboard() {
     if (!silent) setIsRefreshing(true);
     try {
       const [eventsRes, prayersRes, sermonsRes, announcementsRes] = await Promise.allSettled([
-        fetch(`/api/member/events?userId=${user.uid}&t=${Date.now()}`),
-        fetch(`/api/member/prayers?userId=${user.uid}&t=${Date.now()}`),
+        fetch(`/api/member/events?userId=${encodeURIComponent(user.uid)}&t=${Date.now()}`),
+        fetch(`/api/member/prayers?userId=${encodeURIComponent(user.uid)}&t=${Date.now()}`),
         fetch(`/api/pastor/sermons?t=${Date.now()}`),
-        fetch("/api/pastor/announcements"),
+        fetch(`/api/pastor/announcements?t=${Date.now()}`),
       ]);
 
       let eventsCount = 0;
@@ -332,23 +332,23 @@ export default function MemberDashboard() {
       let announcements: Announcement[] = [];
 
       if (eventsRes.status === "fulfilled" && eventsRes.value.ok) {
-        const d = await eventsRes.value.json();
-        if (d.success) eventsCount = d.registeredEventIds?.length || 0;
+        const d = await eventsRes.value.json().catch(() => null);
+        if (d?.success) eventsCount = d.registeredEventIds?.length || 0;
       }
       if (prayersRes.status === "fulfilled" && prayersRes.value.ok) {
-        const d = await prayersRes.value.json();
-        if (d.success) {
+        const d = await prayersRes.value.json().catch(() => null);
+        if (d?.success) {
           prayersCount = d.prayers?.length || 0;
           prayersAnswered = d.prayers?.filter((p: { status: string }) => p.status === "ANSWERED").length || 0;
         }
       }
       if (sermonsRes.status === "fulfilled" && sermonsRes.value.ok) {
-        const d = await sermonsRes.value.json();
-        if (d.success) sermonsCount = d.sermons?.length || 0;
+        const d = await sermonsRes.value.json().catch(() => null);
+        if (d?.success) sermonsCount = d.sermons?.length || 0;
       }
       if (announcementsRes.status === "fulfilled" && announcementsRes.value.ok) {
-        const d = await announcementsRes.value.json();
-        announcements = d.announcements || [];
+        const d = await announcementsRes.value.json().catch(() => null);
+        announcements = d?.announcements || [];
         if (prevAnnouncementCount.current > 0 && announcements.length > prevAnnouncementCount.current) {
           showToast(`📢 ${announcements.length - prevAnnouncementCount.current} new announcement(s)!`, "info");
         }
