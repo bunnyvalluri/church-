@@ -90,7 +90,7 @@ serviceMonitor:
 env:
   NODE_ENV: "production"
   NEXT_PUBLIC_API_URL: "https://api.kcmchurch.org"
-  NEXT_PUBLIC_FIREBASE_API_KEY: "AIzaSyKCMChurchFirebaseKey"
+  NEXT_PUBLIC_FIREBASE_API_KEY: ""
   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "kcm-portal.firebaseapp.com"
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: "kcm-portal"
 
