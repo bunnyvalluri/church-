@@ -89,12 +89,12 @@ export default function BranchSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
-        className={`apple-liquid-glass-btn h-8 min-[360px]:h-9 px-2 min-[360px]:px-3 md:px-3.5 flex items-center gap-1.5 min-[360px]:gap-2 ${currentStyles.triggerBg} backdrop-blur-xl rounded-xl border ${currentStyles.border} text-[11px] min-[360px]:text-xs font-black ${currentStyles.activeText} transition-all duration-300 shadow-sm hover:scale-[1.02] active:scale-95`}
+        className={`apple-liquid-glass-btn h-8.5 min-[360px]:h-9 px-2 min-[360px]:px-2.5 sm:px-3.5 flex items-center gap-1 min-[360px]:gap-1.5 ${currentStyles.triggerBg} backdrop-blur-xl rounded-xl border ${currentStyles.border} text-[10.5px] min-[360px]:text-xs font-black ${currentStyles.activeText} transition-all duration-300 shadow-sm hover:scale-[1.02] active:scale-95`}
       >
         <div className="apple-liquid-shimmer" />
         <MapPin className={`w-3.5 h-3.5 ${currentStyles.mapPin} flex-shrink-0 relative z-10 transition-colors`} />
-        <span className="whitespace-nowrap relative z-10 font-extrabold tracking-tight max-w-[130px] min-[360px]:max-w-[160px] sm:max-w-none">{activeBranchName}</span>
-        <ChevronDown className={`w-3.5 h-3.5 text-gray-400 flex-shrink-0 relative z-10 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <span className="whitespace-nowrap relative z-10 font-extrabold tracking-tight max-w-[90px] min-[360px]:max-w-[125px] sm:max-w-none truncate">{activeBranchName}</span>
+        <ChevronDown className={`w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 text-gray-400 flex-shrink-0 relative z-10 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (

@@ -126,8 +126,8 @@ const NavigationBar = memo(function NavigationBar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 w-full",
           "flex flex-col",
-          // Safe area for iOS notch
-          "pt-[env(safe-area-inset-top)]",
+          // Safe area for iOS notch and screen edge insets
+          "pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]",
           // Prevent CLS — stable width
           "max-w-[100vw]"
         )}
@@ -164,8 +164,8 @@ const NavigationBar = memo(function NavigationBar() {
               "mx-auto w-full",
               // Max-widths per breakpoint
               "max-w-screen-xl 2xl:max-w-[1440px]",
-              // Horizontal padding — 6 viewport responsive scale
-              "px-2.5 min-[360px]:px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 2xl:px-12"
+              // Horizontal padding with generous mobile margins
+              "px-3.5 min-[360px]:px-4 sm:px-5 md:px-6 lg:px-8 2xl:px-12"
             )}
           >
             {/* ── Flex row: Logo | Menu | Actions ── */}
@@ -198,7 +198,7 @@ const NavigationBar = memo(function NavigationBar() {
               />
 
               {/* ── Right actions: BranchSelector + Settings + Login + Hamburger ── */}
-              <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 flex-shrink-0 min-w-0">
+              <div className="flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-2.5 flex-shrink-0 min-w-0">
                 {/* Branch Selector + Settings + Login */}
                 <NavigationActions />
 
@@ -213,11 +213,11 @@ const NavigationBar = memo(function NavigationBar() {
                     "md:hidden flex-shrink-0",
                     "flex items-center justify-center",
                     // Touch target sizing
-                    "w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10 rounded-xl",
-                    "bg-gray-100/80 dark:bg-white/10",
-                    "border border-gray-200 dark:border-white/20",
+                    "w-9 h-9 min-[360px]:w-9.5 min-[360px]:h-9.5 sm:w-10 sm:h-10 rounded-xl",
+                    "bg-gray-100/90 dark:bg-white/10",
+                    "border border-gray-200/90 dark:border-white/20",
                     "text-gray-700 dark:text-white",
-                    "hover:bg-gray-200/80 dark:hover:bg-white/20",
+                    "hover:bg-gray-200/90 dark:hover:bg-white/20",
                     "transition-[background-color,color,transform] duration-150 ease-out",
                     "active:scale-90",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
