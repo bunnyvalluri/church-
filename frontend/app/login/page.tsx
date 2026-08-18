@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
-import { auth, googleProvider, getFirebaseAuth, getGoogleProvider } from "@/lib/firebase";
+import { auth, googleProvider, getFirebaseAuth, getGoogleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2, Info } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -253,6 +253,15 @@ export default function LoginPage() {
     }
   }, [mounted, updateUser]);
 
+  // Extract clean Firebase error code from raw SDK message strings.
+  // Firebase SDK sometimes throws: "Firebase: Error (auth/invalid-credential)."
+  const extractFirebaseCode = (msg?: string): string | null => {
+    if (!msg) return null;
+    const match = msg.match(/\(auth\/[^)]+\)/);
+    if (match) return match[0].replace(/[()]/g, "");
+    return null;
+  };
+
   // Resolve localized error dynamically so it changes instantly when language toggles
   const getLocalizedError = (errStr: string) => {
     if (!errStr) return "";
@@ -264,52 +273,56 @@ export default function LoginPage() {
       return "";
     }
     
-    // Map of raw codes or exact English strings to their translated keys
+    // Map of standard Firebase error codes to translated user-friendly messages
     const errorMap: Record<string, string> = {
       "auth/invalid-credential": loginT.errors.invalidCredential,
+      "auth/invalid-login-credentials": loginT.errors.invalidCredential,
       "auth/user-not-found": loginT.errors.userNotFound,
       "auth/wrong-password": loginT.errors.wrongPassword,
       "auth/user-disabled": "Your account has been disabled. Please contact the church administrator.",
       "auth/invalid-email": "Please enter a valid email address.",
+      "auth/email-already-in-use": "An account already exists with this email address.",
+      "auth/weak-password": "Password is too weak. Please use a stronger password.",
       "auth/too-many-requests": loginT.errors.tooManyRequests,
       "auth/operation-not-allowed": loginT.errors.operationNotAllowed,
       "auth/popup-blocked": loginT.errors.popupBlocked,
       "auth/network-request-failed": loginT.errors.networkFailed,
-      "auth/unauthorized-domain": loginT.errors.unauthorizedDomain || "This domain is not authorized for Google Sign-In. Please add your domain to the Authorized Domains list in Firebase Console.",
-      "auth/auth-domain-config-required": loginT.errors.unauthorizedDomain || "This domain is not authorized for Google Sign-In. Please add your domain to the Authorized Domains list in Firebase Console.",
+      "auth/unauthorized-domain": loginT.errors.unauthorizedDomain || "This domain is not authorized for authentication in Firebase Console. Please add your domain to Authorized Domains.",
+      "auth/auth-domain-config-required": loginT.errors.unauthorizedDomain || "Authentication domain configuration required.",
       "auth/account-exists-with-different-credential": "An account already exists with this email using a different sign-in method.",
+      "auth/api-key-not-valid": "Authentication configuration issue. Please contact support.",
+      "auth/invalid-api-key": "Authentication configuration issue. Please contact support.",
+      "auth/app-not-authorized": "This application domain is not authorized. Please contact the administrator.",
       "auth/internal-error": loginT.errors.genericFailed,
       "auth/configuration-not-found": "Authentication service not configured. Please contact support.",
       "social-redirect-failed": loginT.errors.socialFailed,
       "social-generic-failed": loginT.errors.socialFailed,
       "sign-in-failed": loginT.errors.genericFailed,
       "network-offline": "You are offline. Please check your internet connection and try again.",
-      "auth-not-ready": "Authentication service is temporarily unavailable. Please try again.",
+      "auth-not-ready": "Authentication service is initializing. Please try again in a moment.",
     };
 
     if (errorMap[errStr]) return errorMap[errStr];
     
+    // Try to extract auth/ code from raw Firebase error messages
+    const extracted = extractFirebaseCode(errStr);
+    if (extracted && errorMap[extracted]) return errorMap[extracted];
+    
+    // Check for message string matches
     const msgMap: Record<string, string> = {
       "Invalid email or password. Please try again.": loginT.errors.invalidCredential,
       "No account found with this email.": loginT.errors.userNotFound,
+      "No account exists with this email address.": loginT.errors.userNotFound,
       "Incorrect password.": loginT.errors.wrongPassword,
       "Too many attempts. Please wait a moment.": loginT.errors.tooManyRequests,
       "Social login redirect failed. Please try again.": loginT.errors.socialFailed,
-      "Sign-in failed. Please check your connection.": loginT.errors.genericFailed,
+      "Sign-in failed. Please verify your credentials and try again.": loginT.errors.genericFailed,
     };
 
     if (msgMap[errStr]) return msgMap[errStr];
     
-    if (errStr.includes("sign-in failed")) {
-      return loginT.errors.socialFailed;
-    }
-    if (errStr.includes("Google login is not enabled")) {
-      return loginT.errors.operationNotAllowed;
-    }
-    if (errStr.startsWith("auth/operation-not-allowed")) {
-      const parts = errStr.split(":");
-      const provider = parts[1] || "Google";
-      return loginT.errors.operationNotAllowed.replace("Google", provider);
+    if (errStr.startsWith("auth/")) {
+      return loginT.errors.genericFailed;
     }
 
     return errStr;
@@ -508,7 +521,8 @@ export default function LoginPage() {
       ) {
         return;
       }
-      setError(err?.code || err?.message || "social-generic-failed");
+      const socialErrCode = err?.code || extractFirebaseCode(err?.message) || "social-generic-failed";
+      setError(socialErrCode);
     }
   };
 
@@ -531,6 +545,12 @@ export default function LoginPage() {
     // ── Pre-flight: network check ─────────────────────────────────────────────
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       setError("network-offline");
+      return;
+    }
+
+    // ── Pre-flight: verify Firebase is configured with valid credentials ───────
+    if (!isFirebaseConfigured()) {
+      setError("auth/api-key-not-valid");
       return;
     }
 
@@ -596,10 +616,20 @@ export default function LoginPage() {
       // 5. Role-based redirect
       redirectForRole(role);
     } catch (err: any) {
-      console.error("[AUTH] Login error:", err?.code || err);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[FIREBASE_AUTH_DIAGNOSTIC]", {
+          code: err?.code,
+          message: err?.message,
+          name: err?.name,
+        });
+      } else {
+        console.error("[AUTH] Login error:", err?.code || err?.name || "auth/invalid-credential");
+      }
       setIsLoading(false);
       setIsLoggingIn(false);
-      setError(err?.code || "auth/invalid-credential");
+      // Extract clean error code — avoid exposing raw Firebase SDK message strings
+      const errCode = err?.code || extractFirebaseCode(err?.message) || "auth/invalid-credential";
+      setError(errCode);
     }
   };
 

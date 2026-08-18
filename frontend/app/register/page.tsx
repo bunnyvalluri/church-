@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, getFirebaseAuth } from "@/lib/firebase";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -71,6 +71,15 @@ export default function RegisterPage() {
     return labels[score] || "";
   };
 
+  // Extract clean Firebase error code from raw SDK message strings
+  // Firebase SDK sometimes throws messages like: "Firebase: Error (auth/invalid-credential)."
+  const extractFirebaseCode = (msg?: string): string | null => {
+    if (!msg) return null;
+    const match = msg.match(/\(auth\/[^)]+\)/);
+    if (match) return match[0].replace(/[()]/g, "");
+    return null;
+  };
+
   // Resolve localized error dynamically so it changes instantly when language toggles
   const getLocalizedError = (errStr: string) => {
     if (!errStr) return "";
@@ -84,10 +93,21 @@ export default function RegisterPage() {
       "auth/email-already-in-use": registerT.errors.emailInUse,
       "auth/weak-password": registerT.errors.weakPassword,
       "auth/invalid-email": registerT.errors.invalidEmail,
+      "auth/operation-not-allowed": "Registration is currently unavailable. Please contact support.",
+      "auth/network-request-failed": "Network connection failed. Please check your internet connection.",
+      "auth/too-many-requests": "Too many requests. Please wait a moment and try again.",
+      "auth/api-key-not-valid": "Authentication configuration issue. Please contact support.",
+      "auth/invalid-api-key": "Authentication configuration issue. Please contact support.",
+      "auth-not-ready": "Authentication service is initializing. Please try again in a moment.",
       "registration-failed": registerT.errors.genericFailed,
     };
 
     if (errorMap[errStr]) return errorMap[errStr];
+
+    // Try to extract auth/ code from raw Firebase error messages
+    const extracted = extractFirebaseCode(errStr);
+    if (extracted && errorMap[extracted]) return errorMap[extracted];
+    if (errStr.startsWith("auth/")) return registerT.errors.genericFailed;
     
     const msgMap: Record<string, string> = {
       "Passwords do not match.": registerT.errors.mismatch,
@@ -137,8 +157,17 @@ export default function RegisterPage() {
     setIsRegistering(true);
 
     try {
-      // 1. Create Firebase Authentication Account
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email.trim(), formData.password);
+      // 1. Get the active Firebase Auth instance (resilient singleton)
+      const activeAuth = getFirebaseAuth() || auth;
+      if (!activeAuth || typeof activeAuth.onAuthStateChanged !== "function") {
+        setError("auth-not-ready");
+        setIsLoading(false);
+        setIsRegistering(false);
+        return;
+      }
+
+      // 2. Create Firebase Authentication Account
+      const userCredential = await createUserWithEmailAndPassword(activeAuth, formData.email.trim(), formData.password);
       const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
       const u = userCredential.user;
 
@@ -210,8 +239,18 @@ export default function RegisterPage() {
       // 6. Redirect to /login with registered=true flag
       router.replace("/login?registered=true");
     } catch (err: any) {
-      console.error("[AUTH] Registration error:", err);
-      setError(err?.code || "registration-failed");
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[FIREBASE_REGISTER_DIAGNOSTIC]", {
+          code: err?.code,
+          message: err?.message,
+          name: err?.name,
+        });
+      } else {
+        console.error("[AUTH] Registration error:", err?.code || err?.name || "registration-failed");
+      }
+      // Extract clean error code — avoid exposing raw SDK message strings to the UI
+      const errCode = err?.code || extractFirebaseCode(err?.message) || "registration-failed";
+      setError(errCode);
       setIsLoading(false);
       setIsRegistering(false);
     }

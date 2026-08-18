@@ -72,9 +72,13 @@ export default function AdminLoginPage() {
       }
       const messages: Record<string, string> = {
         "auth/invalid-credential": "Invalid email or password. Please try again.",
+        "auth/invalid-login-credentials": "Invalid email or password. Please try again.",
         "auth/user-not-found": "No account found with this email.",
         "auth/wrong-password": "Incorrect password.",
-        "auth/too-many-requests": "Too many login attempts. Please try again later.",
+        "auth/too-many-requests": "Too many login attempts. Please wait a moment and try again.",
+        "auth/network-request-failed": "Network connection failed. Please check your internet connection.",
+        "auth/operation-not-allowed": "Admin sign-in is currently disabled in Firebase Console.",
+        "auth/unauthorized-domain": "This domain is not authorized in Firebase Console.",
       };
       setError(messages[err?.code] ?? "Sign-in failed. Please check your credentials.");
       setIsLoading(false);
