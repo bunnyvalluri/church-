@@ -6,7 +6,11 @@ import sanitizeHtml from 'sanitize-html';
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const googleAuthSchema = z.object({
-  credential: z.string().min(20, 'Google ID token credential is required').trim(),
+  credential: z.string().min(20).optional(),
+  accessToken: z.string().min(20).optional(),
+  idToken: z.string().min(20).optional(),
+}).refine((data) => data.credential || data.accessToken || data.idToken, {
+  message: 'Google credential token or access token is required',
 });
 
 // ── Sanitizer Helper ─────────────────────────────────────────────────────────
@@ -54,92 +58,151 @@ export async function POST(req: Request) {
     const parseResult = googleAuthSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Invalid Google credential token' },
+        { error: 'Invalid Google authentication parameters' },
         { status: 400 }
       );
     }
 
-    const { credential } = parseResult.data;
+    const { credential, accessToken, idToken } = parseResult.data;
     const clientIds = getGoogleClientIds();
 
-    if (clientIds.length === 0) {
-      console.error('[AUTH/GOOGLE] ❌ Missing GOOGLE_CLIENT_ID or NEXT_PUBLIC_GOOGLE_CLIENT_ID configuration on server.');
+    let googleSub = '';
+    let googleEmail = '';
+    let googleName = '';
+    let googlePicture: string | null = null;
+
+    // 2. Authenticate and Extract Claims (Via Access Token or ID Token)
+    if (accessToken) {
+      // Direct verification via Google OAuth2 UserInfo API
+      try {
+        const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!userInfoRes.ok) {
+          const errText = await userInfoRes.text().catch(() => '');
+          console.warn('[AUTH/GOOGLE] ⚠ Google UserInfo failed:', userInfoRes.status, errText);
+          return NextResponse.json(
+            { error: 'Failed to verify Google access token. Please try signing in again.' },
+            { status: 401 }
+          );
+        }
+
+        const userInfo = await userInfoRes.json();
+        if (!userInfo.sub || !userInfo.email) {
+          return NextResponse.json(
+            { error: 'Incomplete profile returned from Google.' },
+            { status: 401 }
+          );
+        }
+
+        if (userInfo.email_verified === false) {
+          return NextResponse.json(
+            { error: 'Google account email is unverified. Please verify your email with Google first.' },
+            { status: 403 }
+          );
+        }
+
+        googleSub = sanitize(userInfo.sub);
+        googleEmail = sanitize(userInfo.email.toLowerCase().trim());
+        googleName = userInfo.name ? sanitize(userInfo.name) : googleEmail.split('@')[0];
+        googlePicture = userInfo.picture ? sanitize(userInfo.picture) : null;
+      } catch (accessErr: any) {
+        console.warn('[AUTH/GOOGLE] ⚠ Access token verification network error:', accessErr?.message || accessErr);
+        return NextResponse.json(
+          { error: 'Network error communicating with Google authentication servers.' },
+          { status: 502 }
+        );
+      }
+    } else {
+      // Verification via Cryptographic JWT ID Token
+      const token = (credential || idToken) as string;
+
+      if (clientIds.length === 0) {
+        console.error('[AUTH/GOOGLE] ❌ Missing GOOGLE_CLIENT_ID or NEXT_PUBLIC_GOOGLE_CLIENT_ID configuration on server.');
+        return NextResponse.json(
+          { error: 'Google Sign-In is temporarily unavailable. Please try again later.' },
+          { status: 500 }
+        );
+      }
+
+      const client = getOAuth2Client();
+      let ticket;
+      try {
+        ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: clientIds,
+        });
+      } catch (verifyErr: any) {
+        console.warn('[AUTH/GOOGLE] ⚠ Google ID token verification failed:', verifyErr?.message || verifyErr);
+        return NextResponse.json(
+          { error: 'Invalid or expired Google authentication credential. Please try signing in again.' },
+          { status: 401 }
+        );
+      }
+
+      const payload = ticket.getPayload();
+      if (!payload) {
+        return NextResponse.json(
+          { error: 'Failed to extract Google user profile from credential.' },
+          { status: 401 }
+        );
+      }
+
+      // Verify Issuer
+      const validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
+      if (!payload.iss || !validIssuers.includes(payload.iss)) {
+        console.warn('[AUTH/GOOGLE] ⚠ Invalid token issuer:', payload.iss);
+        return NextResponse.json(
+          { error: 'Invalid Google token issuer' },
+          { status: 401 }
+        );
+      }
+
+      // Verify Audience
+      if (!payload.aud || !clientIds.includes(payload.aud as string)) {
+        console.warn('[AUTH/GOOGLE] ⚠ Token audience mismatch:', payload.aud);
+        return NextResponse.json(
+          { error: 'Token audience does not match this application' },
+          { status: 401 }
+        );
+      }
+
+      // Verify Expiration
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      if (!payload.exp || payload.exp < nowSeconds) {
+        console.warn('[AUTH/GOOGLE] ⚠ Token expired at:', payload.exp, 'Current time:', nowSeconds);
+        return NextResponse.json(
+          { error: 'Google session token has expired. Please sign in again.' },
+          { status: 401 }
+        );
+      }
+
+      // Verify Email & Email Verified Status
+      if (!payload.email || payload.email_verified !== true) {
+        console.warn('[AUTH/GOOGLE] ⚠ Google email missing or unverified:', payload.email);
+        return NextResponse.json(
+          { error: 'Google account email is unverified. Please verify your email with Google first.' },
+          { status: 403 }
+        );
+      }
+
+      googleSub = sanitize(payload.sub);
+      googleEmail = sanitize(payload.email.toLowerCase().trim());
+      googleName = payload.name ? sanitize(payload.name) : googleEmail.split('@')[0];
+      googlePicture = payload.picture ? sanitize(payload.picture) : null;
+    }
+
+    if (!googleSub || !googleEmail) {
       return NextResponse.json(
-        { error: 'Google Sign-In is temporarily unavailable. Please try again later.' },
-        { status: 500 }
+        { error: 'Invalid user details received from Google.' },
+        { status: 400 }
       );
     }
 
-    // 2. Cryptographic Verification of Google ID Token
-    const client = getOAuth2Client();
-    let ticket;
-    try {
-      ticket = await client.verifyIdToken({
-        idToken: credential,
-        audience: clientIds,
-      });
-    } catch (verifyErr: any) {
-      console.warn('[AUTH/GOOGLE] ⚠ Google ID token verification failed:', verifyErr?.message || verifyErr);
-      return NextResponse.json(
-        { error: 'Invalid or expired Google authentication credential. Please try signing in again.' },
-        { status: 401 }
-      );
-    }
-
-    const payload = ticket.getPayload();
-    if (!payload) {
-      return NextResponse.json(
-        { error: 'Failed to extract Google user profile from credential.' },
-        { status: 401 }
-      );
-    }
-
-    // 3. Verify Essential OpenID Connect Claims
-    // A. Verify Issuer
-    const validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
-    if (!payload.iss || !validIssuers.includes(payload.iss)) {
-      console.warn('[AUTH/GOOGLE] ⚠ Invalid token issuer:', payload.iss);
-      return NextResponse.json(
-        { error: 'Invalid Google token issuer' },
-        { status: 401 }
-      );
-    }
-
-    // B. Verify Audience
-    if (!payload.aud || !clientIds.includes(payload.aud as string)) {
-      console.warn('[AUTH/GOOGLE] ⚠ Token audience mismatch:', payload.aud);
-      return NextResponse.json(
-        { error: 'Token audience does not match this application' },
-        { status: 401 }
-      );
-    }
-
-    // C. Verify Expiration
-    const nowSeconds = Math.floor(Date.now() / 1000);
-    if (!payload.exp || payload.exp < nowSeconds) {
-      console.warn('[AUTH/GOOGLE] ⚠ Token expired at:', payload.exp, 'Current time:', nowSeconds);
-      return NextResponse.json(
-        { error: 'Google session token has expired. Please sign in again.' },
-        { status: 401 }
-      );
-    }
-
-    // D. Verify Email & Email Verified Status
-    if (!payload.email || payload.email_verified !== true) {
-      console.warn('[AUTH/GOOGLE] ⚠ Google email missing or unverified:', payload.email);
-      return NextResponse.json(
-        { error: 'Google account email is unverified. Please verify your email with Google first.' },
-        { status: 403 }
-      );
-    }
-
-    // E. Extract and sanitize Google user info
-    const googleSub = sanitize(payload.sub);
-    const googleEmail = sanitize(payload.email.toLowerCase().trim());
-    const googleName = payload.name ? sanitize(payload.name) : googleEmail.split('@')[0];
-    const googlePicture = payload.picture ? sanitize(payload.picture) : null;
-
-    // 4. Synchronize User with PostgreSQL Database via Prisma
+    // 3. Synchronize User with PostgreSQL Database via Prisma
     const [userByUid, userByEmail] = await Promise.all([
       prisma.user.findUnique({ where: { id: googleSub } }),
       prisma.user.findUnique({ where: { email: googleEmail } }),
@@ -234,7 +297,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 5. Admin Notification for New Registrations
+    // 4. Admin Notification for New Registrations
     if (isNewUser) {
       try {
         const { createNotification } = await import('@/lib/notification');
@@ -249,7 +312,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 6. Determine Authorized Redirect Destination
+    // 5. Determine Authorized Redirect Destination
     const normalizedRole = (user.role || DEFAULT_ROLE).toUpperCase();
     let redirectTo = '/member';
     if (normalizedRole === 'ADMIN' || normalizedRole === 'SUPER_ADMIN') {
@@ -260,7 +323,7 @@ export async function POST(req: Request) {
       redirectTo = '/event-manager';
     }
 
-    // 7. Establish Authenticated Session via Cookies
+    // 6. Establish Authenticated Session via Cookies
     const maxAge = 7 * 24 * 60 * 60; // 7 days
     const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.url.startsWith('https:');
     const isProd = process.env.NODE_ENV === 'production' || isHttps;

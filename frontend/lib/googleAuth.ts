@@ -3,12 +3,34 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Official Google Identity Services (GIS) Web SDK Loader and Diagnostics.
  *
- * Official GIS SDK Reference: https://accounts.google.com/gsi/client
- * Replaces deprecated gapi.auth2 and legacy Firebase popup redirects.
+ * Supports:
+ * - Google Identity Services OAuth 2.0 Token Client (Popup flow for custom UI buttons)
+ * - Google Identity Services ID Token Client
+ * - Structured client-side diagnostics and safe error fallbacks
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 export type GoogleSdkState = 'IDLE' | 'LOADING' | 'READY' | 'AUTHENTICATING' | 'ERROR';
+
+export interface GoogleCredentialResponse {
+  credential?: string; // The cryptographically signed Google ID Token (JWT)
+  select_by?: string;
+  clientId?: string;
+}
+
+export interface GoogleTokenResponse {
+  access_token?: string;
+  token_type?: string;
+  expires_in?: number;
+  scope?: string;
+  error?: string;
+  error_description?: string;
+  error_uri?: string;
+}
+
+export interface GoogleTokenClient {
+  requestAccessToken: (overrideConfig?: { prompt?: string }) => void;
+}
 
 declare global {
   interface Window {
@@ -45,15 +67,20 @@ declare global {
           disableAutoSelect: () => void;
           revoke: (hint: string, done: (done: any) => void) => void;
         };
+        oauth2?: {
+          initTokenClient: (config: {
+            client_id: string;
+            scope: string;
+            callback: (response: GoogleTokenResponse) => void;
+            error_callback?: (error: any) => void;
+            prompt?: string;
+          }) => GoogleTokenClient;
+          initCodeClient: (config: any) => any;
+          revoke: (accessToken: string, done?: () => void) => void;
+        };
       };
     };
   }
-}
-
-export interface GoogleCredentialResponse {
-  credential: string; // The cryptographically signed Google ID Token (JWT)
-  select_by?: string;
-  clientId?: string;
 }
 
 let gisScriptLoadingPromise: Promise<boolean> | null = null;
@@ -95,7 +122,7 @@ export function logGoogleAuthDiagnostic(event: string, details?: Record<string, 
     event,
     origin: getCurrentOrigin(),
     clientIdConfigured: Boolean(getGoogleClientId()),
-    gisScriptLoaded: Boolean(window.google?.accounts?.id),
+    gisScriptLoaded: Boolean(window.google?.accounts?.oauth2 || window.google?.accounts?.id),
     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
     ...details,
   };
@@ -118,7 +145,7 @@ export function loadGoogleGsiScript(timeoutMs = 8000): Promise<boolean> {
   }
 
   // If already available on window, resolve immediately
-  if (window.google?.accounts?.id) {
+  if (window.google?.accounts?.oauth2 || window.google?.accounts?.id) {
     return Promise.resolve(true);
   }
 
@@ -149,15 +176,23 @@ export function loadGoogleGsiScript(timeoutMs = 8000): Promise<boolean> {
     // Check if script element is already present in DOM
     const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
     if (existingScript) {
-      if (window.google?.accounts?.id) {
+      if (window.google?.accounts?.oauth2 || window.google?.accounts?.id) {
         finalize(true);
         return;
       }
-      existingScript.addEventListener('load', () => finalize(Boolean(window.google?.accounts?.id)), { once: true });
-      existingScript.addEventListener('error', () => {
-        logGoogleAuthDiagnostic('SDK_LOAD_ERROR', { error: 'Failed to load GIS script from CDN' });
-        finalize(false);
-      }, { once: true });
+      existingScript.addEventListener(
+        'load',
+        () => finalize(Boolean(window.google?.accounts?.oauth2 || window.google?.accounts?.id)),
+        { once: true }
+      );
+      existingScript.addEventListener(
+        'error',
+        () => {
+          logGoogleAuthDiagnostic('SDK_LOAD_ERROR', { error: 'Failed to load GIS script from CDN' });
+          finalize(false);
+        },
+        { once: true }
+      );
       return;
     }
 
@@ -168,7 +203,7 @@ export function loadGoogleGsiScript(timeoutMs = 8000): Promise<boolean> {
 
     script.onload = () => {
       logGoogleAuthDiagnostic('SDK_LOAD_SUCCESS');
-      finalize(Boolean(window.google?.accounts?.id));
+      finalize(Boolean(window.google?.accounts?.oauth2 || window.google?.accounts?.id));
     };
 
     script.onerror = () => {

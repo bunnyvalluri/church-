@@ -8,7 +8,6 @@ import {
   resetGoogleGsiScriptPromise,
   getGoogleClientId,
   logGoogleAuthDiagnostic,
-  GoogleCredentialResponse,
 } from "@/lib/googleAuth";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -18,7 +17,7 @@ interface GoogleSignInButtonProps {
   className?: string;
 }
 
-type ButtonState = "IDLE" | "LOADING_GOOGLE" | "READY" | "AUTHENTICATING" | "ERROR";
+type ButtonState = "IDLE" | "LOADING_GOOGLE" | "AUTHENTICATING" | "ERROR";
 
 export default function GoogleSignInButton({ onError, className = "" }: GoogleSignInButtonProps) {
   const router = useRouter();
@@ -29,15 +28,12 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
   const [state, setState] = useState<ButtonState>("IDLE");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const isInitializedRef = useRef(false);
-  const isRenderedRef = useRef(false);
   const isAuthenticatingRef = useRef(false);
   const isMountedRef = useRef(true);
 
-  // Multilingual translations for all button states and error conditions
+  // Multilingual translations for button states and errors
   const getLocalizedText = useCallback(
-    (key: 
+    (key:
       | "signInWithGoogle"
       | "loadingGoogle"
       | "authenticating"
@@ -53,10 +49,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         en: {
           signInWithGoogle: "Sign in with Google",
           loadingGoogle: "Connecting to Google...",
-          authenticating: "Signing in with Google...",
-          unavailable: "Google Sign-In is temporarily unavailable. Please try again later.",
+          authenticating: "Signing in...",
+          unavailable: "Google Sign-In is temporarily unavailable. Please try again.",
           networkError: "Unable to connect to Google. Please check your internet connection.",
-          popupBlocked: "Google Sign-In popup was blocked. Please allow popups and try again.",
+          popupBlocked: "Google popup was blocked. Please allow popups and try again.",
           cancelled: "Google Sign-In was cancelled.",
           authFailed: "Google authentication failed. Please try again.",
           serverError: "Unable to complete Google Sign-In. Please try again.",
@@ -65,10 +61,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         te: {
           signInWithGoogle: "Google తో సైన్ ఇన్ చేయండి",
           loadingGoogle: "Google తో కనెక్ట్ అవుతోంది...",
-          authenticating: "Google తో సైన్ ఇన్ అవుతోంది...",
-          unavailable: "Google సైన్-ఇన్ ప్రస్తుతం అందుబాటులో లేదు. దయచేసి కాసేపటి తర్వాత ప్రయత్నించండి.",
+          authenticating: "సైన్ ఇన్ అవుతోంది...",
+          unavailable: "Google సైన్-ఇన్ ప్రస్తుతం అందుబాటులో లేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           networkError: "Google తో కనెక్ట్ కాలేదు. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి.",
-          popupBlocked: "Google సైన్-ఇన్ పాపప్ నిరోధించబడింది. దయచేసి పాపప్‌లను అనుమతించండి.",
+          popupBlocked: "Google పాపప్ నిరోధించబడింది. దయచేసి పాపప్‌లను అనుమతించండి.",
           cancelled: "Google సైన్-ఇన్ రద్దు చేయబడింది.",
           authFailed: "Google ప్రమాణీకరణ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           serverError: "Google సైన్-ఇన్ పూర్తి కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
@@ -77,10 +73,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         hi: {
           signInWithGoogle: "गूगल से साइन इन करें",
           loadingGoogle: "गूगल से कनेक्ट हो रहा है...",
-          authenticating: "गूगल से साइन इन हो रहा है...",
-          unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया बाद में प्रयास करें।",
+          authenticating: "साइन इन हो रहा है...",
+          unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया पुनः प्रयास करें।",
           networkError: "गूगल से कनेक्ट नहीं हो सका। कृपया अपना इंटरनेट कनेक्शन जांचें।",
-          popupBlocked: "गूगल साइन-इन पॉपअप अवरुद्ध हो गया। कृपया पॉपअप की अनुमति दें।",
+          popupBlocked: "गूगल पॉपअप अवरुद्ध हो गया। कृपया पॉपअप की अनुमति दें।",
           cancelled: "गूगल साइन-इन रद्द कर दिया गया।",
           authFailed: "गूगल प्रमाणीकरण विफल रहा। कृपया पुनः प्रयास करें।",
           serverError: "गूगल साइन-इन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
@@ -114,21 +110,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
   };
 
-  // Process verified Google credential received from GIS popup
-  const handleGoogleCredentialResponse = useCallback(
-    async (response: GoogleCredentialResponse) => {
+  // Verification request to backend with token payload
+  const verifyWithBackend = useCallback(
+    async (payload: { accessToken?: string; credential?: string; idToken?: string }) => {
       if (!isMountedRef.current) return;
-
-      if (!response?.credential) {
-        logGoogleAuthDiagnostic("CREDENTIAL_CALLBACK_EMPTY");
-        setState("ERROR");
-        const msg = getLocalizedText("authFailed");
-        setErrorMessage(msg);
-        onError?.(msg);
-        return;
-      }
-
-      // Prevent duplicate concurrent verification requests
       if (isAuthenticatingRef.current) return;
       isAuthenticatingRef.current = true;
 
@@ -140,7 +125,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         const res = await fetch("/api/auth/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credential: response.credential }),
+          body: JSON.stringify(payload),
         });
 
         const data = await res.json().catch(() => null);
@@ -209,95 +194,48 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     [getLocalizedText, onError, router, searchParams, updateUser]
   );
 
-  // Initialize and Render Google Identity Services Button
-  const initGisButton = useCallback(async () => {
-    const clientId = getGoogleClientId();
-
-    // If client ID is missing in environment, do not crash on initial render.
-    // Transition to IDLE so the fallback button is available.
-    if (!clientId) {
-      logGoogleAuthDiagnostic("CLIENT_ID_UNSET");
-      setState("IDLE");
-      return;
-    }
-
-    // Check offline status
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
-      logGoogleAuthDiagnostic("OFFLINE_DETECTED");
-      setState("IDLE");
-      return;
-    }
-
+  // Fallback to Firebase Google popup if GIS SDK is blocked or unavailable
+  const triggerFirebaseGooglePopup = async () => {
     try {
-      const loaded = await loadGoogleGsiScript(7000);
-      if (!isMountedRef.current) return;
-
-      if (!loaded || !window.google?.accounts?.id) {
-        logGoogleAuthDiagnostic("GIS_SCRIPT_LOAD_FAIL");
+      const { GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+      const { auth } = await import("@/lib/firebase");
+      if (!auth) {
+        throw new Error(getLocalizedText("unavailable"));
+      }
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+      await verifyWithBackend({ idToken });
+    } catch (firebaseErr: any) {
+      if (
+        firebaseErr?.code === "auth/popup-closed-by-user" ||
+        firebaseErr?.code === "auth/cancelled-popup-request"
+      ) {
         setState("IDLE");
         return;
       }
-
-      if (!containerRef.current) {
+      if (firebaseErr?.code === "auth/popup-blocked") {
+        setState("ERROR");
+        const msg = getLocalizedText("popupBlocked");
+        setErrorMessage(msg);
+        onError?.(msg);
         return;
       }
-
-      // Initialize GIS once
-      if (!isInitializedRef.current) {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true,
-          context: "signin",
-          ux_mode: "popup",
-          itp_support: true,
-        });
-        isInitializedRef.current = true;
-        logGoogleAuthDiagnostic("GIS_INITIALIZED_SUCCESS");
-      }
-
-      // Calculate width cleanly
-      containerRef.current.innerHTML = "";
-      const containerWidth = containerRef.current.offsetWidth || 340;
-      const targetWidth = Math.min(Math.max(containerWidth, 240), 400);
-
-      window.google.accounts.id.renderButton(containerRef.current, {
-        type: "standard",
-        theme: "outline",
-        size: "large",
-        text: "signin_with",
-        shape: "rectangular",
-        logo_alignment: "left",
-        width: targetWidth,
-      });
-
-      isRenderedRef.current = true;
-      setState("READY");
-      logGoogleAuthDiagnostic("GIS_BUTTON_RENDERED", { targetWidth });
-    } catch (err: any) {
-      logGoogleAuthDiagnostic("GIS_INIT_EXCEPTION", { error: err?.message || String(err) });
-      if (isMountedRef.current) {
-        setState("IDLE");
-      }
-    }
-  }, [handleGoogleCredentialResponse]);
-
-  // Triggered when clicking custom styled button (in IDLE state)
-  const handleCustomButtonClick = async () => {
-    const clientId = getGoogleClientId();
-
-    // 1. Check if client ID is configured
-    if (!clientId) {
-      logGoogleAuthDiagnostic("CLICK_MISSING_CLIENT_ID");
       setState("ERROR");
-      const msg = getLocalizedText("unavailable");
+      const msg = firebaseErr?.message || getLocalizedText("authFailed");
       setErrorMessage(msg);
       onError?.(msg);
-      return;
     }
+  };
 
-    // 2. Check network connectivity
+  // Main Google Sign-In Click Handler
+  const handleGoogleSignInClick = async () => {
+    if (state === "AUTHENTICATING" || state === "LOADING_GOOGLE") return;
+
+    const clientId = getGoogleClientId();
+
+    // Check offline status
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       logGoogleAuthDiagnostic("CLICK_OFFLINE");
       setState("ERROR");
@@ -310,116 +248,77 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     setState("LOADING_GOOGLE");
     setErrorMessage(null);
 
-    const loaded = await loadGoogleGsiScript(7000);
-    if (!isMountedRef.current) return;
+    // Preload GIS script
+    const loaded = await loadGoogleGsiScript(6000);
 
-    if (!loaded || !window.google?.accounts?.id) {
-      setState("ERROR");
-      const msg = getLocalizedText("unavailable");
-      setErrorMessage(msg);
-      onError?.(msg);
-      return;
-    }
+    // If GIS OAuth2 client is available and client ID is configured, use GIS Token Client
+    if (loaded && window.google?.accounts?.oauth2 && clientId) {
+      try {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: "openid email profile",
+          callback: async (tokenResponse) => {
+            if (tokenResponse.error) {
+              if (tokenResponse.error === "access_denied") {
+                // User closed popup
+                setState("IDLE");
+                return;
+              }
+              setState("ERROR");
+              const msg = tokenResponse.error_description || getLocalizedText("authFailed");
+              setErrorMessage(msg);
+              onError?.(msg);
+              return;
+            }
 
-    // Initialize GIS if needed
-    if (!isInitializedRef.current) {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-        context: "signin",
-        ux_mode: "popup",
-        itp_support: true,
-      });
-      isInitializedRef.current = true;
-    }
+            if (tokenResponse.access_token) {
+              await verifyWithBackend({ accessToken: tokenResponse.access_token });
+            } else {
+              setState("IDLE");
+            }
+          },
+          error_callback: (err) => {
+            console.warn("[GIS_TOKEN_ERROR]", err);
+            // Fallback to Firebase popup if GIS token client had an error
+            triggerFirebaseGooglePopup();
+          },
+        });
 
-    // Render official button into container and switch to READY
-    if (containerRef.current) {
-      containerRef.current.innerHTML = "";
-      const containerWidth = containerRef.current.offsetWidth || 340;
-      const targetWidth = Math.min(Math.max(containerWidth, 240), 400);
-
-      window.google.accounts.id.renderButton(containerRef.current, {
-        type: "standard",
-        theme: "outline",
-        size: "large",
-        text: "signin_with",
-        shape: "rectangular",
-        logo_alignment: "left",
-        width: targetWidth,
-      });
-      isRenderedRef.current = true;
-      setState("READY");
-
-      // Auto-click the rendered button if accessible
-      const renderedIframeBtn = containerRef.current.querySelector('div[role="button"]') as HTMLElement;
-      if (renderedIframeBtn) {
-        renderedIframeBtn.click();
+        // Request access token with account selection prompt
+        tokenClient.requestAccessToken({ prompt: "select_account" });
+        return;
+      } catch (gisErr) {
+        console.warn("[GIS_CLIENT_INIT_FAIL] Fallback to Firebase Auth:", gisErr);
       }
     }
+
+    // Fallback to Firebase Auth Google popup
+    await triggerFirebaseGooglePopup();
   };
 
-  // Retry handler to cleanly recover from any error
   const handleRetry = () => {
-    isInitializedRef.current = false;
-    isRenderedRef.current = false;
     isAuthenticatingRef.current = false;
     resetGoogleGsiScriptPromise();
     setState("IDLE");
     setErrorMessage(null);
-    initGisButton();
   };
 
   useEffect(() => {
     isMountedRef.current = true;
-    initGisButton();
-
-    const handleResize = () => {
-      if (isInitializedRef.current && containerRef.current && window.google?.accounts?.id) {
-        const containerWidth = containerRef.current.offsetWidth || 340;
-        const targetWidth = Math.min(Math.max(containerWidth, 240), 400);
-        window.google.accounts.id.renderButton(containerRef.current, {
-          type: "standard",
-          theme: "outline",
-          size: "large",
-          text: "signin_with",
-          shape: "rectangular",
-          logo_alignment: "left",
-          width: targetWidth,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
+    // Pre-load GIS script in the background silently
+    loadGoogleGsiScript(5000).catch(() => {});
     return () => {
       isMountedRef.current = false;
-      window.removeEventListener("resize", handleResize);
     };
-  }, [initGisButton]);
+  }, []);
+
+  const isLoading = state === "LOADING_GOOGLE" || state === "AUTHENTICATING";
 
   return (
-    <div className={`w-full flex flex-col items-center justify-center ${className}`}>
-      {/* ── 1. Authenticating State: Spinner + localized text ── */}
-      {state === "AUTHENTICATING" && (
-        <div className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-purple-50/50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 shadow-sm animate-pulse">
-          <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
-          <span className="text-xs sm:text-sm font-semibold">{getLocalizedText("authenticating")}</span>
-        </div>
-      )}
-
-      {/* ── 2. Loading Google GIS SDK State ── */}
-      {state === "LOADING_GOOGLE" && (
-        <div className="w-full h-[44px] flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-gray-300 shadow-xs">
-          <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
-          <span className="text-xs font-medium">{getLocalizedText("loadingGoogle")}</span>
-        </div>
-      )}
-
-      {/* ── 3. Error State: Clear alert with actionable retry button ── */}
+    <div className={`w-full flex flex-col items-center justify-center gap-2 ${className}`}>
+      {/* ── Error Banner if any ── */}
       {state === "ERROR" && (
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 mb-1">
           <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-200 text-xs font-medium shadow-xs">
             <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
             <span className="flex-1">{errorMessage || getLocalizedText("serverError")}</span>
@@ -435,43 +334,45 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         </div>
       )}
 
-      {/* ── 4. Fallback Interactive Styled Button (IDLE State) ── */}
-      {state === "IDLE" && (
-        <button
-          type="button"
-          onClick={handleCustomButtonClick}
-          className="w-full h-[44px] flex items-center justify-center gap-3 px-4 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-[0.99]"
-        >
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-            />
-          </svg>
-          <span>{getLocalizedText("signInWithGoogle")}</span>
-        </button>
-      )}
-
-      {/* ── 5. Official GIS Render Container (READY State) ── */}
-      <div
-        id="google-signin-button-container"
-        ref={containerRef}
-        className={`w-full flex justify-center items-center min-h-[44px] ${
-          state === "READY" ? "block" : "hidden"
-        }`}
-      />
+      {/* ── Custom High-Fidelity Google Sign-In Button ── */}
+      <button
+        type="button"
+        onClick={handleGoogleSignInClick}
+        disabled={isLoading}
+        aria-label={getLocalizedText("signInWithGoogle")}
+        className="w-full h-[46px] flex items-center justify-center gap-3 px-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-purple-300 dark:hover:border-purple-700/60 font-semibold text-xs sm:text-sm shadow-xs hover:shadow-sm transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+            <span className="text-xs sm:text-sm font-semibold text-purple-700 dark:text-purple-300">
+              {state === "AUTHENTICATING" ? getLocalizedText("authenticating") : getLocalizedText("loadingGoogle")}
+            </span>
+          </>
+        ) : (
+          <>
+            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+              />
+            </svg>
+            <span>{getLocalizedText("signInWithGoogle")}</span>
+          </>
+        )}
+      </button>
     </div>
   );
 }
