@@ -22,10 +22,6 @@ export default function MemberFooter() {
           <span className="font-semibold text-[11px] sm:text-xs text-gray-700 dark:text-gray-300" suppressHydrationWarning>
             © {mounted ? currentYear : 2026} Kingdom of Christ Ministries.
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[11px] font-medium text-gray-700 dark:text-gray-300">
-            <IndiaFlag className="w-3 h-3" />
-            <span>India</span>
-          </span>
           <a
             href="https://valluri-rahul-portfolio.vercel.app/"
             target="_blank"
@@ -34,6 +30,10 @@ export default function MemberFooter() {
           >
             ✦ Developed by VALLURI RAHUL ✦
           </a>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[11px] font-medium text-gray-700 dark:text-gray-300">
+            <IndiaFlag className="w-3 h-3" />
+            <span>India</span>
+          </span>
         </div>
 
         {/* Footer Links */}

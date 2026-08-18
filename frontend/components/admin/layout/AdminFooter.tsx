@@ -14,10 +14,6 @@ export default function AdminFooter() {
             Kingdom of Christ Ministries
           </span>
           <span suppressHydrationWarning>&copy; {new Date().getFullYear()} All Rights Reserved.</span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[11px] font-medium text-gray-700 dark:text-gray-300">
-            <IndiaFlag className="w-3.5 h-3.5" />
-            <span>India</span>
-          </span>
           <a
             href="https://valluri-rahul-portfolio.vercel.app/"
             target="_blank"
@@ -26,6 +22,10 @@ export default function AdminFooter() {
           >
             ✦ Developed by VALLURI RAHUL. ✦
           </a>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[11px] font-medium text-gray-700 dark:text-gray-300">
+            <IndiaFlag className="w-3.5 h-3.5" />
+            <span>India</span>
+          </span>
           <span className="hidden md:inline text-gray-400 dark:text-gray-500">• Enterprise Portal v2.6</span>
         </div>
 

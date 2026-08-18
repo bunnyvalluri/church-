@@ -287,11 +287,6 @@ export default function Footer() {
               <p className="text-sm text-gray-400">
                 {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}
               </p>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 select-none">
-                <IndiaFlag className="w-3.5 h-3.5" />
-                <span>India</span>
-              </span>
-              <span className="hidden md:inline text-gray-700">•</span>
               <a
                 href="https://valluri-rahul-portfolio.vercel.app/"
                 target="_blank"
@@ -300,6 +295,10 @@ export default function Footer() {
               >
                 ✦ Developed by VALLURI RAHUL. ✦
               </a>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 select-none">
+                <IndiaFlag className="w-3.5 h-3.5" />
+                <span>India</span>
+              </span>
             </div>
             <div className="flex gap-6 text-sm font-medium">
               <Link
