@@ -364,42 +364,43 @@ export async function POST(req: Request) {
       isNewUser,
     });
 
-    // 5. Asynchronously Send KCM Professional Transactional Login Confirmation Email (Non-blocking)
+    // 5. Send KCM Professional Transactional Login Confirmation Email (Awaited with timeout so Vercel Serverless runtime does not freeze)
     const eventId = `google-auth-${user.id}-${Date.now()}`;
-    Promise.resolve().then(async () => {
-      try {
-        await sendGoogleLoginConfirmationEmail({
-          userId: user.id,
-          email: user.email,
-          name: user.name,
-          eventId,
-          loginMethod: 'Google Sign-In',
-        });
-      } catch (emailErr: any) {
-        logger.error('[AUTH/GOOGLE] Background login email dispatch notice', {
-          component: 'GoogleAuthRoute',
-          action: 'LOGIN_EMAIL_FAILED',
-          userId: user.id,
-          error: emailErr?.message || String(emailErr),
-        });
-      }
-    });
-
-    // 6. Admin Notification for New Registrations (Non-blocking)
-    if (isNewUser) {
-      Promise.resolve().then(async () => {
-        try {
-          const { createNotification } = await import('@/lib/notification');
-          await createNotification({
-            type: 'NEW_MEMBER',
-            title: 'New Member via Google Sign-In',
-            content: `${googleName} (${googleEmail}) signed in with Google.`,
-            link: '/admin/members',
-          });
-        } catch (notifErr) {
-          console.warn('[AUTH/GOOGLE] Notification creation notice:', notifErr);
-        }
+    try {
+      // Allow up to 3.5 seconds for email dispatch without blocking login if provider hangs
+      const emailPromise = sendGoogleLoginConfirmationEmail({
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        eventId,
+        loginMethod: 'Google Sign-In',
       });
+      const timeoutPromise = new Promise<{ sent: boolean; reason: string }>((resolve) =>
+        setTimeout(() => resolve({ sent: false, reason: 'TIMEOUT' }), 3500)
+      );
+      await Promise.race([emailPromise, timeoutPromise]).catch(() => null);
+    } catch (emailErr: any) {
+      logger.error('[AUTH/GOOGLE] Login confirmation email dispatch notice', {
+        component: 'GoogleAuthRoute',
+        action: 'LOGIN_EMAIL_FAILED',
+        userId: user.id,
+        error: emailErr?.message || String(emailErr),
+      });
+    }
+
+    // 6. In-App Notification Recording (Awaited)
+    try {
+      const { createNotification } = await import('@/lib/notification');
+      if (isNewUser) {
+        await createNotification({
+          type: 'NEW_MEMBER',
+          title: 'New Member via Google Sign-In',
+          content: `${googleName} (${googleEmail}) joined via Google Sign-In.`,
+          link: '/admin/members',
+        }).catch(() => null);
+      }
+    } catch (notifErr) {
+      console.warn('[AUTH/GOOGLE] In-app notification creation notice:', notifErr);
     }
 
     // 7. Determine Authorized Redirect Destination
