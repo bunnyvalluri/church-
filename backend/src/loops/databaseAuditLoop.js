@@ -35,7 +35,6 @@ async function runDatabaseAuditLoop() {
       },
       data: {
         status: 'EXPIRED',
-        paymentState: 'EXPIRED',
       },
     });
 
