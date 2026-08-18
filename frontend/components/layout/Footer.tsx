@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useFooterConfig, useFooterNavigation } from "@/hooks/useCmsData";
 import type { NavigationItem } from "@/types/cms";
+import { IndiaFlag } from "@/components/ui/IndiaFlag";
 
 const LINK_MAP: Record<string, { te: string; hi: string }> = {
   "/about/story": { te: "మా కథ", hi: "हमारी कहानी" },
@@ -282,9 +283,15 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-400 text-center md:text-left" suppressHydrationWarning>
-              {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}{" "}
-              <br className="md:hidden" />
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 text-center md:text-left" suppressHydrationWarning>
+              <p className="text-sm text-gray-400">
+                {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}
+              </p>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 select-none">
+                <IndiaFlag className="w-3.5 h-3.5" />
+                <span>India</span>
+              </span>
+              <span className="hidden md:inline text-gray-700">•</span>
               <a
                 href="https://valluri-rahul-portfolio.vercel.app/"
                 target="_blank"
@@ -293,7 +300,7 @@ export default function Footer() {
               >
                 ✦ Developed by VALLURI RAHUL. ✦
               </a>
-            </p>
+            </div>
             <div className="flex gap-6 text-sm font-medium">
               <Link
                 href="/privacy"
