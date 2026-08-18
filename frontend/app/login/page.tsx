@@ -4,14 +4,15 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
-import { auth, googleProvider, getFirebaseAuth, getGoogleProvider, isFirebaseConfigured } from "@/lib/firebase";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2, Info } from "lucide-react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import { motion, AnimatePresence } from "framer-motion";
 
 const containerVariants = {
@@ -68,7 +69,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // ── Photo upload state (used after Google sign-in for new users) ───────────
@@ -184,74 +184,6 @@ export default function LoginPage() {
   };
 
   const skipPhotoAndContinue = () => router.replace("/member");
-  
-  // Handle Google OAuth Redirect Returns (e.g. on Mobile devices where popups redirect)
-  useEffect(() => {
-    if (mounted && auth) {
-      const handleRedirectResult = async () => {
-        try {
-          const { getRedirectResult } = await import("firebase/auth");
-          const activeAuth = getFirebaseAuth() || auth;
-          if (!activeAuth) return;
-          const result = await getRedirectResult(activeAuth);
-          if (result?.user) {
-            const u = result.user;
-            // Database sync
-            let role = "MEMBER";
-            try {
-              const syncRes = await fetch("/api/auth/sync", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  uid: u.uid,
-                  email: u.email || "",
-                  name: u.displayName || u.email?.split("@")[0] || "Member",
-                  photoURL: u.photoURL,
-                  phoneNumber: u.phoneNumber || null,
-                }),
-              });
-              if (syncRes.ok) {
-                const syncData = await syncRes.json();
-                if (syncData?.success && syncData?.user?.role) {
-                  role = syncData.user.role;
-                }
-              }
-            } catch (syncErr) {
-              console.warn("[AUTH] Redirect sync error:", syncErr);
-            }
-
-            setAuthCookies(u.uid, role);
-
-            if (updateUser) {
-              updateUser({
-                uid: u.uid,
-                email: u.email || "",
-                name: u.displayName || u.email?.split("@")[0] || "Member",
-                image: u.photoURL || null,
-                role: role as any,
-              });
-            }
-
-            sendLoginEmail(u.email || "", u.displayName || "Member", "google");
-            redirectForRole(role);
-          }
-        } catch (err: any) {
-          console.warn("[AUTH] Redirect check notice:", err);
-          if (
-            err?.code === "auth/popup-closed-by-user" ||
-            err?.code === "auth/user-cancelled" ||
-            err?.code === "auth/cancelled-popup-request"
-          ) {
-            return;
-          }
-          if (err?.code) {
-            setError(err.code);
-          }
-        }
-      };
-      handleRedirectResult();
-    }
-  }, [mounted, updateUser]);
 
   // Extract clean Firebase error code from raw SDK message strings.
   // Firebase SDK sometimes throws: "Firebase: Error (auth/invalid-credential)."
@@ -382,148 +314,6 @@ export default function LoginPage() {
     // Using router.replace() only. window.location.replace() alongside router.push()
     // caused the popup/auth to abort mid-flight, producing the generic 'sign-in failed' error.
     router.replace(targetPath);
-  };
-
-  const handleSocialLogin = async (providerArg: any, name: string) => {
-    setError("");
-    setSocialLoading(name);
-    setIsLoggingIn(true);
-
-    // ── Pre-flight: check network connectivity before opening popup ───────────
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
-      setSocialLoading(null);
-      setIsLoggingIn(false);
-      setError("auth/network-request-failed");
-      return;
-    }
-
-    try {
-      const activeAuth = getFirebaseAuth() || auth;
-      const activeProvider = (name === "Google" ? getGoogleProvider() : providerArg) || new GoogleAuthProvider();
-
-      if (!activeAuth) {
-        throw new Error("auth/internal-error");
-      }
-
-      let u: any = null;
-
-      // Use signInWithPopup for ALL devices (mobile + desktop).
-      // signInWithRedirect is broken on Vercel/custom domains with Firebase's firebaseapp.com
-      // authDomain because modern mobile browsers (Chrome 115+, Safari 17+) block
-      // third-party cookies required for the cross-origin redirect flow.
-      // signInWithPopup works reliably on all modern mobile browsers.
-      try {
-        if (typeof signInWithPopup === "function") {
-          const result = await signInWithPopup(activeAuth, activeProvider);
-          u = result?.user;
-        }
-      } catch (popupErr: any) {
-        console.warn(`[AUTH/OAUTH] ${name} popup error:`, popupErr?.code || popupErr);
-        const code = popupErr?.code || "";
-
-        // Popup was blocked by browser — fall back to redirect
-        if (code === "auth/popup-blocked") {
-          try {
-            if (typeof signInWithRedirect === "function") {
-              await signInWithRedirect(activeAuth, activeProvider);
-              return;
-            }
-          } catch (redirectErr) {
-            console.warn("[AUTH] Redirect fallback failed:", redirectErr);
-            throw redirectErr;
-          }
-        }
-
-        // User closed popup — do nothing silently
-        if (
-          code === "auth/popup-closed-by-user" ||
-          code === "auth/user-cancelled" ||
-          code === "auth/cancelled-popup-request"
-        ) {
-          setSocialLoading(null);
-          setIsLoggingIn(false);
-          return;
-        }
-
-        // Network failure during popup — surface a clear message
-        if (code === "auth/network-request-failed") {
-          setSocialLoading(null);
-          setIsLoggingIn(false);
-          setError("auth/network-request-failed");
-          return;
-        }
-
-        // Domain not authorized in Firebase Console
-        if (code === "auth/unauthorized-domain") {
-          setSocialLoading(null);
-          setIsLoggingIn(false);
-          setError("auth/unauthorized-domain");
-          return;
-        }
-
-        throw popupErr;
-      }
-
-      if (!u) {
-        setSocialLoading(null);
-        setIsLoggingIn(false);
-        return;
-      }
-
-      // Authoritative database sync
-      let role = "MEMBER";
-      try {
-        const syncRes = await fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: u.uid,
-            email: u.email || "",
-            name: u.displayName || u.email?.split("@")[0] || "Member",
-            photoURL: u.photoURL,
-            phoneNumber: u.phoneNumber || null,
-          }),
-        });
-        if (syncRes.ok) {
-          const syncData = await syncRes.json();
-          if (syncData?.success && syncData?.user?.role) {
-            role = syncData.user.role;
-          }
-        }
-      } catch (syncErr) {
-        console.warn("[AUTH] Social sync error:", syncErr);
-      }
-
-      // Set presence cookies & user state
-      setAuthCookies(u.uid, role);
-
-      if (updateUser) {
-        updateUser({
-          uid: u.uid,
-          email: u.email || "",
-          name: u.displayName || u.email?.split("@")[0] || "Member",
-          image: u.photoURL || null,
-          role: role as any,
-        });
-      }
-
-      sendLoginEmail(u.email || "", u.displayName || "Member", name.toLowerCase());
-
-      redirectForRole(role);
-    } catch (err: any) {
-      console.warn(`[AUTH/OAUTH] ${name} login error:`, err?.code || err);
-      setIsLoggingIn(false);
-      setSocialLoading(null);
-      if (
-        err?.code === "auth/popup-closed-by-user" ||
-        err?.code === "auth/user-cancelled" ||
-        err?.code === "auth/cancelled-popup-request"
-      ) {
-        return;
-      }
-      const socialErrCode = err?.code || extractFirebaseCode(err?.message) || "social-generic-failed";
-      setError(socialErrCode);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -915,52 +705,9 @@ export default function LoginPage() {
                 </div>
               </motion.div>
 
-              {/* Google Button */}
+              {/* Google Sign-In via official Google Identity Services */}
               <motion.div variants={itemVariants} className="w-full">
-                <motion.button
-                  type="button"
-                  onClick={() => handleSocialLogin(googleProvider, "Google")}
-                  disabled={!!socialLoading}
-                  whileHover={!socialLoading ? { scale: 1.01, y: -1 } : {}}
-                  whileTap={!socialLoading ? { scale: 0.99 } : {}}
-                  className="relative flex items-center justify-center gap-3 py-3.5 w-full rounded-xl border border-slate-200 dark:border-gray-800 bg-white hover:bg-slate-100 dark:bg-slate-950/80 dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-85 disabled:cursor-wait group overflow-hidden cursor-pointer"
-                  title={loginT.googleSignIn}
-                >
-                  <AnimatePresence mode="wait">
-                    {socialLoading === "Google" ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        className="flex items-center justify-center gap-3"
-                      >
-                        <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400" />
-                        <span className="text-sm font-semibold text-slate-700 dark:text-gray-300 animate-pulse">
-                          {language === "te" ? "Google తో అనుసంధానిస్తోంది..." : language === "hi" ? "Google से जुड़ रहा है..." : "Connecting to Google..."}
-                        </span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="idle"
-                        initial={{ opacity: 0, y: -6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        className="flex items-center justify-center gap-3"
-                      >
-                        <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24">
-                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" />
-                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                        </svg>
-                        <span className="text-sm font-bold text-slate-700 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-300">
-                          {loginT.googleSignIn}
-                        </span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
+                <GoogleSignInButton onError={(err) => setError(err)} />
               </motion.div>
 
               {/* Register Link */}

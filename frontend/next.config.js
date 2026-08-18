@@ -5,7 +5,7 @@
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com;
   font-src 'self' https://fonts.gstatic.com;
   img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com https://*.youtube.com https://youtube.com https://*.googlevideo.com https://*.google.com https://*.doubleclick.net;
   media-src 'self' blob: data: https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.ytimg.com https://res.cloudinary.com https://firebasestorage.googleapis.com;

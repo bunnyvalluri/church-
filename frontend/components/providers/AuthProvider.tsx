@@ -186,9 +186,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.warn("[AUTH] Database role sync error:", syncErr);
           }
         } else {
-          clearSessionCookies();
-          setUser(null);
-          setLoading(false);
+          // Check for active presence session cookie (e.g. from Google Identity Services or server-authenticated session)
+          let hasCookieSession = false;
+          if (typeof document !== "undefined") {
+            const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
+            const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
+            if (uidMatch && uidMatch[1]) {
+              hasCookieSession = true;
+              const sessionUid = uidMatch[1];
+              const sessionRole = (roleMatch?.[1]?.toUpperCase() || "MEMBER") as AuthUser["role"];
+
+              // Immediately set preliminary user so UI renders authenticated
+              setUser({
+                uid: sessionUid,
+                email: "",
+                name: "Member",
+                image: null,
+                role: sessionRole,
+              });
+              setLoading(false);
+
+              // Validate and refresh profile details from server
+              fetch(`/api/member/profile?userId=${encodeURIComponent(sessionUid)}`)
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data?.success && data?.user) {
+                    const profileRole = (data.user.role || sessionRole || "MEMBER") as AuthUser["role"];
+                    setUser({
+                      uid: data.user.id,
+                      email: data.user.email || "",
+                      name: data.user.name || "Member",
+                      image: data.user.image || null,
+                      role: profileRole,
+                    });
+                    setSessionCookies(data.user.id, profileRole);
+                  }
+                })
+                .catch((err) => {
+                  console.warn("[AUTH] Profile revalidation notice:", err);
+                });
+            }
+          }
+
+          if (!hasCookieSession) {
+            clearSessionCookies();
+            setUser(null);
+            setLoading(false);
+          }
         }
       });
     }
@@ -217,6 +261,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       if (auth && typeof signOut === "function") {
         await signOut(auth);
+      }
+      if (typeof window !== "undefined" && (window as any).google?.accounts?.id?.disableAutoSelect) {
+        (window as any).google.accounts.id.disableAutoSelect();
       }
       clearSessionCookies();
       setUser(null);
