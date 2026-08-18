@@ -63,9 +63,9 @@ export async function POST(req: Request) {
     const clientIds = getGoogleClientIds();
 
     if (clientIds.length === 0) {
-      console.error('[AUTH/GOOGLE] ❌ Missing GOOGLE_CLIENT_ID or NEXT_PUBLIC_GOOGLE_CLIENT_ID configuration.');
+      console.error('[AUTH/GOOGLE] ❌ Missing GOOGLE_CLIENT_ID or NEXT_PUBLIC_GOOGLE_CLIENT_ID configuration on server.');
       return NextResponse.json(
-        { error: 'Google authentication service is not configured on the server. Please set GOOGLE_CLIENT_ID.' },
+        { error: 'Google Sign-In is temporarily unavailable. Please try again later.' },
         { status: 500 }
       );
     }

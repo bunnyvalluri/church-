@@ -1,14 +1,14 @@
 /**
  * lib/googleAuth.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Google Identity Services (GIS) Web SDK Loader and Diagnostics Utility.
+ * Official Google Identity Services (GIS) Web SDK Loader and Diagnostics.
  *
- * Official GIS SDK: https://accounts.google.com/gsi/client
+ * Official GIS SDK Reference: https://accounts.google.com/gsi/client
  * Replaces deprecated gapi.auth2 and legacy Firebase popup redirects.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export type GoogleSdkState = 'UNINITIALIZED' | 'LOADING' | 'READY' | 'ERROR';
+export type GoogleSdkState = 'IDLE' | 'LOADING' | 'READY' | 'AUTHENTICATING' | 'ERROR';
 
 declare global {
   interface Window {
@@ -20,11 +20,12 @@ declare global {
             callback: (response: GoogleCredentialResponse) => void;
             auto_select?: boolean;
             cancel_on_tap_outside?: boolean;
-            context?: string;
+            context?: 'signin' | 'signup' | 'use';
             ux_mode?: 'popup' | 'redirect';
             login_uri?: string;
             state_cookie_domain?: string;
             nonce?: string;
+            itp_support?: boolean;
           }) => void;
           renderButton: (
             parent: HTMLElement,
@@ -50,7 +51,7 @@ declare global {
 }
 
 export interface GoogleCredentialResponse {
-  credential: string; // The signed Google ID Token (JWT)
+  credential: string; // The cryptographically signed Google ID Token (JWT)
   select_by?: string;
   clientId?: string;
 }
@@ -59,6 +60,7 @@ let gisScriptLoadingPromise: Promise<boolean> | null = null;
 
 /**
  * Returns the public Google OAuth 2.0 Web Client ID from environment variables.
+ * Checks NEXT_PUBLIC_GOOGLE_CLIENT_ID.
  */
 export function getGoogleClientId(): string {
   return (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '').trim();
@@ -72,6 +74,13 @@ export function getCurrentOrigin(): string {
     return window.location.origin;
   }
   return '';
+}
+
+/**
+ * Resets the cached script loading promise to allow a fresh retry if a network error occurred.
+ */
+export function resetGoogleGsiScriptPromise(): void {
+  gisScriptLoadingPromise = null;
 }
 
 /**
@@ -97,10 +106,13 @@ export function logGoogleAuthDiagnostic(event: string, details?: Record<string, 
 }
 
 /**
- * Reliably and eagerly loads the Google Identity Services SDK (<script src="https://accounts.google.com/gsi/client" async defer />).
- * Uses a singleton promise to prevent duplicate script tags or race conditions.
+ * Reliably loads the Google Identity Services SDK (<script src="https://accounts.google.com/gsi/client" async defer />).
+ * Features:
+ * - Singleton promise to prevent duplicate script tags.
+ * - Guaranteed 8-second timeout guard to prevent permanent loading spinners.
+ * - Safe error handling on network disconnects.
  */
-export function loadGoogleGsiScript(): Promise<boolean> {
+export function loadGoogleGsiScript(timeoutMs = 8000): Promise<boolean> {
   if (typeof window === 'undefined') {
     return Promise.resolve(false);
   }
@@ -115,17 +127,36 @@ export function loadGoogleGsiScript(): Promise<boolean> {
   }
 
   gisScriptLoadingPromise = new Promise<boolean>((resolve) => {
+    let hasResolved = false;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+
+    const finalize = (success: boolean) => {
+      if (hasResolved) return;
+      hasResolved = true;
+      if (timerId) clearTimeout(timerId);
+      if (!success) {
+        gisScriptLoadingPromise = null; // Clear so subsequent retries can re-attempt
+      }
+      resolve(success);
+    };
+
+    // Timeout guard — guarantee resolution so the UI never gets stuck
+    timerId = setTimeout(() => {
+      logGoogleAuthDiagnostic('SDK_LOAD_TIMEOUT', { timeoutMs });
+      finalize(false);
+    }, timeoutMs);
+
     // Check if script element is already present in DOM
     const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
     if (existingScript) {
       if (window.google?.accounts?.id) {
-        resolve(true);
+        finalize(true);
         return;
       }
-      existingScript.addEventListener('load', () => resolve(true), { once: true });
+      existingScript.addEventListener('load', () => finalize(Boolean(window.google?.accounts?.id)), { once: true });
       existingScript.addEventListener('error', () => {
         logGoogleAuthDiagnostic('SDK_LOAD_ERROR', { error: 'Failed to load GIS script from CDN' });
-        resolve(false);
+        finalize(false);
       }, { once: true });
       return;
     }
@@ -137,12 +168,12 @@ export function loadGoogleGsiScript(): Promise<boolean> {
 
     script.onload = () => {
       logGoogleAuthDiagnostic('SDK_LOAD_SUCCESS');
-      resolve(true);
+      finalize(Boolean(window.google?.accounts?.id));
     };
 
-    script.onerror = (err) => {
+    script.onerror = () => {
       logGoogleAuthDiagnostic('SDK_LOAD_ERROR', { error: 'Network error loading accounts.google.com/gsi/client' });
-      resolve(false);
+      finalize(false);
     };
 
     document.head.appendChild(script);

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import {
   loadGoogleGsiScript,
+  resetGoogleGsiScriptPromise,
   getGoogleClientId,
   logGoogleAuthDiagnostic,
   GoogleCredentialResponse,
@@ -17,51 +18,77 @@ interface GoogleSignInButtonProps {
   className?: string;
 }
 
+type ButtonState = "IDLE" | "LOADING_GOOGLE" | "READY" | "AUTHENTICATING" | "ERROR";
+
 export default function GoogleSignInButton({ onError, className = "" }: GoogleSignInButtonProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { updateUser } = useAuth();
   const { language } = useLanguage();
 
-  const [sdkState, setSdkState] = useState<"INITIALIZING" | "READY" | "AUTHENTICATING" | "ERROR">("INITIALIZING");
+  const [state, setState] = useState<ButtonState>("IDLE");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isInitializedRef = useRef(false);
   const isRenderedRef = useRef(false);
   const isAuthenticatingRef = useRef(false);
+  const isMountedRef = useRef(true);
 
-  // Translations for button states
+  // Multilingual translations for all button states and error conditions
   const getLocalizedText = useCallback(
-    (key: "initializing" | "authenticating" | "error" | "retry" | "unavailable" | "configMissing") => {
+    (key: 
+      | "signInWithGoogle"
+      | "loadingGoogle"
+      | "authenticating"
+      | "unavailable"
+      | "networkError"
+      | "popupBlocked"
+      | "cancelled"
+      | "authFailed"
+      | "serverError"
+      | "retry"
+    ) => {
       const texts = {
         en: {
-          initializing: "Loading Google Sign-In...",
+          signInWithGoogle: "Sign in with Google",
+          loadingGoogle: "Connecting to Google...",
           authenticating: "Signing in with Google...",
-          error: "Google Sign-In failed. Please try again.",
+          unavailable: "Google Sign-In is temporarily unavailable. Please try again later.",
+          networkError: "Unable to connect to Google. Please check your internet connection.",
+          popupBlocked: "Google Sign-In popup was blocked. Please allow popups and try again.",
+          cancelled: "Google Sign-In was cancelled.",
+          authFailed: "Google authentication failed. Please try again.",
+          serverError: "Unable to complete Google Sign-In. Please try again.",
           retry: "Try Again",
-          unavailable: "Google Sign-In is temporarily unavailable. Please try again.",
-          configMissing: "Google Sign-In is not configured. Please set NEXT_PUBLIC_GOOGLE_CLIENT_ID.",
         },
         te: {
-          initializing: "Google సైన్-ఇన్ లోడ్ అవుతోంది...",
+          signInWithGoogle: "Google తో సైన్ ఇన్ చేయండి",
+          loadingGoogle: "Google తో కనెక్ట్ అవుతోంది...",
           authenticating: "Google తో సైన్ ఇన్ అవుతోంది...",
-          error: "Google సైన్-ఇన్ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
-          retry: "మళ్ళీ ప్రయత్నించండి",
           unavailable: "Google సైన్-ఇన్ ప్రస్తుతం అందుబాటులో లేదు. దయచేసి కాసేపటి తర్వాత ప్రయత్నించండి.",
-          configMissing: "Google సైన్-ఇన్ కాన్ఫిగర్ చేయబడలేదు.",
+          networkError: "Google తో కనెక్ట్ కాలేదు. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి.",
+          popupBlocked: "Google సైన్-ఇన్ పాపప్ నిరోధించబడింది. దయచేసి పాపప్‌లను అనుమతించండి.",
+          cancelled: "Google సైన్-ఇన్ రద్దు చేయబడింది.",
+          authFailed: "Google ప్రమాణీకరణ విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+          serverError: "Google సైన్-ఇన్ పూర్తి కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+          retry: "మళ్ళీ ప్రయత్నించండి",
         },
         hi: {
-          initializing: "गूगल साइन-इन लोड हो रहा है...",
+          signInWithGoogle: "गूगल से साइन इन करें",
+          loadingGoogle: "गूगल से कनेक्ट हो रहा है...",
           authenticating: "गूगल से साइन इन हो रहा है...",
-          error: "गूगल साइन-इन विफल रहा। कृपया पुनः प्रयास करें।",
+          unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया बाद में प्रयास करें।",
+          networkError: "गूगल से कनेक्ट नहीं हो सका। कृपया अपना इंटरनेट कनेक्शन जांचें।",
+          popupBlocked: "गूगल साइन-इन पॉपअप अवरुद्ध हो गया। कृपया पॉपअप की अनुमति दें।",
+          cancelled: "गूगल साइन-इन रद्द कर दिया गया।",
+          authFailed: "गूगल प्रमाणीकरण विफल रहा। कृपया पुनः प्रयास करें।",
+          serverError: "गूगल साइन-इन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
           retry: "पुनः प्रयास करें",
-          unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया पुनः प्रयास करें।",
-          configMissing: "गूगल साइन-इन कॉन्फ़िगर नहीं है।",
         },
       };
 
-      const langKey = (language === "te" || language === "hi") ? language : "en";
+      const langKey = language === "te" || language === "hi" ? language : "en";
       return texts[langKey][key] || texts.en[key];
     },
     [language]
@@ -77,7 +104,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     }).catch(() => {});
   };
 
-  // Cookie setter with Secure attribute for mobile HTTPS compatibility
+  // Safe cookie setter with SameSite and HTTPS Secure attributes
   const setAuthCookies = (uid: string, role: string) => {
     if (typeof document === "undefined") return;
     const maxAge = 7 * 24 * 60 * 60; // 7 days
@@ -87,23 +114,25 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
   };
 
-  // Handle Google Credential Callback
+  // Process verified Google credential received from GIS popup
   const handleGoogleCredentialResponse = useCallback(
     async (response: GoogleCredentialResponse) => {
+      if (!isMountedRef.current) return;
+
       if (!response?.credential) {
         logGoogleAuthDiagnostic("CREDENTIAL_CALLBACK_EMPTY");
-        setSdkState("ERROR");
-        const msg = getLocalizedText("error");
+        setState("ERROR");
+        const msg = getLocalizedText("authFailed");
         setErrorMessage(msg);
         onError?.(msg);
         return;
       }
 
-      // Prevent duplicate concurrent requests
+      // Prevent duplicate concurrent verification requests
       if (isAuthenticatingRef.current) return;
       isAuthenticatingRef.current = true;
 
-      setSdkState("AUTHENTICATING");
+      setState("AUTHENTICATING");
       setErrorMessage(null);
       logGoogleAuthDiagnostic("CREDENTIAL_CALLBACK_RECEIVED");
 
@@ -117,7 +146,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         const data = await res.json().catch(() => null);
 
         if (!res.ok || !data?.success) {
-          throw new Error(data?.error || getLocalizedText("error"));
+          throw new Error(data?.error || getLocalizedText("serverError"));
         }
 
         logGoogleAuthDiagnostic("BACKEND_VERIFICATION_SUCCESS", {
@@ -125,12 +154,12 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           role: data.user?.role,
         });
 
-        // 1. Set local presence cookies
+        // 1. Set presence session cookies
         if (data.user?.id && data.user?.role) {
           setAuthCookies(data.user.id, data.user.role);
         }
 
-        // 2. Update AuthProvider Context
+        // 2. Update client AuthProvider context
         if (updateUser && data.user) {
           updateUser({
             uid: data.user.id,
@@ -162,50 +191,58 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           }
         }
 
-        // 5. Navigate to authenticated portal
+        // 5. Navigate to member portal
         router.replace(targetPath);
       } catch (err: any) {
         logGoogleAuthDiagnostic("BACKEND_VERIFICATION_FAILED", {
           error: err?.message || String(err),
         });
-        isAuthenticatingRef.current = false;
-        setSdkState("ERROR");
-        const msg = err?.message || getLocalizedText("error");
-        setErrorMessage(msg);
-        onError?.(msg);
+        if (isMountedRef.current) {
+          isAuthenticatingRef.current = false;
+          setState("ERROR");
+          const msg = err?.message || getLocalizedText("serverError");
+          setErrorMessage(msg);
+          onError?.(msg);
+        }
       }
     },
     [getLocalizedText, onError, router, searchParams, updateUser]
   );
 
-  // Initialize and Render GIS Button
-  const initAndRenderGoogleButton = useCallback(async () => {
+  // Initialize and Render Google Identity Services Button
+  const initGisButton = useCallback(async () => {
     const clientId = getGoogleClientId();
 
+    // If client ID is missing in environment, do not crash on initial render.
+    // Transition to IDLE so the fallback button is available.
     if (!clientId) {
-      logGoogleAuthDiagnostic("MISSING_CLIENT_ID");
-      setSdkState("ERROR");
-      setErrorMessage(getLocalizedText("configMissing"));
+      logGoogleAuthDiagnostic("CLIENT_ID_UNSET");
+      setState("IDLE");
       return;
     }
 
-    setSdkState("INITIALIZING");
-    setErrorMessage(null);
-
-    const loaded = await loadGoogleGsiScript();
-    if (!loaded || !window.google?.accounts?.id) {
-      logGoogleAuthDiagnostic("SDK_INIT_FAILED_TO_LOAD");
-      setSdkState("ERROR");
-      setErrorMessage(getLocalizedText("unavailable"));
-      return;
-    }
-
-    if (!containerRef.current) {
+    // Check offline status
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      logGoogleAuthDiagnostic("OFFLINE_DETECTED");
+      setState("IDLE");
       return;
     }
 
     try {
-      // 1. Initialize Google Identity Services (only once)
+      const loaded = await loadGoogleGsiScript(7000);
+      if (!isMountedRef.current) return;
+
+      if (!loaded || !window.google?.accounts?.id) {
+        logGoogleAuthDiagnostic("GIS_SCRIPT_LOAD_FAIL");
+        setState("IDLE");
+        return;
+      }
+
+      if (!containerRef.current) {
+        return;
+      }
+
+      // Initialize GIS once
       if (!isInitializedRef.current) {
         window.google.accounts.id.initialize({
           client_id: clientId,
@@ -214,12 +251,13 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           cancel_on_tap_outside: true,
           context: "signin",
           ux_mode: "popup",
+          itp_support: true,
         });
         isInitializedRef.current = true;
         logGoogleAuthDiagnostic("GIS_INITIALIZED_SUCCESS");
       }
 
-      // 2. Render Google Button into dedicated container
+      // Calculate width cleanly
       containerRef.current.innerHTML = "";
       const containerWidth = containerRef.current.offsetWidth || 340;
       const targetWidth = Math.min(Math.max(containerWidth, 240), 400);
@@ -235,19 +273,109 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       });
 
       isRenderedRef.current = true;
-      setSdkState("READY");
+      setState("READY");
       logGoogleAuthDiagnostic("GIS_BUTTON_RENDERED", { targetWidth });
     } catch (err: any) {
-      logGoogleAuthDiagnostic("GIS_RENDER_EXCEPTION", { error: err?.message || String(err) });
-      setSdkState("ERROR");
-      setErrorMessage(getLocalizedText("error"));
+      logGoogleAuthDiagnostic("GIS_INIT_EXCEPTION", { error: err?.message || String(err) });
+      if (isMountedRef.current) {
+        setState("IDLE");
+      }
     }
-  }, [getLocalizedText, handleGoogleCredentialResponse]);
+  }, [handleGoogleCredentialResponse]);
+
+  // Triggered when clicking custom styled button (in IDLE state)
+  const handleCustomButtonClick = async () => {
+    const clientId = getGoogleClientId();
+
+    // 1. Check if client ID is configured
+    if (!clientId) {
+      logGoogleAuthDiagnostic("CLICK_MISSING_CLIENT_ID");
+      setState("ERROR");
+      const msg = getLocalizedText("unavailable");
+      setErrorMessage(msg);
+      onError?.(msg);
+      return;
+    }
+
+    // 2. Check network connectivity
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      logGoogleAuthDiagnostic("CLICK_OFFLINE");
+      setState("ERROR");
+      const msg = getLocalizedText("networkError");
+      setErrorMessage(msg);
+      onError?.(msg);
+      return;
+    }
+
+    setState("LOADING_GOOGLE");
+    setErrorMessage(null);
+
+    const loaded = await loadGoogleGsiScript(7000);
+    if (!isMountedRef.current) return;
+
+    if (!loaded || !window.google?.accounts?.id) {
+      setState("ERROR");
+      const msg = getLocalizedText("unavailable");
+      setErrorMessage(msg);
+      onError?.(msg);
+      return;
+    }
+
+    // Initialize GIS if needed
+    if (!isInitializedRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        context: "signin",
+        ux_mode: "popup",
+        itp_support: true,
+      });
+      isInitializedRef.current = true;
+    }
+
+    // Render official button into container and switch to READY
+    if (containerRef.current) {
+      containerRef.current.innerHTML = "";
+      const containerWidth = containerRef.current.offsetWidth || 340;
+      const targetWidth = Math.min(Math.max(containerWidth, 240), 400);
+
+      window.google.accounts.id.renderButton(containerRef.current, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "signin_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+        width: targetWidth,
+      });
+      isRenderedRef.current = true;
+      setState("READY");
+
+      // Auto-click the rendered button if accessible
+      const renderedIframeBtn = containerRef.current.querySelector('div[role="button"]') as HTMLElement;
+      if (renderedIframeBtn) {
+        renderedIframeBtn.click();
+      }
+    }
+  };
+
+  // Retry handler to cleanly recover from any error
+  const handleRetry = () => {
+    isInitializedRef.current = false;
+    isRenderedRef.current = false;
+    isAuthenticatingRef.current = false;
+    resetGoogleGsiScriptPromise();
+    setState("IDLE");
+    setErrorMessage(null);
+    initGisButton();
+  };
 
   useEffect(() => {
-    initAndRenderGoogleButton();
+    isMountedRef.current = true;
+    initGisButton();
 
-    // Re-render on window resize if container width changes significantly
     const handleResize = () => {
       if (isInitializedRef.current && containerRef.current && window.google?.accounts?.id) {
         const containerWidth = containerRef.current.offsetWidth || 340;
@@ -266,33 +394,35 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
     window.addEventListener("resize", handleResize);
     return () => {
+      isMountedRef.current = false;
       window.removeEventListener("resize", handleResize);
     };
-  }, [initAndRenderGoogleButton]);
-
-  const handleRetry = () => {
-    isInitializedRef.current = false;
-    isRenderedRef.current = false;
-    isAuthenticatingRef.current = false;
-    initAndRenderGoogleButton();
-  };
+  }, [initGisButton]);
 
   return (
     <div className={`w-full flex flex-col items-center justify-center ${className}`}>
       {/* ── 1. Authenticating State: Spinner + localized text ── */}
-      {sdkState === "AUTHENTICATING" && (
+      {state === "AUTHENTICATING" && (
         <div className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-slate-200 dark:border-gray-800 bg-purple-50/50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 shadow-sm animate-pulse">
-          <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
-          <span className="text-sm font-semibold">{getLocalizedText("authenticating")}</span>
+          <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+          <span className="text-xs sm:text-sm font-semibold">{getLocalizedText("authenticating")}</span>
         </div>
       )}
 
-      {/* ── 2. Error State: Clear alert with actionable retry button ── */}
-      {sdkState === "ERROR" && (
+      {/* ── 2. Loading Google GIS SDK State ── */}
+      {state === "LOADING_GOOGLE" && (
+        <div className="w-full h-[44px] flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-gray-300 shadow-xs">
+          <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+          <span className="text-xs font-medium">{getLocalizedText("loadingGoogle")}</span>
+        </div>
+      )}
+
+      {/* ── 3. Error State: Clear alert with actionable retry button ── */}
+      {state === "ERROR" && (
         <div className="w-full flex flex-col gap-2">
           <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-200 text-xs font-medium shadow-xs">
             <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
-            <span className="flex-1">{errorMessage || getLocalizedText("error")}</span>
+            <span className="flex-1">{errorMessage || getLocalizedText("serverError")}</span>
           </div>
           <button
             type="button"
@@ -305,20 +435,41 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         </div>
       )}
 
-      {/* ── 3. Initializing / Loading Skeleton Placeholder ── */}
-      {sdkState === "INITIALIZING" && (
-        <div className="w-full h-[44px] flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-gray-400 shadow-xs">
-          <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400" />
-          <span className="text-xs font-medium">{getLocalizedText("initializing")}</span>
-        </div>
+      {/* ── 4. Fallback Interactive Styled Button (IDLE State) ── */}
+      {state === "IDLE" && (
+        <button
+          type="button"
+          onClick={handleCustomButtonClick}
+          className="w-full h-[44px] flex items-center justify-center gap-3 px-4 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-[0.99]"
+        >
+          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+            />
+          </svg>
+          <span>{getLocalizedText("signInWithGoogle")}</span>
+        </button>
       )}
 
-      {/* ── 4. Official Google GIS Button Container ── */}
+      {/* ── 5. Official GIS Render Container (READY State) ── */}
       <div
-        id="google-signin-button"
+        id="google-signin-button-container"
         ref={containerRef}
         className={`w-full flex justify-center items-center min-h-[44px] ${
-          sdkState === "READY" ? "block" : "hidden"
+          state === "READY" ? "block" : "hidden"
         }`}
       />
     </div>

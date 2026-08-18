@@ -1,22 +1,17 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// IMPORTANT: authDomain MUST be the firebaseapp.com domain (not a custom domain)
-// so that Google OAuth popup/redirect routes through Firebase's authorized handler.
-// Custom domains (e.g. kcmchurch.vercel.app) must be added to Firebase Console →
-// Authentication → Settings → Authorized Domains for Google Sign-In to work.
-//
-// ⚠️ SECURITY: All credentials come from environment variables only.
-// Set these in .env.local (local dev) and Vercel dashboard (production).
-// NEVER hardcode API keys here — GitHub secret scanning will flag them.
+// ⚠️ SECURITY: Firebase credentials come from environment variables.
+// Google Sign-In is handled independently via official Google Identity Services (GIS),
+// NOT through Firebase Auth.
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBaNc9dgk4StKQsY2L73d2H4Hk_QnwAzN0",
-  authDomain: "kcm-church-7d324.firebaseapp.com",
-  projectId: "kcm-church-7d324",
-  storageBucket: "kcm-church-7d324.firebasestorage.app",
-  messagingSenderId: "410280994688",
-  appId: "1:410280994688:web:3c2e458191024fab890365",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "kcm-church-7d324.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "kcm-church-7d324",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "kcm-church-7d324.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "410280994688",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:410280994688:web:3c2e458191024fab890365",
 };
 
 const firebaseConfig = {
@@ -48,9 +43,6 @@ export function isFirebaseConfigured(): boolean {
 let app: any;
 let auth: any;
 let db: any;
-let googleProvider: any;
-let facebookProvider: any;
-let twitterProvider: any;
 
 try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -59,20 +51,9 @@ try {
     setPersistence(auth, browserLocalPersistence).catch(() => {});
   }
   db = getFirestore(app);
-  googleProvider = new GoogleAuthProvider();
-  googleProvider.setCustomParameters({
-    prompt: "select_account",
-  });
-  googleProvider.addScope("email");
-  googleProvider.addScope("profile");
-  facebookProvider = new FacebookAuthProvider();
-  twitterProvider = new TwitterAuthProvider();
 } catch (e) {
   console.error("[FIREBASE_INIT_ERROR]", e);
   db = null;
-  googleProvider = new GoogleAuthProvider();
-  facebookProvider = new FacebookAuthProvider();
-  twitterProvider = new TwitterAuthProvider();
 }
 
 /**
@@ -95,20 +76,7 @@ export function getFirebaseAuth() {
   return auth;
 }
 
-/**
- * Returns a freshly configured GoogleAuthProvider instance.
- */
-export function getGoogleProvider() {
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({
-    prompt: "select_account",
-  });
-  provider.addScope("email");
-  provider.addScope("profile");
-  return provider;
-}
-
-export { auth, db, googleProvider, facebookProvider, twitterProvider };
+export { auth, db };
 
 /**
  * Requests Firebase Cloud Messaging token for browser push notifications.
