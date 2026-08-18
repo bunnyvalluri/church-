@@ -122,21 +122,27 @@ export default function LoginPage() {
   // Redirect already-authenticated users
   useEffect(() => {
     if (mounted && status === "authenticated" && user && !isLoggingIn) {
+      let target = "/member";
       switch (user.role) {
         case "ADMIN":
         case "SUPER_ADMIN":
-          router.replace("/admin/dashboard");
+          target = "/admin/dashboard";
           break;
         case "PASTOR":
-          router.replace("/pastor/main/dashboard");
+          target = "/pastor/main/dashboard";
           break;
         case "EVENT_MANAGER":
         case "FIELD_VOLUNTEER":
-          router.replace("/event-manager");
+          target = "/event-manager";
           break;
         default:
-          router.replace("/member");
+          target = "/member";
           break;
+      }
+      if (typeof window !== "undefined") {
+        window.location.replace(target);
+      } else {
+        router.replace(target);
       }
     }
   }, [mounted, status, user, router, isLoggingIn]);
@@ -310,10 +316,15 @@ export default function LoginPage() {
       }
     }
 
-    // ── Single navigation — NO double-fire race condition ─────────────────────
-    // Using router.replace() only. window.location.replace() alongside router.push()
-    // caused the popup/auth to abort mid-flight, producing the generic 'sign-in failed' error.
-    router.replace(targetPath);
+    // ── Direct full-page navigation for reliable session cookie pickup ─────────
+    if (typeof window !== "undefined") {
+      window.location.replace(targetPath);
+      setTimeout(() => {
+        router.replace(targetPath);
+      }, 500);
+    } else {
+      router.replace(targetPath);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

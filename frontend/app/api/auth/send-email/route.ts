@@ -1,31 +1,43 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import {
+  generateGoogleLoginEmailHtml,
+  shouldSendLoginEmail,
+  getFormattedLoginDateTime,
+} from '@/lib/authEmailService';
+import { logger } from '@/lib/logger';
 
-const getResend = () => new Resend(process.env.RESEND_API_KEY || 're_dummy_key_build_fallback');
-const PORTAL_URL = process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app';
-
-
-const CHURCH_NAME   = 'Kingdom of Christ Ministries';
-const CHURCH_EMAIL  = 'kingofchristministries23@gmail.com';
-const CHURCH_PHONE  = '+91 97040 90069 | +91 73964 33856';
-const CHURCH_ADDR   = 'Jeedimetla, Hyderabad, Telangana 500055';
-const FROM_EMAIL    = 'KCM Ministries <onboarding@resend.dev>'; // Use your verified domain in prod
-const NOTIFY_EMAIL  = 'kingofchristministries23@gmail.com';     // Admin notification recipient
-
-// ── Brand Colors ──────────────────────────────────────────────────────────────
-const BRAND = {
-  primary:  '#4F46E5',   // Indigo-600
-  accent:   '#7C3AED',   // Violet-600
-  dark:     '#0F0F1A',
-  surface:  '#FFFFFF',
-  muted:    '#6B7280',
-  border:   '#E5E7EB',
-  success:  '#10B981',
-  warning:  '#F59E0B',
+const getResendClient = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || apiKey.trim().length === 0 || apiKey.startsWith('your_')) {
+    return null;
+  }
+  return new Resend(apiKey.trim());
 };
 
-// ── Reusable HTML shell ───────────────────────────────────────────────────────
+const PORTAL_URL = process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app';
+const CHURCH_NAME = 'Kingdom of Christ Ministries';
+const CHURCH_EMAIL = process.env.EMAIL_REPLY_TO || 'kingofchristministries23@gmail.com';
+const CHURCH_PHONE = '+91 97040 90069 | +91 96409 43777';
+const CHURCH_ADDR = '15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055';
+const FROM_EMAIL =
+  process.env.EMAIL_FROM ||
+  process.env.RESEND_FROM_EMAIL ||
+  'Kingdom of Christ Ministries <onboarding@resend.dev>';
+const NOTIFY_EMAIL = process.env.EMAIL_REPLY_TO || 'kingofchristministries23@gmail.com';
+
+const BRAND = {
+  primary: '#4F46E5',
+  accent: '#7C3AED',
+  dark: '#0F0F1A',
+  surface: '#FFFFFF',
+  muted: '#6B7280',
+  border: '#E5E7EB',
+  success: '#10B981',
+  warning: '#F59E0B',
+};
+
 function emailShell(content: string, preheader = ''): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -36,14 +48,10 @@ function emailShell(content: string, preheader = ''): string {
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
 <body style="margin:0;padding:0;background:#F3F4F6;font-family:'Segoe UI',Arial,sans-serif;">
-  <!-- Preheader -->
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
-
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F3F4F6;min-height:100vh;">
     <tr><td align="center" style="padding:40px 16px;">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-
-        <!-- ── HEADER ── -->
         <tr><td style="background:linear-gradient(135deg,${BRAND.primary} 0%,${BRAND.accent} 100%);border-radius:16px 16px 0 0;padding:36px 40px;text-align:center;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
@@ -60,13 +68,9 @@ function emailShell(content: string, preheader = ''): string {
             </tr>
           </table>
         </td></tr>
-
-        <!-- ── BODY ── -->
         <tr><td style="background:#ffffff;padding:40px 40px 32px;border-left:1px solid ${BRAND.border};border-right:1px solid ${BRAND.border};">
           ${content}
         </td></tr>
-
-        <!-- ── FOOTER ── -->
         <tr><td style="background:#F9FAFB;border:1px solid ${BRAND.border};border-top:none;border-radius:0 0 16px 16px;padding:28px 40px;text-align:center;">
           <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#374151;">${CHURCH_NAME}</p>
           <p style="margin:0 0 4px;font-size:12px;color:${BRAND.muted};">${CHURCH_ADDR}</p>
@@ -76,7 +80,6 @@ function emailShell(content: string, preheader = ''): string {
             <p style="margin:6px 0 0;font-size:11px;color:#9CA3AF;">© ${new Date().getFullYear()} ${CHURCH_NAME}. All rights reserved.</p>
           </div>
         </td></tr>
-
       </table>
     </td></tr>
   </table>
@@ -84,16 +87,18 @@ function emailShell(content: string, preheader = ''): string {
 </html>`;
 }
 
-// ── Template: Welcome Email (sent to new registrant) ─────────────────────────
 function welcomeEmailHtml(name: string, email: string): string {
-  const joinDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const joinDate = new Date().toLocaleDateString('en-IN', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const body = `
-    <!-- Greeting -->
     <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#111827;letter-spacing:-0.5px;">Welcome to the Family! 🎉</h1>
     <p style="margin:0 0 28px;font-size:15px;color:${BRAND.muted};line-height:1.6;">We're so glad you've joined <strong style="color:#111827;">Kingdom of Christ Ministries</strong>. Your account has been successfully created.</p>
 
-    <!-- Account Card -->
     <div style="background:linear-gradient(135deg,${BRAND.primary}08,${BRAND.accent}08);border:1px solid ${BRAND.primary}20;border-radius:12px;padding:24px;margin-bottom:28px;">
       <p style="margin:0 0 12px;font-size:11px;font-weight:700;color:${BRAND.primary};letter-spacing:0.12em;text-transform:uppercase;">Your Account Details</p>
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -118,36 +123,11 @@ function welcomeEmailHtml(name: string, email: string): string {
       </table>
     </div>
 
-    <!-- Scripture -->
     <div style="border-left:3px solid ${BRAND.primary};padding:12px 20px;margin-bottom:28px;background:#FAFAFA;border-radius:0 8px 8px 0;">
       <p style="margin:0;font-size:14px;font-style:italic;color:#374151;line-height:1.7;">"For where two or three gather in my name, there am I with them."</p>
       <p style="margin:6px 0 0;font-size:12px;font-weight:600;color:${BRAND.primary};">— Matthew 18:20</p>
     </div>
 
-    <!-- What's Next -->
-    <p style="margin:0 0 16px;font-size:13px;font-weight:700;color:#111827;text-transform:uppercase;letter-spacing:0.08em;">What You Can Do Now</p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
-      ${[
-        ['📖', 'Access Sermons', 'Watch and listen to all past messages from Bishop Kurra Kristhu Raju.'],
-        ['🙏', 'Submit Prayer Requests', 'Share your prayer needs with our dedicated prayer team.'],
-        ['📅', 'View Church Events', 'Stay updated on Sunday services, Bible studies, and special events.'],
-        ['👥', 'Join Ministry Groups', 'Connect with Bible study groups, small groups, and volunteers.'],
-      ].map(([icon, title, desc]) => `
-        <tr><td style="padding:8px 0;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="width:40px;font-size:22px;vertical-align:top;padding-top:2px;">${icon}</td>
-              <td style="vertical-align:top;">
-                <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#111827;">${title}</p>
-                <p style="margin:0;font-size:12px;color:${BRAND.muted};line-height:1.5;">${desc}</p>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-      `).join('')}
-    </table>
-
-    <!-- CTA Button -->
     <div style="text-align:center;margin-bottom:28px;">
       <a href="${PORTAL_URL}/member" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;box-shadow:0 4px 14px ${BRAND.primary}40;">
         Access Member Portal →
@@ -160,18 +140,13 @@ function welcomeEmailHtml(name: string, email: string): string {
   return emailShell(body, `Welcome to Kingdom of Christ Ministries, ${name}! Your account is ready.`);
 }
 
-// ── Template: Login Notification (sent to admin) ──────────────────────────────
-function loginNotificationHtml(name: string, email: string, loginTime: string, method: string): string {
+function loginAdminAlertHtml(name: string, email: string, loginTime: string, method: string): string {
   const body = `
-    <!-- Alert Icon -->
     <div style="text-align:center;margin-bottom:24px;">
       <div style="display:inline-block;width:60px;height:60px;background:${BRAND.warning}15;border:2px solid ${BRAND.warning}30;border-radius:50%;line-height:60px;font-size:28px;">🔔</div>
     </div>
-
     <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#111827;text-align:center;">Member Login Alert</h1>
     <p style="margin:0 0 28px;font-size:14px;color:${BRAND.muted};text-align:center;line-height:1.6;">A member just signed in to the KCM Member Portal.</p>
-
-    <!-- Login Detail Card -->
     <div style="background:#FAFAFA;border:1px solid ${BRAND.border};border-radius:12px;padding:24px;margin-bottom:24px;">
       <p style="margin:0 0 16px;font-size:11px;font-weight:700;color:${BRAND.primary};letter-spacing:0.12em;text-transform:uppercase;">Login Details</p>
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -181,39 +156,32 @@ function loginNotificationHtml(name: string, email: string, loginTime: string, m
           ['Login Time', loginTime],
           ['Sign-in Method', method],
           ['Portal', 'KCM Member Portal'],
-        ].map(([label, val]) => `
+        ]
+          .map(
+            ([label, val]) => `
           <tr>
             <td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};font-size:13px;color:${BRAND.muted};width:140px;font-weight:500;">${label}</td>
             <td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};font-size:13px;font-weight:600;color:#111827;">${val}</td>
           </tr>
-        `).join('')}
+        `
+          )
+          .join('')}
       </table>
     </div>
-
-    <!-- Status Badge -->
-    <div style="background:${BRAND.success}10;border:1px solid ${BRAND.success}25;border-radius:10px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:18px;">✅</span>
-      <p style="margin:0;font-size:13px;color:#065F46;font-weight:600;">Successful authentication — no action required.</p>
+    <div style="background:${BRAND.success}10;border:1px solid ${BRAND.success}25;border-radius:10px;padding:14px 20px;margin-bottom:24px;">
+      <p style="margin:0;font-size:13px;color:#065F46;font-weight:600;">✓ Successful authentication.</p>
     </div>
-
-    <p style="margin:0;font-size:13px;color:${BRAND.muted};line-height:1.7;">This notification is sent every time a member logs into the portal. If you notice any suspicious activity, please reach out immediately.</p>
-    <p style="margin:16px 0 0;font-size:13px;color:#374151;">God Bless,<br/><strong>KCM Portal System</strong><br/><span style="font-size:12px;color:${BRAND.muted};">Automated Notification · Do Not Reply</span></p>
   `;
-  return emailShell(body, `Login alert: ${name} (${email}) just signed in to the KCM Portal.`);
+  return emailShell(body, `Login alert: ${name} (${email}) signed in.`);
 }
 
-// ── Template: New Registration Notification (sent to admin) ──────────────────
 function newMemberAdminHtml(name: string, email: string, phone: string, regTime: string): string {
   const body = `
-    <!-- Alert Icon -->
     <div style="text-align:center;margin-bottom:24px;">
       <div style="display:inline-block;width:60px;height:60px;background:${BRAND.primary}15;border:2px solid ${BRAND.primary}30;border-radius:50%;line-height:60px;font-size:28px;">🧑‍🤝‍🧑</div>
     </div>
-
     <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#111827;text-align:center;">New Member Registered! 🎉</h1>
     <p style="margin:0 0 28px;font-size:14px;color:${BRAND.muted};text-align:center;line-height:1.6;">A new member has just joined Kingdom of Christ Ministries.</p>
-
-    <!-- Member Card -->
     <div style="background:linear-gradient(135deg,${BRAND.primary}08,${BRAND.accent}08);border:1px solid ${BRAND.primary}20;border-radius:12px;padding:24px;margin-bottom:24px;">
       <p style="margin:0 0 16px;font-size:11px;font-weight:700;color:${BRAND.primary};letter-spacing:0.12em;text-transform:uppercase;">New Member Details</p>
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -223,24 +191,23 @@ function newMemberAdminHtml(name: string, email: string, phone: string, regTime:
           ['Phone Number', phone || 'Not provided'],
           ['Registered At', regTime],
           ['Default Role', 'MEMBER'],
-        ].map(([label, val]) => `
+        ]
+          .map(
+            ([label, val]) => `
           <tr>
             <td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};font-size:13px;color:${BRAND.muted};width:140px;font-weight:500;">${label}</td>
             <td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};font-size:13px;font-weight:600;color:#111827;">${val}</td>
           </tr>
-        `).join('')}
+        `
+          )
+          .join('')}
       </table>
     </div>
-
-    <!-- Action Button -->
     <div style="text-align:center;margin-bottom:24px;">
       <a href="${PORTAL_URL}/admin?tab=members" style="display:inline-block;background:linear-gradient(135deg,${BRAND.primary},${BRAND.accent});color:#fff;font-size:13px;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
         View in Admin Panel →
       </a>
     </div>
-
-    <p style="margin:0;font-size:13px;color:${BRAND.muted};line-height:1.7;">You can manage this member's role, assign them to groups, and view their activity from the Admin Portal.</p>
-    <p style="margin:16px 0 0;font-size:13px;color:#374151;">God Bless,<br/><strong>KCM Portal System</strong><br/><span style="font-size:12px;color:${BRAND.muted};">Automated Notification · Do Not Reply</span></p>
   `;
   return emailShell(body, `New member registered: ${name} (${email})`);
 }
@@ -255,62 +222,109 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const now = new Date().toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      weekday: 'long', year: 'numeric', month: 'long',
-      day: 'numeric', hour: '2-digit', minute: '2-digit',
-    }) + ' IST';
+    const sanitizedEmail = String(email).toLowerCase().trim();
+    const displayName = name || sanitizedEmail.split('@')[0];
+    const firstName = displayName.split(' ')[0] || 'Member';
+    const now = getFormattedLoginDateTime();
 
-    let results: any[] = [];
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      logger.warn('[EMAIL/API] Skipped email dispatch: RESEND_API_KEY not configured', {
+        component: 'SendEmailRoute',
+        action: 'EMAIL_SKIPPED',
+        type,
+        email: sanitizedEmail,
+      });
+      return NextResponse.json({ success: true, message: 'Email service unconfigured' });
+    }
 
-    const resendClient = getResend();
-
-    // ── REGISTER: Send welcome email to user + notification to admin ──────────
+    // ── REGISTER: Welcome email to new member + Alert to admin ────────────────
     if (type === 'REGISTER') {
-      const displayName = name || email.split('@')[0];
-
       const [welcomeResult, adminResult] = await Promise.allSettled([
-        // 1. Welcome email → new member
         resendClient.emails.send({
           from: FROM_EMAIL,
-          to: [email],
-          subject: `✝ Welcome to Kingdom of Christ Ministries, ${displayName.split(' ')[0]}!`,
-          html: welcomeEmailHtml(displayName, email),
+          to: [sanitizedEmail],
+          replyTo: CHURCH_EMAIL,
+          subject: `✝ Welcome to Kingdom of Christ Ministries, ${firstName}!`,
+          html: welcomeEmailHtml(displayName, sanitizedEmail),
         }),
-        // 2. New member notification → admin/pastor
         resendClient.emails.send({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
+          replyTo: CHURCH_EMAIL,
           subject: `🧑‍🤝‍🧑 New Member Registered: ${displayName}`,
-          html: newMemberAdminHtml(displayName, email, phone || '', now),
+          html: newMemberAdminHtml(displayName, sanitizedEmail, phone || '', now),
         }),
       ]);
 
-      results = [welcomeResult, adminResult];
-      console.info(`[EMAIL] Registration emails sent for ${email}`);
-    }
-
-    // ── LOGIN: Send login alert to admin ─────────────────────────────────────
-    else if (type === 'LOGIN') {
-      const loginMethod = method === 'google' ? 'Google OAuth' : 'Email & Password';
-      const result = await resendClient.emails.send({
-        from: FROM_EMAIL,
-        to: [NOTIFY_EMAIL],
-        subject: `🔔 Member Login: ${name || email}`,
-        html: loginNotificationHtml(name || 'Member', email, now, loginMethod),
+      logger.info('[EMAIL/API] Registration emails dispatched', {
+        component: 'SendEmailRoute',
+        action: 'REGISTER_EMAIL_SENT',
+        email: sanitizedEmail,
       });
-      results = [{ status: 'fulfilled', value: result }];
-      console.info(`[EMAIL] Login notification sent for ${email}`);
+
+      return NextResponse.json({ success: true });
     }
 
-    const failed = results.filter((r) => r.status === 'rejected');
-    if (failed.length > 0) {
-      console.warn('[EMAIL] Some emails failed:', failed.map((f: any) => f.reason?.message));
+    // ── LOGIN: Branded login confirmation to user + Admin alert ──────────────
+    if (type === 'LOGIN') {
+      const loginMethod = method === 'google' ? 'Google Sign-In' : 'Email & Password';
+
+      // Idempotency check: prevent duplicate login emails within sliding window
+      const deduplicationKey = `${sanitizedEmail}:login-api`;
+      if (!shouldSendLoginEmail(deduplicationKey)) {
+        logger.info('[EMAIL/API] Skipped duplicate login email (deduplicated by idempotency guard)', {
+          component: 'SendEmailRoute',
+          action: 'LOGIN_EMAIL_DEDUPLICATED',
+          email: sanitizedEmail,
+        });
+        return NextResponse.json({ success: true, deduplicated: true });
+      }
+
+      const userHtml = generateGoogleLoginEmailHtml({
+        firstName,
+        email: sanitizedEmail,
+        loginDateTime: now,
+        loginMethod,
+        memberPortalUrl: `${PORTAL_URL}/member`,
+      });
+
+      const [userResult, adminResult] = await Promise.allSettled([
+        // 1. Transactional confirmation email to user
+        resendClient.emails.send({
+          from: FROM_EMAIL,
+          to: [sanitizedEmail],
+          replyTo: CHURCH_EMAIL,
+          subject: 'Welcome to Kingdom of Christ Ministries — Sign-In Successful',
+          html: userHtml,
+        }),
+        // 2. Security alert notification to church admin
+        resendClient.emails.send({
+          from: FROM_EMAIL,
+          to: [NOTIFY_EMAIL],
+          replyTo: CHURCH_EMAIL,
+          subject: `🔔 Member Login: ${displayName} (${sanitizedEmail})`,
+          html: loginAdminAlertHtml(displayName, sanitizedEmail, now, loginMethod),
+        }),
+      ]);
+
+      logger.info('[EMAIL/API] Login confirmation emails dispatched', {
+        component: 'SendEmailRoute',
+        action: 'LOGIN_EMAIL_SENT',
+        email: sanitizedEmail,
+        loginMethod,
+      });
+
+      return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ success: true, sent: results.length - failed.length, failed: failed.length });
+    return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });
   } catch (err: any) {
-    console.error('[EMAIL] Fatal error:', err);
-    return NextResponse.json({ error: err?.message || 'Failed to send email' }, { status: 500 });
+    logger.error('[EMAIL/API] Exception in send-email handler', {
+      component: 'SendEmailRoute',
+      action: 'LOGIN_EMAIL_FAILED',
+      error: err?.message || String(err),
+    });
+    return NextResponse.json({ error: 'Email delivery encountered an issue' }, { status: 500 });
   }
 }

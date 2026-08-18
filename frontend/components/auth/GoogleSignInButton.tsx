@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, AlertCircle, RefreshCw, X } from "lucide-react";
+import { Loader2, AlertCircle, RefreshCw, X, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   loadGoogleGsiScript,
@@ -18,7 +18,7 @@ interface GoogleSignInButtonProps {
   className?: string;
 }
 
-type ButtonState = "IDLE" | "LOADING_GOOGLE" | "AUTHENTICATING" | "ERROR";
+type ButtonState = "IDLE" | "LOADING_GOOGLE" | "AUTHENTICATING" | "REDIRECTING" | "ERROR";
 
 export default function GoogleSignInButton({ onError, className = "" }: GoogleSignInButtonProps) {
   const router = useRouter();
@@ -35,10 +35,11 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
   const isAuthenticatingRef = useRef(false);
   const isMountedRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cancelHintTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const clearTimers = () => {
+  const clearTimers = useCallback(() => {
     if (safetyTimeoutRef.current) {
       clearTimeout(safetyTimeoutRef.current);
       safetyTimeoutRef.current = null;
@@ -48,7 +49,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       cancelHintTimeoutRef.current = null;
     }
     setShowCancelHint(false);
-  };
+  }, []);
 
   // Multilingual translations for button states and errors
   const getLocalizedText = useCallback(
@@ -56,6 +57,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       | "signInWithGoogle"
       | "loadingGoogle"
       | "authenticating"
+      | "redirecting"
       | "unavailable"
       | "networkError"
       | "popupBlocked"
@@ -70,6 +72,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           signInWithGoogle: "Sign in with Google",
           loadingGoogle: "Connecting to Google...",
           authenticating: "Signing in with Google...",
+          redirecting: "Redirecting...",
           unavailable: "Google Sign-In is temporarily unavailable. Please try again.",
           networkError: "Unable to connect to Google. Please check your internet connection.",
           popupBlocked: "Google popup was blocked. Please allow popups and try again.",
@@ -83,6 +86,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           signInWithGoogle: "Google తో సైన్ ఇన్ చేయండి",
           loadingGoogle: "Google తో కనెక్ట్ అవుతోంది...",
           authenticating: "Google తో సైన్ ఇన్ అవుతోంది...",
+          redirecting: "రీడైరెక్ట్ అవుతోంది...",
           unavailable: "Google సైన్-ఇన్ ప్రస్తుతం అందుబాటులో లేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.",
           networkError: "Google తో కనెక్ట్ కాలేదు. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి.",
           popupBlocked: "Google పాపప్ నిరోధించబడింది. దయచేసి పాపప్‌లను అనుమతించండి.",
@@ -96,6 +100,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           signInWithGoogle: "गूगल से साइन इन करें",
           loadingGoogle: "गूगल से कनेक्ट हो रहा है...",
           authenticating: "गूगल से साइन इन हो रहा है...",
+          redirecting: "रीडायरेक्ट हो रहा है...",
           unavailable: "गूगल साइन-इन अस्थायी रूप से अनुपलब्ध है। कृपया पुनः प्रयास करें।",
           networkError: "गूगल से कनेक्ट नहीं हो सका। कृपया अपना इंटरनेट कनेक्शन जांचें।",
           popupBlocked: "गूगल पॉपअप अवरुद्ध हो गया। कृपया पॉपअप की अनुमति दें।",
@@ -108,20 +113,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       };
 
       const langKey = language === "te" || language === "hi" ? language : "en";
-      return texts[langKey][key] || texts.en[key];
+      return (texts as any)[langKey]?.[key] || (texts as any).en[key];
     },
     [language]
   );
-
-  // Send non-blocking login notification email
-  const sendLoginNotification = (email: string, name: string) => {
-    if (!email) return;
-    fetch("/api/auth/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "LOGIN", email, name, method: "google" }),
-    }).catch(() => {});
-  };
 
   // Safe cookie setter with SameSite and HTTPS Secure attributes
   const setAuthCookies = (uid: string, role: string) => {
@@ -132,6 +127,17 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
     document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
   };
+
+  const handleCancel = useCallback(() => {
+    clearTimers();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    isAuthenticatingRef.current = false;
+    setState("IDLE");
+    setErrorMessage(null);
+  }, [clearTimers]);
 
   // Verification request to backend with token payload
   const verifyWithBackend = useCallback(
@@ -145,7 +151,19 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       logGoogleAuthDiagnostic("CREDENTIAL_CALLBACK_RECEIVED");
 
       const abortController = new AbortController();
-      const fetchTimeout = setTimeout(() => abortController.abort(), 10000);
+      abortControllerRef.current = abortController;
+      const fetchTimeout = setTimeout(() => abortController.abort(), 12000);
+
+      // Safety timeout in case backend takes too long (15 seconds max)
+      if (safetyTimeoutRef.current) clearTimeout(safetyTimeoutRef.current);
+      safetyTimeoutRef.current = setTimeout(() => {
+        if (isMountedRef.current && stateRef.current === "AUTHENTICATING") {
+          console.warn("[GOOGLE_AUTH] Authentication safety timeout fired");
+          isAuthenticatingRef.current = false;
+          setState("ERROR");
+          setErrorMessage(getLocalizedText("serverError"));
+        }
+      }, 15000);
 
       try {
         const res = await fetch("/api/auth/google", {
@@ -169,7 +187,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
         clearTimers();
 
-        // 1. Set presence session cookies
+        // 1. Set presence session cookies immediately
         if (data.user?.id && data.user?.role) {
           setAuthCookies(data.user.id, data.user.role);
         }
@@ -185,12 +203,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           });
         }
 
-        // 3. Send non-blocking login email
-        if (data.user?.email) {
-          sendLoginNotification(data.user.email, data.user.name || "Member");
-        }
-
-        // 4. Determine final destination (honoring safe ?next= param if present)
+        // 3. Determine final destination (honoring safe ?next= param if present)
         let targetPath = data.redirectTo || "/member";
         const nextParam = searchParams?.get("next");
         if (
@@ -206,8 +219,20 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
           }
         }
 
-        // 5. Navigate to member portal
-        router.replace(targetPath);
+        // 5. Update state to redirecting
+        setState("REDIRECTING");
+
+        // 6. Direct browser navigation with location.replace for reliable session cookie pickup
+        if (typeof window !== "undefined") {
+          window.location.replace(targetPath);
+          // Fallback if location.replace takes a moment
+          setTimeout(() => {
+            router.replace(targetPath);
+            window.location.href = targetPath;
+          }, 800);
+        } else {
+          router.replace(targetPath);
+        }
       } catch (err: any) {
         clearTimeout(fetchTimeout);
         clearTimers();
@@ -217,15 +242,16 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         if (isMountedRef.current) {
           isAuthenticatingRef.current = false;
           setState("ERROR");
-          const msg = err?.name === "AbortError" 
-            ? getLocalizedText("networkError") 
-            : err?.message || getLocalizedText("serverError");
+          const msg =
+            err?.name === "AbortError"
+              ? getLocalizedText("networkError")
+              : err?.message || getLocalizedText("serverError");
           setErrorMessage(msg);
           onError?.(msg);
         }
       }
     },
-    [getLocalizedText, onError, router, searchParams, updateUser]
+    [clearTimers, getLocalizedText, onError, router, searchParams, updateUser]
   );
 
   // Fallback to Firebase Google popup if GIS SDK is blocked or unavailable
@@ -246,7 +272,8 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       isAuthenticatingRef.current = false;
       if (
         firebaseErr?.code === "auth/popup-closed-by-user" ||
-        firebaseErr?.code === "auth/cancelled-popup-request"
+        firebaseErr?.code === "auth/cancelled-popup-request" ||
+        firebaseErr?.code === "auth/user-cancelled"
       ) {
         setState("IDLE");
         return;
@@ -265,16 +292,9 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     }
   };
 
-  const handleCancel = useCallback(() => {
-    clearTimers();
-    isAuthenticatingRef.current = false;
-    setState("IDLE");
-    setErrorMessage(null);
-  }, []);
-
   // Main Google Sign-In Click Handler
   const handleGoogleSignInClick = async () => {
-    if (state === "AUTHENTICATING" || state === "LOADING_GOOGLE") return;
+    if (state === "AUTHENTICATING" || state === "LOADING_GOOGLE" || state === "REDIRECTING") return;
 
     const clientId = getGoogleClientId();
 
@@ -291,11 +311,11 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     setState("LOADING_GOOGLE");
     setErrorMessage(null);
 
-    // Setup safety timeout: automatically reset if stuck for 12 seconds
+    // Setup safety timeout: automatically reset if stuck for 10 seconds
     clearTimers();
     cancelHintTimeoutRef.current = setTimeout(() => {
       if (isMountedRef.current) setShowCancelHint(true);
-    }, 3500);
+    }, 2500);
 
     safetyTimeoutRef.current = setTimeout(() => {
       if (
@@ -305,7 +325,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         console.warn("[GOOGLE_AUTH] Safety timeout reached, resetting state to IDLE");
         handleCancel();
       }
-    }, 12000);
+    }, 10000);
 
     // Preload GIS script
     const loaded = await loadGoogleGsiScript(5000);
@@ -320,7 +340,11 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
             if (tokenResponse.error) {
               clearTimers();
               isAuthenticatingRef.current = false;
-              if (tokenResponse.error === "access_denied") {
+              if (
+                tokenResponse.error === "access_denied" ||
+                tokenResponse.error === "user_cancelled" ||
+                tokenResponse.error === "popup_closed"
+              ) {
                 // User closed popup or cancelled
                 setState("IDLE");
                 return;
@@ -370,13 +394,32 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     isMountedRef.current = true;
     // Pre-load GIS script in the background silently
     loadGoogleGsiScript(4000).catch(() => {});
+
+    // Recover stuck state if user switches tabs or returns after dismissing popup on mobile
+    const handleFocusRecovery = () => {
+      if (stateRef.current === "LOADING_GOOGLE") {
+        setTimeout(() => {
+          if (stateRef.current === "LOADING_GOOGLE" && isMountedRef.current) {
+            console.info("[GOOGLE_AUTH] Window regained focus, resetting idle state");
+            setState("IDLE");
+            setShowCancelHint(false);
+          }
+        }, 3000);
+      }
+    };
+
+    window.addEventListener("focus", handleFocusRecovery);
+    document.addEventListener("visibilitychange", handleFocusRecovery);
+
     return () => {
       isMountedRef.current = false;
       clearTimers();
+      window.removeEventListener("focus", handleFocusRecovery);
+      document.removeEventListener("visibilitychange", handleFocusRecovery);
     };
-  }, []);
+  }, [clearTimers]);
 
-  const isLoading = state === "LOADING_GOOGLE" || state === "AUTHENTICATING";
+  const isLoading = state === "LOADING_GOOGLE" || state === "AUTHENTICATING" || state === "REDIRECTING";
 
   return (
     <div className={`w-full flex flex-col items-center justify-center gap-2 ${className}`}>
@@ -405,47 +448,57 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         disabled={isLoading}
         aria-label={getLocalizedText("signInWithGoogle")}
         className={`relative overflow-hidden w-full h-[48px] flex items-center justify-center px-4 rounded-xl border font-semibold text-xs sm:text-sm shadow-xs transition-all duration-300 cursor-pointer select-none active:scale-[0.99] disabled:cursor-not-allowed ${
-          isLoading
+          state === "REDIRECTING"
+            ? "border-emerald-400/60 dark:border-emerald-600/60 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-100 shadow-md shadow-emerald-500/10"
+            : isLoading
             ? "border-purple-400/60 dark:border-purple-600/60 bg-purple-50/60 dark:bg-purple-950/30 text-purple-900 dark:text-purple-100 shadow-md shadow-purple-500/10"
             : "border-slate-300 dark:border-slate-700/80 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-md hover:shadow-purple-500/5"
         }`}
       >
         {/* Animated glossy shimmer bar during loading */}
-        {isLoading && (
+        {isLoading && state !== "REDIRECTING" && (
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/15 dark:via-purple-400/25 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
         )}
 
         <div className="relative z-10 flex items-center justify-center gap-3 w-full">
           {/* Always-visible official 4-color Google G Icon */}
           <div className="relative flex items-center justify-center shrink-0 w-5 h-5">
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-              />
-            </svg>
+            {state === "REDIRECTING" ? (
+              <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+            )}
 
             {/* Glowing active spinner ring overlay when connecting */}
-            {isLoading && (
+            {isLoading && state !== "REDIRECTING" && (
               <span className="absolute -inset-1 rounded-full border-2 border-purple-500/30 border-t-purple-600 dark:border-t-purple-400 animate-spin" />
             )}
           </div>
 
           {/* Button Text with Smooth Transition */}
           <span className="truncate font-semibold tracking-wide">
-            {isLoading ? (
+            {state === "REDIRECTING" ? (
+              <span className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+                <span>{getLocalizedText("redirecting")}</span>
+              </span>
+            ) : isLoading ? (
               <span className="inline-flex items-center gap-2 text-purple-700 dark:text-purple-300">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
                 <span>
@@ -461,18 +514,18 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
         </div>
       </button>
 
-      {/* ── Cancel recovery option if popup is taking a moment ── */}
+      {/* ── Cancel / Recovery option if popup or verification is taking a moment ── */}
       <AnimatePresence>
-        {isLoading && showCancelHint && (
+        {isLoading && showCancelHint && state !== "REDIRECTING" && (
           <motion.button
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             type="button"
             onClick={handleCancel}
-            className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline font-medium transition-colors cursor-pointer pt-0.5"
+            className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 underline font-semibold transition-colors cursor-pointer pt-0.5"
           >
-            <X className="w-3 h-3" />
+            <X className="w-3.5 h-3.5" />
             <span>{getLocalizedText("cancel")}</span>
           </motion.button>
         )}
