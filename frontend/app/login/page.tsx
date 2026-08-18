@@ -676,18 +676,27 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="relative overflow-hidden w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 group border border-purple-400/20 cursor-pointer"
+                  className={`relative overflow-hidden w-full py-3.5 rounded-xl font-bold shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer select-none active:scale-[0.99] disabled:cursor-not-allowed ${
+                    isLoading
+                      ? "bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white shadow-purple-600/35 border border-purple-400/40"
+                      : "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.01] border border-purple-400/20"
+                  }`}
                 >
                   {/* Gloss sheen overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
                   
+                  {/* Shimmer sweep while loading */}
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-[shimmer_2s_infinite]" />
+                  )}
+
                   {isLoading ? (
-                    <>
-                      <Loader2 className="animate-spin w-5 h-5" />
-                      <span>{loginT.signingIn}</span>
-                    </>
+                    <div className="relative z-10 flex items-center justify-center gap-2.5">
+                      <Loader2 className="animate-spin w-4 h-4 text-purple-200" />
+                      <span className="tracking-wide text-sm font-semibold text-purple-100">{loginT.signingIn}</span>
+                    </div>
                   ) : (
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="relative z-10 flex items-center justify-center gap-2">
                       {loginT.signInBtn} 
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </span>
