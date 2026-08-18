@@ -20,7 +20,7 @@ import nodemailer from 'nodemailer';
 import { logger } from '@/lib/logger';
 
 const CHURCH_NAME = 'Kingdom of Christ Ministries';
-const CHURCH_TAGLINE = '"A place of Love, Faith, and Miracles"';
+const CHURCH_TAGLINE = '"Love • Faith • Miracles"';
 const CHURCH_WEBSITE = 'https://kcmchurch.vercel.app/';
 const CHURCH_PORTAL_URL = 'https://kcmchurch.vercel.app/member';
 const CHURCH_SUPPORT_EMAIL = process.env.EMAIL_REPLY_TO || 'kingofchristministries23@gmail.com';
@@ -272,10 +272,10 @@ export function generateGoogleLoginEmailHtml({
                           ${loginMethod}
                         </td>
                       </tr>
-                      <!-- Date & Time -->
+                      <!-- Date -->
                       <tr>
                         <td style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 500; vertical-align: top;">
-                          Date &amp; Time:
+                          Date:
                         </td>
                         <td style="padding: 6px 0; font-size: 13px; color: #0f172a; font-weight: 600;">
                           ${loginDateTime}
@@ -305,7 +305,7 @@ export function generateGoogleLoginEmailHtml({
                       <tr>
                         <td align="center" style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); background-color: #7c3aed; border-radius: 12px; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);">
                           <a href="${memberPortalUrl}" target="_blank" class="btn-cta" style="display: inline-block; padding: 15px 36px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 12px;">
-                            OPEN MEMBER PORTAL →
+                            OPEN MEMBER PORTAL
                           </a>
                         </td>
                       </tr>
@@ -316,7 +316,7 @@ export function generateGoogleLoginEmailHtml({
 
               <!-- Informational description -->
               <p style="margin: 0 0 20px; font-size: 13.5px; line-height: 1.65; color: #475569;">
-                You can now access your Kingdom of Christ Ministries Member Portal to manage your profile, view church updates, events, resources, and other available member services.
+                Your account is now ready to access the Kingdom of Christ Ministries Member Portal, where you can view your profile, church updates, events, resources, and other available member services.
               </p>
 
               <!-- Security notice box -->
@@ -324,7 +324,7 @@ export function generateGoogleLoginEmailHtml({
                 <tr>
                   <td style="padding: 12px 16px;">
                     <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #92400e;">
-                      <strong>Security Note:</strong> If you did not authorize this sign-in, please secure your Google Account immediately and contact Kingdom of Christ Ministries administration.
+                      If this wasn't you, please secure your Google Account immediately and contact the Kingdom of Christ Ministries administration.
                     </p>
                   </td>
                 </tr>
@@ -343,8 +343,11 @@ export function generateGoogleLoginEmailHtml({
                 <p style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a;">
                   ${CHURCH_NAME}
                 </p>
-                <p style="margin: 2px 0 6px; font-size: 12.5px; font-style: italic; color: #7c3aed; font-weight: 600;">
+                <p style="margin: 2px 0 6px; font-size: 12.5px; color: #7c3aed; font-weight: 600;">
                   ${CHURCH_TAGLINE}
+                </p>
+                <p style="margin: 4px 0 2px; font-size: 12px; color: #64748b;">
+                  Member Support: <a href="mailto:${CHURCH_SUPPORT_EMAIL}" style="color: #7c3aed; text-decoration: none; font-weight: 600;">${CHURCH_SUPPORT_EMAIL}</a>
                 </p>
                 <p style="margin: 0; font-size: 12px; color: #64748b;">
                   Website: <a href="${CHURCH_WEBSITE}" target="_blank" style="color: #7c3aed; text-decoration: none; font-weight: 600;">${CHURCH_WEBSITE}</a>
@@ -378,6 +381,52 @@ export function generateGoogleLoginEmailHtml({
   </table>
 </body>
 </html>`;
+}
+
+/**
+ * Generates the plain-text version of the KCM login confirmation email.
+ */
+export function generateGoogleLoginEmailText({
+  firstName,
+  email,
+  loginDateTime = getFormattedLoginDateTime(),
+  memberPortalUrl = CHURCH_PORTAL_URL,
+  supportEmail = CHURCH_SUPPORT_EMAIL,
+}: {
+  firstName: string;
+  email: string;
+  loginDateTime?: string;
+  memberPortalUrl?: string;
+  supportEmail?: string;
+}): string {
+  const safeName = firstName || 'Member';
+  return `Welcome, ${safeName}!
+
+Your sign-in was successful.
+
+You have successfully signed in to your Kingdom of Christ Ministries member account using Google.
+
+Account: ${email}
+Sign-in method: Google Sign-In
+Date: ${loginDateTime}
+Status: Successful
+
+Open your Member Portal:
+${memberPortalUrl}
+
+If this wasn't you, please secure your Google Account immediately and contact Kingdom of Christ Ministries administration.
+
+With love and blessings,
+
+Kingdom of Christ Ministries
+"Love • Faith • Miracles"
+
+Member Support:
+${supportEmail}
+
+Website:
+https://kcmchurch.vercel.app/
+`;
 }
 
 /**
@@ -423,6 +472,14 @@ export async function sendGoogleLoginConfirmationEmail({
   const loginDateTime = getFormattedLoginDateTime();
   const subject = 'Welcome to Kingdom of Christ Ministries — Sign-In Successful';
 
+  const textContent = generateGoogleLoginEmailText({
+    firstName,
+    email: sanitizedEmail,
+    loginDateTime,
+    memberPortalUrl: CHURCH_PORTAL_URL,
+    supportEmail: CHURCH_SUPPORT_EMAIL,
+  });
+
   // ── Transport 1: Check SMTP (Gmail / Custom SMTP) ─────────────────────────
   const smtpTransporter = getSmtpTransporter();
   if (smtpTransporter) {
@@ -442,6 +499,7 @@ export async function sendGoogleLoginConfirmationEmail({
         replyTo: CHURCH_SUPPORT_EMAIL,
         subject,
         html: htmlContent,
+        text: textContent,
       });
 
       logger.info('[EMAIL/AUTH] Successfully sent KCM login confirmation email via SMTP', {
@@ -489,6 +547,7 @@ export async function sendGoogleLoginConfirmationEmail({
       replyTo: CHURCH_SUPPORT_EMAIL,
       subject,
       html: htmlContent,
+      text: textContent,
     });
 
     if ((result as any)?.error) {

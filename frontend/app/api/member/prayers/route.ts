@@ -46,18 +46,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Title, description, and category are required' }, { status: 400 });
     }
 
-    if (!userId) {
+    // Extract session from cookie
+    const cookieHeader = req.headers.get('cookie') || '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const sessionUid = uidMatch ? uidMatch[1] : null;
+    const effectiveUserId = sessionUid || userId;
+
+    if (!effectiveUserId) {
       const firstUser = await prisma.user.findFirst();
       userId = firstUser?.id || 'admin_offline_user';
+    } else {
+      userId = effectiveUserId;
     }
 
-    const prayerData = {
-      userId,
-      title,
-      description,
-      category,
+    const prayerData: any = {
+      title: String(title).trim(),
+      description: String(description).trim(),
+      category: String(category).trim(),
       isAnonymous: Boolean(isAnonymous),
-      status: 'PENDING' as const,
+      status: 'PENDING',
+      user: { connect: { id: userId } },
     };
 
     const newPrayer = await prisma.prayerRequest.create({
@@ -105,8 +113,25 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
     }
 
+    // Authorization & Ownership check
+    const cookieHeader = req.headers.get('cookie') || '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
+    const sessionUid = uidMatch ? uidMatch[1] : null;
+    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
+    const isStaff = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN' || sessionRole === 'PASTOR';
+
+    const existingPrayer = await prisma.prayerRequest.findUnique({ where: { id } });
+    if (!existingPrayer) {
+      return NextResponse.json({ error: 'Prayer request not found' }, { status: 404 });
+    }
+
+    if (!isStaff && sessionUid && existingPrayer.userId !== sessionUid) {
+      return NextResponse.json({ error: 'Forbidden: You can only edit your own prayer request' }, { status: 403 });
+    }
+
     const updateData: any = {};
-    if (status) updateData.status = status;
+    if (status && isStaff) updateData.status = status;
     if (category) updateData.category = category;
     if (title) updateData.title = title;
     if (description) updateData.description = description;
@@ -142,6 +167,23 @@ export async function DELETE(req: Request) {
 
     if (!id) {
       return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
+    }
+
+    // Authorization & Ownership check
+    const cookieHeader = req.headers.get('cookie') || '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
+    const sessionUid = uidMatch ? uidMatch[1] : null;
+    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
+    const isStaff = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN' || sessionRole === 'PASTOR';
+
+    const existingPrayer = await prisma.prayerRequest.findUnique({ where: { id } });
+    if (!existingPrayer) {
+      return NextResponse.json({ error: 'Prayer request not found' }, { status: 404 });
+    }
+
+    if (!isStaff && sessionUid && existingPrayer.userId !== sessionUid) {
+      return NextResponse.json({ error: 'Forbidden: You can only delete your own prayer request' }, { status: 403 });
     }
 
     await prisma.prayerRequest.delete({

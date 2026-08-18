@@ -5,6 +5,7 @@ import {
   generateGoogleLoginEmailHtml,
   shouldSendLoginEmail,
   getFormattedLoginDateTime,
+  sendGoogleLoginConfirmationEmail,
 } from '@/lib/authEmailService';
 import { logger } from '@/lib/logger';
 

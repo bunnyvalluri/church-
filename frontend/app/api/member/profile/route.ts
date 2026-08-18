@@ -5,34 +5,41 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    let userId = searchParams.get('userId');
-    let email = searchParams.get('email');
+    const paramUserId = searchParams.get('userId');
+    const paramEmail = searchParams.get('email');
 
-    // Extract session cookie if searchParams are missing
-    if (!userId && !email) {
-      const cookieHeader = req.headers.get('cookie') || '';
-      const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-      if (uidMatch && uidMatch[1]) {
-        userId = uidMatch[1];
-      }
+    // Extract session from cookie
+    const cookieHeader = req.headers.get('cookie') || '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
+    const sessionUid = uidMatch ? uidMatch[1] : null;
+    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
+    const isAdmin = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN';
+
+    // IDOR Protection: Non-admin users can ONLY read their own profile
+    let targetUserId = paramUserId || sessionUid;
+    let targetEmail = paramEmail;
+
+    if (!isAdmin && sessionUid) {
+      targetUserId = sessionUid;
+      targetEmail = null; // Ignore external email param to prevent reading other users
     }
 
-    // If still no identifiers provided (e.g. unauthenticated API status check probe)
-    if (!userId && !email) {
+    if (!targetUserId && !targetEmail) {
       return NextResponse.json({
         success: true,
         authenticated: false,
         user: null,
-        message: 'No active session or query parameters (userId/email) provided.'
+        message: 'No active session or query parameters provided.'
       }, { status: 200 });
     }
 
     let user = null;
-    if (userId) {
-      user = await prisma.user.findUnique({ where: { id: userId } });
+    if (targetUserId) {
+      user = await prisma.user.findUnique({ where: { id: targetUserId } });
     }
-    if (!user && email) {
-      user = await prisma.user.findUnique({ where: { email } });
+    if (!user && targetEmail) {
+      user = await prisma.user.findUnique({ where: { email: targetEmail } });
     }
 
     if (!user) {
@@ -44,10 +51,13 @@ export async function GET(req: Request) {
       }, { status: 404 });
     }
 
+    // Do not leak password hash in profile response
+    const { password: _, ...sanitizedUser } = user as any;
+
     return NextResponse.json({
       success: true,
       authenticated: true,
-      user
+      user: sanitizedUser
     }, { status: 200 });
   } catch (err: any) {
     console.error('[PROFILE/GET] Error:', err);
@@ -63,32 +73,37 @@ export async function POST(req: Request) {
     const body = await req.json();
     let { userId, email, name, phone, address, image } = body;
 
-    // Fallback to cookie if userId/email missing in body
-    if (!userId && !email) {
-      const cookieHeader = req.headers.get('cookie') || '';
-      const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-      if (uidMatch && uidMatch[1]) {
-        userId = uidMatch[1];
-      }
+    // Extract session from cookie
+    const cookieHeader = req.headers.get('cookie') || '';
+    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
+    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
+    const sessionUid = uidMatch ? uidMatch[1] : null;
+    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
+    const isAdmin = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN';
+
+    // IDOR Protection: Non-admin users can ONLY modify their own profile
+    let effectiveUserId = userId || sessionUid;
+    if (!isAdmin && sessionUid) {
+      effectiveUserId = sessionUid;
     }
 
-    if (!userId && !email) {
+    if (!effectiveUserId && !email) {
       return NextResponse.json({ error: 'User ID or Email is required for profile update' }, { status: 400 });
     }
 
     // Find existing user by ID or Email
     let existingUser = null;
-    if (userId) {
-      existingUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (effectiveUserId) {
+      existingUser = await prisma.user.findUnique({ where: { id: effectiveUserId } });
     }
     if (!existingUser && email) {
       existingUser = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
     }
 
     const updateData: any = {
-      name: name || 'Member',
-      phone: phone || null,
-      address: address || null,
+      name: name ? String(name).trim() : 'Member',
+      phone: phone ? String(phone).trim() : null,
+      address: address ? String(address).trim() : null,
     };
     if (image !== undefined && image !== null) {
       updateData.image = image;
@@ -104,19 +119,20 @@ export async function POST(req: Request) {
       // Create user if not present in DB
       updatedUser = await prisma.user.create({
         data: {
-          id: userId || undefined,
-          email: (email || `${userId}@kcm-church.com`).toLowerCase().trim(),
-          name: name || 'Member',
+          id: effectiveUserId || undefined,
+          email: (email || `${effectiveUserId}@kcm-church.com`).toLowerCase().trim(),
+          name: name ? String(name).trim() : 'Member',
           password: '',
-          phone: phone || null,
-          address: address || null,
+          phone: phone ? String(phone).trim() : null,
+          address: address ? String(address).trim() : null,
           image: image || null,
           role: 'MEMBER',
         },
       });
     }
 
-    return NextResponse.json({ success: true, user: updatedUser });
+    const { password: _, ...sanitizedUser } = updatedUser as any;
+    return NextResponse.json({ success: true, user: sanitizedUser });
   } catch (err: any) {
     console.error('[PROFILE/UPDATE] Error:', err);
     return NextResponse.json(
