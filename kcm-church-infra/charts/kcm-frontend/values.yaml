@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: ghcr.io/bunnyvalluri/kcm-frontend
   pullPolicy: IfNotPresent
-  tag: "1f8bff1b058f36c8f26900614190900ceed5f0b1"
+  tag: "90b908f730394484fa4bdd228d24da12e71ed9e6"
 
 imagePullSecrets:
   - name: ghcr-secret
