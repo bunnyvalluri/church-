@@ -3,24 +3,20 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Kingdom of Christ Ministries (KCM) — Transactional Auth Email & Idempotency Service
  *
- * Responsibilities:
- * - Generate production-grade, responsive, table-based HTML transactional emails
- *   compatible with Gmail, Outlook, Apple Mail, Samsung Email.
- * - Enforce strict server-side deduplication / idempotency to prevent duplicate
- *   emails on page refresh, React re-render, network retry, or OAuth callback retry.
- * - Non-blocking asynchronous delivery with isolated try/catch so email failures
- *   never disrupt user authentication or sessions.
- * - Safe structured logging for:
- *   • AUTH_SUCCESS
- *   • AUTH_FAILURE
- *   • MEMBER_CREATED
- *   • MEMBER_LOGIN
- *   • LOGIN_EMAIL_SENT
- *   • LOGIN_EMAIL_FAILED
+ * Multi-Transport Architecture:
+ * 1. Resend Primary Dispatch: Sends branded HTML emails via Resend API.
+ * 2. SMTP Transport (Gmail / Custom SMTP): Seamlessly sends via nodemailer if configured.
+ * 3. Smart Sandbox Mirror: If Resend is running in unverified sandbox mode
+ *    (onboarding@resend.dev where Resend limits delivery to the account owner),
+ *    it gracefully mirrors the notification to the verified test owner inbox
+ *    so notifications are NEVER lost during development or testing.
+ * 4. Idempotency Cache: 3-minute sliding window to eliminate duplicate emails.
+ * 5. Structured Audit Logging: AUTH_SUCCESS, MEMBER_LOGIN, LOGIN_EMAIL_SENT, etc.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { logger } from '@/lib/logger';
 
 const CHURCH_NAME = 'Kingdom of Christ Ministries';
@@ -30,6 +26,9 @@ const CHURCH_PORTAL_URL = 'https://kcmchurch.vercel.app/member';
 const CHURCH_SUPPORT_EMAIL = process.env.EMAIL_REPLY_TO || 'kingofchristministries23@gmail.com';
 const CHURCH_ADDRESS = '15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad, Telangana 500055';
 const CHURCH_PHONE = '+91 97040 90069 | +91 96409 43777';
+
+// Fallback owner email for unverified Resend sandbox mode
+const RESEND_FALLBACK_OWNER = process.env.RESEND_OWNER_EMAIL || 'rahulgamer.7123@gmail.com';
 
 const getFromEmail = (): string => {
   return (
@@ -41,10 +40,29 @@ const getFromEmail = (): string => {
 
 const getResendClient = (): Resend | null => {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || apiKey.trim().length === 0 || apiKey.startsWith('your_')) {
+  if (!apiKey || apiKey.trim().length === 0 || apiKey.startsWith('your_') || apiKey.startsWith('re_your')) {
     return null;
   }
   return new Resend(apiKey.trim());
+};
+
+const getSmtpTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER || 'kingofchristministries23@gmail.com';
+  const pass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+
+  if (pass) {
+    return nodemailer.createTransport({
+      host: host || 'smtp.gmail.com',
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: Number(process.env.SMTP_PORT) === 465 || !process.env.SMTP_PORT,
+      auth: {
+        user,
+        pass,
+      },
+    });
+  }
+  return null;
 };
 
 // ── Idempotency Deduplication Window (3 minutes per user/email) ───────────────
@@ -56,7 +74,6 @@ interface CacheEntry {
 const sentEmailCache = new Map<string, CacheEntry>();
 const DEDUPLICATION_TTL_MS = 3 * 60 * 1000; // 3 minutes
 
-// Periodic cleanup of stale idempotency entries
 function cleanupCache() {
   const now = Date.now();
   for (const [key, entry] of sentEmailCache.entries()) {
@@ -117,6 +134,7 @@ export interface GoogleLoginEmailParams {
   loginDateTime?: string;
   loginMethod?: string;
   memberPortalUrl?: string;
+  sandboxNotice?: string;
 }
 
 /**
@@ -129,9 +147,20 @@ export function generateGoogleLoginEmailHtml({
   loginDateTime = getFormattedLoginDateTime(),
   loginMethod = 'Google Sign-In',
   memberPortalUrl = CHURCH_PORTAL_URL,
+  sandboxNotice,
 }: GoogleLoginEmailParams): string {
   const safeName = firstName || 'Member';
   const safeEmail = email;
+
+  const sandboxBanner = sandboxNotice
+    ? `<tr>
+        <td style="padding: 12px 20px; background-color: #fef3c7; border-bottom: 1px solid #fde68a; text-align: center;">
+          <p style="margin: 0; font-size: 12px; font-weight: 600; color: #92400e;">
+            ${sandboxNotice}
+          </p>
+        </td>
+      </tr>`
+    : '';
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -174,6 +203,8 @@ export function generateGoogleLoginEmailHtml({
         <!-- ── Main Card Container ── -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
           
+          ${sandboxBanner}
+
           <!-- ── Top Purple Gradient Brand Header ── -->
           <tr>
             <td align="center" style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); background-color: #7c3aed; padding: 36px 30px 30px; text-align: center;">
@@ -350,10 +381,8 @@ export function generateGoogleLoginEmailHtml({
 }
 
 /**
- * Asynchronously sends the branded KCM Google login confirmation email to the user.
- * - Enforces idempotency to prevent duplicates.
- * - Non-blocking: Errors are caught, logged as LOGIN_EMAIL_FAILED, and will never throw or interrupt session flow.
- * - Safe logging only.
+ * Dispatches the branded KCM Google login confirmation email to the user.
+ * Supports Resend, SMTP (Gmail/Custom), and smart sandbox fallback.
  */
 export async function sendGoogleLoginConfirmationEmail({
   userId,
@@ -367,7 +396,7 @@ export async function sendGoogleLoginConfirmationEmail({
   name?: string | null;
   eventId?: string;
   loginMethod?: string;
-}): Promise<{ sent: boolean; reason?: string }> {
+}): Promise<{ sent: boolean; reason?: string; transport?: string }> {
   const sanitizedEmail = (email || '').toLowerCase().trim();
   if (!sanitizedEmail) {
     logger.warn('[EMAIL/AUTH] Skipped login email: Missing recipient email address', {
@@ -390,39 +419,125 @@ export async function sendGoogleLoginConfirmationEmail({
     return { sent: false, reason: 'DEDUPLICATED' };
   }
 
+  const firstName = (name || '').trim().split(' ')[0] || 'Member';
+  const loginDateTime = getFormattedLoginDateTime();
+  const subject = 'Welcome to Kingdom of Christ Ministries — Sign-In Successful';
+
+  // ── Transport 1: Check SMTP (Gmail / Custom SMTP) ─────────────────────────
+  const smtpTransporter = getSmtpTransporter();
+  if (smtpTransporter) {
+    try {
+      const htmlContent = generateGoogleLoginEmailHtml({
+        firstName,
+        email: sanitizedEmail,
+        loginDateTime,
+        loginMethod,
+        memberPortalUrl: CHURCH_PORTAL_URL,
+      });
+
+      const senderAddress = process.env.SMTP_FROM || `"${CHURCH_NAME}" <${process.env.SMTP_USER || CHURCH_SUPPORT_EMAIL}>`;
+      await smtpTransporter.sendMail({
+        from: senderAddress,
+        to: sanitizedEmail,
+        replyTo: CHURCH_SUPPORT_EMAIL,
+        subject,
+        html: htmlContent,
+      });
+
+      logger.info('[EMAIL/AUTH] Successfully sent KCM login confirmation email via SMTP', {
+        component: 'authEmailService',
+        action: 'LOGIN_EMAIL_SENT',
+        userId,
+        email: sanitizedEmail,
+        transport: 'SMTP',
+      });
+
+      return { sent: true, transport: 'SMTP' };
+    } catch (smtpErr: any) {
+      logger.warn(`[EMAIL/AUTH] SMTP dispatch failed, falling back to Resend: ${smtpErr?.message}`, {
+        component: 'authEmailService',
+        error: smtpErr?.message,
+      });
+    }
+  }
+
+  // ── Transport 2: Resend API ───────────────────────────────────────────────
   const resendClient = getResendClient();
   if (!resendClient) {
-    logger.warn('[EMAIL/AUTH] Skipped login email: RESEND_API_KEY not configured on server', {
+    logger.warn('[EMAIL/AUTH] Skipped login email: No email transport configured (RESEND_API_KEY or SMTP)', {
       component: 'authEmailService',
       action: 'LOGIN_EMAIL_FAILED',
       userId,
       email: sanitizedEmail,
     });
-    return { sent: false, reason: 'NO_API_KEY' };
+    return { sent: false, reason: 'NO_CONFIGURED_TRANSPORT' };
   }
-
-  const firstName = (name || '').trim().split(' ')[0] || 'Member';
-  const loginDateTime = getFormattedLoginDateTime();
-  const htmlContent = generateGoogleLoginEmailHtml({
-    firstName,
-    email: sanitizedEmail,
-    loginDateTime,
-    loginMethod,
-    memberPortalUrl: CHURCH_PORTAL_URL,
-  });
 
   try {
     const fromAddress = getFromEmail();
+    const htmlContent = generateGoogleLoginEmailHtml({
+      firstName,
+      email: sanitizedEmail,
+      loginDateTime,
+      loginMethod,
+      memberPortalUrl: CHURCH_PORTAL_URL,
+    });
+
     const result = await resendClient.emails.send({
       from: fromAddress,
       to: [sanitizedEmail],
       replyTo: CHURCH_SUPPORT_EMAIL,
-      subject: 'Welcome to Kingdom of Christ Ministries — Sign-In Successful',
+      subject,
       html: htmlContent,
     });
 
     if ((result as any)?.error) {
-      const errorMsg = (result as any).error?.message || 'Resend provider error';
+      const errorObj = (result as any).error;
+      const errorMsg = errorObj?.message || 'Resend error';
+
+      // ── Handle Resend Sandbox restriction (when domain is unverified on onboarding@resend.dev)
+      if (
+        errorObj?.statusCode === 403 ||
+        errorMsg.includes('only send testing emails to your own email address')
+      ) {
+        logger.warn(
+          `[EMAIL/AUTH] Resend sandbox restriction: Recipient "${sanitizedEmail}" is not verified. Dispatching to test owner "${RESEND_FALLBACK_OWNER}". To send directly to all members, verify domain at resend.com/domains.`,
+          {
+            component: 'authEmailService',
+            action: 'LOGIN_EMAIL_SANDBOX_REDIRECT',
+            originalRecipient: sanitizedEmail,
+            fallbackRecipient: RESEND_FALLBACK_OWNER,
+          }
+        );
+
+        const sandboxHtml = generateGoogleLoginEmailHtml({
+          firstName,
+          email: sanitizedEmail,
+          loginDateTime,
+          loginMethod,
+          memberPortalUrl: CHURCH_PORTAL_URL,
+          sandboxNotice: `⚠️ Test Mode Notice: This email was originally generated for ${sanitizedEmail} and delivered to your verified developer inbox.`,
+        });
+
+        const fallbackResult = await resendClient.emails.send({
+          from: fromAddress,
+          to: [RESEND_FALLBACK_OWNER],
+          replyTo: CHURCH_SUPPORT_EMAIL,
+          subject: `[Dev Preview for ${sanitizedEmail}] ${subject}`,
+          html: sandboxHtml,
+        });
+
+        if (!(fallbackResult as any)?.error) {
+          logger.info('[EMAIL/AUTH] Successfully delivered sandbox login email to owner inbox', {
+            component: 'authEmailService',
+            action: 'LOGIN_EMAIL_SENT',
+            fallbackRecipient: RESEND_FALLBACK_OWNER,
+            originalRecipient: sanitizedEmail,
+          });
+          return { sent: true, transport: 'RESEND_SANDBOX_FALLBACK' };
+        }
+      }
+
       logger.error(`[EMAIL/AUTH] Failed to dispatch login confirmation email: ${errorMsg}`, {
         component: 'authEmailService',
         action: 'LOGIN_EMAIL_FAILED',
@@ -432,15 +547,16 @@ export async function sendGoogleLoginConfirmationEmail({
       return { sent: false, reason: errorMsg };
     }
 
-    logger.info('[EMAIL/AUTH] Successfully sent KCM Google login confirmation email', {
+    logger.info('[EMAIL/AUTH] Successfully sent KCM Google login confirmation email via Resend', {
       component: 'authEmailService',
       action: 'LOGIN_EMAIL_SENT',
       userId,
       email: sanitizedEmail,
       loginMethod,
+      transport: 'RESEND',
     });
 
-    return { sent: true };
+    return { sent: true, transport: 'RESEND' };
   } catch (err: any) {
     logger.error(`[EMAIL/AUTH] Unexpected exception during login email dispatch: ${err?.message || err}`, {
       component: 'authEmailService',

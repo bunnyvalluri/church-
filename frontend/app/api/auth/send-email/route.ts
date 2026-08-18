@@ -270,52 +270,36 @@ export async function POST(req: Request) {
     if (type === 'LOGIN') {
       const loginMethod = method === 'google' ? 'Google Sign-In' : 'Email & Password';
 
-      // Idempotency check: prevent duplicate login emails within sliding window
-      const deduplicationKey = `${sanitizedEmail}:login-api`;
-      if (!shouldSendLoginEmail(deduplicationKey)) {
-        logger.info('[EMAIL/API] Skipped duplicate login email (deduplicated by idempotency guard)', {
-          component: 'SendEmailRoute',
-          action: 'LOGIN_EMAIL_DEDUPLICATED',
-          email: sanitizedEmail,
-        });
-        return NextResponse.json({ success: true, deduplicated: true });
-      }
-
-      const userHtml = generateGoogleLoginEmailHtml({
-        firstName,
+      // Dispatches branded email via multi-transport (SMTP / Resend / Sandbox Fallback)
+      const dispatchResult = await sendGoogleLoginConfirmationEmail({
+        userId: sanitizedEmail,
         email: sanitizedEmail,
-        loginDateTime: now,
+        name: displayName,
         loginMethod,
-        memberPortalUrl: `${PORTAL_URL}/member`,
       });
 
-      const [userResult, adminResult] = await Promise.allSettled([
-        // 1. Transactional confirmation email to user
-        resendClient.emails.send({
-          from: FROM_EMAIL,
-          to: [sanitizedEmail],
-          replyTo: CHURCH_EMAIL,
-          subject: 'Welcome to Kingdom of Christ Ministries — Sign-In Successful',
-          html: userHtml,
-        }),
-        // 2. Security alert notification to church admin
-        resendClient.emails.send({
+      // Also trigger admin security alert notification safely
+      try {
+        await resendClient.emails.send({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
           replyTo: CHURCH_EMAIL,
           subject: `🔔 Member Login: ${displayName} (${sanitizedEmail})`,
           html: loginAdminAlertHtml(displayName, sanitizedEmail, now, loginMethod),
-        }),
-      ]);
+        });
+      } catch (adminAlertErr) {
+        // Non-blocking admin notification
+      }
 
-      logger.info('[EMAIL/API] Login confirmation emails dispatched', {
+      logger.info('[EMAIL/API] Login confirmation email processed', {
         component: 'SendEmailRoute',
         action: 'LOGIN_EMAIL_SENT',
         email: sanitizedEmail,
         loginMethod,
+        dispatchResult,
       });
 
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, dispatchResult });
     }
 
     return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });
