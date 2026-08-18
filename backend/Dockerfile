@@ -4,7 +4,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy dependency mappings
-COPY package.json ./
+COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies

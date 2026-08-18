@@ -31,7 +31,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function BeliefsPage() {
   const { t } = useLanguage();
-  const pageT = t.pages.beliefs;
+  const pageT = (t as any)?.pages?.beliefs || {};
 
   // Filter & Search states
   const [selectedCategory, setSelectedCategory] = useState<string>("all");

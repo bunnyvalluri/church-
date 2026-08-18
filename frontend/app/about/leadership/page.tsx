@@ -31,7 +31,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function LeadershipPage() {
   const { t } = useLanguage();
-  const pageT = t.pages.leadership;
+  const pageT = (t as any)?.pages?.leadership || {};
 
   // Pastor bio tab state
   const [activePastorTab, setActivePastorTab] = useState<"bio" | "vision" | "message">("bio");

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { verifyFirebaseToken, isAdminReady } from '@/lib/firebaseAdmin';
 import { getClientIp } from '@/lib/apiResponse';

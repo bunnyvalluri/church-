@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 /**
  * frontend/app/api/openclaw/execute/route.ts
  * ─────────────────────────────────────────────────────────────────────────────

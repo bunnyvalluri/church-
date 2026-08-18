@@ -118,17 +118,52 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
     const uid = uidMatch ? uidMatch[1] : req.headers.get('x-user-uid');
     const cookieRole = roleMatch ? roleMatch[1].toUpperCase() : req.headers.get('x-user-role')?.toUpperCase();
 
-    if (uid && cookieRole) {
-      const validRolesList: AuthenticatedUser['role'][] = [
-        'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
-      ];
-      if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
-        authenticatedUser = {
-          uid,
-          email: `${uid}@kcm.local`,
-          name: 'Portal User',
-          role: cookieRole as AuthenticatedUser['role'],
-        };
+    if (uid) {
+      try {
+        const userInDb = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { id: uid },
+              { email: uid.includes('@') ? uid : `${uid}@kcm.local` }
+            ]
+          },
+          select: { id: true, email: true, name: true, role: true }
+        });
+
+        if (userInDb) {
+          authenticatedUser = {
+            uid: userInDb.id,
+            email: userInDb.email,
+            name: userInDb.name || 'Portal User',
+            role: userInDb.role as AuthenticatedUser['role'],
+          };
+        } else if (cookieRole) {
+          const validRolesList: AuthenticatedUser['role'][] = [
+            'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
+          ];
+          if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
+            authenticatedUser = {
+              uid,
+              email: `${uid}@kcm.local`,
+              name: 'Portal User',
+              role: cookieRole as AuthenticatedUser['role'],
+            };
+          }
+        }
+      } catch (dbErr) {
+        if (cookieRole) {
+          const validRolesList: AuthenticatedUser['role'][] = [
+            'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
+          ];
+          if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
+            authenticatedUser = {
+              uid,
+              email: `${uid}@kcm.local`,
+              name: 'Portal User',
+              role: cookieRole as AuthenticatedUser['role'],
+            };
+          }
+        }
       }
     }
   }

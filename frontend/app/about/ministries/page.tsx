@@ -26,7 +26,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function MinistriesPage() {
   const { t } = useLanguage();
-  const pageT = t.pages.ministries;
+  const pageT = (t as any)?.pages?.ministries || {};
 
   // Filter & Search states
   const [selectedCategory, setSelectedCategory] = useState<string>("all");

@@ -24,7 +24,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function PrayerPage() {
   const { t } = useLanguage();
-  const pageT = t.pages.prayer;
+  const pageT = (t as any)?.pages?.prayer || {};
 
   // Form State
   const [formData, setFormData] = useState({

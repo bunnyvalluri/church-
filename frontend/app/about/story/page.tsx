@@ -10,7 +10,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export default function OurStoryPage() {
   const { t } = useLanguage();
-  const pageT = t.pages.story;
+  const pageT = (t as any)?.pages?.story || {};
 
   const stats = [
     { value: "20+", label: pageT.statYears || "Years of Faith", icon: Calendar, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
