@@ -222,6 +222,12 @@
     min-width: 0;
     min-height: 0;
   }
+
+  /* ── Allow text to break at any character (needed for very narrow screens) ── */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

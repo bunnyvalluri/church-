@@ -281,26 +281,52 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 text-center md:text-left" suppressHydrationWarning>
-              <p className="text-sm text-gray-400">
-                {mounted ? copyright : `© ${currentYear} Kingdom of Christ Ministries. All rights reserved.`}
+        <div
+          className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-5"
+          style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom, 1.25rem))" }}
+        >
+          {/* Mobile: vertical stack · Desktop: horizontal space-between */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+
+            {/* Left group — copyright + credit + India badge */}
+            <div
+              className="flex flex-col items-center md:items-start gap-1.5 min-w-0 text-center md:text-left"
+              suppressHydrationWarning
+            >
+              {/* Copyright — split so it wraps on 320px without clipping */}
+              <p className="text-sm text-gray-400 leading-snug break-words overflow-wrap-anywhere w-full">
+                {mounted
+                  ? copyright
+                  : (
+                    <>
+                      <span>© {currentYear} Kingdom of Christ Ministries.</span>
+                      <span className="sm:hidden"><br /></span>
+                      <span className="hidden sm:inline"> </span>
+                      <span>All rights reserved.</span>
+                    </>
+                  )
+                }
               </p>
-              <a
-                href="https://valluri-rahul-portfolio.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-sm tracking-wider transition-colors duration-200 text-purple-400 hover:text-purple-300 dark:text-purple-400 dark:hover:text-purple-300 inline-block"
-              >
-                ✦ Developed by VALLURI RAHUL. ✦
-              </a>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 select-none">
-                <IndiaFlag className="w-3.5 h-3.5" />
-                <span>India</span>
-              </span>
+
+              {/* Developer credit + India badge — inline on all sizes */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <a
+                  href="https://valluri-rahul-portfolio.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-sm tracking-wider transition-colors duration-200 text-purple-400 hover:text-purple-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 rounded"
+                >
+                  ✦ Developed by VALLURI RAHUL. ✦
+                </a>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 select-none flex-shrink-0">
+                  <IndiaFlag className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>India</span>
+                </span>
+              </div>
             </div>
-            <div className="flex gap-6 text-sm font-medium">
+
+            {/* Right group — legal links */}
+            <div className="flex items-center justify-center md:justify-end gap-4 sm:gap-6 text-sm font-medium flex-shrink-0">
               <Link
                 href="/privacy"
                 className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
@@ -311,6 +337,7 @@ export default function Footer() {
                   ? "गोपनीयता नीति"
                   : "Privacy Policy"}
               </Link>
+              <span className="text-gray-700 select-none" aria-hidden="true">·</span>
               <Link
                 href="/terms"
                 className="text-gray-400 hover:text-purple-400 dark:hover:text-purple-300 transition-colors focus-visible:outline-none focus-visible:underline"
@@ -322,6 +349,7 @@ export default function Footer() {
                   : "Terms of Service"}
               </Link>
             </div>
+
           </div>
         </div>
       </div>
