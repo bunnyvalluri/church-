@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { Shield, BookOpen, Users, Star, LogOut, ChevronRight, Crown, Lock, Camera, ClipboardCheck } from "lucide-react";
-import Image from "next/image";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Shield, BookOpen, Users, Star, LogOut, ChevronRight, Crown, Lock, Camera } from "lucide-react";
+import Image from "next/image";
 
 interface Portal {
   id: string;
@@ -20,10 +22,139 @@ interface Portal {
   allowed: boolean;
 }
 
+const portalSelectTranslations = {
+  en: {
+    portalName: "Kingdom of Christ",
+    ministriesPortal: "Ministries Portal",
+    signOut: "Sign Out",
+    welcomeBack: "Welcome back",
+    selectPortalDesc: "Select a portal to continue",
+    yourPortals: "Your Portals",
+    enterPortal: "Enter Portal",
+    notAvailable: "Not Available for Your Role",
+    accessLevel: "Your access level",
+    portals: {
+      admin: {
+        title: "Admin Portal",
+        subtitle: "Church Administration",
+        description: "Manage members, donations, finances, attendance, content, and all church operations.",
+      },
+      pastor: {
+        title: "Pastor Portal",
+        subtitle: "Ministry & Sermons",
+        description: "Manage sermons, announcements, prayer requests, small groups, and member requests.",
+      },
+      eventManager: {
+        title: "Event Manager Portal",
+        subtitle: "Live Event Uploads",
+        description: "Submit live branch reports, record attendance, take camera captures, and sync offline updates.",
+      },
+      member: {
+        title: "Member Portal",
+        subtitle: "Church Membership",
+        description: "View events, submit prayers, watch sermons, volunteer, and manage your church profile.",
+      },
+    },
+    roles: {
+      SUPER_ADMIN: "Super Administrator",
+      ADMIN: "Administrator",
+      PASTOR: "Pastor",
+      MEMBER: "Member",
+      EVENT_MANAGER: "Event Manager",
+      FIELD_VOLUNTEER: "Field Volunteer",
+    },
+  },
+  te: {
+    portalName: "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్",
+    ministriesPortal: "పరిచర్యల పోర్టల్",
+    signOut: "లాగ్ అవుట్",
+    welcomeBack: "స్వాగతం",
+    selectPortalDesc: "కొనసాగడానికి ఒక పోర్టల్‌ను ఎంచుకోండి",
+    yourPortals: "మీ పోర్టల్స్",
+    enterPortal: "పోర్టల్‌లోకి ప్రవేశించండి",
+    notAvailable: "మీ పాత్రకు అందుబాటులో లేదు",
+    accessLevel: "మీ యాక్సెస్ స్థాయి",
+    portals: {
+      admin: {
+        title: "అడ్మిన్ పోర్టల్",
+        subtitle: "చర్చి పరిపాలన",
+        description: "సభ్యులు, కానుకలు, ఆర్థిక లావాదేవీలు, హాజరు మరియు అన్ని చర్చి కార్యకలాపాలను నిర్వహించండి.",
+      },
+      pastor: {
+        title: "పాస్టర్ పోర్టల్",
+        subtitle: "పరిచర్య & ప్రసంగాలు",
+        description: "ప్రసంగాలు, ప్రకటనలు, ప్రార్థన అభ్యర్థనలు, చిన్న సమూహాలు మరియు సభ్యుల విజ్ఞప్తులను నిర్వహించండి.",
+      },
+      eventManager: {
+        title: "ఈవెంట్ మేనేజర్ పోర్టల్",
+        subtitle: "ప్రత్యక్ష ఈవెంట్ అప్‌లోడ్‌లు",
+        description: "శాఖల నివేదికలను సమర్పించండి, హాజరు నమోదు చేయండి మరియు ఆఫ్‌లైన్ అప్‌డేట్‌లను సమకాలీకరించండి.",
+      },
+      member: {
+        title: "సభ్యుల పోర్టల్",
+        subtitle: "చర్చి సభ్యత్వం",
+        description: "కార్యక్రమాలను వీక్షించండి, ప్రార్థనలు సమర్పించండి, ప్రసంగాలు చూడండి మరియు మీ ప్రొఫైల్‌ను నిర్వహించండి.",
+      },
+    },
+    roles: {
+      SUPER_ADMIN: "సూపర్ అడ్మినిస్ట్రేటర్",
+      ADMIN: "అడ్మినిస్ట్రేటర్",
+      PASTOR: "పాస్టర్",
+      MEMBER: "సభ్యుడు",
+      EVENT_MANAGER: "ఈవెంట్ మేనేజర్",
+      FIELD_VOLUNTEER: "ఫీల్డ్ వాలంటీర్",
+    },
+  },
+  hi: {
+    portalName: "किंगडम ऑफ क्राइस्ट",
+    ministriesPortal: "मंत्रालय पोर्टल",
+    signOut: "लॉग आउट",
+    welcomeBack: "वापसी पर स्वागत है",
+    selectPortalDesc: "जारी रखने के लिए एक पोर्टल चुनें",
+    yourPortals: "आपके पोर्टल",
+    enterPortal: "पोर्टल में प्रवेश करें",
+    notAvailable: "आपकी भूमिका के लिए उपलब्ध नहीं है",
+    accessLevel: "आपका एक्सेस स्तर",
+    portals: {
+      admin: {
+        title: "एडमिन पोर्टल",
+        subtitle: "चर्च प्रशासन",
+        description: "सदस्यों, दान, वित्त, उपस्थिति, सामग्री और सभी चर्च संचालन का प्रबंधन करें।",
+      },
+      pastor: {
+        title: "पादरी पोर्टल",
+        subtitle: "मंत्रालय और प्रवचन",
+        description: "प्रवचनों, घोषणाओं, प्रार्थना अनुरोधों, छोटे समूहों और सदस्य अनुरोधों का प्रबंधन करें।",
+      },
+      eventManager: {
+        title: "इवेंट मैनेजर पोर्टल",
+        subtitle: "लाइव इवेंट अपलोड",
+        description: "लाइव शाखा रिपोर्ट सबमिट करें, उपस्थिति दर्ज करें और ऑफ़लाइन अपडेट सिंक करें।",
+      },
+      member: {
+        title: "सदस्य पोर्टल",
+        subtitle: "चर्च सदस्यता",
+        description: "कार्यक्रम देखें, प्रार्थना सबमिट करें, प्रवचन देखें और अपनी प्रोफ़ाइल प्रबंधित करें।",
+      },
+    },
+    roles: {
+      SUPER_ADMIN: "सुपर एडमिनिस्ट्रेटर",
+      ADMIN: "एडमिनिस्ट्रेटर",
+      PASTOR: "पादरी",
+      MEMBER: "सदस्य",
+      EVENT_MANAGER: "इवेंट मैनेजर",
+      FIELD_VOLUNTEER: "फील्ड वालंटियर",
+    },
+  },
+};
+
 export default function PortalSelectPage() {
   const router = useRouter();
   const { user, status, mounted, logout } = useAuth();
+  const { language } = useLanguage();
   const [mounted2, setMounted2] = useState(false);
+
+  const t = portalSelectTranslations[language as keyof typeof portalSelectTranslations] || portalSelectTranslations.en;
 
   useEffect(() => {
     setMounted2(true);
@@ -59,9 +190,9 @@ export default function PortalSelectPage() {
   const portals: Portal[] = [
     {
       id: "admin",
-      title: "Admin Portal",
-      subtitle: "Church Administration",
-      description: "Manage members, donations, finances, attendance, content, and all church operations.",
+      title: t.portals.admin.title,
+      subtitle: t.portals.admin.subtitle,
+      description: t.portals.admin.description,
       href: "/admin",
       icon: Shield,
       gradient: "from-violet-600 via-purple-600 to-indigo-700",
@@ -71,9 +202,9 @@ export default function PortalSelectPage() {
     },
     {
       id: "pastor",
-      title: "Pastor Portal",
-      subtitle: "Ministry & Sermons",
-      description: "Manage sermons, announcements, prayer requests, small groups, and member requests.",
+      title: t.portals.pastor.title,
+      subtitle: t.portals.pastor.subtitle,
+      description: t.portals.pastor.description,
       href: "/pastor",
       icon: BookOpen,
       gradient: "from-amber-500 via-orange-500 to-rose-600",
@@ -83,9 +214,9 @@ export default function PortalSelectPage() {
     },
     {
       id: "field-volunteer",
-      title: "Event Manager Portal",
-      subtitle: "Live Event Uploads",
-      description: "Submit live branch reports, record attendance, take camera captures, and sync offline updates.",
+      title: t.portals.eventManager.title,
+      subtitle: t.portals.eventManager.subtitle,
+      description: t.portals.eventManager.description,
       href: "/event-manager",
       icon: Camera,
       gradient: "from-pink-600 via-rose-600 to-orange-700",
@@ -95,29 +226,22 @@ export default function PortalSelectPage() {
     },
     {
       id: "member",
-      title: "Member Portal",
-      subtitle: "Church Membership",
-      description: "View events, submit prayers, watch sermons, volunteer, and manage your church profile.",
+      title: t.portals.member.title,
+      subtitle: t.portals.member.subtitle,
+      description: t.portals.member.description,
       href: "/member",
       icon: Users,
       gradient: "from-emerald-500 via-teal-500 to-cyan-600",
       badge: "MEMBER",
       badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-      allowed: true, // Everyone can access member portal
+      allowed: true,
     },
   ];
 
   const allowedPortals  = portals.filter(p => p.allowed);
   const blockedPortals  = portals.filter(p => !p.allowed);
 
-  const roleLabelMap: Record<string, string> = {
-    SUPER_ADMIN: "Super Administrator",
-    ADMIN:       "Administrator",
-    PASTOR:      "Pastor",
-    MEMBER:      "Member",
-    EVENT_MANAGER: "Event Manager",
-    FIELD_VOLUNTEER: "Field Volunteer",
-  };
+  const roleLabel = t.roles[role as keyof typeof t.roles] || role;
 
   const roleGradientMap: Record<string, string> = {
     SUPER_ADMIN: "from-violet-600 to-purple-700",
@@ -138,18 +262,19 @@ export default function PortalSelectPage() {
             <Image src="/logo.png" alt="KCM Logo" fill className="object-cover" />
           </div>
           <div>
-            <p className="text-sm font-black text-slate-800 dark:text-white tracking-tight leading-none">Kingdom of Christ</p>
-            <p className="text-[10px] font-semibold text-slate-400 dark:text-white/40 uppercase tracking-widest">Ministries Portal</p>
+            <p className="text-sm font-black text-slate-800 dark:text-white tracking-tight leading-none">{t.portalName}</p>
+            <p className="text-[10px] font-semibold text-slate-400 dark:text-white/40 uppercase tracking-widest">{t.ministriesPortal}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageToggle />
           <ThemeToggle />
           <button
             onClick={logout}
             className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/[0.08] text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white text-xs font-semibold transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
-            Sign Out
+            <span className="hidden sm:inline">{t.signOut}</span>
           </button>
         </div>
       </header>
@@ -162,21 +287,21 @@ export default function PortalSelectPage() {
           <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${roleGradientMap[role] || "from-gray-600 to-gray-700"} mb-4 shadow-sm`}>
             <Crown className="w-3.5 h-3.5 text-white" />
             <span className="text-xs font-black text-white uppercase tracking-widest">
-              {roleLabelMap[role] || role}
+              {roleLabel}
             </span>
           </div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Welcome back, {user?.name?.split(" ")[0] || "User"}! 🙏
+            {t.welcomeBack}, {user?.name?.split(" ")[0] || "User"}! 🙏
           </h1>
           <p className="text-slate-500 dark:text-white/50 text-sm mt-2 font-medium">
-            {user?.email} · Select a portal to continue
+            {user?.email} · {t.selectPortalDesc}
           </p>
         </div>
 
         {/* Available Portals */}
         <div className="w-full max-w-3xl space-y-4">
           <p className="text-[10px] font-extrabold text-slate-400 dark:text-white/30 uppercase tracking-widest px-1">
-            Your Portals ({allowedPortals.length})
+            {t.yourPortals} ({allowedPortals.length})
           </p>
 
           <div className={`grid gap-4 ${allowedPortals.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : allowedPortals.length === 2 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
@@ -186,7 +311,7 @@ export default function PortalSelectPage() {
                 <button
                   key={portal.id}
                   onClick={() => router.push(portal.href)}
-                  className="group relative bg-white dark:bg-white/[0.04] hover:bg-slate-50/50 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] hover:border-primary/20 dark:hover:border-white/20 rounded-3xl p-6 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+                  className="group relative bg-white dark:bg-white/[0.04] hover:bg-slate-50/50 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] hover:border-primary/20 dark:hover:border-white/20 rounded-3xl p-6 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm cursor-pointer"
                 >
                   {/* Gradient glow bg on hover */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-[0.03] dark:group-hover:opacity-10 rounded-3xl transition-opacity duration-300`} />
@@ -212,7 +337,7 @@ export default function PortalSelectPage() {
                   </p>
 
                   <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-white/60 group-hover:text-primary dark:group-hover:text-white transition-colors">
-                    Enter Portal
+                    {t.enterPortal}
                     <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </button>
@@ -224,7 +349,7 @@ export default function PortalSelectPage() {
           {blockedPortals.length > 0 && (
             <div className="mt-8">
               <p className="text-[10px] font-extrabold text-slate-400 dark:text-white/20 uppercase tracking-widest px-1 mb-4">
-                Not Available for Your Role
+                {t.notAvailable}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {blockedPortals.map((portal) => {
@@ -253,7 +378,7 @@ export default function PortalSelectPage() {
         {/* Quick Role Info */}
         <div className="mt-10 flex items-center gap-2 text-[11px] text-slate-400 dark:text-white/25 font-medium">
           <Star className="w-3 h-3" />
-          <span>Your access level: <strong className="text-slate-600 dark:text-white/40">{roleLabelMap[role]}</strong></span>
+          <span>{t.accessLevel}: <strong className="text-slate-600 dark:text-white/40">{roleLabel}</strong></span>
         </div>
       </main>
     </div>
