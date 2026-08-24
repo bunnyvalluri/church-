@@ -89,7 +89,7 @@ export default function NgoShowcase() {
   const itemsRow3 = useMemo(() => [...row3, ...row3], [row3]);
 
   return (
-    <section className="py-20 sm:py-24 relative overflow-hidden bg-slate-50/50 dark:bg-slate-950/20 border-t border-b border-slate-200/50 dark:border-white/[0.04]">
+    <section className="py-10 sm:py-14 md:py-16 relative overflow-hidden bg-slate-50/50 dark:bg-slate-950/20 border-t border-b border-slate-200/50 dark:border-white/[0.04]">
       {/* Background Orbs */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-12 left-12 w-64 h-64 rounded-full bg-purple-500/5 blur-2xl transform-gpu" />
