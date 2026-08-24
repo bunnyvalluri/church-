@@ -36,7 +36,25 @@ async function logAuditEvent({ action, entity, entityId, userId, details, severi
     console.warn(`[AUDIT_LOGGER_WARN] Database write skipped: ${err.message}`);
   }
 
-  // 2. Update STATE.md reconciliation timestamp asynchronously
+  // 2. Mirror to MongoDB Atlas audit_events
+  try {
+    const { insertAuditEvent } = require('../modules/mongodb/repositories/auditEventRepository');
+    const crypto = require('crypto');
+    const eventId = `audit_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+    insertAuditEvent({
+      eventId,
+      actorId: userId || 'SYSTEM',
+      actorRole: 'SYSTEM',
+      action: `${loopName}:${action}`,
+      resource: entity || 'system_loop',
+      resourceId: entityId || 'unknown',
+      metadata: { severity, loopName, ...(details || {}) },
+    }).catch(() => {});
+  } catch (mongoErr) {
+    // Non-blocking
+  }
+
+  // 3. Update STATE.md reconciliation timestamp asynchronously
   updateStateTelemetry(loopName, severity);
 }
 

@@ -490,9 +490,36 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'api') {
     return res.json({ success: true });
   });
 
-  app.get('/health', (req, res) => {
-    return res.json({ status: "OK", time: new Date(), type: PROCESS_TYPE });
+  app.get('/health', async (req, res) => {
+    let mongoStatus = 'offline';
+    try {
+      const { checkMongoHealth } = require('./src/infrastructure/mongodb/client');
+      const mHealth = await checkMongoHealth();
+      mongoStatus = mHealth.status;
+    } catch (e) {
+      mongoStatus = 'unhealthy';
+    }
+    return res.json({
+      status: "OK",
+      time: new Date(),
+      type: PROCESS_TYPE,
+      services: {
+        mongodb: mongoStatus,
+      },
+    });
   });
+
+  // MongoDB Atlas Index Initialization
+  try {
+    const { initializeMongoIndexes } = require('./src/infrastructure/mongodb/indexes');
+    initializeMongoIndexes().then((res) => {
+      if (res && res.success) {
+        console.log('[MONGODB_BACKEND] Production indexes reconciled:', res.indexed.join(', '));
+      }
+    }).catch(() => {});
+  } catch (err) {
+    console.warn('[MONGODB_BACKEND] Index initialization note:', err.message);
+  }
 
   // Loop Engineering Architecture Initialization & Diagnostic Endpoint
   try {

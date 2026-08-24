@@ -36,6 +36,8 @@ services:
     environment:
       - PROCESS_TYPE=api
       - DATABASE_URL=${DATABASE_URL:-}
+      - MONGODB_URI=${MONGODB_URI:-}
+      - MONGODB_DATABASE_NAME=${MONGODB_DATABASE_NAME:-kcm_church}
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
@@ -56,6 +58,8 @@ services:
     environment:
       - PROCESS_TYPE=socket
       - DATABASE_URL=${DATABASE_URL:-}
+      - MONGODB_URI=${MONGODB_URI:-}
+      - MONGODB_DATABASE_NAME=${MONGODB_DATABASE_NAME:-kcm_church}
       - REDIS_URL=redis://redis:6379
       - SOCKET_PORT=3001
     command: sh -c "npm install && node backend/socket.js"
@@ -73,6 +77,8 @@ services:
     environment:
       - PROCESS_TYPE=worker
       - DATABASE_URL=${DATABASE_URL:-}
+      - MONGODB_URI=${MONGODB_URI:-}
+      - MONGODB_DATABASE_NAME=${MONGODB_DATABASE_NAME:-kcm_church}
       - REDIS_URL=redis://redis:6379
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
