@@ -103,11 +103,14 @@
   /* Performance-Optimized: SVG noise overlays cause massive paint lag on scroll.
      We removed the full-screen feTurbulence filter to ensure 60fps scrolling and fast rendering. */
 
-  /* content-visibility: auto — tells the browser to skip layout+paint for off-screen sections
-     until the user scrolls to them. Massive initial render speedup on long pages. */
   .cv-auto {
     content-visibility: auto;
     contain-intrinsic-size: 0 600px; /* estimated height prevents layout shift */
+  }
+
+  .cv-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 280px;
   }
 }
 
@@ -1152,6 +1155,15 @@ html[data-mobile-menu-open="true"] .fixed.bottom-4.right-4 {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+@keyframes kcmSpriteProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 

@@ -41,6 +41,91 @@
     "createdAt": "2026-08-15T09:01:00.000Z"
   },
   {
+    "id": "pastor-anointing-photo-1",
+    "title": "Senior Pastor Anointing & Holy Laying of Hands",
+    "description": "Senior Pastor ministering with apostolic authority, imparting the Holy Spirit's blessing and prophetic prayer upon every believer.",
+    "url": "/gallery/pastor/1.0.jpeg",
+    "thumbnailUrl": "/gallery/pastor/1.0.jpeg",
+    "category": "Pastoral Ministry",
+    "branchId": "cmrgwqhc30001fsk8mysbmp50",
+    "branchName": "Subhash Nagar",
+    "eventName": "Pastoral Anointing & Revival Gathering",
+    "eventDate": "August 2026",
+    "type": "image",
+    "tags": [
+      "Pastor",
+      "Pastoral Ministry",
+      "Anointing",
+      "Hands Laying",
+      "Blessing",
+      "Subhash Nagar"
+    ],
+    "createdAt": "2026-08-16T08:00:00.000Z"
+  },
+  {
+    "id": "pastor-anointing-photo-2",
+    "title": "Apostolic Preaching & Holy Scripture Exhortation",
+    "description": "Delivering the transformative Sunday message, inspiring faith, righteousness, and spiritual elevation in the congregation.",
+    "url": "/gallery/pastor/2.0.jpeg",
+    "thumbnailUrl": "/gallery/pastor/2.0.jpeg",
+    "category": "Pastoral Ministry",
+    "branchId": "cmrgwqhc30001fsk8mysbmp50",
+    "branchName": "Subhash Nagar",
+    "eventName": "Sunday Worship & Scripture Exhortation",
+    "eventDate": "August 2026",
+    "type": "image",
+    "tags": [
+      "Pastor",
+      "Preaching",
+      "Scripture",
+      "Pastoral Ministry",
+      "Word of God"
+    ],
+    "createdAt": "2026-08-16T08:01:00.000Z"
+  },
+  {
+    "id": "pastor-anointing-photo-3",
+    "title": "Shepherd's Pastoral Care & Heartfelt Fellowship",
+    "description": "Demonstrating Christ's unconditional love through warm fellowship, personal encouragement, and dedicated pastoral counsel.",
+    "url": "/gallery/pastor/3.0.jpeg",
+    "thumbnailUrl": "/gallery/pastor/3.0.jpeg",
+    "category": "Pastoral Ministry",
+    "branchId": "cmrgwqhc30001fsk8mysbmp50",
+    "branchName": "Subhash Nagar",
+    "eventName": "Pastoral Care & Member Fellowship",
+    "eventDate": "August 2026",
+    "type": "image",
+    "tags": [
+      "Pastor",
+      "Pastoral Care",
+      "Shepherd",
+      "Fellowship",
+      "Counseling"
+    ],
+    "createdAt": "2026-08-16T08:02:00.000Z"
+  },
+  {
+    "id": "pastor-anointing-photo-4",
+    "title": "Covenant Congregation Prayer & Unified Intercession",
+    "description": "United in one accord, Senior Pastor leads the entire congregation into the throne room of God for community blessing and citywide revival.",
+    "url": "/gallery/pastor/4.0.jpeg",
+    "thumbnailUrl": "/gallery/pastor/4.0.jpeg",
+    "category": "Pastoral Ministry",
+    "branchId": "cmrgwqhc30001fsk8mysbmp50",
+    "branchName": "Subhash Nagar",
+    "eventName": "Revival Prayer & Intercession",
+    "eventDate": "August 2026",
+    "type": "image",
+    "tags": [
+      "Pastor",
+      "Congregation",
+      "Prayer",
+      "Intercession",
+      "Pastoral Ministry"
+    ],
+    "createdAt": "2026-08-16T08:03:00.000Z"
+  },
+  {
     "id": "subhash-family-blessing-1",
     "title": "Family Dedication & Covenant Blessing #1",
     "description": "Pastoral hands laid in prayer over families seeking divine protection, health, and household prosperity.",
