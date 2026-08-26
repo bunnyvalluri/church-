@@ -32,18 +32,24 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
           className="object-cover group-hover:scale-110 transition-transform duration-300"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        {/* Play Overlay */}
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
-            <Play className="h-8 w-8 text-[hsl(var(--primary))] ml-1" fill="currentColor" />
+        {/* Play Overlay & Badge (Visible with enhanced hover lift) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-center justify-center transition-all duration-300">
+          <div className="relative flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            {/* Luminous Glow Ring */}
+            <span className="absolute w-16 h-16 rounded-full bg-primary/30 animate-ping opacity-60 pointer-events-none" />
+            
+            {/* Glass Play Button */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+              <Play className="h-7 w-7 fill-current ml-1 transform-gpu transition-colors duration-300" />
+            </div>
           </div>
         </div>
         {/* Duration Badge */}
-        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 text-white text-xs font-semibold rounded">
+        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/75 backdrop-blur-md text-white text-[11px] font-mono font-bold rounded-lg border border-white/10 shadow-sm">
           {sermon.duration}
         </div>
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 px-3 py-1 bg-[hsl(var(--primary))] text-white text-xs font-semibold rounded-full animate-pulse">
+        <div className="absolute top-3 left-3 px-3 py-1 bg-primary/90 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider rounded-full shadow-sm border border-white/20">
           {sermon.category}
         </div>
       </div>
