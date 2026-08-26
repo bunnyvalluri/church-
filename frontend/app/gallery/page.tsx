@@ -1921,13 +1921,13 @@ export default function ChurchGalleryPage() {
                             {/* Play Ring */}
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div
-                                className={`flex items-center justify-center rounded-full border-2 border-white/50 transition-all duration-300 shadow-2xl w-12 h-12 ${
+                                className={`relative flex items-center justify-center rounded-full transition-all duration-300 shadow-2xl w-12 h-12 ${
                                   isCurrent
-                                    ? "bg-rose-600 border-rose-400 scale-110 shadow-rose-600/50"
-                                    : "bg-black/50 backdrop-blur-sm group-hover:bg-rose-600 group-hover:scale-110"
+                                    ? "bg-rose-600 text-white scale-110 shadow-rose-600/50 ring-4 ring-rose-500/30"
+                                    : "bg-white/95 dark:bg-slate-900/90 text-rose-600 dark:text-rose-400 group-hover:bg-rose-600 group-hover:text-white group-hover:scale-110 border border-white/50 shadow-black/40 backdrop-blur-md"
                                 }`}
                               >
-                                <Play className="w-5 h-5 text-white ml-0.5 fill-white" />
+                                <Play className="w-5 h-5 ml-0.5 fill-current drop-shadow-sm" />
                               </div>
                             </div>
 

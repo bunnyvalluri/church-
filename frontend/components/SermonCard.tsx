@@ -21,7 +21,7 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
     >
       {/* Thumbnail */}
       <div
-        className="relative h-48 overflow-hidden cursor-pointer"
+        className="relative h-52 overflow-hidden cursor-pointer bg-slate-950"
         onClick={() => handlePlaySermon(sermon)}
       >
         <Image
@@ -29,50 +29,56 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
           alt={sermon.title}
           fill
           loading="lazy"
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        {/* Play Overlay & Badge (Visible with enhanced hover lift) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-center justify-center transition-all duration-300">
-          <div className="relative flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            {/* Luminous Glow Ring */}
-            <span className="absolute w-16 h-16 rounded-full bg-primary/30 animate-ping opacity-60 pointer-events-none" />
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+
+        {/* Play Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-90 group-hover:opacity-100 transition-all duration-300">
+          <div className="relative flex items-center justify-center">
+            {/* Ambient Pulse Ring on Hover */}
+            <span className="absolute w-16 h-16 rounded-full bg-purple-500/30 group-hover:scale-125 transition-transform duration-500 pointer-events-none" />
             
-            {/* Glass Play Button */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-              <Play className="h-7 w-7 fill-current ml-1 transform-gpu transition-colors duration-300" />
+            {/* Liquid Glass Play Button */}
+            <div className="relative w-14 h-14 rounded-full bg-white/95 dark:bg-slate-900/90 text-purple-600 dark:text-purple-400 flex items-center justify-center shadow-xl shadow-black/40 border border-white/60 dark:border-white/20 group-hover:scale-110 active:scale-95 transition-all duration-300 backdrop-blur-md">
+              <Play className="h-6 w-6 fill-current ml-0.5" />
             </div>
           </div>
         </div>
+
         {/* Duration Badge */}
-        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/75 backdrop-blur-md text-white text-[11px] font-mono font-bold rounded-lg border border-white/10 shadow-sm">
+        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/75 backdrop-blur-md text-white text-xs font-mono font-bold rounded-lg border border-white/10">
           {sermon.duration}
         </div>
+
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 px-3 py-1 bg-primary/90 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider rounded-full shadow-sm border border-white/20">
+        <div className="absolute top-3 left-3 px-3 py-1 bg-purple-600/90 backdrop-blur-md text-white text-xs font-extrabold rounded-full border border-purple-400/30 shadow-md">
           {sermon.category}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6 md:p-8 text-left">
-        <h3 className="text-xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors line-clamp-2 min-h-[3.5rem]">
+      <div className="p-6 md:p-8 text-left space-y-4">
+        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-2 min-h-[3.5rem]">
           {sermon.title}
         </h3>
 
         {/* Meta Info */}
-        <div className="space-y-3 text-sm text-slate-600 dark:text-white/70 font-medium">
+        <div className="space-y-2.5 text-sm text-slate-600 dark:text-white/70 font-medium pt-1">
           <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-[hsl(var(--primary))]" />
-            <span>{sermon.pastor}</span>
+            <User className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            <span className="font-semibold">{sermon.pastor}</span>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-xs font-semibold">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[hsl(var(--primary))]" />
+              <Calendar className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               <span>{sermon.date}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Eye className="h-4 w-4 text-[hsl(var(--primary))]" />
+            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+              <Eye className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               <span>{sermon.views} {t.sermons.views}</span>
             </div>
           </div>
@@ -81,10 +87,10 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
         {/* Watch Button */}
         <button
           onClick={() => handlePlaySermon(sermon)}
-          className="mt-5 w-full py-3 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95"
+          className="mt-4 w-full py-3.5 px-5 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-bold text-sm shadow-md hover:shadow-xl hover:shadow-purple-600/25 transition-all duration-300 flex items-center justify-center gap-2.5 transform active:scale-95"
         >
-          <Play className="h-5 w-5" fill="currentColor" />
-          {t.sermons.watch}
+          <Play className="h-4 w-4 fill-current" />
+          <span>{t.sermons.watch}</span>
         </button>
       </div>
     </motion.div>

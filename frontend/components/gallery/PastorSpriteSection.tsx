@@ -518,12 +518,12 @@ export default function PastorSpriteSection({
               <button
                 onClick={() => setIsAutoPlaying(!isAutoPlaying)}
                 title={isAutoPlaying ? "Pause slideshow (Space)" : "Play slideshow (Space)"}
-                className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-slate-700 text-purple-600 dark:text-purple-400 border border-slate-200 dark:border-slate-700 transition-all shadow-sm flex items-center justify-center active:scale-95"
+                className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm"
               >
                 {isAutoPlaying ? (
-                  <Pause className="w-4 h-4" />
+                  <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 ) : (
-                  <Play className="w-4 h-4 fill-current text-purple-600 dark:text-purple-400 ml-0.5" />
+                  <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-purple-500" />
                 )}
               </button>
             </div>
