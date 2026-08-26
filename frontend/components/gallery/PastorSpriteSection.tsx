@@ -507,25 +507,50 @@ export default function PastorSpriteSection({
           <div className="w-full flex items-center justify-between gap-2 p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 backdrop-blur-md">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button
-                onClick={() => setModalItem(currentItem)}
+                onClick={() => {
+                  if (currentItem.type === "video") {
+                    setIsInlineVideoPlaying(true);
+                    setModalItem(currentItem);
+                  } else {
+                    setModalItem(currentItem);
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-600/20 transform hover:scale-[1.02] active:scale-95 transition-all"
               >
                 <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{currentItem.type === "video" ? labels.watchVideo : labels.viewHighRes}</span>
               </button>
 
-              {/* Auto Play Toggle */}
-              <button
-                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                title={isAutoPlaying ? "Pause slideshow (Space)" : "Play slideshow (Space)"}
-                className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm"
-              >
-                {isAutoPlaying ? (
-                  <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                ) : (
-                  <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-purple-500" />
-                )}
-              </button>
+              {/* Play Video / Slideshow AutoPlay Toggle */}
+              {currentItem.type === "video" ? (
+                <button
+                  onClick={() => setIsInlineVideoPlaying((prev) => !prev)}
+                  title={isInlineVideoPlaying ? "Pause Video" : "Play Video"}
+                  className={`p-1.5 sm:p-2 rounded-xl transition-all shadow-sm flex items-center justify-center ${
+                    isInlineVideoPlaying
+                      ? "bg-amber-500 text-slate-950 ring-2 ring-amber-400/50"
+                      : "bg-white dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-slate-700 text-purple-600 dark:text-purple-400 border border-slate-200 dark:border-slate-700"
+                  }`}
+                >
+                  {isInlineVideoPlaying ? (
+                    <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" />
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsAutoPlaying((prev) => !prev)}
+                  title={isAutoPlaying ? "Pause slideshow (Space)" : "Play slideshow (Space)"}
+                  className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm"
+                >
+                  {isAutoPlaying ? (
+                    <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-purple-500" />
+                  )}
+                </button>
+              )}
             </div>
 
             <div className="flex items-center gap-1.5">
