@@ -1,11 +1,17 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth, getAuthenticatedUser } from '@/lib/authMiddleware';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
+    const queryUserId = searchParams.get('userId');
+
+    const auth = await getAuthenticatedUser(req);
+    const isAdmin = auth?.role === 'ADMIN' || auth?.role === 'SUPER_ADMIN';
+
+    const effectiveUserId = isAdmin && queryUserId ? queryUserId : auth?.uid;
 
     const dbEvents = await prisma.event.findMany({
       where: {
@@ -16,12 +22,12 @@ export async function GET(req: Request) {
     });
 
     let registeredIds: string[] = [];
-    if (userId && dbEvents.length > 0) {
+    if (effectiveUserId && dbEvents.length > 0) {
       const registrations = await prisma.eventRegistration.findMany({
-        where: { userId },
+        where: { userId: effectiveUserId },
         select: { eventId: true },
       });
-      registeredIds = registrations.map(r => r.eventId);
+      registeredIds = registrations.map((r) => r.eventId);
     }
 
     return NextResponse.json({ success: true, events: dbEvents, registeredEventIds: registeredIds });
@@ -36,23 +42,44 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const body = await req.json();
-    const { userId, eventId } = body;
+    const { eventId, userId } = body;
 
-    if (!userId || !eventId) {
-      return NextResponse.json({ error: 'User ID and Event ID are required' }, { status: 400 });
+    if (!eventId) {
+      return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
     }
 
-    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    const isAdmin = auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN';
+    const effectiveUserId = isAdmin && userId ? userId : auth.uid;
+
+    const targetUser = await prisma.user.findUnique({ where: { id: effectiveUserId } });
     if (!targetUser) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     }
+
+    // Prevent duplicate registrations
+    const existing = await prisma.eventRegistration.findUnique({
+      where: {
+        userId_eventId: {
+          userId: effectiveUserId,
+          eventId,
+        },
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json({ success: true, registration: existing, alreadyRegistered: true });
+    }
+
     const registration = await prisma.eventRegistration.create({
       data: {
-        userId,
+        userId: effectiveUserId,
         eventId,
-        name: targetUser.name || "Attendee",
-        email: targetUser.email || "attendee@kcm.org",
+        name: targetUser.name || 'Attendee',
+        email: targetUser.email || 'attendee@kcm.org',
       },
     });
 
@@ -65,4 +92,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

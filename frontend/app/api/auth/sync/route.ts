@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
+import { createServerSession, attachSessionCookie } from '@/lib/session';
+import { getClientIp } from '@/lib/apiResponse';
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const syncSchema = z.object({
@@ -22,7 +24,6 @@ const sanitize = (s: string) =>
   });
 
 // ── Default Role Helper ──────────────────────────────────────────────────────
-// Strictly default new users to MEMBER. Role elevations can only be assigned by administrators in DB.
 const DEFAULT_ROLE: 'MEMBER' = 'MEMBER';
 
 export async function POST(req: Request) {
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
     const sanitizedPhoneNumber = phoneNumber ? sanitize(phoneNumber) : null;
 
     // 3. Sync with the database
-    // Find by ID and Email in parallel
     const [userByUid, userByEmail] = await Promise.all([
       prisma.user.findUnique({ where: { id: sanitizedUid } }),
       prisma.user.findUnique({ where: { email: sanitizedEmail } }),
@@ -57,7 +57,6 @@ export async function POST(req: Request) {
 
     if (userByUid) {
       // User already exists with this Firebase UID.
-      // Update profile info (name, image, phone) while preserving their authoritative role.
       if (
         userByUid.email !== sanitizedEmail ||
         (sanitizedName && userByUid.name !== sanitizedName) ||
@@ -77,11 +76,10 @@ export async function POST(req: Request) {
         user = userByUid;
       }
     } else if (userByEmail) {
-      // User exists with this email but has a different ID (needs migration from local credentials / old ID to Firebase UID)
+      // User exists with this email but has a different ID (migrate to Firebase UID)
       console.info(`[AUTH/SYNC] User ID mismatch (DB: ${userByEmail.id}, Firebase: ${sanitizedUid}). Migrating user ID and preserving role: ${userByEmail.role}`);
-      
+
       user = await prisma.$transaction(async (tx) => {
-        // Check again inside transaction
         const txAlreadyMigrated = await tx.user.findUnique({
           where: { id: sanitizedUid },
         });
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
           where: { id: userByEmail.id },
         });
         if (!oldUser) {
-          const fallback = (await tx.user.findUnique({ where: { email: sanitizedEmail } }));
+          const fallback = await tx.user.findUnique({ where: { email: sanitizedEmail } });
           if (fallback) return fallback;
           throw new Error('User migration source record disappeared.');
         }
@@ -175,20 +173,25 @@ export async function POST(req: Request) {
       }
     }
 
+    // 4. Establish Server-Side Session in PostgreSQL with Secure HttpOnly Cookie
+    const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.url.startsWith('https:');
+    const isProd = process.env.NODE_ENV === 'production' || isHttps;
+    const ip = getClientIp(req);
+    const userAgent = req.headers.get('user-agent');
+
+    const { token } = await createServerSession(user.id, user.role, {
+      ip,
+      userAgent,
+      isHttps: isProd,
+    });
+
     const res = NextResponse.json({ success: true, user });
-    const maxAge = 7 * 24 * 60 * 60; // 7 days
-    res.cookies.set('__kcm_session_uid', sanitizedUid, {
-      path: '/',
-      maxAge,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    });
-    res.cookies.set('__kcm_session_role', user.role, {
-      path: '/',
-      maxAge,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    });
+    attachSessionCookie(res, token, isProd);
+
+    // Clean up legacy cookies
+    res.cookies.set('__kcm_session_uid', '', { path: '/', maxAge: 0 });
+    res.cookies.set('__kcm_session_role', '', { path: '/', maxAge: 0 });
+
     return res;
   } catch (err: any) {
     console.error('[AUTH/SYNC] Error:', err);
@@ -198,4 +201,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

@@ -43,8 +43,28 @@ model User {
   smsMessages        SmsMessage[]
   notificationPreferences MemberNotificationPreference?
   smsAuditLogs       SmsAuditLog[]
+  sessions           Session[]
 
   @@map("members")
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionTokenHash String    @unique
+  role             UserRole  @default(MEMBER)
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  lastActivityAt   DateTime  @default(now())
+  ipHash           String?
+  userAgentHash    String?
+  revokedAt        DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([sessionTokenHash])
+  @@map("sessions")
 }
 
 model Event {

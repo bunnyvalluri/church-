@@ -1,37 +1,26 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/authMiddleware';
 
 export async function GET(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const { searchParams } = new URL(req.url);
     const paramUserId = searchParams.get('userId');
     const paramEmail = searchParams.get('email');
 
-    // Extract session from cookie
-    const cookieHeader = req.headers.get('cookie') || '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
-    const sessionUid = uidMatch ? uidMatch[1] : null;
-    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
-    const isAdmin = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN';
+    const isAdmin = auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN';
 
     // IDOR Protection: Non-admin users can ONLY read their own profile
-    let targetUserId = paramUserId || sessionUid;
-    let targetEmail = paramEmail;
+    let targetUserId = auth.uid;
+    let targetEmail: string | null = null;
 
-    if (!isAdmin && sessionUid) {
-      targetUserId = sessionUid;
-      targetEmail = null; // Ignore external email param to prevent reading other users
-    }
-
-    if (!targetUserId && !targetEmail) {
-      return NextResponse.json({
-        success: true,
-        authenticated: false,
-        user: null,
-        message: 'No active session or query parameters provided.'
-      }, { status: 200 });
+    if (isAdmin) {
+      if (paramUserId) targetUserId = paramUserId;
+      if (paramEmail) targetEmail = paramEmail;
     }
 
     let user = null;
@@ -43,22 +32,28 @@ export async function GET(req: Request) {
     }
 
     if (!user) {
-      return NextResponse.json({
-        success: false,
-        authenticated: false,
-        user: null,
-        error: 'User not found'
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          authenticated: false,
+          user: null,
+          error: 'User not found',
+        },
+        { status: 404 }
+      );
     }
 
     // Do not leak password hash in profile response
     const { password: _, ...sanitizedUser } = user as any;
 
-    return NextResponse.json({
-      success: true,
-      authenticated: true,
-      user: sanitizedUser
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        authenticated: true,
+        user: sanitizedUser,
+      },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error('[PROFILE/GET] Error:', err);
     return NextResponse.json(
@@ -70,66 +65,35 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    let { userId, email, name, phone, address, image } = body;
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
 
-    // Extract session from cookie
-    const cookieHeader = req.headers.get('cookie') || '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
-    const sessionUid = uidMatch ? uidMatch[1] : null;
-    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
-    const isAdmin = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN';
+    const body = await req.json();
+    let { userId, name, phone, address, image } = body;
+
+    const isAdmin = auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN';
 
     // IDOR Protection: Non-admin users can ONLY modify their own profile
-    let effectiveUserId = userId || sessionUid;
-    if (!isAdmin && sessionUid) {
-      effectiveUserId = sessionUid;
-    }
+    const effectiveUserId = isAdmin && userId ? userId : auth.uid;
 
-    if (!effectiveUserId && !email) {
-      return NextResponse.json({ error: 'User ID or Email is required for profile update' }, { status: 400 });
-    }
-
-    // Find existing user by ID or Email
-    let existingUser = null;
-    if (effectiveUserId) {
-      existingUser = await prisma.user.findUnique({ where: { id: effectiveUserId } });
-    }
-    if (!existingUser && email) {
-      existingUser = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const existingUser = await prisma.user.findUnique({ where: { id: effectiveUserId } });
+    if (!existingUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const updateData: any = {
-      name: name ? String(name).trim() : 'Member',
-      phone: phone ? String(phone).trim() : null,
-      address: address ? String(address).trim() : null,
+      name: name ? String(name).trim() : existingUser.name,
+      phone: phone !== undefined ? (phone ? String(phone).trim() : null) : existingUser.phone,
+      address: address !== undefined ? (address ? String(address).trim() : null) : existingUser.address,
     };
     if (image !== undefined && image !== null) {
       updateData.image = image;
     }
 
-    let updatedUser;
-    if (existingUser) {
-      updatedUser = await prisma.user.update({
-        where: { id: existingUser.id },
-        data: updateData,
-      });
-    } else {
-      // Create user if not present in DB
-      updatedUser = await prisma.user.create({
-        data: {
-          id: effectiveUserId || undefined,
-          email: (email || `${effectiveUserId}@kcm-church.com`).toLowerCase().trim(),
-          name: name ? String(name).trim() : 'Member',
-          password: '',
-          phone: phone ? String(phone).trim() : null,
-          address: address ? String(address).trim() : null,
-          image: image || null,
-          role: 'MEMBER',
-        },
-      });
-    }
+    const updatedUser = await prisma.user.update({
+      where: { id: existingUser.id },
+      data: updateData,
+    });
 
     const { password: _, ...sanitizedUser } = updatedUser as any;
     return NextResponse.json({ success: true, user: sanitizedUser });

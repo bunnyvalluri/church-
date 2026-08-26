@@ -76,29 +76,17 @@ export async function verifyFirebaseToken(idToken: string): Promise<VerifiedToke
   const app = getAdminApp();
 
   if (!app) {
-    console.warn('[FIREBASE_ADMIN] verifyFirebaseToken called in stub mode — decoding token without signature check.');
-    try {
-      const parts = idToken.split('.');
-      if (parts.length === 3) {
-        const payloadJson = Buffer.from(parts[1], 'base64').toString('utf8');
-        const decoded = JSON.parse(payloadJson);
-        return {
-          uid: decoded.user_id || decoded.uid,
-          email: decoded.email,
-          name: decoded.name || decoded.email?.split('@')[0],
-          picture: decoded.picture,
-          email_verified: decoded.email_verified,
-        };
-      }
-    } catch (e) {
-      console.error('[FIREBASE_ADMIN] Failed to parse JWT token in stub mode:', e);
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[FIREBASE_ADMIN] Critical: Firebase Admin SDK not configured in production. Token verification rejected.');
+      return null;
     }
+    console.warn('[FIREBASE_ADMIN] Dev Notice: Firebase Admin SDK not initialised.');
     return null;
   }
 
   try {
     const { getAuth } = require('firebase-admin/auth');
-    const decoded = await getAuth(app).verifyIdToken(idToken, false); // checkRevoked = false for faster verification
+    const decoded = await getAuth(app).verifyIdToken(idToken, false);
     return {
       uid: decoded.uid,
       email: decoded.email,
@@ -108,25 +96,6 @@ export async function verifyFirebaseToken(idToken: string): Promise<VerifiedToke
     };
   } catch (err: any) {
     console.warn('[FIREBASE_ADMIN] Token verification failed:', err?.message || err);
-    if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
-      console.warn('[FIREBASE_ADMIN] Falling back to decoding token without signature check.');
-      try {
-        const parts = idToken.split('.');
-        if (parts.length === 3) {
-          const payloadJson = Buffer.from(parts[1], 'base64').toString('utf8');
-          const decoded = JSON.parse(payloadJson);
-          return {
-            uid: decoded.user_id || decoded.uid,
-            email: decoded.email,
-            name: decoded.name || decoded.email?.split('@')[0],
-            picture: decoded.picture,
-            email_verified: decoded.email_verified,
-          };
-        }
-      } catch (e) {
-        console.error('[FIREBASE_ADMIN] Failed to parse JWT token in error fallback:', e);
-      }
-    }
     return null;
   }
 }

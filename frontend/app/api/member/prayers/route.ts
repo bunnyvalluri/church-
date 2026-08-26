@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/authMiddleware';
 
 export async function GET(req: Request) {
   try {
@@ -39,24 +39,14 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const body = await req.json();
-    let { userId, title, description, category, isAnonymous } = body;
+    let { title, description, category, isAnonymous } = body;
 
     if (!title || !description || !category) {
       return NextResponse.json({ error: 'Title, description, and category are required' }, { status: 400 });
-    }
-
-    // Extract session from cookie
-    const cookieHeader = req.headers.get('cookie') || '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const sessionUid = uidMatch ? uidMatch[1] : null;
-    const effectiveUserId = sessionUid || userId;
-
-    if (!effectiveUserId) {
-      const firstUser = await prisma.user.findFirst();
-      userId = firstUser?.id || 'admin_offline_user';
-    } else {
-      userId = effectiveUserId;
     }
 
     const prayerData: any = {
@@ -65,7 +55,7 @@ export async function POST(req: Request) {
       category: String(category).trim(),
       isAnonymous: Boolean(isAnonymous),
       status: 'PENDING',
-      user: { connect: { id: userId } },
+      user: { connect: { id: auth.uid } },
     };
 
     const newPrayer = await prisma.prayerRequest.create({
@@ -87,7 +77,7 @@ export async function POST(req: Request) {
       await createNotification({
         type: 'PRAYER_REQUEST',
         title: 'New Prayer Request',
-        content: `${isAnonymous ? 'Anonymous' : 'A member'} requested prayers: "${title.substring(0, 40)}"`,
+        content: `${isAnonymous ? 'Anonymous' : (auth.name || 'A member')} requested prayers: "${title.substring(0, 40)}"`,
         link: 'prayers',
       });
     } catch (notifErr) {
@@ -106,6 +96,9 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const body = await req.json();
     const { id, status, category, title, description } = body;
 
@@ -113,20 +106,15 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
     }
 
-    // Authorization & Ownership check
-    const cookieHeader = req.headers.get('cookie') || '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
-    const sessionUid = uidMatch ? uidMatch[1] : null;
-    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
-    const isStaff = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN' || sessionRole === 'PASTOR';
+    const isStaff = auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN' || auth.role === 'PASTOR';
 
     const existingPrayer = await prisma.prayerRequest.findUnique({ where: { id } });
     if (!existingPrayer) {
       return NextResponse.json({ error: 'Prayer request not found' }, { status: 404 });
     }
 
-    if (!isStaff && sessionUid && existingPrayer.userId !== sessionUid) {
+    // Ownership check: staff or prayer owner
+    if (!isStaff && existingPrayer.userId !== auth.uid) {
       return NextResponse.json({ error: 'Forbidden: You can only edit your own prayer request' }, { status: 403 });
     }
 
@@ -162,6 +150,9 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -169,20 +160,15 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Prayer ID is required' }, { status: 400 });
     }
 
-    // Authorization & Ownership check
-    const cookieHeader = req.headers.get('cookie') || '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
-    const sessionUid = uidMatch ? uidMatch[1] : null;
-    const sessionRole = roleMatch ? roleMatch[1].toUpperCase() : null;
-    const isStaff = sessionRole === 'ADMIN' || sessionRole === 'SUPER_ADMIN' || sessionRole === 'PASTOR';
+    const isStaff = auth.role === 'ADMIN' || auth.role === 'SUPER_ADMIN' || auth.role === 'PASTOR';
 
     const existingPrayer = await prisma.prayerRequest.findUnique({ where: { id } });
     if (!existingPrayer) {
       return NextResponse.json({ error: 'Prayer request not found' }, { status: 404 });
     }
 
-    if (!isStaff && sessionUid && existingPrayer.userId !== sessionUid) {
+    // Ownership check: staff or prayer owner
+    if (!isStaff && existingPrayer.userId !== auth.uid) {
       return NextResponse.json({ error: 'Forbidden: You can only delete your own prayer request' }, { status: 403 });
     }
 
@@ -199,5 +185,3 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
-

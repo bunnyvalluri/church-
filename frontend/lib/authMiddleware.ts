@@ -22,6 +22,7 @@
 import { NextResponse } from 'next/server';
 import { verifyFirebaseToken } from '@/lib/firebaseAdmin';
 import { prisma } from '@/lib/prisma';
+import { verifyServerSession, SESSION_COOKIE_NAME } from '@/lib/session';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface AuthenticatedUser {
@@ -92,7 +93,22 @@ async function resolveAndSyncUser(uid: string, email: string, name?: string): Pr
 export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedUser | null> {
   let authenticatedUser: AuthenticatedUser | null = null;
 
-  // 1. Always try the real Bearer token first (highest priority).
+  // 1. Authoritative HttpOnly session cookie validation against PostgreSQL
+  const cookieHeader = req.headers.get('cookie') ?? '';
+  const sessionMatch = cookieHeader.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]+)`));
+  if (sessionMatch && sessionMatch[1]) {
+    const sessionUser = await verifyServerSession(sessionMatch[1]);
+    if (sessionUser) {
+      return {
+        uid: sessionUser.uid,
+        email: sessionUser.email,
+        name: sessionUser.name || 'Member',
+        role: sessionUser.role as AuthenticatedUser['role'],
+      };
+    }
+  }
+
+  // 2. Cryptographically signed Bearer token (Firebase / External IdP)
   const token = extractToken(req);
   if (token && !token.startsWith("session-token-")) {
     const decoded = await verifyFirebaseToken(token);
@@ -109,66 +125,7 @@ export async function getAuthenticatedUser(req: Request): Promise<AuthenticatedU
     }
   }
 
-  // 2. Cookie / Header session fallback for active authenticated web sessions
-  if (!authenticatedUser) {
-    const cookieHeader = req.headers.get('cookie') ?? '';
-    const uidMatch = cookieHeader.match(/__kcm_session_uid=([^;]+)/);
-    const roleMatch = cookieHeader.match(/__kcm_session_role=([^;]+)/);
-
-    const uid = uidMatch ? uidMatch[1] : req.headers.get('x-user-uid');
-    const cookieRole = roleMatch ? roleMatch[1].toUpperCase() : req.headers.get('x-user-role')?.toUpperCase();
-
-    if (uid) {
-      try {
-        const userInDb = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { id: uid },
-              { email: uid.includes('@') ? uid : `${uid}@kcm.local` }
-            ]
-          },
-          select: { id: true, email: true, name: true, role: true }
-        });
-
-        if (userInDb) {
-          authenticatedUser = {
-            uid: userInDb.id,
-            email: userInDb.email,
-            name: userInDb.name || 'Portal User',
-            role: userInDb.role as AuthenticatedUser['role'],
-          };
-        } else if (cookieRole) {
-          const validRolesList: AuthenticatedUser['role'][] = [
-            'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
-          ];
-          if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
-            authenticatedUser = {
-              uid,
-              email: `${uid}@kcm.local`,
-              name: 'Portal User',
-              role: cookieRole as AuthenticatedUser['role'],
-            };
-          }
-        }
-      } catch (dbErr) {
-        if (cookieRole) {
-          const validRolesList: AuthenticatedUser['role'][] = [
-            'SUPER_ADMIN', 'ADMIN', 'PASTOR', 'MEMBER', 'EVENT_MANAGER', 'FIELD_VOLUNTEER', 'NGO_ADMIN'
-          ];
-          if (validRolesList.includes(cookieRole as AuthenticatedUser['role'])) {
-            authenticatedUser = {
-              uid,
-              email: `${uid}@kcm.local`,
-              name: 'Portal User',
-              role: cookieRole as AuthenticatedUser['role'],
-            };
-          }
-        }
-      }
-    }
-  }
-
-  // 3. Dev bypass fallback — only used when no real token/cookie is in the request.
+  // 3. Dev bypass fallback — strictly disabled in production
   if (!authenticatedUser && process.env.NODE_ENV !== 'production') {
     const devUser = getDevBypassUser();
     if (devUser) {

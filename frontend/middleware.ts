@@ -1,17 +1,21 @@
 /**
  * middleware.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Next.js Edge Middleware — Centralized route protection and role-based access.
+ * Next.js Edge Middleware — Production-Ready Route Protection, Role-Based
+ * Access Control, Cryptographic Session Verification, and CSRF Defense.
  *
  * Role Matrix:
- *  SUPER_ADMIN  → /admin/*, /pastor/main/*, /member/*
- *  ADMIN        → /admin/*, /pastor/main/*, /member/*
- *  PASTOR       → /pastor/main/*, /member/*
- *  MEMBER       → /member/* only
+ *  SUPER_ADMIN     → /admin/*, /pastor/*, /member/*, /event-manager/*
+ *  ADMIN           → /admin/*, /pastor/*, /member/*, /event-manager/*
+ *  PASTOR          → /pastor/*, /member/*
+ *  EVENT_MANAGER   → /event-manager/*, /member/*
+ *  FIELD_VOLUNTEER → /field-volunteer/*, /event-manager/*, /member/*
+ *  MEMBER          → /member/* only
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionAtEdge, SESSION_COOKIE_NAME } from '@/lib/edgeSession';
 
 // ── Role Protected Prefixes ──────────────────────────────────────────────────
 const ADMIN_PREFIXES = ['/admin'];
@@ -34,7 +38,6 @@ const PUBLIC_PATHS = [
   '/admin/login',
   '/admin/register',
   '/api/auth',
-  '/api/member/profile',
   '/api/donations',
   '/api/sermons',
   '/api/events',
@@ -50,13 +53,26 @@ const PUBLIC_PATHS = [
   '/robots',
 ];
 
+// ── Webhook Exemptions for CSRF ──────────────────────────────────────────────
+const WEBHOOK_PREFIXES = [
+  '/api/donations/stripe/webhook',
+  '/api/payments/webhook',
+  '/api/webhooks/httpsms',
+  '/api/google-event-trigger',
+  '/api/donations/test-webhook',
+];
+
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(
     (p) => pathname === p || pathname.startsWith(p + '/') || pathname.startsWith(p + '?')
   );
 }
 
-export function middleware(req: NextRequest) {
+function isWebhookPath(pathname: string): boolean {
+  return WEBHOOK_PREFIXES.some((w) => pathname.startsWith(w));
+}
+
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // ── HTTPS Enforcement in Production ──────────────────────────────────────
@@ -73,30 +89,90 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Check Session Presence via Cookies ───────────────────────────────────
-  const sessionRole = req.cookies.get('__kcm_session_role')?.value?.toUpperCase() ?? null;
-  const sessionUid  = req.cookies.get('__kcm_session_uid')?.value ?? null;
-  const hasSession  = !!(sessionUid && sessionRole);
+  // ── CSRF Protection on State-Changing API Requests ─────────────────────────
+  const method = req.method.toUpperCase();
+  const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
 
-  const effectiveRole = hasSession ? sessionRole : null;
+  if (isStateChanging && pathname.startsWith('/api/') && !isWebhookPath(pathname)) {
+    const origin = req.headers.get('origin');
+    const referer = req.headers.get('referer');
+    const host = req.headers.get('host') || req.nextUrl.host;
+
+    if (origin) {
+      try {
+        const originUrl = new URL(origin);
+        const originHost = originUrl.host;
+        // Allow match on exact host or allowed staging/prod hosts
+        const isAllowedOrigin =
+          originHost === host ||
+          originHost === 'kcmchurch.vercel.app' ||
+          originHost.endsWith('.vercel.app') ||
+          originHost.startsWith('localhost') ||
+          originHost.startsWith('127.0.0.1');
+
+        if (!isAllowedOrigin) {
+          return NextResponse.json(
+            { error: 'Forbidden: Cross-site request forgery protection triggered.' },
+            { status: 403 }
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          { error: 'Forbidden: Malformed request origin.' },
+          { status: 403 }
+        );
+      }
+    } else if (referer) {
+      try {
+        const refererUrl = new URL(referer);
+        const refererHost = refererUrl.host;
+        const isAllowedReferer =
+          refererHost === host ||
+          refererHost === 'kcmchurch.vercel.app' ||
+          refererHost.endsWith('.vercel.app') ||
+          refererHost.startsWith('localhost') ||
+          refererHost.startsWith('127.0.0.1');
+
+        if (!isAllowedReferer) {
+          return NextResponse.json(
+            { error: 'Forbidden: Cross-site request forgery protection triggered.' },
+            { status: 403 }
+          );
+        }
+      } catch {
+        // Ignored if unparseable referer
+      }
+    }
+  }
+
+  // ── Cryptographic Session Verification via Edge Web Crypto ────────────────
+  const sessionCookie = req.cookies.get(SESSION_COOKIE_NAME)?.value || null;
+  const verifiedSession = await verifySessionAtEdge(sessionCookie);
+
+  const effectiveRole = verifiedSession?.role ?? null;
   const isAuthenticated = !!effectiveRole;
-  const isSuperAdmin    = effectiveRole === 'SUPER_ADMIN';
-  const isAdminRole     = effectiveRole === 'ADMIN' || isSuperAdmin;
-  const isPastorRole    = effectiveRole === 'PASTOR' || isAdminRole;
+  const isSuperAdmin = effectiveRole === 'SUPER_ADMIN';
+  const isAdminRole = effectiveRole === 'ADMIN' || isSuperAdmin;
+  const isPastorRole = effectiveRole === 'PASTOR' || isAdminRole;
   const isEventManagerRole = effectiveRole === 'EVENT_MANAGER' || isAdminRole;
   const isVolunteerRole = effectiveRole === 'FIELD_VOLUNTEER' || isEventManagerRole;
 
-  // ── Helper: redirect unauthenticated to login ───────────────────────────
+  // ── Helper: redirect unauthenticated to login ─────────────────────────────
   function redirectToLogin(next?: string) {
     const loginUrl = req.nextUrl.clone();
     loginUrl.pathname = '/login';
     if (next && next !== '/' && next !== '/login' && next !== '/register') {
       loginUrl.searchParams.set('next', next);
     }
-    return NextResponse.redirect(loginUrl);
+    const res = NextResponse.redirect(loginUrl);
+    // If an invalid session cookie was present, clear it
+    if (sessionCookie && !verifiedSession) {
+      res.cookies.set(SESSION_COOKIE_NAME, '', { path: '/', maxAge: 0 });
+    }
+    return res;
   }
 
-  // ── Helper: redirect authenticated user to their authorized portal ──────
+  // ── Helper: redirect authenticated user to their authorized portal ────────
   function redirectToAuthorizedPortal() {
     const portalUrl = req.nextUrl.clone();
     if (isAdminRole) {
@@ -111,10 +187,9 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(portalUrl);
   }
 
-  // ── Logged-In User Redirects on /login and /register ──────────────────────
+  // ── Logged-In User Redirects on /login and /register ────────────────────────
   if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
     const nextParam = req.nextUrl.searchParams.get('next');
-    // If next is specified and user has permission, let them proceed
     if (nextParam && nextParam.startsWith('/')) {
       if (nextParam.startsWith('/admin') && isAdminRole) return NextResponse.redirect(new URL(nextParam, req.url));
       if (nextParam.startsWith('/pastor') && isPastorRole) return NextResponse.redirect(new URL(nextParam, req.url));
@@ -128,7 +203,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Root /pastor redirect ────────────────────────────────────────────────
+  // ── Root /pastor redirect ──────────────────────────────────────────────────
   if (pathname === '/pastor' || pathname === '/pastor/') {
     if (!isAuthenticated) return redirectToLogin('/pastor/main/dashboard');
     if (!isPastorRole) return redirectToAuthorizedPortal();
@@ -137,7 +212,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(target);
   }
 
-  // ── Root /admin redirect ─────────────────────────────────────────────────
+  // ── Root /admin redirect ───────────────────────────────────────────────────
   if (pathname === '/admin' || pathname === '/admin/') {
     if (!isAuthenticated) return redirectToLogin('/admin/dashboard');
     if (!isAdminRole) return redirectToAuthorizedPortal();
@@ -146,41 +221,41 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(target);
   }
 
-  // ── Guard: /admin/* pages ─────────────────────────────────────────────────
+  // ── Guard: /admin/* pages ───────────────────────────────────────────────────
   if (ADMIN_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
     if (!isAdminRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
-  // ── Guard: /pastor/* pages ────────────────────────────────────────────────
+  // ── Guard: /pastor/* pages ──────────────────────────────────────────────────
   if (PASTOR_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
     if (!isPastorRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
-  // ── Guard: /event-manager/* pages ──────────────────────────────────────────
+  // ── Guard: /event-manager/* pages ────────────────────────────────────────────
   if (EVENT_MANAGER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
     if (!isVolunteerRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
-  // ── Guard: /field-volunteer/* pages ────────────────────────────────────────
+  // ── Guard: /field-volunteer/* pages ──────────────────────────────────────────
   if (FIELD_VOLUNTEER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
     if (!isVolunteerRole) return redirectToAuthorizedPortal();
     return NextResponse.next();
   }
 
-  // ── Guard: /member/* pages ────────────────────────────────────────────────
+  // ── Guard: /member/* pages ──────────────────────────────────────────────────
   if (MEMBER_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     if (!isAuthenticated) return redirectToLogin(pathname);
     return NextResponse.next();
   }
 
-  // ── Guard: /api/admin/* endpoints ─────────────────────────────────────────
+  // ── Guard: /api/admin/* endpoints ───────────────────────────────────────────
   if (ADMIN_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
@@ -191,19 +266,19 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Guard: /api/pastor/* endpoints ────────────────────────────────────────
+  // ── Guard: /api/pastor/* endpoints ──────────────────────────────────────────
   if (PASTOR_API_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const isGetPublicPastorResource = req.method === 'GET' && (
-      pathname.startsWith('/api/pastor/sermons') || 
-      pathname.startsWith('/api/pastor/announcements')
-    );
+    const isGetPublicPastorResource =
+      req.method === 'GET' &&
+      (pathname.startsWith('/api/pastor/sermons') || pathname.startsWith('/api/pastor/announcements'));
+
     if (!isGetPublicPastorResource) {
       if (!isAuthenticated) {
         return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
       }
-      const isSermonOrAnnouncementEndpoint = 
-        pathname.startsWith('/api/pastor/sermons') || 
-        pathname.startsWith('/api/pastor/announcements') || 
+      const isSermonOrAnnouncementEndpoint =
+        pathname.startsWith('/api/pastor/sermons') ||
+        pathname.startsWith('/api/pastor/announcements') ||
         pathname.startsWith('/api/pastor/clear-seeded-sermons');
       const canAccess = isPastorRole || (isSermonOrAnnouncementEndpoint && isVolunteerRole);
       if (!canAccess) {
@@ -213,7 +288,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Guard: /api/event-manager/* endpoints ──────────────────────────────────
+  // ── Guard: /api/event-manager/* endpoints ────────────────────────────────────
   if (EVENT_MANAGER_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });
@@ -224,7 +299,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Guard: /api/field-volunteer/* endpoints ─────────────────────────────────
+  // ── Guard: /api/field-volunteer/* endpoints ───────────────────────────────────
   if (FIELD_VOLUNTEER_API_PREFIXES.some((p) => pathname.startsWith(p))) {
     if (!isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required. Please sign in.' }, { status: 401 });

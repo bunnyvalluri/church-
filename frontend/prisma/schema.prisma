@@ -43,8 +43,28 @@ model User {
   smsMessages        SmsMessage[]
   notificationPreferences MemberNotificationPreference?
   smsAuditLogs       SmsAuditLog[]
+  sessions           Session[]
 
   @@map("members")
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionTokenHash String    @unique
+  role             UserRole  @default(MEMBER)
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  lastActivityAt   DateTime  @default(now())
+  ipHash           String?
+  userAgentHash    String?
+  revokedAt        DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([sessionTokenHash])
+  @@map("sessions")
 }
 
 model Event {
@@ -1677,6 +1697,30 @@ model SmsAuditLog {
   @@index([createdAt])
   @@map("sms_audit_logs")
 }
+
+model AIChatLog {
+  id               String   @id @default(cuid())
+  assistantType    String   @map("assistant_type") // SERMON_ASSISTANT | PRAYER_ASSISTANT | EVENT_CONTENT_ASSISTANT | BIBLE_STUDY_ASSISTANT | CHURCH_CHATBOT
+  userId           String?  @map("user_id")
+  userRole         String?  @map("user_role")
+  prompt           String   @db.Text
+  response         String   @db.Text
+  provider         String   // Groq | OpenRouter | GoogleAIStudio
+  modelName        String   @map("model_name")
+  latencyMs        Int      @map("latency_ms")
+  status           String   @default("SUCCESS") // SUCCESS | MODERATED | FAILED
+  isFlagged        Boolean  @default(false) @map("is_flagged")
+  moderationReason String?  @map("moderation_reason")
+  metadata         Json     @default("{}")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([assistantType])
+  @@index([userId])
+  @@index([provider])
+  @@index([createdAt])
+  @@map("ai_chat_logs")
+}
+
 
 
 

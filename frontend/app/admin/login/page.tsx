@@ -59,17 +59,6 @@ export default function AdminLoginPage() {
       // The AuthProvider will automatically trigger updates and redirect to /admin via useEffect if ADMIN.
     } catch (err: any) {
       console.warn("[ADMIN/AUTH] Firebase auth notice:", err?.code || err);
-      const eStr = (email || "").toLowerCase().trim();
-      const isAdminEmail = eStr.includes("admin") || eStr === "bishop.kraju@kcmchurch.org";
-      if (isAdminEmail) {
-        const role = eStr.includes("superadmin") ? "SUPER_ADMIN" : "ADMIN";
-        if (typeof document !== "undefined") {
-          document.cookie = `__kcm_session_uid=admin-session; path=/; max-age=604800; SameSite=Lax`;
-          document.cookie = `__kcm_session_role=${role}; path=/; max-age=604800; SameSite=Lax`;
-        }
-        window.location.href = "/admin";
-        return;
-      }
       const messages: Record<string, string> = {
         "auth/invalid-credential": "Invalid email or password. Please try again.",
         "auth/invalid-login-credentials": "Invalid email or password. Please try again.",

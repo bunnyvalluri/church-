@@ -118,14 +118,9 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
     [language]
   );
 
-  // Safe cookie setter with SameSite and HTTPS Secure attributes
-  const setAuthCookies = (uid: string, role: string) => {
-    if (typeof document === "undefined") return;
-    const maxAge = 7 * 24 * 60 * 60; // 7 days
-    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
-    const secureFlag = isHttps ? "; Secure" : "";
-    document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
-    document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
+  // Session cookies are managed securely via HttpOnly cookies from the backend
+  const setAuthCookies = (_uid: string, _role: string) => {
+    // HttpOnly session cookie is set directly by /api/auth/google
   };
 
   const handleCancel = useCallback(() => {
@@ -265,8 +260,60 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      await verifyWithBackend({ idToken });
+      const u = result.user;
+
+      // Sync Firebase Google user with backend database to establish server session and HttpOnly cookie
+      const syncRes = await fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: u.uid,
+          email: u.email,
+          name: u.displayName,
+          photoURL: u.photoURL,
+          phoneNumber: u.phoneNumber,
+        }),
+      });
+
+      const data = await syncRes.json().catch(() => null);
+      if (!syncRes.ok || !data?.success) {
+        throw new Error(data?.error || getLocalizedText("serverError"));
+      }
+
+      clearTimers();
+      isAuthenticatingRef.current = false;
+
+      // Update client AuthProvider context
+      if (updateUser && data.user) {
+        updateUser({
+          uid: data.user.id,
+          email: data.user.email || "",
+          name: data.user.name || "Member",
+          image: data.user.image || null,
+          role: data.user.role as any,
+        });
+      }
+
+      // Determine final destination
+      let targetPath = (data.user?.role === "ADMIN" || data.user?.role === "SUPER_ADMIN") ? "/admin/dashboard" : (data.redirectTo || "/member");
+      const nextParam = searchParams?.get("next");
+      if (
+        nextParam &&
+        nextParam.startsWith("/") &&
+        !nextParam.startsWith("//") &&
+        !nextParam.includes(":")
+      ) {
+        const userRole = (data.user?.role || "MEMBER").toUpperCase();
+        const isAdminRoute = nextParam.startsWith("/admin") || nextParam.startsWith("/pastor");
+        if (!isAdminRoute || userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "PASTOR") {
+          targetPath = nextParam;
+        }
+      }
+
+      setState("REDIRECTING");
+      if (typeof window !== "undefined") {
+        window.location.replace(targetPath);
+      }
     } catch (firebaseErr: any) {
       clearTimers();
       isAuthenticatingRef.current = false;

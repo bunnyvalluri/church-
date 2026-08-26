@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdminOrDev } from '@/lib/authMiddleware';
+import { revokeAllUserSessions } from '@/lib/session';
 
 // Safe user fields — NEVER expose password hash
 const USER_SELECT = {
@@ -122,6 +123,9 @@ export async function POST(req: Request) {
         select: USER_SELECT,
       });
 
+      // Revoke all active sessions for the user to force immediate token/session refresh
+      await revokeAllUserSessions(userId);
+
       return NextResponse.json({ success: true, user: updatedUser });
     } catch (dbError: any) {
       console.error('[ADMIN/USERS/UPDATE] Database error:', dbError);
@@ -177,7 +181,10 @@ export async function DELETE(req: Request) {
       data: { userId: null },
     });
 
-    // 5. Delete the user
+    // 5. Revoke all active sessions
+    await revokeAllUserSessions(targetUser.id);
+
+    // 6. Delete the user
     await prisma.user.delete({
       where: { id: targetUser.id },
     });
@@ -191,5 +198,3 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
-

@@ -137,6 +137,19 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  sessionTokenHash: 'sessionTokenHash',
+  role: 'role',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt',
+  lastActivityAt: 'lastActivityAt',
+  ipHash: 'ipHash',
+  userAgentHash: 'userAgentHash',
+  revokedAt: 'revokedAt'
+};
+
 exports.Prisma.EventScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -1462,6 +1475,7 @@ exports.SmsErrorCode = exports.$Enums.SmsErrorCode = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Session: 'Session',
   Event: 'Event',
   EventMedia: 'EventMedia',
   EventImage: 'EventImage',

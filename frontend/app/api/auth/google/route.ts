@@ -6,6 +6,8 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 import { sendGoogleLoginConfirmationEmail } from '@/lib/authEmailService';
 import { logger } from '@/lib/logger';
+import { createServerSession, attachSessionCookie } from '@/lib/session';
+import { getClientIp } from '@/lib/apiResponse';
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const googleAuthSchema = z
@@ -414,10 +416,17 @@ export async function POST(req: Request) {
       redirectTo = '/event-manager';
     }
 
-    // 8. Establish Authenticated Session via Cookies
-    const maxAge = 7 * 24 * 60 * 60; // 7 days
+    // 8. Establish Authenticated Server Session via HttpOnly Cookie
     const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.url.startsWith('https:');
     const isProd = process.env.NODE_ENV === 'production' || isHttps;
+    const ip = getClientIp(req);
+    const userAgent = req.headers.get('user-agent');
+
+    const { token } = await createServerSession(user.id, user.role, {
+      ip,
+      userAgent,
+      isHttps: isProd,
+    });
 
     const response = NextResponse.json({
       success: true,
@@ -431,21 +440,10 @@ export async function POST(req: Request) {
       redirectTo,
     });
 
-    response.cookies.set('__kcm_session_uid', user.id, {
-      path: '/',
-      maxAge,
-      sameSite: 'lax',
-      secure: isProd,
-      httpOnly: false, // Accessible by client AuthProvider
-    });
-
-    response.cookies.set('__kcm_session_role', user.role, {
-      path: '/',
-      maxAge,
-      sameSite: 'lax',
-      secure: isProd,
-      httpOnly: false,
-    });
+    attachSessionCookie(response, token, isProd);
+    // Clear legacy unverified cookies
+    response.cookies.set('__kcm_session_uid', '', { path: '/', maxAge: 0 });
+    response.cookies.set('__kcm_session_role', '', { path: '/', maxAge: 0 });
 
     return response;
   } catch (err: any) {

@@ -266,15 +266,6 @@ function LoginForm() {
     return errStr;
   };
 
-  // Cookie setter with Secure attribute for mobile HTTPS compatibility (iOS Safari & Chrome Android)
-  const setAuthCookies = (uid: string, role: string) => {
-    if (typeof document === "undefined") return;
-    const maxAge = 7 * 24 * 60 * 60; // 7 days
-    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
-    const secureFlag = isHttps ? "; Secure" : "";
-    document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
-    document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
-  };
 
   const redirectForRole = (targetRole: string) => {
     // ── Determine role-based default destination ─────────────────────────────
@@ -397,8 +388,7 @@ function LoginForm() {
         console.warn("[AUTH] Sync error:", syncErr);
       }
 
-      // 2. Set secure presence session cookies
-      setAuthCookies(u.uid, role);
+      // 2. Server session is already established via /api/auth/sync HttpOnly cookie
 
       // 3. Update client AuthProvider state
       if (updateUser) {

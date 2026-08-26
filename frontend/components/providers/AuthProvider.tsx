@@ -35,23 +35,17 @@ const AuthContext = createContext<AuthContextType>({
   getIdToken: async () => null,
 });
 
-// ── Cookie helpers (lightweight presence cookies for Edge Middleware) ──────────
-function setSessionCookies(uid: string, role: string) {
-  if (typeof document === "undefined") return;
-  const maxAge = 7 * 24 * 60 * 60; // 7 days
-  // Add Secure flag on HTTPS (production). Omit on HTTP (local dev) so it still works.
-  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-  const secureFlag = isSecure ? "; Secure" : "";
-  document.cookie = `__kcm_session_uid=${uid}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
-  document.cookie = `__kcm_session_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secureFlag}`;
+// ── Session Cookie Cleaners ──────────────────────────────────────────────────
+function setSessionCookies(_uid: string, _role: string) {
+  // Authoritative session cookie (kcm_session) is HttpOnly and managed by the server.
+  // We ensure legacy plain cookies are cleared.
+  clearSessionCookies();
 }
 
 function clearSessionCookies() {
   if (typeof document === "undefined") return;
-  const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-  const secureFlag = isSecure ? "; Secure" : "";
-  document.cookie = `__kcm_session_uid=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
-  document.cookie = `__kcm_session_role=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
+  document.cookie = "__kcm_session_uid=; path=/; max-age=0; SameSite=Lax";
+  document.cookie = "__kcm_session_role=; path=/; max-age=0; SameSite=Lax";
 }
 
 async function syncUserToDatabase(firebaseUser: any): Promise<any | null> {
@@ -100,13 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.error("[AUTH] getIdToken error:", err);
     }
-    // Fallback: Use cookie presence session token if available
-    if (typeof document !== "undefined") {
-      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
-      if (uidMatch && uidMatch[1]) {
-        return `session-token-${uidMatch[1]}`;
-      }
-    }
     return null;
   };
 
@@ -135,142 +122,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
 
-    // 0. Immediate synchronous hydration from presence cookies (0ms delay)
-    if (typeof document !== "undefined") {
-      const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
-      const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
-      if (uidMatch && uidMatch[1]) {
-        const sessionUid = uidMatch[1];
-        const sessionRole = (roleMatch?.[1]?.toUpperCase() || "MEMBER") as AuthUser["role"];
-        setUser((prev) => prev || {
-          uid: sessionUid,
-          email: "",
-          name: "Member",
-          image: null,
-          role: sessionRole,
-        });
-        setLoading(false);
-
-        // Validate and refresh profile details from server in background
-        fetch(`/api/member/profile?userId=${encodeURIComponent(sessionUid)}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data?.success && data?.user) {
-              const profileRole = (data.user.role || sessionRole || "MEMBER") as AuthUser["role"];
-              setUser({
-                uid: data.user.id,
-                email: data.user.email || "",
-                name: data.user.name || "Member",
-                image: data.user.image || null,
-                role: profileRole,
-              });
-              setSessionCookies(data.user.id, profileRole);
-            }
-          })
-          .catch((err) => {
-            console.warn("[AUTH] Profile revalidation notice:", err);
+    // 1. Initial verification against server session
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.authenticated && data?.user) {
+          setUser({
+            uid: data.user.uid,
+            email: data.user.email || '',
+            name: data.user.name || 'Member',
+            image: data.user.image || null,
+            role: data.user.role || 'MEMBER',
           });
-      }
-    }
+          setLoading(false);
+        }
+      })
+      .catch(() => {});
 
     let unsubscribe: (() => void) | undefined;
 
-    if (!auth || typeof onAuthStateChanged !== "function") {
-      console.warn("[AUTH] Firebase Auth not available. Running in offline fallback mode.");
+    if (!auth || typeof onAuthStateChanged !== 'function') {
+      console.warn('[AUTH] Firebase Auth not available. Running in offline fallback mode.');
       setLoading(false);
     } else {
       unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
-          // Read presence cookie role if available during hydration, default to MEMBER
-          let initialRole: AuthUser["role"] = "MEMBER";
-          if (typeof document !== "undefined") {
-            const matches = document.cookie.match(/__kcm_session_role=([^;]+)/);
-            if (matches && matches[1]) {
-              const cookieRole = matches[1].toUpperCase();
-              const validRolesList = ["MEMBER", "PASTOR", "ADMIN", "SUPER_ADMIN", "EVENT_MANAGER", "FIELD_VOLUNTEER", "NGO_ADMIN"];
-              if (validRolesList.includes(cookieRole)) {
-                initialRole = cookieRole as any;
-              }
-            }
-          }
-
-          const initialUser: AuthUser = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName || "Member",
-            image: firebaseUser.photoURL || null,
-            role: initialRole,
-          };
-
-          setUser(initialUser);
-          setLoading(false);
-
-          // Perform authoritative database sync
           try {
             const dbUser = await syncUserToDatabase(firebaseUser);
             if (dbUser) {
-              const syncedRole = dbUser.role || "MEMBER";
+              const syncedRole = dbUser.role || 'MEMBER';
               const updatedUser: AuthUser = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                name: dbUser.name || firebaseUser.displayName || "Member",
+                name: dbUser.name || firebaseUser.displayName || 'Member',
                 image: dbUser.image || firebaseUser.photoURL || null,
                 role: syncedRole,
               };
-              setSessionCookies(updatedUser.uid, updatedUser.role);
               setUser(updatedUser);
-            }
-          } catch (syncErr) {
-            console.warn("[AUTH] Database role sync error:", syncErr);
-          }
-        } else {
-          // Check for active presence session cookie (e.g. from Google Identity Services or server-authenticated session)
-          let hasCookieSession = false;
-          if (typeof document !== "undefined") {
-            const uidMatch = document.cookie.match(/__kcm_session_uid=([^;]+)/);
-            const roleMatch = document.cookie.match(/__kcm_session_role=([^;]+)/);
-            if (uidMatch && uidMatch[1]) {
-              hasCookieSession = true;
-              const sessionUid = uidMatch[1];
-              const sessionRole = (roleMatch?.[1]?.toUpperCase() || "MEMBER") as AuthUser["role"];
-
-              // Immediately set preliminary user so UI renders authenticated
-              setUser((prev) => prev || {
-                uid: sessionUid,
-                email: "",
-                name: "Member",
-                image: null,
-                role: sessionRole,
+              setLoading(false);
+            } else {
+              setUser({
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: firebaseUser.displayName || 'Member',
+                image: firebaseUser.photoURL || null,
+                role: 'MEMBER',
               });
               setLoading(false);
-
-              // Validate and refresh profile details from server
-              fetch(`/api/member/profile?userId=${encodeURIComponent(sessionUid)}`)
-                .then((res) => res.json())
-                .then((data) => {
-                  if (data?.success && data?.user) {
-                    const profileRole = (data.user.role || sessionRole || "MEMBER") as AuthUser["role"];
-                    setUser({
-                      uid: data.user.id,
-                      email: data.user.email || "",
-                      name: data.user.name || "Member",
-                      image: data.user.image || null,
-                      role: profileRole,
-                    });
-                    setSessionCookies(data.user.id, profileRole);
-                  }
-                })
-                .catch((err) => {
-                  console.warn("[AUTH] Profile revalidation notice:", err);
-                });
             }
-          }
-
-          if (!hasCookieSession) {
-            clearSessionCookies();
-            setUser(null);
+          } catch (syncErr) {
+            console.warn('[AUTH] Database role sync error:', syncErr);
             setLoading(false);
           }
+        } else {
+          // Verify with server session before clearing user
+          fetch('/api/auth/session')
+            .then((res) => res.json())
+            .then((data) => {
+              if (data?.authenticated && data?.user) {
+                setUser({
+                  uid: data.user.uid,
+                  email: data.user.email || '',
+                  name: data.user.name || 'Member',
+                  image: data.user.image || null,
+                  role: data.user.role || 'MEMBER',
+                });
+              } else {
+                clearSessionCookies();
+                setUser(null);
+              }
+              setLoading(false);
+            })
+            .catch(() => {
+              clearSessionCookies();
+              setUser(null);
+              setLoading(false);
+            });
         }
       });
     }
@@ -297,6 +224,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
+      // Call server logout to revoke database session and clear HttpOnly cookie
+      await fetch('/api/auth/session', { method: 'DELETE' }).catch(() => {});
+
       if (auth && typeof signOut === "function") {
         await signOut(auth);
       }
