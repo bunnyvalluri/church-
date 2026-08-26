@@ -15,6 +15,7 @@
 import { prisma } from '@/lib/prisma';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
 import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
+import { emailService } from '@/lib/email';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -282,13 +283,6 @@ export async function sendDonationReceiptEmail(payload: DonationNotificationPayl
     return false;
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    await logNotification('EMAIL', 'SKIPPED', payload, email, 'RESEND_API_KEY not set');
-    console.info('[NOTIF/EMAIL] Skipped — RESEND_API_KEY not configured');
-    return false;
-  }
-
   const formattedAmount = payload.amount.toLocaleString('en-IN', {
     minimumFractionDigits: 2,
     style: 'currency',
@@ -296,144 +290,42 @@ export async function sendDonationReceiptEmail(payload: DonationNotificationPayl
   });
 
   const formattedDate = new Date(payload.paidAt).toLocaleDateString('en-IN', {
-    day: 'numeric', month: 'long', year: 'numeric',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
   });
-  const formattedTime = new Date(payload.paidAt).toLocaleTimeString('en-IN', {
-    hour: '2-digit', minute: '2-digit', hour12: true,
-  });
 
-  const htmlBody = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Donation Receipt — KCM</title>
-</head>
-<body style="margin:0;padding:0;background:#f3f0fb;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f0fb;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(79,28,145,0.12);">
-
-        <!-- HEADER BAND -->
-        <tr>
-          <td style="background:linear-gradient(135deg,#4F1C91 0%,#7C3AED 60%,#4F46E5 100%);padding:36px 40px;text-align:center;">
-            <div style="font-size:36px;margin-bottom:6px;">✝</div>
-            <div style="color:#ffffff;font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;">Kingdom of Christ Ministries</div>
-            <div style="color:rgba(255,255,255,0.75);font-size:12px;letter-spacing:2px;text-transform:uppercase;">Official Donation Receipt</div>
-          </td>
-        </tr>
-
-        <!-- SUCCESS BANNER -->
-        <tr>
-          <td style="background:#f0fdf4;padding:20px 40px;text-align:center;border-bottom:1px solid #dcfce7;">
-            <div style="display:inline-block;background:#16a34a;color:#fff;border-radius:50px;padding:8px 24px;font-size:14px;font-weight:700;">
-              ✅ Payment Successful
-            </div>
-          </td>
-        </tr>
-
-        <!-- BODY -->
-        <tr>
-          <td style="padding:36px 40px;">
-            <p style="font-size:16px;color:#374151;margin:0 0 24px;">Dear <strong style="color:#4F1C91;">${payload.donorName}</strong>,</p>
-            <p style="font-size:14px;color:#6b7280;line-height:1.7;margin:0 0 28px;">
-              Thank you for your generous contribution to <strong>Kingdom of Christ Ministries</strong>. Your gift helps us spread the Gospel, support communities, and serve those in need. May God richly bless you for your cheerful giving.
-            </p>
-
-            <!-- RECEIPT DETAILS BOX -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf5ff;border:1px solid #ede9fe;border-radius:14px;overflow:hidden;margin-bottom:28px;">
-              <tr><td style="padding:16px 20px;background:#4F1C91;">
-                <span style="color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Receipt Details</span>
-              </td></tr>
-              <tr><td style="padding:20px;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;">
-                  ${[
-                    ['Receipt Number', payload.receiptNumber, '#4F1C91', true],
-                    ['Donation ID', payload.donationId, '#374151', false],
-                    ['Transaction Ref (UTR)', payload.utr, '#4338ca', false],
-                    ['Date', formattedDate, '#374151', false],
-                    ['Time', formattedTime, '#374151', false],
-                    ['Donor Name', payload.isAnonymous ? 'Anonymous' : payload.donorName, '#374151', false],
-                    ['Donation Cause', payload.purpose, '#374151', false],
-                    ['Branch', payload.branchName, '#374151', false],
-                    ['Payment Method', `${payload.paymentMethod}${payload.upiApp ? ` (${payload.upiApp})` : ''}`, '#374151', false],
-                  ].map(([label, value, color, bold]) => `
-                  <tr style="border-bottom:1px solid #ede9fe;">
-                    <td style="padding:10px 0;color:#9ca3af;vertical-align:top;">${label}:</td>
-                    <td style="padding:10px 0;text-align:right;color:${color};font-weight:${bold ? '700' : '500'};font-family:${bold ? 'monospace' : 'inherit'};">${value}</td>
-                  </tr>`).join('')}
-                  <tr>
-                    <td style="padding:16px 0 6px;font-size:15px;font-weight:700;color:#4F1C91;">Total Amount:</td>
-                    <td style="padding:16px 0 6px;text-align:right;font-size:20px;font-weight:800;color:#4F1C91;">${formattedAmount}</td>
-                  </tr>
-                </table>
-              </td></tr>
-            </table>
-
-            <!-- ACTION BUTTONS -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-              <tr>
-                <td align="center" style="padding:0 6px;">
-                  <a href="${payload.receiptUrl}" style="display:inline-block;background:linear-gradient(135deg,#4F1C91,#7C3AED);color:#fff;padding:12px 28px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">🧾 View Receipt</a>
-                </td>
-                <td align="center" style="padding:0 6px;">
-                  <a href="${payload.verifyUrl}" style="display:inline-block;background:#f3f4f6;color:#374151;padding:12px 28px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;border:1px solid #e5e7eb;">✅ Verify</a>
-                </td>
-              </tr>
-            </table>
-
-            <!-- TAX INFO -->
-            <div style="background:#fffbeb;border:1px solid #fef3c7;border-radius:10px;padding:14px 18px;margin-bottom:24px;">
-              <p style="margin:0;font-size:12px;color:#92400e;line-height:1.6;">
-                <strong>📋 Tax Exemption:</strong> Donations to Kingdom of Christ Ministries are eligible for tax exemption under Section 80G of the Income Tax Act, 1961. Please retain this receipt for your tax records.
-              </p>
-            </div>
-
-            <!-- BIBLE VERSE -->
-            <p style="font-size:13px;color:#9ca3af;text-align:center;font-style:italic;margin:0 0 4px;">"God loves a cheerful giver." — 2 Corinthians 9:7</p>
-          </td>
-        </tr>
-
-        <!-- FOOTER -->
-        <tr>
-          <td style="background:#f9fafb;border-top:1px solid #f3f4f6;padding:24px 40px;text-align:center;">
-            <p style="margin:0 0 8px;font-size:12px;color:#6b7280;">Kingdom of Christ Ministries • Reg No: 125/2012 • 80G Tax Exempted</p>
-            <p style="margin:0 0 8px;font-size:11px;color:#9ca3af;">15-201, Vivekananda Nagar, Jeedimetla, Hyderabad, TS 500055</p>
-            <p style="margin:0;font-size:11px;color:#9ca3af;">📞 +91 97040 90069 | ✉ kingofchristministries23@gmail.com</p>
-          </td>
-        </tr>
-
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+  const receiptUrl = `${process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app'}/donations/receipts/${payload.receiptId}`;
+  const downloadPdfUrl = `${process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app'}/api/receipts/${payload.receiptId}?download=true`;
 
   try {
-    const emailRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
+    const result = await emailService.sendDonationReceipt(
+      email,
+      {
+        email,
+        donorName: payload.donorName,
+        receiptNumber: payload.receiptNumber,
+        donationAmount: formattedAmount,
+        transactionId: payload.utr || payload.razorpayPaymentId || payload.receiptNumber,
+        date: formattedDate,
+        purpose: payload.purpose,
+        verificationCode: payload.verificationCode,
+        utr: payload.utr,
+        receiptUrl,
+        downloadPdfUrl: payload.pdfUrl || downloadPdfUrl,
       },
-      body: JSON.stringify({
-        from: 'KCM Donations <donations@kingdomofchristministries.org>',
-        to: [email],
-        subject: `🧾 Donation Receipt ${payload.receiptNumber} — Kingdom of Christ Ministries`,
-        html: htmlBody,
-      }),
-    });
+      payload.receiptId
+    );
 
-    if (emailRes.ok) {
-      await logNotification('EMAIL', 'SENT', payload, email);
-      console.info(`[NOTIF/EMAIL] Receipt email sent to ${email}`);
+    if (result.success) {
+      console.info(`[NOTIF/EMAIL] Receipt email sent to ${email} via ${result.provider}`);
       return true;
+    } else {
+      console.warn(`[NOTIF/EMAIL] Receipt email delivery warning: ${result.error}`);
+      return false;
     }
-    const errBody = await emailRes.text();
-    throw new Error(`Resend error ${emailRes.status}: ${errBody}`);
   } catch (err: any) {
-    await logNotification('EMAIL', 'FAILED', payload, email, err.message);
-    console.error('[NOTIF/EMAIL] Dispatch failed:', err.message);
+    console.error('[NOTIF/EMAIL] Dispatch exception:', err?.message);
     return false;
   }
 }

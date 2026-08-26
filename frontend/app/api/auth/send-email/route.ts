@@ -7,6 +7,7 @@ import {
   getFormattedLoginDateTime,
   sendGoogleLoginConfirmationEmail,
 } from '@/lib/authEmailService';
+import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 
 const getResendClient = () => {
@@ -241,58 +242,59 @@ export async function POST(req: Request) {
 
     // ── REGISTER: Welcome email to new member + Alert to admin ────────────────
     if (type === 'REGISTER') {
-      const [welcomeResult, adminResult] = await Promise.allSettled([
-        resendClient.emails.send({
-          from: FROM_EMAIL,
-          to: [sanitizedEmail],
-          replyTo: CHURCH_EMAIL,
-          subject: `✝ Welcome to Kingdom of Christ Ministries, ${firstName}!`,
-          html: welcomeEmailHtml(displayName, sanitizedEmail),
-        }),
+      const welcomeResult = await emailService.sendWelcomeEmail(
+        sanitizedEmail,
+        firstName,
+        undefined
+      );
+
+      // Safe admin notification
+      if (resendClient) {
         resendClient.emails.send({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
           replyTo: CHURCH_EMAIL,
           subject: `🧑‍🤝‍🧑 New Member Registered: ${displayName}`,
           html: newMemberAdminHtml(displayName, sanitizedEmail, phone || '', now),
-        }),
-      ]);
+        }).catch(() => {});
+      }
 
-      logger.info('[EMAIL/API] Registration emails dispatched', {
+      logger.info('[EMAIL/API] Registration welcome email dispatched via emailService', {
         component: 'SendEmailRoute',
         action: 'REGISTER_EMAIL_SENT',
         email: sanitizedEmail,
+        welcomeResult,
       });
 
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, welcomeResult });
     }
 
     // ── LOGIN: Branded login confirmation to user + Admin alert ──────────────
     if (type === 'LOGIN') {
       const loginMethod = method === 'google' ? 'Google Sign-In' : 'Email & Password';
 
-      // Dispatches branded email via multi-transport (SMTP / Resend / Sandbox Fallback)
-      const dispatchResult = await sendGoogleLoginConfirmationEmail({
-        userId: sanitizedEmail,
-        email: sanitizedEmail,
-        name: displayName,
-        loginMethod,
-      });
+      // Dispatches branded email via multi-transport emailService
+      const dispatchResult = await emailService.sendLoginNotification(
+        sanitizedEmail,
+        displayName,
+        {
+          loginDateTime: now,
+          loginMethod,
+        }
+      );
 
       // Also trigger admin security alert notification safely
-      try {
-        await resendClient.emails.send({
+      if (resendClient) {
+        resendClient.emails.send({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
           replyTo: CHURCH_EMAIL,
           subject: `🔔 Member Login: ${displayName} (${sanitizedEmail})`,
           html: loginAdminAlertHtml(displayName, sanitizedEmail, now, loginMethod),
-        });
-      } catch (adminAlertErr) {
-        // Non-blocking admin notification
+        }).catch(() => {});
       }
 
-      logger.info('[EMAIL/API] Login confirmation email processed', {
+      logger.info('[EMAIL/API] Login confirmation email processed via emailService', {
         component: 'SendEmailRoute',
         action: 'LOGIN_EMAIL_SENT',
         email: sanitizedEmail,

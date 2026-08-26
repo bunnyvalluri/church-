@@ -5,6 +5,7 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 import { createServerSession, attachSessionCookie } from '@/lib/session';
 import { getClientIp } from '@/lib/apiResponse';
+import { emailService } from '@/lib/email';
 
 // ── Validation Schema ────────────────────────────────────────────────────────
 const syncSchema = z.object({
@@ -171,6 +172,16 @@ export async function POST(req: Request) {
       } catch (notifErr) {
         console.warn('[AUTH/SYNC] Notification creation failed:', notifErr);
       }
+
+      // Non-blocking welcome email dispatch to member
+      emailService
+        .sendWelcomeEmail(
+          sanitizedEmail,
+          sanitizedName ? sanitizedName.split(' ')[0] : 'Member',
+          undefined,
+          user.id
+        )
+        .catch((err) => console.warn('[AUTH/SYNC] Welcome email dispatch notice:', err?.message));
     }
 
     // 4. Establish Server-Side Session in PostgreSQL with Secure HttpOnly Cookie

@@ -81,6 +81,27 @@ export async function POST(req: Request) {
       },
     });
 
+    // Send volunteer application confirmation email
+    try {
+      const { emailService } = await import('@/lib/email');
+      emailService.send({
+        template: 'VOLUNTEER_CONFIRMATION',
+        to: email,
+        data: {
+          email,
+          firstName: name.split(' ')[0],
+          ministry: 'Community & NGO Outreach',
+          appliedAt: new Date().toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+        },
+      }).catch((err) => console.warn('[NGO/VOLUNTEER/EMAIL] Email notice:', err?.message));
+    } catch {
+      /* ignore */
+    }
+
     return NextResponse.json({ success: true, volunteer });
   } catch (err: any) {
     console.error('[API/NGO/VOLUNTEERS/POST] Error:', err);

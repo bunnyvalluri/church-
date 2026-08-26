@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { emailService } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const { id, status } = body;
+    const { id, status, pastoralNote } = body;
 
     if (!id || !status) {
       return NextResponse.json({ error: 'Prayer ID and status are required' }, { status: 400 });
@@ -41,7 +42,33 @@ export async function PATCH(req: Request) {
     const prayer = await prisma.prayerRequest.update({
       where: { id },
       data: { status },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
+
+    // Notify member if email available and request is not anonymous
+    if (prayer.user?.email && !prayer.isAnonymous) {
+      emailService
+        .sendPrayerStatusUpdate(
+          prayer.user.email,
+          {
+            prayerRequestId: prayer.id,
+            title: prayer.title,
+            status,
+            pastoralNote,
+            firstName: prayer.user.name ? prayer.user.name.split(' ')[0] : 'Member',
+          },
+          prayer.user.id
+        )
+        .catch((err) => console.warn('[PASTOR/PRAYER/EMAIL] Status notification notice:', err?.message));
+    }
 
     return NextResponse.json({ success: true, prayer });
   } catch (err: any) {

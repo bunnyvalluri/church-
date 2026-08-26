@@ -5,6 +5,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { sendPushNotification } from "@/lib/firebaseAdmin";
+import { emailService } from "@/lib/email";
 
 const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
 const resendKey = process.env.RESEND_API_KEY || "";
@@ -147,27 +148,73 @@ export async function notifyEventActivity(
     // 4. Send FCM Push Notification
     await sendEventPushNotification(title, content, link, eventId);
 
-    // 5. If it's a cancellation or important notice, email registered attendees
-    if (type === "EVENT_CANCELLED" || type === "REMINDER" || type === "STARTING_SOON") {
+    // 5. If it's a cancellation, reminder, or update, email registered attendees
+    if (type === "EVENT_CANCELLED" || type === "REMINDER" || type === "STARTING_SOON" || type === "EVENT_UPDATED") {
       const registrations = await prisma.eventRegistration.findMany({
         where: { eventId, status: "REGISTERED" },
-        select: { email: true, name: true },
+        select: { email: true, name: true, userId: true },
       });
 
+      const formattedDate = new Date(eventDetails.date).toLocaleDateString("en-IN", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const eventUrl = `${process.env.NEXTAUTH_URL || "https://kcmchurch.vercel.app"}${link}`;
+
       for (const reg of registrations) {
-        const html = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-            <h2 style="color: #6366f1;">${title}</h2>
-            <p>Dear ${reg.name},</p>
-            <p>${content}</p>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p><strong>Event:</strong> ${eventDetails.title}</p>
-            <p><strong>Location:</strong> ${eventDetails.location}</p>
-            <p><strong>Date:</strong> ${new Date(eventDetails.date).toLocaleDateString("en-IN")}</p>
-            <p style="margin-top: 20px;"><a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}${link}" style="background-color: #6366f1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Details</a></p>
-          </div>
-        `;
-        await sendEmailNotification(reg.email, `${title} - KCM Events`, html);
+        if (!reg.email) continue;
+        const firstName = reg.name ? reg.name.split(' ')[0] : 'Member';
+
+        if (type === "EVENT_CANCELLED") {
+          emailService.send({
+            template: "EVENT_CANCELLED",
+            to: reg.email,
+            userId: reg.userId || undefined,
+            eventId,
+            data: {
+              email: reg.email,
+              firstName,
+              eventName: eventDetails.title,
+              eventDate: formattedDate,
+              cancellationReason: content,
+              calendarUrl: `${process.env.NEXTAUTH_URL || "https://kcmchurch.vercel.app"}/events`,
+            },
+          }).catch(() => {});
+        } else if (type === "EVENT_UPDATED") {
+          emailService.send({
+            template: "EVENT_UPDATED",
+            to: reg.email,
+            userId: reg.userId || undefined,
+            eventId,
+            data: {
+              email: reg.email,
+              firstName,
+              eventName: eventDetails.title,
+              eventDate: formattedDate,
+              eventLocation: eventDetails.location,
+              updateSummary: content,
+              eventUrl,
+            },
+          }).catch(() => {});
+        } else {
+          // REMINDER or STARTING_SOON
+          emailService.send({
+            template: "EVENT_REMINDER",
+            to: reg.email,
+            userId: reg.userId || undefined,
+            eventId,
+            data: {
+              email: reg.email,
+              firstName,
+              eventName: eventDetails.title,
+              eventDate: formattedDate,
+              eventLocation: eventDetails.location,
+              eventUrl,
+            },
+          }).catch(() => {});
+        }
       }
     }
   } catch (err: any) {

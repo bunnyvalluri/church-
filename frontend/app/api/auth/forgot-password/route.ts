@@ -40,8 +40,40 @@ export async function POST(req: Request) {
     }
 
     const { email } = parsed.data;
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
+    // 2. Try generating secure password reset link via Firebase Admin and send branded KCM email
+    try {
+      const { generatePasswordResetLink } = await import('@/lib/firebaseAdmin');
+      const { emailService } = await import('@/lib/email');
+      const { prisma } = await import('@/lib/prisma');
+
+      const resetLink = await generatePasswordResetLink(email);
+
+      if (resetLink) {
+        // Look up member name if exists
+        const user = await prisma.user.findUnique({
+          where: { email },
+          select: { name: true, id: true },
+        }).catch(() => null);
+
+        const firstName = user?.name ? user.name.split(' ')[0] : undefined;
+
+        await emailService.sendPasswordReset(
+          email,
+          resetLink,
+          firstName,
+          '1 hour'
+        );
+
+        console.log(`[AUTH/FORGOT-PASSWORD] ✅ Branded KCM password reset email dispatched for: ${email}`);
+        return NextResponse.json({ success: true }, { status: 200, headers: rlHeaders });
+      }
+    } catch (adminErr: any) {
+      console.warn('[AUTH/FORGOT-PASSWORD] Admin SDK link generation note:', adminErr?.message);
+    }
+
+    // 3. Fallback: Call Firebase Auth REST API to send password reset email
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
       console.error('[AUTH/FORGOT-PASSWORD] Missing Firebase API Key in backend env');
       return NextResponse.json(
@@ -50,7 +82,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Call Firebase Auth REST API to send password reset email
     const firebaseResponse = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
       {
@@ -71,7 +102,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200, headers: rlHeaders });
     }
 
-    console.log(`[AUTH/FORGOT-PASSWORD] ✅ Password reset email sent for: ${email}`);
+    console.log(`[AUTH/FORGOT-PASSWORD] ✅ Fallback password reset email sent for: ${email}`);
     return NextResponse.json({ success: true }, { status: 200, headers: rlHeaders });
 
   } catch (err: any) {

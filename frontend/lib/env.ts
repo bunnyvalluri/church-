@@ -33,7 +33,22 @@ const serverEnvSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   HTTPSMS_API_KEY: z.string().optional(),
   HTTPSMS_WEBHOOK_SECRET: z.string().optional(),
+  
+  // Transactional Email Configuration
+  EMAIL_PROVIDER: z.string().optional(),
+  EMAIL_FROM_NAME: z.string().optional(),
+  EMAIL_FROM_ADDRESS: z.string().optional(),
+  EMAIL_REPLY_TO: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
+  RESEND_OWNER_EMAIL: z.string().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  SMTP_SECURE: z.string().optional(),
+  GMAIL_APP_PASSWORD: z.string().optional(),
+  
   OPENAI_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),

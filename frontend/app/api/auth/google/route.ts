@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 import { sendGoogleLoginConfirmationEmail } from '@/lib/authEmailService';
+import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 import { createServerSession, attachSessionCookie } from '@/lib/session';
 import { getClientIp } from '@/lib/apiResponse';
@@ -366,25 +367,56 @@ export async function POST(req: Request) {
       isNewUser,
     });
 
-    // 5. Send KCM Professional Transactional Login Confirmation Email (Awaited with timeout so Vercel Serverless runtime does not freeze)
-    const eventId = `google-auth-${user.id}-${Date.now()}`;
+    // 5. Send KCM Professional Transactional Emails
+    const ip = getClientIp(req);
+    const userAgent = req.headers.get('user-agent') || 'Web Browser';
+    const loginDateTime = new Date().toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }) + ' IST';
+
     try {
-      // Allow up to 3.5 seconds for email dispatch without blocking login if provider hangs
-      const emailPromise = sendGoogleLoginConfirmationEmail({
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        eventId,
-        loginMethod: 'Google Sign-In',
-      });
-      const timeoutPromise = new Promise<{ sent: boolean; reason: string }>((resolve) =>
-        setTimeout(() => resolve({ sent: false, reason: 'TIMEOUT' }), 3500)
+      const emailPromises: Promise<any>[] = [];
+
+      // If new member, dispatch official Welcome Email (Template A)
+      if (isNewUser) {
+        emailPromises.push(
+          emailService.sendWelcomeEmail(
+            user.email,
+            user.name ? user.name.split(' ')[0] : 'Member',
+            undefined,
+            user.id
+          )
+        );
+      }
+
+      // Dispatch KCM Login Security Notification (Template D)
+      emailPromises.push(
+        emailService.sendLoginNotification(
+          user.email,
+          user.name,
+          {
+            loginDateTime,
+            loginMethod: 'Google Sign-In',
+            device: userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop Browser',
+            browser: userAgent.slice(0, 60),
+            ipAddress: ip,
+          },
+          user.id
+        )
       );
-      await Promise.race([emailPromise, timeoutPromise]).catch(() => null);
+
+      // Safe bounded await so serverless functions never hang
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
+      await Promise.race([Promise.allSettled(emailPromises), timeoutPromise]).catch(() => null);
     } catch (emailErr: any) {
-      logger.error('[AUTH/GOOGLE] Login confirmation email dispatch notice', {
-        component: 'GoogleAuthRoute',
-        action: 'LOGIN_EMAIL_FAILED',
+      logger.error('[AUTH/GOOGLE] Email notification dispatch note:', {
         userId: user.id,
         error: emailErr?.message || String(emailErr),
       });
@@ -419,8 +451,6 @@ export async function POST(req: Request) {
     // 8. Establish Authenticated Server Session via HttpOnly Cookie
     const isHttps = req.headers.get('x-forwarded-proto') === 'https' || req.url.startsWith('https:');
     const isProd = process.env.NODE_ENV === 'production' || isHttps;
-    const ip = getClientIp(req);
-    const userAgent = req.headers.get('user-agent');
 
     const { token } = await createServerSession(user.id, user.role, {
       ip,

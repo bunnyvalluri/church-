@@ -1047,16 +1047,22 @@ model NotificationLog {
   receiptNumber  String?       @map("receipt_number")
   channel        String        // SMS | WHATSAPP | EMAIL | PUSH | ADMIN_ALERT
   status         String        @default("PENDING") // PENDING | SENT | FAILED | RETRYING | SKIPPED
+  template       String?       // Template identifier (e.g. WELCOME, LOGIN_ALERT, etc.)
+  subject        String?       // Subject of the notification
+  providerMessageId String?    @map("provider_message_id")
   recipient_addr String?       @map("recipient_addr") // phone number or email address
   retryCount     Int           @default(0) @map("retry_count")
   deliveredAt    DateTime?     @map("delivered_at")
   errorMessage   String?       @map("error_message")
+  metadata       String?       @db.Text
   sentAt         DateTime      @default(now()) @map("sent_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
   @@index([notificationId])
   @@index([recipientId])
   @@index([donationId])
+  @@index([status])
+  @@index([template])
   @@map("notification_logs")
 }
 

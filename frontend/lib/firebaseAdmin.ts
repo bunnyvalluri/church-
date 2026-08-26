@@ -133,8 +133,22 @@ export async function sendPushNotification(
     console.info(`[FIREBASE_ADMIN] FCM Multicast Sent. Success: ${response.successCount}, Failure: ${response.failureCount}`);
     return { successCount: response.successCount, failureCount: response.failureCount };
   } catch (err: any) {
-    console.warn('[FIREBASE_ADMIN] FCM Push notification error:', err?.message || err);
+    console.error('[FCM_MULTICAST] Multicast dispatch error:', err.message);
     return { successCount: 0, failureCount: tokens.length };
   }
 }
 
+/**
+ * Generates a secure, expiring password reset link for a user's email.
+ */
+export async function generatePasswordResetLink(email: string): Promise<string | null> {
+  const app = getAdminApp();
+  if (!app) return null;
+  try {
+    const { getAuth } = require('firebase-admin/auth');
+    return await getAuth(app).generatePasswordResetLink(email);
+  } catch (err: any) {
+    console.warn('[FIREBASE_ADMIN] Password reset link generation notice:', err?.message || err);
+    return null;
+  }
+}

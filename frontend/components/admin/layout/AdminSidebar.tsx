@@ -44,7 +44,8 @@ import {
   PanelLeft,
   X,
   Cpu,
-  MessageSquare
+  MessageSquare,
+  Mail
 } from "lucide-react";
 
 interface MenuItem {
@@ -92,6 +93,15 @@ const menuGroups: MenuGroup[] = [
         color: "text-blue-500 dark:text-blue-400",
         activeGradient: "from-blue-600 via-indigo-600 to-purple-600",
         iconBg: "bg-blue-500/10 text-blue-500 dark:text-blue-400",
+      },
+      {
+        name: "Email Delivery Engine",
+        href: "/admin/notifications/email",
+        icon: Mail,
+        badge: "PROD",
+        color: "text-purple-500 dark:text-purple-400",
+        activeGradient: "from-purple-600 via-indigo-600 to-pink-600",
+        iconBg: "bg-purple-500/10 text-purple-500 dark:text-purple-400",
       },
     ],
   },

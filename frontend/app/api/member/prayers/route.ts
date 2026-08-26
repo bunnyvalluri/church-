@@ -3,6 +3,7 @@ export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/authMiddleware';
+import { emailService } from '@/lib/email';
 
 export async function GET(req: Request) {
   try {
@@ -82,6 +83,28 @@ export async function POST(req: Request) {
       });
     } catch (notifErr) {
       console.warn('[PRAYERS/CREATE] Notification creation failed:', notifErr);
+    }
+
+    // Send prayer request confirmation email if user email is available
+    const recipientEmail = newPrayer.user?.email || auth.email;
+    if (recipientEmail && !isAnonymous) {
+      emailService
+        .sendPrayerConfirmation(
+          recipientEmail,
+          {
+            prayerRequestId: newPrayer.id,
+            title: newPrayer.title,
+            category: newPrayer.category,
+            submittedAt: new Date(newPrayer.createdAt).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            }),
+            firstName: (newPrayer.user?.name || auth.name)?.split(' ')[0] || 'Member',
+          },
+          auth.uid
+        )
+        .catch((err) => console.warn('[PRAYERS/CREATE] Email dispatch warning:', err?.message));
     }
 
     return NextResponse.json({ success: true, prayer: newPrayer });

@@ -28,7 +28,28 @@ export async function PUT(
     const volunteer = await prisma.ngoVolunteer.update({
       where: { id: params.id },
       data: { status },
+      include: {
+        project: { select: { title: true } },
+      },
     });
+
+    if (status === 'APPROVED' && volunteer.email) {
+      try {
+        const { emailService } = await import('@/lib/email');
+        emailService.send({
+          template: 'VOLUNTEER_APPROVAL',
+          to: volunteer.email,
+          data: {
+            email: volunteer.email,
+            firstName: volunteer.name.split(' ')[0],
+            ministry: volunteer.project?.title || 'Community & NGO Outreach',
+            orientationDate: 'Next Sunday Fellowship',
+          },
+        }).catch((err) => console.warn('[NGO/VOLUNTEER/APPROVAL] Email notice:', err?.message));
+      } catch {
+        /* ignore */
+      }
+    }
 
     return NextResponse.json({ success: true, volunteer });
   } catch (err: any) {
