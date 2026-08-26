@@ -138,10 +138,11 @@ class SMSRepository {
    * @param {number} [limit=50]
    */
   async findPendingMessages(limit = 50) {
-    if (!this.smsModel) return [];
+    const model = this.smsModel;
+    if (!model || typeof model.findMany !== 'function') return [];
     const now = new Date();
     try {
-      return await this.smsModel.findMany({
+      return await model.findMany({
         where: {
           status: { in: [SMS_STATUS.QUEUED, SMS_STATUS.RETRYING] },
           OR: [

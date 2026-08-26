@@ -230,8 +230,9 @@ class SMSWorker {
     this.isProcessingBatch = true;
 
     try {
+      if (!this.repository || typeof this.repository.findPendingMessages !== 'function') return;
       const pending = await this.repository.findPendingMessages(10);
-      if (pending.length > 0) {
+      if (Array.isArray(pending) && pending.length > 0) {
         console.log(`[SMSWorker] Found ${pending.length} pending SMS messages in outbox to process`);
         for (const msg of pending) {
           await this.processMessage(msg.id);
@@ -240,7 +241,7 @@ class SMSWorker {
         }
       }
     } catch (err) {
-      console.error('[SMSWorker] Error polling pending SMS batch:', err.message);
+      // Safe catch for startup/unmigrated state
     } finally {
       this.isProcessingBatch = false;
     }
