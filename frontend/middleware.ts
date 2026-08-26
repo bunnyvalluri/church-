@@ -310,7 +310,25 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  return NextResponse.next();
+  const res = NextResponse.next();
+  const isPrivatePath =
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/member') ||
+    pathname.startsWith('/pastor') ||
+    pathname.startsWith('/event-manager') ||
+    pathname.startsWith('/event-management') ||
+    pathname.startsWith('/field-volunteer') ||
+    pathname.startsWith('/portal-select') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/api/');
+
+  if (isPrivatePath) {
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+
+  return res;
 }
 
 export const config = {

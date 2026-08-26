@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export default function LocationsRedirect() {
-  redirect("/about/locations");
-}
+import LocationsPage from "@/app/about/locations/page";
+
+export default LocationsPage;

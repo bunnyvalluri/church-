@@ -1,32 +1,46 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kcmchurch.vercel.app";
-  
-  const routes = [
-    "",
-    "/about",
-    "/about/story",
-    "/about/leadership",
-    "/about/beliefs",
-    "/about/ministries",
-    "/about/mission",
-    "/about/pastor-message",
-    "/prayer",
-    "/get-involved/volunteer",
-    "/give",
-    "/login",
-    "/register",
-    "/gallery",
-    "/contact",
-    "/privacy",
-    "/terms",
+  const base = "https://kcmchurch.vercel.app";
+  const now = new Date();
+
+  const publicRoutes: Array<{
+    path: string;
+    priority: number;
+    changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  }> = [
+    { path: "/", priority: 1.0, changeFrequency: "weekly" },
+    { path: "/about", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/about/story", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/about/leadership", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/about/beliefs", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/about/ministries", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/about/mission", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/about/pastor-message", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/sermons", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/events", priority: 0.9, changeFrequency: "daily" },
+    { path: "/prayer", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/get-involved/small-groups", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/get-involved/volunteer", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/get-involved/serve", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/membership", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/locations", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/gallery", priority: 0.7, changeFrequency: "weekly" },
+    { path: "/ngo", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/ngo/projects", priority: 0.7, changeFrequency: "weekly" },
+    { path: "/ngo/gallery", priority: 0.6, changeFrequency: "weekly" },
+    { path: "/ngo/videos", priority: 0.6, changeFrequency: "weekly" },
+    { path: "/ngo/volunteers", priority: 0.6, changeFrequency: "monthly" },
+    { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/give", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
+    { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
   ];
 
-  return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: route === "" ? 1.0 : route.startsWith("/about/") ? 0.8 : 0.6,
+  return publicRoutes.map(({ path, priority, changeFrequency }) => ({
+    url: `${base}${path}`,
+    lastModified: now,
+    changeFrequency,
+    priority,
   }));
 }

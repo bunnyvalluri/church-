@@ -9,6 +9,9 @@ import SkipToContent from "@/components/ui/SkipToContent";
 import OfflineBanner from "@/components/ui/OfflineBanner";
 import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 import ConflictDialog from "@/components/offline/ConflictDialog";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { churchSchema, websiteSchema } from "@/lib/schema";
+import { SITE_URL } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,18 +40,30 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Kingdom of Christ Ministries | Hyderabad",
-  description: "Welcome to Kingdom of Christ Ministries - A place of worship, prayer, and community in Jeedimetla, Hyderabad. Join us for services, events, and spiritual growth.",
-  keywords: ["church", "ministry", "worship", "prayer", "Hyderabad", "Jeedimetla", "Kingdom of Christ"],
-  authors: [{ name: "Kingdom of Christ Ministries" }],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Kingdom of Christ Ministries | Faith, Worship & Community in Hyderabad",
+    template: "%s | Kingdom of Christ Ministries",
+  },
+  description:
+    "Kingdom of Christ Ministries — a Christ-centred church community in Jeedimetla & Bahadurpally, Hyderabad. Join us for worship, sermons, prayer, ministries, events and community outreach.",
+  keywords: [
+    "Kingdom of Christ Ministries",
+    "KCM church",
+    "KCM Ministries",
+    "church Hyderabad",
+    "church Jeedimetla",
+    "Bishop Kurra Kristhu Raju",
+    "Sunday service Hyderabad",
+    "Christian community Hyderabad",
+  ],
+  authors: [{ name: "Kingdom of Christ Ministries", url: SITE_URL }],
+  creator: "Kingdom of Christ Ministries",
+  publisher: "Kingdom of Christ Ministries",
   manifest: "/manifest.json",
   icons: {
-    icon: [
-      { url: "/logo.png", type: "image/png" },
-    ],
-    apple: [
-      { url: "/logo.png", type: "image/png" },
-    ],
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/logo.png", type: "image/png" }],
     shortcut: "/logo.png",
   },
   appleWebApp: {
@@ -56,14 +71,48 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "KCM Church",
   },
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
-    title: "Kingdom of Christ Ministries",
-    description: "A place of worship and community in Hyderabad",
+    title: "Kingdom of Christ Ministries | Faith, Worship & Community",
+    description:
+      "Kingdom of Christ Ministries — a Christ-centred church in Jeedimetla & Bahadurpally, Hyderabad. Worship, sermons, prayer, ministries and community outreach.",
+    url: SITE_URL,
+    siteName: "Kingdom of Christ Ministries",
     type: "website",
     locale: "en_IN",
+    images: [
+      {
+        url: `${SITE_URL}/logo.png`,
+        width: 512,
+        height: 512,
+        alt: "Kingdom of Christ Ministries",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kingdom of Christ Ministries | Hyderabad",
+    description:
+      "A Christ-centred church in Jeedimetla & Bahadurpally, Hyderabad. Join us for worship, sermons, prayer and community.",
+    images: [`${SITE_URL}/logo.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "CrXIpIzuGUYxLQOuD16DJnLmUMafzisYdXY4LGzPHMw",
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      "CrXIpIzuGUYxLQOuD16DJnLmUMafzisYdXY4LGzPHMw",
   },
 };
 
@@ -78,10 +127,13 @@ export default function RootLayout({
         {/* Explicit color-scheme declaration to prevent Samsung Internet forced auto-dark mode inversion */}
         <meta name="color-scheme" content="light dark" />
 
+        {/* Global Schema.org structured data — Church + WebSite */}
+        <JsonLd data={[churchSchema(), websiteSchema()]} />
+
         {/* Network performance optimizations: preconnect to high-priority origins */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossOrigin="anonymous" />
-        
+
         {/* DNS prefetching as a fallback for secondary domains */}
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
