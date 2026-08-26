@@ -905,17 +905,17 @@ export default function ChurchGalleryPage() {
 
       {/* ══════════════════════════ HERO SECTION ══════════════════════════ */}
       <section className="relative pt-32 pb-14 md:pt-36 md:pb-16 overflow-hidden bg-gradient-to-b from-purple-100/70 via-slate-50 to-slate-50 dark:from-purple-950/40 dark:via-slate-950 dark:to-slate-950 border-b border-slate-200/80 dark:border-white/5">
-        {/* Ambient Lights */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,40,200,0.35),rgba(255,255,255,0))]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-purple-500/10 dark:bg-purple-600/15 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-rose-500/10 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/10 dark:bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
+        {/* Ambient Lights & Sacred Aura */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.35),rgba(255,255,255,0))]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[380px] bg-purple-500/15 dark:bg-purple-600/20 blur-[130px] rounded-full pointer-events-none animate-pulse" style={{ animationDuration: "8s" }} />
+        <div className="absolute top-10 right-10 w-80 h-80 bg-rose-500/10 dark:bg-rose-500/15 blur-[110px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-10 left-10 w-80 h-80 bg-blue-600/10 dark:bg-blue-600/15 blur-[110px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
               <BackToHome variant="glass" />
-              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/30 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-widest backdrop-blur-md shrink-0">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/30 dark:border-purple-400/30 text-purple-700 dark:text-purple-300 text-xs font-extrabold uppercase tracking-widest backdrop-blur-xl shadow-sm shrink-0">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-spin shrink-0" style={{ animationDuration: "6s" }} />
                 <span className="whitespace-nowrap">Captured Moments of Faith & Praise</span>
               </div>
@@ -932,18 +932,18 @@ export default function ChurchGalleryPage() {
               {gt.subtitle || "Relive powerful revival services, explore 80+ church family blessing moments, and watch 44 live YouTube worship broadcasts."}
             </p>
 
-            {/* Quick Media Switcher Tabs in Hero — COMPLETE FULL NAMES VISIBLE */}
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 max-w-full mx-auto px-2">
-              {/* 0. Pastor Spotlight Tab (FIRST/PROMINENT) */}
+            {/* Quick Media Switcher Tabs in Hero — Liquid Glass Segmented Pill */}
+            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/80 dark:border-white/10 shadow-2xl shadow-purple-950/10 max-w-full mx-auto">
+              {/* 0. Pastor Spotlight Tab */}
               <button
                 onClick={handleSwitchToPastor}
-                className={`inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 shadow-md ${
+                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
                   activeMediaTab === "pastor"
-                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-purple-600/30 scale-105"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-200 dark:border-slate-800"
+                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
+                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                 }`}
               >
-                <Crown className={`w-4 h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300" : "text-purple-600 dark:text-purple-400"}`} />
+                <Crown className={`w-4 h-4 shrink-0 ${activeMediaTab === "pastor" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
                 <span>Pastor Spotlight</span>
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black shrink-0 ${
@@ -954,15 +954,18 @@ export default function ChurchGalleryPage() {
                 >
                   {PASTOR_MEDIA_ITEMS.length}
                 </span>
+                {activeMediaTab === "pastor" && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1" />
+                )}
               </button>
 
-              {/* 1. Photo Gallery Tab (SECOND) */}
+              {/* 1. Photo Gallery Tab */}
               <button
                 onClick={handleSwitchToPhotoGallery}
-                className={`inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 shadow-md ${
+                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
                   activeMediaTab === "photos"
-                    ? "bg-purple-600 text-white shadow-purple-600/30 scale-105"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-200 dark:border-slate-800"
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400/40"
+                    : "text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-purple-950/30"
                 }`}
               >
                 <Camera className={`w-4 h-4 shrink-0 ${activeMediaTab === "photos" ? "text-white" : "text-purple-600 dark:text-purple-400"}`} />
@@ -978,13 +981,13 @@ export default function ChurchGalleryPage() {
                 </span>
               </button>
 
-              {/* 2. Video Theater Tab (THIRD) */}
+              {/* 2. Video Theater Tab */}
               <button
                 onClick={handleSwitchToVideoTheater}
-                className={`inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 shadow-md ${
+                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
                   activeMediaTab === "videos"
-                    ? "bg-rose-600 text-white shadow-rose-600/30 scale-105"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-800"
+                    ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-400/40"
+                    : "text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30"
                 }`}
               >
                 <YouTubeLogoIcon className="w-4 h-4 shrink-0" />
@@ -1000,13 +1003,13 @@ export default function ChurchGalleryPage() {
                 </span>
               </button>
 
-              {/* 3. All Media Tab (FOURTH) */}
+              {/* 3. All Media Tab */}
               <button
                 onClick={handleSwitchToAllMedia}
-                className={`inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 shadow-md ${
+                className={`relative inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap transition-all duration-300 ${
                   activeMediaTab === "all"
-                    ? "bg-indigo-600 text-white shadow-indigo-600/30 scale-105"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-200 dark:border-slate-800"
+                    ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/40"
+                    : "text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/30"
                 }`}
               >
                 <Layers className={`w-4 h-4 shrink-0 ${activeMediaTab === "all" ? "text-white" : "text-indigo-600 dark:text-indigo-400"}`} />
@@ -1556,76 +1559,81 @@ export default function ChurchGalleryPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
               {/* ── LEFT COLUMN: MAIN CINEMA PLAYER SCREEN (8 Cols) ── */}
               <div className="lg:col-span-8 space-y-5">
-                {/* 16:9 Screen - Direct Embedded YouTube Cinema Player with Mobile Touch Controls */}
-                <div
-                  className="relative rounded-3xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-2xl shadow-rose-950/20 transition-all duration-300 w-full"
-                  style={{ aspectRatio: "16/9" }}
-                >
-                  {isVideoPlaying ? (
-                    <iframe
-                      ref={cinemaIframeRef}
-                      key={activeVideo.id + "-playing"}
-                      src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
-                      title={activeVideo.title}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0 w-full h-full group cursor-pointer"
-                      onClick={() => setIsVideoPlaying(true)}
-                    >
-                      {/* High-definition Cover Thumbnail */}
-                      <YouTubeThumbnail
-                        videoId={activeVideo.videoId}
-                        alt={activeVideo.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                {/* 16:9 Screen - Direct Embedded YouTube Cinema Player with Ambilight Glow */}
+                <div className="relative group/cinema">
+                  {/* Dynamic Cinema Ambilight Glow */}
+                  <div className="video-ambilight-glow" />
+
+                  <div
+                    className="relative rounded-3xl overflow-hidden bg-black border border-slate-200/80 dark:border-slate-800/80 shadow-2xl shadow-rose-950/25 transition-all duration-300 w-full z-10"
+                    style={{ aspectRatio: "16/9" }}
+                  >
+                    {isVideoPlaying ? (
+                      <iframe
+                        ref={cinemaIframeRef}
+                        key={activeVideo.id + "-playing"}
+                        src={`https://www.youtube.com/embed/${activeVideo.videoId}?autoplay=1&playsinline=1&controls=1&fs=1&rel=0&iv_load_policy=3&enablejsapi=1`}
+                        title={activeVideo.title}
+                        className="absolute inset-0 w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                        allowFullScreen
                       />
+                    ) : (
+                      <div
+                        className="absolute inset-0 w-full h-full group cursor-pointer"
+                        onClick={() => setIsVideoPlaying(true)}
+                      >
+                        {/* High-definition Cover Thumbnail */}
+                        <YouTubeThumbnail
+                          videoId={activeVideo.videoId}
+                          alt={activeVideo.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
 
-                      {/* Gradient Vignette Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/45 pointer-events-none" />
+                        {/* Gradient Vignette Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/45 pointer-events-none" />
 
-                      {/* Top Header Badge inside player */}
-                      <div className="absolute top-3 left-3 right-3 sm:top-5 sm:left-5 sm:right-5 flex items-center justify-between z-10 pointer-events-none">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg">
-                          <YouTubeLogoIcon className="w-3.5 h-3.5" />
-                          <span className="truncate max-w-[180px] sm:max-w-md">{activeVideo.category}</span>
+                        {/* Top Header Badge inside player */}
+                        <div className="absolute top-3 left-3 right-3 sm:top-5 sm:left-5 sm:right-5 flex items-center justify-between z-10 pointer-events-none">
+                          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-lg">
+                            <YouTubeLogoIcon className="w-3.5 h-3.5" />
+                            <span className="truncate max-w-[180px] sm:max-w-md">{activeVideo.category}</span>
+                          </div>
+                          <span className="px-3 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-white/90 text-[11px] font-mono font-bold">
+                            {activeVideo.date}
+                          </span>
                         </div>
-                        <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white/90 text-[11px] font-mono font-bold">
-                          {activeVideo.date}
-                        </span>
-                      </div>
 
-                      {/* Center Animated High-Contrast Touch-Friendly Play Button */}
-                      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                        <div className="relative flex items-center justify-center">
-                          {/* Animated Glow Ping Ring */}
-                          <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-600/40 animate-ping" />
+                        {/* Center Animated High-Contrast Touch-Friendly Play Button */}
+                        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                          <div className="relative flex items-center justify-center">
+                            {/* Animated Glow Ping Ring */}
+                            <span className="absolute w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-600/40 animate-ping" />
 
-                          {/* Authentic YouTube Play Pill Button */}
-                          <div className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-2xl bg-red-600 hover:bg-red-500 active:scale-90 flex items-center justify-center shadow-2xl shadow-red-600/60 transition-all duration-200 border border-white/20">
-                            <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white fill-white ml-1" />
+                            {/* Authentic YouTube Play Pill Button */}
+                            <div className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-2xl bg-red-600 hover:bg-red-500 active:scale-90 flex items-center justify-center shadow-2xl shadow-red-600/60 transition-all duration-200 border border-white/25 group-hover:scale-110">
+                              <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white fill-white ml-1" />
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Bottom Title Bar & Tap Prompt */}
-                      <div className="absolute bottom-3 left-3 right-3 sm:bottom-5 sm:left-5 sm:right-5 z-10 space-y-1 pointer-events-none">
-                        <p className="text-white font-extrabold text-sm sm:text-base md:text-lg line-clamp-2 drop-shadow-md">
-                          {getLocalizedVideoTitle(activeVideo, language)}
-                        </p>
-                        <p className="text-white/85 text-xs font-bold flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          <span>Tap anywhere to play video</span>
-                        </p>
+                        {/* Bottom Title Bar & Tap Prompt */}
+                        <div className="absolute bottom-3 left-3 right-3 sm:bottom-5 sm:left-5 sm:right-5 z-10 space-y-1 pointer-events-none">
+                          <p className="text-white font-black text-sm sm:text-base md:text-xl line-clamp-2 drop-shadow-md">
+                            {getLocalizedVideoTitle(activeVideo, language)}
+                          </p>
+                          <p className="text-white/90 text-xs font-bold flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span>Click to start instant broadcast playback</span>
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
 
                 {/* Video Info & Controls Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-md space-y-4">
                   {/* Controls & Badges Bar */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                     {/* Active Indicator & Category */}
@@ -1665,7 +1673,7 @@ export default function ChurchGalleryPage() {
                       </button>
 
                       {/* Prev/Next Video Controls */}
-                      <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
+                      <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700 min-h-[40px]">
                         <button
                           onClick={handlePrevVideo}
                           title="Previous Video"
@@ -1737,19 +1745,19 @@ export default function ChurchGalleryPage() {
 
               {/* ── RIGHT COLUMN: PLAYLIST SIDEBAR (4 Cols) ── */}
               <div className="lg:col-span-4">
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm flex flex-col">
+                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-md flex flex-col">
                   {/* Playlist Header */}
                   <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-800/60 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-600 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 text-white flex items-center justify-center shadow-md shadow-rose-500/20">
                         <ListVideo className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-extrabold text-slate-900 dark:text-white leading-none">
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white leading-none">
                           Up Next Playlist
                         </h4>
                         <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                          Select Video to Play
+                          Tap any track to switch video
                         </p>
                       </div>
                     </div>
@@ -1798,8 +1806,8 @@ export default function ChurchGalleryPage() {
                     </div>
                   </div>
 
-                  {/* Scrollable Playlist Rows */}
-                  <div className="p-3 space-y-2 max-h-[520px] overflow-y-auto custom-scrollbar">
+                  {/* Scrollable Playlist Rows with Equalizer */}
+                  <div className="p-3 space-y-2 max-h-[520px] overflow-y-auto custom-thin-scrollbar">
                     {playlistItems.map((item, idx) => {
                       const isActive = activeVideo.id === item.id;
                       const localizedTitle = getLocalizedVideoTitle(item, language);
@@ -1808,26 +1816,28 @@ export default function ChurchGalleryPage() {
                         <button
                           key={item.id}
                           onClick={() => handleSelectVideo(item)}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-all duration-200 group ${
+                          className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all duration-200 group ${
                             isActive
-                              ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-600/25 ring-1 ring-rose-400/30"
+                              ? "bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-lg shadow-rose-600/25 ring-2 ring-rose-400/40 scale-[1.01]"
                               : "bg-white dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700/50 text-slate-800 dark:text-slate-100"
                           }`}
                         >
                           {/* 16:9 Thumbnail */}
                           <div
-                            className="relative flex-shrink-0 rounded-lg overflow-hidden bg-slate-950 border border-black/10 dark:border-white/10"
-                            style={{ width: 92, aspectRatio: "16/9" }}
+                            className="relative flex-shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-black/10 dark:border-white/10 shadow-sm"
+                            style={{ width: 96, aspectRatio: "16/9" }}
                           >
                             <YouTubeThumbnail videoId={item.videoId} alt={localizedTitle} />
                             <div
                               className={`absolute inset-0 flex items-center justify-center transition-colors ${
-                                isActive ? "bg-black/20" : "bg-black/40 group-hover:bg-black/25"
+                                isActive ? "bg-black/25" : "bg-black/45 group-hover:bg-black/25"
                               }`}
                             >
                               {isActive ? (
-                                <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center animate-pulse">
-                                  <Play className="w-3 h-3 text-white fill-white ml-0.5" />
+                                <div className="flex items-end gap-0.5 h-4 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm">
+                                  <span className="w-1 bg-rose-400 rounded-full animate-equalizer-1" />
+                                  <span className="w-1 bg-white rounded-full animate-equalizer-2" />
+                                  <span className="w-1 bg-rose-400 rounded-full animate-equalizer-3" />
                                 </div>
                               ) : (
                                 <PlayCircle className="w-5 h-5 text-white/85 group-hover:scale-110 transition-transform" />
