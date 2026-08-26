@@ -141,6 +141,64 @@ app.post('/api/notifications/retry', async (req, res) => {
   }
 });
 
+// ── Production httpSMS Delivery Engine Routes ────────────────────────────────
+const { smsController } = require('./src/modules/notifications/sms/sms.controller');
+const { getSMSService } = require('./src/modules/notifications/sms/sms.service');
+
+// Admin SMS Test Endpoint
+app.post('/api/admin/sms/test', notificationLimiter, smsController.sendTestSms);
+
+// Admin SMS Single Send
+app.post('/api/admin/sms/send', notificationLimiter, smsController.sendSms);
+
+// Admin SMS Broadcast
+app.post('/api/admin/sms/broadcast', notificationLimiter, smsController.broadcastSms);
+
+// Admin SMS Messages List (Paginated & Filtered)
+app.get('/api/admin/sms', smsController.listMessages);
+
+// Admin SMS Metrics / Stats
+app.get('/api/admin/sms/stats', smsController.getStats);
+
+// Admin SMS Settings & Gateway Status
+app.get('/api/admin/sms/settings', smsController.getSettings);
+
+// Admin SMS Single Message Detail
+app.get('/api/admin/sms/:id', smsController.getMessageById);
+
+// Admin SMS Actions (Retry / Cancel)
+app.post('/api/admin/sms/:id/retry', smsController.retryMessage);
+app.post('/api/admin/sms/:id/cancel', smsController.cancelMessage);
+
+// httpSMS Inbound Webhook Endpoint
+app.post('/api/webhooks/httpsms', webhookLimiter, smsController.handleWebhook);
+
+// Member Notification Preferences
+app.get('/api/member/notification-preferences', async (req, res) => {
+  try {
+    const userId = req.query.userId || req.user?.id;
+    if (!userId) return res.status(400).json({ success: false, error: 'userId is required' });
+    const service = getSMSService();
+    const preferences = await service.repository.getMemberPreference(userId);
+    return res.json({ success: true, preferences });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/member/notification-preferences', async (req, res) => {
+  try {
+    const { userId, ...data } = req.body;
+    if (!userId) return res.status(400).json({ success: false, error: 'userId is required' });
+    const service = getSMSService();
+    const preferences = await service.repository.updateMemberPreference(userId, data);
+    return res.json({ success: true, preferences });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 // ── Agent Reach Internet Intelligence Routes ─────────────────────────────────
 const agentReachEngine = require('./src/services/agentReachEngine');
 
@@ -434,6 +492,9 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
         console.log(`[SOCKET] Client disconnected: ${socket.id}`);
       });
     });
+
+    // Wire real-time broadcast engine to SMSService
+    getSMSService({ io });
   }
   
   if (PROCESS_TYPE === 'api') {

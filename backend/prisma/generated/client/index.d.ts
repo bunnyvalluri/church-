@@ -393,6 +393,21 @@ export type WebsiteMonitorLog = $Result.DefaultSelection<Prisma.$WebsiteMonitorL
  * 
  */
 export type AIChatLog = $Result.DefaultSelection<Prisma.$AIChatLogPayload>
+/**
+ * Model SmsMessage
+ * 
+ */
+export type SmsMessage = $Result.DefaultSelection<Prisma.$SmsMessagePayload>
+/**
+ * Model MemberNotificationPreference
+ * 
+ */
+export type MemberNotificationPreference = $Result.DefaultSelection<Prisma.$MemberNotificationPreferencePayload>
+/**
+ * Model SmsAuditLog
+ * 
+ */
+export type SmsAuditLog = $Result.DefaultSelection<Prisma.$SmsAuditLogPayload>
 
 /**
  * Enums
@@ -544,6 +559,34 @@ export const ServiceStatus: {
 
 export type ServiceStatus = (typeof ServiceStatus)[keyof typeof ServiceStatus]
 
+
+export const SmsStatus: {
+  QUEUED: 'QUEUED',
+  PROCESSING: 'PROCESSING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED',
+  RETRYING: 'RETRYING',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type SmsStatus = (typeof SmsStatus)[keyof typeof SmsStatus]
+
+
+export const SmsErrorCode: {
+  TRANSIENT_ERROR: 'TRANSIENT_ERROR',
+  PERMANENT_ERROR: 'PERMANENT_ERROR',
+  RATE_LIMIT_ERROR: 'RATE_LIMIT_ERROR',
+  AUTH_ERROR: 'AUTH_ERROR',
+  INVALID_NUMBER: 'INVALID_NUMBER',
+  EXPIRED_MESSAGE: 'EXPIRED_MESSAGE',
+  GATEWAY_OFFLINE: 'GATEWAY_OFFLINE',
+  UNKNOWN: 'UNKNOWN'
+};
+
+export type SmsErrorCode = (typeof SmsErrorCode)[keyof typeof SmsErrorCode]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -601,6 +644,14 @@ export const ServiceFreq: typeof $Enums.ServiceFreq
 export type ServiceStatus = $Enums.ServiceStatus
 
 export const ServiceStatus: typeof $Enums.ServiceStatus
+
+export type SmsStatus = $Enums.SmsStatus
+
+export const SmsStatus: typeof $Enums.SmsStatus
+
+export type SmsErrorCode = $Enums.SmsErrorCode
+
+export const SmsErrorCode: typeof $Enums.SmsErrorCode
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1484,6 +1535,36 @@ export class PrismaClient<
     * ```
     */
   get aIChatLog(): Prisma.AIChatLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.smsMessage`: Exposes CRUD operations for the **SmsMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SmsMessages
+    * const smsMessages = await prisma.smsMessage.findMany()
+    * ```
+    */
+  get smsMessage(): Prisma.SmsMessageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.memberNotificationPreference`: Exposes CRUD operations for the **MemberNotificationPreference** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MemberNotificationPreferences
+    * const memberNotificationPreferences = await prisma.memberNotificationPreference.findMany()
+    * ```
+    */
+  get memberNotificationPreference(): Prisma.MemberNotificationPreferenceDelegate<ExtArgs>;
+
+  /**
+   * `prisma.smsAuditLog`: Exposes CRUD operations for the **SmsAuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SmsAuditLogs
+    * const smsAuditLogs = await prisma.smsAuditLog.findMany()
+    * ```
+    */
+  get smsAuditLog(): Prisma.SmsAuditLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -2000,7 +2081,10 @@ export namespace Prisma {
     NgoOpportunity: 'NgoOpportunity',
     WebsiteMonitorTarget: 'WebsiteMonitorTarget',
     WebsiteMonitorLog: 'WebsiteMonitorLog',
-    AIChatLog: 'AIChatLog'
+    AIChatLog: 'AIChatLog',
+    SmsMessage: 'SmsMessage',
+    MemberNotificationPreference: 'MemberNotificationPreference',
+    SmsAuditLog: 'SmsAuditLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2016,7 +2100,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog" | "aIChatLog"
+      modelProps: "user" | "event" | "eventMedia" | "eventImage" | "eventVideo" | "eventRegistration" | "sermon" | "sermonMedia" | "sermonAudio" | "sermonNotes" | "sermonView" | "sermonLike" | "sermonComment" | "sermonDownload" | "sermonBookmark" | "prayerRequest" | "donation" | "announcement" | "testimonial" | "ministry" | "pastor" | "gallery" | "contactMessage" | "notification" | "churchSettings" | "memberRequest" | "smallGroup" | "volunteer" | "bibleStudy" | "attendanceRecord" | "pledge" | "transaction" | "account" | "ngoProject" | "ngoMedia" | "ngoVolunteer" | "branch" | "eventReport" | "mediaReport" | "family" | "churchFeedback" | "givingHeroConfig" | "donationPurpose" | "donationAmount" | "donationFormField" | "donationSession" | "paymentTransaction" | "receipt" | "paymentWebhook" | "notificationLog" | "auditLog" | "deviceToken" | "churchService" | "eventCategory" | "eventAttendance" | "eventNotification" | "homepageHero" | "siteStatistic" | "siteContact" | "footerConfig" | "navigationItem" | "aboutConfig" | "donationAgentEvent" | "donationRetryJob" | "agentReachTask" | "agentReachSource" | "churchNewsArticle" | "firecrawlScrapeJob" | "sermonResearchSummary" | "churchNewsItem" | "bibleStudyResource" | "eventContentGenLog" | "ngoOpportunity" | "websiteMonitorTarget" | "websiteMonitorLog" | "aIChatLog" | "smsMessage" | "memberNotificationPreference" | "smsAuditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -7340,6 +7424,216 @@ export namespace Prisma {
           }
         }
       }
+      SmsMessage: {
+        payload: Prisma.$SmsMessagePayload<ExtArgs>
+        fields: Prisma.SmsMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SmsMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SmsMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.SmsMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SmsMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          findMany: {
+            args: Prisma.SmsMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>[]
+          }
+          create: {
+            args: Prisma.SmsMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          createMany: {
+            args: Prisma.SmsMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SmsMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.SmsMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          update: {
+            args: Prisma.SmsMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.SmsMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SmsMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SmsMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.SmsMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSmsMessage>
+          }
+          groupBy: {
+            args: Prisma.SmsMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SmsMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SmsMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<SmsMessageCountAggregateOutputType> | number
+          }
+        }
+      }
+      MemberNotificationPreference: {
+        payload: Prisma.$MemberNotificationPreferencePayload<ExtArgs>
+        fields: Prisma.MemberNotificationPreferenceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MemberNotificationPreferenceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MemberNotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          findFirst: {
+            args: Prisma.MemberNotificationPreferenceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MemberNotificationPreferenceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          findMany: {
+            args: Prisma.MemberNotificationPreferenceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>[]
+          }
+          create: {
+            args: Prisma.MemberNotificationPreferenceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          createMany: {
+            args: Prisma.MemberNotificationPreferenceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MemberNotificationPreferenceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>[]
+          }
+          delete: {
+            args: Prisma.MemberNotificationPreferenceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          update: {
+            args: Prisma.MemberNotificationPreferenceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          deleteMany: {
+            args: Prisma.MemberNotificationPreferenceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MemberNotificationPreferenceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.MemberNotificationPreferenceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberNotificationPreferencePayload>
+          }
+          aggregate: {
+            args: Prisma.MemberNotificationPreferenceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMemberNotificationPreference>
+          }
+          groupBy: {
+            args: Prisma.MemberNotificationPreferenceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MemberNotificationPreferenceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MemberNotificationPreferenceCountArgs<ExtArgs>
+            result: $Utils.Optional<MemberNotificationPreferenceCountAggregateOutputType> | number
+          }
+        }
+      }
+      SmsAuditLog: {
+        payload: Prisma.$SmsAuditLogPayload<ExtArgs>
+        fields: Prisma.SmsAuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SmsAuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SmsAuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.SmsAuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SmsAuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.SmsAuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.SmsAuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.SmsAuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SmsAuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.SmsAuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          update: {
+            args: Prisma.SmsAuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.SmsAuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SmsAuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SmsAuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SmsAuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.SmsAuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSmsAuditLog>
+          }
+          groupBy: {
+            args: Prisma.SmsAuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SmsAuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SmsAuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<SmsAuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -7520,6 +7814,8 @@ export namespace Prisma {
     sermonBookmarks: number
     sermonViews: number
     sermonDownloads: number
+    smsMessages: number
+    smsAuditLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7542,6 +7838,8 @@ export namespace Prisma {
     sermonBookmarks?: boolean | UserCountOutputTypeCountSermonBookmarksArgs
     sermonViews?: boolean | UserCountOutputTypeCountSermonViewsArgs
     sermonDownloads?: boolean | UserCountOutputTypeCountSermonDownloadsArgs
+    smsMessages?: boolean | UserCountOutputTypeCountSmsMessagesArgs
+    smsAuditLogs?: boolean | UserCountOutputTypeCountSmsAuditLogsArgs
   }
 
   // Custom InputTypes
@@ -7686,6 +7984,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSermonDownloadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SermonDownloadWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSmsMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SmsMessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSmsAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SmsAuditLogWhereInput
   }
 
 
@@ -8462,6 +8774,9 @@ export namespace Prisma {
     sermonBookmarks?: boolean | User$sermonBookmarksArgs<ExtArgs>
     sermonViews?: boolean | User$sermonViewsArgs<ExtArgs>
     sermonDownloads?: boolean | User$sermonDownloadsArgs<ExtArgs>
+    smsMessages?: boolean | User$smsMessagesArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    smsAuditLogs?: boolean | User$smsAuditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8515,6 +8830,9 @@ export namespace Prisma {
     sermonBookmarks?: boolean | User$sermonBookmarksArgs<ExtArgs>
     sermonViews?: boolean | User$sermonViewsArgs<ExtArgs>
     sermonDownloads?: boolean | User$sermonDownloadsArgs<ExtArgs>
+    smsMessages?: boolean | User$smsMessagesArgs<ExtArgs>
+    notificationPreferences?: boolean | User$notificationPreferencesArgs<ExtArgs>
+    smsAuditLogs?: boolean | User$smsAuditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8541,6 +8859,9 @@ export namespace Prisma {
       sermonBookmarks: Prisma.$SermonBookmarkPayload<ExtArgs>[]
       sermonViews: Prisma.$SermonViewPayload<ExtArgs>[]
       sermonDownloads: Prisma.$SermonDownloadPayload<ExtArgs>[]
+      smsMessages: Prisma.$SmsMessagePayload<ExtArgs>[]
+      notificationPreferences: Prisma.$MemberNotificationPreferencePayload<ExtArgs> | null
+      smsAuditLogs: Prisma.$SmsAuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8938,6 +9259,9 @@ export namespace Prisma {
     sermonBookmarks<T extends User$sermonBookmarksArgs<ExtArgs> = {}>(args?: Subset<T, User$sermonBookmarksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SermonBookmarkPayload<ExtArgs>, T, "findMany"> | Null>
     sermonViews<T extends User$sermonViewsArgs<ExtArgs> = {}>(args?: Subset<T, User$sermonViewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SermonViewPayload<ExtArgs>, T, "findMany"> | Null>
     sermonDownloads<T extends User$sermonDownloadsArgs<ExtArgs> = {}>(args?: Subset<T, User$sermonDownloadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SermonDownloadPayload<ExtArgs>, T, "findMany"> | Null>
+    smsMessages<T extends User$smsMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$smsMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findMany"> | Null>
+    notificationPreferences<T extends User$notificationPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPreferencesArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    smsAuditLogs<T extends User$smsAuditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$smsAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9670,6 +9994,61 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SermonDownloadScalarFieldEnum | SermonDownloadScalarFieldEnum[]
+  }
+
+  /**
+   * User.smsMessages
+   */
+  export type User$smsMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    where?: SmsMessageWhereInput
+    orderBy?: SmsMessageOrderByWithRelationInput | SmsMessageOrderByWithRelationInput[]
+    cursor?: SmsMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SmsMessageScalarFieldEnum | SmsMessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.notificationPreferences
+   */
+  export type User$notificationPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    where?: MemberNotificationPreferenceWhereInput
+  }
+
+  /**
+   * User.smsAuditLogs
+   */
+  export type User$smsAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    where?: SmsAuditLogWhereInput
+    orderBy?: SmsAuditLogOrderByWithRelationInput | SmsAuditLogOrderByWithRelationInput[]
+    cursor?: SmsAuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SmsAuditLogScalarFieldEnum | SmsAuditLogScalarFieldEnum[]
   }
 
   /**
@@ -86000,6 +86379,3307 @@ export namespace Prisma {
 
 
   /**
+   * Model SmsMessage
+   */
+
+  export type AggregateSmsMessage = {
+    _count: SmsMessageCountAggregateOutputType | null
+    _avg: SmsMessageAvgAggregateOutputType | null
+    _sum: SmsMessageSumAggregateOutputType | null
+    _min: SmsMessageMinAggregateOutputType | null
+    _max: SmsMessageMaxAggregateOutputType | null
+  }
+
+  export type SmsMessageAvgAggregateOutputType = {
+    attempts: number | null
+    maxAttempts: number | null
+  }
+
+  export type SmsMessageSumAggregateOutputType = {
+    attempts: number | null
+    maxAttempts: number | null
+  }
+
+  export type SmsMessageMinAggregateOutputType = {
+    id: string | null
+    notificationId: string | null
+    memberId: string | null
+    phoneNumber: string | null
+    normalizedPhoneNumber: string | null
+    message: string | null
+    provider: string | null
+    providerMessageId: string | null
+    idempotencyKey: string | null
+    status: $Enums.SmsStatus | null
+    attempts: number | null
+    maxAttempts: number | null
+    scheduledAt: Date | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    failedAt: Date | null
+    expiresAt: Date | null
+    failureReason: string | null
+    errorCode: $Enums.SmsErrorCode | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SmsMessageMaxAggregateOutputType = {
+    id: string | null
+    notificationId: string | null
+    memberId: string | null
+    phoneNumber: string | null
+    normalizedPhoneNumber: string | null
+    message: string | null
+    provider: string | null
+    providerMessageId: string | null
+    idempotencyKey: string | null
+    status: $Enums.SmsStatus | null
+    attempts: number | null
+    maxAttempts: number | null
+    scheduledAt: Date | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    failedAt: Date | null
+    expiresAt: Date | null
+    failureReason: string | null
+    errorCode: $Enums.SmsErrorCode | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SmsMessageCountAggregateOutputType = {
+    id: number
+    notificationId: number
+    memberId: number
+    phoneNumber: number
+    normalizedPhoneNumber: number
+    message: number
+    provider: number
+    providerMessageId: number
+    idempotencyKey: number
+    status: number
+    attempts: number
+    maxAttempts: number
+    scheduledAt: number
+    sentAt: number
+    deliveredAt: number
+    failedAt: number
+    expiresAt: number
+    failureReason: number
+    errorCode: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SmsMessageAvgAggregateInputType = {
+    attempts?: true
+    maxAttempts?: true
+  }
+
+  export type SmsMessageSumAggregateInputType = {
+    attempts?: true
+    maxAttempts?: true
+  }
+
+  export type SmsMessageMinAggregateInputType = {
+    id?: true
+    notificationId?: true
+    memberId?: true
+    phoneNumber?: true
+    normalizedPhoneNumber?: true
+    message?: true
+    provider?: true
+    providerMessageId?: true
+    idempotencyKey?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    scheduledAt?: true
+    sentAt?: true
+    deliveredAt?: true
+    failedAt?: true
+    expiresAt?: true
+    failureReason?: true
+    errorCode?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SmsMessageMaxAggregateInputType = {
+    id?: true
+    notificationId?: true
+    memberId?: true
+    phoneNumber?: true
+    normalizedPhoneNumber?: true
+    message?: true
+    provider?: true
+    providerMessageId?: true
+    idempotencyKey?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    scheduledAt?: true
+    sentAt?: true
+    deliveredAt?: true
+    failedAt?: true
+    expiresAt?: true
+    failureReason?: true
+    errorCode?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SmsMessageCountAggregateInputType = {
+    id?: true
+    notificationId?: true
+    memberId?: true
+    phoneNumber?: true
+    normalizedPhoneNumber?: true
+    message?: true
+    provider?: true
+    providerMessageId?: true
+    idempotencyKey?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    scheduledAt?: true
+    sentAt?: true
+    deliveredAt?: true
+    failedAt?: true
+    expiresAt?: true
+    failureReason?: true
+    errorCode?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SmsMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SmsMessage to aggregate.
+     */
+    where?: SmsMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsMessages to fetch.
+     */
+    orderBy?: SmsMessageOrderByWithRelationInput | SmsMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SmsMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SmsMessages
+    **/
+    _count?: true | SmsMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SmsMessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SmsMessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SmsMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SmsMessageMaxAggregateInputType
+  }
+
+  export type GetSmsMessageAggregateType<T extends SmsMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateSmsMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSmsMessage[P]>
+      : GetScalarType<T[P], AggregateSmsMessage[P]>
+  }
+
+
+
+
+  export type SmsMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SmsMessageWhereInput
+    orderBy?: SmsMessageOrderByWithAggregationInput | SmsMessageOrderByWithAggregationInput[]
+    by: SmsMessageScalarFieldEnum[] | SmsMessageScalarFieldEnum
+    having?: SmsMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SmsMessageCountAggregateInputType | true
+    _avg?: SmsMessageAvgAggregateInputType
+    _sum?: SmsMessageSumAggregateInputType
+    _min?: SmsMessageMinAggregateInputType
+    _max?: SmsMessageMaxAggregateInputType
+  }
+
+  export type SmsMessageGroupByOutputType = {
+    id: string
+    notificationId: string | null
+    memberId: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider: string
+    providerMessageId: string | null
+    idempotencyKey: string | null
+    status: $Enums.SmsStatus
+    attempts: number
+    maxAttempts: number
+    scheduledAt: Date | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    failedAt: Date | null
+    expiresAt: Date | null
+    failureReason: string | null
+    errorCode: $Enums.SmsErrorCode | null
+    metadata: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SmsMessageCountAggregateOutputType | null
+    _avg: SmsMessageAvgAggregateOutputType | null
+    _sum: SmsMessageSumAggregateOutputType | null
+    _min: SmsMessageMinAggregateOutputType | null
+    _max: SmsMessageMaxAggregateOutputType | null
+  }
+
+  type GetSmsMessageGroupByPayload<T extends SmsMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SmsMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SmsMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SmsMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], SmsMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SmsMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    notificationId?: boolean
+    memberId?: boolean
+    phoneNumber?: boolean
+    normalizedPhoneNumber?: boolean
+    message?: boolean
+    provider?: boolean
+    providerMessageId?: boolean
+    idempotencyKey?: boolean
+    status?: boolean
+    attempts?: boolean
+    maxAttempts?: boolean
+    scheduledAt?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    failedAt?: boolean
+    expiresAt?: boolean
+    failureReason?: boolean
+    errorCode?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    member?: boolean | SmsMessage$memberArgs<ExtArgs>
+  }, ExtArgs["result"]["smsMessage"]>
+
+  export type SmsMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    notificationId?: boolean
+    memberId?: boolean
+    phoneNumber?: boolean
+    normalizedPhoneNumber?: boolean
+    message?: boolean
+    provider?: boolean
+    providerMessageId?: boolean
+    idempotencyKey?: boolean
+    status?: boolean
+    attempts?: boolean
+    maxAttempts?: boolean
+    scheduledAt?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    failedAt?: boolean
+    expiresAt?: boolean
+    failureReason?: boolean
+    errorCode?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    member?: boolean | SmsMessage$memberArgs<ExtArgs>
+  }, ExtArgs["result"]["smsMessage"]>
+
+  export type SmsMessageSelectScalar = {
+    id?: boolean
+    notificationId?: boolean
+    memberId?: boolean
+    phoneNumber?: boolean
+    normalizedPhoneNumber?: boolean
+    message?: boolean
+    provider?: boolean
+    providerMessageId?: boolean
+    idempotencyKey?: boolean
+    status?: boolean
+    attempts?: boolean
+    maxAttempts?: boolean
+    scheduledAt?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    failedAt?: boolean
+    expiresAt?: boolean
+    failureReason?: boolean
+    errorCode?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SmsMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    member?: boolean | SmsMessage$memberArgs<ExtArgs>
+  }
+  export type SmsMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    member?: boolean | SmsMessage$memberArgs<ExtArgs>
+  }
+
+  export type $SmsMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SmsMessage"
+    objects: {
+      member: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      notificationId: string | null
+      memberId: string | null
+      phoneNumber: string
+      normalizedPhoneNumber: string
+      message: string
+      provider: string
+      providerMessageId: string | null
+      idempotencyKey: string | null
+      status: $Enums.SmsStatus
+      attempts: number
+      maxAttempts: number
+      scheduledAt: Date | null
+      sentAt: Date | null
+      deliveredAt: Date | null
+      failedAt: Date | null
+      expiresAt: Date | null
+      failureReason: string | null
+      errorCode: $Enums.SmsErrorCode | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["smsMessage"]>
+    composites: {}
+  }
+
+  type SmsMessageGetPayload<S extends boolean | null | undefined | SmsMessageDefaultArgs> = $Result.GetResult<Prisma.$SmsMessagePayload, S>
+
+  type SmsMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SmsMessageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SmsMessageCountAggregateInputType | true
+    }
+
+  export interface SmsMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SmsMessage'], meta: { name: 'SmsMessage' } }
+    /**
+     * Find zero or one SmsMessage that matches the filter.
+     * @param {SmsMessageFindUniqueArgs} args - Arguments to find a SmsMessage
+     * @example
+     * // Get one SmsMessage
+     * const smsMessage = await prisma.smsMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SmsMessageFindUniqueArgs>(args: SelectSubset<T, SmsMessageFindUniqueArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SmsMessage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SmsMessageFindUniqueOrThrowArgs} args - Arguments to find a SmsMessage
+     * @example
+     * // Get one SmsMessage
+     * const smsMessage = await prisma.smsMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SmsMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, SmsMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SmsMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageFindFirstArgs} args - Arguments to find a SmsMessage
+     * @example
+     * // Get one SmsMessage
+     * const smsMessage = await prisma.smsMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SmsMessageFindFirstArgs>(args?: SelectSubset<T, SmsMessageFindFirstArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SmsMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageFindFirstOrThrowArgs} args - Arguments to find a SmsMessage
+     * @example
+     * // Get one SmsMessage
+     * const smsMessage = await prisma.smsMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SmsMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, SmsMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SmsMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SmsMessages
+     * const smsMessages = await prisma.smsMessage.findMany()
+     * 
+     * // Get first 10 SmsMessages
+     * const smsMessages = await prisma.smsMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const smsMessageWithIdOnly = await prisma.smsMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SmsMessageFindManyArgs>(args?: SelectSubset<T, SmsMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SmsMessage.
+     * @param {SmsMessageCreateArgs} args - Arguments to create a SmsMessage.
+     * @example
+     * // Create one SmsMessage
+     * const SmsMessage = await prisma.smsMessage.create({
+     *   data: {
+     *     // ... data to create a SmsMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends SmsMessageCreateArgs>(args: SelectSubset<T, SmsMessageCreateArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SmsMessages.
+     * @param {SmsMessageCreateManyArgs} args - Arguments to create many SmsMessages.
+     * @example
+     * // Create many SmsMessages
+     * const smsMessage = await prisma.smsMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SmsMessageCreateManyArgs>(args?: SelectSubset<T, SmsMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SmsMessages and returns the data saved in the database.
+     * @param {SmsMessageCreateManyAndReturnArgs} args - Arguments to create many SmsMessages.
+     * @example
+     * // Create many SmsMessages
+     * const smsMessage = await prisma.smsMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SmsMessages and only return the `id`
+     * const smsMessageWithIdOnly = await prisma.smsMessage.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SmsMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, SmsMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SmsMessage.
+     * @param {SmsMessageDeleteArgs} args - Arguments to delete one SmsMessage.
+     * @example
+     * // Delete one SmsMessage
+     * const SmsMessage = await prisma.smsMessage.delete({
+     *   where: {
+     *     // ... filter to delete one SmsMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SmsMessageDeleteArgs>(args: SelectSubset<T, SmsMessageDeleteArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SmsMessage.
+     * @param {SmsMessageUpdateArgs} args - Arguments to update one SmsMessage.
+     * @example
+     * // Update one SmsMessage
+     * const smsMessage = await prisma.smsMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SmsMessageUpdateArgs>(args: SelectSubset<T, SmsMessageUpdateArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SmsMessages.
+     * @param {SmsMessageDeleteManyArgs} args - Arguments to filter SmsMessages to delete.
+     * @example
+     * // Delete a few SmsMessages
+     * const { count } = await prisma.smsMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SmsMessageDeleteManyArgs>(args?: SelectSubset<T, SmsMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SmsMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SmsMessages
+     * const smsMessage = await prisma.smsMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SmsMessageUpdateManyArgs>(args: SelectSubset<T, SmsMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SmsMessage.
+     * @param {SmsMessageUpsertArgs} args - Arguments to update or create a SmsMessage.
+     * @example
+     * // Update or create a SmsMessage
+     * const smsMessage = await prisma.smsMessage.upsert({
+     *   create: {
+     *     // ... data to create a SmsMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SmsMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SmsMessageUpsertArgs>(args: SelectSubset<T, SmsMessageUpsertArgs<ExtArgs>>): Prisma__SmsMessageClient<$Result.GetResult<Prisma.$SmsMessagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SmsMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageCountArgs} args - Arguments to filter SmsMessages to count.
+     * @example
+     * // Count the number of SmsMessages
+     * const count = await prisma.smsMessage.count({
+     *   where: {
+     *     // ... the filter for the SmsMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends SmsMessageCountArgs>(
+      args?: Subset<T, SmsMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SmsMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SmsMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SmsMessageAggregateArgs>(args: Subset<T, SmsMessageAggregateArgs>): Prisma.PrismaPromise<GetSmsMessageAggregateType<T>>
+
+    /**
+     * Group by SmsMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SmsMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SmsMessageGroupByArgs['orderBy'] }
+        : { orderBy?: SmsMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SmsMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSmsMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SmsMessage model
+   */
+  readonly fields: SmsMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SmsMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SmsMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    member<T extends SmsMessage$memberArgs<ExtArgs> = {}>(args?: Subset<T, SmsMessage$memberArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SmsMessage model
+   */ 
+  interface SmsMessageFieldRefs {
+    readonly id: FieldRef<"SmsMessage", 'String'>
+    readonly notificationId: FieldRef<"SmsMessage", 'String'>
+    readonly memberId: FieldRef<"SmsMessage", 'String'>
+    readonly phoneNumber: FieldRef<"SmsMessage", 'String'>
+    readonly normalizedPhoneNumber: FieldRef<"SmsMessage", 'String'>
+    readonly message: FieldRef<"SmsMessage", 'String'>
+    readonly provider: FieldRef<"SmsMessage", 'String'>
+    readonly providerMessageId: FieldRef<"SmsMessage", 'String'>
+    readonly idempotencyKey: FieldRef<"SmsMessage", 'String'>
+    readonly status: FieldRef<"SmsMessage", 'SmsStatus'>
+    readonly attempts: FieldRef<"SmsMessage", 'Int'>
+    readonly maxAttempts: FieldRef<"SmsMessage", 'Int'>
+    readonly scheduledAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly sentAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly deliveredAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly failedAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly expiresAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly failureReason: FieldRef<"SmsMessage", 'String'>
+    readonly errorCode: FieldRef<"SmsMessage", 'SmsErrorCode'>
+    readonly metadata: FieldRef<"SmsMessage", 'Json'>
+    readonly createdAt: FieldRef<"SmsMessage", 'DateTime'>
+    readonly updatedAt: FieldRef<"SmsMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SmsMessage findUnique
+   */
+  export type SmsMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsMessage to fetch.
+     */
+    where: SmsMessageWhereUniqueInput
+  }
+
+  /**
+   * SmsMessage findUniqueOrThrow
+   */
+  export type SmsMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsMessage to fetch.
+     */
+    where: SmsMessageWhereUniqueInput
+  }
+
+  /**
+   * SmsMessage findFirst
+   */
+  export type SmsMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsMessage to fetch.
+     */
+    where?: SmsMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsMessages to fetch.
+     */
+    orderBy?: SmsMessageOrderByWithRelationInput | SmsMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SmsMessages.
+     */
+    cursor?: SmsMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SmsMessages.
+     */
+    distinct?: SmsMessageScalarFieldEnum | SmsMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SmsMessage findFirstOrThrow
+   */
+  export type SmsMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsMessage to fetch.
+     */
+    where?: SmsMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsMessages to fetch.
+     */
+    orderBy?: SmsMessageOrderByWithRelationInput | SmsMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SmsMessages.
+     */
+    cursor?: SmsMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SmsMessages.
+     */
+    distinct?: SmsMessageScalarFieldEnum | SmsMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SmsMessage findMany
+   */
+  export type SmsMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsMessages to fetch.
+     */
+    where?: SmsMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsMessages to fetch.
+     */
+    orderBy?: SmsMessageOrderByWithRelationInput | SmsMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SmsMessages.
+     */
+    cursor?: SmsMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsMessages.
+     */
+    skip?: number
+    distinct?: SmsMessageScalarFieldEnum | SmsMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SmsMessage create
+   */
+  export type SmsMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SmsMessage.
+     */
+    data: XOR<SmsMessageCreateInput, SmsMessageUncheckedCreateInput>
+  }
+
+  /**
+   * SmsMessage createMany
+   */
+  export type SmsMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SmsMessages.
+     */
+    data: SmsMessageCreateManyInput | SmsMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SmsMessage createManyAndReturn
+   */
+  export type SmsMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SmsMessages.
+     */
+    data: SmsMessageCreateManyInput | SmsMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SmsMessage update
+   */
+  export type SmsMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SmsMessage.
+     */
+    data: XOR<SmsMessageUpdateInput, SmsMessageUncheckedUpdateInput>
+    /**
+     * Choose, which SmsMessage to update.
+     */
+    where: SmsMessageWhereUniqueInput
+  }
+
+  /**
+   * SmsMessage updateMany
+   */
+  export type SmsMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SmsMessages.
+     */
+    data: XOR<SmsMessageUpdateManyMutationInput, SmsMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which SmsMessages to update
+     */
+    where?: SmsMessageWhereInput
+  }
+
+  /**
+   * SmsMessage upsert
+   */
+  export type SmsMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SmsMessage to update in case it exists.
+     */
+    where: SmsMessageWhereUniqueInput
+    /**
+     * In case the SmsMessage found by the `where` argument doesn't exist, create a new SmsMessage with this data.
+     */
+    create: XOR<SmsMessageCreateInput, SmsMessageUncheckedCreateInput>
+    /**
+     * In case the SmsMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SmsMessageUpdateInput, SmsMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * SmsMessage delete
+   */
+  export type SmsMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+    /**
+     * Filter which SmsMessage to delete.
+     */
+    where: SmsMessageWhereUniqueInput
+  }
+
+  /**
+   * SmsMessage deleteMany
+   */
+  export type SmsMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SmsMessages to delete
+     */
+    where?: SmsMessageWhereInput
+  }
+
+  /**
+   * SmsMessage.member
+   */
+  export type SmsMessage$memberArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * SmsMessage without action
+   */
+  export type SmsMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsMessage
+     */
+    select?: SmsMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MemberNotificationPreference
+   */
+
+  export type AggregateMemberNotificationPreference = {
+    _count: MemberNotificationPreferenceCountAggregateOutputType | null
+    _min: MemberNotificationPreferenceMinAggregateOutputType | null
+    _max: MemberNotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  export type MemberNotificationPreferenceMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    smsEnabled: boolean | null
+    emailEnabled: boolean | null
+    pushEnabled: boolean | null
+    events: boolean | null
+    sundayService: boolean | null
+    prayerMeetings: boolean | null
+    sermons: boolean | null
+    specialPrograms: boolean | null
+    donations: boolean | null
+    emergencyAlerts: boolean | null
+    youthPrograms: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MemberNotificationPreferenceMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    smsEnabled: boolean | null
+    emailEnabled: boolean | null
+    pushEnabled: boolean | null
+    events: boolean | null
+    sundayService: boolean | null
+    prayerMeetings: boolean | null
+    sermons: boolean | null
+    specialPrograms: boolean | null
+    donations: boolean | null
+    emergencyAlerts: boolean | null
+    youthPrograms: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MemberNotificationPreferenceCountAggregateOutputType = {
+    id: number
+    userId: number
+    smsEnabled: number
+    emailEnabled: number
+    pushEnabled: number
+    events: number
+    sundayService: number
+    prayerMeetings: number
+    sermons: number
+    specialPrograms: number
+    donations: number
+    emergencyAlerts: number
+    youthPrograms: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MemberNotificationPreferenceMinAggregateInputType = {
+    id?: true
+    userId?: true
+    smsEnabled?: true
+    emailEnabled?: true
+    pushEnabled?: true
+    events?: true
+    sundayService?: true
+    prayerMeetings?: true
+    sermons?: true
+    specialPrograms?: true
+    donations?: true
+    emergencyAlerts?: true
+    youthPrograms?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MemberNotificationPreferenceMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    smsEnabled?: true
+    emailEnabled?: true
+    pushEnabled?: true
+    events?: true
+    sundayService?: true
+    prayerMeetings?: true
+    sermons?: true
+    specialPrograms?: true
+    donations?: true
+    emergencyAlerts?: true
+    youthPrograms?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MemberNotificationPreferenceCountAggregateInputType = {
+    id?: true
+    userId?: true
+    smsEnabled?: true
+    emailEnabled?: true
+    pushEnabled?: true
+    events?: true
+    sundayService?: true
+    prayerMeetings?: true
+    sermons?: true
+    specialPrograms?: true
+    donations?: true
+    emergencyAlerts?: true
+    youthPrograms?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MemberNotificationPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MemberNotificationPreference to aggregate.
+     */
+    where?: MemberNotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberNotificationPreferences to fetch.
+     */
+    orderBy?: MemberNotificationPreferenceOrderByWithRelationInput | MemberNotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MemberNotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberNotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberNotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MemberNotificationPreferences
+    **/
+    _count?: true | MemberNotificationPreferenceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MemberNotificationPreferenceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MemberNotificationPreferenceMaxAggregateInputType
+  }
+
+  export type GetMemberNotificationPreferenceAggregateType<T extends MemberNotificationPreferenceAggregateArgs> = {
+        [P in keyof T & keyof AggregateMemberNotificationPreference]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMemberNotificationPreference[P]>
+      : GetScalarType<T[P], AggregateMemberNotificationPreference[P]>
+  }
+
+
+
+
+  export type MemberNotificationPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberNotificationPreferenceWhereInput
+    orderBy?: MemberNotificationPreferenceOrderByWithAggregationInput | MemberNotificationPreferenceOrderByWithAggregationInput[]
+    by: MemberNotificationPreferenceScalarFieldEnum[] | MemberNotificationPreferenceScalarFieldEnum
+    having?: MemberNotificationPreferenceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MemberNotificationPreferenceCountAggregateInputType | true
+    _min?: MemberNotificationPreferenceMinAggregateInputType
+    _max?: MemberNotificationPreferenceMaxAggregateInputType
+  }
+
+  export type MemberNotificationPreferenceGroupByOutputType = {
+    id: string
+    userId: string
+    smsEnabled: boolean
+    emailEnabled: boolean
+    pushEnabled: boolean
+    events: boolean
+    sundayService: boolean
+    prayerMeetings: boolean
+    sermons: boolean
+    specialPrograms: boolean
+    donations: boolean
+    emergencyAlerts: boolean
+    youthPrograms: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: MemberNotificationPreferenceCountAggregateOutputType | null
+    _min: MemberNotificationPreferenceMinAggregateOutputType | null
+    _max: MemberNotificationPreferenceMaxAggregateOutputType | null
+  }
+
+  type GetMemberNotificationPreferenceGroupByPayload<T extends MemberNotificationPreferenceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MemberNotificationPreferenceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MemberNotificationPreferenceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MemberNotificationPreferenceGroupByOutputType[P]>
+            : GetScalarType<T[P], MemberNotificationPreferenceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MemberNotificationPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["memberNotificationPreference"]>
+
+  export type MemberNotificationPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["memberNotificationPreference"]>
+
+  export type MemberNotificationPreferenceSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MemberNotificationPreferenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type MemberNotificationPreferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $MemberNotificationPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MemberNotificationPreference"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      smsEnabled: boolean
+      emailEnabled: boolean
+      pushEnabled: boolean
+      events: boolean
+      sundayService: boolean
+      prayerMeetings: boolean
+      sermons: boolean
+      specialPrograms: boolean
+      donations: boolean
+      emergencyAlerts: boolean
+      youthPrograms: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["memberNotificationPreference"]>
+    composites: {}
+  }
+
+  type MemberNotificationPreferenceGetPayload<S extends boolean | null | undefined | MemberNotificationPreferenceDefaultArgs> = $Result.GetResult<Prisma.$MemberNotificationPreferencePayload, S>
+
+  type MemberNotificationPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<MemberNotificationPreferenceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: MemberNotificationPreferenceCountAggregateInputType | true
+    }
+
+  export interface MemberNotificationPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MemberNotificationPreference'], meta: { name: 'MemberNotificationPreference' } }
+    /**
+     * Find zero or one MemberNotificationPreference that matches the filter.
+     * @param {MemberNotificationPreferenceFindUniqueArgs} args - Arguments to find a MemberNotificationPreference
+     * @example
+     * // Get one MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MemberNotificationPreferenceFindUniqueArgs>(args: SelectSubset<T, MemberNotificationPreferenceFindUniqueArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one MemberNotificationPreference that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {MemberNotificationPreferenceFindUniqueOrThrowArgs} args - Arguments to find a MemberNotificationPreference
+     * @example
+     * // Get one MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MemberNotificationPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, MemberNotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first MemberNotificationPreference that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceFindFirstArgs} args - Arguments to find a MemberNotificationPreference
+     * @example
+     * // Get one MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MemberNotificationPreferenceFindFirstArgs>(args?: SelectSubset<T, MemberNotificationPreferenceFindFirstArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first MemberNotificationPreference that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceFindFirstOrThrowArgs} args - Arguments to find a MemberNotificationPreference
+     * @example
+     * // Get one MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MemberNotificationPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, MemberNotificationPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more MemberNotificationPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MemberNotificationPreferences
+     * const memberNotificationPreferences = await prisma.memberNotificationPreference.findMany()
+     * 
+     * // Get first 10 MemberNotificationPreferences
+     * const memberNotificationPreferences = await prisma.memberNotificationPreference.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const memberNotificationPreferenceWithIdOnly = await prisma.memberNotificationPreference.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MemberNotificationPreferenceFindManyArgs>(args?: SelectSubset<T, MemberNotificationPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a MemberNotificationPreference.
+     * @param {MemberNotificationPreferenceCreateArgs} args - Arguments to create a MemberNotificationPreference.
+     * @example
+     * // Create one MemberNotificationPreference
+     * const MemberNotificationPreference = await prisma.memberNotificationPreference.create({
+     *   data: {
+     *     // ... data to create a MemberNotificationPreference
+     *   }
+     * })
+     * 
+     */
+    create<T extends MemberNotificationPreferenceCreateArgs>(args: SelectSubset<T, MemberNotificationPreferenceCreateArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many MemberNotificationPreferences.
+     * @param {MemberNotificationPreferenceCreateManyArgs} args - Arguments to create many MemberNotificationPreferences.
+     * @example
+     * // Create many MemberNotificationPreferences
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MemberNotificationPreferenceCreateManyArgs>(args?: SelectSubset<T, MemberNotificationPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MemberNotificationPreferences and returns the data saved in the database.
+     * @param {MemberNotificationPreferenceCreateManyAndReturnArgs} args - Arguments to create many MemberNotificationPreferences.
+     * @example
+     * // Create many MemberNotificationPreferences
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MemberNotificationPreferences and only return the `id`
+     * const memberNotificationPreferenceWithIdOnly = await prisma.memberNotificationPreference.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MemberNotificationPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, MemberNotificationPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a MemberNotificationPreference.
+     * @param {MemberNotificationPreferenceDeleteArgs} args - Arguments to delete one MemberNotificationPreference.
+     * @example
+     * // Delete one MemberNotificationPreference
+     * const MemberNotificationPreference = await prisma.memberNotificationPreference.delete({
+     *   where: {
+     *     // ... filter to delete one MemberNotificationPreference
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MemberNotificationPreferenceDeleteArgs>(args: SelectSubset<T, MemberNotificationPreferenceDeleteArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one MemberNotificationPreference.
+     * @param {MemberNotificationPreferenceUpdateArgs} args - Arguments to update one MemberNotificationPreference.
+     * @example
+     * // Update one MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MemberNotificationPreferenceUpdateArgs>(args: SelectSubset<T, MemberNotificationPreferenceUpdateArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more MemberNotificationPreferences.
+     * @param {MemberNotificationPreferenceDeleteManyArgs} args - Arguments to filter MemberNotificationPreferences to delete.
+     * @example
+     * // Delete a few MemberNotificationPreferences
+     * const { count } = await prisma.memberNotificationPreference.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MemberNotificationPreferenceDeleteManyArgs>(args?: SelectSubset<T, MemberNotificationPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MemberNotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MemberNotificationPreferences
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MemberNotificationPreferenceUpdateManyArgs>(args: SelectSubset<T, MemberNotificationPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one MemberNotificationPreference.
+     * @param {MemberNotificationPreferenceUpsertArgs} args - Arguments to update or create a MemberNotificationPreference.
+     * @example
+     * // Update or create a MemberNotificationPreference
+     * const memberNotificationPreference = await prisma.memberNotificationPreference.upsert({
+     *   create: {
+     *     // ... data to create a MemberNotificationPreference
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MemberNotificationPreference we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MemberNotificationPreferenceUpsertArgs>(args: SelectSubset<T, MemberNotificationPreferenceUpsertArgs<ExtArgs>>): Prisma__MemberNotificationPreferenceClient<$Result.GetResult<Prisma.$MemberNotificationPreferencePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of MemberNotificationPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceCountArgs} args - Arguments to filter MemberNotificationPreferences to count.
+     * @example
+     * // Count the number of MemberNotificationPreferences
+     * const count = await prisma.memberNotificationPreference.count({
+     *   where: {
+     *     // ... the filter for the MemberNotificationPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends MemberNotificationPreferenceCountArgs>(
+      args?: Subset<T, MemberNotificationPreferenceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MemberNotificationPreferenceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MemberNotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MemberNotificationPreferenceAggregateArgs>(args: Subset<T, MemberNotificationPreferenceAggregateArgs>): Prisma.PrismaPromise<GetMemberNotificationPreferenceAggregateType<T>>
+
+    /**
+     * Group by MemberNotificationPreference.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberNotificationPreferenceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MemberNotificationPreferenceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MemberNotificationPreferenceGroupByArgs['orderBy'] }
+        : { orderBy?: MemberNotificationPreferenceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MemberNotificationPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMemberNotificationPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MemberNotificationPreference model
+   */
+  readonly fields: MemberNotificationPreferenceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MemberNotificationPreference.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MemberNotificationPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MemberNotificationPreference model
+   */ 
+  interface MemberNotificationPreferenceFieldRefs {
+    readonly id: FieldRef<"MemberNotificationPreference", 'String'>
+    readonly userId: FieldRef<"MemberNotificationPreference", 'String'>
+    readonly smsEnabled: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly emailEnabled: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly pushEnabled: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly events: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly sundayService: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly prayerMeetings: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly sermons: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly specialPrograms: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly donations: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly emergencyAlerts: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly youthPrograms: FieldRef<"MemberNotificationPreference", 'Boolean'>
+    readonly createdAt: FieldRef<"MemberNotificationPreference", 'DateTime'>
+    readonly updatedAt: FieldRef<"MemberNotificationPreference", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MemberNotificationPreference findUnique
+   */
+  export type MemberNotificationPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberNotificationPreference to fetch.
+     */
+    where: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * MemberNotificationPreference findUniqueOrThrow
+   */
+  export type MemberNotificationPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberNotificationPreference to fetch.
+     */
+    where: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * MemberNotificationPreference findFirst
+   */
+  export type MemberNotificationPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberNotificationPreference to fetch.
+     */
+    where?: MemberNotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberNotificationPreferences to fetch.
+     */
+    orderBy?: MemberNotificationPreferenceOrderByWithRelationInput | MemberNotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MemberNotificationPreferences.
+     */
+    cursor?: MemberNotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberNotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberNotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MemberNotificationPreferences.
+     */
+    distinct?: MemberNotificationPreferenceScalarFieldEnum | MemberNotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * MemberNotificationPreference findFirstOrThrow
+   */
+  export type MemberNotificationPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberNotificationPreference to fetch.
+     */
+    where?: MemberNotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberNotificationPreferences to fetch.
+     */
+    orderBy?: MemberNotificationPreferenceOrderByWithRelationInput | MemberNotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MemberNotificationPreferences.
+     */
+    cursor?: MemberNotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberNotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberNotificationPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MemberNotificationPreferences.
+     */
+    distinct?: MemberNotificationPreferenceScalarFieldEnum | MemberNotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * MemberNotificationPreference findMany
+   */
+  export type MemberNotificationPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberNotificationPreferences to fetch.
+     */
+    where?: MemberNotificationPreferenceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberNotificationPreferences to fetch.
+     */
+    orderBy?: MemberNotificationPreferenceOrderByWithRelationInput | MemberNotificationPreferenceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MemberNotificationPreferences.
+     */
+    cursor?: MemberNotificationPreferenceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberNotificationPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberNotificationPreferences.
+     */
+    skip?: number
+    distinct?: MemberNotificationPreferenceScalarFieldEnum | MemberNotificationPreferenceScalarFieldEnum[]
+  }
+
+  /**
+   * MemberNotificationPreference create
+   */
+  export type MemberNotificationPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MemberNotificationPreference.
+     */
+    data: XOR<MemberNotificationPreferenceCreateInput, MemberNotificationPreferenceUncheckedCreateInput>
+  }
+
+  /**
+   * MemberNotificationPreference createMany
+   */
+  export type MemberNotificationPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MemberNotificationPreferences.
+     */
+    data: MemberNotificationPreferenceCreateManyInput | MemberNotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MemberNotificationPreference createManyAndReturn
+   */
+  export type MemberNotificationPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many MemberNotificationPreferences.
+     */
+    data: MemberNotificationPreferenceCreateManyInput | MemberNotificationPreferenceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MemberNotificationPreference update
+   */
+  export type MemberNotificationPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MemberNotificationPreference.
+     */
+    data: XOR<MemberNotificationPreferenceUpdateInput, MemberNotificationPreferenceUncheckedUpdateInput>
+    /**
+     * Choose, which MemberNotificationPreference to update.
+     */
+    where: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * MemberNotificationPreference updateMany
+   */
+  export type MemberNotificationPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MemberNotificationPreferences.
+     */
+    data: XOR<MemberNotificationPreferenceUpdateManyMutationInput, MemberNotificationPreferenceUncheckedUpdateManyInput>
+    /**
+     * Filter which MemberNotificationPreferences to update
+     */
+    where?: MemberNotificationPreferenceWhereInput
+  }
+
+  /**
+   * MemberNotificationPreference upsert
+   */
+  export type MemberNotificationPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MemberNotificationPreference to update in case it exists.
+     */
+    where: MemberNotificationPreferenceWhereUniqueInput
+    /**
+     * In case the MemberNotificationPreference found by the `where` argument doesn't exist, create a new MemberNotificationPreference with this data.
+     */
+    create: XOR<MemberNotificationPreferenceCreateInput, MemberNotificationPreferenceUncheckedCreateInput>
+    /**
+     * In case the MemberNotificationPreference was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MemberNotificationPreferenceUpdateInput, MemberNotificationPreferenceUncheckedUpdateInput>
+  }
+
+  /**
+   * MemberNotificationPreference delete
+   */
+  export type MemberNotificationPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+    /**
+     * Filter which MemberNotificationPreference to delete.
+     */
+    where: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  /**
+   * MemberNotificationPreference deleteMany
+   */
+  export type MemberNotificationPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MemberNotificationPreferences to delete
+     */
+    where?: MemberNotificationPreferenceWhereInput
+  }
+
+  /**
+   * MemberNotificationPreference without action
+   */
+  export type MemberNotificationPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberNotificationPreference
+     */
+    select?: MemberNotificationPreferenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberNotificationPreferenceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SmsAuditLog
+   */
+
+  export type AggregateSmsAuditLog = {
+    _count: SmsAuditLogCountAggregateOutputType | null
+    _avg: SmsAuditLogAvgAggregateOutputType | null
+    _sum: SmsAuditLogSumAggregateOutputType | null
+    _min: SmsAuditLogMinAggregateOutputType | null
+    _max: SmsAuditLogMaxAggregateOutputType | null
+  }
+
+  export type SmsAuditLogAvgAggregateOutputType = {
+    recipientCount: number | null
+  }
+
+  export type SmsAuditLogSumAggregateOutputType = {
+    recipientCount: number | null
+  }
+
+  export type SmsAuditLogMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    role: $Enums.UserRole | null
+    action: string | null
+    recipientCount: number | null
+    template: string | null
+    provider: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type SmsAuditLogMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    role: $Enums.UserRole | null
+    action: string | null
+    recipientCount: number | null
+    template: string | null
+    provider: string | null
+    ipAddress: string | null
+    userAgent: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type SmsAuditLogCountAggregateOutputType = {
+    id: number
+    userId: number
+    role: number
+    action: number
+    recipientCount: number
+    template: number
+    provider: number
+    ipAddress: number
+    userAgent: number
+    status: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SmsAuditLogAvgAggregateInputType = {
+    recipientCount?: true
+  }
+
+  export type SmsAuditLogSumAggregateInputType = {
+    recipientCount?: true
+  }
+
+  export type SmsAuditLogMinAggregateInputType = {
+    id?: true
+    userId?: true
+    role?: true
+    action?: true
+    recipientCount?: true
+    template?: true
+    provider?: true
+    ipAddress?: true
+    userAgent?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type SmsAuditLogMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    role?: true
+    action?: true
+    recipientCount?: true
+    template?: true
+    provider?: true
+    ipAddress?: true
+    userAgent?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type SmsAuditLogCountAggregateInputType = {
+    id?: true
+    userId?: true
+    role?: true
+    action?: true
+    recipientCount?: true
+    template?: true
+    provider?: true
+    ipAddress?: true
+    userAgent?: true
+    status?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SmsAuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SmsAuditLog to aggregate.
+     */
+    where?: SmsAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsAuditLogs to fetch.
+     */
+    orderBy?: SmsAuditLogOrderByWithRelationInput | SmsAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SmsAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SmsAuditLogs
+    **/
+    _count?: true | SmsAuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SmsAuditLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SmsAuditLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SmsAuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SmsAuditLogMaxAggregateInputType
+  }
+
+  export type GetSmsAuditLogAggregateType<T extends SmsAuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateSmsAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSmsAuditLog[P]>
+      : GetScalarType<T[P], AggregateSmsAuditLog[P]>
+  }
+
+
+
+
+  export type SmsAuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SmsAuditLogWhereInput
+    orderBy?: SmsAuditLogOrderByWithAggregationInput | SmsAuditLogOrderByWithAggregationInput[]
+    by: SmsAuditLogScalarFieldEnum[] | SmsAuditLogScalarFieldEnum
+    having?: SmsAuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SmsAuditLogCountAggregateInputType | true
+    _avg?: SmsAuditLogAvgAggregateInputType
+    _sum?: SmsAuditLogSumAggregateInputType
+    _min?: SmsAuditLogMinAggregateInputType
+    _max?: SmsAuditLogMaxAggregateInputType
+  }
+
+  export type SmsAuditLogGroupByOutputType = {
+    id: string
+    userId: string | null
+    role: $Enums.UserRole | null
+    action: string
+    recipientCount: number
+    template: string | null
+    provider: string
+    ipAddress: string | null
+    userAgent: string | null
+    status: string
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: SmsAuditLogCountAggregateOutputType | null
+    _avg: SmsAuditLogAvgAggregateOutputType | null
+    _sum: SmsAuditLogSumAggregateOutputType | null
+    _min: SmsAuditLogMinAggregateOutputType | null
+    _max: SmsAuditLogMaxAggregateOutputType | null
+  }
+
+  type GetSmsAuditLogGroupByPayload<T extends SmsAuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SmsAuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SmsAuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SmsAuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], SmsAuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SmsAuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    role?: boolean
+    action?: boolean
+    recipientCount?: boolean
+    template?: boolean
+    provider?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    user?: boolean | SmsAuditLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["smsAuditLog"]>
+
+  export type SmsAuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    role?: boolean
+    action?: boolean
+    recipientCount?: boolean
+    template?: boolean
+    provider?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    user?: boolean | SmsAuditLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["smsAuditLog"]>
+
+  export type SmsAuditLogSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    role?: boolean
+    action?: boolean
+    recipientCount?: boolean
+    template?: boolean
+    provider?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type SmsAuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | SmsAuditLog$userArgs<ExtArgs>
+  }
+  export type SmsAuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | SmsAuditLog$userArgs<ExtArgs>
+  }
+
+  export type $SmsAuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SmsAuditLog"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string | null
+      role: $Enums.UserRole | null
+      action: string
+      recipientCount: number
+      template: string | null
+      provider: string
+      ipAddress: string | null
+      userAgent: string | null
+      status: string
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["smsAuditLog"]>
+    composites: {}
+  }
+
+  type SmsAuditLogGetPayload<S extends boolean | null | undefined | SmsAuditLogDefaultArgs> = $Result.GetResult<Prisma.$SmsAuditLogPayload, S>
+
+  type SmsAuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SmsAuditLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SmsAuditLogCountAggregateInputType | true
+    }
+
+  export interface SmsAuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SmsAuditLog'], meta: { name: 'SmsAuditLog' } }
+    /**
+     * Find zero or one SmsAuditLog that matches the filter.
+     * @param {SmsAuditLogFindUniqueArgs} args - Arguments to find a SmsAuditLog
+     * @example
+     * // Get one SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SmsAuditLogFindUniqueArgs>(args: SelectSubset<T, SmsAuditLogFindUniqueArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SmsAuditLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SmsAuditLogFindUniqueOrThrowArgs} args - Arguments to find a SmsAuditLog
+     * @example
+     * // Get one SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SmsAuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, SmsAuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SmsAuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogFindFirstArgs} args - Arguments to find a SmsAuditLog
+     * @example
+     * // Get one SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SmsAuditLogFindFirstArgs>(args?: SelectSubset<T, SmsAuditLogFindFirstArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SmsAuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogFindFirstOrThrowArgs} args - Arguments to find a SmsAuditLog
+     * @example
+     * // Get one SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SmsAuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, SmsAuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SmsAuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SmsAuditLogs
+     * const smsAuditLogs = await prisma.smsAuditLog.findMany()
+     * 
+     * // Get first 10 SmsAuditLogs
+     * const smsAuditLogs = await prisma.smsAuditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const smsAuditLogWithIdOnly = await prisma.smsAuditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SmsAuditLogFindManyArgs>(args?: SelectSubset<T, SmsAuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SmsAuditLog.
+     * @param {SmsAuditLogCreateArgs} args - Arguments to create a SmsAuditLog.
+     * @example
+     * // Create one SmsAuditLog
+     * const SmsAuditLog = await prisma.smsAuditLog.create({
+     *   data: {
+     *     // ... data to create a SmsAuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends SmsAuditLogCreateArgs>(args: SelectSubset<T, SmsAuditLogCreateArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SmsAuditLogs.
+     * @param {SmsAuditLogCreateManyArgs} args - Arguments to create many SmsAuditLogs.
+     * @example
+     * // Create many SmsAuditLogs
+     * const smsAuditLog = await prisma.smsAuditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SmsAuditLogCreateManyArgs>(args?: SelectSubset<T, SmsAuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SmsAuditLogs and returns the data saved in the database.
+     * @param {SmsAuditLogCreateManyAndReturnArgs} args - Arguments to create many SmsAuditLogs.
+     * @example
+     * // Create many SmsAuditLogs
+     * const smsAuditLog = await prisma.smsAuditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SmsAuditLogs and only return the `id`
+     * const smsAuditLogWithIdOnly = await prisma.smsAuditLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SmsAuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, SmsAuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SmsAuditLog.
+     * @param {SmsAuditLogDeleteArgs} args - Arguments to delete one SmsAuditLog.
+     * @example
+     * // Delete one SmsAuditLog
+     * const SmsAuditLog = await prisma.smsAuditLog.delete({
+     *   where: {
+     *     // ... filter to delete one SmsAuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SmsAuditLogDeleteArgs>(args: SelectSubset<T, SmsAuditLogDeleteArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SmsAuditLog.
+     * @param {SmsAuditLogUpdateArgs} args - Arguments to update one SmsAuditLog.
+     * @example
+     * // Update one SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SmsAuditLogUpdateArgs>(args: SelectSubset<T, SmsAuditLogUpdateArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SmsAuditLogs.
+     * @param {SmsAuditLogDeleteManyArgs} args - Arguments to filter SmsAuditLogs to delete.
+     * @example
+     * // Delete a few SmsAuditLogs
+     * const { count } = await prisma.smsAuditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SmsAuditLogDeleteManyArgs>(args?: SelectSubset<T, SmsAuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SmsAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SmsAuditLogs
+     * const smsAuditLog = await prisma.smsAuditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SmsAuditLogUpdateManyArgs>(args: SelectSubset<T, SmsAuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SmsAuditLog.
+     * @param {SmsAuditLogUpsertArgs} args - Arguments to update or create a SmsAuditLog.
+     * @example
+     * // Update or create a SmsAuditLog
+     * const smsAuditLog = await prisma.smsAuditLog.upsert({
+     *   create: {
+     *     // ... data to create a SmsAuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SmsAuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SmsAuditLogUpsertArgs>(args: SelectSubset<T, SmsAuditLogUpsertArgs<ExtArgs>>): Prisma__SmsAuditLogClient<$Result.GetResult<Prisma.$SmsAuditLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SmsAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogCountArgs} args - Arguments to filter SmsAuditLogs to count.
+     * @example
+     * // Count the number of SmsAuditLogs
+     * const count = await prisma.smsAuditLog.count({
+     *   where: {
+     *     // ... the filter for the SmsAuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends SmsAuditLogCountArgs>(
+      args?: Subset<T, SmsAuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SmsAuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SmsAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SmsAuditLogAggregateArgs>(args: Subset<T, SmsAuditLogAggregateArgs>): Prisma.PrismaPromise<GetSmsAuditLogAggregateType<T>>
+
+    /**
+     * Group by SmsAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SmsAuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SmsAuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SmsAuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: SmsAuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SmsAuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSmsAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SmsAuditLog model
+   */
+  readonly fields: SmsAuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SmsAuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SmsAuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends SmsAuditLog$userArgs<ExtArgs> = {}>(args?: Subset<T, SmsAuditLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SmsAuditLog model
+   */ 
+  interface SmsAuditLogFieldRefs {
+    readonly id: FieldRef<"SmsAuditLog", 'String'>
+    readonly userId: FieldRef<"SmsAuditLog", 'String'>
+    readonly role: FieldRef<"SmsAuditLog", 'UserRole'>
+    readonly action: FieldRef<"SmsAuditLog", 'String'>
+    readonly recipientCount: FieldRef<"SmsAuditLog", 'Int'>
+    readonly template: FieldRef<"SmsAuditLog", 'String'>
+    readonly provider: FieldRef<"SmsAuditLog", 'String'>
+    readonly ipAddress: FieldRef<"SmsAuditLog", 'String'>
+    readonly userAgent: FieldRef<"SmsAuditLog", 'String'>
+    readonly status: FieldRef<"SmsAuditLog", 'String'>
+    readonly metadata: FieldRef<"SmsAuditLog", 'Json'>
+    readonly createdAt: FieldRef<"SmsAuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SmsAuditLog findUnique
+   */
+  export type SmsAuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsAuditLog to fetch.
+     */
+    where: SmsAuditLogWhereUniqueInput
+  }
+
+  /**
+   * SmsAuditLog findUniqueOrThrow
+   */
+  export type SmsAuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsAuditLog to fetch.
+     */
+    where: SmsAuditLogWhereUniqueInput
+  }
+
+  /**
+   * SmsAuditLog findFirst
+   */
+  export type SmsAuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsAuditLog to fetch.
+     */
+    where?: SmsAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsAuditLogs to fetch.
+     */
+    orderBy?: SmsAuditLogOrderByWithRelationInput | SmsAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SmsAuditLogs.
+     */
+    cursor?: SmsAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SmsAuditLogs.
+     */
+    distinct?: SmsAuditLogScalarFieldEnum | SmsAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * SmsAuditLog findFirstOrThrow
+   */
+  export type SmsAuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsAuditLog to fetch.
+     */
+    where?: SmsAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsAuditLogs to fetch.
+     */
+    orderBy?: SmsAuditLogOrderByWithRelationInput | SmsAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SmsAuditLogs.
+     */
+    cursor?: SmsAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SmsAuditLogs.
+     */
+    distinct?: SmsAuditLogScalarFieldEnum | SmsAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * SmsAuditLog findMany
+   */
+  export type SmsAuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which SmsAuditLogs to fetch.
+     */
+    where?: SmsAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SmsAuditLogs to fetch.
+     */
+    orderBy?: SmsAuditLogOrderByWithRelationInput | SmsAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SmsAuditLogs.
+     */
+    cursor?: SmsAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SmsAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SmsAuditLogs.
+     */
+    skip?: number
+    distinct?: SmsAuditLogScalarFieldEnum | SmsAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * SmsAuditLog create
+   */
+  export type SmsAuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SmsAuditLog.
+     */
+    data: XOR<SmsAuditLogCreateInput, SmsAuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * SmsAuditLog createMany
+   */
+  export type SmsAuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SmsAuditLogs.
+     */
+    data: SmsAuditLogCreateManyInput | SmsAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SmsAuditLog createManyAndReturn
+   */
+  export type SmsAuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SmsAuditLogs.
+     */
+    data: SmsAuditLogCreateManyInput | SmsAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SmsAuditLog update
+   */
+  export type SmsAuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SmsAuditLog.
+     */
+    data: XOR<SmsAuditLogUpdateInput, SmsAuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which SmsAuditLog to update.
+     */
+    where: SmsAuditLogWhereUniqueInput
+  }
+
+  /**
+   * SmsAuditLog updateMany
+   */
+  export type SmsAuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SmsAuditLogs.
+     */
+    data: XOR<SmsAuditLogUpdateManyMutationInput, SmsAuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which SmsAuditLogs to update
+     */
+    where?: SmsAuditLogWhereInput
+  }
+
+  /**
+   * SmsAuditLog upsert
+   */
+  export type SmsAuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SmsAuditLog to update in case it exists.
+     */
+    where: SmsAuditLogWhereUniqueInput
+    /**
+     * In case the SmsAuditLog found by the `where` argument doesn't exist, create a new SmsAuditLog with this data.
+     */
+    create: XOR<SmsAuditLogCreateInput, SmsAuditLogUncheckedCreateInput>
+    /**
+     * In case the SmsAuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SmsAuditLogUpdateInput, SmsAuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * SmsAuditLog delete
+   */
+  export type SmsAuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter which SmsAuditLog to delete.
+     */
+    where: SmsAuditLogWhereUniqueInput
+  }
+
+  /**
+   * SmsAuditLog deleteMany
+   */
+  export type SmsAuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SmsAuditLogs to delete
+     */
+    where?: SmsAuditLogWhereInput
+  }
+
+  /**
+   * SmsAuditLog.user
+   */
+  export type SmsAuditLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * SmsAuditLog without action
+   */
+  export type SmsAuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SmsAuditLog
+     */
+    select?: SmsAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SmsAuditLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -87365,6 +91045,73 @@ export namespace Prisma {
   export type AIChatLogScalarFieldEnum = (typeof AIChatLogScalarFieldEnum)[keyof typeof AIChatLogScalarFieldEnum]
 
 
+  export const SmsMessageScalarFieldEnum: {
+    id: 'id',
+    notificationId: 'notificationId',
+    memberId: 'memberId',
+    phoneNumber: 'phoneNumber',
+    normalizedPhoneNumber: 'normalizedPhoneNumber',
+    message: 'message',
+    provider: 'provider',
+    providerMessageId: 'providerMessageId',
+    idempotencyKey: 'idempotencyKey',
+    status: 'status',
+    attempts: 'attempts',
+    maxAttempts: 'maxAttempts',
+    scheduledAt: 'scheduledAt',
+    sentAt: 'sentAt',
+    deliveredAt: 'deliveredAt',
+    failedAt: 'failedAt',
+    expiresAt: 'expiresAt',
+    failureReason: 'failureReason',
+    errorCode: 'errorCode',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SmsMessageScalarFieldEnum = (typeof SmsMessageScalarFieldEnum)[keyof typeof SmsMessageScalarFieldEnum]
+
+
+  export const MemberNotificationPreferenceScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    smsEnabled: 'smsEnabled',
+    emailEnabled: 'emailEnabled',
+    pushEnabled: 'pushEnabled',
+    events: 'events',
+    sundayService: 'sundayService',
+    prayerMeetings: 'prayerMeetings',
+    sermons: 'sermons',
+    specialPrograms: 'specialPrograms',
+    donations: 'donations',
+    emergencyAlerts: 'emergencyAlerts',
+    youthPrograms: 'youthPrograms',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MemberNotificationPreferenceScalarFieldEnum = (typeof MemberNotificationPreferenceScalarFieldEnum)[keyof typeof MemberNotificationPreferenceScalarFieldEnum]
+
+
+  export const SmsAuditLogScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    role: 'role',
+    action: 'action',
+    recipientCount: 'recipientCount',
+    template: 'template',
+    provider: 'provider',
+    ipAddress: 'ipAddress',
+    userAgent: 'userAgent',
+    status: 'status',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type SmsAuditLogScalarFieldEnum = (typeof SmsAuditLogScalarFieldEnum)[keyof typeof SmsAuditLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -87682,6 +91429,34 @@ export namespace Prisma {
    */
   export type ListEnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceStatus[]'>
     
+
+
+  /**
+   * Reference to a field of type 'SmsStatus'
+   */
+  export type EnumSmsStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'SmsStatus[]'
+   */
+  export type ListEnumSmsStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SmsErrorCode'
+   */
+  export type EnumSmsErrorCodeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsErrorCode'>
+    
+
+
+  /**
+   * Reference to a field of type 'SmsErrorCode[]'
+   */
+  export type ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SmsErrorCode[]'>
+    
   /**
    * Deep Input Types
    */
@@ -87722,6 +91497,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkListRelationFilter
     sermonViews?: SermonViewListRelationFilter
     sermonDownloads?: SermonDownloadListRelationFilter
+    smsMessages?: SmsMessageListRelationFilter
+    notificationPreferences?: XOR<MemberNotificationPreferenceNullableRelationFilter, MemberNotificationPreferenceWhereInput> | null
+    smsAuditLogs?: SmsAuditLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -87756,6 +91534,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkOrderByRelationAggregateInput
     sermonViews?: SermonViewOrderByRelationAggregateInput
     sermonDownloads?: SermonDownloadOrderByRelationAggregateInput
+    smsMessages?: SmsMessageOrderByRelationAggregateInput
+    notificationPreferences?: MemberNotificationPreferenceOrderByWithRelationInput
+    smsAuditLogs?: SmsAuditLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -87793,6 +91574,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkListRelationFilter
     sermonViews?: SermonViewListRelationFilter
     sermonDownloads?: SermonDownloadListRelationFilter
+    smsMessages?: SmsMessageListRelationFilter
+    notificationPreferences?: XOR<MemberNotificationPreferenceNullableRelationFilter, MemberNotificationPreferenceWhereInput> | null
+    smsAuditLogs?: SmsAuditLogListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -94596,6 +98380,345 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AIChatLog"> | Date | string
   }
 
+  export type SmsMessageWhereInput = {
+    AND?: SmsMessageWhereInput | SmsMessageWhereInput[]
+    OR?: SmsMessageWhereInput[]
+    NOT?: SmsMessageWhereInput | SmsMessageWhereInput[]
+    id?: StringFilter<"SmsMessage"> | string
+    notificationId?: StringNullableFilter<"SmsMessage"> | string | null
+    memberId?: StringNullableFilter<"SmsMessage"> | string | null
+    phoneNumber?: StringFilter<"SmsMessage"> | string
+    normalizedPhoneNumber?: StringFilter<"SmsMessage"> | string
+    message?: StringFilter<"SmsMessage"> | string
+    provider?: StringFilter<"SmsMessage"> | string
+    providerMessageId?: StringNullableFilter<"SmsMessage"> | string | null
+    idempotencyKey?: StringNullableFilter<"SmsMessage"> | string | null
+    status?: EnumSmsStatusFilter<"SmsMessage"> | $Enums.SmsStatus
+    attempts?: IntFilter<"SmsMessage"> | number
+    maxAttempts?: IntFilter<"SmsMessage"> | number
+    scheduledAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    sentAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failedAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failureReason?: StringNullableFilter<"SmsMessage"> | string | null
+    errorCode?: EnumSmsErrorCodeNullableFilter<"SmsMessage"> | $Enums.SmsErrorCode | null
+    metadata?: JsonNullableFilter<"SmsMessage">
+    createdAt?: DateTimeFilter<"SmsMessage"> | Date | string
+    updatedAt?: DateTimeFilter<"SmsMessage"> | Date | string
+    member?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type SmsMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    notificationId?: SortOrderInput | SortOrder
+    memberId?: SortOrderInput | SortOrder
+    phoneNumber?: SortOrder
+    normalizedPhoneNumber?: SortOrder
+    message?: SortOrder
+    provider?: SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrderInput | SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    failedAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    errorCode?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    member?: UserOrderByWithRelationInput
+  }
+
+  export type SmsMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    providerMessageId?: string
+    idempotencyKey?: string
+    AND?: SmsMessageWhereInput | SmsMessageWhereInput[]
+    OR?: SmsMessageWhereInput[]
+    NOT?: SmsMessageWhereInput | SmsMessageWhereInput[]
+    notificationId?: StringNullableFilter<"SmsMessage"> | string | null
+    memberId?: StringNullableFilter<"SmsMessage"> | string | null
+    phoneNumber?: StringFilter<"SmsMessage"> | string
+    normalizedPhoneNumber?: StringFilter<"SmsMessage"> | string
+    message?: StringFilter<"SmsMessage"> | string
+    provider?: StringFilter<"SmsMessage"> | string
+    status?: EnumSmsStatusFilter<"SmsMessage"> | $Enums.SmsStatus
+    attempts?: IntFilter<"SmsMessage"> | number
+    maxAttempts?: IntFilter<"SmsMessage"> | number
+    scheduledAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    sentAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failedAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failureReason?: StringNullableFilter<"SmsMessage"> | string | null
+    errorCode?: EnumSmsErrorCodeNullableFilter<"SmsMessage"> | $Enums.SmsErrorCode | null
+    metadata?: JsonNullableFilter<"SmsMessage">
+    createdAt?: DateTimeFilter<"SmsMessage"> | Date | string
+    updatedAt?: DateTimeFilter<"SmsMessage"> | Date | string
+    member?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id" | "providerMessageId" | "idempotencyKey">
+
+  export type SmsMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    notificationId?: SortOrderInput | SortOrder
+    memberId?: SortOrderInput | SortOrder
+    phoneNumber?: SortOrder
+    normalizedPhoneNumber?: SortOrder
+    message?: SortOrder
+    provider?: SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrderInput | SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    failedAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    errorCode?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SmsMessageCountOrderByAggregateInput
+    _avg?: SmsMessageAvgOrderByAggregateInput
+    _max?: SmsMessageMaxOrderByAggregateInput
+    _min?: SmsMessageMinOrderByAggregateInput
+    _sum?: SmsMessageSumOrderByAggregateInput
+  }
+
+  export type SmsMessageScalarWhereWithAggregatesInput = {
+    AND?: SmsMessageScalarWhereWithAggregatesInput | SmsMessageScalarWhereWithAggregatesInput[]
+    OR?: SmsMessageScalarWhereWithAggregatesInput[]
+    NOT?: SmsMessageScalarWhereWithAggregatesInput | SmsMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SmsMessage"> | string
+    notificationId?: StringNullableWithAggregatesFilter<"SmsMessage"> | string | null
+    memberId?: StringNullableWithAggregatesFilter<"SmsMessage"> | string | null
+    phoneNumber?: StringWithAggregatesFilter<"SmsMessage"> | string
+    normalizedPhoneNumber?: StringWithAggregatesFilter<"SmsMessage"> | string
+    message?: StringWithAggregatesFilter<"SmsMessage"> | string
+    provider?: StringWithAggregatesFilter<"SmsMessage"> | string
+    providerMessageId?: StringNullableWithAggregatesFilter<"SmsMessage"> | string | null
+    idempotencyKey?: StringNullableWithAggregatesFilter<"SmsMessage"> | string | null
+    status?: EnumSmsStatusWithAggregatesFilter<"SmsMessage"> | $Enums.SmsStatus
+    attempts?: IntWithAggregatesFilter<"SmsMessage"> | number
+    maxAttempts?: IntWithAggregatesFilter<"SmsMessage"> | number
+    scheduledAt?: DateTimeNullableWithAggregatesFilter<"SmsMessage"> | Date | string | null
+    sentAt?: DateTimeNullableWithAggregatesFilter<"SmsMessage"> | Date | string | null
+    deliveredAt?: DateTimeNullableWithAggregatesFilter<"SmsMessage"> | Date | string | null
+    failedAt?: DateTimeNullableWithAggregatesFilter<"SmsMessage"> | Date | string | null
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"SmsMessage"> | Date | string | null
+    failureReason?: StringNullableWithAggregatesFilter<"SmsMessage"> | string | null
+    errorCode?: EnumSmsErrorCodeNullableWithAggregatesFilter<"SmsMessage"> | $Enums.SmsErrorCode | null
+    metadata?: JsonNullableWithAggregatesFilter<"SmsMessage">
+    createdAt?: DateTimeWithAggregatesFilter<"SmsMessage"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SmsMessage"> | Date | string
+  }
+
+  export type MemberNotificationPreferenceWhereInput = {
+    AND?: MemberNotificationPreferenceWhereInput | MemberNotificationPreferenceWhereInput[]
+    OR?: MemberNotificationPreferenceWhereInput[]
+    NOT?: MemberNotificationPreferenceWhereInput | MemberNotificationPreferenceWhereInput[]
+    id?: StringFilter<"MemberNotificationPreference"> | string
+    userId?: StringFilter<"MemberNotificationPreference"> | string
+    smsEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    emailEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    pushEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    events?: BoolFilter<"MemberNotificationPreference"> | boolean
+    sundayService?: BoolFilter<"MemberNotificationPreference"> | boolean
+    prayerMeetings?: BoolFilter<"MemberNotificationPreference"> | boolean
+    sermons?: BoolFilter<"MemberNotificationPreference"> | boolean
+    specialPrograms?: BoolFilter<"MemberNotificationPreference"> | boolean
+    donations?: BoolFilter<"MemberNotificationPreference"> | boolean
+    emergencyAlerts?: BoolFilter<"MemberNotificationPreference"> | boolean
+    youthPrograms?: BoolFilter<"MemberNotificationPreference"> | boolean
+    createdAt?: DateTimeFilter<"MemberNotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"MemberNotificationPreference"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type MemberNotificationPreferenceOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    smsEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    pushEnabled?: SortOrder
+    events?: SortOrder
+    sundayService?: SortOrder
+    prayerMeetings?: SortOrder
+    sermons?: SortOrder
+    specialPrograms?: SortOrder
+    donations?: SortOrder
+    emergencyAlerts?: SortOrder
+    youthPrograms?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type MemberNotificationPreferenceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: MemberNotificationPreferenceWhereInput | MemberNotificationPreferenceWhereInput[]
+    OR?: MemberNotificationPreferenceWhereInput[]
+    NOT?: MemberNotificationPreferenceWhereInput | MemberNotificationPreferenceWhereInput[]
+    smsEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    emailEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    pushEnabled?: BoolFilter<"MemberNotificationPreference"> | boolean
+    events?: BoolFilter<"MemberNotificationPreference"> | boolean
+    sundayService?: BoolFilter<"MemberNotificationPreference"> | boolean
+    prayerMeetings?: BoolFilter<"MemberNotificationPreference"> | boolean
+    sermons?: BoolFilter<"MemberNotificationPreference"> | boolean
+    specialPrograms?: BoolFilter<"MemberNotificationPreference"> | boolean
+    donations?: BoolFilter<"MemberNotificationPreference"> | boolean
+    emergencyAlerts?: BoolFilter<"MemberNotificationPreference"> | boolean
+    youthPrograms?: BoolFilter<"MemberNotificationPreference"> | boolean
+    createdAt?: DateTimeFilter<"MemberNotificationPreference"> | Date | string
+    updatedAt?: DateTimeFilter<"MemberNotificationPreference"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId">
+
+  export type MemberNotificationPreferenceOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    smsEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    pushEnabled?: SortOrder
+    events?: SortOrder
+    sundayService?: SortOrder
+    prayerMeetings?: SortOrder
+    sermons?: SortOrder
+    specialPrograms?: SortOrder
+    donations?: SortOrder
+    emergencyAlerts?: SortOrder
+    youthPrograms?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MemberNotificationPreferenceCountOrderByAggregateInput
+    _max?: MemberNotificationPreferenceMaxOrderByAggregateInput
+    _min?: MemberNotificationPreferenceMinOrderByAggregateInput
+  }
+
+  export type MemberNotificationPreferenceScalarWhereWithAggregatesInput = {
+    AND?: MemberNotificationPreferenceScalarWhereWithAggregatesInput | MemberNotificationPreferenceScalarWhereWithAggregatesInput[]
+    OR?: MemberNotificationPreferenceScalarWhereWithAggregatesInput[]
+    NOT?: MemberNotificationPreferenceScalarWhereWithAggregatesInput | MemberNotificationPreferenceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MemberNotificationPreference"> | string
+    userId?: StringWithAggregatesFilter<"MemberNotificationPreference"> | string
+    smsEnabled?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    emailEnabled?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    pushEnabled?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    events?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    sundayService?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    prayerMeetings?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    sermons?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    specialPrograms?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    donations?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    emergencyAlerts?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    youthPrograms?: BoolWithAggregatesFilter<"MemberNotificationPreference"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"MemberNotificationPreference"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MemberNotificationPreference"> | Date | string
+  }
+
+  export type SmsAuditLogWhereInput = {
+    AND?: SmsAuditLogWhereInput | SmsAuditLogWhereInput[]
+    OR?: SmsAuditLogWhereInput[]
+    NOT?: SmsAuditLogWhereInput | SmsAuditLogWhereInput[]
+    id?: StringFilter<"SmsAuditLog"> | string
+    userId?: StringNullableFilter<"SmsAuditLog"> | string | null
+    role?: EnumUserRoleNullableFilter<"SmsAuditLog"> | $Enums.UserRole | null
+    action?: StringFilter<"SmsAuditLog"> | string
+    recipientCount?: IntFilter<"SmsAuditLog"> | number
+    template?: StringNullableFilter<"SmsAuditLog"> | string | null
+    provider?: StringFilter<"SmsAuditLog"> | string
+    ipAddress?: StringNullableFilter<"SmsAuditLog"> | string | null
+    userAgent?: StringNullableFilter<"SmsAuditLog"> | string | null
+    status?: StringFilter<"SmsAuditLog"> | string
+    metadata?: JsonNullableFilter<"SmsAuditLog">
+    createdAt?: DateTimeFilter<"SmsAuditLog"> | Date | string
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type SmsAuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    role?: SortOrderInput | SortOrder
+    action?: SortOrder
+    recipientCount?: SortOrder
+    template?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type SmsAuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SmsAuditLogWhereInput | SmsAuditLogWhereInput[]
+    OR?: SmsAuditLogWhereInput[]
+    NOT?: SmsAuditLogWhereInput | SmsAuditLogWhereInput[]
+    userId?: StringNullableFilter<"SmsAuditLog"> | string | null
+    role?: EnumUserRoleNullableFilter<"SmsAuditLog"> | $Enums.UserRole | null
+    action?: StringFilter<"SmsAuditLog"> | string
+    recipientCount?: IntFilter<"SmsAuditLog"> | number
+    template?: StringNullableFilter<"SmsAuditLog"> | string | null
+    provider?: StringFilter<"SmsAuditLog"> | string
+    ipAddress?: StringNullableFilter<"SmsAuditLog"> | string | null
+    userAgent?: StringNullableFilter<"SmsAuditLog"> | string | null
+    status?: StringFilter<"SmsAuditLog"> | string
+    metadata?: JsonNullableFilter<"SmsAuditLog">
+    createdAt?: DateTimeFilter<"SmsAuditLog"> | Date | string
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type SmsAuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    role?: SortOrderInput | SortOrder
+    action?: SortOrder
+    recipientCount?: SortOrder
+    template?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: SmsAuditLogCountOrderByAggregateInput
+    _avg?: SmsAuditLogAvgOrderByAggregateInput
+    _max?: SmsAuditLogMaxOrderByAggregateInput
+    _min?: SmsAuditLogMinOrderByAggregateInput
+    _sum?: SmsAuditLogSumOrderByAggregateInput
+  }
+
+  export type SmsAuditLogScalarWhereWithAggregatesInput = {
+    AND?: SmsAuditLogScalarWhereWithAggregatesInput | SmsAuditLogScalarWhereWithAggregatesInput[]
+    OR?: SmsAuditLogScalarWhereWithAggregatesInput[]
+    NOT?: SmsAuditLogScalarWhereWithAggregatesInput | SmsAuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SmsAuditLog"> | string
+    userId?: StringNullableWithAggregatesFilter<"SmsAuditLog"> | string | null
+    role?: EnumUserRoleNullableWithAggregatesFilter<"SmsAuditLog"> | $Enums.UserRole | null
+    action?: StringWithAggregatesFilter<"SmsAuditLog"> | string
+    recipientCount?: IntWithAggregatesFilter<"SmsAuditLog"> | number
+    template?: StringNullableWithAggregatesFilter<"SmsAuditLog"> | string | null
+    provider?: StringWithAggregatesFilter<"SmsAuditLog"> | string
+    ipAddress?: StringNullableWithAggregatesFilter<"SmsAuditLog"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"SmsAuditLog"> | string | null
+    status?: StringWithAggregatesFilter<"SmsAuditLog"> | string
+    metadata?: JsonNullableWithAggregatesFilter<"SmsAuditLog">
+    createdAt?: DateTimeWithAggregatesFilter<"SmsAuditLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -94628,6 +98751,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -94662,6 +98788,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -94696,6 +98825,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -94730,6 +98862,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -102623,6 +106758,409 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SmsMessageCreateInput = {
+    id?: string
+    notificationId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    member?: UserCreateNestedOneWithoutSmsMessagesInput
+  }
+
+  export type SmsMessageUncheckedCreateInput = {
+    id?: string
+    notificationId?: string | null
+    memberId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SmsMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    member?: UserUpdateOneWithoutSmsMessagesNestedInput
+  }
+
+  export type SmsMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsMessageCreateManyInput = {
+    id?: string
+    notificationId?: string | null
+    memberId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SmsMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    memberId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberNotificationPreferenceCreateInput = {
+    id?: string
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationPreferencesInput
+  }
+
+  export type MemberNotificationPreferenceUncheckedCreateInput = {
+    id?: string
+    userId: string
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberNotificationPreferenceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput
+  }
+
+  export type MemberNotificationPreferenceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberNotificationPreferenceCreateManyInput = {
+    id?: string
+    userId: string
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberNotificationPreferenceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberNotificationPreferenceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogCreateInput = {
+    id?: string
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    user?: UserCreateNestedOneWithoutSmsAuditLogsInput
+  }
+
+  export type SmsAuditLogUncheckedCreateInput = {
+    id?: string
+    userId?: string | null
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SmsAuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutSmsAuditLogsNestedInput
+  }
+
+  export type SmsAuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogCreateManyInput = {
+    id?: string
+    userId?: string | null
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SmsAuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -102796,6 +107334,23 @@ export namespace Prisma {
     none?: SermonDownloadWhereInput
   }
 
+  export type SmsMessageListRelationFilter = {
+    every?: SmsMessageWhereInput
+    some?: SmsMessageWhereInput
+    none?: SmsMessageWhereInput
+  }
+
+  export type MemberNotificationPreferenceNullableRelationFilter = {
+    is?: MemberNotificationPreferenceWhereInput | null
+    isNot?: MemberNotificationPreferenceWhereInput | null
+  }
+
+  export type SmsAuditLogListRelationFilter = {
+    every?: SmsAuditLogWhereInput
+    some?: SmsAuditLogWhereInput
+    none?: SmsAuditLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -102874,6 +107429,14 @@ export namespace Prisma {
   }
 
   export type SermonDownloadOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SmsMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SmsAuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -107241,6 +111804,228 @@ export namespace Prisma {
     latencyMs?: SortOrder
   }
 
+  export type EnumSmsStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsStatus | EnumSmsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSmsStatusFilter<$PrismaModel> | $Enums.SmsStatus
+  }
+
+  export type EnumSmsErrorCodeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsErrorCode | EnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel> | $Enums.SmsErrorCode | null
+  }
+
+  export type SmsMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    notificationId?: SortOrder
+    memberId?: SortOrder
+    phoneNumber?: SortOrder
+    normalizedPhoneNumber?: SortOrder
+    message?: SortOrder
+    provider?: SortOrder
+    providerMessageId?: SortOrder
+    idempotencyKey?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    scheduledAt?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    failedAt?: SortOrder
+    expiresAt?: SortOrder
+    failureReason?: SortOrder
+    errorCode?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SmsMessageAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+  }
+
+  export type SmsMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    notificationId?: SortOrder
+    memberId?: SortOrder
+    phoneNumber?: SortOrder
+    normalizedPhoneNumber?: SortOrder
+    message?: SortOrder
+    provider?: SortOrder
+    providerMessageId?: SortOrder
+    idempotencyKey?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    scheduledAt?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    failedAt?: SortOrder
+    expiresAt?: SortOrder
+    failureReason?: SortOrder
+    errorCode?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SmsMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    notificationId?: SortOrder
+    memberId?: SortOrder
+    phoneNumber?: SortOrder
+    normalizedPhoneNumber?: SortOrder
+    message?: SortOrder
+    provider?: SortOrder
+    providerMessageId?: SortOrder
+    idempotencyKey?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    scheduledAt?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    failedAt?: SortOrder
+    expiresAt?: SortOrder
+    failureReason?: SortOrder
+    errorCode?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SmsMessageSumOrderByAggregateInput = {
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+  }
+
+  export type EnumSmsStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsStatus | EnumSmsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSmsStatusWithAggregatesFilter<$PrismaModel> | $Enums.SmsStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSmsStatusFilter<$PrismaModel>
+    _max?: NestedEnumSmsStatusFilter<$PrismaModel>
+  }
+
+  export type EnumSmsErrorCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsErrorCode | EnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSmsErrorCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.SmsErrorCode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel>
+    _max?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel>
+  }
+
+  export type MemberNotificationPreferenceCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    smsEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    pushEnabled?: SortOrder
+    events?: SortOrder
+    sundayService?: SortOrder
+    prayerMeetings?: SortOrder
+    sermons?: SortOrder
+    specialPrograms?: SortOrder
+    donations?: SortOrder
+    emergencyAlerts?: SortOrder
+    youthPrograms?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MemberNotificationPreferenceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    smsEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    pushEnabled?: SortOrder
+    events?: SortOrder
+    sundayService?: SortOrder
+    prayerMeetings?: SortOrder
+    sermons?: SortOrder
+    specialPrograms?: SortOrder
+    donations?: SortOrder
+    emergencyAlerts?: SortOrder
+    youthPrograms?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MemberNotificationPreferenceMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    smsEnabled?: SortOrder
+    emailEnabled?: SortOrder
+    pushEnabled?: SortOrder
+    events?: SortOrder
+    sundayService?: SortOrder
+    prayerMeetings?: SortOrder
+    sermons?: SortOrder
+    specialPrograms?: SortOrder
+    donations?: SortOrder
+    emergencyAlerts?: SortOrder
+    youthPrograms?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SmsAuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    action?: SortOrder
+    recipientCount?: SortOrder
+    template?: SortOrder
+    provider?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    status?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SmsAuditLogAvgOrderByAggregateInput = {
+    recipientCount?: SortOrder
+  }
+
+  export type SmsAuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    action?: SortOrder
+    recipientCount?: SortOrder
+    template?: SortOrder
+    provider?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SmsAuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    action?: SortOrder
+    recipientCount?: SortOrder
+    template?: SortOrder
+    provider?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SmsAuditLogSumOrderByAggregateInput = {
+    recipientCount?: SortOrder
+  }
+
   export type DonationCreateNestedManyWithoutUserInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -107374,6 +112159,26 @@ export namespace Prisma {
     connect?: SermonDownloadWhereUniqueInput | SermonDownloadWhereUniqueInput[]
   }
 
+  export type SmsMessageCreateNestedManyWithoutMemberInput = {
+    create?: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput> | SmsMessageCreateWithoutMemberInput[] | SmsMessageUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: SmsMessageCreateOrConnectWithoutMemberInput | SmsMessageCreateOrConnectWithoutMemberInput[]
+    createMany?: SmsMessageCreateManyMemberInputEnvelope
+    connect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+  }
+
+  export type MemberNotificationPreferenceCreateNestedOneWithoutUserInput = {
+    create?: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+    connectOrCreate?: MemberNotificationPreferenceCreateOrConnectWithoutUserInput
+    connect?: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  export type SmsAuditLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput> | SmsAuditLogCreateWithoutUserInput[] | SmsAuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SmsAuditLogCreateOrConnectWithoutUserInput | SmsAuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: SmsAuditLogCreateManyUserInputEnvelope
+    connect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+  }
+
   export type DonationUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -107505,6 +112310,26 @@ export namespace Prisma {
     connectOrCreate?: SermonDownloadCreateOrConnectWithoutUserInput | SermonDownloadCreateOrConnectWithoutUserInput[]
     createMany?: SermonDownloadCreateManyUserInputEnvelope
     connect?: SermonDownloadWhereUniqueInput | SermonDownloadWhereUniqueInput[]
+  }
+
+  export type SmsMessageUncheckedCreateNestedManyWithoutMemberInput = {
+    create?: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput> | SmsMessageCreateWithoutMemberInput[] | SmsMessageUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: SmsMessageCreateOrConnectWithoutMemberInput | SmsMessageCreateOrConnectWithoutMemberInput[]
+    createMany?: SmsMessageCreateManyMemberInputEnvelope
+    connect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+  }
+
+  export type MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+    connectOrCreate?: MemberNotificationPreferenceCreateOrConnectWithoutUserInput
+    connect?: MemberNotificationPreferenceWhereUniqueInput
+  }
+
+  export type SmsAuditLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput> | SmsAuditLogCreateWithoutUserInput[] | SmsAuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SmsAuditLogCreateOrConnectWithoutUserInput | SmsAuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: SmsAuditLogCreateManyUserInputEnvelope
+    connect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -107793,6 +112618,44 @@ export namespace Prisma {
     deleteMany?: SermonDownloadScalarWhereInput | SermonDownloadScalarWhereInput[]
   }
 
+  export type SmsMessageUpdateManyWithoutMemberNestedInput = {
+    create?: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput> | SmsMessageCreateWithoutMemberInput[] | SmsMessageUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: SmsMessageCreateOrConnectWithoutMemberInput | SmsMessageCreateOrConnectWithoutMemberInput[]
+    upsert?: SmsMessageUpsertWithWhereUniqueWithoutMemberInput | SmsMessageUpsertWithWhereUniqueWithoutMemberInput[]
+    createMany?: SmsMessageCreateManyMemberInputEnvelope
+    set?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    disconnect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    delete?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    connect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    update?: SmsMessageUpdateWithWhereUniqueWithoutMemberInput | SmsMessageUpdateWithWhereUniqueWithoutMemberInput[]
+    updateMany?: SmsMessageUpdateManyWithWhereWithoutMemberInput | SmsMessageUpdateManyWithWhereWithoutMemberInput[]
+    deleteMany?: SmsMessageScalarWhereInput | SmsMessageScalarWhereInput[]
+  }
+
+  export type MemberNotificationPreferenceUpdateOneWithoutUserNestedInput = {
+    create?: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+    connectOrCreate?: MemberNotificationPreferenceCreateOrConnectWithoutUserInput
+    upsert?: MemberNotificationPreferenceUpsertWithoutUserInput
+    disconnect?: MemberNotificationPreferenceWhereInput | boolean
+    delete?: MemberNotificationPreferenceWhereInput | boolean
+    connect?: MemberNotificationPreferenceWhereUniqueInput
+    update?: XOR<XOR<MemberNotificationPreferenceUpdateToOneWithWhereWithoutUserInput, MemberNotificationPreferenceUpdateWithoutUserInput>, MemberNotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SmsAuditLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput> | SmsAuditLogCreateWithoutUserInput[] | SmsAuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SmsAuditLogCreateOrConnectWithoutUserInput | SmsAuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: SmsAuditLogUpsertWithWhereUniqueWithoutUserInput | SmsAuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SmsAuditLogCreateManyUserInputEnvelope
+    set?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    disconnect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    delete?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    connect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    update?: SmsAuditLogUpdateWithWhereUniqueWithoutUserInput | SmsAuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SmsAuditLogUpdateManyWithWhereWithoutUserInput | SmsAuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SmsAuditLogScalarWhereInput | SmsAuditLogScalarWhereInput[]
+  }
+
   export type DonationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<DonationCreateWithoutUserInput, DonationUncheckedCreateWithoutUserInput> | DonationCreateWithoutUserInput[] | DonationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: DonationCreateOrConnectWithoutUserInput | DonationCreateOrConnectWithoutUserInput[]
@@ -108057,6 +112920,44 @@ export namespace Prisma {
     update?: SermonDownloadUpdateWithWhereUniqueWithoutUserInput | SermonDownloadUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SermonDownloadUpdateManyWithWhereWithoutUserInput | SermonDownloadUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SermonDownloadScalarWhereInput | SermonDownloadScalarWhereInput[]
+  }
+
+  export type SmsMessageUncheckedUpdateManyWithoutMemberNestedInput = {
+    create?: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput> | SmsMessageCreateWithoutMemberInput[] | SmsMessageUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: SmsMessageCreateOrConnectWithoutMemberInput | SmsMessageCreateOrConnectWithoutMemberInput[]
+    upsert?: SmsMessageUpsertWithWhereUniqueWithoutMemberInput | SmsMessageUpsertWithWhereUniqueWithoutMemberInput[]
+    createMany?: SmsMessageCreateManyMemberInputEnvelope
+    set?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    disconnect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    delete?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    connect?: SmsMessageWhereUniqueInput | SmsMessageWhereUniqueInput[]
+    update?: SmsMessageUpdateWithWhereUniqueWithoutMemberInput | SmsMessageUpdateWithWhereUniqueWithoutMemberInput[]
+    updateMany?: SmsMessageUpdateManyWithWhereWithoutMemberInput | SmsMessageUpdateManyWithWhereWithoutMemberInput[]
+    deleteMany?: SmsMessageScalarWhereInput | SmsMessageScalarWhereInput[]
+  }
+
+  export type MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+    connectOrCreate?: MemberNotificationPreferenceCreateOrConnectWithoutUserInput
+    upsert?: MemberNotificationPreferenceUpsertWithoutUserInput
+    disconnect?: MemberNotificationPreferenceWhereInput | boolean
+    delete?: MemberNotificationPreferenceWhereInput | boolean
+    connect?: MemberNotificationPreferenceWhereUniqueInput
+    update?: XOR<XOR<MemberNotificationPreferenceUpdateToOneWithWhereWithoutUserInput, MemberNotificationPreferenceUpdateWithoutUserInput>, MemberNotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput> | SmsAuditLogCreateWithoutUserInput[] | SmsAuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SmsAuditLogCreateOrConnectWithoutUserInput | SmsAuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: SmsAuditLogUpsertWithWhereUniqueWithoutUserInput | SmsAuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SmsAuditLogCreateManyUserInputEnvelope
+    set?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    disconnect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    delete?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    connect?: SmsAuditLogWhereUniqueInput | SmsAuditLogWhereUniqueInput[]
+    update?: SmsAuditLogUpdateWithWhereUniqueWithoutUserInput | SmsAuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SmsAuditLogUpdateManyWithWhereWithoutUserInput | SmsAuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SmsAuditLogScalarWhereInput | SmsAuditLogScalarWhereInput[]
   }
 
   export type EventCreatetagsInput = {
@@ -110468,6 +115369,60 @@ export namespace Prisma {
     update?: XOR<XOR<WebsiteMonitorTargetUpdateToOneWithWhereWithoutLogsInput, WebsiteMonitorTargetUpdateWithoutLogsInput>, WebsiteMonitorTargetUncheckedUpdateWithoutLogsInput>
   }
 
+  export type UserCreateNestedOneWithoutSmsMessagesInput = {
+    create?: XOR<UserCreateWithoutSmsMessagesInput, UserUncheckedCreateWithoutSmsMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSmsMessagesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumSmsStatusFieldUpdateOperationsInput = {
+    set?: $Enums.SmsStatus
+  }
+
+  export type NullableEnumSmsErrorCodeFieldUpdateOperationsInput = {
+    set?: $Enums.SmsErrorCode | null
+  }
+
+  export type UserUpdateOneWithoutSmsMessagesNestedInput = {
+    create?: XOR<UserCreateWithoutSmsMessagesInput, UserUncheckedCreateWithoutSmsMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSmsMessagesInput
+    upsert?: UserUpsertWithoutSmsMessagesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSmsMessagesInput, UserUpdateWithoutSmsMessagesInput>, UserUncheckedUpdateWithoutSmsMessagesInput>
+  }
+
+  export type UserCreateNestedOneWithoutNotificationPreferencesInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationPreferencesNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationPreferencesInput
+    upsert?: UserUpsertWithoutNotificationPreferencesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationPreferencesInput, UserUpdateWithoutNotificationPreferencesInput>, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserCreateNestedOneWithoutSmsAuditLogsInput = {
+    create?: XOR<UserCreateWithoutSmsAuditLogsInput, UserUncheckedCreateWithoutSmsAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSmsAuditLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutSmsAuditLogsNestedInput = {
+    create?: XOR<UserCreateWithoutSmsAuditLogsInput, UserUncheckedCreateWithoutSmsAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSmsAuditLogsInput
+    upsert?: UserUpsertWithoutSmsAuditLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSmsAuditLogsInput, UserUpdateWithoutSmsAuditLogsInput>, UserUncheckedUpdateWithoutSmsAuditLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -110998,6 +115953,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumServiceStatusFilter<$PrismaModel>
     _max?: NestedEnumServiceStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSmsStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsStatus | EnumSmsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSmsStatusFilter<$PrismaModel> | $Enums.SmsStatus
+  }
+
+  export type NestedEnumSmsErrorCodeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsErrorCode | EnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel> | $Enums.SmsErrorCode | null
+  }
+
+  export type NestedEnumSmsStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsStatus | EnumSmsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SmsStatus[] | ListEnumSmsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSmsStatusWithAggregatesFilter<$PrismaModel> | $Enums.SmsStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSmsStatusFilter<$PrismaModel>
+    _max?: NestedEnumSmsStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSmsErrorCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SmsErrorCode | EnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SmsErrorCode[] | ListEnumSmsErrorCodeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSmsErrorCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.SmsErrorCode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel>
+    _max?: NestedEnumSmsErrorCodeNullableFilter<$PrismaModel>
   }
 
   export type DonationCreateWithoutUserInput = {
@@ -111780,6 +116769,141 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SmsMessageCreateWithoutMemberInput = {
+    id?: string
+    notificationId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SmsMessageUncheckedCreateWithoutMemberInput = {
+    id?: string
+    notificationId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SmsMessageCreateOrConnectWithoutMemberInput = {
+    where: SmsMessageWhereUniqueInput
+    create: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput>
+  }
+
+  export type SmsMessageCreateManyMemberInputEnvelope = {
+    data: SmsMessageCreateManyMemberInput | SmsMessageCreateManyMemberInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MemberNotificationPreferenceCreateWithoutUserInput = {
+    id?: string
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberNotificationPreferenceUncheckedCreateWithoutUserInput = {
+    id?: string
+    smsEnabled?: boolean
+    emailEnabled?: boolean
+    pushEnabled?: boolean
+    events?: boolean
+    sundayService?: boolean
+    prayerMeetings?: boolean
+    sermons?: boolean
+    specialPrograms?: boolean
+    donations?: boolean
+    emergencyAlerts?: boolean
+    youthPrograms?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberNotificationPreferenceCreateOrConnectWithoutUserInput = {
+    where: MemberNotificationPreferenceWhereUniqueInput
+    create: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+  }
+
+  export type SmsAuditLogCreateWithoutUserInput = {
+    id?: string
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SmsAuditLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SmsAuditLogCreateOrConnectWithoutUserInput = {
+    where: SmsAuditLogWhereUniqueInput
+    create: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type SmsAuditLogCreateManyUserInputEnvelope = {
+    data: SmsAuditLogCreateManyUserInput | SmsAuditLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type DonationUpsertWithWhereUniqueWithoutUserInput = {
     where: DonationWhereUniqueInput
     update: XOR<DonationUpdateWithoutUserInput, DonationUncheckedUpdateWithoutUserInput>
@@ -112443,6 +117567,129 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SermonDownload"> | Date | string
   }
 
+  export type SmsMessageUpsertWithWhereUniqueWithoutMemberInput = {
+    where: SmsMessageWhereUniqueInput
+    update: XOR<SmsMessageUpdateWithoutMemberInput, SmsMessageUncheckedUpdateWithoutMemberInput>
+    create: XOR<SmsMessageCreateWithoutMemberInput, SmsMessageUncheckedCreateWithoutMemberInput>
+  }
+
+  export type SmsMessageUpdateWithWhereUniqueWithoutMemberInput = {
+    where: SmsMessageWhereUniqueInput
+    data: XOR<SmsMessageUpdateWithoutMemberInput, SmsMessageUncheckedUpdateWithoutMemberInput>
+  }
+
+  export type SmsMessageUpdateManyWithWhereWithoutMemberInput = {
+    where: SmsMessageScalarWhereInput
+    data: XOR<SmsMessageUpdateManyMutationInput, SmsMessageUncheckedUpdateManyWithoutMemberInput>
+  }
+
+  export type SmsMessageScalarWhereInput = {
+    AND?: SmsMessageScalarWhereInput | SmsMessageScalarWhereInput[]
+    OR?: SmsMessageScalarWhereInput[]
+    NOT?: SmsMessageScalarWhereInput | SmsMessageScalarWhereInput[]
+    id?: StringFilter<"SmsMessage"> | string
+    notificationId?: StringNullableFilter<"SmsMessage"> | string | null
+    memberId?: StringNullableFilter<"SmsMessage"> | string | null
+    phoneNumber?: StringFilter<"SmsMessage"> | string
+    normalizedPhoneNumber?: StringFilter<"SmsMessage"> | string
+    message?: StringFilter<"SmsMessage"> | string
+    provider?: StringFilter<"SmsMessage"> | string
+    providerMessageId?: StringNullableFilter<"SmsMessage"> | string | null
+    idempotencyKey?: StringNullableFilter<"SmsMessage"> | string | null
+    status?: EnumSmsStatusFilter<"SmsMessage"> | $Enums.SmsStatus
+    attempts?: IntFilter<"SmsMessage"> | number
+    maxAttempts?: IntFilter<"SmsMessage"> | number
+    scheduledAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    sentAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failedAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"SmsMessage"> | Date | string | null
+    failureReason?: StringNullableFilter<"SmsMessage"> | string | null
+    errorCode?: EnumSmsErrorCodeNullableFilter<"SmsMessage"> | $Enums.SmsErrorCode | null
+    metadata?: JsonNullableFilter<"SmsMessage">
+    createdAt?: DateTimeFilter<"SmsMessage"> | Date | string
+    updatedAt?: DateTimeFilter<"SmsMessage"> | Date | string
+  }
+
+  export type MemberNotificationPreferenceUpsertWithoutUserInput = {
+    update: XOR<MemberNotificationPreferenceUpdateWithoutUserInput, MemberNotificationPreferenceUncheckedUpdateWithoutUserInput>
+    create: XOR<MemberNotificationPreferenceCreateWithoutUserInput, MemberNotificationPreferenceUncheckedCreateWithoutUserInput>
+    where?: MemberNotificationPreferenceWhereInput
+  }
+
+  export type MemberNotificationPreferenceUpdateToOneWithWhereWithoutUserInput = {
+    where?: MemberNotificationPreferenceWhereInput
+    data: XOR<MemberNotificationPreferenceUpdateWithoutUserInput, MemberNotificationPreferenceUncheckedUpdateWithoutUserInput>
+  }
+
+  export type MemberNotificationPreferenceUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberNotificationPreferenceUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    smsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    emailEnabled?: BoolFieldUpdateOperationsInput | boolean
+    pushEnabled?: BoolFieldUpdateOperationsInput | boolean
+    events?: BoolFieldUpdateOperationsInput | boolean
+    sundayService?: BoolFieldUpdateOperationsInput | boolean
+    prayerMeetings?: BoolFieldUpdateOperationsInput | boolean
+    sermons?: BoolFieldUpdateOperationsInput | boolean
+    specialPrograms?: BoolFieldUpdateOperationsInput | boolean
+    donations?: BoolFieldUpdateOperationsInput | boolean
+    emergencyAlerts?: BoolFieldUpdateOperationsInput | boolean
+    youthPrograms?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: SmsAuditLogWhereUniqueInput
+    update: XOR<SmsAuditLogUpdateWithoutUserInput, SmsAuditLogUncheckedUpdateWithoutUserInput>
+    create: XOR<SmsAuditLogCreateWithoutUserInput, SmsAuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type SmsAuditLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: SmsAuditLogWhereUniqueInput
+    data: XOR<SmsAuditLogUpdateWithoutUserInput, SmsAuditLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SmsAuditLogUpdateManyWithWhereWithoutUserInput = {
+    where: SmsAuditLogScalarWhereInput
+    data: XOR<SmsAuditLogUpdateManyMutationInput, SmsAuditLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SmsAuditLogScalarWhereInput = {
+    AND?: SmsAuditLogScalarWhereInput | SmsAuditLogScalarWhereInput[]
+    OR?: SmsAuditLogScalarWhereInput[]
+    NOT?: SmsAuditLogScalarWhereInput | SmsAuditLogScalarWhereInput[]
+    id?: StringFilter<"SmsAuditLog"> | string
+    userId?: StringNullableFilter<"SmsAuditLog"> | string | null
+    role?: EnumUserRoleNullableFilter<"SmsAuditLog"> | $Enums.UserRole | null
+    action?: StringFilter<"SmsAuditLog"> | string
+    recipientCount?: IntFilter<"SmsAuditLog"> | number
+    template?: StringNullableFilter<"SmsAuditLog"> | string | null
+    provider?: StringFilter<"SmsAuditLog"> | string
+    ipAddress?: StringNullableFilter<"SmsAuditLog"> | string | null
+    userAgent?: StringNullableFilter<"SmsAuditLog"> | string | null
+    status?: StringFilter<"SmsAuditLog"> | string
+    metadata?: JsonNullableFilter<"SmsAuditLog">
+    createdAt?: DateTimeFilter<"SmsAuditLog"> | Date | string
+  }
+
   export type BranchCreateWithoutEventsInput = {
     id?: string
     name: string
@@ -112513,6 +117760,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsCreatedInput = {
@@ -112546,6 +117796,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsCreatedInput = {
@@ -112869,6 +118122,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsCreatedInput = {
@@ -112902,6 +118158,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventRegistrationUpsertWithWhereUniqueWithoutEventInput = {
@@ -113242,6 +118501,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventMediaUploadsInput = {
@@ -113275,6 +118537,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventMediaUploadsInput = {
@@ -113443,6 +118708,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventMediaUploadsInput = {
@@ -113476,6 +118744,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateWithoutEventImagesInput = {
@@ -114086,6 +119357,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventRegistrationsInput = {
@@ -114119,6 +119393,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventRegistrationsInput = {
@@ -114317,6 +119594,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventRegistrationsInput = {
@@ -114350,6 +119630,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventAttendanceUpsertWithWhereUniqueWithoutRegistrationInput = {
@@ -115600,6 +120883,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonViewsInput = {
@@ -115633,6 +120919,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonViewsInput = {
@@ -115805,6 +121094,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonViewsInput = {
@@ -115838,6 +121130,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutLikesInput = {
@@ -115988,6 +121283,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonLikesInput = {
@@ -116021,6 +121319,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonLikesInput = {
@@ -116193,6 +121494,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonLikesInput = {
@@ -116226,6 +121530,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutCommentsInput = {
@@ -116376,6 +121683,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonCommentsInput = {
@@ -116409,6 +121719,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonCommentsInput = {
@@ -116581,6 +121894,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonCommentsInput = {
@@ -116614,6 +121930,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutDownloadsInput = {
@@ -116764,6 +122083,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonDownloadsInput = {
@@ -116797,6 +122119,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonDownloadsInput = {
@@ -116969,6 +122294,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonDownloadsInput = {
@@ -117002,6 +122330,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SermonCreateWithoutBookmarksInput = {
@@ -117152,6 +122483,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSermonBookmarksInput = {
@@ -117185,6 +122519,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSermonBookmarksInput = {
@@ -117357,6 +122694,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSermonBookmarksInput = {
@@ -117390,6 +122730,9 @@ export namespace Prisma {
     sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPrayerRequestsInput = {
@@ -117423,6 +122766,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPrayerRequestsInput = {
@@ -117456,6 +122802,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPrayerRequestsInput = {
@@ -117505,6 +122854,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPrayerRequestsInput = {
@@ -117538,6 +122890,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DonationPurposeCreateWithoutDonationsInput = {
@@ -117730,6 +123085,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDonationsInput = {
@@ -117763,6 +123121,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDonationsInput = {
@@ -118024,6 +123385,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDonationsInput = {
@@ -118057,6 +123421,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReceiptUpsertWithoutDonationInput = {
@@ -118131,6 +123498,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTestimonialsInput = {
@@ -118164,6 +123534,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTestimonialsInput = {
@@ -118213,6 +123586,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTestimonialsInput = {
@@ -118246,6 +123622,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchCreateWithoutPastorsInput = {
@@ -119622,6 +125001,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventReportsInput = {
@@ -119655,6 +125037,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventReportsInput = {
@@ -119896,6 +125281,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventReportsInput = {
@@ -119929,6 +125317,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MediaReportUpsertWithWhereUniqueWithoutEventReportInput = {
@@ -120033,6 +125424,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMediaReportsInput = {
@@ -120066,6 +125460,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMediaReportsInput = {
@@ -120176,6 +125573,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMediaReportsInput = {
@@ -120209,6 +125609,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DonationSessionCreateWithoutPurposeInput = {
@@ -120422,6 +125825,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDonationSessionsInput = {
@@ -120455,6 +125861,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDonationSessionsInput = {
@@ -120704,6 +126113,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDonationSessionsInput = {
@@ -120737,6 +126149,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchUpsertWithoutDonationSessionsInput = {
@@ -121134,6 +126549,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceiptsInput = {
@@ -121167,6 +126585,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceiptsInput = {
@@ -121291,6 +126712,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceiptsInput = {
@@ -121324,6 +126748,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NotificationCreateWithoutNotificationLogsInput = {
@@ -121382,6 +126809,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationLogsInput = {
@@ -121415,6 +126845,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationLogsInput = {
@@ -121495,6 +126928,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationLogsInput = {
@@ -121528,6 +126964,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -121561,6 +127000,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -121594,6 +127036,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -121643,6 +127088,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -121676,6 +127124,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDeviceTokensInput = {
@@ -121709,6 +127160,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDeviceTokensInput = {
@@ -121742,6 +127196,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDeviceTokensInput = {
@@ -121791,6 +127248,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDeviceTokensInput = {
@@ -121824,6 +127284,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BranchCreateWithoutChurchServicesInput = {
@@ -122085,6 +127548,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventAttendanceInput = {
@@ -122118,6 +127584,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
     sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
     sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventAttendanceInput = {
@@ -122323,6 +127792,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventAttendanceInput = {
@@ -122356,6 +127828,9 @@ export namespace Prisma {
     sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
     sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
     sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateWithoutEventNotificationsInput = {
@@ -122861,6 +128336,486 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutSmsMessagesInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialCreateNestedManyWithoutUserInput
+    eventReports?: EventReportCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSmsMessagesInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationUncheckedCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationUncheckedCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestUncheckedCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialUncheckedCreateNestedManyWithoutUserInput
+    eventReports?: EventReportUncheckedCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportUncheckedCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventUncheckedCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaUncheckedCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionUncheckedCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceUncheckedCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeUncheckedCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSmsMessagesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSmsMessagesInput, UserUncheckedCreateWithoutSmsMessagesInput>
+  }
+
+  export type UserUpsertWithoutSmsMessagesInput = {
+    update: XOR<UserUpdateWithoutSmsMessagesInput, UserUncheckedUpdateWithoutSmsMessagesInput>
+    create: XOR<UserCreateWithoutSmsMessagesInput, UserUncheckedCreateWithoutSmsMessagesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSmsMessagesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSmsMessagesInput, UserUncheckedUpdateWithoutSmsMessagesInput>
+  }
+
+  export type UserUpdateWithoutSmsMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSmsMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUncheckedUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUncheckedUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUncheckedUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUncheckedUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUncheckedUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUncheckedUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUncheckedUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUncheckedUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUncheckedUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUncheckedUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUncheckedUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialCreateNestedManyWithoutUserInput
+    eventReports?: EventReportCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    smsAuditLogs?: SmsAuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationUncheckedCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationUncheckedCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestUncheckedCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialUncheckedCreateNestedManyWithoutUserInput
+    eventReports?: EventReportUncheckedCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportUncheckedCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventUncheckedCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaUncheckedCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionUncheckedCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceUncheckedCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeUncheckedCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    smsAuditLogs?: SmsAuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserUpsertWithoutNotificationPreferencesInput = {
+    update: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+    create: XOR<UserCreateWithoutNotificationPreferencesInput, UserUncheckedCreateWithoutNotificationPreferencesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationPreferencesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationPreferencesInput, UserUncheckedUpdateWithoutNotificationPreferencesInput>
+  }
+
+  export type UserUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    smsAuditLogs?: SmsAuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUncheckedUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUncheckedUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUncheckedUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUncheckedUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUncheckedUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUncheckedUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUncheckedUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUncheckedUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUncheckedUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUncheckedUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUncheckedUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    smsAuditLogs?: SmsAuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutSmsAuditLogsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialCreateNestedManyWithoutUserInput
+    eventReports?: EventReportCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSmsAuditLogsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: Date | string | null
+    image?: string | null
+    profilePublicId?: string | null
+    password: string
+    role?: $Enums.UserRole
+    phone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    donations?: DonationUncheckedCreateNestedManyWithoutUserInput
+    eventRegistrations?: EventRegistrationUncheckedCreateNestedManyWithoutUserInput
+    prayerRequests?: PrayerRequestUncheckedCreateNestedManyWithoutUserInput
+    testimonials?: TestimonialUncheckedCreateNestedManyWithoutUserInput
+    eventReports?: EventReportUncheckedCreateNestedManyWithoutCreatedByInput
+    mediaReports?: MediaReportUncheckedCreateNestedManyWithoutUploadedByInput
+    eventsCreated?: EventUncheckedCreateNestedManyWithoutCreatedByInput
+    eventMediaUploads?: EventMediaUncheckedCreateNestedManyWithoutUploadedByInput
+    donationSessions?: DonationSessionUncheckedCreateNestedManyWithoutMemberInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutMemberInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutRecipientInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    deviceTokens?: DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+    eventAttendance?: EventAttendanceUncheckedCreateNestedManyWithoutMemberInput
+    sermonLikes?: SermonLikeUncheckedCreateNestedManyWithoutUserInput
+    sermonComments?: SermonCommentUncheckedCreateNestedManyWithoutUserInput
+    sermonBookmarks?: SermonBookmarkUncheckedCreateNestedManyWithoutUserInput
+    sermonViews?: SermonViewUncheckedCreateNestedManyWithoutUserInput
+    sermonDownloads?: SermonDownloadUncheckedCreateNestedManyWithoutUserInput
+    smsMessages?: SmsMessageUncheckedCreateNestedManyWithoutMemberInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSmsAuditLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSmsAuditLogsInput, UserUncheckedCreateWithoutSmsAuditLogsInput>
+  }
+
+  export type UserUpsertWithoutSmsAuditLogsInput = {
+    update: XOR<UserUpdateWithoutSmsAuditLogsInput, UserUncheckedUpdateWithoutSmsAuditLogsInput>
+    create: XOR<UserCreateWithoutSmsAuditLogsInput, UserUncheckedCreateWithoutSmsAuditLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSmsAuditLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSmsAuditLogsInput, UserUncheckedUpdateWithoutSmsAuditLogsInput>
+  }
+
+  export type UserUpdateWithoutSmsAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSmsAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    profilePublicId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    donations?: DonationUncheckedUpdateManyWithoutUserNestedInput
+    eventRegistrations?: EventRegistrationUncheckedUpdateManyWithoutUserNestedInput
+    prayerRequests?: PrayerRequestUncheckedUpdateManyWithoutUserNestedInput
+    testimonials?: TestimonialUncheckedUpdateManyWithoutUserNestedInput
+    eventReports?: EventReportUncheckedUpdateManyWithoutCreatedByNestedInput
+    mediaReports?: MediaReportUncheckedUpdateManyWithoutUploadedByNestedInput
+    eventsCreated?: EventUncheckedUpdateManyWithoutCreatedByNestedInput
+    eventMediaUploads?: EventMediaUncheckedUpdateManyWithoutUploadedByNestedInput
+    donationSessions?: DonationSessionUncheckedUpdateManyWithoutMemberNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutMemberNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutRecipientNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    deviceTokens?: DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+    eventAttendance?: EventAttendanceUncheckedUpdateManyWithoutMemberNestedInput
+    sermonLikes?: SermonLikeUncheckedUpdateManyWithoutUserNestedInput
+    sermonComments?: SermonCommentUncheckedUpdateManyWithoutUserNestedInput
+    sermonBookmarks?: SermonBookmarkUncheckedUpdateManyWithoutUserNestedInput
+    sermonViews?: SermonViewUncheckedUpdateManyWithoutUserNestedInput
+    sermonDownloads?: SermonDownloadUncheckedUpdateManyWithoutUserNestedInput
+    smsMessages?: SmsMessageUncheckedUpdateManyWithoutMemberNestedInput
+    notificationPreferences?: MemberNotificationPreferenceUncheckedUpdateOneWithoutUserNestedInput
+  }
+
   export type DonationCreateManyUserInput = {
     id?: string
     amount: number
@@ -123141,6 +129096,44 @@ export namespace Prisma {
     sermonId: string
     fileType: string
     ipAddress?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SmsMessageCreateManyMemberInput = {
+    id?: string
+    notificationId?: string | null
+    phoneNumber: string
+    normalizedPhoneNumber: string
+    message: string
+    provider?: string
+    providerMessageId?: string | null
+    idempotencyKey?: string | null
+    status?: $Enums.SmsStatus
+    attempts?: number
+    maxAttempts?: number
+    scheduledAt?: Date | string | null
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    failedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    failureReason?: string | null
+    errorCode?: $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SmsAuditLogCreateManyUserInput = {
+    id?: string
+    role?: $Enums.UserRole | null
+    action: string
+    recipientCount?: number
+    template?: string | null
+    provider?: string
+    ipAddress?: string | null
+    userAgent?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -124014,6 +130007,120 @@ export namespace Prisma {
     sermonId?: StringFieldUpdateOperationsInput | string
     fileType?: StringFieldUpdateOperationsInput | string
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsMessageUpdateWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsMessageUncheckedUpdateWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsMessageUncheckedUpdateManyWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: StringFieldUpdateOperationsInput | string
+    normalizedPhoneNumber?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumSmsStatusFieldUpdateOperationsInput | $Enums.SmsStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableEnumSmsErrorCodeFieldUpdateOperationsInput | $Enums.SmsErrorCode | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SmsAuditLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+    action?: StringFieldUpdateOperationsInput | string
+    recipientCount?: IntFieldUpdateOperationsInput | number
+    template?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -126422,6 +132529,18 @@ export namespace Prisma {
      * @deprecated Use AIChatLogDefaultArgs instead
      */
     export type AIChatLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AIChatLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SmsMessageDefaultArgs instead
+     */
+    export type SmsMessageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SmsMessageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use MemberNotificationPreferenceDefaultArgs instead
+     */
+    export type MemberNotificationPreferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MemberNotificationPreferenceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SmsAuditLogDefaultArgs instead
+     */
+    export type SmsAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SmsAuditLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

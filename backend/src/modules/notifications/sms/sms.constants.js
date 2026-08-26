@@ -1,0 +1,72 @@
+/**
+ * backend/src/modules/notifications/sms/sms.constants.js
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Central constants, enumerations, and configuration defaults for the
+ * Kingdom of Christ Ministries (KCM) SMS delivery engine.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+'use strict';
+
+const SMS_STATUS = {
+  QUEUED: 'QUEUED',
+  PROCESSING: 'PROCESSING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED',
+  RETRYING: 'RETRYING',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+};
+
+const SMS_ERROR_CODE = {
+  TRANSIENT_ERROR: 'TRANSIENT_ERROR',
+  PERMANENT_ERROR: 'PERMANENT_ERROR',
+  RATE_LIMIT_ERROR: 'RATE_LIMIT_ERROR',
+  AUTH_ERROR: 'AUTH_ERROR',
+  INVALID_NUMBER: 'INVALID_NUMBER',
+  EXPIRED_MESSAGE: 'EXPIRED_MESSAGE',
+  GATEWAY_OFFLINE: 'GATEWAY_OFFLINE',
+  SMS_PROVIDER_UNAVAILABLE: 'SMS_PROVIDER_UNAVAILABLE',
+  SMS_TIMEOUT: 'SMS_TIMEOUT',
+  SMS_DUPLICATE: 'SMS_DUPLICATE',
+  SMS_QUEUE_ERROR: 'SMS_QUEUE_ERROR',
+  UNKNOWN: 'UNKNOWN',
+};
+
+const SMS_AUDIT_ACTION = {
+  SMS_SENT: 'SMS_SENT',
+  SMS_BROADCAST_CREATED: 'SMS_BROADCAST_CREATED',
+  SMS_RETRY: 'SMS_RETRY',
+  SMS_CANCELLED: 'SMS_CANCELLED',
+  SMS_WEBHOOK_RECEIVED: 'SMS_WEBHOOK_RECEIVED',
+  SMS_PROVIDER_ERROR: 'SMS_PROVIDER_ERROR',
+  SMS_TEST_SENT: 'SMS_TEST_SENT',
+};
+
+const SMS_PROVIDER = {
+  HTTPSMS: 'httpsms',
+  MOCK: 'mock',
+};
+
+const SMS_DEFAULTS = {
+  DEFAULT_COUNTRY: 'IN',
+  DEFAULT_COUNTRY_CODE: '+91',
+  MAX_RETRIES: 3,
+  BASE_RETRY_DELAY_MS: 5000,
+  MAX_RETRY_DELAY_MS: 300000, // 5 minutes
+  RATE_LIMIT_PER_MINUTE: 30,  // Protect Android SIM gateway
+  DEFAULT_EXPIRATION_HOURS: 24,
+  MAX_GSM7_SINGLE_LENGTH: 160,
+  MAX_GSM7_CONCAT_LENGTH: 153,
+  MAX_UCS2_SINGLE_LENGTH: 70,
+  MAX_UCS2_CONCAT_LENGTH: 67,
+};
+
+module.exports = {
+  SMS_STATUS,
+  SMS_ERROR_CODE,
+  SMS_AUDIT_ACTION,
+  SMS_PROVIDER,
+  SMS_DEFAULTS,
+};
