@@ -1,16 +1,7 @@
-/**
- * frontend/hooks/useSms.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * React Query + Socket.io real-time hooks for SMS management,
- * stats metrics, testing, and lifecycle actions.
- * ─────────────────────────────────────────────────────────────────────────────
- */
-
-'use strict';
+"use client";
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { io } from 'socket.io-client';
 
 export interface SmsMessageItem {
   id: string;
@@ -98,27 +89,36 @@ export function useSmsMessages(params: {
     refetchInterval: 15000,
   });
 
-  // Socket.io Realtime Listener
+  // Socket.io Realtime Listener (dynamic import for SSR safety)
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+    if (typeof window === 'undefined') return;
     let socket: any = null;
-    try {
-      socket = io(socketUrl, { transports: ['websocket', 'polling'] });
-      
-      const invalidate = () => {
-        queryClient.invalidateQueries({ queryKey: ['sms-messages'] });
-        queryClient.invalidateQueries({ queryKey: ['sms-stats'] });
-      };
+    let isMounted = true;
 
-      socket.on('sms.updated', invalidate);
-      socket.on('sms.sent', invalidate);
-      socket.on('sms.delivered', invalidate);
-      socket.on('sms.failed', invalidate);
-      socket.on('sms.retrying', invalidate);
-      socket.on('sms.processing', invalidate);
-    } catch {}
+    import('socket.io-client').then(({ io }) => {
+      if (!isMounted) return;
+      try {
+        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+        socket = io(socketUrl, { transports: ['websocket', 'polling'] });
+        
+        const invalidate = () => {
+          queryClient.invalidateQueries({ queryKey: ['sms-messages'] });
+          queryClient.invalidateQueries({ queryKey: ['sms-stats'] });
+        };
+
+        socket.on('sms.updated', invalidate);
+        socket.on('sms.sent', invalidate);
+        socket.on('sms.delivered', invalidate);
+        socket.on('sms.failed', invalidate);
+        socket.on('sms.retrying', invalidate);
+        socket.on('sms.processing', invalidate);
+      } catch (err) {
+        console.warn('[useSms] Socket connection error:', err);
+      }
+    }).catch(() => {});
 
     return () => {
+      isMounted = false;
       if (socket) socket.disconnect();
     };
   }, [queryClient]);
