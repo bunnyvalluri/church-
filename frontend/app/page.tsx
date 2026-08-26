@@ -5,13 +5,10 @@ import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ScrollToTopOnMount from "@/components/ui/ScrollToTopOnMount";
-import dynamic from "next/dynamic";
-
-// ── Lazy-load below-the-fold and heavy sections ───────────────────────────────
-const NgoShowcase = dynamic(() => import("@/components/sections/NgoShowcase"), { ssr: true });
-const Events = dynamic(() => import("@/components/sections/Events"), { ssr: true });
-const Sermons = dynamic(() => import("@/components/sections/Sermons"), { ssr: true });
-const Contact = dynamic(() => import("@/components/sections/Contact"), { ssr: true });
+import NgoShowcase from "@/components/sections/NgoShowcase";
+import Events from "@/components/sections/Events";
+import Sermons from "@/components/sections/Sermons";
+import Contact from "@/components/sections/Contact";
 
 import {
   getHeroContent,
