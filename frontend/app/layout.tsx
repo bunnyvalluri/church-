@@ -10,6 +10,60 @@ import OfflineBanner from "@/components/ui/OfflineBanner";
 import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 import ConflictDialog from "@/components/offline/ConflictDialog";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+});
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+  preload: true,
+  weight: ["400", "600", "700", "800", "900"],
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#05050A" },
+  ],
+};
+
+export const metadata: Metadata = {
+  title: "Kingdom of Christ Ministries | Hyderabad",
+  description: "Welcome to Kingdom of Christ Ministries - A place of worship, prayer, and community in Jeedimetla, Hyderabad. Join us for services, events, and spiritual growth.",
+  keywords: ["church", "ministry", "worship", "prayer", "Hyderabad", "Jeedimetla", "Kingdom of Christ"],
+  authors: [{ name: "Kingdom of Christ Ministries" }],
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "KCM Church",
+  },
+  openGraph: {
+    title: "Kingdom of Christ Ministries",
+    description: "A place of worship and community in Hyderabad",
+    type: "website",
+    locale: "en_IN",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
