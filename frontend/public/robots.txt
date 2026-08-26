@@ -11,4 +11,4 @@ Disallow: /pastor/
 Disallow: /dashboard
 Disallow: /dashboard/
 
-Sitemap: https://church-valluri-rahuls-projects.vercel.app/sitemap.xml
+Sitemap: https://kcmchurch.vercel.app/sitemap.xml
