@@ -3,11 +3,11 @@ import Link from "next/link";
 import { ArrowRight, Church, Users, Book, Target, Heart, Briefcase, MapPin } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { PAGE_METADATA, SITE_URL } from "@/lib/seo";
+import { breadcrumbSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 
-export const metadata: Metadata = {
-  title: "About Us | Kingdom of Christ Ministries",
-  description: "Learn about Kingdom of Christ Ministries - our story, leadership, beliefs, and mission",
-};
+export const metadata: Metadata = PAGE_METADATA.about;
 
 export default function AboutPage() {
   const sections = [
@@ -49,7 +49,7 @@ export default function AboutPage() {
     {
       title: "Locations",
       description: "Find service times, maps, and directions for our three branches in Hyderabad",
-      href: "/about/locations",
+      href: "/locations",
       icon: MapPin,
       color: "purple",
     },

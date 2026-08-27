@@ -330,16 +330,23 @@ export default function LocationsPage() {
                   </div>
                 </div>
 
-                {/* Direct Google Maps Navigation Button */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
+                {/* Actions: View Details + Direct Google Maps Navigation */}
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <a
+                    href={`/locations/${branch.id === "shapur" ? "shapur-nagar" : branch.id === "subhash" ? "subhash-nagar" : branch.id === "bahadur" ? "bahadurpally" : branch.id}`}
+                    className="w-full py-3 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98"
+                  >
+                    <Church className="w-3.5 h-3.5" />
+                    <span>{isTelugu ? "వివరాలు చూడండి" : isHindi ? "विवरण देखें" : "Branch Details"}</span>
+                  </a>
                   <a
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-full py-3.5 px-4 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-98`}
+                    className={`w-full py-3 px-3 rounded-xl ${branch.btnColor} text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98`}
                   >
-                    <Navigation className="w-4 h-4" />
-                    <span>{isTelugu ? "గూగుల్ మ్యాప్‌లో దిశలను పొందండి" : isHindi ? "गूगल मैप्स पर दिशा-निर्देश प्राप्त करें" : "Get Directions on Google Maps"}</span>
+                    <Navigation className="w-3.5 h-3.5" />
+                    <span>{isTelugu ? "దిశలను పొందండి" : isHindi ? "दिशा-निर्देश" : "Get Directions"}</span>
                   </a>
                 </div>
               </div>

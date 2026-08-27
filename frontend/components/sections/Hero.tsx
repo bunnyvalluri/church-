@@ -199,7 +199,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
       ? (hero as any).badgeTextHi
       : language !== "en"
       ? t.hero.prayerBoxSub
-      : hero?.badgeText ?? t.hero.prayerBoxSub ?? "We are here for you 24/7";
+      : hero?.badgeText ?? "Kingdom of Christ Ministries (KCM) • Official Website";
 
   const headline =
     language === "te" && (hero as any)?.headlineTe

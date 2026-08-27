@@ -165,9 +165,11 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-lg leading-tight text-white">
-                    {t.nav.churchName}
+                    Kingdom of Christ Ministries
                   </span>
-                  <span className="text-xs text-gray-400">{t.nav.ministries}</span>
+                  <span className="text-xs text-purple-300 font-semibold tracking-wider">
+                    KCM • Official Website
+                  </span>
                 </div>
               </a>
 

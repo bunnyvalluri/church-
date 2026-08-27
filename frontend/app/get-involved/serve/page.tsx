@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, HandHeart, Mic, Music, Camera, Users, Baby, Car, Coffee, ChevronLeft } from "lucide-react";
+import { ArrowRight, HandHeart, Mic, Music, Camera, Users, Baby, Car, Coffee } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
+import { PAGE_METADATA } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Serve | Kingdom of Christ Ministries",
-  description: "Use your gifts to serve God and our community.",
-};
+export const metadata: Metadata = PAGE_METADATA.serve;
 
 export default function ServePage() {
   const teams = [
