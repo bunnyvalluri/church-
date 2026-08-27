@@ -10,9 +10,11 @@ const GiveForm = dynamic(() => import("@/components/GiveForm"), {
 
 export default function GivePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080d1a] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
-      <GiveForm />
+      <main className="pt-24 sm:pt-28 pb-12">
+        <GiveForm />
+      </main>
       <Footer />
     </div>
   );

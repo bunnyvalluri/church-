@@ -751,112 +751,73 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
         )}
       </AnimatePresence>
 
-      {/* ── HERO SECTION ──────────────────────────────────── */}
-      {isPortalRoute ? (
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 sm:pt-5 pb-2">
-          <div className="relative overflow-hidden px-4 py-3.5 sm:px-8 sm:py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900 text-white border border-indigo-500/20 dark:border-indigo-500/30 shadow-lg shadow-indigo-600/10">
-            <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 dark:bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                  <Heart className="w-3.5 h-3.5 text-pink-300 fill-pink-300" />
-                  {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
-                </div>
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  {t.pages.give.title}
-                </h1>
-                <p className="text-xs sm:text-sm text-indigo-100 dark:text-slate-100 font-medium italic opacity-95">
-                  {t.pages.give.subtitle}
-                </p>
+      {/* ── HERO SECTION (UNIFIED WITH MEMBER PORTAL UX) ──────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-2">
+        <div className="relative overflow-hidden px-4 py-4 sm:px-8 sm:py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 dark:from-[#0f172a] dark:via-[#1e1b4b] dark:to-[#0f172a] text-white border border-indigo-500/20 dark:border-indigo-500/30 shadow-lg shadow-indigo-600/10">
+          <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 dark:bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 text-[10px] font-black uppercase tracking-wider shadow-sm">
+                <Heart className="w-3.5 h-3.5 text-pink-300 fill-pink-300" />
+                {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
               </div>
-              <div className="hidden min-[640px]:flex items-center gap-3 bg-white/20 dark:bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/30 dark:border-white/20">
-                <ShieldCheck className="w-5 h-5 text-emerald-300 dark:text-emerald-300" />
-                <div className="text-left">
-                  <p className="text-xs font-black text-white leading-none">Instant & Verified</p>
-                  <p className="text-[10px] text-indigo-100 dark:text-slate-200 mt-0.5 font-semibold">Real-time UPI Transfer</p>
-                </div>
+              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
+                {t.pages.give.title}
+              </h1>
+              <p className="text-xs sm:text-sm text-indigo-100 dark:text-slate-200 font-medium italic opacity-95">
+                {t.pages.give.subtitle}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 bg-white/20 dark:bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/30 dark:border-white/20 self-start sm:self-center">
+              <ShieldCheck className="w-5 h-5 text-emerald-300 dark:text-emerald-300" />
+              <div className="text-left">
+                <p className="text-xs font-black text-white leading-none">Instant &amp; Verified</p>
+                <p className="text-[10px] text-indigo-100 dark:text-slate-200 mt-0.5 font-semibold">Real-time UPI • 80G Tax-Exempt</p>
               </div>
             </div>
-          </div>
-
-          {/* ── MOBILE SEGMENTED TAB CONTROLLER ───────────────────── */}
-          <div className="flex lg:hidden items-center justify-between gap-1 p-1 mt-3 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl border border-slate-300/70 dark:border-slate-700/70 shadow-inner">
-            <button
-              type="button"
-              onClick={() => setMobileTab('form')}
-              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
-                mobileTab === 'form'
-                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <QrCode className="w-3.5 h-3.5 shrink-0" />
-              <span>Give</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileTab('summary')}
-              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
-                mobileTab === 'summary'
-                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <Receipt className="w-3.5 h-3.5 shrink-0" />
-              <span>Summary</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileTab('ways')}
-              className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
-                mobileTab === 'ways'
-                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <Building className="w-3.5 h-3.5 shrink-0" />
-              <span>Bank Info</span>
-            </button>
           </div>
         </div>
-      ) : (
-        <section className="relative py-8 sm:py-16 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950" />
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.08]" />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="max-w-3xl mx-auto text-center">
-              <motion.div 
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 backdrop-blur-md border border-white/20 rounded-full text-white text-xs mb-3 shadow-xl font-bold"
-              >
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <Heart className="h-4 w-4 text-pink-400 fill-pink-400" />
-                <span className="font-medium tracking-wide">
-                  {language === 'te' ? 'దాతృత్వము' : language === 'hi' ? 'उदार दान' : 'Generous Giving'}
-                </span>
-              </motion.div>
 
-              <motion.h1 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="text-2xl sm:text-5xl font-black text-white mb-2 tracking-tight leading-tight"
-              >
-                {t.pages.give.title}
-              </motion.h1>
-
-              <motion.p 
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="text-xs sm:text-base text-slate-100 font-medium max-w-xl mx-auto leading-relaxed"
-              >
-                {t.pages.give.subtitle}
-              </motion.p>
-            </div>
-          </div>
-        </section>
-      )}
+        {/* ── MOBILE SEGMENTED TAB CONTROLLER ───────────────────── */}
+        <div className="flex lg:hidden items-center justify-between gap-1 p-1 mt-3 bg-slate-200/80 dark:bg-slate-800/90 rounded-2xl border border-slate-300/70 dark:border-slate-700/70 shadow-inner">
+          <button
+            type="button"
+            onClick={() => setMobileTab('form')}
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+              mobileTab === 'form'
+                ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <QrCode className="w-3.5 h-3.5 shrink-0" />
+            <span>Give</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('summary')}
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+              mobileTab === 'summary'
+                ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Receipt className="w-3.5 h-3.5 shrink-0" />
+            <span>Summary</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('ways')}
+            className={`flex-1 py-2 px-2 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+              mobileTab === 'ways'
+                ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Building className="w-3.5 h-3.5 shrink-0" />
+            <span>Bank Info</span>
+          </button>
+        </div>
+      </div>
 
       {/* ── MAIN CONTENT ──────────────────────────────────── */}
       <section className="pt-2 sm:pt-6 pb-20 sm:pb-24 relative z-20">

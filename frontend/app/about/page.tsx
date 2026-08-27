@@ -13,14 +13,14 @@ export default function AboutPage() {
   const sections = [
     {
       title: "Our Story",
-      description: "Discover how God built Kingdom of Christ Ministries from a small prayer group to a thriving community",
+      description: "Discover the journey of Kingdom of Christ Ministries, established in 2012, transforming lives through education, healthcare, and social welfare",
       href: "/about/story",
       icon: Church,
       color: "purple",
     },
     {
       title: "Leadership",
-      description: "Meet Bishop Kurra Kristhu Raju Garu and our ministry leaders serving God's people",
+      description: "Meet Sri. Kurra Kristhu Raju and our ministry leaders serving communities across Telangana and India",
       href: "/about/leadership",
       icon: Users,
       color: "indigo",
@@ -41,7 +41,7 @@ export default function AboutPage() {
     },
     {
       title: "Mission & Vision",
-      description: "Learn about our mission to know Christ and make Him known in Hyderabad and beyond",
+      description: "Learn about our mission to know Christ, champion education as a fundamental right, and empower communities",
       href: "/about/mission",
       icon: Target,
       color: "green",
@@ -72,8 +72,8 @@ export default function AboutPage() {
                 About Us
               </h1>
               <p className="text-xl text-purple-100 animate-fade-in-up animate-delay-200 max-w-2xl mx-auto">
-                Welcome to Kingdom of Christ Ministries - a vibrant community of believers
-                serving God across Hyderabad
+                Welcome to Kingdom of Christ Ministries - Established in 2012, dedicated to spiritual growth,
+                education as a fundamental right, and holistic social welfare
               </p>
             </div>
           </div>
@@ -87,10 +87,10 @@ export default function AboutPage() {
                 Who We Are
               </h2>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
-                Kingdom of Christ Ministries is a multi-location church in Hyderabad, led by
-                <strong className="text-purple-600 dark:text-purple-400"> Bishop Kurra Kristhu Raju Garu</strong>.
-                We are a family of 1000+ believers worshiping at three locations: Shapur, Subhash Nagar,
-                and Bahadurpally.
+                The Kingdom of Christ Ministries is led by visionary leader
+                <strong className="text-purple-600 dark:text-purple-400"> Sri. Kurra Kristhu Raju</strong>.
+                Established in 2012, we are expanding continuously in social &amp; educational development,
+                medical services, food distribution, and sheltering for orphans across Hyderabad and beyond.
               </p>
               <div className="grid md:grid-cols-3 gap-6 stagger-children">
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover-lift">
