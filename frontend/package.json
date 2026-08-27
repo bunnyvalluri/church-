@@ -6,7 +6,15 @@
     "dev": "next dev -p 3000",
     "build": "npx prisma generate && next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test",
+    "test:e2e": "playwright test tests/e2e",
+    "test:health": "playwright test tests/e2e/route-health.spec.ts",
+    "test:rbac": "playwright test tests/e2e/rbac-matrix.spec.ts",
+    "test:responsive": "playwright test tests/responsive.spec.ts",
+    "test:a11y": "playwright test tests/accessibility.spec.ts",
+    "test:smoke": "playwright test tests/smoke/production-smoke.spec.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.15",
@@ -64,6 +72,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^20.12.0",
