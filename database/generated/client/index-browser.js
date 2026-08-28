@@ -1109,6 +1109,64 @@ exports.Prisma.GoogleSheetsMemberScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SmsMessageScalarFieldEnum = {
+  id: 'id',
+  notificationId: 'notificationId',
+  memberId: 'memberId',
+  phoneNumber: 'phoneNumber',
+  normalizedPhoneNumber: 'normalizedPhoneNumber',
+  message: 'message',
+  provider: 'provider',
+  providerMessageId: 'providerMessageId',
+  idempotencyKey: 'idempotencyKey',
+  status: 'status',
+  attempts: 'attempts',
+  maxAttempts: 'maxAttempts',
+  scheduledAt: 'scheduledAt',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  failedAt: 'failedAt',
+  expiresAt: 'expiresAt',
+  failureReason: 'failureReason',
+  errorCode: 'errorCode',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MemberNotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  smsEnabled: 'smsEnabled',
+  emailEnabled: 'emailEnabled',
+  pushEnabled: 'pushEnabled',
+  events: 'events',
+  sundayService: 'sundayService',
+  prayerMeetings: 'prayerMeetings',
+  sermons: 'sermons',
+  specialPrograms: 'specialPrograms',
+  donations: 'donations',
+  emergencyAlerts: 'emergencyAlerts',
+  youthPrograms: 'youthPrograms',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SmsAuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  role: 'role',
+  action: 'action',
+  recipientCount: 'recipientCount',
+  template: 'template',
+  provider: 'provider',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  status: 'status',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1243,6 +1301,28 @@ exports.ServiceStatus = exports.$Enums.ServiceStatus = {
   ARCHIVED: 'ARCHIVED'
 };
 
+exports.SmsStatus = exports.$Enums.SmsStatus = {
+  QUEUED: 'QUEUED',
+  PROCESSING: 'PROCESSING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED',
+  RETRYING: 'RETRYING',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.SmsErrorCode = exports.$Enums.SmsErrorCode = {
+  TRANSIENT_ERROR: 'TRANSIENT_ERROR',
+  PERMANENT_ERROR: 'PERMANENT_ERROR',
+  RATE_LIMIT_ERROR: 'RATE_LIMIT_ERROR',
+  AUTH_ERROR: 'AUTH_ERROR',
+  INVALID_NUMBER: 'INVALID_NUMBER',
+  EXPIRED_MESSAGE: 'EXPIRED_MESSAGE',
+  GATEWAY_OFFLINE: 'GATEWAY_OFFLINE',
+  UNKNOWN: 'UNKNOWN'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Event: 'Event',
@@ -1309,7 +1389,10 @@ exports.Prisma.ModelName = {
   DonationAgentEvent: 'DonationAgentEvent',
   DonationRetryJob: 'DonationRetryJob',
   EventNotificationRetryJob: 'EventNotificationRetryJob',
-  GoogleSheetsMember: 'GoogleSheetsMember'
+  GoogleSheetsMember: 'GoogleSheetsMember',
+  SmsMessage: 'SmsMessage',
+  MemberNotificationPreference: 'MemberNotificationPreference',
+  SmsAuditLog: 'SmsAuditLog'
 };
 
 /**

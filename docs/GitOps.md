@@ -1,55 +1,76 @@
-# GitOps Repository Architecture & Workflow Guide
+# Declarative GitOps Operations & Architecture
 
-## 1. Dual Repository Model
+## Purpose
+This document provides the technical specification for the declarative GitOps delivery model powering the Kingdom of Christ Ministries platform, establishing Git as the single authoritative source of truth for all Kubernetes infrastructure, application deployments, and operational policies.
 
-To adhere strictly to GitOps security best practices, application source code is completely separated from infrastructure configuration:
+## Scope
+Covers GitOps repository structures, branching workflows, Argo CD reconciliation loops, environment promotions, and automated drift correction.
 
-### Repository 1: `kcm-church-app`
-- **Purpose**: Application source code, component logic, database schemas, Dockerfiles, unit tests, and GitHub Actions CI pipelines.
-- **Access**: Full read/write access for application developers.
-- **Trigger**: Every push or pull request runs linting, tests, security scanning, multi-arch Docker image builds, and pushes signed tags to `ghcr.io`.
-
-### Repository 2: `kcm-church-infra`
-- **Purpose**: Declarative Kubernetes state, Helm charts, Argo CD AppProjects, Application specs, environment values (`dev`, `staging`, `prod`), NetworkPolicies, and Observability configs.
-- **Access**: Strictly controlled access (DevOps / Release Engineers / Argo CD Service Account).
-- **Trigger**: Automatically updated by GitHub Actions bot on image releases, triggering continuous reconciliation by Argo CD.
+## Status
+> Status: Implemented
 
 ---
 
-## 2. Directory Layout of `kcm-church-infra`
+## 1. GitOps Core Principles & Topology
 
+```mermaid
+graph LR
+    subgraph Git Authoritative Source
+        GitRepo[(Git: bunnyvalluri/church-)]
+        BranchMain[Branch: main - Production Truth]
+    end
+
+    subgraph GitOps Controller
+        ArgoCD[Argo CD Reconciliation Engine]
+    end
+
+    subgraph Production Kubernetes
+        K8sCluster[Kubernetes Production Cluster]
+    end
+
+    GitRepo --> BranchMain
+    BranchMain -->|Poll / Webhook Event| ArgoCD
+    ArgoCD -->|Reconcile State| K8sCluster
+    K8sCluster -.->|Drift Alert & Auto-Healing| ArgoCD
 ```
-kcm-church-infra/
-├── argocd/
-│   ├── installation/          # Official Argo CD HA deployment manifests
-│   ├── projects/              # Argo CD AppProjects (frontend, backend, db, monitoring, etc.)
-│   ├── applications/          # Root App-of-Apps and individual Application CRDs
-│   ├── argocd-cm.yaml         # System ConfigMap
-│   ├── argocd-rbac-cm.yaml    # Least-privilege RBAC CSV definition
-│   ├── argocd-secret.yaml     # Initial admin hash & secret keys
-│   ├── ingress.yaml           # TLS Ingress for Argo CD console
-│   └── sync-windows.yaml      # Service blackout and maintenance windows
-├── charts/
-│   ├── kcm-frontend/          # Production Next.js Helm Chart
-│   ├── kcm-backend/           # Node.js API, Worker, Cron Helm Chart
-│   ├── kcm-redis/             # Redis HA StatefulSet Chart
-│   ├── kcm-postgresql/        # PostgreSQL HA StatefulSet Chart
-│   ├── kcm-monitoring/       # Monitoring Helm Chart
-│   └── kcm-ingress-certmanager/# Ingress & Cert-Manager Chart
-├── rollouts/
-│   ├── rollout-frontend.yaml  # Argo Rollouts Canary specification
-│   └── rollout-backend.yaml   # Argo Rollouts Blue-Green specification
-├── security/
-│   ├── network-policies/      # Microsegmentation NetworkPolicies
-│   ├── pod-security-standards/# Restricted PSS profiles
-│   ├── rbac/                  # Workload RBAC bindings
-│   ├── cert-manager/          # ClusterIssuer specs
-│   └── secrets-management/    # ExternalSecrets / SealedSecrets templates
-├── observability/
-│   ├── prometheus-stack.yaml  # Prometheus Operator & exporters
-│   ├── loki-stack.yaml        # Loki + Promtail logging engine
-│   └── alertmanager-rules.yaml# Production alerting rules
-├── autoscaling/               # HPA v2 and VPA specs
-├── disaster-recovery/         # Database backup CronJob and DR script
-└── environments/              # Environment overrides (dev, staging, prod)
-```
+
+1. **Declarative State**: All infrastructure, storage classes, routes, security policies, and microservice definitions are stored as version-controlled YAML manifests.
+2. **Automated Convergence**: Argo CD continuously compares desired Git state against live cluster state and automatically reconciles discrepancies.
+3. **Drift Detection**: Any manual `kubectl edit` or uncommitted modification in the cluster is flagged as Out-of-Sync and overwritten back to the Git baseline.
+
+---
+
+## 2. Branching & Promotion Strategy
+
+- **`feature/*` Branches**: Developers implement feature changes or infrastructure updates on short-lived branches.
+- **Pull Request & CI Validation**: Automated GitHub Actions run linting, unit tests, security scans, and render Helm templates.
+- **Merge to `main`**: Merging into `main` creates an immutable container image tag (Git SHA) and updates the GitOps manifest directory.
+- **Production Canary Rollout**: Argo CD detects the commit and triggers a progressive canary deployment via Argo Rollouts.
+
+---
+
+## 3. Disaster Recovery via GitOps
+
+Because all application and infrastructure states are fully declared in Git:
+1. In the event of total cluster loss, a replacement cluster can be spun up in minutes using OpenTofu (`tofu apply`).
+2. Pointing Argo CD to the Git repository restores all namespaces, CRDs, network policies, and application workloads automatically.
+3. Database and persistent storage are restored from S3 backups via Velero and CloudNativePG.
+
+---
+
+## 4. Troubleshooting & Diagnostics
+
+| Problem | Cause | Solution |
+| :--- | :--- | :--- |
+| Cluster state does not match Git after merge | Argo CD sync polling interval (3m) or auto-sync disabled | Trigger immediate manual sync via Argo CD UI or CLI: `argocd app sync kcm-platform`. |
+| Merge conflict in automated GitOps image tag commit | Multiple parallel CI pipelines updating image tags | Configure GitHub Actions with rebase retry logic on manifest tag commits. |
+
+---
+
+## Security Considerations
+- Direct write access (`kubectl apply`) to the production cluster is disabled; all changes must flow through peer-reviewed Git Pull Requests.
+
+## Related Documentation
+- [ArgoCD.md](ArgoCD.md) — Argo CD configuration.
+- [ArgoRollouts.md](ArgoRollouts.md) — Progressive canary delivery.
+- [CI-CD.md](CI-CD.md) — CI/CD build automation.
