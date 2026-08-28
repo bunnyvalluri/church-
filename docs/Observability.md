@@ -67,7 +67,7 @@ To allow instant jump from an error log to its exact distributed trace and Prome
 ---
 
 ## Security Considerations
-- Distributed traces redact sensitive query parameters (passwords, tokens, PAN numbers) before transmitting spans to Jaeger.
+- Distributed traces redact sensitive query parameters (credentials, tokens, PAN numbers) before transmitting spans to Jaeger.
 
 ## Related Documentation
 - [Monitoring.md](Monitoring.md) — Prometheus metrics and alerting.

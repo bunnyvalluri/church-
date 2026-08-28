@@ -86,7 +86,7 @@ For frictionless giving in India without payment gateway gateway transaction fee
 ---
 
 ## Security Considerations
-- PCI-DSS Compliance: Application servers never capture or persist card CVVs or banking passwords.
+- PCI-DSS Compliance: Application servers never capture or persist card CVVs or banking credentials.
 - All webhook events require valid HMAC cryptographic signatures.
 
 ## Related Documentation

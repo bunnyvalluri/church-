@@ -129,7 +129,7 @@ spec:
 
 ## Security Considerations
 - Client TLS certificates are generated automatically by CloudNativePG for all internal connections.
-- Database passwords use SCRAM-SHA-256 cryptographic hashing.
+- Database authentication credentials use SCRAM-SHA-256 cryptographic hashing.
 
 ## Related Documentation
 - [PostgreSQL.md](PostgreSQL.md) — Relational data model and Prisma client.

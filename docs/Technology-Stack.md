@@ -74,7 +74,7 @@ Covers frontend, backend, database, messaging, infrastructure, security, monitor
 | **Media Storage & CDN** | Cloudinary | Auto-optimized image/video storage, transformations, and global CDN delivery |
 | **Payments (INR)** | Razorpay | UPI, NetBanking, Debit/Credit Card offerings and tithes in Indian Rupees |
 | **Payments (USD/Global)** | Stripe | International card donations and global ministry support |
-| **Transactional Email** | Resend / SMTP | PDF donation receipts, event registration confirmations, password reset emails |
+| **Transactional Email** | Resend / SMTP | PDF donation receipts, event registration confirmations, account recovery emails |
 | **SMS Delivery** | httpSMS Gateway | High-reliability Android GSM gateway for member notification broadcasts |
 | **WhatsApp Messaging** | Twilio API | Automated prayer notifications and ministry broadcast channels |
 | **Web Crawling & Research** | Firecrawl | Structured content extraction and web research for sermon preparation |

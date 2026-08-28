@@ -22,7 +22,7 @@ Covers all endpoints under `frontend/app/api/*` and `backend/server.js`.
   {
     "name": "John Doe",
     "email": "john.doe@example.com",
-    "password": "SecurePassword123!",
+    "credential": "<SECURE_USER_CREDENTIAL>",
     "phone": "+919876543210",
     "address": "Hyderabad, Telangana"
   }
@@ -35,10 +35,10 @@ Covers all endpoints under `frontend/app/api/*` and `backend/server.js`.
 - **Purpose**: Authenticates credentials and sets encrypted session cookie.
 - **Authentication**: None (Public).
 - **Rate Limit**: 5 requests / 15 min per IP.
-- **Request Body**: `{ "email": "john.doe@example.com", "password": "..." }`
+- **Request Body**: `{ "email": "john.doe@example.com", "credential": "<USER_CREDENTIAL>" }`
 - **Responses**:
   - `200 OK`: Sets `kcm_session` HttpOnly cookie.
-  - `401 Unauthorized`: `{ "error": "Invalid email or password" }`
+  - `401 Unauthorized`: `{ "error": "Invalid email or credentials" }`
 
 ### `POST /api/auth/sync`
 - **Purpose**: Synchronizes and verifies Google OAuth ID Token.

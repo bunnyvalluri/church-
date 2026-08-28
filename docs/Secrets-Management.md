@@ -4,7 +4,7 @@
 This document specifies the secrets management architecture, encryption-at-rest standards, Kubernetes secret injection, automated scanning, and credential rotation procedures for the Kingdom of Christ Ministries platform.
 
 ## Scope
-Covers database passwords, API credentials, payment gateway keys, webhook signing secrets, and SSL/TLS private keys.
+Covers database access credentials, API keys, payment gateway keys, webhook signing secrets, and SSL/TLS private keys.
 
 ## Status
 > Status: Implemented
@@ -46,8 +46,8 @@ metadata:
   namespace: kcm-system
 type: Opaque
 stringData:
-  DATABASE_URL: "postgresql://kcm_app:StrongSecretPassword@kcm-db-pooler:5432/church_db?sslmode=require"
-  MONGODB_URI: "mongodb+srv://kcm_app:StrongSecretPassword@cluster0.mongodb.net/kcm_church"
+  DATABASE_URL: "postgresql://<DB_USER>:<DB_CREDENTIALS>@kcm-db-pooler:5432/church_db?sslmode=require"
+  MONGODB_URI: "mongodb+srv://<DB_USER>:<DB_CREDENTIALS>@cluster0.mongodb.net/kcm_church"
   NEXTAUTH_SECRET: "32_character_random_hex_string_here"
   RAZORPAY_KEY_SECRET: "razorpay_secret_key_here"
   STRIPE_SECRET_KEY: "stripe_secret_key_here"
@@ -62,7 +62,7 @@ stringData:
 
 | Secret Category | Rotation Interval | Automation Mechanism |
 | :--- | :---: | :--- |
-| **Database Application Passwords** | `90 Days` | CloudNativePG operator password rotation |
+| **Database Application Credentials** | `90 Days` | CloudNativePG operator credential rotation |
 | **Payment Gateway Secrets** | `180 Days` | Manual dual-key rotation via Razorpay / Stripe dashboard |
 | **API Keys (Resend, Gemini, httpSMS)**| `90 Days` | Provider API console key recreation |
 | **Kubernetes Service Account Tokens** | `30 Days` | Automated kube-controller-manager token rotation |

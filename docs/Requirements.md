@@ -15,7 +15,7 @@ Encompasses the web application, mobile progressive web app (PWA), backend APIs,
 
 | ID | Module / Feature Area | Requirement Description | Implementation Status | Verification Method |
 | :--- | :--- | :--- | :--- | :--- |
-| **FR-01** | **User Authentication** | Support email/password registration, bcrypt authentication, Google OAuth 2.0 Identity Services, and session cookies. | `Implemented` | Playwright Auth E2E tests (`tests/e2e/rbac-matrix.spec.ts`) |
+| **FR-01** | **User Authentication** | Support credentials registration, bcrypt authentication, Google OAuth 2.0 Identity Services, and session cookies. | `Implemented` | Playwright Auth E2E tests (`tests/e2e/rbac-matrix.spec.ts`) |
 | **FR-02** | **Role-Based Access Control** | Enforce authorization boundaries across MEMBER, PASTOR, ADMIN, EVENT_MANAGER, and VOLUNTEER roles. | `Implemented` | RBAC test suite & Next.js middleware enforcement |
 | **FR-03** | **Event Management** | Allow creation, editing, publishing, capacity limits, banner uploads, registration tracking, and check-in QR codes. | `Implemented` | API tests (`/api/events/*`) & Event Manager portal |
 | **FR-04** | **Online Giving & Tithes** | Process payments via Razorpay (INR) and Stripe (USD), generate dynamic UPI QRs, and issue automated signed PDF receipts. | `Implemented` | Payment webhook verification & receipt generation tests |
@@ -57,7 +57,7 @@ Encompasses the web application, mobile progressive web app (PWA), backend APIs,
 
 1. **Transport Encryption**: Enforce TLS 1.3 across all public endpoints with HTTP Strict Transport Security (HSTS) preload headers.
 2. **Authentication Security**:
-   - Passwords hashed using bcrypt with minimum 12 salt rounds.
+   - User credentials hashed using bcrypt with minimum 12 salt rounds.
    - HttpOnly, Secure, SameSite=Lax session cookies.
    - Brute-force protection via IP-based and user-based rate limiting (100 req / 15 min).
 3. **Data Protection & Privacy**:

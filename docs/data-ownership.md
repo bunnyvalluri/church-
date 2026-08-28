@@ -61,7 +61,7 @@ graph TD
 3. **NO Orphan Relational References**:
    - MongoDB document records referencing relational entities must store the PostgreSQL primary key string (UUID/CUID) in standard fields (`actorId`, `entityId`, `resourceId`).
 4. **NO Sensitive Data Ingestion in MongoDB**:
-   - Passwords, auth tokens, session secrets, PAN/tax identifiers, bank account details, and raw credit card/UPI PIN information must never be inserted into MongoDB logs or metadata fields. Client IP addresses must be SHA-256 hashed.
+   - Authentication credentials, auth tokens, session secrets, PAN/tax identifiers, bank account details, and raw credit card/UPI PIN information must never be inserted into MongoDB logs or metadata fields. Client IP addresses must be SHA-256 hashed.
 
 ---
 

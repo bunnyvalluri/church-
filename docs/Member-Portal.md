@@ -16,7 +16,7 @@ Covers frontend pages in `frontend/app/member/`, client components in `frontend/
 | Route | Purpose | Permissions | Primary Components |
 | :--- | :--- | :--- | :--- |
 | `/member` | Member Overview Dashboard | `MEMBER` | Quick stats, recent sermons, upcoming registrations, prayer feed |
-| `/member/profile` | Personal Profile & Avatar Photo | `MEMBER` | Profile editor, password change, notification preferences |
+| `/member/profile` | Personal Profile & Avatar Photo | `MEMBER` | Profile editor, security settings, notification preferences |
 | `/member/events` | Registered Events & QR Badges | `MEMBER` | Event tickets, pass download, check-in QR code modal |
 | `/member/prayers` | Submitted Prayer Requests | `MEMBER` | Prayer submission form, pastoral status tracking |
 | `/member/give` | Personal Giving Statements | `MEMBER` | Donation history table, annual tax statement download |

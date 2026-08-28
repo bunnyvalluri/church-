@@ -106,17 +106,17 @@ sequenceDiagram
     participant Hash as Bcrypt Hasher
     participant Audit as MongoDB Audit Repository
 
-    User->>Form: Fill Name, Email, Password, Phone, Address
+    User->>Form: Fill Name, Email, Credential, Phone, Address
     Form->>Form: Client-side Zod validation
-    Form->>AuthAPI: POST { name, email, password, phone, role: "MEMBER" }
+    Form->>AuthAPI: POST { name, email, credential, phone, role: "MEMBER" }
     AuthAPI->>DB: Check if user exists (findUnique email)
     alt Email already registered
         DB-->>AuthAPI: Existing User Record
         AuthAPI-->>Form: 400 Bad Request ("Email already registered")
         Form-->>User: Display error message
     else User is new
-        AuthAPI->>Hash: Hash password with salt rounds (12)
-        Hash-->>AuthAPI: hashedPassword
+        AuthAPI->>Hash: Hash credential with salt rounds (12)
+        Hash-->>AuthAPI: hashedCredential
         AuthAPI->>DB: Create User record with role MEMBER
         DB-->>AuthAPI: Created User (id, email, name, role)
         AuthAPI->>Audit: Log USER_REGISTRATION event
@@ -137,18 +137,18 @@ sequenceDiagram
     participant Hash as Bcrypt Compare
     participant Session as Session Token Generator
 
-    User->>Login: Submit Email & Password
-    Login->>AuthAPI: POST { email, password }
+    User->>Login: Submit Email & Credential
+    Login->>AuthAPI: POST { email, credential }
     AuthAPI->>DB: Query User by email
     alt User Not Found
         DB-->>AuthAPI: null
         AuthAPI-->>Login: 401 Unauthorized ("Invalid credentials")
     else User Found
-        AuthAPI->>Hash: Compare plaintext password with hashed password
-        alt Password Mismatch
+        AuthAPI->>Hash: Compare supplied credential with hashed credential
+        alt Credential Mismatch
             Hash-->>AuthAPI: false
             AuthAPI-->>Login: 401 Unauthorized ("Invalid credentials")
-        else Password Valid
+        else Credential Valid
             Hash-->>AuthAPI: true
             AuthAPI->>Session: Generate Encrypted JWT / Session Cookie
             Session-->>AuthAPI: Set-Cookie: kcm_session=...; HttpOnly; Secure; SameSite=Lax

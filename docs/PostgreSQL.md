@@ -146,7 +146,7 @@ npm run db:seed
 ---
 
 ## Security Considerations
-- Password hashes are stored as bcrypt strings (`$2a$12$...`) and never returned in public API payloads.
+- Credential hashes are stored as bcrypt strings (`$2a$12$...`) and never returned in public API payloads.
 - Row-level isolation ensures members can only query their own donations and private prayer requests.
 
 ## Related Documentation

@@ -82,7 +82,7 @@ graph TD
 ---
 
 ## Security Considerations
-- Default `admin` password is generated randomly during OpenTofu installation and stored in a Kubernetes secret.
+- Default `admin` access credential is generated randomly during OpenTofu installation and stored in a Kubernetes secret.
 - Session cookies use `Secure: true` and `SameSite: strict`.
 
 ## Related Documentation

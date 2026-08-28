@@ -22,7 +22,7 @@ Covers application code, databases, authentication mechanisms, Kubernetes cluste
 - [x] **Security Headers**: HSTS, CSP, X-Frame-Options (`DENY`), X-Content-Type-Options (`nosniff`) enabled in `next.config.js`.
 
 ### 1.2 Authentication & Session Management
-- [x] **Password Hashing**: Bcrypt salt rounds >= 12 configured for all user passwords.
+- [x] **Credential Hashing**: Bcrypt salt rounds >= 12 configured for all user credentials.
 - [x] **Session Cookies**: `kcm_session` cookies configured with `HttpOnly: true`, `Secure: true`, `SameSite: Lax`.
 - [x] **Google OAuth**: Tokens verified cryptographically using `google-auth-library` server-side.
 - [x] **RBAC Enforcement**: Edge middleware (`frontend/middleware.ts`) and API guards enforce role authorization boundaries.

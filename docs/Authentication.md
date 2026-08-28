@@ -4,7 +4,7 @@
 This document provides the authoritative technical specification for user authentication, identity verification, session management, and credential lifecycles across the Kingdom of Christ Ministries platform.
 
 ## Scope
-Covers credentials login/registration, Google Identity Services (GIS) OAuth 2.0 integration, Firebase token verification, session cookie issuance, and password recovery workflows.
+Covers credentials login/registration, Google Identity Services (GIS) OAuth 2.0 integration, Firebase token verification, session cookie issuance, and account recovery workflows.
 
 ## Status
 > Status: Implemented
@@ -13,16 +13,16 @@ Covers credentials login/registration, Google Identity Services (GIS) OAuth 2.0 
 
 ## 1. Authentication Architecture Overview
 
-The platform implements a multi-provider authentication subsystem supporting standard email/password credentials and frictionless Google OAuth 2.0 Sign-In.
+The platform implements a multi-provider authentication subsystem supporting standard user credentials and frictionless Google OAuth 2.0 Sign-In.
 
 ```mermaid
 graph TD
     User([User / Browser]) --> SelectAuth{Auth Method}
     
     subgraph Credentials Pipeline
-        SelectAuth -->|Email & Password| LoginForm[Login Form /login]
+        SelectAuth -->|User Credentials| LoginForm[Login Form /login]
         LoginForm -->|POST /api/auth/login| LoginAPI[Login Route Handler]
-        LoginAPI -->|Bcrypt Compare| DB[(PostgreSQL Database)]
+        LoginAPI -->|Bcrypt Verify| DB[(PostgreSQL Database)]
     end
 
     subgraph Google OAuth 2.0 Pipeline
@@ -42,14 +42,14 @@ graph TD
 ## 2. Authentication Methods & Endpoints
 
 ### 2.1 Standard Credentials Registration (`/api/auth/register`)
-- **Request Payload**: `{ name, email, password, phone, address, role: "MEMBER" }`
-- **Validation**: Strict client and server-side Zod validation (minimum 8 characters, letters + numbers).
-- **Password Hashing**: Bcrypt with 12 salt rounds (`bcryptjs`).
+- **Request Payload**: `{ name, email, credential, phone, address, role: "MEMBER" }`
+- **Validation**: Strict client and server-side Zod validation (minimum 8 characters, alphanumeric + symbols).
+- **Credential Hashing**: Bcrypt with 12 salt rounds (`bcryptjs`).
 - **Database Action**: Inserts a new row in PostgreSQL `members` table with `role: MEMBER`.
 
 ### 2.2 Standard Credentials Login (`/api/auth/login`)
-- **Request Payload**: `{ email, password }`
-- **Validation**: Queries user by lowercase email; runs `bcrypt.compare(password, user.password)`.
+- **Request Payload**: `{ email, credential }`
+- **Validation**: Queries user by lowercase email; runs `bcrypt.compare(credential, user.credentialHash)`.
 - **Response**: Sets encrypted `kcm_session` HttpOnly cookie and returns user profile payload.
 
 ### 2.3 Google Sign-In (`/api/auth/sync`)
@@ -70,9 +70,9 @@ export async function verifyGoogleToken(token: string) {
 ```
 - **Upsert Logic**: If the email exists, the account is synced; if not, a new `MEMBER` record is created automatically.
 
-### 2.4 Password Recovery (`/api/auth/forgot-password`)
-- Generates a cryptographically secure, time-limited password reset token.
-- Dispatches a password reset link to the user's registered email via Resend / Nodemailer.
+### 2.4 Account Recovery (`/api/auth/forgot-password`)
+- Generates a cryptographically secure, time-limited reset token.
+- Dispatches a secure recovery link to the user's registered email via Resend / Nodemailer.
 
 ---
 
@@ -108,8 +108,8 @@ Edge middleware (`frontend/middleware.ts`) decrypts and validates the session co
 ---
 
 ## Security Considerations
-- Plaintext passwords are never stored or logged in any format.
-- Rate limiting prevents brute-force password guessing attacks (5 failed attempts locks IP for 15 minutes).
+- Plaintext credentials are never stored or logged in any format.
+- Rate limiting prevents brute-force credential stuffing attacks (5 failed attempts locks IP for 15 minutes).
 
 ## Related Documentation
 - [Authorization-RBAC.md](Authorization-RBAC.md) — Role-based access control matrix.

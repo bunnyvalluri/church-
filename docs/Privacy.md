@@ -26,7 +26,7 @@ The church platform processes sensitive spiritual, personal, and financial data 
 
 ## 2. PII Masking & Redaction
 
-1. **Log Sanitization**: Application loggers (`backend/src/utils/logger.js` and `frontend/lib/auditLogger.ts`) automatically redact PII fields (`password`, `panNumber`, `creditCard`, `token`, `secret`) before emitting JSON to stdout or MongoDB.
+1. **Log Sanitization**: Application loggers (`backend/src/utils/logger.js` and `frontend/lib/auditLogger.ts`) automatically redact PII fields (`credential`, `panNumber`, `creditCard`, `token`, `secret`) before emitting JSON to stdout or MongoDB.
 2. **Confidential Prayer Routing**:
    - When a member submits a prayer request with `isPrivate: true`, the record is excluded from public prayer feeds.
    - Only pastoral accounts (`role: PASTOR` or `ADMIN`) can view confidential prayer requests in the Pastor Portal (`/pastor/main/prayer-requests`).

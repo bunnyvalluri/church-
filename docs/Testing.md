@@ -77,7 +77,7 @@ npx playwright test --ui
 ---
 
 ## Security Considerations
-- Test fixtures use randomized test user emails and dummy passwords.
+- Test fixtures use randomized test user emails and dummy authentication credentials.
 - No live payment cards or production API secrets are used during automated test runs.
 
 ## Related Documentation

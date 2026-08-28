@@ -143,7 +143,7 @@ The architecture is configured via standardized environment variable injection. 
 ## Security Considerations
 - Zero-trust network policies (`NetworkPolicy`) restrict pod-to-pod traffic in Kubernetes.
 - Secrets are securely injected as Kubernetes Secrets and never committed to Git.
-- Passwords use bcrypt hashing with salted rounds.
+- User authentication credentials use bcrypt cryptographic hashing with salted rounds.
 
 ## Related Documentation
 - [Architecture-Diagrams.md](Architecture-Diagrams.md) — Comprehensive visual workflow diagrams.

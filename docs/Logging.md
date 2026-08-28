@@ -77,7 +77,7 @@ export function maskSensitiveData(obj: any): any {
 ---
 
 ## Security Considerations
-- Plaintext passwords and cryptographic keys are never written to log outputs.
+- Plaintext credentials and cryptographic keys are never written to log outputs.
 - Log access in Grafana Loki is restricted to authorized operations personnel.
 
 ## Related Documentation

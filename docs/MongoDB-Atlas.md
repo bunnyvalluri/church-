@@ -134,7 +134,7 @@ To allow local development without requiring live MongoDB Atlas credentials:
 ---
 
 ## Security Considerations
-- Sensitive fields (credit card tokens, passwords) are filtered and stripped before being written to MongoDB.
+- Sensitive fields (credit card tokens, authentication credentials) are filtered and stripped before being written to MongoDB.
 - MongoDB Atlas connections enforce TLS 1.3 encryption and SCRAM-SHA-256 authentication.
 
 ## Related Documentation
