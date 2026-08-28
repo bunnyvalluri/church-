@@ -101,5 +101,5 @@ env:
   NATS_URL: "nats://nats-cluster.kcm-messaging.svc.cluster.local:4222"
 
 secrets:
-  DATABASE_URL: "postgresql://kcm_user:KCM_SecurePass2026@cloudnativepg-cluster.kcm-database.svc.cluster.local:5432/kcm_db?sslmode=require"
-  JWT_SECRET: "KCM_Church_JWT_Secret_2026_Key"
+  DATABASE_URL: "postgresql://<DB_USER>:<DB_PASSWORD>@cloudnativepg-cluster.kcm-database.svc.cluster.local:5432/kcm_db?sslmode=require"
+  JWT_SECRET: "<GENERATE_SECURE_JWT_SECRET>"

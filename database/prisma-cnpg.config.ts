@@ -5,11 +5,8 @@ import { PrismaClient } from './generated/client';
  * Separates Read-Write primary pooler traffic from Read-Only replica pooler traffic.
  */
 
-const primaryDatabaseUrl = process.env.DATABASE_URL || 
-  "postgresql://kcm_app_user:KCM_DB_APP_PASSWORD_CHANGE_IN_VAULT_PROD_2026!@kcm-db-pooler-rw.kcm-database.svc.cluster.local:5432/kcm_portal_db?schema=public&pgbouncer=true";
-
-const readReplicaDatabaseUrl = process.env.RO_DATABASE_URL || 
-  "postgresql://kcm_app_user:KCM_DB_APP_PASSWORD_CHANGE_IN_VAULT_PROD_2026!@kcm-db-pooler-ro.kcm-database.svc.cluster.local:5432/kcm_portal_db?schema=public&pgbouncer=true";
+const primaryDatabaseUrl = process.env.DATABASE_URL || "";
+const readReplicaDatabaseUrl = process.env.RO_DATABASE_URL || process.env.DATABASE_URL || "";
 
 // Primary Prisma Client for Mutations, Transactions, and Writes
 export const prismaPrimary = new PrismaClient({

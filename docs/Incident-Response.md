@@ -76,13 +76,32 @@ Detailed technical explanation of the failure mechanism.
 2. [Action Item 2]: Adjust Prometheus alerting threshold.
 ```
 
+## 5. Secret Leak & Credential Compromise Response Protocol
+
+If a database URI, private key, or API secret is detected in public version control or flagged by GitHub Secret Scanning:
+1. **Immediate Revocation (Minute 0-5)**:
+   - Access the provider console (MongoDB Atlas, GCP, Razorpay, Resend) and immediately delete or rotate the compromised key.
+   - Never wait for Git history scrubbing before revoking the credential.
+2. **Update Environment Stores (Minute 5-15)**:
+   - Inject replacement secrets into Vercel Project Environment Variables and Kubernetes Secrets.
+3. **Trigger Zero-Downtime Redeployment (Minute 15-20)**:
+   - Redeploy the application and verify health probes (`/api/health`).
+4. **Git Sanitization & Force-Push (Minute 20-30)**:
+   - Sanitize all local tracked files and replace with `<PLACEHOLDER>` values.
+   - If history scrubbing is required, coordinate with team members to rewrite and force-push sanitized refs.
+5. **Publish Security Post-Mortem (Within 24 Hours)**:
+   - Document root cause, affected scopes, and preventive push protection rules.
+
 ---
 
 ## Security Considerations
 - Incident bridge channels are private and restricted to authorized response team members.
 - Security-related incident post-mortems redact sensitive attacker IPs or vulnerability details.
+- Rotate the exposed MongoDB credential before considering the incident resolved.
 
 ## Related Documentation
+- [Secrets-Management.md](Secrets-Management.md) — Secrets management & rotation workflows.
+- [MongoDB-Security.md](MongoDB-Security.md) — MongoDB Atlas least-privilege configuration.
 - [Disaster-Recovery.md](Disaster-Recovery.md) — Disaster recovery playbooks.
 - [Monitoring.md](Monitoring.md) — Real-time alerting rules.
 - [Troubleshooting.md](Troubleshooting.md) — Issue resolution runbooks.
