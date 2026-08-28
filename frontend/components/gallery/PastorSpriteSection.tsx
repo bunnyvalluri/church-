@@ -275,16 +275,16 @@ export default function PastorSpriteSection({
   const labels = {
     sectionBadge:
       language === "te"
-        ? "రెవరెండ్ కుర్ర క్రీస్తు రాజు గారు • వైస్ ప్రెసిడెంట్, TUCS"
+        ? "శ్రీ కుర్ర క్రిస్తు రాజు గారు • వైస్ ప్రెసిడెంట్, TUCS"
         : language === "hi"
-        ? "रेवरेंड कुर्रा क्रिस्टु राजू • उपाध्यक्ष (Vice President), TUCS"
-        : "Reverend Kurra Christu Raju • Vice President, TUCS",
+        ? "श्री कुर्रा क्रिस्तु राजू • उपाध्यक्ष (Vice President), TUCS"
+        : "Sri. KURRA KRISTHU RAJU • Vice President, TUCS",
     sectionTitle:
       language === "te"
-        ? "సీనియర్ పాస్టర్ రెవరెండ్ కుర్ర క్రీస్తు రాజు గారి ప్రత్యేక గ్యాలరీ"
+        ? "శ్రీ కుర్ర క్రిస్తు రాజు గారి ప్రత్యేక గ్యాలరీ"
         : language === "hi"
-        ? "वरिष्ठ पादरी रेवरेंड कुर्रा क्रिस्टु राजू विशेष गैलरी"
-        : "Senior Pastor Reverend Kurra Christu Raju Spotlight & Moments",
+        ? "श्री कुर्रा क्रिस्तु राजू विशेष गैलरी"
+        : "Sri. KURRA KRISTHU RAJU Spotlight & Moments",
     sectionSubtitle:
       language === "te"
         ? "తెలంగాణ సైనాడ్ ప్రమాణ స్వీకారోత్సవ పత్రికా ప్రకటనలు, చారిత్రక సభలు మరియు ప్రత్యక్ష ఆశీర్వాద వీడియో."
