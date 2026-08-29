@@ -269,7 +269,8 @@ export default function AIChat() {
 
   if (pathname?.startsWith("/admin") || pathname?.startsWith("/pastor") ||
       pathname?.startsWith("/login") || pathname?.startsWith("/register") ||
-      pathname?.startsWith("/gallery") || pathname?.startsWith("/ngo/videos")) return null;
+      pathname?.startsWith("/gallery") || pathname?.startsWith("/ngo/videos") ||
+      pathname?.startsWith("/about/story")) return null;
   if (!mounted || isMenuOpen) return null;
 
   const onSubmit = (e: React.FormEvent) => { setHasError(false); handleSubmit(e); };
