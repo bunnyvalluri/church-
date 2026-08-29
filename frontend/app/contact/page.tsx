@@ -132,8 +132,14 @@ export default function ContactPage() {
                 <div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">E-Mail Us</h3>
                   <a
-                    href="mailto:kcm.kristhraj2004@gmail.com"
+                    href="mailto:kingofchristministries23@gmail.com"
                     className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors mt-1 block font-medium break-all"
+                  >
+                    kingofchristministries23@gmail.com
+                  </a>
+                  <a
+                    href="mailto:kcm.kristhraj2004@gmail.com"
+                    className="text-xs text-slate-500 dark:text-slate-400 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors mt-0.5 block font-medium break-all"
                   >
                     kcm.kristhraj2004@gmail.com
                   </a>
