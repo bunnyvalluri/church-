@@ -50,7 +50,7 @@ export default function ContactPage() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -90,32 +90,30 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#070814] font-sans antialiased text-slate-900 dark:text-slate-100 selection:bg-[#f95700] selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50/70 dark:bg-[#070814] font-sans antialiased text-slate-900 dark:text-slate-100 selection:bg-[#f95700] selection:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* ── Top Hero Banner ── */}
-      <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-[#090b17] text-white overflow-hidden">
-        {/* Ambient Dark Overlay with Subtle Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#060710]/90 via-[#0a0c1e]/90 to-[#070814] pointer-events-none z-10" />
+      {/* ── Top Hero Banner (Flawless Light & Dark Palette) ── */}
+      <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-b from-orange-50/80 via-slate-100/60 to-slate-50 dark:from-[#060710]/95 dark:via-[#0a0c1e]/95 dark:to-[#070814] border-b border-slate-200/80 dark:border-white/5 overflow-hidden transition-colors duration-300">
         
-        {/* Glow Spheres */}
-        <div className="absolute -top-24 right-1/4 w-96 h-96 bg-[#f95700]/15 rounded-full blur-[120px] pointer-events-none z-10" />
-        <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none z-10" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff04_1px,transparent_1px),linear-gradient(to_bottom,#ffffff04_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
+        {/* Glow Spheres & Meshes */}
+        <div className="absolute -top-24 right-1/4 w-96 h-96 bg-[#f95700]/10 dark:bg-[#f95700]/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-orange-400 mb-4 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 mb-4 backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5 text-[#f95700]" />
             <span>Kingdom of Christ Ministries • Hyderabad</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-outfit">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
             Contact <span className="text-[#f95700] drop-shadow-sm">Us</span>
           </h1>
 
           {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 mt-4 text-sm font-semibold">
-            <Link href="/" className="text-slate-400 hover:text-white transition-colors">
+            <Link href="/" className="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors">
               Home
             </Link>
             <span className="text-[#f95700] text-base">•</span>
@@ -126,13 +124,13 @@ export default function ContactPage() {
 
       {/* ── 3-Column Floating Info Cards Banner ── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 sm:-mt-16 relative z-30">
-        <div className="bg-white/95 dark:bg-[#0c0e22]/95 border border-slate-200/80 dark:border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 sm:p-8 lg:p-10 backdrop-blur-xl">
+        <div className="bg-white/95 dark:bg-[#0c0e22]/95 border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 sm:p-8 lg:p-10 backdrop-blur-xl transition-all duration-300">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8 md:divide-x md:divide-slate-200/80 dark:md:divide-white/10">
             
             {/* 1. Contact Us */}
             <div className="flex flex-col justify-between space-y-5 md:pr-4 lg:pr-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-slate-200 dark:border-white/15 flex items-center justify-center shrink-0 bg-gradient-to-br from-slate-50 to-orange-50/30 dark:from-white/5 dark:to-orange-500/10 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <Phone className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -159,7 +157,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_12px_rgba(249,87,0,0.6)] animate-pulse" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Live Support</span>
               </div>
             </div>
@@ -167,7 +165,7 @@ export default function ContactPage() {
             {/* 2. Location */}
             <div className="flex flex-col justify-between space-y-5 md:px-4 lg:px-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-slate-200 dark:border-white/15 flex items-center justify-center shrink-0 bg-gradient-to-br from-slate-50 to-orange-50/30 dark:from-white/5 dark:to-orange-500/10 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <MapPin className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -188,21 +186,20 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_12px_rgba(249,87,0,0.6)] animate-pulse" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Main Headquarters</span>
               </div>
             </div>
 
-            {/* 3. E-Mail Us */}
+            {/* 3. E-Mail Us (Only requested email) */}
             <div className="flex flex-col justify-between space-y-5 md:pl-4 lg:pl-6 group">
               <div className="flex items-start gap-4">
-                <div className="w-13 h-13 rounded-2xl border border-slate-200 dark:border-slate-white/15 flex items-center justify-center shrink-0 bg-gradient-to-br from-slate-50 to-orange-50/30 dark:from-white/5 dark:to-orange-500/10 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
+                <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <Mail className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">E-Mail Us</h3>
                   
-                  {/* Email */}
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <a
                       href="mailto:kingofchristministries23@gmail.com"
@@ -220,11 +217,14 @@ export default function ContactPage() {
                       {copiedKey === "email1" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    24/7 Monitored Ministry Inbox
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_12px_rgba(249,87,0,0.6)] animate-pulse" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">24/7 Monitored Inbox</span>
+                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Official Inbox</span>
               </div>
             </div>
 
@@ -238,7 +238,7 @@ export default function ContactPage() {
           
           {/* Left Column (5 cols): Official Portrait of Bishop Kurra Kristhu Raju */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="relative w-full aspect-[4/4.6] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 dark:border-white/10 bg-[#0c0e22] group">
+            <div className="relative w-full aspect-[4/4.6] rounded-3xl overflow-hidden shadow-xl shadow-slate-300/50 dark:shadow-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0c0e22] group">
               <Image
                 src="/pastor.png"
                 alt="Bishop Kurra Kristhu Raju"
@@ -272,7 +272,7 @@ export default function ContactPage() {
                 href="https://wa.me/919704090069?text=Praise%20the%20Lord%20Pastor"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-bold text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>WhatsApp Pastor</span>
@@ -280,7 +280,7 @@ export default function ContactPage() {
 
               <a
                 href="tel:+919704090069"
-                className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-[#f95700] font-bold text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 border border-orange-200 dark:border-orange-500/30 text-[#f95700] font-bold text-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Phone className="w-4 h-4" />
                 <span>Call Directly</span>
@@ -289,7 +289,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right Column (7 cols): "Get in to touch" Form */}
-          <div className="lg:col-span-7 bg-white dark:bg-[#0c0e22]/90 border border-slate-200/80 dark:border-white/10 rounded-3xl p-6 sm:p-10 lg:p-11 shadow-xl relative">
+          <div className="lg:col-span-7 bg-white dark:bg-[#0c0e22]/90 border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10 lg:p-11 shadow-xl shadow-slate-200/50 dark:shadow-xl relative transition-colors duration-300">
             <div className="mb-8">
               <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight font-outfit">
                 Get in to touch
@@ -313,7 +313,7 @@ export default function ContactPage() {
                   <button
                     type="button"
                     onClick={() => setStatus("idle")}
-                    className="mt-3 text-xs font-bold text-emerald-800 dark:text-emerald-300 underline hover:no-underline"
+                    className="mt-3 text-xs font-bold text-emerald-800 dark:text-emerald-300 underline hover:no-underline cursor-pointer"
                   >
                     Send another message
                   </button>
@@ -343,10 +343,10 @@ export default function ContactPage() {
                       key={cat}
                       type="button"
                       onClick={() => setFormData((prev) => ({ ...prev, category: cat }))}
-                      className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all ${
+                      className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all cursor-pointer ${
                         formData.category === cat
-                          ? "bg-[#f95700] text-white border-[#f95700] shadow-sm shadow-orange-500/30"
-                          : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-orange-500/40"
+                          ? "bg-[#f95700] text-white border-[#f95700] shadow-sm shadow-orange-500/30 font-bold"
+                          : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-orange-500/40 hover:bg-slate-200/60 dark:hover:bg-white/10"
                       }`}
                     >
                       {cat}
@@ -368,7 +368,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   placeholder="Your Name"
-                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
+                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
                 />
               </div>
 
@@ -386,7 +386,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Enter your e-mail"
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
                   />
                 </div>
 
@@ -402,7 +402,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="Mobile Number"
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium"
                   />
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function ContactPage() {
                     maxLength={1000}
                     rows={4}
                     placeholder="Write message..."
-                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium resize-none"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#070814] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-[#070814] focus:outline-none focus:ring-2 focus:ring-[#f95700] focus:border-transparent transition-all text-sm font-medium resize-none"
                   />
                   {/* Vertical Accent Pill */}
                   <span className="absolute right-0 top-3 bottom-3 w-1.5 bg-[#f95700] rounded-r-md pointer-events-none" />
@@ -461,33 +461,33 @@ export default function ContactPage() {
       </section>
 
       {/* ── Sanctuary Service Timings & Direct Location Map Section ── */}
-      <section className="border-t border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-[#090a1b]/50 py-16">
+      <section className="border-t border-slate-200 dark:border-white/10 bg-slate-100/60 dark:bg-[#090a1b]/50 py-16 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             
             {/* Worship Times */}
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest">
                 <Clock className="w-4 h-4" />
                 <span>Sanctuary Timings</span>
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white font-outfit">
                 Join Us in Worship
               </h3>
-              <ul className="space-y-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                <li className="flex items-center justify-between p-3 rounded-xl bg-slate-100/80 dark:bg-white/5">
+              <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                <li className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-transparent shadow-sm dark:shadow-none">
                   <span className="font-semibold">Sunday 1st Service</span>
                   <span className="font-mono text-[#f95700] font-bold">10:00 AM</span>
                 </li>
-                <li className="flex items-center justify-between p-3 rounded-xl bg-slate-100/80 dark:bg-white/5">
+                <li className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-transparent shadow-sm dark:shadow-none">
                   <span className="font-semibold">Sunday 2nd Service</span>
                   <span className="font-mono text-[#f95700] font-bold">12:30 PM</span>
                 </li>
-                <li className="flex items-center justify-between p-3 rounded-xl bg-slate-100/80 dark:bg-white/5">
+                <li className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-transparent shadow-sm dark:shadow-none">
                   <span className="font-semibold">Sunday Evening Service</span>
                   <span className="font-mono text-[#f95700] font-bold">06:00 PM</span>
                 </li>
-                <li className="flex items-center justify-between p-3 rounded-xl bg-slate-100/80 dark:bg-white/5">
+                <li className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-transparent shadow-sm dark:shadow-none">
                   <span className="font-semibold">Friday Fasting Prayer</span>
                   <span className="font-mono text-[#f95700] font-bold">10:30 AM</span>
                 </li>
@@ -495,13 +495,13 @@ export default function ContactPage() {
             </div>
 
             {/* Interactive Location Map */}
-            <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 dark:border-white/10 h-72 sm:h-80 relative bg-slate-900">
+            <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/60 dark:shadow-2xl border border-slate-200 dark:border-white/10 h-72 sm:h-80 relative bg-slate-200 dark:bg-slate-900">
               <iframe
                 title="Kingdom of Christ Ministries Location Map"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3804.839846399432!2d78.441865!3d17.514032!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb90325fa12d27%3A0x6ec0c6efb18d2bf4!2sSubhash%20Nagar%20Colony%2C%20Jeedimetla%2C%20Hyderabad%2C%20Telangana%20500055!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
-                style={{ border: 0, filter: "contrast(1.05) brightness(0.95)" }}
+                style={{ border: 0 }}
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
