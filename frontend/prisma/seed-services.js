@@ -44,7 +44,7 @@ const services = [
     occurrence: "Every Wednesday",
     startTime: "18:30",
     endTime: "20:30",
-    location: "KCM Prayer Hall",
+    location: "Bahadurpally",
     featured: false,
     displayOrder: 2,
     status: "PUBLISHED",
