@@ -8,8 +8,8 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import { ALL_NGO_IMAGES } from "@/lib/ngoImages";
 
-// Cap to 10 images per row — 20 total per row when doubled for seamless loop (60 total DOM nodes instead of 180)
-const MAX_PER_ROW = 10;
+// Optimized to 6 images per row (12 total per row when looped) for buttery-smooth 60fps scrolling and rapid loading
+const MAX_PER_ROW = 6;
 
 // Memoized Gallery Image Card
 const NgoImageCard = memo(function NgoImageCard({
@@ -22,15 +22,16 @@ const NgoImageCard = memo(function NgoImageCard({
   badgeText?: string;
 }) {
   return (
-    <div className="ngo-img-card w-60 sm:w-72 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0 transform-gpu">
+    <div className="ngo-img-card w-56 sm:w-64 aspect-[4/3] relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md bg-slate-900 flex-shrink-0 transform-gpu">
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 320px"
+        sizes="(max-width: 640px) 220px, 260px"
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
-        quality={60}
+        decoding="async"
+        quality={50}
       />
       {badgeText && (
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-red-500/90 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 group-hover:opacity-100">

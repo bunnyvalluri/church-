@@ -21,6 +21,8 @@ import {
 } from "@/lib/server/cms";
 import { getLatestSermons } from "@/app/actions/sermons";
 
+export const revalidate = 60; // 60-second Edge CDN ISR caching for instant sub-30ms load times
+
 const DEFAULT_THUMBNAIL = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80";
 
 function SectionDivider() {
@@ -83,24 +85,36 @@ export default async function Home() {
       <main className="min-h-screen overflow-x-hidden relative">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
 
-        <SectionDivider />
-        <NgoShowcase />
+        <div className="cv-auto">
+          <SectionDivider />
+          <NgoShowcase />
+        </div>
 
-        <SectionDivider />
-        <About initialAboutData={aboutData} initialContactsData={contactsData} initialPastorsData={pastorsData} />
+        <div className="cv-auto">
+          <SectionDivider />
+          <About initialAboutData={aboutData} initialContactsData={contactsData} initialPastorsData={pastorsData} />
+        </div>
 
-        <SectionDivider />
-        <Services initialServices={servicesData} />
+        <div className="cv-auto">
+          <SectionDivider />
+          <Services initialServices={servicesData} />
+        </div>
 
-        <SectionDivider />
-        <Events initialEvents={eventsData} />
+        <div className="cv-auto">
+          <SectionDivider />
+          <Events initialEvents={eventsData} />
+        </div>
 
-        <SectionDivider />
-        <Sermons initialSermons={formattedSermons} />
+        <div className="cv-auto">
+          <SectionDivider />
+          <Sermons initialSermons={formattedSermons} />
+        </div>
 
-        <SectionDivider />
-        <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
-        <Footer />
+        <div className="cv-auto">
+          <SectionDivider />
+          <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
+          <Footer />
+        </div>
       </main>
     </>
   );

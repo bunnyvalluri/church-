@@ -1,17 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Noto_Sans_Telugu, Noto_Sans_Devanagari } from "next/font/google";
 import "@/app/globals.css";
+import dynamic from "next/dynamic";
 import { Providers } from "@/components/providers/index";
-import AIChat from "@/components/ai/AIChat";
-import SmoothScroll from "@/components/ui/SmoothScroll";
 import BackToTop from "@/components/ui/BackToTop";
 import SkipToContent from "@/components/ui/SkipToContent";
-import OfflineBanner from "@/components/ui/OfflineBanner";
-import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
-import ConflictDialog from "@/components/offline/ConflictDialog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { churchSchema, websiteSchema } from "@/lib/schema";
 import { SITE_URL } from "@/lib/seo";
+
+// Dynamically imported heavy client widgets (loaded after initial paint for fast TTFB & FCP)
+const AIChat = dynamic(() => import("@/components/ai/AIChat"), { ssr: false });
+const SmoothScroll = dynamic(() => import("@/components/ui/SmoothScroll"), { ssr: false });
+const OfflineBanner = dynamic(() => import("@/components/ui/OfflineBanner"), { ssr: false });
+const ServiceWorkerProvider = dynamic(() => import("@/components/providers/ServiceWorkerProvider"), { ssr: false });
+const ConflictDialog = dynamic(() => import("@/components/offline/ConflictDialog"), { ssr: false });
 
 const inter = Inter({
   subsets: ["latin"],

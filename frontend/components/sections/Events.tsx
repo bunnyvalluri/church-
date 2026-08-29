@@ -167,8 +167,12 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
       fetchEvents();
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, { transports: ["websocket", "polling"] });
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+    if (!socketUrl || socketUrl.includes("localhost")) {
+      return;
+    }
+
+    const socket = io(socketUrl, { transports: ["websocket"], timeout: 3000, reconnectionAttempts: 2 });
 
     // Auto update landing page on modifications
     socket.on("event.created", () => fetchEvents());

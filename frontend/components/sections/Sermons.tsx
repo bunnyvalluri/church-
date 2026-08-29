@@ -68,8 +68,12 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
       fetchSermonsFromDatabase();
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, { transports: ["websocket", "polling"] });
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+    if (!socketUrl || socketUrl.includes("localhost")) {
+      return;
+    }
+
+    const socket = io(socketUrl, { transports: ["websocket"], timeout: 3000, reconnectionAttempts: 2 });
 
     socket.on("sermon:uploaded", (data) => {
       console.log("[LANDING/SERMONS] Auto-refreshing sermon section due to live upload...", data);
