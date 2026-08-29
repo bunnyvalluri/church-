@@ -605,7 +605,7 @@ export default function OpenClawOrchestratorView() {
                   </label>
                   <button
                     onClick={() => setInputJson(JSON.stringify(DEFAULT_SAMPLE_INPUTS[activeSkill.id] || {}, null, 2))}
-                    className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                    className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1 transition-colors"
                   >
                     <RefreshCw className="w-3 h-3" /> {labels.resetSample}
                   </button>
@@ -615,7 +615,7 @@ export default function OpenClawOrchestratorView() {
                   value={inputJson}
                   onChange={e => setInputJson(e.target.value)}
                   rows={7}
-                  className="w-full bg-slate-900 text-emerald-400 font-mono text-xs p-3.5 rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner scrollbar-thin"
+                  className="w-full bg-slate-50/90 dark:bg-[#0A0C1A] text-slate-800 dark:text-emerald-400 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-[#0A0C1A] shadow-inner transition-all scrollbar-thin"
                 />
               </div>
 
@@ -627,25 +627,25 @@ export default function OpenClawOrchestratorView() {
                 </label>
 
                 {executionResult ? (
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-3 shadow-inner">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                  <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-4 font-mono text-xs space-y-3 shadow-sm dark:shadow-inner">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-2.5">
                       <div className="flex items-center gap-2">
                         {executionResult.success ? (
-                          <span className="flex items-center gap-1 text-emerald-400 font-extrabold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">
-                            <CheckCircle2 className="w-3 h-3" /> {labels.statusSuccess}
+                          <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-extrabold bg-emerald-100 dark:bg-emerald-950/80 px-2.5 py-0.5 rounded-lg border border-emerald-300 dark:border-emerald-500/30 text-xs">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> {labels.statusSuccess}
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-rose-400 font-extrabold bg-rose-950/80 px-2 py-0.5 rounded border border-rose-500/30">
-                            <AlertTriangle className="w-3 h-3" /> {labels.statusFailed}
+                          <span className="flex items-center gap-1 text-rose-700 dark:text-rose-400 font-extrabold bg-rose-100 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-lg border border-rose-300 dark:border-rose-500/30 text-xs">
+                            <AlertTriangle className="w-3.5 h-3.5" /> {labels.statusFailed}
                           </span>
                         )}
-                        <span className="text-slate-300 font-semibold">Domain: {executionResult.domain}</span>
+                        <span className="text-slate-700 dark:text-slate-300 font-bold text-xs">Domain: {executionResult.domain}</span>
                       </div>
 
                       {executionResult.telemetry && (
-                        <div className="flex items-center gap-2.5 text-[11px] text-slate-400">
-                          <span className="flex items-center gap-1 font-semibold text-indigo-300">
-                            <Clock className="w-3 h-3 text-indigo-400" />
+                        <div className="flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                          <span className="flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-300">
+                            <Clock className="w-3.5 h-3.5 text-indigo-500" />
                             {executionResult.telemetry.durationMs} ms
                           </span>
                           <span>•</span>
@@ -654,12 +654,12 @@ export default function OpenClawOrchestratorView() {
                       )}
                     </div>
 
-                    <pre className="text-emerald-300 overflow-x-auto max-h-64 scrollbar-thin leading-relaxed">
+                    <pre className="text-slate-800 dark:text-emerald-300 overflow-x-auto max-h-64 scrollbar-thin leading-relaxed p-3 bg-white dark:bg-black/50 rounded-lg border border-slate-200/90 dark:border-white/5 font-mono text-xs">
                       {JSON.stringify(executionResult, null, 2)}
                     </pre>
                   </div>
                 ) : (
-                  <div className="bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-300 dark:border-white/10 rounded-xl p-6 text-center text-slate-500 text-xs">
+                  <div className="bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-300 dark:border-white/10 rounded-xl p-6 text-center text-slate-500 dark:text-slate-400 text-xs">
                     {labels.clickToExecute}
                   </div>
                 )}
@@ -667,21 +667,21 @@ export default function OpenClawOrchestratorView() {
 
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500">
+            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500 dark:text-slate-400">
               Select a skill from the left list to open the execution panel.
             </div>
           )}
 
           {/* Pipeline Logs */}
           {pipelineLogs.length > 0 && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2 text-slate-100 shadow-lg">
-              <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <Server className="w-4 h-4 text-purple-400" />
+            <div className="bg-white dark:bg-[#121428] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 space-y-2.5 text-slate-900 dark:text-slate-100 shadow-sm">
+              <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                <Server className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 {labels.pipelineLogsTitle}
               </h3>
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 font-mono text-xs space-y-1 max-h-40 overflow-y-auto">
+              <div className="bg-slate-50 dark:bg-[#0A0C1A] border border-slate-200 dark:border-white/10 rounded-xl p-3.5 font-mono text-xs space-y-1.5 max-h-48 overflow-y-auto">
                 {pipelineLogs.map((log, idx) => (
-                  <div key={idx} className="text-slate-200">
+                  <div key={idx} className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
                     {log}
                   </div>
                 ))}
