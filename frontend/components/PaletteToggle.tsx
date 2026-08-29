@@ -116,12 +116,12 @@ export default function PaletteToggle({ showPreferences = false }: PaletteToggle
         <>
           {/* Glassmorphic Backdrop */}
           <div
-            className="fixed inset-0 z-[9990] bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200"
+            className="fixed inset-0 z-[999990] bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Modal Container */}
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[92vw] max-w-md rounded-3xl bg-white dark:bg-[#12132A] border border-slate-200 dark:border-white/10 shadow-2xl shadow-purple-500/10 p-5 sm:p-6 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[999999] w-[92vw] max-w-md rounded-3xl bg-white dark:bg-[#12132A] border border-slate-200 dark:border-white/10 shadow-2xl shadow-purple-500/10 p-5 sm:p-6 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             {/* Header */}
             <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-slate-100 dark:border-white/10 shrink-0">
