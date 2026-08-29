@@ -23,10 +23,12 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)"],
-        heading: ["var(--font-outfit)"],
-        outfit: ["var(--font-outfit)"],
-        inter: ["var(--font-inter)"],
+        sans: ["var(--font-inter)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
+        heading: ["var(--font-outfit)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
+        outfit: ["var(--font-outfit)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
+        inter: ["var(--font-inter)", "Noto Sans Telugu", "Noto Sans Devanagari", "Noto Sans", "sans-serif"],
+        telugu: ["'Noto Sans Telugu'", "sans-serif"],
+        hindi: ["'Noto Sans Devanagari'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

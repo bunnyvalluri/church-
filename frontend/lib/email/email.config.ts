@@ -6,6 +6,27 @@
  */
 
 export const emailConfig = {
+  environment: {
+    nodeEnv: process.env.NODE_ENV || 'development',
+    appEnv: process.env.APP_ENV || process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
+    get isProduction(): boolean {
+      return (
+        process.env.NODE_ENV === 'production' ||
+        process.env.VERCEL_ENV === 'production' ||
+        process.env.APP_ENV === 'production'
+      );
+    },
+    get isStaging(): boolean {
+      return (
+        process.env.VERCEL_ENV === 'preview' ||
+        process.env.APP_ENV === 'staging'
+      );
+    },
+    get isDevelopment(): boolean {
+      return !this.isProduction && !this.isStaging;
+    },
+  },
+
   church: {
     name: process.env.NEXT_PUBLIC_CHURCH_NAME || 'Kingdom of Christ Ministries',
     tagline: 'Faith • Love • Service • Community',

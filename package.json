@@ -13,6 +13,7 @@
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
     "typecheck": "npm run typecheck -w frontend",
+    "i18n:check": "npm run i18n:check -w frontend",
     "test": "npm run test -w frontend",
     "test:e2e": "npm run test:e2e -w frontend",
     "test:health": "npm run test:health -w frontend",

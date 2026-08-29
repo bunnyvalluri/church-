@@ -15,7 +15,9 @@ import {
   RenderedEmail,
 } from './email.types';
 import { emailConfig } from './email.config';
-import { renderMasterEmailHtml, htmlToPlainText } from './email.renderer';
+import { renderMasterEmailHtml, htmlToPlainText, escapeHtml } from './email.renderer';
+
+export { escapeHtml };
 
 function resolveFirstName(data: { firstName?: string; fullName?: string; email: string }): string {
   if (data.firstName && data.firstName.trim().length > 0) {
@@ -86,7 +88,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         },
         calloutBox: {
           type: 'note',
-          message: `If you did not create this account, please contact our support team immediately at <a href="mailto:${church.supportEmail}" style="color:#7c3aed;font-weight:600;text-decoration:none;">${church.supportEmail}</a>.`,
+          message: `If you did not create this account, please contact our support team immediately at <a href="mailto:${escapeHtml(church.supportEmail)}" style="color:#7c3aed;font-weight:600;text-decoration:none;">${escapeHtml(church.supportEmail)}</a>.`,
         },
         closingText: 'May God bless you and your family.',
         showUnsubscribe: false,
@@ -126,7 +128,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         },
         calloutBox: {
           type: 'note',
-          message: `This verification link will expire after <strong>${expTime}</strong>.<br/>If you did not create this account, you can safely ignore this email.`,
+          message: `This verification link will expire after <strong>${escapeHtml(expTime)}</strong>.<br/>If you did not create this account, you can safely ignore this email.`,
         },
         showUnsubscribe: false,
       });
@@ -165,7 +167,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         },
         calloutBox: {
           type: 'alert',
-          message: `This link will expire after <strong>${expTime}</strong>.<br/>If you did not request a password reset, no action is required. Your account remains secure.`,
+          message: `This link will expire after <strong>${escapeHtml(expTime)}</strong>.<br/>If you did not request a password reset, no action is required. Your account remains secure.`,
         },
         showUnsubscribe: false,
       });
@@ -179,7 +181,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
     case 'LOGIN_ALERT': {
       const d = data as TemplateDataMap['LOGIN_ALERT'];
       const subject = `New Sign-In to Your Kingdom of Christ Ministries Account`;
-      const previewText = `Security alert for your KCM account.`;
+      const previewText = `Security Notice: Successful sign-in to your Kingdom of Christ Ministries account.`;
 
       const bodyHtml = `
         <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: #334155;">
@@ -188,19 +190,20 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows: Array<{ label: string; value: string; isBold?: boolean; isMono?: boolean; color?: string }> = [
-        { label: 'Account', value: d.email },
-        { label: 'Sign-in Method', value: d.loginMethod || 'Google Sign-In' },
-        { label: 'Date & Time', value: d.loginDateTime || new Date().toUTCString() },
+        { label: 'Account', value: escapeHtml(d.email) },
+        { label: 'Sign-In Method', value: escapeHtml(d.loginMethod || 'Google Sign-In') },
+        { label: 'Date & Time', value: escapeHtml(d.loginDateTime || new Date().toUTCString()) },
       ];
 
-      if (d.device || d.browser) {
-        rows.push({ label: 'Device / Browser', value: [d.device, d.browser].filter(Boolean).join(' • ') });
+      const deviceStr = [d.device, d.browser].filter(Boolean).join(' • ');
+      if (deviceStr) {
+        rows.push({ label: 'Device / Browser', value: escapeHtml(deviceStr) });
       }
       if (d.ipAddress) {
-        rows.push({ label: 'IP Address', value: d.ipAddress, isMono: true });
+        rows.push({ label: 'IP Address', value: escapeHtml(d.ipAddress), isMono: true });
       }
       if (d.approxLocation) {
-        rows.push({ label: 'Approx. Location', value: d.approxLocation });
+        rows.push({ label: 'Location', value: escapeHtml(d.approxLocation) });
       }
 
       const html = renderMasterEmailHtml({
@@ -214,13 +217,13 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
           title: 'Sign-In Details',
           rows,
         },
+        calloutBox: {
+          type: 'alert',
+          message: `If this was you, no action is required.<br/>If you do not recognize this activity, secure your account immediately and contact Kingdom of Christ Ministries at <a href="mailto:${escapeHtml(church.supportEmail)}" style="color:#b45309;font-weight:600;text-decoration:none;">${escapeHtml(church.supportEmail)}</a>.`,
+        },
         ctaButton: {
           label: 'Open Member Portal',
           url: d.reviewActivityUrl || church.portalUrl,
-        },
-        calloutBox: {
-          type: 'alert',
-          message: `If this was you, no action is needed.<br/>If you did not perform this sign-in, please change your password immediately and contact church administration at <a href="mailto:${church.supportEmail}" style="color:#b45309;font-weight:600;">${church.supportEmail}</a>.`,
         },
       });
 
@@ -240,11 +243,11 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
           We are pleased to invite you to:
         </p>
         <p style="margin: 0 0 20px; font-size: 18px; font-weight: 700; color: #7c3aed;">
-          ${d.eventName}
+          ${escapeHtml(d.eventName)}
         </p>
         ${
           d.eventDescription
-            ? `<p style="margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #475569;">${d.eventDescription}</p>`
+            ? `<p style="margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #475569;">${escapeHtml(d.eventDescription)}</p>`
             : ''
         }
         <p style="margin: 0 0 10px; font-size: 14px; color: #334155;">
@@ -253,10 +256,10 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Date', value: d.eventDate, isBold: true },
-        ...(d.eventTime ? [{ label: 'Time', value: d.eventTime }] : []),
-        { label: 'Location', value: d.eventLocation },
-        ...(d.branchName ? [{ label: 'Branch', value: d.branchName }] : []),
+        { label: 'Date', value: escapeHtml(d.eventDate), isBold: true },
+        ...(d.eventTime ? [{ label: 'Time', value: escapeHtml(d.eventTime) }] : []),
+        { label: 'Location', value: escapeHtml(d.eventLocation) },
+        ...(d.branchName ? [{ label: 'Branch', value: escapeHtml(d.branchName) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -290,15 +293,15 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: #334155;">
-          Please note that details for the upcoming event <strong>${d.eventName}</strong> have been updated.
+          Please note that details for the upcoming event <strong>${escapeHtml(d.eventName)}</strong> have been updated.
         </p>
       `;
 
       const rows = [
-        { label: 'Event', value: d.eventName, isBold: true },
-        { label: 'Date', value: d.eventDate },
-        ...(d.eventTime ? [{ label: 'Time', value: d.eventTime }] : []),
-        { label: 'Location', value: d.eventLocation },
+        { label: 'Event', value: escapeHtml(d.eventName), isBold: true },
+        { label: 'Date', value: escapeHtml(d.eventDate) },
+        ...(d.eventTime ? [{ label: 'Time', value: escapeHtml(d.eventTime) }] : []),
+        { label: 'Location', value: escapeHtml(d.eventLocation) },
       ];
 
       const html = renderMasterEmailHtml({
@@ -310,7 +313,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         bodyHtml,
         calloutBox: {
           type: 'note',
-          message: `<strong>Update Notice:</strong> ${d.updateSummary}`,
+          message: `<strong>Update Notice:</strong> ${escapeHtml(d.updateSummary)}`,
         },
         dataBox: {
           title: 'Updated Event Details',
@@ -335,7 +338,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: #334155;">
-          This is a friendly reminder that <strong>${d.eventName}</strong> will take place on <strong>${d.eventDate}</strong>.
+          This is a friendly reminder that <strong>${escapeHtml(d.eventName)}</strong> will take place on <strong>${escapeHtml(d.eventDate)}</strong>.
         </p>
         <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.65; color: #475569;">
           We are preparing a blessed time of fellowship and worship, and we look forward to having you with us.
@@ -343,10 +346,10 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Event', value: d.eventName, isBold: true },
-        { label: 'Date', value: d.eventDate },
-        ...(d.eventTime ? [{ label: 'Time', value: d.eventTime }] : []),
-        { label: 'Location', value: d.eventLocation },
+        { label: 'Event', value: escapeHtml(d.eventName), isBold: true },
+        { label: 'Date', value: escapeHtml(d.eventDate) },
+        ...(d.eventTime ? [{ label: 'Time', value: escapeHtml(d.eventTime) }] : []),
+        { label: 'Location', value: escapeHtml(d.eventLocation) },
       ];
 
       const html = renderMasterEmailHtml({
@@ -385,7 +388,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: #334155;">
-          We regret to inform you that <strong>${d.eventName}</strong> originally scheduled for <strong>${d.eventDate}</strong> has been cancelled.
+          We regret to inform you that <strong>${escapeHtml(d.eventName)}</strong> originally scheduled for <strong>${escapeHtml(d.eventDate)}</strong> has been cancelled.
         </p>
         <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.65; color: #64748b;">
           We sincerely apologize for any inconvenience this may cause. Please check our website calendar for other upcoming worship services and gatherings.
@@ -402,7 +405,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         calloutBox: d.cancellationReason
           ? {
               type: 'note',
-              message: `<strong>Reason for cancellation:</strong> ${d.cancellationReason}`,
+              message: `<strong>Reason for cancellation:</strong> ${escapeHtml(d.cancellationReason)}`,
             }
           : undefined,
         ctaButton: {
@@ -435,10 +438,10 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Prayer Request ID', value: d.prayerRequestId, isBold: true, isMono: true },
-        ...(d.title ? [{ label: 'Title', value: d.title }] : []),
-        ...(d.category ? [{ label: 'Category', value: d.category }] : []),
-        ...(d.submittedAt ? [{ label: 'Submitted Date', value: d.submittedAt }] : []),
+        { label: 'Prayer Request ID', value: escapeHtml(d.prayerRequestId), isBold: true, isMono: true },
+        ...(d.title ? [{ label: 'Title', value: escapeHtml(d.title) }] : []),
+        ...(d.category ? [{ label: 'Category', value: escapeHtml(d.category) }] : []),
+        ...(d.submittedAt ? [{ label: 'Submitted Date', value: escapeHtml(d.submittedAt) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -477,9 +480,9 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Prayer Request ID', value: d.prayerRequestId, isMono: true },
-        ...(d.title ? [{ label: 'Title', value: d.title }] : []),
-        { label: 'Current Status', value: d.status, isBold: true, color: '#059669' },
+        { label: 'Prayer Request ID', value: escapeHtml(d.prayerRequestId), isMono: true },
+        ...(d.title ? [{ label: 'Title', value: escapeHtml(d.title) }] : []),
+        { label: 'Current Status', value: escapeHtml(d.status), isBold: true, color: '#059669' },
       ];
 
       const html = renderMasterEmailHtml({
@@ -496,7 +499,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         calloutBox: d.pastoralNote
           ? {
               type: 'note',
-              message: `<strong>Pastoral Note:</strong> ${d.pastoralNote}`,
+              message: `<strong>Pastoral Note:</strong> ${escapeHtml(d.pastoralNote)}`,
             }
           : undefined,
         ctaButton: {
@@ -527,11 +530,11 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Donation Amount', value: d.donationAmount, isBold: true, color: '#059669' },
-        { label: 'Transaction ID', value: d.transactionId, isMono: true },
-        { label: 'Date', value: d.date },
-        ...(d.purpose ? [{ label: 'Cause / Purpose', value: d.purpose }] : []),
-        ...(d.paymentMethod ? [{ label: 'Payment Method', value: d.paymentMethod }] : []),
+        { label: 'Donation Amount', value: escapeHtml(d.donationAmount), isBold: true, color: '#059669' },
+        { label: 'Transaction ID', value: escapeHtml(d.transactionId), isMono: true },
+        { label: 'Date', value: escapeHtml(d.date) },
+        ...(d.purpose ? [{ label: 'Cause / Purpose', value: escapeHtml(d.purpose) }] : []),
+        ...(d.paymentMethod ? [{ label: 'Payment Method', value: escapeHtml(d.paymentMethod) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -570,12 +573,12 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Receipt Number', value: d.receiptNumber, isBold: true, isMono: true, color: '#7c3aed' },
-        { label: 'Amount', value: d.donationAmount, isBold: true, color: '#059669' },
-        { label: 'Donation Cause', value: d.purpose },
-        { label: 'Date', value: d.date },
-        { label: 'Verification Code', value: d.verificationCode, isMono: true },
-        ...(d.utr ? [{ label: 'Bank Ref / UTR', value: d.utr, isMono: true }] : []),
+        { label: 'Receipt Number', value: escapeHtml(d.receiptNumber), isBold: true, isMono: true, color: '#7c3aed' },
+        { label: 'Amount', value: escapeHtml(d.donationAmount), isBold: true, color: '#059669' },
+        { label: 'Donation Cause', value: escapeHtml(d.purpose) },
+        { label: 'Date', value: escapeHtml(d.date) },
+        { label: 'Verification Code', value: escapeHtml(d.verificationCode), isMono: true },
+        ...(d.utr ? [{ label: 'Bank Ref / UTR', value: escapeHtml(d.utr), isMono: true }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -583,7 +586,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         previewText,
         badgeText: 'Official Receipt',
         badgeType: 'success',
-        greeting: `Dear ${d.donorName || firstName},`,
+        greeting: `Dear ${escapeHtml(d.donorName || firstName)},`,
         bodyHtml,
         dataBox: {
           title: 'Official Receipt Summary',
@@ -621,7 +624,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
           Thank you for offering your heart and hands to serve with Kingdom of Christ Ministries.
         </p>
         <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.65; color: #475569;">
-          We have received your volunteer application for the <strong>${d.ministry}</strong> team.
+          We have received your volunteer application for the <strong>${escapeHtml(d.ministry)}</strong> team.
         </p>
         <p style="margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #64748b;">
           Our ministry leadership will review your application and connect with you regarding team orientation and service opportunities.
@@ -629,8 +632,8 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Ministry Department', value: d.ministry, isBold: true },
-        ...(d.appliedAt ? [{ label: 'Application Date', value: d.appliedAt }] : []),
+        { label: 'Ministry Department', value: escapeHtml(d.ministry), isBold: true },
+        ...(d.appliedAt ? [{ label: 'Application Date', value: escapeHtml(d.appliedAt) }] : []),
         { label: 'Current Status', value: 'Under Review', isBold: true, color: '#b45309' },
       ];
 
@@ -665,7 +668,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.65; color: #334155;">
-          Praise God! We are thrilled to inform you that your volunteer application for the <strong>${d.ministry}</strong> team has been approved.
+          Praise God! We are thrilled to inform you that your volunteer application for the <strong>${escapeHtml(d.ministry)}</strong> team has been approved.
         </p>
         <p style="margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #475569;">
           We are excited to serve the Lord alongside you. You can now access volunteer resources and schedules via the member portal.
@@ -673,10 +676,10 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        { label: 'Ministry', value: d.ministry, isBold: true },
-        ...(d.coordinatorName ? [{ label: 'Coordinator', value: d.coordinatorName }] : []),
-        ...(d.coordinatorContact ? [{ label: 'Contact', value: d.coordinatorContact }] : []),
-        ...(d.orientationDate ? [{ label: 'Orientation', value: d.orientationDate }] : []),
+        { label: 'Ministry', value: escapeHtml(d.ministry), isBold: true },
+        ...(d.coordinatorName ? [{ label: 'Coordinator', value: escapeHtml(d.coordinatorName) }] : []),
+        ...(d.coordinatorContact ? [{ label: 'Contact', value: escapeHtml(d.coordinatorContact) }] : []),
+        ...(d.orientationDate ? [{ label: 'Orientation', value: escapeHtml(d.orientationDate) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -718,8 +721,8 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        ...(d.applicationId ? [{ label: 'Application ID', value: d.applicationId, isMono: true }] : []),
-        ...(d.appliedAt ? [{ label: 'Submitted Date', value: d.appliedAt }] : []),
+        ...(d.applicationId ? [{ label: 'Application ID', value: escapeHtml(d.applicationId), isMono: true }] : []),
+        ...(d.appliedAt ? [{ label: 'Submitted Date', value: escapeHtml(d.appliedAt) }] : []),
         { label: 'Status', value: 'Under Pastoral Review', isBold: true, color: '#b45309' },
       ];
 
@@ -762,8 +765,8 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
       `;
 
       const rows = [
-        ...(d.memberId ? [{ label: 'Member ID', value: d.memberId, isBold: true, isMono: true }] : []),
-        ...(d.approvalDate ? [{ label: 'Confirmed On', value: d.approvalDate }] : []),
+        ...(d.memberId ? [{ label: 'Member ID', value: escapeHtml(d.memberId), isBold: true, isMono: true }] : []),
+        ...(d.approvalDate ? [{ label: 'Confirmed On', value: escapeHtml(d.approvalDate) }] : []),
         { label: 'Status', value: 'Active Member', isBold: true, color: '#059669' },
       ];
 
@@ -801,14 +804,14 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
           A new sermon message is now available to watch and listen on our website portal.
         </p>
         <p style="margin: 0 0 18px; font-size: 17px; font-weight: 700; color: #7c3aed;">
-          ${d.sermonTitle}
+          ${escapeHtml(d.sermonTitle)}
         </p>
       `;
 
       const rows = [
-        ...(d.preacher ? [{ label: 'Preacher / Speaker', value: d.preacher, isBold: true }] : []),
-        ...(d.series ? [{ label: 'Sermon Series', value: d.series }] : []),
-        ...(d.date ? [{ label: 'Delivered On', value: d.date }] : []),
+        ...(d.preacher ? [{ label: 'Preacher / Speaker', value: escapeHtml(d.preacher), isBold: true }] : []),
+        ...(d.series ? [{ label: 'Sermon Series', value: escapeHtml(d.series) }] : []),
+        ...(d.date ? [{ label: 'Delivered On', value: escapeHtml(d.date) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -825,7 +828,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         calloutBox: d.keyVerse
           ? {
               type: 'note',
-              message: `<strong>Key Scripture:</strong> <em>"${d.keyVerse}"</em>`,
+              message: `<strong>Key Scripture:</strong> <em>"${escapeHtml(d.keyVerse)}"</em>`,
             }
           : undefined,
         ctaButton: {
@@ -848,7 +851,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 14px; font-size: 16px; font-weight: 700; color: #0f172a;">
-          ${d.announcementTitle}
+          ${escapeHtml(d.announcementTitle)}
         </p>
         <div style="font-size: 14px; line-height: 1.7; color: #475569; margin-bottom: 18px;">
           ${d.announcementBody}
@@ -884,7 +887,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
 
       const bodyHtml = `
         <p style="margin: 0 0 14px; font-size: 16px; font-weight: 700; color: #0f172a;">
-          ${d.notificationTitle}
+          ${escapeHtml(d.notificationTitle)}
         </p>
         <div style="font-size: 14px; line-height: 1.7; color: #475569; margin-bottom: 18px;">
           ${d.notificationBody}
@@ -922,16 +925,16 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
           We detected an important security-sensitive action on your Kingdom of Christ Ministries member account:
         </p>
         <p style="margin: 0 0 18px; font-size: 16px; font-weight: 700; color: #b45309;">
-          ${d.securityAction}
+          ${escapeHtml(d.securityAction)}
         </p>
       `;
 
       const rows = [
-        { label: 'Security Event', value: d.securityAction, isBold: true },
-        { label: 'Date & Time', value: d.dateTime || new Date().toUTCString() },
-        ...(d.device ? [{ label: 'Device / Browser', value: d.device }] : []),
-        ...(d.ipAddress ? [{ label: 'IP Address', value: d.ipAddress, isMono: true }] : []),
-        ...(d.approxLocation ? [{ label: 'Approx. Location', value: d.approxLocation }] : []),
+        { label: 'Security Event', value: escapeHtml(d.securityAction), isBold: true },
+        { label: 'Date & Time', value: escapeHtml(d.dateTime || new Date().toUTCString()) },
+        ...(d.device ? [{ label: 'Device / Browser', value: escapeHtml(d.device) }] : []),
+        ...(d.ipAddress ? [{ label: 'IP Address', value: escapeHtml(d.ipAddress), isMono: true }] : []),
+        ...(d.approxLocation ? [{ label: 'Approx. Location', value: escapeHtml(d.approxLocation) }] : []),
       ];
 
       const html = renderMasterEmailHtml({
@@ -947,7 +950,7 @@ export function renderEmailTemplate<T extends EmailTemplateType>(
         },
         calloutBox: {
           type: 'alert',
-          message: `If you performed this action, no further steps are needed.<br/><strong>If you did NOT perform this action:</strong> Please change your password immediately and contact church support at <a href="mailto:${church.supportEmail}" style="color:#b45309;font-weight:600;">${church.supportEmail}</a>.`,
+          message: `If you performed this action, no further steps are needed.<br/><strong>If you did NOT perform this action:</strong> Please change your password immediately and contact church support at <a href="mailto:${escapeHtml(church.supportEmail)}" style="color:#b45309;font-weight:600;">${escapeHtml(church.supportEmail)}</a>.`,
         },
         ctaButton: {
           label: 'Secure My Account',

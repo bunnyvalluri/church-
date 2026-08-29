@@ -9,14 +9,24 @@ import {
   useMemo,
   ReactNode,
 } from "react";
-import { translations } from "@/lib/translations";
+import {
+  translations,
+  Language,
+  SUPPORTED_LANGUAGES,
+  DEFAULT_LANGUAGE,
+  LOCALE_MAP,
+  detectUserLanguage,
+  persistLanguage,
+  applyDocumentLanguage,
+  resolveKeyPath,
+} from "@/i18n";
 
-export type Language = "en" | "te" | "hi";
+export type { Language };
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: typeof translations.en;
+  t: typeof translations.en & Record<string, any>;
   translate: (keyPath: string, defaultText?: string) => string;
   formatDate: (date: Date | string | number, options?: Intl.DateTimeFormatOptions) => string;
   formatCurrency: (amount: number, currency?: string) => string;
@@ -28,66 +38,24 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const LOCALE_MAP: Record<Language, string> = {
-  en: "en-IN",
-  te: "te-IN",
-  hi: "hi-IN",
-};
-
-/**
- * Safely resolves a dot-notation key path on a nested object with English fallback.
- */
-function resolveKeyPath(obj: any, path: string): string | undefined {
-  if (!obj || !path) return undefined;
-  const parts = path.split(".");
-  let current = obj;
-  for (const part of parts) {
-    if (current === undefined || current === null || typeof current !== "object") {
-      return undefined;
-    }
-    current = current[part];
-  }
-  return typeof current === "string" ? current : undefined;
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
   const [mounted, setMounted] = useState(false);
 
-  // Initialize language from localStorage, cookies, or browser preferences
+  // Initialize language from localStorage / cookies / browser detection on client mount
   useEffect(() => {
     setMounted(true);
-    let initialLang: Language = "en";
-
-    try {
-      const saved = localStorage.getItem("language") as Language;
-      if (saved && (saved === "en" || saved === "te" || saved === "hi")) {
-        initialLang = saved;
-      } else if (typeof document !== "undefined") {
-        // Fallback to cookie
-        const match = document.cookie.match(/kcm-lang=([a-z]{2})/i);
-        if (match && (match[1] === "en" || match[1] === "te" || match[1] === "hi")) {
-          initialLang = match[1] as Language;
-        } else if (typeof navigator !== "undefined" && navigator.language) {
-          // Browser language detection
-          const browserLang = navigator.language.toLowerCase();
-          if (browserLang.startsWith("te")) initialLang = "te";
-          else if (browserLang.startsWith("hi")) initialLang = "hi";
-        }
-      }
-    } catch {
-      initialLang = "en";
-    }
-
+    const initialLang = detectUserLanguage();
     setLanguage(initialLang);
-    if (typeof document !== "undefined") {
-      document.documentElement.lang = initialLang;
-    }
+    applyDocumentLanguage(initialLang);
 
-    // Listen for custom event across tabs or subcomponents
+    // Listen for custom language change event across tabs / window
     const handleCustomEvent = (e: Event) => {
       const customEvent = e as CustomEvent<Language>;
-      if (customEvent.detail && (customEvent.detail === "en" || customEvent.detail === "te" || customEvent.detail === "hi")) {
+      if (
+        customEvent.detail &&
+        SUPPORTED_LANGUAGES.includes(customEvent.detail)
+      ) {
         setLanguage(customEvent.detail);
       }
     };
@@ -96,37 +64,33 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleSetLanguage = useCallback((lang: Language) => {
+    if (!SUPPORTED_LANGUAGES.includes(lang)) return;
     setLanguage(lang);
-    try {
-      localStorage.setItem("language", lang);
-      if (typeof document !== "undefined") {
-        document.documentElement.lang = lang;
-        document.cookie = `kcm-lang=${lang};path=/;max-age=31536000;SameSite=Lax`;
-        window.dispatchEvent(new CustomEvent("kcm-language-change", { detail: lang }));
-      }
-    } catch (e) {
-      console.warn("Could not persist language selection:", e);
-    }
+    persistLanguage(lang);
   }, []);
 
-  // Compute active dictionary with deep fallback to English
+  // Compute active dictionary with deep fallback to canonical English
   const activeDictionary = useMemo(() => {
-    const current = translations[mounted ? language : "en"] || translations.en;
+    const current = translations[mounted ? language : DEFAULT_LANGUAGE] || translations.en;
     return current;
   }, [language, mounted]);
 
-  // Dot-notation translation helper with safe English fallback
+  // Dot-notation translation helper with safe English fallback and development logging
   const translate = useCallback(
     (keyPath: string, defaultText?: string): string => {
-      const targetLang = mounted ? language : "en";
+      const targetLang = mounted ? language : DEFAULT_LANGUAGE;
       const currentDict = translations[targetLang] || translations.en;
       const val = resolveKeyPath(currentDict, keyPath);
       if (val !== undefined) return val;
 
-      // Fallback to English dictionary
+      // Fallback to canonical English dictionary
       if (targetLang !== "en") {
         const fallbackVal = resolveKeyPath(translations.en, keyPath);
         if (fallbackVal !== undefined) return fallbackVal;
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[i18n] Missing translation key: "${keyPath}" for locale "${targetLang}"`);
       }
 
       return defaultText || keyPath;
@@ -140,7 +104,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       try {
         const d = typeof dateInput === "object" ? dateInput : new Date(dateInput);
         if (isNaN(d.getTime())) return String(dateInput);
-        const locale = LOCALE_MAP[mounted ? language : "en"] || "en-IN";
+        const locale = LOCALE_MAP[mounted ? language : DEFAULT_LANGUAGE] || "en-IN";
         const defaultOptions: Intl.DateTimeFormatOptions = options || {
           year: "numeric",
           month: "short",
@@ -158,7 +122,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const formatCurrency = useCallback(
     (amount: number, currency: string = "INR"): string => {
       try {
-        const locale = LOCALE_MAP[mounted ? language : "en"] || "en-IN";
+        const locale = LOCALE_MAP[mounted ? language : DEFAULT_LANGUAGE] || "en-IN";
         return new Intl.NumberFormat(locale, {
           style: "currency",
           currency,
@@ -175,7 +139,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const formatNumber = useCallback(
     (num: number): string => {
       try {
-        const locale = LOCALE_MAP[mounted ? language : "en"] || "en-IN";
+        const locale = LOCALE_MAP[mounted ? language : DEFAULT_LANGUAGE] || "en-IN";
         return new Intl.NumberFormat(locale).format(num);
       } catch {
         return num.toLocaleString();
@@ -184,22 +148,23 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     [language, mounted]
   );
 
+  const activeLang = mounted ? language : DEFAULT_LANGUAGE;
+
   const contextValue = useMemo(
     () => ({
-      language: mounted ? language : "en",
+      language: activeLang,
       setLanguage: handleSetLanguage,
       t: activeDictionary,
       translate,
       formatDate,
       formatCurrency,
       formatNumber,
-      isTelugu: (mounted ? language : "en") === "te",
-      isHindi: (mounted ? language : "en") === "hi",
-      isEnglish: (mounted ? language : "en") === "en",
+      isTelugu: activeLang === "te",
+      isHindi: activeLang === "hi",
+      isEnglish: activeLang === "en",
     }),
     [
-      language,
-      mounted,
+      activeLang,
       handleSetLanguage,
       activeDictionary,
       translate,

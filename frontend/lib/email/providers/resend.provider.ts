@@ -1,7 +1,7 @@
 /**
  * frontend/lib/email/providers/resend.provider.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Resend Email Delivery Provider with Smart Sandbox Fallback
+ * Resend Email Delivery Provider with Smart Environment-Aware Fallback
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -58,33 +58,44 @@ export class ResendProvider implements IEmailProvider {
         const errorObj = (response as any).error;
         const errorMsg = errorObj?.message || 'Unknown Resend error';
 
-        // ── Handle Resend Sandbox restriction (when domain is unverified on onboarding@resend.dev)
-        if (
+        const isSandboxError =
           errorObj?.statusCode === 403 ||
           errorMsg.includes('only send testing emails to your own email address') ||
-          errorMsg.includes('testing emails')
-        ) {
+          errorMsg.includes('testing emails') ||
+          errorMsg.includes('validation_error');
+
+        // ── IN PRODUCTION: Never redirect to developer mailbox or add sandbox notices.
+        // Fail so CompositeEmailProvider can immediately fall back to SMTP (Gmail/Custom SMTP).
+        if (emailConfig.environment.isProduction) {
+          logger.warn(
+            `[EMAIL/RESEND] Resend rejected delivery (${errorMsg}). Returning failure for multi-transport failover.`,
+            { originalRecipients: recipients, error: errorMsg }
+          );
+          return {
+            success: false,
+            provider: this.name,
+            error: errorMsg,
+          };
+        }
+
+        // ── IN DEVELOPMENT / STAGING: Safely preview to verified developer mailbox if restricted
+        if (isSandboxError) {
           const fallbackOwner = emailConfig.providers.resend.fallbackOwner;
           logger.warn(
-            `[EMAIL/RESEND] Sandbox restriction encountered for "${recipients.join(
+            `[EMAIL/RESEND] [DEV] Sandbox restriction encountered for "${recipients.join(
               ', '
-            )}". Dispatching to test owner "${fallbackOwner}". To send to any inbox, verify your domain at resend.com/domains.`,
+            )}". Dispatching preview to test owner "${fallbackOwner}".`,
             { originalRecipients: recipients, fallbackOwner }
           );
 
-          // Deliver sandbox preview to test owner
           const sandboxSubject = `[Sandbox Preview for ${recipients.join(', ')}] ${options.subject}`;
-          const sandboxHtml = options.html.replace(
-            '<body style="margin: 0; padding: 0;',
-            `<body style="margin: 0; padding: 0;"><div style="background-color:#fef3c7;color:#92400e;padding:10px 16px;text-align:center;font-size:12px;font-weight:bold;border-bottom:1px solid #fde68a;">⚠️ DEV SANDBOX NOTICE: Intended for ${recipients.join(', ')} — delivered to verified owner mailbox.</div>`
-          );
 
           const fallbackRes = await this.client.emails.send({
             from,
             to: [fallbackOwner],
             replyTo,
             subject: sandboxSubject,
-            html: sandboxHtml,
+            html: options.html,
             text: options.text,
           });
 

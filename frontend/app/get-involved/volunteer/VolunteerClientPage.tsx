@@ -245,7 +245,7 @@ export default function VolunteerClientPage() {
                       </h3>
 
                       <ul className="space-y-2 mb-6">
-                        {opp.areas.map((area, idx) => (
+                        {opp.areas.map((area: string, idx: number) => (
                           <li key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                             <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
                             <span>{area}</span>

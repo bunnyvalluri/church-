@@ -1,5 +1,5 @@
 {
-  "python.terminal.useEnvFile": false,
+  "python.terminal.useEnvFile": true,
   "typescript.tsdk": "frontend/node_modules/typescript/lib",
   "files.associations": {
     ".env*": "properties"

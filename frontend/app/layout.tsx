@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Noto_Sans_Telugu, Noto_Sans_Devanagari } from "next/font/google";
 import "@/app/globals.css";
 import { Providers } from "@/components/providers/index";
 import AIChat from "@/components/ai/AIChat";
@@ -25,6 +25,18 @@ const outfit = Outfit({
   display: "swap",
   preload: true,
   weight: ["400", "600", "700", "800", "900"],
+});
+const notoTelugu = Noto_Sans_Telugu({
+  subsets: ["telugu"],
+  variable: "--font-noto-telugu",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+const notoDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
+  variable: "--font-noto-devanagari",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
@@ -141,7 +153,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://apis.google.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${notoTelugu.variable} ${notoDevanagari.variable} font-sans relative min-h-screen bg-background overflow-x-hidden selection:bg-primary/30 selection:text-primary pt-safe pb-safe pl-safe pr-safe`}>
         {/* Dynamic Premium Ambient Mesh Background (GPU hardware-accelerated, zero scrolling paint overhead) */}
         <div className="premium-glow-bg" />
         <div className="fixed inset-0 z-[-2] bg-white/70 dark:bg-[#05050A]/85 pointer-events-none" />

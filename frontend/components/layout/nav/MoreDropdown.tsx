@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavItem, NavStyles } from "./types";
 import { NAV_STYLES } from "./constants";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface MoreDropdownProps {
   items: NavItem[];
@@ -30,6 +31,9 @@ const MoreDropdown = memo(function MoreDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { t } = useLanguage();
+  const moreLabel = (t.nav as any)?.more || "More";
 
   // Determine if any overflow item is active (to highlight the "More" button)
   const hasActiveOverflow = items.some((item) =>
@@ -74,7 +78,7 @@ const MoreDropdown = memo(function MoreDropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        aria-label="More navigation items"
+        aria-label={`${moreLabel} navigation items`}
         className={cn(
           "apple-liquid-glass-btn relative flex items-center gap-1.5 px-3 py-1.5 rounded-full",
           "text-[12.5px] font-bold whitespace-nowrap select-none overflow-hidden",
@@ -85,7 +89,7 @@ const MoreDropdown = memo(function MoreDropdown({
             : "text-gray-700 dark:text-gray-200 border border-transparent hover:bg-white/60 dark:hover:bg-white/12 hover:scale-[1.03] active:scale-[0.97]"
         )}
       >
-        <span className="relative z-10">More</span>
+        <span className="relative z-10" suppressHydrationWarning>{moreLabel}</span>
         <ChevronDown
           className={cn(
             "w-3.5 h-3.5 relative z-10 transition-transform duration-300 ease-out",
