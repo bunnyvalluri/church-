@@ -1156,54 +1156,29 @@ export default function OurStoryPage() {
           onClick={() => setSelectedDocIndex(null)}
         >
           <div 
-            className="bg-white dark:bg-[#11192e] border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-5xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[94vh] overflow-y-auto animate-scale-in"
+            className="bg-white dark:bg-[#11192e] border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-5xl w-full p-4 sm:p-6 lg:p-8 shadow-2xl relative max-h-[94vh] overflow-y-auto animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Top Header Bar */}
-            <div className="flex items-start justify-between pb-5 border-b border-slate-200 dark:border-slate-800 mb-6">
-              <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 ${selectedDoc.bg} rounded-2xl flex items-center justify-center border border-slate-200/60 dark:border-slate-800 shadow-sm`}>
-                  {(() => {
-                    const Icon = selectedDoc.icon;
-                    return <Icon className={`h-6 w-6 sm:h-7 sm:w-7 ${selectedDoc.color}`} />;
-                  })()}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2.5">
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+            {/* Modal Top Header Bar — fully responsive */}
+            <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
+              {/* Row 1: Icon + Title + Close */}
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 ${selectedDoc.bg} rounded-2xl flex items-center justify-center border border-slate-200/60 dark:border-slate-800 shadow-sm`}>
+                    {(() => {
+                      const Icon = selectedDoc.icon;
+                      return <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${selectedDoc.color}`} />;
+                    })()}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight line-clamp-2">
                       {selectedDoc.title}
                     </h3>
-                    <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${selectedDoc.badgeColor}`}>
-                      {selectedDoc.badge}
-                    </span>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5">
+                      {selectedDoc.subtitle}
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400">
-                    {selectedDoc.subtitle}
-                  </p>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {/* Previous Document Button */}
-                <button
-                  disabled={selectedDocIndex === 0}
-                  onClick={() => setSelectedDocIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
-                  className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-                  title="Previous Document (Left Arrow)"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-
-                {/* Next Document Button */}
-                <button
-                  disabled={selectedDocIndex === officialDocuments.length - 1}
-                  onClick={() => setSelectedDocIndex(prev => (prev !== null && prev < officialDocuments.length - 1 ? prev + 1 : prev))}
-                  className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-                  title="Next Document (Right Arrow)"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedDocIndex(null)}
@@ -1213,14 +1188,45 @@ export default function OurStoryPage() {
                   <X className="h-6 w-6" />
                 </button>
               </div>
+
+              {/* Row 2: Badge + Prev/Next Navigation */}
+              <div className="flex items-center justify-between gap-2 mt-2">
+                <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${selectedDoc.badgeColor} max-w-[55%] line-clamp-1`}>
+                  {selectedDoc.badge}
+                </span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    disabled={selectedDocIndex === 0}
+                    onClick={() => setSelectedDocIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev))}
+                    className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1"
+                    title="Previous Document"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline text-xs font-bold">Prev</span>
+                  </button>
+                  <span className="text-xs text-slate-400 font-mono px-0.5">
+                    {(selectedDocIndex ?? 0) + 1}/{officialDocuments.length}
+                  </span>
+                  <button
+                    disabled={selectedDocIndex === officialDocuments.length - 1}
+                    onClick={() => setSelectedDocIndex(prev => (prev !== null && prev < officialDocuments.length - 1 ? prev + 1 : prev))}
+                    className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1"
+                    title="Next Document"
+                  >
+                    <span className="hidden sm:inline text-xs font-bold">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Modal Body: Two-Column Side-by-Side Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-6">
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
               
               {/* Left Column: Full Document Image Viewer */}
-              <div className="lg:col-span-6 bg-slate-100 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
-                <div className="relative w-full h-[400px] sm:h-[460px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
+              <div className="lg:col-span-6 bg-slate-100 dark:bg-slate-950 rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+                <div className="relative w-full h-[280px] sm:h-[380px] lg:h-[460px] rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
                   <Image
                     src={selectedDoc.image}
                     alt={selectedDoc.title}
@@ -1230,7 +1236,8 @@ export default function OurStoryPage() {
                     priority
                   />
                 </div>
-                <div className="mt-3 flex items-center justify-between w-full px-2">
+                {/* Caption row — stacks on mobile */}
+                <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between w-full px-1 gap-1.5">
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                     Official Certificate Document
                   </span>
@@ -1241,18 +1248,18 @@ export default function OurStoryPage() {
                     className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1.5"
                   >
                     <span>Open High Resolution Image</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                   </a>
                 </div>
               </div>
 
               {/* Right Column: Structured Statutory Credentials Table */}
               <div className="lg:col-span-6 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h4 className="text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
                     Verified Statutory Credentials
                   </h4>
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 shrink-0">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     <span>Govt. Verified</span>
                   </span>
