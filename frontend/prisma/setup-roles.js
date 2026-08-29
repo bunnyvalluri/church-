@@ -16,14 +16,17 @@ async function setupRoles() {
   const roleUpdates = [
     // Super Admin
     { email: 'kingofchristministries23@gmail.com', role: 'SUPER_ADMIN' },
-    { email: 'admin@kcm-church.com', role: 'SUPER_ADMIN', name: 'Admin Leader' },
-    // Admins
+    // Admin
+    { email: 'admin@kcm-church.com', role: 'ADMIN', name: 'Admin Leader' },
     { email: 'accounts@kcm-church.com', role: 'ADMIN' },
     { email: 'secretary@kcm-church.com', role: 'ADMIN' },
     // Pastors
+    { email: 'pastor.david@kcm-church.com', role: 'PASTOR', name: 'Pastor David' },
     { email: 'pastor.kristhuraju@kcm-church.com', role: 'PASTOR' },
     { email: 'pastor.samuel@kcm-church.com', role: 'PASTOR' },
     { email: 'pastor@kcm-church.com', role: 'PASTOR' },
+    // Event Management
+    { email: 'event-management@kcm-church.com', role: 'EVENT_MANAGER', name: 'Event Manager' },
   ];
 
   let updated = 0;

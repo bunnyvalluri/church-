@@ -157,7 +157,7 @@ function scheduleLabel(s: ChurchService): string {
   if (s.startTime) {
     parts.push(formatTime(s.startTime) + (s.endTime ? ` – ${formatTime(s.endTime)}` : ""));
   }
-  return parts.join(" · ");
+  return parts.join(" - ");
 }
 
 // ── Blank form ────────────────────────────────────────────────────────────────────

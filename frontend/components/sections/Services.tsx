@@ -64,7 +64,14 @@ function formatTime(t: string | null | undefined): string {
   return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
 }
 
-function buildScheduleLabel(service: any): string {
+function buildScheduleLabels(service: any): string[] {
+  if (service.occurrence && (service.occurrence.includes("\n") || service.occurrence.includes("|") || service.occurrence.includes(";"))) {
+    return service.occurrence
+      .split(/[\n|;]/)
+      .map((s: string) => s.trim())
+      .filter(Boolean);
+  }
+
   const parts: string[] = [];
   if (service.occurrence) {
     parts.push(service.occurrence);
@@ -76,7 +83,8 @@ function buildScheduleLabel(service: any): string {
     const end = service.endTime ? ` – ${formatTime(service.endTime)}` : "";
     parts.push(`${start}${end}`);
   }
-  return parts.join(" · ") || "See schedule";
+  const single = parts.join(" - ");
+  return single ? [single] : [];
 }
 
 // ── Service type definition ───────────────────────────────────────────────────────
@@ -118,7 +126,7 @@ const ServiceCard = memo(function ServiceCard({
 }) {
   const Icon = getIcon(service.icon);
   const { gradient } = resolveGradient(service.cardColor);
-  const scheduleLabel = buildScheduleLabel(service);
+  const scheduleLabels = buildScheduleLabels(service);
 
   return (
     <motion.div
@@ -176,14 +184,19 @@ const ServiceCard = memo(function ServiceCard({
           {service.title}
         </h3>
 
-        {/* Schedule badge */}
-        {scheduleLabel && (
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold mb-4"
-            style={{ background: gradient }}
-          >
-            <span>🕐</span>
-            {scheduleLabel}
+        {/* Schedule badges */}
+        {scheduleLabels.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {scheduleLabels.map((label, idx) => (
+              <div
+                key={idx}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold"
+                style={{ background: gradient }}
+              >
+                <span>⏰</span>
+                <span>{label.replace(/^⏰\s*/, "")}</span>
+              </div>
+            ))}
           </div>
         )}
 
