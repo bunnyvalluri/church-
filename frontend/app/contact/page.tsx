@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
@@ -18,10 +18,15 @@ import {
   ExternalLink,
   MessageCircle, 
   Clock, 
-  Sparkles,
-  ShieldCheck,
-  Send,
-  ChevronLeft
+  Sparkles, 
+  ShieldCheck, 
+  Send, 
+  ChevronLeft,
+  HeartHandshake,
+  Calendar,
+  Compass,
+  CheckCircle,
+  HelpCircle
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -36,13 +41,19 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [submittedName, setSubmittedName] = useState("");
+
+  const nameId = useId();
+  const emailId = useId();
+  const phoneId = useId();
+  const messageId = useId();
 
   const categories = [
-    "General Inquiry",
-    "Pastoral Prayer",
-    "Counseling",
-    "Ministries & Volunteering",
-    "Donations & Giving"
+    { label: "General Inquiry", desc: "Questions about services, timings, or church info" },
+    { label: "Pastoral Prayer", desc: "Personal prayer support from Bishop & team" },
+    { label: "Counseling", desc: "Spiritual guidance & confidential pastoral meeting" },
+    { label: "Volunteering", desc: "Joining choir, media, ushering, or NGO outreach" },
+    { label: "Donations & Giving", desc: "Tithes, offerings, building fund, or receipts" }
   ];
 
   const handleCopy = (text: string, key: string) => {
@@ -79,6 +90,7 @@ export default function ContactPage() {
         throw new Error(data?.error || "Failed to send message. Please try again.");
       }
 
+      setSubmittedName(formData.name.trim() || "Beloved Friend");
       setStatus("success");
       setFormData({ name: "", email: "", phone: "", category: "General Inquiry", message: "" });
     } catch (err: any) {
@@ -94,27 +106,29 @@ export default function ContactPage() {
     <div className="min-h-screen bg-slate-50/70 dark:bg-[#070814] font-sans antialiased text-slate-900 dark:text-slate-100 selection:bg-[#f95700] selection:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* ── Top Hero Banner (Flawless Light & Dark Palette) ── */}
+      {/* ── Top Hero Banner (Ultra-Polished Light & Dark Theme) ── */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-b from-orange-50/80 via-slate-100/60 to-slate-50 dark:from-[#060710]/95 dark:via-[#0a0c1e]/95 dark:to-[#070814] border-b border-slate-200/80 dark:border-white/5 overflow-hidden transition-colors duration-300">
         
-        {/* Glow Spheres & Meshes */}
+        {/* Glow Spheres & Spatial Grid */}
         <div className="absolute -top-24 right-1/4 w-96 h-96 bg-[#f95700]/10 dark:bg-[#f95700]/15 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-          <div className="flex flex-wrap items-center gap-3 mb-5">
+          
+          {/* Header Action Bar: Back to Home + Live Badge */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-purple-200/80 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-white shadow-sm transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-purple-200/80 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-white shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
             >
               <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:-translate-x-0.5 transition-transform" />
               <span>Back to Home</span>
             </Link>
 
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-[#f95700]" />
-              <span>Kingdom of Christ Ministries • Hyderabad</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Pastoral Office • Shapur Nagar, Hyderabad</span>
             </div>
           </div>
 
@@ -122,8 +136,12 @@ export default function ContactPage() {
             Contact <span className="text-[#f95700] drop-shadow-sm">Us</span>
           </h1>
 
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mt-3 leading-relaxed font-medium">
+            We are here to pray with you, walk alongside your spiritual journey, and welcome you into the fellowship of Christ.
+          </p>
+
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 mt-4 text-sm font-semibold">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 mt-5 text-xs sm:text-sm font-semibold">
             <Link href="/" className="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors">
               Home
             </Link>
@@ -156,7 +174,7 @@ export default function ContactPage() {
                     <button
                       type="button"
                       onClick={() => handleCopy("9704090069", "phone")}
-                      className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all"
                       title="Copy phone number"
                     >
                       {copiedKey === "phone" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -168,12 +186,12 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
+                <div className="w-3 h-3 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.6)] animate-pulse" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Live Support</span>
               </div>
             </div>
 
-            {/* 2. Location */}
+            {/* 2. Location (Shapur Nagar) */}
             <div className="flex flex-col justify-between space-y-5 md:px-4 lg:px-6 group">
               <div className="flex items-start gap-4">
                 <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
@@ -197,12 +215,12 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Main Headquarters</span>
+                <div className="w-3 h-3 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.6)] animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Shapur Nagar Main Sanctuary</span>
               </div>
             </div>
 
-            {/* 3. E-Mail Us (Only requested email) */}
+            {/* 3. E-Mail Us (Full visibility, no ellipsis) */}
             <div className="flex flex-col justify-between space-y-5 md:pl-4 lg:pl-6 group">
               <div className="flex items-start gap-4">
                 <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
@@ -221,20 +239,20 @@ export default function ContactPage() {
                     <button
                       type="button"
                       onClick={() => handleCopy("kingofchristministries23@gmail.com", "email1")}
-                      className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all shrink-0 mt-0.5"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all shrink-0 mt-0.5"
                       title="Copy email address"
                     >
                       {copiedKey === "email1" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
                     24/7 Monitored Ministry Inbox
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.5)] animate-pulse" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Official Inbox</span>
+                <div className="w-3 h-3 rounded-full bg-[#f95700] shadow-[0_0_10px_rgba(249,87,0,0.6)] animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Guaranteed Response</span>
               </div>
             </div>
 
@@ -259,7 +277,7 @@ export default function ContactPage() {
               />
               
               {/* Subtle Vignette Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
               {/* Pastor Credentials Floating Tag */}
               <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/15 text-white z-10">
@@ -311,21 +329,24 @@ export default function ContactPage() {
 
             {/* Success Feedback Modal / Card */}
             {status === "success" && (
-              <div className="mb-6 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-start gap-4 animate-in fade-in duration-300">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <div className="mb-6 p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-start gap-4 animate-in fade-in zoom-in-95 duration-300">
+                <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center shrink-0">
+                  <CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-200">Message Received with Blessing!</h4>
-                  <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
-                    Thank you for reaching out to Kingdom of Christ Ministries. Your inquiry has been routed to our ministry desk.
+                  <h4 className="text-base font-bold text-emerald-900 dark:text-emerald-200">
+                    Peace & Blessings, {submittedName}!
+                  </h4>
+                  <p className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
+                    Your message has been received with prayer and routed to our pastoral desk. We will reach out to you shortly.
                   </p>
                   <button
                     type="button"
                     onClick={() => setStatus("idle")}
-                    className="mt-3 text-xs font-bold text-emerald-800 dark:text-emerald-300 underline hover:no-underline cursor-pointer"
+                    className="mt-3.5 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-900/50 hover:bg-emerald-200 dark:hover:bg-emerald-900/80 px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
                   >
-                    Send another message
+                    <span>Send another inquiry</span>
+                    <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -350,16 +371,16 @@ export default function ContactPage() {
                 <div className="flex flex-wrap gap-2">
                   {categories.map((cat) => (
                     <button
-                      key={cat}
+                      key={cat.label}
                       type="button"
-                      onClick={() => setFormData((prev) => ({ ...prev, category: cat }))}
+                      onClick={() => setFormData((prev) => ({ ...prev, category: cat.label }))}
                       className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all cursor-pointer ${
-                        formData.category === cat
-                          ? "bg-[#f95700] text-white border-[#f95700] shadow-sm shadow-orange-500/30 font-bold"
+                        formData.category === cat.label
+                          ? "bg-[#f95700] text-white border-[#f95700] shadow-sm shadow-orange-500/30 font-bold scale-[1.02]"
                           : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-orange-500/40 hover:bg-slate-200/60 dark:hover:bg-white/10"
                       }`}
                     >
-                      {cat}
+                      {cat.label}
                     </button>
                   ))}
                 </div>
@@ -367,11 +388,11 @@ export default function ContactPage() {
 
               {/* First Name */}
               <div className="space-y-1.5">
-                <label htmlFor="contact-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label htmlFor={nameId} className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   First Name <span className="text-orange-500">*</span>
                 </label>
                 <input
-                  id="contact-name"
+                  id={nameId}
                   type="text"
                   name="name"
                   value={formData.name}
@@ -385,11 +406,11 @@ export default function ContactPage() {
               {/* Email & Mobile Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="contact-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <label htmlFor={emailId} className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     E mail <span className="text-orange-500">*</span>
                   </label>
                   <input
-                    id="contact-email"
+                    id={emailId}
                     type="email"
                     name="email"
                     value={formData.email}
@@ -401,11 +422,11 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="contact-phone" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <label htmlFor={phoneId} className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Mobile Number <span className="text-orange-500">*</span>
                   </label>
                   <input
-                    id="contact-phone"
+                    id={phoneId}
                     type="tel"
                     name="phone"
                     value={formData.phone}
@@ -420,7 +441,7 @@ export default function ContactPage() {
               {/* Message */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="contact-message" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <label htmlFor={messageId} className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Message <span className="text-orange-500">*</span>
                   </label>
                   <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
@@ -429,7 +450,7 @@ export default function ContactPage() {
                 </div>
                 <div className="relative">
                   <textarea
-                    id="contact-message"
+                    id={messageId}
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
@@ -484,6 +505,9 @@ export default function ContactPage() {
               <h3 className="text-2xl font-black text-slate-900 dark:text-white font-outfit">
                 Join Us in Worship
               </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                All worship services held at Shapur Nagar Sanctuary. Fellowship and children ministries available.
+              </p>
               <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                 <li className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-transparent shadow-sm dark:shadow-none">
                   <span className="font-semibold">Sunday 1st Service</span>
@@ -504,10 +528,10 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            {/* Interactive Location Map */}
+            {/* Interactive Location Map for Shapur Nagar */}
             <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/60 dark:shadow-2xl border border-slate-200 dark:border-white/10 h-72 sm:h-80 relative bg-slate-200 dark:bg-slate-900">
               <iframe
-                title="Kingdom of Christ Ministries Location Map"
+                title="Kingdom of Christ Ministries Shapur Nagar Location Map"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3804.839846399432!2d78.441865!3d17.514032!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb90325fa12d27%3A0x6ec0c6efb18d2bf4!2sSubhash%20Nagar%20Colony%2C%20Jeedimetla%2C%20Hyderabad%2C%20Telangana%20500055!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
