@@ -89,7 +89,7 @@ const services = [
     serviceDay: "Wednesday",
     frequency: "WEEKLY",
     startTime: "18:30",
-    endTime: "20:00",
+    endTime: "20:30",
     timezone: "Asia/Kolkata",
     displayOrder: 4,
     status: "PUBLISHED",
