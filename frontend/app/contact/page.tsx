@@ -154,31 +154,43 @@ export default function ContactPage() {
       {/* ── 3-Column Floating Info Cards Banner ── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 sm:-mt-16 relative z-30">
         <div className="bg-white/95 dark:bg-[#0c0e22]/95 border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 sm:p-8 lg:p-10 backdrop-blur-xl transition-all duration-300">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8 md:divide-x md:divide-slate-200/80 dark:md:divide-white/10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6 xl:gap-8 lg:divide-x lg:divide-slate-200/80 dark:lg:divide-white/10">
             
             {/* 1. Contact Us */}
-            <div className="flex flex-col justify-between space-y-5 md:pr-4 lg:pr-6 group">
+            <div className="flex flex-col justify-between space-y-5 lg:pr-6 group">
               <div className="flex items-start gap-4">
                 <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <Phone className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Contact Us</h3>
-                  <div className="mt-1 flex items-center gap-2">
-                    <a
-                      href="tel:+919704090069"
-                      className="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors"
-                    >
-                      9704090069
-                    </a>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Contact Us</h3>
                     <button
                       type="button"
                       onClick={() => handleCopy("9704090069", "phone")}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all"
+                      className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all flex items-center gap-1 text-[11px] font-bold"
                       title="Copy phone number"
                     >
-                      {copiedKey === "phone" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedKey === "phone" ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <span className="text-emerald-500 text-[10px]">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span className="text-[10px] text-slate-400">Copy</span>
+                        </>
+                      )}
                     </button>
+                  </div>
+                  <div className="mt-1">
+                    <a
+                      href="tel:+919704090069"
+                      className="text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors block"
+                    >
+                      9704090069
+                    </a>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
                     Direct Pastoral Line & WhatsApp
@@ -192,7 +204,7 @@ export default function ContactPage() {
             </div>
 
             {/* 2. Location (Shapur Nagar) */}
-            <div className="flex flex-col justify-between space-y-5 md:px-4 lg:px-6 group">
+            <div className="flex flex-col justify-between space-y-5 lg:px-6 group">
               <div className="flex items-start gap-4">
                 <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <MapPin className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
@@ -220,30 +232,42 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* 3. E-Mail Us (Full visibility, no ellipsis) */}
-            <div className="flex flex-col justify-between space-y-5 md:pl-4 lg:pl-6 group">
+            {/* 3. E-Mail Us (100% Unbroken Single-Line Visibility) */}
+            <div className="flex flex-col justify-between space-y-5 lg:pl-6 group">
               <div className="flex items-start gap-4">
                 <div className="w-13 h-13 rounded-2xl border border-orange-100 dark:border-white/15 flex items-center justify-center shrink-0 bg-orange-50/70 dark:bg-white/5 shadow-sm group-hover:scale-105 group-hover:border-orange-500/50 transition-all duration-300">
                   <Mail className="w-5 h-5 text-slate-800 dark:text-slate-100 group-hover:text-[#f95700] transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">E-Mail Us</h3>
-                  
-                  <div className="mt-1 flex items-start gap-2">
-                    <a
-                      href="mailto:kingofchristministries23@gmail.com"
-                      className="text-xs sm:text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors break-all leading-snug flex-1"
-                    >
-                      kingofchristministries23@gmail.com
-                    </a>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">E-Mail Us</h3>
                     <button
                       type="button"
                       onClick={() => handleCopy("kingofchristministries23@gmail.com", "email1")}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all shrink-0 mt-0.5"
+                      className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all flex items-center gap-1 text-[11px] font-bold"
                       title="Copy email address"
                     >
-                      {copiedKey === "email1" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedKey === "email1" ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <span className="text-emerald-500 text-[10px]">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span className="text-[10px] text-slate-400">Copy</span>
+                        </>
+                      )}
                     </button>
+                  </div>
+                  
+                  <div className="mt-1">
+                    <a
+                      href="mailto:kingofchristministries23@gmail.com"
+                      className="text-xs sm:text-[13px] xl:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors whitespace-nowrap block"
+                    >
+                      kingofchristministries23@gmail.com
+                    </a>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
                     24/7 Monitored Ministry Inbox
