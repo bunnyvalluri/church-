@@ -124,7 +124,7 @@ export default function NgoProjectDetailPage({
                 title: "Missionaries of Charity Bhoiguda Outreach",
                 description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
                 details: "KCM volunteers organize dedicated compassionate care drives at Missionaries of Charity in Secunderabad Bhoiguda. We supply wholesome meals, fresh milk, fruits, clean bedding, warm blankets, and personal care hygiene kits to destitute residents and patients under specialized care.",
-                imageUrl: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0008.jpg",
+                imageUrl: "/missionaries_of_charity_bhoiguda_outreach.png",
                 targetAmount: 250000,
                 raisedAmount: 142000,
                 status: "ACTIVE",

@@ -176,7 +176,7 @@ export default function NgoProjectsPage() {
       id: "preset-charity",
       title: "Missionaries of Charity Bhoiguda Outreach",
       description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
-      imageUrl: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0008.jpg",
+      imageUrl: "/missionaries_of_charity_bhoiguda_outreach.png",
       targetAmount: null,
       raisedAmount: 0,
       status: "ACTIVE",
