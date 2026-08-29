@@ -25,5 +25,6 @@ scripts/
 backend/
 /KCM_NGO_SERVICES/
 !frontend/public/KCM_NGO_SERVICES/
-!frontend/public/KCM_NGO_SERVICES/**
+kcm-gallery/
+reports/
 
