@@ -72,10 +72,22 @@ function buildScheduleLabels(service: any): string[] {
       .filter(Boolean);
   }
 
-  const parts: string[] = [];
   if (service.occurrence) {
-    parts.push(service.occurrence);
-  } else if (service.serviceDay) {
+    const hasTime = /\b(AM|PM|am|pm|\d{1,2}:\d{2})\b/.test(service.occurrence);
+    if (hasTime) {
+      return [service.occurrence.trim()];
+    }
+    const parts: string[] = [service.occurrence.trim()];
+    if (service.startTime) {
+      const start = formatTime(service.startTime);
+      const end = service.endTime ? ` – ${formatTime(service.endTime)}` : "";
+      parts.push(`${start}${end}`);
+    }
+    return [parts.join(" - ")];
+  }
+
+  const parts: string[] = [];
+  if (service.serviceDay) {
     parts.push(service.serviceDay);
   }
   if (service.startTime) {
@@ -112,6 +124,204 @@ interface ChurchService {
   tags: string[];
 }
 
+// ── Comprehensive Multi-language Translation Helpers ──────────────────────────
+const SERVICE_TITLES: Record<string, { te: string; hi: string }> = {
+  "Sunday Evening Service": { te: "ఆదివారం సాయంత్రపు ఆరాధన", hi: "रविवार संध्याकालीन सेवा" },
+  "Sunday Worship & Thursday Prayer": { te: "ఆదివారం ఆరాధన & గురువారం ప్రార్థన", hi: "रविवार आराधना एवं गुरुवार प्रार्थना" },
+  "Sunday Worship & Prayer Meetings": { te: "ఆదివారం ఆరాధన & ప్రార్థన కూడికలు", hi: "रविवार आराधना एवं प्रार्थना सभाएं" },
+  "Monthly Fasting Prayer": { te: "నెలవారీ ఉపవాస ప్రార్థన", hi: "मासिक उपवास प्रार्थना" },
+  "Youth Ministry": { te: "యువజన పరిచర్య", hi: "युवा सेवकाई" },
+  "Women's Fellowship": { te: "మహిళా సహవాసం", hi: "महिला संगति" },
+  "English Worship": { te: "ఇంగ్లీష్ ఆరాధన", hi: "अंग्रेजी आराधना" },
+  "Men's Fellowship": { te: "పురుషుల సహవాసం", hi: "पुरुष संगति" },
+  "Bible Study": { te: "బైబిల్ అధ్యయనం", hi: "बाइबिल अध्ययन" },
+  "Prayer Meeting": { te: "ప్రార్థన కూడిక", hi: "प्रार्थना सभा" },
+};
+
+const SERVICE_DESCRIPTIONS: Record<string, { short: { te: string; hi: string }; long: { te: string; hi: string } }> = {
+  "shapur-sunday-service": {
+    short: {
+      te: "షాపూర్ నగర్‌లో ఉత్సాహభరితమైన ఆరాధన, ప్రార్థన మరియు దేవుని వాక్యాన్ని అనుభవించండి.",
+      hi: "शापूर नगर में उत्साहवर्धक आराधना, प्रार्थना और परमेश्वर के वचन का अनुभव करें।",
+    },
+    long: {
+      te: "ప్రతి ఆదివారం సాయంత్రం 6:00 నుండి 9:00 వరకు మరియు ప్రతి శుక్రవారం సాయంత్రం 6:30 నుండి 8:30 వరకు మా షాపూర్ నగర్ బ్రాంచ్‌లో ఉపవాస, స్వస్థత & అభిషేక ఆరాధనలో పాల్గొనండి.",
+      hi: "हर रविवार शाम 6:00 से 9:00 बजे तक और हर शुक्रवार शाम 6:30 से 8:30 बजे तक हमारी शापूर नगर शाखा में उपवास, चंगाई और अभिषेक आराधना के लिए शामिल हों।",
+    },
+  },
+  "subhash-nagar-service": {
+    short: {
+      te: "సుభాష్ నగర్‌లో మా ఉదయకాల ఆరాధనలు మరియు గురువారం సాయంత్రపు ప్రార్థనలో పాల్గొనండి.",
+      hi: "सुभाष नगर में हमारी सुबह की आराधना और गुरुवार शाम की प्रार्थना में शामिल हों।",
+    },
+    long: {
+      te: "ఆదివారం ఉదయం జరిగే రెండు ఆరాధనలలో మరియు గురువారం సాయంత్రపు ఉపవాస, స్వస్థత & అభిషేక ఆరాధనలలో దేవుని శక్తిని అనుభవించండి.",
+      hi: "रविवार सुबह की दो आराधनाओं और गुरुवार शाम की उपवास, चंगाई और अभिषेक आराधना में परमेश्वर की सामर्थ्य का अनुभव करें।",
+    },
+  },
+  "sunday-worship-service": {
+    short: {
+      te: "బహదూర్‌పల్లిలో జరిగే మా ఆదివారం ఆరాధన మరియు మంగళవారం ప్రార్థన కూడికలలో దేవుని సన్నిధిని అనుభవించండి.",
+      hi: "बहादुरपल्ली में हमारी रविवार आराधना और मंगलवार प्रार्थना सभाओं में परमेश्वर की उपस्थिति का अनुभव करें।",
+    },
+    long: {
+      te: "ప్రతి ఆదివారం దైవిక ఆరాధన మరియు ప్రతి 3వ మంగళవారం సాయంత్రం ఉపవాస, స్వస్థత & అభిషేక ఆరాధనలో పాల్గొనండి. మా ఆరాధనలు తెలుగు, హిందీ, ఇంగ్లీషులలో నిర్వహించబడతాయి.",
+      hi: "हर रविवार शक्तिशाली स्तुति-आराधना और हर तीसरे मंगलवार शाम उपवास, चंगाई और अभिषेक आराधना में शामिल हों। हमारी सेवाएं तेलुगु, हिंदी और अंग्रेजी में आयोजित की जाती हैं।",
+    },
+  },
+  "monthly-fasting-prayer": {
+    short: {
+      te: "దేవుని సన్నిధి కొరకు ప్రతి నెలా నిర్వహించే కలీసియా ఉపవాస ప్రార్థన కూడిక.",
+      hi: "परमेश्वर की उपस्थिति पाने के लिए कलीसिया-व्यापी मासिक उपवास एवं प्रार्थना सभा।",
+    },
+    long: {
+      te: "ప్రతి నెలా 2వ సోమవారం షాపూర్ నగర్ ప్రధాన శాఖలో ఉదయం 10:00 నుండి మధ్యాహ్నం 3:00 వరకు ఉపవాసం, మధ్యవర్తిత్వ ప్రార్థన, ఆరాధన మరియు ఆత్మీయ పునరుజ్జీవన కూడికలో పాల్గొనండి.",
+      hi: "हर महीने के दूसरे सोमवार को हमारी शापूर नगर मुख्य शाखा में सुबह 10:00 से दोपहर 3:00 बजे तक उपवास, मध्यस्थता प्रार्थना, आराधना और आत्मिक नवीनीकरण के लिए शामिल हों।",
+    },
+  },
+  "youth-ministry": {
+    short: {
+      te: "క్రీస్తు కొరకు ధైర్యంగా జీవించేందుకు తర్వాతి తరాన్ని బలపరచడం.",
+      hi: "मसीह के लिए साहसपूर्वक जीने हेतु अगली पीढ़ी को सशक्त बनाना।",
+    },
+    long: {
+      te: "KCM యూత్ 13-25 సంవత్సరాల వయస్సు గల యువత కొరకు నిర్వహించే ప్రత్యేక పరిచర్య. ప్రతి నెలా 2వ శనివారం సాయంత్రం 6:30 నుండి 8:30 వరకు ఆరాధన, వాక్యం మరియు సహవాసం కొరకు కలుస్తాము.",
+      hi: "KCM यूथ 13-25 आयु वर्ग के युवाओं के लिए एक गतिशील सेवकाई है। हम हर महीने के दूसरे शनिवार को शाम 6:30 से 8:30 बजे तक आराधना, वचन और संगति के लिए मिलते हैं।",
+    },
+  },
+  "womens-fellowship": {
+    short: {
+      te: "ఆత్మీయ సహోదరిత్వం మరియు ఆత్మీయ బలాన్ని కలిసి నిర్మించడం.",
+      hi: "एकता, आत्मिक संगति और आत्मिक सामर्थ्य का निर्माण।",
+    },
+    long: {
+      te: "KCM మహిళా సహవాసం ప్రతి నెలా 3వ శనివారం సాయంత్రం 6:30 నుండి 8:30 వరకు ఆరాధన, సాక్ష్యాలు మరియు పరస్పర పరిచర్య కొరకు కూడుకుంటుంది. స్త్రీలందరికీ స్వాగతం.",
+      hi: "KCM महिला संगति हर महीने के तीसरे शनिवार को शाम 6:30 से 8:30 बजे तक आराधना, गवाही और एक-दूसरे की सेवकाई के लिए एकत्रित होती है। सभी महिलाओं का स्वागत है।",
+    },
+  },
+  "mens-fellowship": {
+    short: {
+      te: "షాపూర్ నగర్‌లో ఇంగ్లీష్ స్తుతి, ఆరాధన మరియు బైబిల్ ఉపదేశం.",
+      hi: "शापूर नगर में अंग्रेजी स्तुति, आराधना और बाइबिल शिक्षण।",
+    },
+    long: {
+      te: "ప్రతి నెలా 3వ ఆదివారం సాయంత్రం 4:00 నుండి 6:00 వరకు షాపూర్ నగర్‌లో మా ఇంగ్లీష్ ఆరాధనలో పాల్గొనండి. శక్తివంతమైన ఆరాధన మరియు వాక్య సందేశాలను అనుభవించండి.",
+      hi: "हर महीने के तीसरे रविवार को शाम 4:00 से 6:00 बजे तक शापूर नगर में हमारी अंग्रेजी आराधना में शामिल हों। शक्तिशाली आराधना और वचन का अनुभव करें।",
+    },
+  },
+};
+
+const LOCATION_NAMES: Record<string, { te: string; hi: string }> = {
+  "Shapur Nagar": { te: "షాపూర్ నగర్", hi: "शापूर नगर" },
+  "Subhash Nagar": { te: "సుభాష్ నగర్", hi: "सुभाष नगर" },
+  "Bahadurpally": { te: "బహదూర్‌పల్లి", hi: "बहादुरपल्ली" },
+  "KCM Fellowship Hall": { te: "KCM ఫెలోషిప్ హాల్", hi: "KCM फेलोशिप हॉल" },
+  "KCM Main Auditorium": { te: "KCM మెయిన్ ఆడిటోరియం", hi: "KCM मुख्य सभागार" },
+};
+
+const TAG_TRANSLATIONS: Record<string, { te: string; hi: string }> = {
+  worship: { te: "ఆరాధన", hi: "आराधना" },
+  sunday: { te: "ఆదివారం", hi: "रविवार" },
+  friday: { te: "శుక్రవారం", hi: "शुक्रवार" },
+  thursday: { te: "గురువారం", hi: "गुरुवार" },
+  tuesday: { te: "మంగళవారం", hi: "मंगलवार" },
+  monday: { te: "సోమవారం", hi: "सोमवार" },
+  saturday: { te: "శనివారం", hi: "शनिवार" },
+  prayer: { te: "ప్రార్థన", hi: "प्रार्थना" },
+  healing: { te: "స్వస్థత", hi: "चंगाई" },
+  anointing: { te: "అభిషేకం", hi: "अभिषेक" },
+  youth: { te: "యువత", hi: "युवा" },
+  fellowship: { te: "సహవాసం", hi: "संगति" },
+  women: { te: "మహిళలు", hi: "महिलाएं" },
+  men: { te: "పురుషులు", hi: "पुरुष" },
+  english: { te: "ఇంగ్లీష్", hi: "अंग्रेजी" },
+  fasting: { te: "ఉపవాసం", hi: "उपवास" },
+  monthly: { te: "నెలవారీ", hi: "मासिक" },
+  intercession: { te: "విజ్ఞాపన", hi: "मध्यस्थता" },
+  evening: { te: "సాయంత్రం", hi: "शाम" },
+  shapur: { te: "షాపూర్", hi: "शापूर" },
+  "subhash-nagar": { te: "సుభాష్ నగర్", hi: "सुभाष नगर" },
+};
+
+function translateLocation(loc?: string, lang?: string): string {
+  if (!loc) return "";
+  if (lang === "te" && LOCATION_NAMES[loc]?.te) return LOCATION_NAMES[loc].te;
+  if (lang === "hi" && LOCATION_NAMES[loc]?.hi) return LOCATION_NAMES[loc].hi;
+  return loc;
+}
+
+function translateTitle(title: string, lang?: string): string {
+  if (lang === "te" && SERVICE_TITLES[title]?.te) return SERVICE_TITLES[title].te;
+  if (lang === "hi" && SERVICE_TITLES[title]?.hi) return SERVICE_TITLES[title].hi;
+  return title;
+}
+
+function translateDescription(desc: string | undefined, slug: string, isShort: boolean, lang?: string): string {
+  if (!desc) return "";
+  const entry = SERVICE_DESCRIPTIONS[slug];
+  if (entry) {
+    if (lang === "te") return isShort ? entry.short.te : entry.long.te;
+    if (lang === "hi") return isShort ? entry.short.hi : entry.long.hi;
+  }
+  return desc;
+}
+
+function translateScheduleBadge(label: string, lang?: string): string {
+  if (!label || lang === "en") return label;
+
+  if (lang === "te") {
+    return label
+      .replace(/Every Sunday \(1st Service\)/gi, "ప్రతి ఆదివారం (1వ ఆరాధన)")
+      .replace(/Every Sunday \(2nd Service\)/gi, "ప్రతి ఆదివారం (2వ ఆరాధన)")
+      .replace(/Every Sunday/gi, "ప్రతి ఆదివారం")
+      .replace(/Every Friday/gi, "ప్రతి శుక్రవారం")
+      .replace(/Every Thursday/gi, "ప్రతి గురువారం")
+      .replace(/Every 3rd Tuesday/gi, "ప్రతి 3వ మంగళవారం")
+      .replace(/Every 3rd Wednesday/gi, "ప్రతి 3వ బుధవారం")
+      .replace(/Every Month 2nd Monday/gi, "ప్రతి నెలా 2వ సోమవారం")
+      .replace(/2nd Saturday of the month/gi, "నెలలో 2వ శనివారం")
+      .replace(/3rd Saturday of the month/gi, "నెలలో 3వ శనివారం")
+      .replace(/3rd Sunday of the month/gi, "నెలలో 3వ ఆదివారం")
+      .replace(/Fasting, Healing & Anointing Service - "Aradhana"/gi, 'ఉపవాస, స్వస్థత & అభిషేక ఆరాధన - "ఆరాధన"')
+      .replace(/Fasting, Healing & Anointing Service/gi, "ఉపవాస, స్వస్థత & అభిషేక ఆరాధన")
+      .replace(/Fasting Prayer/gi, "ఉపవాస ప్రార్థన")
+      .replace(/Prayer Meeting/gi, "ప్రార్థన కూడిక")
+      .replace(/\bat\b/gi, "")
+      .replace(/\bAM\b/g, "AM")
+      .replace(/\bPM\b/g, "PM");
+  }
+
+  if (lang === "hi") {
+    return label
+      .replace(/Every Sunday \(1st Service\)/gi, "हर रविवार (पहली सेवा)")
+      .replace(/Every Sunday \(2nd Service\)/gi, "हर रविवार (दूसरी सेवा)")
+      .replace(/Every Sunday/gi, "हर रविवार")
+      .replace(/Every Friday/gi, "हर शुक्रवार")
+      .replace(/Every Thursday/gi, "हर गुरुवार")
+      .replace(/Every 3rd Tuesday/gi, "हर तीसरे मंगलवार")
+      .replace(/Every 3rd Wednesday/gi, "हर तीसरे बुधवार")
+      .replace(/Every Month 2nd Monday/gi, "हर महीने का दूसरा सोमवार")
+      .replace(/2nd Saturday of the month/gi, "महीने का दूसरा शनिवार")
+      .replace(/3rd Saturday of the month/gi, "महीने का तीसरा शनिवार")
+      .replace(/3rd Sunday of the month/gi, "महीने का तीसरा रविवार")
+      .replace(/Fasting, Healing & Anointing Service - "Aradhana"/gi, 'उपवास, चंगाई एवं अभिषेक सेवा - "आराधना"')
+      .replace(/Fasting, Healing & Anointing Service/gi, "उपवास, चंगाई एवं अभिषेक सेवा")
+      .replace(/Fasting Prayer/gi, "उपवास प्रार्थना")
+      .replace(/Prayer Meeting/gi, "प्रार्थना सभा")
+      .replace(/\bat\b/gi, "")
+      .replace(/\bAM\b/g, "AM")
+      .replace(/\bPM\b/g, "PM");
+  }
+
+  return label;
+}
+
+function translateTag(tag: string, lang?: string): string {
+  if (lang === "te" && TAG_TRANSLATIONS[tag]?.te) return TAG_TRANSLATIONS[tag].te;
+  if (lang === "hi" && TAG_TRANSLATIONS[tag]?.hi) return TAG_TRANSLATIONS[tag].hi;
+  return tag;
+}
+
 // ── Memoized Service Card Component ───────────────────────────────────────────
 const ServiceCard = memo(function ServiceCard({
   service,
@@ -124,9 +334,15 @@ const ServiceCard = memo(function ServiceCard({
   isExpanded: boolean;
   onToggleExpand: (id: string) => void;
 }) {
+  const { language, isTelugu, isHindi } = useLanguage();
   const Icon = getIcon(service.icon);
   const { gradient } = resolveGradient(service.cardColor);
   const scheduleLabels = buildScheduleLabels(service);
+
+  const translatedTitle = translateTitle(service.title, language);
+  const translatedShortDesc = translateDescription(service.shortDescription || service.description, service.slug, true, language);
+  const translatedLongDesc = translateDescription(service.description, service.slug, false, language);
+  const translatedLocation = translateLocation(service.location || service.branch?.name, language);
 
   return (
     <motion.div
@@ -139,7 +355,7 @@ const ServiceCard = memo(function ServiceCard({
       tabIndex={0}
       role="button"
       aria-expanded={isExpanded}
-      aria-label={`${service.title} service details`}
+      aria-label={`${translatedTitle} service details`}
       className="services-card group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 md:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       onClick={() => onToggleExpand(service.id)}
       onKeyDown={(e) => {
@@ -151,15 +367,15 @@ const ServiceCard = memo(function ServiceCard({
     >
       {/* Top Badges: Location & Featured */}
       <div className="absolute top-4 right-4 flex items-center flex-wrap justify-end gap-1.5 z-20">
-        {(service.location || service.branch?.name) && (
+        {translatedLocation && (
           <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/50 shadow-sm backdrop-blur-sm">
             <MapPin className="w-3 h-3 text-violet-600 dark:text-violet-400 shrink-0" />
-            <span className="truncate max-w-[120px] sm:max-w-none">{service.location || service.branch?.name}</span>
+            <span className="truncate max-w-[140px] sm:max-w-none">{translatedLocation}</span>
           </div>
         )}
         {service.featured && (
           <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
-            <Star className="w-3 h-3 fill-current" /> Featured
+            <Star className="w-3 h-3 fill-current" /> {isTelugu ? "ప్రత్యేకమైనది" : isHindi ? "विशेष" : "Featured"}
           </div>
         )}
       </div>
@@ -181,7 +397,7 @@ const ServiceCard = memo(function ServiceCard({
 
         {/* Title */}
         <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight group-hover:text-[hsl(var(--primary))] dark:group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
-          {service.title}
+          {translatedTitle}
         </h3>
 
         {/* Schedule badges */}
@@ -194,7 +410,7 @@ const ServiceCard = memo(function ServiceCard({
                 style={{ background: gradient }}
               >
                 <span>⏰</span>
-                <span>{label.replace(/^⏰\s*/, "")}</span>
+                <span>{translateScheduleBadge(label.replace(/^⏰\s*/, ""), language)}</span>
               </div>
             ))}
           </div>
@@ -202,7 +418,7 @@ const ServiceCard = memo(function ServiceCard({
 
         {/* Description */}
         <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
-          {service.shortDescription || service.description || ""}
+          {translatedShortDesc}
         </p>
 
         {/* Expanded details */}
@@ -216,21 +432,23 @@ const ServiceCard = memo(function ServiceCard({
               className="overflow-hidden"
             >
               <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] space-y-2">
-                {service.description && service.shortDescription && (
+                {translatedLongDesc && (
                   <p className="text-slate-500 dark:text-white/50 text-xs leading-relaxed">
-                    {service.description}
+                    {translatedLongDesc}
                   </p>
                 )}
-                {service.location && (
+                {translatedLocation && (
                   <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
                     <MapPin className="w-3 h-3 shrink-0" />
-                    <span>{service.location}</span>
+                    <span>{translatedLocation}</span>
                   </div>
                 )}
                 {service.branch && (
                   <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40">
                     <Globe className="w-3 h-3 shrink-0" />
-                    <span>{service.branch.name} Branch</span>
+                    <span>
+                      {translateLocation(service.branch.name, language)} {isTelugu ? "శాఖ" : isHindi ? "शाखा" : "Branch"}
+                    </span>
                   </div>
                 )}
                 {service.tags?.length > 0 && (
@@ -240,7 +458,7 @@ const ServiceCard = memo(function ServiceCard({
                         key={tag}
                         className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-white/40 text-[10px] font-medium"
                       >
-                        #{tag}
+                        #{translateTag(tag, language)}
                       </span>
                     ))}
                   </div>
@@ -255,7 +473,19 @@ const ServiceCard = memo(function ServiceCard({
           <ChevronRight
             className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
           />
-          <span>{isExpanded ? "Less" : "More info"}</span>
+          <span>
+            {isExpanded
+              ? isTelugu
+                ? "తక్కువ"
+                : isHindi
+                ? "कम"
+                : "Less"
+              : isTelugu
+              ? "మరిన్ని వివరాలు"
+              : isHindi
+              ? "अधिक जानकारी"
+              : "More info"}
+          </span>
         </div>
       </div>
     </motion.div>

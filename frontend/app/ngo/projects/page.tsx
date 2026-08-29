@@ -263,6 +263,7 @@ export default function NgoProjectsPage() {
       if (c === "HOSPITAL") return "ఆసుపత్రి సేవ";
       if (c === "ASHRAMAM") return "ఆశ్రమ సంరక్షణ";
       if (c === "REHABILITATION") return "దివ్యాంగుల సాయం";
+      if (c === "CHARITY") return "చారిటీ సేవ";
       return cat;
     }
     if (language === "hi") {
@@ -270,12 +271,14 @@ export default function NgoProjectsPage() {
       if (c === "HOSPITAL") return "अस्पताल राहत";
       if (c === "ASHRAMAM") return "आश्रम देखभाल";
       if (c === "REHABILITATION") return "दिव्यांग सहायता";
+      if (c === "CHARITY") return "चैरिटी सेवा";
       return cat;
     }
     if (c === "ALL") return "All Projects";
     if (c === "HOSPITAL") return "Hospital Relief";
     if (c === "ASHRAMAM") return "Ashramam Care";
-    if (c === "REHABILITATION") return "Handicap Aid";
+    if (c === "REHABILITATION") return "Disabled Care";
+    if (c === "CHARITY") return "Charity Outreach";
     return cat;
   };
 
@@ -301,6 +304,7 @@ export default function NgoProjectsPage() {
     { id: "HOSPITAL", label: getCategoryLabel("HOSPITAL") },
     { id: "ASHRAMAM", label: getCategoryLabel("ASHRAMAM") },
     { id: "REHABILITATION", label: getCategoryLabel("REHABILITATION") },
+    { id: "CHARITY", label: getCategoryLabel("CHARITY") },
   ];
 
   return (
@@ -484,6 +488,7 @@ export default function NgoProjectsPage() {
                           <span className={`w-2 h-2 rounded-full ${
                             project.category.toUpperCase() === "HOSPITAL" ? "bg-blue-400" :
                             project.category.toUpperCase() === "ASHRAMAM" ? "bg-pink-400" :
+                            project.category.toUpperCase() === "CHARITY" ? "bg-teal-400" :
                             "bg-emerald-400"
                           }`} />
                           <span>{getCategoryLabel(project.category)}</span>
@@ -517,14 +522,14 @@ export default function NgoProjectsPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 space-y-3">
+                  <div className="p-6 pt-0 space-y-2.5">
                     <div className="flex gap-2.5">
                       <Link
                         href={`/ngo/donations?project=${project.id}`}
                         className="flex-1 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <Heart className="w-3.5 h-3.5 fill-current" />
-                        <span>{projectsPage.donateBtn || "Donate Now"}</span>
+                        <span>{projectsPage.donateBtn || (language === "te" ? "విరాళం ఇవ్వండి" : language === "hi" ? "दान करें" : "Donate")}</span>
                       </Link>
                       
                       <Link
@@ -532,9 +537,17 @@ export default function NgoProjectsPage() {
                         className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                        <span>{projectsPage.volunteerBtn || "Volunteer"}</span>
+                        <span>{projectsPage.volunteerBtn || (language === "te" ? "వాలంటీర్" : language === "hi" ? "स्वयंसेवक" : "Volunteer")}</span>
                       </Link>
                     </div>
+
+                    <Link
+                      href={`/ngo/projects/${project.id}`}
+                      className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/30 dark:hover:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/50 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>{language === "te" ? "ప్రాజెక్ట్ వివరాలు & లాగ్స్ చూడండి" : language === "hi" ? "परियोजना विवरण और लॉग देखें" : "View Project Details & Logs"}</span>
+                    </Link>
                   </div>
                 </div>
               );

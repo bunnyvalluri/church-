@@ -144,7 +144,7 @@ async function main() {
       mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
       embedUrl: "https://maps.google.com/maps?q=Bahadurpally,+Quthbullapur,+Hyderabad,+Telangana+500043&hl=en&z=15&output=embed",
       isStreetView: true,
-      serviceHours: "Sunday: 11:00 AM – 2:00 PM",
+      serviceHours: "Sunday: 11:00 AM – 1:00 PM",
       displayOrder: 2,
     },
   ];

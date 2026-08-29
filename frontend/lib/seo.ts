@@ -252,7 +252,7 @@ export const PAGE_METADATA = {
   bahadurpally: constructMetadata({
     title: "Bahadurpally Branch",
     description:
-      "Kingdom of Christ Ministries Bahadurpally Branch. Sunday afternoon worship service (11:00 AM – 2:00 PM) and monthly 2nd Tuesday special intercession in North Hyderabad.",
+      "Kingdom of Christ Ministries Bahadurpally Branch. Sunday afternoon worship service (11:00 AM – 1:00 PM) and monthly 2nd Tuesday special intercession in North Hyderabad.",
     path: "/locations/bahadurpally",
     keywords: ["Bahadurpally church", "Gandimaisamma church", "Kingdom of Christ Bahadurpally"],
   }),

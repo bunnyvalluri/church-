@@ -137,7 +137,7 @@ export default function LocationsPage() {
         services: [
           {
             day: isTelugu ? "ఆదివారం" : isHindi ? "रविवार" : "Sunday",
-            time: "11:00 AM – 2:00 PM",
+            time: "11:00 AM – 1:00 PM",
             type: isTelugu ? "మధ్యాహ్న ఆరాధన" : isHindi ? "दोपहर आराधना सेवा" : "Afternoon Worship Service",
           },
           {

@@ -113,7 +113,7 @@ async function main() {
       const dateMatch = filePath.match(/(\d{2}-\d{2}-\d{4})/);
       if (dateMatch) dateStr = dateMatch[1];
     } else if (filePath.includes('HOME_FOR_THE_DISABLED (SECUNDERABAD)')) {
-      category = 'DISABLED-AASHRAMAM';
+      category = 'DISABLED-SECUNDERABAD';
       locationName = 'Home for the Disabled (Secunderabad)';
       dateStr = '23-07-2026';
     } else if (filePath.includes('MISSIONARIES OF CHARITY')) {
@@ -166,9 +166,12 @@ async function main() {
     } else if (category === 'MISSIONARIES-OF-CHARITY') {
       title = `Missionaries of Charity Bhoiguda Outreach${dateLabel} - Photo ${photoNumber}`;
       description = 'KCM compassionate care mission providing nutrition, essential care supplies, emotional support, and meals at Missionaries of Charity, Bhoiguda.';
+    } else if (category === 'DISABLED-SECUNDERABAD') {
+      title = `Home for Disabled Secunderabad${dateLabel} - Photo ${photoNumber}`;
+      description = 'Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to residents of Home for the Disabled, Secunderabad.';
     } else if (category === 'DISABLED-AASHRAMAM') {
-      title = `Home for the Disabled Care${dateLabel} - Photo ${photoNumber}`;
-      description = 'Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to residents of the Home for the Disabled.';
+      title = `Home for Disabled Ashramam${dateLabel} - Photo ${photoNumber}`;
+      description = 'Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to residents of the Home for the Disabled Ashramam.';
     } else {
       title = `NGO Service Outreach${dateLabel} - Photo ${photoNumber}`;
       description = 'KCM Social Service team in action, carrying out physical ministries to help the needy and underprivileged.';

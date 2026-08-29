@@ -82,7 +82,7 @@ export function churchSchema() {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: "Sunday",
         opens: "11:00",
-        closes: "14:00",
+        closes: "13:00",
         description: "Sunday Afternoon Worship Service (Bahadurpally Branch)",
       },
       {

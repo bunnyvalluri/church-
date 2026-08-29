@@ -79,8 +79,9 @@ const CATEGORIES = [
   { label: "Govt Hospital", value: "GOVT-HOSPITAL" },
   { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL" },
   { label: "Bethany Ashramam", value: "ASHRAMAM" },
-  { label: "Home for Disabled", value: "DISABLED-AASHRAMAM" },
+  { label: "Home for Disabled (Secunderabad)", value: "DISABLED-SECUNDERABAD" },
   { label: "Missionaries of Charity", value: "MISSIONARIES-OF-CHARITY" },
+  { label: "Home for Disabled Ashramam", value: "DISABLED-AASHRAMAM" },
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -89,8 +90,9 @@ const CATEGORY_COLORS: Record<string, string> = {
   "GOVT-HOSPITAL": "from-emerald-600 to-teal-400",
   "GANDHI-HOSPITAL": "from-amber-500 to-orange-400",
   "ASHRAMAM": "from-fuchsia-600 to-pink-400",
-  "DISABLED-AASHRAMAM": "from-rose-500 to-red-400",
+  "DISABLED-SECUNDERABAD": "from-rose-500 to-red-500",
   "MISSIONARIES-OF-CHARITY": "from-teal-600 to-emerald-500",
+  "DISABLED-AASHRAMAM": "from-indigo-600 to-violet-500",
 };
 
 const CATEGORY_STYLES: Record<string, {
@@ -135,7 +137,7 @@ const CATEGORY_STYLES: Record<string, {
     badgeInactive: "bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300 font-bold",
     dot: "bg-fuchsia-500",
   },
-  "DISABLED-AASHRAMAM": {
+  "DISABLED-SECUNDERABAD": {
     active: "bg-gradient-to-r from-rose-600 via-red-600 to-pink-600 text-white border-transparent shadow-lg shadow-rose-500/25 scale-[1.02]",
     inactive: "bg-white dark:bg-slate-900 border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 hover:border-rose-400",
     badgeActive: "bg-white/20 text-white font-black",
@@ -148,6 +150,13 @@ const CATEGORY_STYLES: Record<string, {
     badgeActive: "bg-white/20 text-white font-black",
     badgeInactive: "bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-bold",
     dot: "bg-teal-500",
+  },
+  "DISABLED-AASHRAMAM": {
+    active: "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-500 text-white border-transparent shadow-lg shadow-indigo-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-indigo-200 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/40 hover:border-indigo-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold",
+    dot: "bg-indigo-500",
   },
 };
 
@@ -189,7 +198,7 @@ const GalleryCard = React.memo(function GalleryCard({
     >
       {/* Category badge */}
       <div className={`absolute top-2 left-2 sm:top-3 sm:left-3 z-20 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${CATEGORY_COLORS[item.category] ?? "from-slate-600 to-slate-500"} shadow-md transition-transform duration-300 group-hover:scale-105 backdrop-blur-md`}>
-        {item.category}
+        {CATEGORIES.find((c) => c.value === item.category)?.label || item.category}
       </div>
 
       {/* Delete button (Admin Mode only) */}
@@ -265,7 +274,9 @@ const GalleryCard = React.memo(function GalleryCard({
             </div>
           </div>
           <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out space-y-0.5">
-            <p className="text-white text-[10px] sm:text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">{item.category}</p>
+            <p className="text-white text-[10px] sm:text-xs font-bold font-sans drop-shadow-sm uppercase tracking-wider">
+              {CATEGORIES.find((c) => c.value === item.category)?.label || item.category}
+            </p>
             <p className="text-white/90 text-[11px] sm:text-xs font-medium drop-shadow-sm truncate">
               {item.title}
             </p>
@@ -745,7 +756,7 @@ export default function NgoGalleryPage() {
         {/* Category Filter Chips */}
         <div className="sticky top-[104px] sm:top-[120px] z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-xl py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 border-y border-slate-200/60 dark:border-white/10 shadow-sm">
 
-          {/* Mobile: 2-column structured grid (3 neat rows of 2) */}
+          {/* Mobile: 2-column structured grid */}
           <div className="sm:hidden grid grid-cols-2 gap-1.5">
             {CATEGORIES.map((cat) => {
               const count = categoryCounts[cat.value] || 0;
@@ -758,14 +769,16 @@ export default function NgoGalleryPage() {
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
                     cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల సేవ"
+                    cat.value === "DISABLED-SECUNDERABAD" ? "హోమ్ ఫర్ డిజేబుల్డ్ (సికింద్రాబాద్)" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
                     cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग देखभाल"
+                    cat.value === "DISABLED-SECUNDERABAD" ? "होम फॉर डिसेबल्ड (सिकंदराबाद)" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग आश्रम"
                   : cat.label;
 
               return (
@@ -806,14 +819,16 @@ export default function NgoGalleryPage() {
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
                     cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల సేవ"
+                    cat.value === "DISABLED-SECUNDERABAD" ? "హోమ్ ఫర్ డిజేబుల్డ్ (సికింద్రాబాద్)" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల ఆశ్రమం"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
                     cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
-                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग देखभाल"
+                    cat.value === "DISABLED-SECUNDERABAD" ? "होम फॉर डिसेबल्ड (सिकंदराबाद)" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग आश्रम"
                   : cat.label;
 
               return (
@@ -987,7 +1002,7 @@ export default function NgoGalleryPage() {
                   >
                     <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto min-w-0">
                       <span className={`px-2.5 py-0.5 rounded-full text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${gradient} shadow-md truncate max-w-[120px] sm:max-w-none`}>
-                        {currentItem?.category}
+                        {CATEGORIES.find((c) => c.value === currentItem?.category)?.label || currentItem?.category}
                       </span>
                       <span className="text-white/80 text-[11px] sm:text-xs font-mono font-bold whitespace-nowrap">
                         {lightboxIndex + 1} / {filteredItems.length}

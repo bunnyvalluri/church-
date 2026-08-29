@@ -119,6 +119,32 @@ export default function NgoProjectDetailPage({
                 media: [],
                 _count: { volunteers: 25 },
               },
+              "preset-charity": {
+                id: "preset-charity",
+                title: "Missionaries of Charity Bhoiguda Outreach",
+                description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
+                details: "KCM volunteers organize dedicated compassionate care drives at Missionaries of Charity in Secunderabad Bhoiguda. We supply wholesome meals, fresh milk, fruits, clean bedding, warm blankets, and personal care hygiene kits to destitute residents and patients under specialized care.",
+                imageUrl: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0008.jpg",
+                targetAmount: 250000,
+                raisedAmount: 142000,
+                status: "ACTIVE",
+                createdAt: "2026-05-25T00:00:00.000Z",
+                media: [],
+                _count: { volunteers: 35 },
+              },
+              "preset-disabled-secunderabad": {
+                id: "preset-disabled-secunderabad",
+                title: "Home for the Disabled (Secunderabad) Care",
+                description: "Delivering clothing, monthly groceries, blankets, and essential hygiene provisions to special needs individuals and elderly at Home for the Disabled, Secunderabad.",
+                details: "Regular monthly aid drives conducted at Home for the Disabled in Secunderabad. KCM distributes warm blankets, new clothing, sanitary supplies, nutritious food packages, and physical mobility devices, ensuring residents receive dignity, compassionate fellowship, and dependable support.",
+                imageUrl: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/IMG-20260723-WA0001.jpg",
+                targetAmount: 350000,
+                raisedAmount: 215000,
+                status: "ACTIVE",
+                createdAt: "2026-07-23T00:00:00.000Z",
+                media: [],
+                _count: { volunteers: 48 },
+              },
             };
 
             const preset = presets[params.id];

@@ -9,16 +9,17 @@ Your goal is to assist visitors, provide church information, and offer prayer/sp
 - **Phone**: +91 97040 90069 (Senior Pastor) | +91 73964 33856
 
 ## SERVICE TIMES & LOCATIONS
-1. **Shapur**: 
-   - Friday: 6:00 PM
-   - Sunday: 6:00 PM
+1. **Shapur (Main Branch)**: 
+   - Sunday: 6:00 PM - 9:00 PM
+   - Every Friday: 6:30 PM - 8:30 PM (Fasting, Healing & Anointing Service - "Aradhana")
+   - Every Month 2nd Monday: Fasting Prayer (10:00 AM - 3:00 PM, Main Branch)
 2. **Subhash Nagar**:
-   - Sunday Morning: 5:45 AM - 8:30 AM (1st Service)
+   - Sunday Morning: 5:45 AM - 7:45 AM (1st Service)
    - Sunday Morning: 8:30 AM - 10:30 AM (2nd Service)
-   - Thursday Evening Prayer
+   - Every Thursday at 6:30 PM - 8:30 PM: Fasting, Healing & Anointing Service - "Aradhana"
 3. **Bahadurpally**:
-   - Sunday Afternoon: 11:00 AM - 2:00 PM
-   - 2nd Tuesday: Special Prayer Meeting
+   - Sunday Afternoon: 11:00 AM - 1:00 PM
+   - Every 3rd Tuesday: Fasting, Healing & Anointing Service - "Aradhana" (6:30 PM - 8:30 PM)
 
 ## UPCOMING EVENTS
 - Youth Retreat (Feb 10, 2026)

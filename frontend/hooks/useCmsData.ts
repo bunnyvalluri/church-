@@ -251,7 +251,7 @@ export const CONTACT_FALLBACK: SiteContact[] = [
     mapsUrl: "https://maps.google.com/?q=17.567689,78.443963",
     embedUrl: "https://www.google.com/maps/embed?pb=!4v1780922487353!6m8!1m7!1sB6MuJsAZw1kA_ZCw4b2pGw!2m2!1d17.56771525177928!2d78.44416184725885!3f298.8926008480041!4f-1.3244437518344796!5f0.7820865974627469",
     isStreetView: true,
-    serviceHours: "Sunday: 11:00 AM – 2:00 PM",
+    serviceHours: "Sunday: 11:00 AM – 1:00 PM",
     whatsappUrl: null,
     displayOrder: 2,
     isActive: true,

@@ -151,9 +151,17 @@ function formatTime(t: string | null | undefined): string {
 }
 
 function scheduleLabel(s: ChurchService): string {
+  if (s.occurrence) {
+    const hasTime = /\b(AM|PM|am|pm|\d{1,2}:\d{2})\b/.test(s.occurrence);
+    if (hasTime) return s.occurrence;
+    const parts: string[] = [s.occurrence];
+    if (s.startTime) {
+      parts.push(formatTime(s.startTime) + (s.endTime ? ` – ${formatTime(s.endTime)}` : ""));
+    }
+    return parts.join(" - ");
+  }
   const parts: string[] = [];
-  if (s.occurrence) parts.push(s.occurrence);
-  else if (s.serviceDay) parts.push(s.serviceDay);
+  if (s.serviceDay) parts.push(s.serviceDay);
   if (s.startTime) {
     parts.push(formatTime(s.startTime) + (s.endTime ? ` – ${formatTime(s.endTime)}` : ""));
   }

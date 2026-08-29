@@ -196,7 +196,7 @@ export const KCM_BRANCHES: Record<string, BranchLocation> = {
         day: "Sunday",
         dayTe: "ఆదివారం",
         dayHi: "रविवार",
-        time: "11:00 AM – 2:00 PM",
+        time: "11:00 AM – 1:00 PM",
         type: "Sunday Afternoon Worship Service",
         typeTe: "ఆదివారం మధ్యాహ్న ఆరాధన సేవ",
         typeHi: "रविवार दोपहर आराधना सेवा",
