@@ -183,7 +183,7 @@ export default function ContactPage() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">Location</h3>
                     <a
-                      href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries+Jeedimetla+Hyderabad"
+                      href="https://maps.google.com/?q=Kingdom+of+Christ+Ministries+15-201+Vivekananda+Nagar+Shapur+Nagar+Jeedimetla+Hyderabad"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs font-semibold text-[#f95700] hover:underline flex items-center gap-1"
@@ -192,7 +192,7 @@ export default function ContactPage() {
                     </a>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-1 font-medium">
-                    DOOR NO.119/A, pochamma, temple, IDA Jeedimetla, SUBHASHNAGAR, Qutubullapur, 500055, K.V.RANGAREDDY, Telangana
+                    15-201, Vivekananda Nagar, Srinivas Nagar, Shapur Nagar, Jeedimetla, Hyderabad, Telangana - 500055
                   </p>
                 </div>
               </div>
