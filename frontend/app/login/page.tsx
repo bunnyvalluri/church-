@@ -739,23 +739,6 @@ function LoginForm() {
                   {loginT.createAccountLink}
                 </Link>
               </motion.p>
-
-              {/* Staff Portals Direct Gateways */}
-              <motion.div variants={itemVariants} className="pt-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                <Link
-                  href="/admin/login"
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1"
-                >
-                  <span>🛡️ Admin Console</span>
-                </Link>
-                <span>•</span>
-                <Link
-                  href="/pastor"
-                  className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-1"
-                >
-                  <span>✝️ Pastor Portal</span>
-                </Link>
-              </motion.div>
             </motion.div>
           </form>
         </motion.div>
