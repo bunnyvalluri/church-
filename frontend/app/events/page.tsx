@@ -223,28 +223,16 @@ const PublicEventCard = React.memo(function PublicEventCard({
       )}
 
       {/* Thumbnail with Smart Poster Canvas (Full Complete Image, Never Cropped) */}
-      <div className={`relative h-60 sm:h-72 overflow-hidden bg-slate-950 flex items-center justify-center`}>
+      <div className={`relative h-60 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-950 flex items-center justify-center`}>
         {thumbnail ? (
-          <>
-            {/* Ambient blurred backdrop so there are never awkward blank margins */}
-            <img
-              src={encodeSrc(thumbnail)}
-              alt=""
-              aria-hidden="true"
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-50 scale-110 pointer-events-none select-none"
-            />
-            {/* Full uncropped crisp poster */}
-            <img
-              src={encodeSrc(thumbnail)}
-              alt={event.title}
-              loading="lazy"
-              decoding="async"
-              onClick={() => onOpenPreview?.(encodeSrc(thumbnail))}
-              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 cursor-pointer drop-shadow-lg"
-            />
-          </>
+          <img
+            src={encodeSrc(thumbnail)}
+            alt={event.title}
+            loading="lazy"
+            decoding="async"
+            onClick={() => onOpenPreview?.(encodeSrc(thumbnail))}
+            className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 cursor-pointer drop-shadow-lg"
+          />
         ) : (
           /* Decorative placeholder — visible, branded, never pitch-black */
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700">

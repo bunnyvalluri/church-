@@ -613,7 +613,7 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: 
 }
 
 /* ════════════════════════════ MEDIA THUMBNAIL CARD ════════════════════════════ */
-function MediaCard({ item, index, onPlay, lang, vT }: {
+const MediaCard = React.memo(function MediaCard({ item, index, onPlay, lang, vT }: {
   item: MediaItem; index: number; onPlay: () => void;
   lang: string; vT: any;
 }) {
@@ -627,7 +627,7 @@ function MediaCard({ item, index, onPlay, lang, vT }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={onPlay}
-      className="group relative w-full text-left overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col"
+      className="group relative w-full text-left overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-200 hover:-translate-y-1 cursor-pointer flex flex-col contain-paint"
     >
       {/* Thumbnail Aspect Box */}
       <div className="relative w-full overflow-hidden bg-slate-950" style={{ aspectRatio: "16/9" }}>
@@ -635,12 +635,13 @@ function MediaCard({ item, index, onPlay, lang, vT }: {
           src={encodeSrc(item.thumbnail)}
           alt={displayTitle}
           loading="lazy"
-          className={`w-full h-full object-cover transition-transform duration-500 ${hovered ? "scale-108" : "scale-100"}`}
+          decoding="async"
+          className={`w-full h-full object-cover transition-transform duration-300 ${hovered ? "scale-105" : "scale-100"}`}
           onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
         />
 
         {/* Gradient Scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
 
         {/* Play Ring */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -689,7 +690,7 @@ function MediaCard({ item, index, onPlay, lang, vT }: {
       </div>
     </div>
   );
-}
+});
 
 /* ════════════════════════════ SIDEBAR PLAYLIST ROW ════════════════════════════ */
 function PlaylistRow({ item, index, active, onSelect, lang, vT }: {

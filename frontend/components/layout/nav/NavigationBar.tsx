@@ -58,36 +58,52 @@ const NavigationBar = memo(function NavigationBar() {
     [isHomePage]
   );
 
-  // ── Scroll listener — rAF + passive for zero jank ──────────────────────────
+  // ── Scroll & Active Section Detection — Zero-Jank IntersectionObserver ────
   useEffect(() => {
-    let rafId: number;
+    // 1. Passive, throttled scroll threshold for navbar background blur
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 30);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    setIsScrolled(window.scrollY > 30);
+
+    // 2. High-performance IntersectionObserver for active section highlighting
     const hashSections = navItems
       .filter((i) => i.href.startsWith("#"))
       .map((i) => i.href.slice(1));
 
-    const onScroll = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        setIsScrolled(window.scrollY > 40);
-
-        // Active section detection
-        const active = hashSections.find((id) => {
-          const el = document.getElementById(id);
-          if (!el) return false;
-          const { top, bottom } = el.getBoundingClientRect();
-          return top <= 100 && bottom >= 100;
-        });
-        if (active) setActiveSection(active);
-      });
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -70% 0px",
+      threshold: 0,
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    hashSections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
+    });
+
     return () => {
       window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafId);
+      sectionObserver.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navItems]);
 
   // ── Global Escape key → closes drawer ──────────────────────────────────────
   useEffect(() => {

@@ -13,11 +13,11 @@ interface SermonCardProps {
 const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-sm hover:shadow-md dark:shadow-none transition-shadow duration-300 border border-slate-100 dark:border-white/[0.05]"
+      transition={{ duration: 0.4, delay: index * 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="group bg-slate-50 dark:bg-white/[0.02] rounded-3xl overflow-hidden shadow-sm hover:shadow-md dark:shadow-none transition-shadow duration-300 border border-slate-100 dark:border-white/[0.05] contain-paint"
     >
       {/* Thumbnail */}
       <div
@@ -29,7 +29,8 @@ const SermonCard = React.memo(({ sermon, index, handlePlaySermon, t }: SermonCar
           alt={sermon.title}
           fill
           loading="lazy"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          decoding="async"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
 

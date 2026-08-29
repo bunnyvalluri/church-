@@ -294,21 +294,16 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                 >
                   <div>
                     {/* Image Banner with Smart Poster Canvas */}
-                    <div className="relative h-60 w-full overflow-hidden bg-slate-950 flex items-center justify-center">
-                      <Image
-                        src={displayImage}
-                        alt=""
-                        aria-hidden="true"
-                        fill
-                        className="object-cover blur-xl opacity-45 scale-110 pointer-events-none select-none"
-                      />
+                    <div className="relative h-60 w-full overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-950 flex items-center justify-center">
                       <div className="relative z-10 w-full h-full">
                         <Image
                           src={displayImage}
                           alt={event.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-md"
+                          loading="lazy"
+                          decoding="async"
+                          className="object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
                         />
                       </div>
                       <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />

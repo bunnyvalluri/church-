@@ -251,19 +251,19 @@ export default function About({ initialAboutData, initialContactsData, initialPa
   return (
     <section
       id="about"
-      className="py-20 md:py-28 lg:py-36 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
+      className="py-16 md:py-24 lg:py-28 relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-transparent"
     >
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="max-w-3xl mx-auto text-center mb-20"
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl mx-auto text-center mb-14 sm:mb-18"
         >
-          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-4 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-4 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">
             {aboutLoading ? "..." : sectionBadge}
           </span>
           {aboutLoading ? (
@@ -274,13 +274,13 @@ export default function About({ initialAboutData, initialContactsData, initialPa
             </div>
           ) : (
             <>
-              <h2 className="text-4xl md:text-5xl font-black mb-5 text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">
                 {heading.split(" ").slice(0, -1).join(" ")}{" "}
                 <span className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] bg-clip-text text-transparent">
                   {heading.split(" ").slice(-1)[0]}
                 </span>
               </h2>
-              <p className="text-base sm:text-lg text-slate-600 dark:text-white/60 px-4 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-white/60 px-4 leading-relaxed">
                 {subtitle}
               </p>
             </>
@@ -289,16 +289,16 @@ export default function About({ initialAboutData, initialContactsData, initialPa
 
         {/* Mission Statement */}
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="max-w-4xl mx-auto mb-20"
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="max-w-4xl mx-auto mb-14 sm:mb-18"
         >
-          <div className="relative bg-white dark:bg-white/[0.02] rounded-[2rem] p-10 md:p-14 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
-            <div className="absolute left-0 top-8 bottom-8 w-1 bg-gradient-to-b from-transparent via-[hsl(var(--primary))] to-transparent rounded-full" />
-            <div className="relative z-10 pl-4">
-              <h3 className="text-xl sm:text-2xl font-bold mb-5 text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <div className="relative bg-white dark:bg-white/[0.02] rounded-[2rem] p-8 sm:p-10 md:p-12 border border-slate-100 dark:border-white/[0.06] shadow-sm overflow-hidden">
+            <div className="absolute left-0 top-6 bottom-6 w-1 bg-gradient-to-b from-transparent via-[hsl(var(--primary))] to-transparent rounded-full" />
+            <div className="relative z-10 pl-3 sm:pl-4">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
                 <span className="text-2xl">✝️</span>
                 {aboutLoading ? "..." : missionTitle}
               </h3>
@@ -309,7 +309,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-4/5" />
                 </div>
               ) : (
-                <p className="text-base sm:text-lg text-slate-600 dark:text-white/70 leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-white/70 leading-relaxed">
                   {missionText}
                 </p>
               )}
@@ -317,7 +317,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
           {aboutLoading
             ? Array.from({ length: 4 }).map((_, i) => <ValueCardSkeleton key={i} />)
             : values.map((value, index) => {
@@ -325,25 +325,25 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.5, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-                    className="group relative bg-white dark:bg-white/[0.02] rounded-3xl p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+                    viewport={{ once: true, margin: "-30px" }}
+                    transition={{ duration: 0.4, delay: index * 0.06, ease: [0.21, 0.47, 0.32, 0.98] }}
+                    className="group relative bg-white dark:bg-white/[0.02] rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                   >
                     <div
                       className={`absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r ${value.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl`}
                     />
                     <div className="relative z-10">
                       <div
-                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${value.gradient} flex items-center justify-center mb-6 shadow-md services-icon`}
+                        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${value.gradient} flex items-center justify-center mb-5 shadow-md services-icon`}
                       >
-                        <Icon className="h-7 w-7 text-white" />
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-bold mb-2.5 text-slate-900 dark:text-white tracking-tight">
                         {value.title}
                       </h3>
-                      <p className="text-slate-600 dark:text-white/60 leading-relaxed text-sm">
+                      <p className="text-slate-600 dark:text-white/60 leading-relaxed text-xs sm:text-sm">
                         {value.description}
                       </p>
                     </div>
@@ -354,73 +354,62 @@ export default function About({ initialAboutData, initialContactsData, initialPa
 
         {/* Church Info Banner — Pastor + Contacts */}
         <motion.div
-          initial={{ opacity: 0, y: 48 }}
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mt-24 max-w-5xl mx-auto relative group"
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="mt-16 sm:mt-20 max-w-5xl mx-auto relative group"
         >
-          <div className="absolute -top-12 -right-12 w-96 h-96 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/10 dark:from-violet-500/10 dark:to-purple-500/5 blur-3xl pointer-events-none -z-10 group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute -bottom-12 -left-12 w-96 h-96 rounded-full bg-gradient-to-br from-cyan-500/15 to-blue-500/10 dark:from-cyan-500/5 dark:to-blue-500/5 blur-3xl pointer-events-none -z-10 group-hover:scale-105 transition-transform duration-700" />
-
-          <div className="relative bg-white/40 dark:bg-[#090a15]/40 backdrop-blur-xl border border-white/60 dark:border-white/[0.08] shadow-[0_8px_32px_0_rgba(31,38,135,0.06)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-slate-800 dark:text-white rounded-[2.5rem] p-10 sm:p-12 md:p-16 overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-[0.06] dark:opacity-[0.03]"
-              style={{
-                backgroundImage: `radial-gradient(circle, currentColor 1.2px, transparent 1.2px)`,
-                backgroundSize: "28px 28px",
-              }}
-            />
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-72 h-72 rounded-full bg-violet-400/10 dark:bg-violet-500/5 blur-3xl pointer-events-none" />
-
+          <div className="relative bg-white/80 dark:bg-[#090a15]/80 backdrop-blur-md border border-slate-200/80 dark:border-white/[0.08] shadow-lg text-slate-800 dark:text-white rounded-[2rem] p-6 sm:p-10 md:p-14 overflow-hidden">
             <div className="relative z-10">
               {/* Pastor Section */}
               {pastorsLoading ? (
                 <PastorSkeleton />
               ) : primaryPastor ? (
-                <div className="flex flex-col items-center text-center mb-12 pb-12 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
                     <Image
                       src={primaryPastor.image ?? "/pastor.png"}
                       alt={primaryPastor.name}
                       fill
-                      sizes="112px"
+                      sizes="(max-width: 640px) 96px, 112px"
                       className="object-cover"
+                      priority
                     />
                   </div>
-                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-2">
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5">
                     {ledByLabel}
                   </p>
-                  <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white">
                     {pastorTitle}
                   </h3>
-                  <p className="text-xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">
+                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">
                     {pastorName}
                   </p>
-                  <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-white/50 mt-1">
                     {pastorDesignation}
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col items-center text-center mb-12 pb-12 border-b border-slate-200/80 dark:border-white/10">
-                  <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
-                    <Image src="/pastor.png" alt="Bishop Kurra Kristhu Raju" fill sizes="112px" className="object-cover" />
+                <div className="flex flex-col items-center text-center mb-10 pb-10 border-b border-slate-200/80 dark:border-white/10">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white dark:border-white/10 shadow-xl mb-4 relative hover:scale-105 transition-transform duration-300 bg-slate-900">
+                    <Image src="/pastor.png" alt="Bishop Kurra Kristhu Raju" fill sizes="112px" className="object-cover" priority />
                   </div>
-                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-2">{ledByLabel}</p>
-                  <h3 className="text-2xl md:text-4xl font-extrabold mb-2 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
-                  <p className="text-xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">{t.about.pastorName}</p>
+                  <p className="text-indigo-600 dark:text-amber-400 font-bold uppercase tracking-[0.2em] text-xs mb-1.5">{ledByLabel}</p>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-1.5 tracking-tight text-slate-900 dark:text-white">{t.about.pastor}</h3>
+                  <p className="text-lg sm:text-2xl md:text-3xl font-black tracking-wide text-amber-600 dark:text-amber-300">{t.about.pastorName}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
                 {/* Contact Details */}
                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <h3 className="text-xl font-bold mb-6 tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                     <span className="text-indigo-600 dark:text-indigo-400">📍</span>
                     {t.hero.ctaPrimary}
                   </h3>
                   {contactsLoading ? (
-                    <div className="animate-pulse space-y-2 w-full mb-8">
+                    <div className="animate-pulse space-y-2 w-full mb-6">
                       <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
                       <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
                       <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3" />
@@ -433,7 +422,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                         role="button"
                         tabIndex={0}
                         aria-label={`View ${primaryContact.branchName} contact details`}
-                        className="space-y-1 text-slate-500 dark:text-slate-400 mb-8 text-sm leading-relaxed border-l-2 border-slate-200 dark:border-white/10 pl-4 cursor-pointer hover:text-violet-600 dark:hover:text-amber-300 transition-colors select-none outline-none focus-visible:ring-1 focus-visible:ring-violet-500 rounded"
+                        className="space-y-1 text-slate-500 dark:text-slate-400 mb-6 text-xs sm:text-sm leading-relaxed border-l-2 border-slate-200 dark:border-white/10 pl-3.5 cursor-pointer hover:text-violet-600 dark:hover:text-amber-300 transition-colors select-none outline-none focus-visible:ring-1 focus-visible:ring-violet-500 rounded"
                       >
                         {(
                           language === "te" && primaryContact.addressTe
@@ -447,20 +436,20 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                             <p key={i}>{line}</p>
                           ))}
                       </div>
-                      <div className="flex flex-col gap-3 w-full sm:w-auto">
+                      <div className="flex flex-col gap-2.5 w-full sm:w-auto">
                         {primaryContact.phones.map((phone, i) => (
                           <a
                             key={i}
                             href={`tel:${phone.number.replace(/\s/g, "")}`}
-                            className="inline-flex items-center gap-3 bg-white/60 hover:bg-white dark:bg-white/[0.03] dark:hover:bg-white/[0.08] px-3.5 py-3 sm:px-5 sm:py-3.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] hover:border-violet-400 dark:hover:border-amber-400/50 transition-all duration-300 cursor-pointer w-full group/phone shadow-sm"
+                            className="inline-flex items-center gap-2.5 bg-white/60 hover:bg-white dark:bg-white/[0.03] dark:hover:bg-white/[0.08] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] hover:border-violet-400 dark:hover:border-amber-400/50 transition-all duration-200 cursor-pointer w-full group/phone shadow-sm"
                           >
-                            <Phone className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform flex-shrink-0" />
+                            <Phone className="w-4 h-4 text-violet-600 dark:text-amber-300 group-hover/phone:scale-110 transition-transform flex-shrink-0" />
                             <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 min-w-0">
-                              <span className="text-sm min-[380px]:text-base md:text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+                              <span className="text-xs min-[380px]:text-sm md:text-base font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
                                 {phone.number}
                               </span>
                               {phone.label && (
-                                <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-white/60 whitespace-nowrap">
+                                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-white/60 whitespace-nowrap">
                                   ({phone.label})
                                 </span>
                               )}
@@ -474,17 +463,17 @@ export default function About({ initialAboutData, initialContactsData, initialPa
 
                 {/* Branch Locations */}
                 <div>
-                  <h3 className="text-xl font-bold mb-6 text-center lg:text-left tracking-tight text-slate-950 dark:text-white">
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-center lg:text-left tracking-tight text-slate-950 dark:text-white">
                     {t.services.title}
                   </h3>
                   {contactsLoading ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="animate-pulse h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl" />
+                        <div key={i} className="animate-pulse h-14 bg-slate-100 dark:bg-slate-900 rounded-2xl" />
                       ))}
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {contacts.map((contact, idx) => (
                         <BranchCard key={contact.id} contact={contact} idx={idx} language={language} />
                       ))}
@@ -499,3 +488,4 @@ export default function About({ initialAboutData, initialContactsData, initialPa
     </section>
   );
 }
+

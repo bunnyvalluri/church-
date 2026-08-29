@@ -38,7 +38,7 @@ export default function LeadershipPage() {
 
   // Ministry directory filter & search
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState<string>(" ");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Selected ministry modal
   const [selectedMinistry, setSelectedMinistry] = useState<any | null>(null);

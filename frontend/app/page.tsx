@@ -85,32 +85,32 @@ export default async function Home() {
       <main className="min-h-screen overflow-x-hidden relative">
         <Hero initialHeroData={heroData} initialStatsData={statsData} />
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <NgoShowcase />
         </div>
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <About initialAboutData={aboutData} initialContactsData={contactsData} initialPastorsData={pastorsData} />
         </div>
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <Services initialServices={servicesData} />
         </div>
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <Events initialEvents={eventsData} />
         </div>
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <Sermons initialSermons={formattedSermons} />
         </div>
 
-        <div className="cv-auto">
+        <div>
           <SectionDivider />
           <ScrollReveal delay={0.1}><Contact /></ScrollReveal>
           <Footer />

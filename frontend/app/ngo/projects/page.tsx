@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   Users,
@@ -455,20 +456,13 @@ export default function NgoProjectsPage() {
                     {/* Cover image & Floating Badges */}
                     <div className="relative aspect-video overflow-hidden bg-slate-950">
                       {project.imageUrl ? (
-                        <img
+                        <Image
                           src={encodeSrc(project.imageUrl)}
                           alt={displayTitle}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            if (project.category === "ASHRAMAM") {
-                              target.src = "/bethany_ashramam_care_image.png";
-                            } else if (project.category === "REHABILITATION") {
-                              target.src = "/home_for_disabled_rehab_care.png";
-                            } else {
-                              target.src = "/ngo_outreach_drive_thumbnail.png";
-                            }
-                          }}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-900">

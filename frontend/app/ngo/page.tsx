@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart, Users, Video, Image as ImageIcon, ArrowRight, ShieldCheck,
   Award, Star, CheckCircle2, Sparkles, HandHeart, FileText, Gift,
@@ -204,10 +205,17 @@ export default function NgoOverviewPage() {
 
           <div className="space-y-4">
             <div className="relative group rounded-3xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-slate-900 shadow-2xl">
-              <div className="aspect-[4/3] bg-gradient-to-br from-slate-900 to-slate-950 p-2 flex items-center justify-center">
-                <img src="/kcm_society_ngo.jpg" alt="KCM Society NGO" className="w-full h-full object-contain rounded-2xl group-hover:scale-[1.03] transition-transform duration-700" />
+              <div className="aspect-[4/3] bg-gradient-to-br from-slate-900 to-slate-950 p-2 flex items-center justify-center relative">
+                <Image
+                  src="/kcm_society_ngo.jpg"
+                  alt="KCM Society NGO"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-contain rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
+                  priority
+                />
               </div>
-              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 px-3 py-1.5 rounded-full bg-slate-950/90 border border-amber-400/50 text-amber-400 text-[10px] sm:text-[11px] font-bold font-mono shadow-xl flex items-center gap-1.5">
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 px-3 py-1.5 rounded-full bg-slate-950/90 border border-amber-400/50 text-amber-400 text-[10px] sm:text-[11px] font-bold font-mono shadow-xl flex items-center gap-1.5 z-10">
                 <ShieldCheck className="w-3.5 h-3.5" /> Regd No: 206/2024
               </div>
             </div>
@@ -432,8 +440,15 @@ export default function NgoOverviewPage() {
               ].map(({ label, sub, image, Ico }, i) => (
                 <div key={i} className="rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm text-left">
                   <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden relative group">
-                    <img src={image} alt={label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Image
+                      src={image}
+                      alt={label}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <Ico className="w-6 h-6 text-white" />
                     </div>
                   </div>

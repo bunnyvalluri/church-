@@ -126,10 +126,10 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
           className="max-w-3xl mx-auto text-center mb-10 sm:mb-16 lg:mb-20"
         >
           <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[hsl(var(--primary))] mb-3 px-3 py-1.5 rounded-full bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)]">

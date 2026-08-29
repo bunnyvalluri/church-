@@ -511,13 +511,9 @@ html {
    SMOOTH GLOBAL ENHANCEMENTS
    ============================== */
 
-/* Optimized transitions: Transition specific properties to avoid triggering heavy reflow/repaint calculations on every layout element */
-a, button, input, textarea, select, [role="button"] {
-  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-              background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-              border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Scoped transitions for interactive elements without layout thrashing */
+a, button, [role="button"] {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
 /* Smooth image scaling */
@@ -727,24 +723,13 @@ html[lang="hi"] h3 {
 }
 
 /* ==========================================================================
-   🌀 ICON HOVER — lightweight scale only (rotation causes GPU layer per-SVG)
+   🌀 ICON HOVER — scoped to hover-icon and explicit group targets
    ========================================================================== */
 
-svg.lucide,
-.lucide,
-[class^="lucide-"],
-.lucide-react {
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-a:hover svg.lucide,
-button:hover svg.lucide,
-.group:hover svg.lucide,
-[role="button"]:hover svg.lucide,
-a:hover .lucide,
-button:hover .lucide,
+.hover-icon,
 .group:hover .lucide {
-  transform: scale(1.15);
+  transform: scale(1.08);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ==========================================================================

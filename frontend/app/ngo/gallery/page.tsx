@@ -231,17 +231,7 @@ const GalleryCard = React.memo(function GalleryCard({
             <span className="text-[8px] uppercase tracking-widest text-purple-300/80 font-mono">Service Photo</span>
           </div>
         ) : (
-          <>
-            {/* Ambient Blurred Layer for color-matched background */}
-            <Image
-              src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
-              alt=""
-              fill
-              unoptimized
-              aria-hidden="true"
-              className="object-cover blur-md opacity-35 scale-110 pointer-events-none select-none"
-            />
-
+          <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-purple-950/20 to-slate-950 flex items-center justify-center">
             {/* Crisp Contained Foreground Image - Never crops Telugu text or newspaper press release headlines! */}
             <Image
               src={encodeSrc(item.thumbnailUrl || item.imageUrl)}
@@ -249,9 +239,11 @@ const GalleryCard = React.memo(function GalleryCard({
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               priority={priority}
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
               unoptimized
-              className={`object-contain z-10 transform group-hover:scale-105 transition-all duration-500 ease-out ${
-                isLoaded ? "opacity-100 scale-100" : "opacity-90 blur-sm"
+              className={`object-contain z-10 transform group-hover:scale-105 transition-all duration-300 ease-out ${
+                isLoaded ? "opacity-100" : "opacity-0"
               }`}
               onLoad={() => {
                 loadedImagesCache.add(item.thumbnailUrl);
@@ -263,7 +255,7 @@ const GalleryCard = React.memo(function GalleryCard({
                 setIsLoaded(true);
               }}
             />
-          </>
+          </div>
         )}
 
         {/* Premium Hover / Touch Overlay */}
