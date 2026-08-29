@@ -18,7 +18,8 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
   useEffect(() => {
     if (!mounted) return;
     if (status === "unauthenticated") {
-      router.replace("/login?next=/admin/dashboard");
+      const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/admin/dashboard";
+      router.replace(`/login?next=${encodeURIComponent(currentPath)}`);
     } else if (
       status === "authenticated" &&
       user &&

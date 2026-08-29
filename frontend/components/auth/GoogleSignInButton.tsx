@@ -439,8 +439,10 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
   useEffect(() => {
     isMountedRef.current = true;
-    // Pre-load GIS script in the background silently
-    loadGoogleGsiScript(4000).catch(() => {});
+    // Defer GIS script loading until after initial paint
+    const timer = setTimeout(() => {
+      loadGoogleGsiScript(4000).catch(() => {});
+    }, 1500);
 
     // Recover stuck state if user switches tabs or returns after dismissing popup on mobile
     const handleFocusRecovery = () => {
@@ -460,6 +462,7 @@ export default function GoogleSignInButton({ onError, className = "" }: GoogleSi
 
     return () => {
       isMountedRef.current = false;
+      clearTimeout(timer);
       clearTimers();
       window.removeEventListener("focus", handleFocusRecovery);
       document.removeEventListener("visibilitychange", handleFocusRecovery);

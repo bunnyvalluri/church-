@@ -225,6 +225,13 @@ const CATEGORIES = [
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function AIChat() {
   const pathname = usePathname();
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname?.startsWith("/admin/login") ||
+    pathname?.startsWith("/admin/register");
+
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -239,13 +246,14 @@ export default function AIChat() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
+    if (isAuthPage) return;
     const handleMenuToggle = (e: Event) => {
       const customEv = e as CustomEvent<{ isOpen: boolean }>;
       setIsMenuOpen(!!customEv.detail?.isOpen);
     };
     window.addEventListener("mobile-menu-toggle", handleMenuToggle);
     return () => window.removeEventListener("mobile-menu-toggle", handleMenuToggle);
-  }, []);
+  }, [isAuthPage]);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, setMessages, reload } = useChat({
     api: "/api/chat",

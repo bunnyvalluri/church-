@@ -123,9 +123,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
 
     // 1. Initial verification against server session
-    fetch('/api/auth/session')
-      .then((res) => res.json())
-      .then((data) => {
+    let initialSessionFetched = false;
+    const checkServerSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        const data = await res.json();
         if (data?.authenticated && data?.user) {
           setUser({
             uid: data.user.uid,
@@ -134,10 +136,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             image: data.user.image || null,
             role: data.user.role || 'MEMBER',
           });
-          setLoading(false);
+        } else {
+          setUser(null);
         }
-      })
-      .catch(() => {});
+      } catch {
+        setUser(null);
+      } finally {
+        initialSessionFetched = true;
+        setLoading(false);
+      }
+    };
+
+    checkServerSession();
 
     let unsubscribe: (() => void) | undefined;
 
@@ -159,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 role: syncedRole,
               };
               setUser(updatedUser);
-              setLoading(false);
             } else {
               setUser({
                 uid: firebaseUser.uid,
@@ -168,36 +177,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 image: firebaseUser.photoURL || null,
                 role: 'MEMBER',
               });
-              setLoading(false);
             }
           } catch (syncErr) {
             console.warn('[AUTH] Database role sync error:', syncErr);
+          } finally {
             setLoading(false);
           }
         } else {
-          // Verify with server session before clearing user
-          fetch('/api/auth/session')
-            .then((res) => res.json())
-            .then((data) => {
-              if (data?.authenticated && data?.user) {
-                setUser({
-                  uid: data.user.uid,
-                  email: data.user.email || '',
-                  name: data.user.name || 'Member',
-                  image: data.user.image || null,
-                  role: data.user.role || 'MEMBER',
-                });
-              } else {
-                clearSessionCookies();
-                setUser(null);
-              }
-              setLoading(false);
-            })
-            .catch(() => {
-              clearSessionCookies();
-              setUser(null);
-              setLoading(false);
-            });
+          // If initial session check has already completed and found no user, don't repeat fetch
+          if (initialSessionFetched) {
+            clearSessionCookies();
+            setUser(null);
+            setLoading(false);
+          } else {
+            checkServerSession();
+          }
         }
       });
     }

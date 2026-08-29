@@ -1,15 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function BackToTop() {
+  const pathname = usePathname();
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname?.startsWith("/admin/login") ||
+    pathname?.startsWith("/admin/register");
+
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    if (isAuthPage) return;
     setMounted(true);
     const onScroll = () => {
       const scrollY = window.scrollY;
@@ -23,7 +33,9 @@ export default function BackToTop() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isAuthPage]);
+
+  if (isAuthPage) return null;
 
   const isNearTop = progress < 50;
 

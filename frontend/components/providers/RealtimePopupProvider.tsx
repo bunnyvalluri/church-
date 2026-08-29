@@ -14,11 +14,16 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
     const timer = setTimeout(async () => {
     // 1. Dynamically import socket.io-client to avoid blocking the initial JS bundle
     const { default: io } = await import("socket.io-client");
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, {
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+    if (!socketUrl && typeof window !== "undefined" && window.location.protocol === "https:") {
+      // In production HTTPS without configured socket companion URL, skip connection
+      return;
+    }
+    const resolvedUrl = socketUrl || "http://localhost:3001";
+    const socket = io(resolvedUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 3,
     });
     socketRef.current = socket;
 

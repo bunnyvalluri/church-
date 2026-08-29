@@ -25,7 +25,8 @@ export default function PastorPortalLayout({ children }: { children: React.React
   useEffect(() => {
     if (!mounted) return;
     if (status === "unauthenticated") {
-      router.replace("/login?next=/pastor/main/dashboard");
+      const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/pastor/main/dashboard";
+      router.replace(`/login?next=${encodeURIComponent(currentPath)}`);
     } else if (
       status === "authenticated" &&
       user &&
