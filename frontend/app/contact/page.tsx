@@ -20,7 +20,8 @@ import {
   Clock, 
   Sparkles,
   ShieldCheck,
-  Send
+  Send,
+  ChevronLeft
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -102,9 +103,19 @@ export default function ContactPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 mb-4 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#f95700]" />
-            <span>Kingdom of Christ Ministries • Hyderabad</span>
+          <div className="flex flex-wrap items-center gap-3 mb-5">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-purple-200/80 dark:border-white/15 text-xs font-bold text-slate-800 dark:text-white shadow-sm transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
+            >
+              <ChevronLeft className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back to Home</span>
+            </Link>
+
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-[#f95700]" />
+              <span>Kingdom of Christ Ministries • Hyderabad</span>
+            </div>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
