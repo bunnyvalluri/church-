@@ -172,7 +172,7 @@ export default function AdminSmsTestPage() {
           {/* Left Column: Form Fields */}
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-1.5">
                 Recipient Mobile Number (India +91)
               </label>
               <input
@@ -180,35 +180,35 @@ export default function AdminSmsTestPage() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+919876543210 or 10-digit number"
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 shadow-xs transition-all"
               />
               <div className="flex items-center justify-between mt-1 text-[11px]">
-                <span className="text-slate-400">
-                  Normalized E.164: <strong className="text-slate-700 dark:text-slate-300">{normalizedPreview}</strong>
+                <span className="text-slate-500 dark:text-slate-400 font-medium">
+                  Normalized E.164: <strong className="text-slate-800 dark:text-slate-200">{normalizedPreview}</strong>
                 </span>
                 {isValidPhone ? (
-                  <span className="text-emerald-600 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Valid format
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Valid format
                   </span>
                 ) : (
-                  <span className="text-rose-500 font-bold flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" /> Needs 10 digits
+                  <span className="text-rose-500 dark:text-rose-400 font-bold flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" /> Needs 10 digits
                   </span>
                 )}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-1.5">
                 Template Preset
               </label>
               <select
                 value={selectedTemplateId}
                 onChange={(e) => handleTemplateChange(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 shadow-xs transition-all"
               >
                 {SAMPLE_TEMPLATES.map((tmpl) => (
-                  <option key={tmpl.id} value={tmpl.id}>
+                  <option key={tmpl.id} value={tmpl.id} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     {tmpl.name}
                   </option>
                 ))}
@@ -217,10 +217,10 @@ export default function AdminSmsTestPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   SMS Message Body
                 </label>
-                <span className="text-[11px] text-slate-400 font-medium">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                   {isUnicode ? "UCS-2 Unicode" : "GSM 7-bit"} Encoding
                 </span>
               </div>
@@ -229,13 +229,13 @@ export default function AdminSmsTestPage() {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Enter SMS message content..."
-                className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans"
+                className="w-full p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 shadow-xs font-sans transition-all"
               />
 
               {/* Character & Segment Counter Bar */}
-              <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+              <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 <span>
-                  Characters: <strong>{length}</strong>
+                  Characters: <strong className="text-slate-800 dark:text-slate-200">{length}</strong>
                 </span>
                 <span>
                   Billable Segments: <strong className="text-indigo-600 dark:text-indigo-400">{segments}</strong> ({isUnicode ? "67 chars/part" : "153 chars/part"})
@@ -245,22 +245,24 @@ export default function AdminSmsTestPage() {
           </div>
 
           {/* Right Column: Phone Visual Preview */}
-          <div className="flex flex-col items-center justify-center p-6 bg-slate-100/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 space-y-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Mobile Message Preview</span>
+          <div className="flex flex-col items-center justify-center p-6 bg-slate-50/80 dark:bg-slate-800/40 rounded-3xl border border-slate-200 dark:border-slate-800/80 space-y-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Live Message Preview
+            </span>
             
             {/* Phone Screen Mockup */}
-            <div className="w-full max-w-[280px] bg-slate-900 text-white rounded-[2.5rem] p-4 shadow-2xl border-4 border-slate-700 space-y-3">
-              <div className="w-20 h-4 bg-slate-800 rounded-full mx-auto" />
-              <div className="text-center text-[10px] text-slate-400 font-semibold">
+            <div className="w-full max-w-[280px] bg-slate-100 dark:bg-[#0A0C1A] text-slate-900 dark:text-white rounded-[2.5rem] p-4 shadow-xl border-4 border-slate-300 dark:border-slate-700 space-y-3 transition-colors">
+              <div className="w-20 h-4 bg-slate-300 dark:bg-slate-800 rounded-full mx-auto" />
+              <div className="text-center text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider">
                 KCM Ministries Alert
               </div>
-              <div className="bg-indigo-600 text-white p-3 rounded-2xl rounded-tl-sm text-xs leading-relaxed whitespace-pre-wrap shadow-sm">
+              <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white p-3.5 rounded-2xl rounded-tl-sm text-xs leading-relaxed whitespace-pre-wrap shadow-md">
                 {messageText || "Type a message to see preview..."}
               </div>
-              <div className="text-[9px] text-slate-500 text-right">Just now</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 text-right font-medium">Just now</div>
             </div>
 
-            <div className="text-center text-xs text-slate-500 space-y-1">
+            <div className="text-center text-xs text-slate-500 dark:text-slate-400 space-y-1">
               <p>Protected by rate limiting & idempotency keys</p>
             </div>
           </div>
