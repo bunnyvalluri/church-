@@ -112,6 +112,14 @@ async function main() {
       // Extract date from subfolder, e.g. 15-05-2026(AASHRAMAM)
       const dateMatch = filePath.match(/(\d{2}-\d{2}-\d{4})/);
       if (dateMatch) dateStr = dateMatch[1];
+    } else if (filePath.includes('HOME_FOR_THE_DISABLED (SECUNDERABAD)')) {
+      category = 'DISABLED-AASHRAMAM';
+      locationName = 'Home for the Disabled (Secunderabad)';
+      dateStr = '23-07-2026';
+    } else if (filePath.includes('MISSIONARIES OF CHARITY')) {
+      category = 'MISSIONARIES-OF-CHARITY';
+      locationName = 'Missionaries of Charity (Secunderabad Bhoiguda)';
+      dateStr = '25-05-2026';
     } else if (filePath.includes('HOME_FOR_THE_DISABLED_AASHRAMAM')) {
       category = 'DISABLED-AASHRAMAM';
       locationName = 'Home for the Disabled Ashramam';
@@ -155,11 +163,14 @@ async function main() {
     } else if (category === 'ASHRAMAM') {
       title = `Bethany Ashramam Provisions${dateLabel} - Photo ${photoNumber}`;
       description = 'Delivering monthly groceries, rice bags, school supplies, and healthy food items to the children at Bethany Samrakshana Ashramam.';
+    } else if (category === 'MISSIONARIES-OF-CHARITY') {
+      title = `Missionaries of Charity Bhoiguda Outreach${dateLabel} - Photo ${photoNumber}`;
+      description = 'KCM compassionate care mission providing nutrition, essential care supplies, emotional support, and meals at Missionaries of Charity, Bhoiguda.';
     } else if (category === 'DISABLED-AASHRAMAM') {
-      title = `Disabled Care Ashramam Visit - Photo ${photoNumber}`;
-      description = 'Providing comfort kits, warm blankets, bedsheets, and moral support to the residents of the Home for the Disabled.';
+      title = `Home for the Disabled Care${dateLabel} - Photo ${photoNumber}`;
+      description = 'Providing comfort kits, warm blankets, bedsheets, wheelchairs, and physical support to residents of the Home for the Disabled.';
     } else {
-      title = `NGO Service Outreach - Photo ${photoNumber}`;
+      title = `NGO Service Outreach${dateLabel} - Photo ${photoNumber}`;
       description = 'KCM Social Service team in action, carrying out physical ministries to help the needy and underprivileged.';
     }
 

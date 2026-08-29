@@ -80,6 +80,7 @@ const CATEGORIES = [
   { label: "Gandhi Hospital", value: "GANDHI-HOSPITAL" },
   { label: "Bethany Ashramam", value: "ASHRAMAM" },
   { label: "Home for Disabled", value: "DISABLED-AASHRAMAM" },
+  { label: "Missionaries of Charity", value: "MISSIONARIES-OF-CHARITY" },
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -89,6 +90,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   "GANDHI-HOSPITAL": "from-amber-500 to-orange-400",
   "ASHRAMAM": "from-fuchsia-600 to-pink-400",
   "DISABLED-AASHRAMAM": "from-rose-500 to-red-400",
+  "MISSIONARIES-OF-CHARITY": "from-teal-600 to-emerald-500",
 };
 
 const CATEGORY_STYLES: Record<string, {
@@ -139,6 +141,13 @@ const CATEGORY_STYLES: Record<string, {
     badgeActive: "bg-white/20 text-white font-black",
     badgeInactive: "bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 font-bold",
     dot: "bg-rose-500",
+  },
+  "MISSIONARIES-OF-CHARITY": {
+    active: "bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-500 text-white border-transparent shadow-lg shadow-teal-500/25 scale-[1.02]",
+    inactive: "bg-white dark:bg-slate-900 border-teal-200 dark:border-teal-900/50 text-teal-700 dark:text-teal-300 hover:bg-teal-50/80 dark:hover:bg-teal-950/40 hover:border-teal-400",
+    badgeActive: "bg-white/20 text-white font-black",
+    badgeInactive: "bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-bold",
+    dot: "bg-teal-500",
   },
 };
 
@@ -748,13 +757,15 @@ export default function NgoGalleryPage() {
                     cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
-                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" : "దివ్యాంగుల సేవ"
+                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల సేవ"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
-                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" : "दिव्यांग देखभाल"
+                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग देखभाल"
                   : cat.label;
 
               return (
@@ -794,13 +805,15 @@ export default function NgoGalleryPage() {
                     cat.value === "NIMS-HOSPITAL" ? "నిమ్స్ హాస్పిటల్" :
                     cat.value === "GOVT-HOSPITAL" ? "ప్రభుత్వ హాస్పిటల్" :
                     cat.value === "GANDHI-HOSPITAL" ? "గాంధీ హాస్పిటల్" :
-                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" : "దివ్యాంగుల సేవ"
+                    cat.value === "ASHRAMAM" ? "బెథానీ ఆశ్రమం" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "మిషనరీస్ ఆఫ్ చారిటీ" : "దివ్యాంగుల సేవ"
                   : language === "hi"
                   ? cat.value === "ALL" ? "सभी तस्वीरें" :
                     cat.value === "NIMS-HOSPITAL" ? "निम्स अस्पताल" :
                     cat.value === "GOVT-HOSPITAL" ? "सरकारी अस्पताल" :
                     cat.value === "GANDHI-HOSPITAL" ? "गांधी अस्पताल" :
-                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" : "दिव्यांग देखभाल"
+                    cat.value === "ASHRAMAM" ? "बेथानी आश्रम" :
+                    cat.value === "MISSIONARIES-OF-CHARITY" ? "मिशनरीज ऑफ चैरिटी" : "दिव्यांग देखभाल"
                   : cat.label;
 
               return (

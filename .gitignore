@@ -92,5 +92,9 @@ eslint-report*.txt
 !frontend/public/KCM_NGO_SERVICES/
 !frontend/public/KCM_NGO_SERVICES/**/*.mp4
 
+# Exclude raw uncompressed camera files exceeding GitHub's 100MB limit
+frontend/public/KCM_NGO_SERVICES/**/VID_20260825_120657614.mp4
+frontend/public/KCM_NGO_SERVICES/**/VID_20260825_120805292.mp4
+
 # temp/test scripts
 frontend/prisma/test-service.js

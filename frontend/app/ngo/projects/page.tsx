@@ -92,6 +92,24 @@ const PROJECT_TRANSLATIONS: Record<string, {
     },
     location: { te: "పునరావాస కేంద్రం, జీడిమెట్ల", hi: "पुनर्वास केंद्र, जीदीमेतला" },
     beneficiaries: { te: "85+ దివ్యాంగ వ్యక్తులు", hi: "85+ दिव्यांग व्यक्ति" }
+  },
+  "preset-charity": {
+    title: { te: "మిషనరీస్ ఆఫ్ చారిటీ భోయిగూడ సేవ", hi: "मिशनरीज ऑफ चैरिटी भोईगुड़ा सेवा" },
+    desc: {
+      te: "నిస్సహాయులు మరియు నిరాశ్రయులకు పౌష్టికాహారం, దుప్పట్లు, బెడ్డింగ్ మరియు సంరక్షణ సహాయాన్ని అందించడం.",
+      hi: "असहाय और निराश्रित लोगों को पौष्टिक भोजन, कंबल, बिस्तर और देखभाल सहायता प्रदान करना।"
+    },
+    location: { te: "మిషనరీస్ ఆఫ్ చారిటీ, భోయిగూడ", hi: "मिशनरीज ऑफ चैरिटी, भोईगुड़ा" },
+    beneficiaries: { te: "150+ నివాసితులు", hi: "150+ निवासी" }
+  },
+  "preset-disabled-secunderabad": {
+    title: { te: "సికింద్రాబాద్ దివ్యాంగుల హోమ్ సహాయ డ్రైవ్", hi: "सिकंदराबाद दिव्यांग गृह सहायता अभियान" },
+    desc: {
+      te: "సికింద్రాబాద్‌లోని దివ్యాంగుల హోమ్‌లో నిత్యావసర సరుకులు, పాలు, దుస్తులు, పారిశుద్ధ్య సామాగ్రి మరియు వైద్య సహాయం అందించడం.",
+      hi: "सिकंदराबाद स्थित दिव्यांग गृह में राशन, दूध, वस्त्र, स्वच्छता सामग्री और चिकित्सा सहायता प्रदान करना।"
+    },
+    location: { te: "దివ్యాంగుల హోమ్, సికింద్రాబాద్", hi: "दिव्यांग गृह, सिकंदराबाद" },
+    beneficiaries: { te: "200+ దివ్యాంగులు & వృద్ధులు", hi: "200+ दिव्यांग और बुजुर्ग" }
   }
 };
 
@@ -152,6 +170,32 @@ export default function NgoProjectsPage() {
       location: "Rehab Center, Jeedimetla",
       beneficiaries: "85+ Disabled Individuals",
       createdAt: "2026-06-17T00:00:00.000Z",
+    },
+    {
+      id: "preset-charity",
+      title: "Missionaries of Charity Bhoiguda Outreach",
+      description: "Providing wholesome nutrition, clean blankets, medical care items, and emotional comfort to residents at Missionaries of Charity, Bhoiguda.",
+      imageUrl: "/KCM_NGO_SERVICES/MISSIONARIES OF CHARITY [SECUNDERABAD BHOIGUDA] 25-05-2026/IMG-20260825-WA0008.jpg",
+      targetAmount: null,
+      raisedAmount: 0,
+      status: "ACTIVE",
+      category: "CHARITY",
+      location: "Missionaries of Charity, Bhoiguda",
+      beneficiaries: "150+ Residents",
+      createdAt: "2026-05-25T00:00:00.000Z",
+    },
+    {
+      id: "preset-disabled-secunderabad",
+      title: "Home for the Disabled Secunderabad Drive",
+      description: "Delivering clothing, monthly groceries, blankets, and essential hygiene provisions to special needs individuals and elderly at Home for the Disabled, Secunderabad.",
+      imageUrl: "/KCM_NGO_SERVICES/HOME_FOR_THE_DISABLED (SECUNDERABAD) [23-07-2026]/IMG-20260723-WA0001.jpg",
+      targetAmount: null,
+      raisedAmount: 0,
+      status: "ACTIVE",
+      category: "REHABILITATION",
+      location: "Home for Disabled, Secunderabad",
+      beneficiaries: "200+ Special Needs & Elderly",
+      createdAt: "2026-07-23T00:00:00.000Z",
     },
   ];
 
