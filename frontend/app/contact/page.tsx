@@ -202,7 +202,7 @@ export default function ContactPage() {
                 <div className="min-w-0 flex-1">
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">E-Mail Us</h3>
                   
-                  {/* Primary Email */}
+                  {/* Email */}
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <a
                       href="mailto:kingofchristministries23@gmail.com"
@@ -215,26 +215,9 @@ export default function ContactPage() {
                       type="button"
                       onClick={() => handleCopy("kingofchristministries23@gmail.com", "email1")}
                       className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all shrink-0"
+                      title="Copy email address"
                     >
                       {copiedKey === "email1" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-
-                  {/* Secondary Email */}
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <a
-                      href="mailto:kcm.kristhraj2004@gmail.com"
-                      className="text-xs text-slate-500 dark:text-slate-400 hover:text-[#f95700] dark:hover:text-[#f95700] transition-colors truncate"
-                      title="kcm.kristhraj2004@gmail.com"
-                    >
-                      kcm.kristhraj2004@gmail.com
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("kcm.kristhraj2004@gmail.com", "email2")}
-                      className="p-1 rounded-md text-slate-400 hover:text-[#f95700] hover:bg-orange-50 dark:hover:bg-white/5 transition-all shrink-0"
-                    >
-                      {copiedKey === "email2" ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
