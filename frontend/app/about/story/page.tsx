@@ -48,7 +48,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function OurStoryPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.story || {};
 
   // State management
@@ -386,40 +386,50 @@ export default function OurStoryPage() {
       <Navbar />
       
       {/* 🌌 HERO SECTION: LUXURY EDITORIAL EXPERIENCE */}
-      <section className="relative pt-36 pb-28 md:pt-44 md:pb-36 bg-[#090e1f] overflow-hidden">
+      <section className="relative pt-36 pb-28 md:pt-44 md:pb-36 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-[#090e1f] dark:via-[#0c1329] dark:to-[#090e1f] text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
         {/* Cinematic Ambient Backlight Glows */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-purple-600/20 via-indigo-600/20 to-pink-600/10 blur-[130px] pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="absolute inset-0 dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-purple-400/20 via-indigo-400/20 to-pink-400/15 dark:from-purple-600/20 dark:via-indigo-600/20 dark:to-pink-600/10 blur-[130px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 dark:opacity-10 pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             
             {/* Top Navigation Pill */}
             <div className="mb-6 flex justify-center">
-              <BackToHome label={pageT.backToHome || t.nav.home} />
+              <BackToHome label={pageT.backToHome || (t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
             </div>
             
             {/* Verified Organization Emblem Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-gradient-to-r from-purple-900/80 via-indigo-900/80 to-purple-900/80 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-xl backdrop-blur-xl animate-fade-in">
-              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
-              <span className="bg-gradient-to-r from-white via-purple-100 to-amber-200 bg-clip-text text-transparent">
-                THE KINGDOM OF CHRIST MINISTRIES • ESTABLISHED 2012
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-gradient-to-r dark:from-purple-900/80 dark:via-indigo-900/80 dark:to-purple-900/80 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-sm dark:shadow-xl backdrop-blur-xl animate-fade-in">
+              <Sparkles className="h-4 w-4 text-purple-600 dark:text-amber-300 animate-pulse" />
+              <span className="font-black tracking-wider">
+                {language === "te"
+                  ? "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ • స్థాపన 2012"
+                  : language === "hi"
+                  ? "द किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज • स्थापना 2012"
+                  : "THE KINGDOM OF CHRIST MINISTRIES • ESTABLISHED 2012"}
               </span>
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
             </div>
 
             {/* Main Page Title */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1] animate-fade-in-up">
-              Our Journey, <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-purple-300 via-indigo-200 to-pink-300 bg-clip-text text-transparent">
-                Vision &amp; Impact
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 dark:text-white mb-6 tracking-tight leading-[1.1] animate-fade-in-up">
+              {language === "te" ? "మా ఆత్మీయ ప్రయాణం, " : language === "hi" ? "हमारी यात्रा, " : "Our Journey, "}
+              <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-purple-700 via-indigo-600 to-pink-600 dark:from-purple-300 dark:via-indigo-200 dark:to-pink-300 bg-clip-text text-transparent">
+                {language === "te" ? "దర్శనం & ప్రభావం" : language === "hi" ? "दृष्टिकोण और प्रभाव" : "Vision & Impact"}
               </span>
             </h1>
             
             {/* Subtitle Narrative */}
-            <p className="text-base sm:text-xl text-slate-300 animate-fade-in-up animate-delay-200 font-normal max-w-3xl mx-auto leading-relaxed mb-10">
-              {pageT.subtitle || "The KINGDOM OF CHRIST MINISTRIES — Transforming Lives, Championing Education & Serving Communities Since 2012"}
+            <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 animate-fade-in-up animate-delay-200 font-medium max-w-3xl mx-auto leading-relaxed mb-10">
+              {pageT.subtitle ||
+                (language === "te"
+                  ? "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ — 2012 నుండి జీవితాలను రూపాంతరం చేస్తూ, విద్యను ప్రోత్సహిస్తూ మరియు సమాజానికి సేవలందిస్తోంది."
+                  : language === "hi"
+                  ? "द किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज — 2012 से जीवन को बदलते हुए, शिक्षा को बढ़ावा देते हुए और समुदायों की सेवा करते हुए।"
+                  : "The KINGDOM OF CHRIST MINISTRIES — Transforming Lives, Championing Education & Serving Communities Since 2012")}
             </p>
 
             {/* Quick Action Navigation Buttons */}
@@ -429,14 +439,14 @@ export default function OurStoryPage() {
                 className="px-6 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-105 transition-all duration-300 flex items-center gap-2"
               >
                 <FileCheck className="h-4 w-4 text-amber-300" />
-                <span>Compliance &amp; Documents Vault</span>
+                <span>{language === "te" ? "చట్టపరమైన పత్రాలు & ధృవీకరణ" : language === "hi" ? "दस्तावेज़ और अनुपालन वॉल्ट" : "Compliance & Documents Vault"}</span>
               </a>
               <a
                 href="#mission-vision"
-                className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold rounded-2xl border border-white/20 backdrop-blur-md hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-3.5 bg-white dark:bg-white/10 hover:bg-purple-50 dark:hover:bg-white/20 text-slate-800 dark:text-white text-xs sm:text-sm font-bold rounded-2xl border border-purple-200/90 dark:border-white/20 backdrop-blur-md shadow-sm hover:scale-105 transition-all duration-300 flex items-center gap-2"
               >
-                <Target className="h-4 w-4 text-purple-300" />
-                <span>Our Mission &amp; Vision</span>
+                <Target className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+                <span>{language === "te" ? "మా మిషన్ & దర్శనం" : language === "hi" ? "हमारा मिशन और दृष्टिकोण" : "Our Mission & Vision"}</span>
               </a>
             </div>
 

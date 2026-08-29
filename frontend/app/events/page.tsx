@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { io } from "socket.io-client";
 import Link from "next/link";
 import {
@@ -21,6 +21,12 @@ import {
   Phone,
   User,
   Share2,
+  Trash2,
+  Trash,
+  AlertTriangle,
+  CheckSquare,
+  Square,
+  Check
 } from "lucide-react";
 import Image from "next/image";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
@@ -108,7 +114,19 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   OUTREACH: "from-orange-500 via-amber-500 to-yellow-500",
 };
 
-function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean }) {
+const PublicEventCard = React.memo(function PublicEventCard({
+  event,
+  isNew,
+  onOpenPreview,
+  isDeleteMode,
+  onDelete
+}: {
+  event: PublicEvent;
+  isNew?: boolean;
+  onOpenPreview?: (src: string) => void;
+  isDeleteMode?: boolean;
+  onDelete?: (id: string, title?: string) => void;
+}) {
   const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -117,20 +135,57 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
 
   const cat = CATEGORY_STYLES[event.category] || CATEGORY_STYLES.SPECIAL;
   const gradientClass = CATEGORY_GRADIENTS[event.category] || CATEGORY_GRADIENTS.SPECIAL;
-  const eventDate = new Date(event.date);
+  const eventDate = useMemo(() => new Date(event.date), [event.date]);
   const isUpcoming = mounted && eventDate > new Date();
   const thumbnail = event.image || event.media?.[0]?.imageUrl;
   const locale = language === "te" ? "te-IN" : language === "hi" ? "hi-IN" : "en-IN";
 
   return (
-    <div className={`group bg-white dark:bg-slate-900 border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${isNew ? "border-violet-500/50 ring-2 ring-violet-500/30 animate-in slide-in-from-bottom-4 duration-500" : "border-slate-200 dark:border-white/10 hover:border-violet-500/40 dark:hover:border-violet-500/40"}`}>
-      {/* Thumbnail */}
-      <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${gradientClass}`}>
+    <div className={`group bg-white dark:bg-slate-900 border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative ${isNew ? "border-violet-500/50 ring-2 ring-violet-500/30 animate-in slide-in-from-bottom-4 duration-500" : "border-slate-200 dark:border-white/10 hover:border-violet-500/40 dark:hover:border-violet-500/40"}`}>
+      
+      {/* 🔴 Direct Delete Mode Badge & Button on Card */}
+      {isDeleteMode && (
+        <div className="absolute top-3 right-3 z-30 animate-in zoom-in-90 duration-200">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.(event.id, event.title);
+            }}
+            className="px-3 py-1.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/50 border border-rose-400 flex items-center gap-1.5 text-xs font-black cursor-pointer hover:scale-110 active:scale-95 transition-all"
+            title="Delete this event (Ctrl+Shift+D)"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete</span>
+          </button>
+        </div>
+      )}
+
+      {/* Thumbnail with Smart Poster Canvas (Full Complete Image, Never Cropped) */}
+      <div className={`relative h-60 sm:h-72 overflow-hidden bg-slate-950 flex items-center justify-center`}>
         {thumbnail ? (
-          <img src={encodeSrc(thumbnail)} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <>
+            {/* Ambient blurred backdrop so there are never awkward blank margins */}
+            <img
+              src={encodeSrc(thumbnail)}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-50 scale-110 pointer-events-none select-none"
+            />
+            {/* Full uncropped crisp poster */}
+            <img
+              src={encodeSrc(thumbnail)}
+              alt={event.title}
+              loading="lazy"
+              decoding="async"
+              onClick={() => onOpenPreview?.(encodeSrc(thumbnail))}
+              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 cursor-pointer drop-shadow-lg"
+            />
+          </>
         ) : (
           /* Decorative placeholder — visible, branded, never pitch-black */
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700">
             {/* Soft radial glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-white/15 blur-2xl" />
             {/* Large faint icon */}
@@ -142,11 +197,11 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
             <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-black/10" />
           </div>
         )}
-        {/* Softer overlay — lets gradient breathe */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+        {/* Softer overlay */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+        <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 pointer-events-none">
           <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl text-white shadow-sm border ${cat.bg} ${cat.border}`}>
             {(t.events?.categories as any)?.[event.category] || event.category}
           </span>
@@ -162,11 +217,26 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
           )}
         </div>
 
-        {/* Date chip */}
-        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
-          <p className="text-[11px] font-black text-white" suppressHydrationWarning>
-            {eventDate.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })}
-          </p>
+        {/* Date chip + View Poster Action */}
+        <div className="absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between">
+          <div className="bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+            <p className="text-[11px] font-black text-white" suppressHydrationWarning>
+              {eventDate.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })}
+            </p>
+          </div>
+          {thumbnail && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenPreview?.(encodeSrc(thumbnail));
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-black/70 hover:bg-purple-600 text-white border border-white/20 transition-all shadow-sm flex items-center gap-1.5 text-[10px] font-bold cursor-pointer backdrop-blur-md"
+              title="Click to view full poster"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>View Poster</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -202,7 +272,7 @@ function PublicEventCard({ event, isNew }: { event: PublicEvent; isNew?: boolean
       </div>
     </div>
   );
-}
+});
 
 // ── Main Events Page ──────────────────────────────────────────────────────────
 export default function EventsPage() {
@@ -218,8 +288,131 @@ export default function EventsPage() {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [previewPoster, setPreviewPoster] = useState<string | null>(null);
 
+  // ── 🗑️ Shortcut & Delete Mode State (Ctrl + Shift + D) ──────────────────────
+  const [isDeleteModeOpen, setIsDeleteModeOpen] = useState(false);
+  const [selectedDeleteIds, setSelectedDeleteIds] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteToast, setDeleteToast] = useState<string | null>(null);
+  const [deleteSearch, setDeleteSearch] = useState("");
+
+  // ── Global Keyboard Shortcut: Ctrl + Shift + D / Cmd + Shift + D ────────────
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore inside text inputs
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        if (!((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "d")) {
+          return;
+        }
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        setIsDeleteModeOpen((prev) => !prev);
+      }
+      
+      // Escape to close
+      if (e.key === "Escape" && isDeleteModeOpen) {
+        setIsDeleteModeOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDeleteModeOpen]);
+
+  // ── Delete Handler Functions ───────────────────────────────────────────────
+  const handleDeleteEvent = useCallback(async (id: string, title?: string) => {
+    const confirmDelete = window.confirm(
+      language === "te"
+        ? `మీరు "${title || "ఈ ఈవెంట్"}"ని ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?`
+        : language === "hi"
+        ? `क्या आप वाकई "${title || "इस कार्यक्रम"}" को हटाना चाहते हैं?`
+        : `Are you sure you want to delete "${title || "this event"}"?`
+    );
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/events/${id}`, { method: "DELETE" });
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+      setSelectedDeleteIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      setDeleteToast(
+        language === "te"
+          ? `ఈవెంట్ "${title || ""}" విజయవంతంగా తొలగించబడింది.`
+          : language === "hi"
+          ? `कार्यक्रम "${title || ""}" सफलतापूर्वक हटा दिया गया।`
+          : `Event "${title || ""}" deleted successfully.`
+      );
+      setTimeout(() => setDeleteToast(null), 4000);
+    } catch (err) {
+      console.error("Delete failed:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [language]);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedDeleteIds.size === 0) return;
+    const count = selectedDeleteIds.size;
+    const confirmDelete = window.confirm(
+      language === "te"
+        ? `ఎంచుకున్న ${count} ఈవెంట్లను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?`
+        : language === "hi"
+        ? `क्या आप वाकई चयनित ${count} कार्यक्रमों को हटाना चाहते हैं?`
+        : `Are you sure you want to delete ${count} selected events?`
+    );
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+    const idsToDelete = Array.from(selectedDeleteIds);
+    try {
+      await Promise.all(
+        idsToDelete.map((id) =>
+          fetch(`/api/events/${id}`, { method: "DELETE" }).catch(() => {})
+        )
+      );
+      setEvents((prev) => prev.filter((e) => !selectedDeleteIds.has(e.id)));
+      setSelectedDeleteIds(new Set());
+      setDeleteToast(
+        language === "te"
+          ? `${count} ఈవెంట్లు విజయవంతంగా తొలగించబడ్డాయి.`
+          : language === "hi"
+          ? `${count} कार्यक्रम सफलतापूर्वक हटा दिए गए।`
+          : `${count} events deleted successfully.`
+      );
+      setTimeout(() => setDeleteToast(null), 4000);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [language, selectedDeleteIds]);
+
+  const toggleSelectDeleteId = useCallback((id: string) => {
+    setSelectedDeleteIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback((allIds: string[]) => {
+    setSelectedDeleteIds((prev) => {
+      if (prev.size === allIds.length) {
+        return new Set();
+      } else {
+        return new Set(allIds);
+      }
+    });
+  }, []);
+
   // ── Fetch events ────────────────────────────────────────────────────────
   useEffect(() => {
+    let isMounted = true;
     const loadEvents = async () => {
       setIsLoading(true);
       try {
@@ -227,22 +420,31 @@ export default function EventsPage() {
           ? "/api/events?status=PUBLISHED&limit=50"
           : `/api/branch/${selectedBranchId}/events`;
         const res = await fetch(url);
-        if (res.ok) {
+        if (res.ok && isMounted) {
           const data = await res.json();
-          if (data.success) setEvents(data.events);
+          if (data.success && isMounted) setEvents(data.events);
         }
       } catch { /* fail silently */ }
-      finally { setIsLoading(false); }
+      finally { if (isMounted) setIsLoading(false); }
     };
     loadEvents();
+    return () => { isMounted = false; };
   }, [selectedBranchId]);
 
   // ── Socket.io real-time updates ─────────────────────────────────────────
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== "undefined" && window.location.hostname === "localhost" ? "http://localhost:3001" : "");
+    if (!socketUrl) return;
+
+    const socket = io(socketUrl, {
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 2,
+      timeout: 2500,
+    });
 
     socket.on("connect", () => setIsSocketConnected(true));
     socket.on("disconnect", () => setIsSocketConnected(false));
+    socket.on("connect_error", () => setIsSocketConnected(false));
 
     socket.on("new-event", (payload: any) => {
       // Add to top of list
@@ -290,6 +492,20 @@ export default function EventsPage() {
       });
     });
 
+    socket.on("event.deleted", (payload: any) => {
+      const deletedId = typeof payload === "string" ? payload : payload?.id;
+      if (deletedId) {
+        setEvents((prev) => prev.filter((e) => e.id !== deletedId));
+      }
+    });
+
+    socket.on("event:deleted", (payload: any) => {
+      const deletedId = typeof payload === "string" ? payload : payload?.id;
+      if (deletedId) {
+        setEvents((prev) => prev.filter((e) => e.id !== deletedId));
+      }
+    });
+
     socket.on("event-images-uploaded", (payload: any) => {
       // Update media count for existing event
       setEvents((prev) =>
@@ -312,20 +528,32 @@ export default function EventsPage() {
     return () => { socket.disconnect(); };
   }, [language]);
 
-  // ── Filters ─────────────────────────────────────────────────────────────
-  const filtered = events.filter((e) => {
-    const matchSearch =
-      searchQuery === "" ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchCat = categoryFilter === "ALL" || e.category === categoryFilter;
-    return matchSearch && matchCat;
-  });
+  // ── Filters & Memoized Lists ─────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    return events.filter((e) => {
+      const matchSearch =
+        searchQuery === "" ||
+        e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.location.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchCat = categoryFilter === "ALL" || e.category === categoryFilter;
+      return matchSearch && matchCat;
+    });
+  }, [events, searchQuery, categoryFilter]);
 
-  const upcoming = filtered.filter((e) => new Date(e.date) > new Date());
-  const past = filtered.filter((e) => new Date(e.date) <= new Date());
+  const now = useMemo(() => new Date(), []);
+  const upcoming = useMemo(() => filtered.filter((e) => new Date(e.date) > now), [filtered, now]);
+  const past = useMemo(() => filtered.filter((e) => new Date(e.date) <= now), [filtered, now]);
 
-  const specialCount = events.filter((e) => e.category === "SPECIAL").length;
+  const specialCount = useMemo(() => events.filter((e) => e.category === "SPECIAL").length, [events]);
+
+  // Filtered events inside delete modal
+  const deleteModalEvents = useMemo(() => {
+    return events.filter((e) =>
+      deleteSearch === "" ||
+      e.title.toLowerCase().includes(deleteSearch.toLowerCase()) ||
+      e.location.toLowerCase().includes(deleteSearch.toLowerCase())
+    );
+  }, [events, deleteSearch]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#05050a] text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -333,6 +561,197 @@ export default function EventsPage() {
 
       {/* Notification popup */}
       <NotificationPopup notification={notification} onDismiss={() => setNotification(null)} />
+
+      {/* 🔴 Delete Success Toast Banner */}
+      {deleteToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 duration-300">
+          <div className="bg-rose-600 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-rose-400">
+            <Trash2 className="w-5 h-5 text-white animate-bounce" />
+            <span className="text-sm font-bold">{deleteToast}</span>
+            <button
+              onClick={() => setDeleteToast(null)}
+              className="p-1 rounded-full hover:bg-white/20 text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🗑️ Quick Event Deletion Modal (Triggered by Ctrl + Shift + D) */}
+      {isDeleteModeOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#0f1021] border border-rose-500/40 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="p-6 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white relative">
+              <button
+                onClick={() => setIsDeleteModeOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors cursor-pointer"
+                title="Close (Esc)"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center shadow-md">
+                  <Trash2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-black font-serif text-white">
+                      {language === "te" ? "ఈవెంట్లను తొలగించే మేనేజర్" : language === "hi" ? "कार्यक्रम हटाने का प्रबंधक" : "Quick Event Delete Manager"}
+                    </h3>
+                    <kbd className="px-2 py-0.5 rounded bg-white/20 border border-white/30 text-[11px] font-mono font-black text-white">
+                      Ctrl+Shift+D
+                    </kbd>
+                  </div>
+                  <p className="text-xs text-rose-100 mt-0.5">
+                    {language === "te" ? "అనవసరమైన లేదా రద్దు చేయబడిన ఈవెంట్లను త్వరగా తొలగించండి." : language === "hi" ? "अनावश्यक या रद्द किए गए कार्यक्रमों को तुरंत हटाएं।" : "Selectively or bulk delete events across branches."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Search & Bulk Select Controls */}
+            <div className="p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder={language === "te" ? "ఈవెంట్ పేరుతో శోధించండి..." : language === "hi" ? "कार्यक्रम खोजें..." : "Filter events to delete..."}
+                  value={deleteSearch}
+                  onChange={(e) => setDeleteSearch(e.target.value)}
+                  className="w-full h-9 pl-9 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => toggleSelectAll(deleteModalEvents.map((e) => e.id))}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  {selectedDeleteIds.size === deleteModalEvents.length && deleteModalEvents.length > 0 ? (
+                    <CheckSquare className="w-3.5 h-3.5 text-rose-500" />
+                  ) : (
+                    <Square className="w-3.5 h-3.5 text-slate-400" />
+                  )}
+                  <span>{language === "te" ? "అన్నీ ఎంచుకోండి" : language === "hi" ? "सभी चुनें" : "Select All"}</span>
+                </button>
+
+                {selectedDeleteIds.size > 0 && (
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={isDeleting}
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black shadow-md shadow-rose-600/30 flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Trash className="w-3.5 h-3.5" />
+                    <span>{language === "te" ? `ఎంచుకున్న (${selectedDeleteIds.size}) తొలగించు` : language === "hi" ? `चयनित (${selectedDeleteIds.size}) हटाएं` : `Delete (${selectedDeleteIds.size})`}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Scrollable Events List */}
+            <div className="p-4 overflow-y-auto max-h-[55vh] space-y-2.5 custom-scrollbar">
+              {deleteModalEvents.length === 0 ? (
+                <div className="py-12 text-center text-slate-400 text-xs font-medium">
+                  {language === "te" ? "తొలగించడానికి ఈవెంట్లు లేవు." : language === "hi" ? "हटाने के लिए कोई कार्यक्रम नहीं मिला।" : "No events match your filter."}
+                </div>
+              ) : (
+                deleteModalEvents.map((evt) => {
+                  const isSelected = selectedDeleteIds.has(evt.id);
+                  const evtDate = new Date(evt.date);
+                  const thumb = evt.image || evt.media?.[0]?.imageUrl;
+
+                  return (
+                    <div
+                      key={evt.id}
+                      onClick={() => toggleSelectDeleteId(evt.id)}
+                      className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                        isSelected
+                          ? "bg-rose-500/10 border-rose-500/50 shadow-sm"
+                          : "bg-slate-50/80 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Checkbox */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSelectDeleteId(evt.id);
+                          }}
+                          className="shrink-0 p-1 text-slate-400 hover:text-rose-500"
+                        >
+                          {isSelected ? (
+                            <CheckSquare className="w-4 h-4 text-rose-600" />
+                          ) : (
+                            <Square className="w-4 h-4 text-slate-400" />
+                          )}
+                        </button>
+
+                        {/* Thumbnail */}
+                        <div className="w-12 h-12 rounded-xl bg-slate-900 overflow-hidden shrink-0 relative flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                          {thumb ? (
+                            <img src={encodeSrc(thumb)} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <Calendar className="w-5 h-5 text-slate-400" />
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="min-w-0">
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                            {evt.title}
+                          </h4>
+                          <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                            <span className="font-semibold">{evtDate.toLocaleDateString()}</span>
+                            <span>•</span>
+                            <span className="truncate">{evt.location}</span>
+                            {evt.branch && (
+                              <>
+                                <span>•</span>
+                                <span className="text-purple-600 dark:text-purple-400 font-bold">{evt.branch.name}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Single Delete Action */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteEvent(evt.id, evt.title);
+                        }}
+                        disabled={isDeleting}
+                        className="px-3 py-1.5 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white transition-all text-xs font-bold shrink-0 flex items-center gap-1 cursor-pointer border border-rose-300 dark:border-rose-700"
+                        title="Delete this event"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">{language === "te" ? "తొలగించు" : language === "hi" ? "हटाएं" : "Delete"}</span>
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-100 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+              <span>{language === "te" ? `మొత్తం ఈవెంట్లు: ${events.length}` : language === "hi" ? `कुल कार्यक्रम: ${events.length}` : `Total Events: ${events.length}`}</span>
+              <button
+                onClick={() => setIsDeleteModeOpen(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold transition-colors cursor-pointer"
+              >
+                {language === "te" ? "మూసివేయి (Esc)" : language === "hi" ? "बंद करें (Esc)" : "Close (Esc)"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Poster Zoom Modal */}
       {previewPoster && (
@@ -369,10 +788,30 @@ export default function EventsPage() {
           <div className="mb-6 flex justify-center">
             <BackToHome />
           </div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-900/70 border border-purple-500/30 dark:border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-white mb-6 backdrop-blur-md shadow-sm">
-            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-300 fill-amber-500/30" />
-            <span className="font-extrabold tracking-wider">{t.nav?.churchName || "Kingdom of Christ"} {t.nav?.ministries || "Ministries"}</span>
-            {isSocketConnected && <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse ml-1" />}
+          
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 dark:bg-purple-900/70 border border-purple-500/30 dark:border-purple-400/50 text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-white backdrop-blur-md shadow-sm">
+              <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-300 fill-amber-500/30" />
+              <span className="font-extrabold tracking-wider">{t.nav?.churchName || "Kingdom of Christ"} {t.nav?.ministries || "Ministries"}</span>
+              {isSocketConnected && <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse ml-1" />}
+            </div>
+
+            {/* Quick Delete Shortcut Badge / Button */}
+            <button
+              onClick={() => setIsDeleteModeOpen((prev) => !prev)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-sm ${
+                isDeleteModeOpen
+                  ? "bg-rose-600 text-white border-rose-500 shadow-rose-600/30"
+                  : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60 hover:bg-rose-100"
+              }`}
+              title="Toggle Delete Events Mode (Ctrl+Shift+D)"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+              <span>{language === "te" ? "ఈవెంట్లను తొలగించు" : language === "hi" ? "कार्यक्रम हटाएं" : "Delete Events"}</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 text-[10px] font-mono font-black">
+                Ctrl+Shift+D
+              </kbd>
+            </button>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-4 font-outfit">
@@ -462,7 +901,7 @@ export default function EventsPage() {
                     const el = document.getElementById("events-grid-section");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>View Special Events ({specialCount || 2})</span>
@@ -544,7 +983,7 @@ export default function EventsPage() {
                 className="w-full h-10 pl-9 sm:pl-10 pr-9 sm:pr-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -578,7 +1017,7 @@ export default function EventsPage() {
                 <button
                   key={cat.key}
                   onClick={() => setCategoryFilter(cat.key)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border cursor-pointer ${
                     isActive
                       ? "bg-purple-600 text-white border-purple-500 shadow-md"
                       : cat.isSpecial
@@ -600,6 +1039,31 @@ export default function EventsPage() {
 
       {/* ── Events Content ────────────────────────────────────────────────────── */}
       <div id="events-grid-section" className="max-w-7xl mx-auto px-6 py-12 space-y-12">
+
+        {/* 🔴 Delete Mode Active Notification Bar */}
+        {isDeleteModeOpen && (
+          <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/40 flex items-center justify-between gap-4 text-slate-900 dark:text-white animate-in slide-in-from-top-4 duration-300 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                <Trash2 className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-bold">
+                  {language === "te" ? "ఈవెంట్ తొలగింపు మోడ్ ప్రారంభించబడింది" : language === "hi" ? "कार्यक्रम हटाने का मोड सक्रिय है" : "Delete Mode Active"}
+                </p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                  {language === "te" ? "కార్డులపై ఉన్న ఎరుపు రంగు Delete బటన్ ద్వారా నేరుగా తొలగించండి." : language === "hi" ? "कार्ड्स पर लाल Delete बटन का उपयोग करके सीधे हटाएं।" : "Click any card's red Delete button to remove an event directly."}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsDeleteModeOpen(false)}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold transition-all cursor-pointer shrink-0"
+            >
+              {language === "te" ? "ముగించు" : language === "hi" ? "समाप्त करें" : "Exit Mode"}
+            </button>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -626,6 +1090,9 @@ export default function EventsPage() {
                       key={event.id}
                       event={event}
                       isNew={newEventIds.has(event.id)}
+                      onOpenPreview={setPreviewPoster}
+                      isDeleteMode={isDeleteModeOpen}
+                      onDelete={handleDeleteEvent}
                     />
                   ))}
                 </div>
@@ -645,7 +1112,13 @@ export default function EventsPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-85">
                   {past.map((event) => (
-                    <PublicEventCard key={event.id} event={event} />
+                    <PublicEventCard
+                      key={event.id}
+                      event={event}
+                      onOpenPreview={setPreviewPoster}
+                      isDeleteMode={isDeleteModeOpen}
+                      onDelete={handleDeleteEvent}
+                    />
                   ))}
                 </div>
               </section>
@@ -670,7 +1143,7 @@ export default function EventsPage() {
                 {searchQuery && (
                   <button
                     onClick={() => { setSearchQuery(""); setCategoryFilter("ALL"); }}
-                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-violet-600/25 transition-all hover:scale-105 active:scale-95"
+                    className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-violet-600/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <X className="w-4 h-4" /> {(t.events as any)?.clearFilters || "Clear Filters"}
                   </button>

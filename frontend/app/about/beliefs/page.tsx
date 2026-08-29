@@ -30,33 +30,33 @@ import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function BeliefsPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.beliefs || {};
 
-  // Filter & Search states
+  // Interactive filter & search states
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Selected doctrine modal state
+  // Modal states for interactive deep-dive
   const [selectedDoctrine, setSelectedDoctrine] = useState<any | null>(null);
 
   // Stats Data
   const stats = [
-    { value: "66", label: pageT.statBooks || "Inspired Books", icon: BookOpen, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
-    { value: "1", label: pageT.statGod || "Eternal Trinity", icon: Cross, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
-    { value: "100%", label: pageT.statGrace || "Grace by Faith", icon: Heart, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
-    { value: "6", label: pageT.statValues || "Kingdom Core Values", icon: Sparkles, color: "text-white", bg: "bg-amber-600 shadow-md shadow-amber-600/30" },
+    { value: "8", label: pageT.statPillars || "Core Doctrines", icon: BookOpen, color: "text-white", bg: "bg-purple-600 shadow-md shadow-purple-600/30" },
+    { value: "100%", label: pageT.statScripture || "Biblical Authority", icon: ShieldCheck, color: "text-white", bg: "bg-indigo-600 shadow-md shadow-indigo-600/30" },
+    { value: "3+", label: pageT.statCampuses || "Active Campuses", icon: Church, color: "text-white", bg: "bg-pink-600 shadow-md shadow-pink-600/30" },
+    { value: "24/7", label: pageT.statGospel || "Gospel Impact", icon: Flame, color: "text-white", bg: "bg-amber-600 shadow-md shadow-amber-600/30" },
   ];
 
-  // Doctrines List
+  // 8 Core Biblical Doctrines
   const doctrines = useMemo(() => [
     {
       id: "d1",
-      title: pageT.d1Title || "The Holy Bible",
-      category: pageT.d1Category || "god",
-      desc: pageT.d1Desc || "We believe the 66 books of the Holy Bible are fully inspired by God, infallible, and the final authority for all Christian faith and practice.",
-      verse: pageT.d1Verse || "2 Timothy 3:16-17",
+      title: pageT.d1Title || "The Holy Scriptures (Bible)",
+      category: pageT.d1Category || "bible",
+      desc: pageT.d1Desc || "We believe the Bible is the inspired, infallible, and authoritative Word of God, our supreme standard for all Christian faith and living.",
+      verse: pageT.d1Verse || "2 Timothy 3:16",
       quote: pageT.d1Quote || "All Scripture is God-breathed and useful for teaching, rebuking, correcting and training in righteousness.",
       passages: pageT.d1Passages || ["2 Timothy 3:16-17", "2 Peter 1:20-21", "Psalm 119:105", "Hebrews 4:12"],
       deep: pageT.d1Deep || "The Holy Bible is God's written revelation to mankind. It provides divine direction, spiritual nourishment, and absolute truth for every generation.",
@@ -138,32 +138,48 @@ export default function BeliefsPage() {
     {
       id: "d7",
       title: pageT.d7Title || "Prayer & Faith-Filled Living",
-      category: pageT.d7Category || "life",
-      desc: pageT.d7Desc || "We believe prayer is vital communication with God, unlocking spiritual breakthroughs and divine healing.",
-      verse: pageT.d7Verse || "1 Thessalonians 5:17",
-      quote: pageT.d7Quote || "Pray continually, give thanks in all circumstances; for this is God's will for you in Christ Jesus.",
-      passages: pageT.d7Passages || ["1 Thessalonians 5:17", "James 5:16", "Philippians 4:6-7", "Hebrews 11:6"],
-      deep: pageT.d7Deep || "Prayer is the engine of Kingdom of Christ Ministries. We believe in 24/7 intercession and trusting God for miracles in every situation.",
-      icon: ShieldCheck,
-      accent: "from-blue-500 to-indigo-500",
-      color: "text-white",
-      bg: "bg-blue-600 shadow-md shadow-blue-600/30"
-    },
-    {
-      id: "d8",
-      title: pageT.d8Title || "Eternal Hope & Second Coming",
-      category: pageT.d8Category || "life",
-      desc: pageT.d8Desc || "We believe in the personal return of Jesus Christ in glory, the resurrection of the dead, and eternal life with God.",
-      verse: pageT.d8Verse || "1 Thessalonians 4:16-17",
-      quote: pageT.d8Quote || "For the Lord himself will come down from heaven, with a loud command, with the voice of the archangel.",
-      passages: pageT.d8Passages || ["1 Thessalonians 4:16-17", "Revelation 21:1-4", "John 14:1-3", "Matthew 24:30-31"],
-      deep: pageT.d8Deep || "Our ultimate anchor is the blessed hope of Christ's return, inspiring us to live holy, purposeful lives sharing the Gospel with love.",
+      category: pageT.d7Category || "living",
+      desc: pageT.d7Desc || "We believe in the power of fervent prayer and a holy, obedient lifestyle that reflects Christ's character daily.",
+      verse: pageT.d7Verse || "James 5:16",
+      quote: pageT.d7Quote || "The prayer of a righteous person is powerful and effective.",
+      passages: pageT.d7Passages || ["James 5:16", "1 Thessalonians 5:16-18", "Philippians 4:6-7", "Colossians 3:12-17"],
+      deep: pageT.d7Deep || "Prayer connects humanity with heaven. Through regular devotion, fasting, and intercession, God performs breakthroughs, healing, and revival.",
       icon: Sparkles,
       accent: "from-purple-500 to-pink-500",
       color: "text-white",
       bg: "bg-purple-600 shadow-md shadow-purple-600/30"
+    },
+    {
+      id: "d8",
+      title: pageT.d8Title || "The Second Coming & Eternity",
+      category: pageT.d8Category || "living",
+      desc: pageT.d8Desc || "We believe in the glorious, visible return of Jesus Christ, the resurrection of the dead, and eternal life with God.",
+      verse: pageT.d8Verse || "Revelation 22:20",
+      quote: pageT.d8Quote || "He who testifies to these things says, 'Yes, I am coming soon.' Amen. Come, Lord Jesus.",
+      passages: pageT.d8Passages || ["Revelation 22:20", "1 Thessalonians 4:16-17", "John 14:1-3", "2 Corinthians 5:1"],
+      deep: pageT.d8Deep || "Our eternal hope is anchored in Christ's triumphant return. We eagerly anticipate the New Heaven and New Earth where righteousness dwells.",
+      icon: Globe,
+      accent: "from-blue-500 to-indigo-600",
+      color: "text-white",
+      bg: "bg-blue-600 shadow-md shadow-blue-600/30"
     }
   ], [pageT]);
+
+  // Filtered doctrines
+  const filteredDoctrines = useMemo(() => {
+    return doctrines.filter((doc) => {
+      const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
+      const query = searchQuery.toLowerCase().trim();
+      const matchesSearch = 
+        !query ||
+        doc.title.toLowerCase().includes(query) ||
+        doc.desc.toLowerCase().includes(query) ||
+        doc.verse.toLowerCase().includes(query) ||
+        doc.quote.toLowerCase().includes(query);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [doctrines, selectedCategory, searchQuery]);
 
   // Core Values Data
   const values = [
@@ -175,24 +191,9 @@ export default function BeliefsPage() {
     { name: pageT.v6Name || "Mission", desc: pageT.v6Desc || "Reaching the lost, serving the needy, and making disciples locally and globally.", verse: pageT.v6Verse || "Mark 16:15", icon: Globe, color: "text-white", bg: "bg-cyan-600 shadow-md shadow-cyan-600/20" },
   ];
 
-  // Filtering Logic
-  const filteredDoctrines = useMemo(() => {
-    return doctrines.filter((doc) => {
-      const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
-      const query = searchQuery.toLowerCase().trim();
-      const matchesSearch = !query || 
-        doc.title.toLowerCase().includes(query) ||
-        doc.desc.toLowerCase().includes(query) ||
-        doc.verse.toLowerCase().includes(query) ||
-        doc.quote.toLowerCase().includes(query);
-
-      return matchesCategory && matchesSearch;
-    });
-  }, [doctrines, selectedCategory, searchQuery]);
-
   // Copy full statement summary
   const handleCopyStatement = () => {
-    const textToCopy = `${pageT.title || "Our Beliefs & Doctrines"}\n${pageT.subtitle}\n\n${doctrines.map((d, i) => `${i + 1}. ${d.title} (${d.verse}): ${d.desc}`).join("\n\n")}\n\nKingdom of Christ Ministries | Hyderabad`;
+    const textToCopy = `${pageT.title || "Our Beliefs & Doctrines"}\n\n${doctrines.map((d, i) => `${i + 1}. ${d.title} (${d.verse}): ${d.desc}`).join("\n\n")}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
@@ -202,32 +203,32 @@ export default function BeliefsPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
 
-      {/* 🌌 Hero Section with Ambient Glows & Search Bar */}
-      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-slate-950 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15" />
-        <div className="hero-orb-1 opacity-70" />
-        <div className="hero-orb-2 opacity-60" />
+      {/* 🌌 Hero Section */}
+      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/25 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/25 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6 flex justify-center">
-              <BackToHome label={t.nav?.home || "Home"} />
+              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
             </div>
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
-              <BookOpen className="h-4 w-4 text-purple-300" />
-              <span>{pageT.badge || "Statement of Faith"}</span>
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-sm backdrop-blur-md animate-bounce-in">
+              <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+              <span>{pageT.badge || (language === "te" ? "విశ్వాస ప్రకటన" : language === "hi" ? "विश्वास का वक्तव्य" : "Statement of Faith")}</span>
+              <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-300" />
             </div>
 
             {/* Main Title */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
-              {pageT.title || "Our Beliefs & Doctrines"}
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
+              {pageT.title || (language === "te" ? "మా విశ్వాసాలు & సిద్ధాంతాలు" : language === "hi" ? "हमारे विश्वास और सिद्धांत" : "Our Beliefs & Doctrines")}
             </h1>
 
-            <p className="text-lg sm:text-xl text-purple-100 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed mb-10">
-              {pageT.subtitle || "Anchored in the Holy Scripture, Guided by God's Grace"}
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed mb-10">
+              {pageT.subtitle || (language === "te" ? "పరిశుద్ధ వాక్యంలో స్థిరమైనవి, దైవిక కృపతో నడిపించబడేవి" : language === "hi" ? "पवित्र शास्त्र में स्थापित, ईश्वरीय अनुग्रह द्वारा निर्देशित" : "Anchored in the Holy Scripture, Guided by God's Grace")}
             </p>
 
             {/* Search Input Box */}
@@ -238,13 +239,13 @@ export default function BeliefsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={pageT.searchPlaceholder || "Search doctrines, scriptures, or values..."}
-                  className="w-full pl-12 pr-10 py-3.5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-400/50 shadow-2xl transition-all"
+                  placeholder={language === "te" ? "సిద్ధాంతాలు, వాక్యాలు లేదా విలువలను శోధించండి..." : language === "hi" ? "सिद्धांत, वचन या मूल्य खोजें..." : (pageT.searchPlaceholder || "Search doctrines, scriptures, or values...")}
+                  className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-slate-900/90 border border-purple-200/90 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-md transition-all font-semibold"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3.5 p-1 text-slate-400 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                    className="absolute right-3.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>

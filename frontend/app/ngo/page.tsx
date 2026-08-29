@@ -10,7 +10,7 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function NgoOverviewPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [selectedImpactIndex, setSelectedImpactIndex] = useState(0);
 
@@ -21,24 +21,128 @@ export default function NgoOverviewPage() {
   const ngoT = t?.ngo || {};
 
   const stats = [
-    { value: "5,000+", label: "People Assisted", desc: "Patient food, medicines & care support", icon: HandHeart, accent: "border-rose-500", iconBg: "bg-rose-500", numColor: "text-rose-600 dark:text-rose-400" },
-    { value: "3+", label: "Hospitals Supported", desc: "NIMS, Gandhi & Government Hospitals", icon: Stethoscope, accent: "border-blue-500", iconBg: "bg-blue-500", numColor: "text-blue-600 dark:text-blue-400" },
-    { value: "100+", label: "Volunteers Active", desc: "Dedicated social service team", icon: Users, accent: "border-amber-500", iconBg: "bg-amber-500", numColor: "text-amber-600 dark:text-amber-400" },
-    { value: "2+", label: "Ashramams Supported", desc: "Rehabilitation & shelter care", icon: Home, accent: "border-purple-500", iconBg: "bg-purple-500", numColor: "text-purple-600 dark:text-purple-400" },
+    {
+      value: "5,000+",
+      label: language === "te" ? "సహాయం పొందిన ప్రజలు" : language === "hi" ? "लाभार्थी नागरिक" : "People Assisted",
+      desc: language === "te" ? "రోగులకు భోజనం, మందులు & సహాయం" : language === "hi" ? "मरीजों को भोजन, दवाएं और देखभाल" : "Patient food, medicines & care support",
+      icon: HandHeart,
+      accent: "border-rose-500",
+      iconBg: "bg-rose-500",
+      numColor: "text-rose-600 dark:text-rose-400"
+    },
+    {
+      value: "3+",
+      label: language === "te" ? "సేవలు అందించిన ఆసుపత్రులు" : language === "hi" ? "सहयोगी अस्पताल" : "Hospitals Supported",
+      desc: language === "te" ? "నిమ్స్, గాంధీ & ప్రభుత్వ ఆసుపత్రులు" : language === "hi" ? "निम्स, गांधी और सरकारी अस्पताल" : "NIMS, Gandhi & Government Hospitals",
+      icon: Stethoscope,
+      accent: "border-blue-500",
+      iconBg: "bg-blue-500",
+      numColor: "text-blue-600 dark:text-blue-400"
+    },
+    {
+      value: "100+",
+      label: language === "te" ? "క్రియాశీల వాలంటీర్లు" : language === "hi" ? "सक्रिय स्वयंसेवक" : "Volunteers Active",
+      desc: language === "te" ? "అంకితభావం కలిగిన సేవా బృందం" : language === "hi" ? "समर्पित समाज सेवा टीम" : "Dedicated social service team",
+      icon: Users,
+      accent: "border-amber-500",
+      iconBg: "bg-amber-500",
+      numColor: "text-amber-600 dark:text-amber-400"
+    },
+    {
+      value: "2+",
+      label: language === "te" ? "ఆశ్రమాలకు నిరంతర మద్దతు" : language === "hi" ? "सहयोगी आश्रम" : "Ashramams Supported",
+      desc: language === "te" ? "పునరావాస & ఆశ్రయ సంరక్షణ" : language === "hi" ? "पुनर्वास एवं आश्रय देखभाल" : "Rehabilitation & shelter care",
+      icon: Home,
+      accent: "border-purple-500",
+      iconBg: "bg-purple-500",
+      numColor: "text-purple-600 dark:text-purple-400"
+    },
   ];
 
   const initiatives = [
-    { step: "01", title: "Hospital Outreaches", desc: "Providing medicine, food supplies, and spiritual comfort to patients in Gandhi, NIMS, and Government General Hospitals across Hyderabad.", icon: Stethoscope, badge: "Regular Outreach", accent: "border-l-blue-500", iconBg: "bg-blue-600", badgeColor: "bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-600 dark:border-blue-500 dark:text-white", href: "/ngo/projects" },
-    { step: "02", title: "Ashramam Support", desc: "Aiding Bethany Samrakshana Ashramam and disabled care shelters with monthly provisions, bedding, and medical assistance.", icon: Home, badge: "Shelter Care", accent: "border-l-purple-500", iconBg: "bg-purple-600", badgeColor: "bg-purple-100 text-purple-800 border border-purple-300 dark:bg-purple-600 dark:border-purple-500 dark:text-white", href: "/ngo/projects" },
-    { step: "03", title: "Impact Gallery", desc: "Browse high-quality photo logs capturing real-time volunteer services, food distribution drives, and relief camps across Telangana.", icon: Camera, badge: "Photo Logs", accent: "border-l-emerald-500", iconBg: "bg-emerald-600", badgeColor: "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-600 dark:border-emerald-500 dark:text-white", href: "/ngo/gallery" },
-    { step: "04", title: "Service Video Logs", desc: "Watch direct video evidence of our social work, including specialized hospital care distribution and community relief operations.", icon: PlayCircle, badge: "Video Evidence", accent: "border-l-rose-500", iconBg: "bg-rose-600", badgeColor: "bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-600 dark:border-rose-500 dark:text-white", href: "/ngo/videos" },
+    {
+      step: "01",
+      title: ngoT.hospitalOutreachTitle || (language === "te" ? "ఆసుపత్రి సేవా కార్యక్రమాలు" : language === "hi" ? "अस्पताल सेवा अभियान" : "Hospital Outreaches"),
+      desc: ngoT.hospitalOutreachDesc || (language === "te" ? "గాంధీ, నిమ్స్ మరియు ప్రభుత్వ జనరల్ ఆసుపత్రులలోని రోగులకు మందులు, ఆహారం మరియు ఆధ్యాత్మిక ఓదార్పుని అందించడం." : language === "hi" ? "गांधी, निम्स और सरकारी जनरल अस्पतालों में मरीजों को दवाएं, भोजन और आध्यात्मिक सांत्वना प्रदान करना।" : "Providing medicine, food supplies, and spiritual comfort to patients in Gandhi, NIMS, and Government General Hospitals across Hyderabad."),
+      icon: Stethoscope,
+      badge: language === "te" ? "క్రమం తప్పని సేవ" : language === "hi" ? "नियमित सेवा" : "Regular Outreach",
+      accent: "border-l-blue-500",
+      iconBg: "bg-blue-600",
+      badgeColor: "bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-600 dark:border-blue-500 dark:text-white",
+      href: "/ngo/projects"
+    },
+    {
+      step: "02",
+      title: ngoT.ashramamSupportTitle || (language === "te" ? "ఆశ్రమ సహాయ సేవ" : language === "hi" ? "आश्रम सहायता सेवा" : "Ashramam Support"),
+      desc: ngoT.ashramamSupportDesc || (language === "te" ? "బెథానీ సంరక్షణ ఆశ్రమం మరియు దివ్యాంగుల కేంద్రాలకు నెలవారీ నిత్యావసరాలు, బెడ్డింగ్ మరియు వైద్య సహాయం అందించడం." : language === "hi" ? "बेथानी संरक्षण आश्रम और दिव्यांग केंद्रों को मासिक राशन, बिस्तर और चिकित्सा सहायता प्रदान करना।" : "Aiding Bethany Samrakshana Ashramam and disabled care shelters with monthly provisions, bedding, and medical assistance."),
+      icon: Home,
+      badge: language === "te" ? "ఆశ్రయ సంరక్షణ" : language === "hi" ? "आश्रय देखभाल" : "Shelter Care",
+      accent: "border-l-purple-500",
+      iconBg: "bg-purple-600",
+      badgeColor: "bg-purple-100 text-purple-800 border border-purple-300 dark:bg-purple-600 dark:border-purple-500 dark:text-white",
+      href: "/ngo/projects"
+    },
+    {
+      step: "03",
+      title: ngoT.impactGalleryTitle || (language === "te" ? "సేవా ఫోటో గ్యాలరీ" : language === "hi" ? "सेवा फोटो गैलरी" : "Impact Gallery"),
+      desc: ngoT.impactGalleryDesc || (language === "te" ? "తెలంగాణ అంతటా జరిగిన వాలంటీర్ సేవలు, అన్నదాన డ్రైవ్‌లు మరియు సహాయ శిబిరాల వాస్తవ ఫోటోలను ఇక్కడ చూడండి." : language === "hi" ? "तेलंगाना भर में स्वयंसेवक सेवाओं, भोजन वितरण और सहायता शिविरों की वास्तविक तस्वीरों का संग्रह देखें।" : "Browse high-quality photo logs capturing real-time volunteer services, food distribution drives, and relief camps across Telangana."),
+      icon: Camera,
+      badge: language === "te" ? "ఫోటో లాగ్స్" : language === "hi" ? "फोटो लॉग्स" : "Photo Logs",
+      accent: "border-l-emerald-500",
+      iconBg: "bg-emerald-600",
+      badgeColor: "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-600 dark:border-emerald-500 dark:text-white",
+      href: "/ngo/gallery"
+    },
+    {
+      step: "04",
+      title: ngoT.videoLogsTitle || (language === "te" ? "సేవా వీడియో లాగ్స్" : language === "hi" ? "सेवा वीडियो लॉग्स" : "Service Video Logs"),
+      desc: ngoT.videoLogsDesc || (language === "te" ? "మా సామాజిక సేవ, ఆసుపత్రి సహాయ పంపిణీ మరియు కమ్యూనిటీ సహాయ కార్యక్రమాల ప్రత్యక్ష వీడియోలను వీక్షించండి." : language === "hi" ? "हमारे सामाजिक कार्य, अस्पताल सहायता वितरण और समुदाय राहत कार्यों के लाइव वीडियो देखें।" : "Watch direct video evidence of our social work, including specialized hospital care distribution and community relief operations."),
+      icon: PlayCircle,
+      badge: language === "te" ? "వీడియో సాక్ష్యం" : language === "hi" ? "वीडियो प्रमाण" : "Video Evidence",
+      accent: "border-l-rose-500",
+      iconBg: "bg-rose-600",
+      badgeColor: "bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-600 dark:border-rose-500 dark:text-white",
+      href: "/ngo/videos"
+    },
   ];
 
   const impactTiers = [
-    { amount: "₹500", rawAmount: 500, title: "Medical & Meal Pack", desc: "1 essential medicine kit & nutritious meals for hospital patients.", impactBadge: "1 Patient Helped", icon: HandHeart, gradient: "from-rose-500 to-pink-600" },
-    { amount: "₹1,500", rawAmount: 1500, title: "Ashramam Care Kit", desc: "Monthly grocery provisions, bedding & hygiene kits for elderly residents.", impactBadge: "Elderly Care", icon: ShieldCheck, gradient: "from-purple-500 to-indigo-600" },
-    { amount: "₹3,000", rawAmount: 3000, title: "Outreach & Wheelchair Aid", desc: "Mobility equipment & specialized medical care in relief camps.", impactBadge: "Mobility & Aid", icon: Award, gradient: "from-blue-500 to-cyan-600" },
-    { amount: "₹5,000+", rawAmount: 5000, title: "Sponsor a Shelter Unit", desc: "Total monthly care, food & medical treatment for vulnerable individuals.", impactBadge: "Full Sponsorship", icon: Star, gradient: "from-amber-500 to-orange-600" },
+    {
+      amount: "₹500",
+      rawAmount: 500,
+      title: language === "te" ? "వైద్య & భోజన ప్యాక్" : language === "hi" ? "चिकित्सा एवं भोजन किट" : "Medical & Meal Pack",
+      desc: language === "te" ? "ఆసుపత్రి రోగులకు 1 అవసరమైన ఔషధ కిట్ & పోషకాహార భోజనం." : language === "hi" ? "अस्पताल के मरीजों के लिए 1 आवश्यक दवा किट और पौष्टिक भोजन।" : "1 essential medicine kit & nutritious meals for hospital patients.",
+      impactBadge: language === "te" ? "1 రోగికి సహాయం" : language === "hi" ? "1 मरीज की सहायता" : "1 Patient Helped",
+      icon: HandHeart,
+      gradient: "from-rose-500 to-pink-600"
+    },
+    {
+      amount: "₹1,500",
+      rawAmount: 1500,
+      title: language === "te" ? "ఆశ్రమ నిత్యావసర కిట్" : language === "hi" ? "आश्रम राशन किट" : "Ashramam Care Kit",
+      desc: language === "te" ? "వృద్ధులకు నెలవారీ కిరాణా సరుకులు, బెడ్డింగ్ & పరిశుభ్రత కిట్." : language === "hi" ? "बुजुर्गों के लिए मासिक राशन सामग्री, बिस्तर और स्वच्छता किट।" : "Monthly grocery provisions, bedding & hygiene kits for elderly residents.",
+      impactBadge: language === "te" ? "వృద్ధుల సంరక్షణ" : language === "hi" ? "बुजुर्ग देखभाल" : "Elderly Care",
+      icon: ShieldCheck,
+      gradient: "from-purple-500 to-indigo-600"
+    },
+    {
+      amount: "₹3,000",
+      rawAmount: 3000,
+      title: language === "te" ? "వీల్‌చైర్ & మొబిలిటీ సాయం" : language === "hi" ? "व्हीलचेयर एवं सहायता" : "Outreach & Wheelchair Aid",
+      desc: language === "te" ? "దివ్యాంగులకు వీల్‌చైర్లు, వాకర్లు & ప్రత్యేక వైద్య సంరక్షణ." : language === "hi" ? "दिव्यांगों के लिए व्हीलचेयर, वॉकर और विशेष चिकित्सा देखभाल।" : "Mobility equipment & specialized medical care in relief camps.",
+      impactBadge: language === "te" ? "మొబిలిటీ సాయం" : language === "hi" ? "गतिशीलता सहायता" : "Mobility & Aid",
+      icon: Award,
+      gradient: "from-blue-500 to-cyan-600"
+    },
+    {
+      amount: "₹5,000+",
+      rawAmount: 5000,
+      title: language === "te" ? "సంపూర్ణ ఆశ్రయ స్పాన్సర్‌షిప్" : language === "hi" ? "पूर्ण आश्रय प्रायोजन" : "Sponsor a Shelter Unit",
+      desc: language === "te" ? "నిరుపేద వ్యక్తికి నెల మొత్తం అవసరమైన సంరక్షణ, భోజనం & వైద్యం." : language === "hi" ? "जरूरतमंद व्यक्ति के लिए पूरे महीने की देखभाल, भोजन और इलाज।" : "Total monthly care, food & medical treatment for vulnerable individuals.",
+      impactBadge: language === "te" ? "పూర్తి స్పాన్సర్‌షిప్" : language === "hi" ? "पूर्ण प्रायोजन" : "Full Sponsorship",
+      icon: Star,
+      gradient: "from-amber-500 to-orange-600"
+    },
   ];
 
   return (
@@ -53,16 +157,18 @@ export default function NgoOverviewPage() {
                 <Heart className="w-3.5 h-3.5 fill-current animate-pulse" />
                 {ngoT.subtitle || "NGO — Non-Governmental Organization"}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-600 dark:border-emerald-500 dark:text-white text-[11px] font-extrabold shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-600 dark:border-emerald-500 dark:text-white text-[11px] font-extrabold shadow-sm">
                 <CheckCircle2 className="w-3.5 h-3.5" /> 80G Tax Exempted
               </span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black tracking-tight leading-[1.15] sm:leading-[1.1]">
-              <span className="text-slate-900 dark:text-white">Serving Humanity,</span>
+              <span className="text-slate-900 dark:text-white">
+                {language === "te" ? "మానవ సేవయే," : language === "hi" ? "मानव सेवा ही," : "Serving Humanity,"}
+              </span>
               <br />
               <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 dark:from-rose-400 dark:via-pink-400 dark:to-purple-400 bg-clip-text text-transparent">
-                Spreading Hope
+                {language === "te" ? "మాధవ సేవ" : language === "hi" ? "माधव सेवा" : "Spreading Hope"}
               </span>
             </h1>
 
@@ -86,7 +192,7 @@ export default function NgoOverviewPage() {
               {[
                 { icon: ShieldCheck, text: "Regd No: 206/2024", color: "text-emerald-600 dark:text-emerald-400" },
                 { icon: FileText, text: "12A & 80G Approval", color: "text-purple-600 dark:text-purple-400" },
-                { icon: Globe, text: "100% Field Aid", color: "text-amber-600 dark:text-amber-400" },
+                { icon: Globe, text: language === "te" ? "100% ప్రత్యక్ష సేవ" : language === "hi" ? "100% प्रत्यक्ष सहायता" : "100% Field Aid", color: "text-amber-600 dark:text-amber-400" },
               ].map(({ icon: Icon, text, color }, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-extrabold text-slate-800 dark:text-white shadow-sm">
                   <Icon className={`w-4 h-4 flex-shrink-0 ${color}`} />
@@ -113,7 +219,9 @@ export default function NgoOverviewPage() {
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">{ngoT.bannerTitle || "KCM Social Services"}</h3>
-                  <span className="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-md bg-purple-600 text-white border border-purple-500 whitespace-nowrap shadow-sm">Govt. Registered</span>
+                  <span className="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-md bg-purple-600 text-white border border-purple-500 whitespace-nowrap shadow-sm">
+                    {language === "te" ? "ప్రభుత్వ గుర్తింపు పొందినది" : language === "hi" ? "सरकारी पंजीकृत" : "Govt. Registered"}
+                  </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                   {ngoT.bannerDesc || "Active social service: daily necessities, blankets, medical funds, and care programs across orphanages and clinics in Hyderabad."}
@@ -127,10 +235,15 @@ export default function NgoOverviewPage() {
         <div className="space-y-6 sm:space-y-8">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-800 border border-purple-300 bg-purple-100 dark:bg-purple-600 dark:border-purple-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
-              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-white" /><span>Our Measured Impact</span>
+              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-white" />
+              <span>{language === "te" ? "మా సేవా ప్రభావం" : language === "hi" ? "हमारा सेवा प्रभाव" : "Our Measured Impact"}</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">Real Outcomes, Real Lives Changed</h2>
-            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm max-w-lg mx-auto">Powered by generous donors and 100+ dedicated volunteers across Telangana.</p>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+              {language === "te" ? "వాస్తవ ఫలితాలు, మారిన జీవితాలు" : language === "hi" ? "वास्तविक परिणाम, बदले हुए जीवन" : "Real Outcomes, Real Lives Changed"}
+            </h2>
+            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm max-w-lg mx-auto">
+              {language === "te" ? "తెలంగాణ అంతటా దాతల విరాళాలు మరియు 100+ వాలంటీర్ల నిరంతర సేవతో సాధ్యమవుతోంది." : language === "hi" ? "उदार दाताओं और 100+ समर्पित स्वयंसेवकों के सहयोग से संचालित।" : "Powered by generous donors and 100+ dedicated volunteers across Telangana."}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
@@ -142,7 +255,9 @@ export default function NgoOverviewPage() {
                     <div className={`w-11 h-11 rounded-xl ${stat.iconBg} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600">Verified</span>
+                    <span className="text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600">
+                      {language === "te" ? "ధృవీకరించబడింది" : language === "hi" ? "सत्यापित" : "Verified"}
+                    </span>
                   </div>
                   <div className={`text-3xl sm:text-4xl font-black tracking-tight ${stat.numColor} mb-1`}>{stat.value}</div>
                   <div className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base">{stat.label}</div>
@@ -156,21 +271,24 @@ export default function NgoOverviewPage() {
         {/* ═══ 3. 12A / 80G TRUST BANNER ═══ */}
         <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-300 dark:border-emerald-800 bg-gradient-to-br from-emerald-50/80 via-white to-purple-50/50 dark:from-slate-800 dark:to-slate-800 p-6 sm:p-10 shadow-xl">
           <div className="relative z-10 grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-600 dark:border-emerald-500 dark:text-white text-xs font-extrabold uppercase tracking-wider shadow-sm">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-white" /> Tax Exemption Eligible — Section 80G
+                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-white" />
+                <span>{language === "te" ? "పన్ను మినహాయింపు అర్హత — సెక్షన్ 80G" : language === "hi" ? "आयकर छूट योग्य — धारा 80G" : "Tax Exemption Eligible — Section 80G"}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Government Registered NGO with 12A &amp; 80G Approvals</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {language === "te" ? "12A & 80G అనుమతులు కలిగిన ప్రభుత్వ రిజిస్టర్డ్ NGO" : language === "hi" ? "12A एवं 80G स्वीकृतियों के साथ सरकारी पंजीकृत एनजीओ" : "Government Registered NGO with 12A & 80G Approvals"}
+              </h2>
               <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-                All donations to KCM Society NGO qualify for tax deduction under Section 80G(5)(VI) of the Indian Income Tax Act. Official vouchers and receipts issued automatically.
+                {language === "te" ? "KCM సొసైటీ NGOకి ఇచ్చే అన్ని విరాళాలు ఆదాయపు పన్ను చట్టం సెక్షన్ 80G(5)(VI) కింద 50% పన్ను మినహాయింపునకు అర్హమైనవి. అధికారిక రసీదులు తక్షణమే జారీ చేయబడతాయి." : language === "hi" ? "केसीएम सोसाइटी एनजीओ को दिए गए सभी दान आयकर अधिनियम की धारा 80G के तहत कर कटौती के योग्य हैं। आधिकारिक रसीदें तुरंत जारी की जाती हैं।" : "All donations to KCM Society NGO qualify for tax deduction under Section 80G(5)(VI) of the Indian Income Tax Act. Official vouchers and receipts issued automatically."}
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { label: "Society Reg Number", value: "206 / 2024", color: "text-amber-700 dark:text-amber-400" },
-                { label: "IT Section Approval", value: "12A & 80G(5)(VI)", color: "text-emerald-700 dark:text-emerald-400" },
-                { label: "Field Operations", value: "Hyderabad, TG", color: "text-blue-700 dark:text-blue-400" },
-                { label: "Tax Benefit", value: "50% Deduction", color: "text-purple-700 dark:text-purple-400" },
+                { label: language === "te" ? "సొసైటీ రిజిస్ట్రేషన్ నంబర్" : language === "hi" ? "सोसाइटी पंजीकरण संख्या" : "Society Reg Number", value: "206 / 2024", color: "text-amber-700 dark:text-amber-400" },
+                { label: language === "te" ? "ఐటీ సెక్షన్ ఆమోదం" : language === "hi" ? "आयकर धारा स्वीकृति" : "IT Section Approval", value: "12A & 80G(5)(VI)", color: "text-emerald-700 dark:text-emerald-400" },
+                { label: language === "te" ? "క్షేత్ర కార్యకలాపాలు" : language === "hi" ? "कार्यक्षेत्र" : "Field Operations", value: "Hyderabad, TG", color: "text-blue-700 dark:text-blue-400" },
+                { label: language === "te" ? "పన్ను ప్రయోజనం" : language === "hi" ? "कर लाभ" : "Tax Benefit", value: language === "te" ? "50% మినహాయింపు" : language === "hi" ? "50% छूट" : "50% Deduction", color: "text-purple-700 dark:text-purple-400" },
               ].map((item, i) => (
                 <div key={i} className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 text-center shadow-sm">
                   <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-extrabold mb-0.5">{item.label}</div>
@@ -185,7 +303,8 @@ export default function NgoOverviewPage() {
         <div className="space-y-8 sm:space-y-10">
           <div className="text-center space-y-2 sm:space-y-3 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-800 border border-purple-300 bg-purple-100 dark:bg-purple-600 dark:border-purple-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-white" /><span>What We Do</span>
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-white" />
+              <span>{language === "te" ? "మేము ఏమి చేస్తాము" : language === "hi" ? "हम क्या करते हैं" : "What We Do"}</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">{ngoT.initiativesTitle || "Our Core Initiatives"}</h2>
             <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">{ngoT.initiativesDesc || "Four pillars of active humanitarian service — delivered consistently every month."}</p>
@@ -195,7 +314,7 @@ export default function NgoOverviewPage() {
             {initiatives.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className={`group relative p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 border-l-4 ${item.accent} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-4 sm:space-y-5`}>
+                <div key={idx} className={`group relative p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 border-l-4 ${item.accent} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-4 sm:space-y-5 text-left`}>
                   <div className="space-y-3 sm:space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl ${item.iconBg} flex items-center justify-center text-white shadow-md flex-shrink-0`}>
@@ -223,19 +342,24 @@ export default function NgoOverviewPage() {
 
         {/* ═══ 5. GIVING IMPACT TIERS ═══ */}
         <div className="rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 shadow-xl p-5 sm:p-10 space-y-6 sm:space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-5 text-left">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-purple-800 border border-purple-300 bg-purple-100 dark:bg-purple-600 dark:border-purple-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
-                <Gift className="w-4 h-4 text-purple-600 dark:text-white" /><span>See What Your Gift Does</span>
+                <Gift className="w-4 h-4 text-purple-600 dark:text-white" />
+                <span>{language === "te" ? "మీ సహాయం చేసే మార్పు చూడండి" : language === "hi" ? "आपके दान का प्रभाव देखें" : "See What Your Gift Does"}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Select Your Giving Impact Tier</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm max-w-md">Choose an amount to see exactly what your donation funds on the ground.</p>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {language === "te" ? "మీ విరాళ ప్రభావ శ్రేణిని ఎంచుకోండి" : language === "hi" ? "दान राशि और उसका प्रभाव चुनें" : "Select Your Giving Impact Tier"}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm max-w-md">
+                {language === "te" ? "మీ విరాళం క్షేత్రస్థాయిలో ఎవరికి ఎలా సహాయపడుతుందో తెలుసుకోవడానికి ఒక మొత్తాన్ని ఎంచుకోండి." : language === "hi" ? "यह जानने के लिए एक राशि चुनें कि आपका दान जमीनी स्तर पर कैसे मदद करता है।" : "Choose an amount to see exactly what your donation funds on the ground."}
+              </p>
             </div>
             <Link
               href={mounted ? `/ngo/donations?amount=${impactTiers[selectedImpactIndex].rawAmount}` : "/ngo/donations"}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm whitespace-nowrap w-full sm:w-auto"
             >
-              <span>Donate {mounted ? impactTiers[selectedImpactIndex].amount : impactTiers[0].amount}</span>
+              <span>{language === "te" ? `${impactTiers[selectedImpactIndex].amount} విరాళం ఇవ్వండి` : language === "hi" ? `${impactTiers[selectedImpactIndex].amount} दान करें` : `Donate ${impactTiers[selectedImpactIndex].amount}`}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -281,25 +405,32 @@ export default function NgoOverviewPage() {
           <div className="relative z-10 grid lg:grid-cols-2 gap-6 sm:gap-8 items-center p-6 sm:p-12">
             <div className="space-y-4 sm:space-y-5 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-600 dark:border-rose-500 dark:text-white text-xs font-extrabold uppercase tracking-wider shadow-sm">
-                <Video className="w-3.5 h-3.5 text-rose-600 dark:text-white animate-pulse" /> Real-Time Field Transparency
+                <Video className="w-3.5 h-3.5 text-rose-600 dark:text-white animate-pulse" />
+                <span>{language === "te" ? "క్షేత్రస్థాయి పారదర్శకత" : language === "hi" ? "जमीनी पारदर्शिता" : "Real-Time Field Transparency"}</span>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">Witness Our Work<br className="hidden sm:inline" /> in Action</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">We document every distribution drive, hospital visit, and ashramam aid program. Browse verified photo archives and high-definition video logs of ongoing humanitarian efforts.</p>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                {language === "te" ? "మా సేవా కార్యాలను ప్రత్యక్షంగా చూడండి" : language === "hi" ? "हमारे सेवा कार्यों को प्रत्यक्ष देखें" : "Witness Our Work in Action"}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">
+                {language === "te" ? "మేము ప్రతి అన్నదానం, ఆసుపత్రి సందర్శన మరియు ఆశ్రమ సహాయ కార్యక్రమాన్ని నమోదు చేస్తాము. కొనసాగుతున్న సేవా ప్రయత్నాల ఫోటోలు మరియు హై-డెఫినిషన్ వీడియో లాగ్‌లను వీక్షించండి." : language === "hi" ? "हम हर भोजन वितरण, अस्पताल यात्रा और आश्रम सहायता कार्यक्रम का दस्तावेजीकरण करते हैं। हमारे सेवा प्रयासों के फोटो और वीडियो देखें।" : "We document every distribution drive, hospital visit, and ashramam aid program. Browse verified photo archives and high-definition video logs of ongoing humanitarian efforts."}
+              </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-1">
                 <Link href="/ngo/gallery" className="justify-center px-5 py-2.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold rounded-xl shadow-md hover:border-emerald-500 transition-all flex items-center gap-2 text-sm">
-                  <Camera className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> View Photo Gallery
+                  <Camera className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>{language === "te" ? "ఫోటో గ్యాలరీ చూడండి" : language === "hi" ? "फोटो गैलरी देखें" : "View Photo Gallery"}</span>
                 </Link>
                 <Link href="/ngo/videos" className="justify-center px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2 text-sm">
-                  <PlayCircle className="w-4 h-4 text-white" /> Watch Video Logs
+                  <PlayCircle className="w-4 h-4 text-white" />
+                  <span>{language === "te" ? "వీడియో లాగ్స్ చూడండి" : language === "hi" ? "वीडियो लॉग्स देखें" : "Watch Video Logs"}</span>
                 </Link>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
-                { label: "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", image: "/ngo_outreach_drive_thumbnail.png", Ico: ImageIcon },
-                { label: "Ashramam Blanket Drive", sub: "Bethany Shelter Support", image: "/bethany_ashramam_thumbnail.png", Ico: Video },
+                { label: language === "te" ? "ఆసుపత్రి వైద్య సహాయం" : language === "hi" ? "अस्पताल चिकित्सा सहायता" : "Hospital Medical Aid", sub: "Gandhi & NIMS Hospitals", image: "/ngo_outreach_drive_thumbnail.png", Ico: ImageIcon },
+                { label: language === "te" ? "ఆశ్రమ దుప్పట్ల పంపిణీ" : language === "hi" ? "आश्रम कंबल वितरण" : "Ashramam Blanket Drive", sub: "Bethany Shelter Support", image: "/bethany_ashramam_thumbnail.png", Ico: Video },
               ].map(({ label, sub, image, Ico }, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm">
+                <div key={i} className="rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-2 shadow-sm text-left">
                   <div className="aspect-video rounded-xl bg-slate-900 overflow-hidden relative group">
                     <img src={image} alt={label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -319,19 +450,23 @@ export default function NgoOverviewPage() {
           <div className="relative z-10 space-y-3 max-w-xl text-left">
             <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-rose-800 border border-rose-300 bg-rose-100 dark:bg-rose-600 dark:border-rose-500 dark:text-white px-3.5 py-1.5 rounded-full shadow-sm">
               <Heart className="w-4 h-4 fill-current text-rose-500 dark:text-white" />
-              {ngoT.ctaHeading || "Be the Change Today"}
+              <span>{ngoT.ctaHeading || "Be the Change Today"}</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
-              Make a Direct Difference<br className="hidden sm:inline" /> in Someone&apos;s Life
+              {language === "te" ? "ఒకరి జీవితంలో నేరుగా మార్పు తీసుకురండి" : language === "hi" ? "किसी के जीवन में सीधा बदलाव लाएं" : "Make a Direct Difference in Someone's Life"}
             </h3>
-            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">{ngoT.ctaText || "Every small action counts. Your donation funds medical supplies and food packs for government hospitals, while volunteering gives us the hands needed to deliver them."}</p>
+            <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {ngoT.ctaText || "Every small action counts. Your donation funds medical supplies and food packs for government hospitals, while volunteering gives us the hands needed to deliver them."}
+            </p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
             <Link href="/ngo/donations" className="justify-center px-7 py-3.5 bg-gradient-to-r from-rose-500 to-purple-600 hover:opacity-90 text-white font-bold rounded-xl shadow-lg shadow-purple-500/25 hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
-              <Gift className="w-4 h-4" />{ngoT.donateNow || "Donate Now"}
+              <Gift className="w-4 h-4" />
+              <span>{ngoT.donateNow || "Donate Now"}</span>
             </Link>
             <Link href="/ngo/volunteers" className="justify-center px-7 py-3.5 bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 hover:border-purple-500 text-slate-900 dark:text-white font-bold rounded-xl shadow-sm hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
-              <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />{ngoT.becomeVolunteer || "Become a Volunteer"}
+              <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span>{ngoT.becomeVolunteer || "Become a Volunteer"}</span>
             </Link>
           </div>
         </div>

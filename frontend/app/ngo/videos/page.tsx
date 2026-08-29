@@ -247,10 +247,123 @@ const MP4_ITEMS: MediaItem[] = RAW_MP4_ITEMS.map(item => ({
 
 const ALL_MEDIA_DATABASE: MediaItem[] = [...YOUTUBE_ITEMS, ...MP4_ITEMS];
 
+// Multilingual video title & description mapping
+const VIDEO_TRANSLATIONS: Record<string, {
+  title: { te: string; hi: string };
+  description?: { te: string; hi: string };
+}> = {
+  "yt-gandhi": {
+    title: { te: "గాంధీ ఆసుపత్రి ఆహారం & సంరక్షణ సేవ", hi: "गांधी अस्पताल भोजन एवं देखभाल सेवा" },
+    description: {
+      te: "గాంధీ ఆసుపత్రిలోని క్రిటికల్ కేర్ వార్డులు మరియు రోగుల సహాయకులకు వేడి పాలు, భోజన బాక్స్‌లు మరియు పారిశుద్ధ్య కిట్‌లను పంపిణీ చేసిన KCM వాలంటీర్ల వీడియో కవరేజ్.",
+      hi: "गांधी अस्पताल में क्रिटिकल केयर वार्डों और मरीजों के तीमारदारों को गर्म दूध, भोजन के पैकेट और स्वच्छता किट वितरित करते केसीएम स्वयंसेवकों का वीडियो कवरेज।"
+    }
+  },
+  "yt-nims": {
+    title: { te: "నిమ్స్ ఆసుపత్రి రోగుల సంరక్షణ & మద్దతు ప్రచారం", hi: "निम्स अस्पताल देखभाल एवं सहायता अभियान" },
+    description: {
+      te: "నిమ్స్ ఆసుపత్రిలోని ఆంకాలజీ మరియు ఆర్థోపెడిక్ విభాగాల రోగులకు ప్రత్యేక మందులు, దుస్తులు మరియు పోషకాహారాన్ని పంపిణీ చేస్తున్న దృశ్యాలు.",
+      hi: "निम्स अस्पताल में ऑन्कोलॉजी और ऑर्थोपेडिक विभागों के मरीजों को विशेष दवाएं, कपड़े और पौष्टिक भोजन वितरित करने का लाइव वीडियो।"
+    }
+  },
+  "yt-govt": {
+    title: { te: "ప్రభుత్వ జనరల్ ఆసుపత్రి సహాయ పంపిణీ సేవ", hi: "सरकारी जनरल अस्पताल सहायता वितरण अभियान" },
+    description: {
+      te: "స్థానిక ప్రభుత్వ ఆసుపత్రిలో వీల్‌చైర్లు, వాకర్లు, రోగుల పడకలు మరియు ఆహార ప్యాకెట్ల పంపిణీ కార్యక్రమం ప్రత్యక్ష దృశ్యాలు.",
+      hi: "स्थानीय सरकारी अस्पताल में व्हीलचेयर, वॉकर, मरीजों के बिस्तर और भोजन पैकेट वितरण कार्यक्रम के प्रत्यक्ष दृश्य।"
+    }
+  },
+  "yt-ashramam": {
+    title: { te: "బెథానీ సంరక్షణ ఆశ్రమం సేవా కార్యక్రమం", hi: "बेथानी संरक्षण आश्रम सहायता सेवा" },
+    description: {
+      te: "బెథానీ సంరక్షణ ఆశ్రమంలోని పిల్లలు మరియు నివాసితులకు నెలవారీ కిరాణా, బియ్యం బస్తాలు, పుస్తకాలు మరియు ఆరోగ్యకరమైన ఆహార పదార్థాల పంపిణీ.",
+      hi: "बेथानी संरक्षण आश्रम में बच्चों और निवासियों को मासिक राशन, चावल की बोरियां, किताबें और पौष्टिक खाद्य सामग्री का वितरण।"
+    }
+  },
+  "yt-disabled": {
+    title: { te: "దివ్యాంగుల సంరక్షణ ఆశ్రమం సందర్శన & సేవ", hi: "दिव्यांग देखभाल आश्रम सेवा एवं भेंट" },
+    description: {
+      te: "దివ్యాంగుల హోమ్ నివాసితులకు సౌకర్య కిట్‌లు, వెచ్చని దుప్పట్లు, బెడ్‌షీట్లు, వీల్‌చైర్లు మరియు శారీరక సహాయాన్ని అందించడం.",
+      hi: "दिव्यांग गृह के निवासियों को कम्फर्ट किट, गर्म कंबल, बेडशीट, व्हीलचेयर और शारीरिक सहायता प्रदान करना।"
+    }
+  },
+};
+
+function getVideoTitle(item: MediaItem, lang: string): string {
+  if (VIDEO_TRANSLATIONS[item.id]?.title) {
+    if (lang === "te") return VIDEO_TRANSLATIONS[item.id].title.te;
+    if (lang === "hi") return VIDEO_TRANSLATIONS[item.id].title.hi;
+  }
+  
+  if (lang === "te") {
+    if (item.id === "mp4-17") return "పూర్తి కవరేజ్ – ఉదయం సెషన్";
+    if (item.id === "mp4-18") return "పూర్తి కవరేజ్ – మధ్యాహ్నం సెషన్";
+    if (item.id === "mp4-19") return "పూర్తి కవరేజ్ – సాయంత్రం సెషన్";
+    if (item.id.startsWith("mp4-apr-")) return `బెథానీ ఆశ్రమం ఏప్రిల్ సేవ – క్లిప్ ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-dis-")) return `దివ్యాంగుల ఆశ్రమం – క్లిప్ ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-nims")) return `నిమ్స్ ఆసుపత్రి సేవ – క్లిప్ ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-govt")) return `ప్రభుత్వ ఆసుపత్రి సేవ – క్లిప్ ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-gandhi")) return `గాంధీ ఆసుపత్రి సేవ – క్లిప్ ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-")) return `బెథానీ ఆశ్రమం మే – క్లిప్ ${item.clipNumber || 1}`;
+  }
+
+  if (lang === "hi") {
+    if (item.id === "mp4-17") return "पूर्ण कवरेज – सुबह का सत्र";
+    if (item.id === "mp4-18") return "पूर्ण कवरेज – दोपहर का सत्र";
+    if (item.id === "mp4-19") return "पूर्ण कवरेज – शाम का सत्र";
+    if (item.id.startsWith("mp4-apr-")) return `बेथानी आश्रम अप्रैल सेवा – क्लिप ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-dis-")) return `दिव्यांग आश्रम – क्लिप ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-nims")) return `निम्स अस्पताल सेवा – क्लिप ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-govt")) return `सरकारी अस्पताल सेवा – क्लिप ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-hosp-gandhi")) return `गांधी अस्पताल सेवा – क्लिप ${item.clipNumber || 1}`;
+    if (item.id.startsWith("mp4-")) return `बेथानी आश्रम मई – क्लिप ${item.clipNumber || 1}`;
+  }
+
+  return item.title;
+}
+
+function getVideoDescription(item: MediaItem, lang: string): string {
+  if (VIDEO_TRANSLATIONS[item.id]?.description) {
+    if (lang === "te") return VIDEO_TRANSLATIONS[item.id].description!.te;
+    if (lang === "hi") return VIDEO_TRANSLATIONS[item.id].description!.hi;
+  }
+
+  if (lang === "te") {
+    if (item.category === "disabled") return `${item.date}న KCM దివ్యాంగుల సంరక్షణ ఆశ్రమం సేవా కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
+    if (item.category === "hospital") return `${item.date}న KCM ఆసుపత్రి సహాయ పంపిణీ కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
+    return `${item.date}న KCM బెథానీ సంరక్షణ ఆశ్రమంలో నిత్యావసర సరుకుల పంపిణీ కార్యక్రమంలో ప్రత్యక్షంగా రికార్డ్ చేసిన వీడియో.`;
+  }
+
+  if (lang === "hi") {
+    if (item.category === "disabled") return `${item.date} को केसीएम दिव्यांग देखभाल आश्रम सहायता अभियान के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
+    if (item.category === "hospital") return `${item.date} को केसीएम अस्पताल सहायता वितरण कार्यक्रम के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
+    return `${item.date} को केसीएम बेथानी संरक्षण आश्रम राशन वितरण अभियान के दौरान लाइव रिकॉर्ड किया गया वीडियो।`;
+  }
+
+  return item.description;
+}
+
+function getCategoryDisplayName(cat: string, lang: string): string {
+  if (lang === "te") {
+    if (cat === "hospital" || cat.includes("Hospital") || cat.includes("ఆసుపత్రి")) return "ఆసుపత్రి సేవ";
+    if (cat === "ashramam" || cat.includes("Ashramam") || cat.includes("ఆశ్రమం")) return "ఆశ్రమ సేవ";
+    if (cat === "disabled" || cat.includes("Disabled") || cat.includes("దివ్యాంగుల")) return "దివ్యాంగుల సంరక్షణ";
+    return "క్షేత్ర స్థాయి లాగ్";
+  }
+  if (lang === "hi") {
+    if (cat === "hospital" || cat.includes("Hospital")) return "अस्पताल सेवा";
+    if (cat === "ashramam" || cat.includes("Ashramam")) return "आश्रम सेवा";
+    if (cat === "disabled" || cat.includes("Disabled")) return "दिव्यांग देखभाल";
+    return "फील्ड वीडियो लॉग";
+  }
+  return cat;
+}
+
 /* ════════════════════════════ LIGHTBOX COMPONENT ════════════════════════════ */
-function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
+function Lightbox({ videos, index, onClose, onPrev, onNext, onJump, lang, vT }: {
   videos: MediaItem[]; index: number;
   onClose: () => void; onPrev: () => void; onNext: () => void; onJump: (i: number) => void;
+  lang: string; vT: any;
 }) {
   const [mounted, setMounted] = useState(false);
   const vRef = useRef<HTMLVideoElement>(null);
@@ -280,6 +393,8 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
 
   if (!mounted || !item) return null;
 
+  const displayTitle = getVideoTitle(item, lang);
+
   return createPortal(
     <div className="fixed inset-0 z-[999999] w-screen h-screen bg-black/98 backdrop-blur-2xl flex flex-col select-none overflow-hidden"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -291,9 +406,9 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
             <Film className="w-4 h-4" />
           </span>
           <div className="min-w-0">
-            <p className="text-white font-extrabold text-sm sm:text-base truncate leading-snug">{item.title}</p>
+            <p className="text-white font-extrabold text-sm sm:text-base truncate leading-snug">{displayTitle}</p>
             <p className="text-slate-400 text-xs leading-none mt-1 flex items-center gap-2">
-              <span>Clip {index + 1} of {videos.length}</span>
+              <span>{vT.clip || "Clip"} {index + 1} {vT.of || "of"} {videos.length}</span>
               <span>•</span>
               <span>{item.date}</span>
             </p>
@@ -368,11 +483,14 @@ function Lightbox({ videos, index, onClose, onPrev, onNext, onJump }: {
 }
 
 /* ════════════════════════════ MEDIA THUMBNAIL CARD ════════════════════════════ */
-function MediaCard({ item, index, onPlay }: {
+function MediaCard({ item, index, onPlay, lang, vT }: {
   item: MediaItem; index: number; onPlay: () => void;
+  lang: string; vT: any;
 }) {
   const [hovered, setHovered] = useState(false);
   const isYt = item.source === "yt";
+  const displayTitle = getVideoTitle(item, lang);
+  const displayCategory = getCategoryDisplayName(item.categoryLabel, lang);
 
   return (
     <div
@@ -385,7 +503,7 @@ function MediaCard({ item, index, onPlay }: {
       <div className="relative w-full overflow-hidden bg-slate-950" style={{ aspectRatio: "16/9" }}>
         <img
           src={encodeSrc(item.thumbnail)}
-          alt={item.title}
+          alt={displayTitle}
           loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-500 ${hovered ? "scale-108" : "scale-100"}`}
           onError={(e) => { e.currentTarget.src = "/ngo_outreach_drive_thumbnail.png"; }}
@@ -419,14 +537,14 @@ function MediaCard({ item, index, onPlay }: {
               : "bg-emerald-600/90 text-white border-emerald-400/40"
           }`}>
             {isYt ? <Youtube className="w-3 h-3" /> : <Film className="w-3 h-3" />}
-            {isYt ? "YouTube" : item.isSession ? "Full Session" : "MP4 Clip"}
+            {isYt ? "YouTube" : item.isSession ? (vT.fullSession || "Full Session") : (vT.mp4Clip || "MP4 Clip")}
           </span>
         </div>
 
         {/* Bottom Details Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-3.5 pt-8">
           <p className="text-white font-extrabold text-sm leading-snug line-clamp-1 group-hover:text-emerald-300 transition-colors drop-shadow-md">
-            {item.title}
+            {displayTitle}
           </p>
           <div className="flex items-center justify-between mt-1 text-[10px] text-white/70 font-semibold">
             <span className="flex items-center gap-1">
@@ -434,7 +552,7 @@ function MediaCard({ item, index, onPlay }: {
               {item.date}
             </span>
             <span className="text-emerald-400 font-bold uppercase tracking-wider">
-              {item.categoryLabel}
+              {displayCategory}
             </span>
           </div>
         </div>
@@ -444,10 +562,12 @@ function MediaCard({ item, index, onPlay }: {
 }
 
 /* ════════════════════════════ SIDEBAR PLAYLIST ROW ════════════════════════════ */
-function PlaylistRow({ item, index, active, onSelect }: {
+function PlaylistRow({ item, index, active, onSelect, lang, vT }: {
   item: MediaItem; index: number; active: boolean; onSelect: () => void;
+  lang: string; vT: any;
 }) {
   const isYt = item.source === "yt";
+  const displayTitle = getVideoTitle(item, lang);
 
   return (
     <button
@@ -478,16 +598,16 @@ function PlaylistRow({ item, index, active, onSelect }: {
 
       <div className="flex-1 min-w-0 space-y-1">
         <p className={`text-xs font-bold leading-snug line-clamp-2 ${active ? "text-white" : "text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"}`}>
-          {item.title}
+          {displayTitle}
         </p>
         <div className="flex items-center gap-2 text-[10px]">
           <span className={`inline-flex items-center gap-1 font-bold ${active ? "text-white/90" : isYt ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
             {isYt ? <Youtube className="w-3 h-3" /> : <Film className="w-3 h-3" />}
-            {isYt ? "YouTube" : item.isSession ? "Session" : "MP4"}
+            {isYt ? "YouTube" : item.isSession ? (vT.session || "Session") : "MP4"}
           </span>
           {active && (
             <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[9px] font-black uppercase tracking-wider">
-              Now Playing
+              {vT.nowPlaying || "Now Playing"}
             </span>
           )}
         </div>
@@ -926,7 +1046,7 @@ export default function NgoVideosPage() {
                     <div className="relative z-10 flex items-center justify-between gap-2 pointer-events-none">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black text-white bg-rose-600/90 backdrop-blur-md shadow-lg border border-rose-400/30">
                         <YouTubeLogoIcon className="w-3.5 h-3.5" />
-                        YouTube Broadcast
+                        {vT.youtubeBroadcast || "YouTube Broadcast"}
                       </span>
                       <span className="text-white/90 text-xs font-extrabold bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15 font-mono">
                         {activeMedia.date}
@@ -946,11 +1066,11 @@ export default function NgoVideosPage() {
                     {/* Bottom Title Preview & Tap Prompt */}
                     <div className="relative z-10 space-y-1 max-w-2xl pointer-events-none">
                       <h3 className="text-white font-black text-sm sm:text-xl leading-snug drop-shadow-md line-clamp-2">
-                        {activeMedia.title}
+                        {getVideoTitle(activeMedia, language)}
                       </h3>
                       <p className="text-white/80 text-xs font-semibold flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        <span>Tap anywhere to play video • 1080p HD</span>
+                        <span>{vT.tapToPlay || "Tap anywhere to play video • 1080p HD"}</span>
                       </p>
                     </div>
                   </div>
@@ -984,7 +1104,7 @@ export default function NgoVideosPage() {
                   <div className="relative z-10 flex items-center justify-between gap-2 pointer-events-none">
                     <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black text-white bg-emerald-600/90 backdrop-blur-md shadow-lg border border-emerald-400/30">
                       <Film className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      Field Video Log
+                      {vT.fieldLog || "Field Video Log"}
                     </span>
                     <span className="text-white/90 text-[10px] sm:text-xs font-extrabold bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15">
                       {activeMedia.date}
@@ -1001,11 +1121,11 @@ export default function NgoVideosPage() {
                   {/* Bottom Title Preview */}
                   <div className="relative z-10 space-y-0.5 sm:space-y-1 max-w-2xl pointer-events-none">
                     <h3 className="text-white font-black text-sm sm:text-xl leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-2">
-                      {activeMedia.title}
+                      {getVideoTitle(activeMedia, language)}
                     </h3>
                     <p className="text-white/80 text-xs font-semibold flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>Tap to play field recording</span>
+                      <span>{vT.tapToPlayField || "Tap to play field recording"}</span>
                     </p>
                   </div>
                 </div>
@@ -1032,7 +1152,7 @@ export default function NgoVideosPage() {
                   <span className={`text-xs font-black uppercase tracking-wider leading-tight ${
                     activeMedia.source === "yt" ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
                   }`}>
-                    {activeMedia.source === "yt" ? "YouTube Broadcast" : `Bethany Ashramam • Clip ${activeMedia.clipNumber || 1} of ${MP4_ITEMS.length}`}
+                    {activeMedia.source === "yt" ? (vT.youtubeBroadcast || "YouTube Broadcast") : `${getCategoryDisplayName(activeMedia.categoryLabel, language)} • ${vT.clip || "Clip"} ${activeMedia.clipNumber || 1} ${vT.of || "of"} ${MP4_ITEMS.length}`}
                   </span>
                 </div>
 
@@ -1048,17 +1168,17 @@ export default function NgoVideosPage() {
                         ? "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/25 ring-2 ring-rose-500/30"
                         : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/25 ring-2 ring-emerald-500/30"
                     }`}
-                    title={isPlaying ? "Pause Video" : "Play Video"}
+                    title={isPlaying ? (vT.pauseVideo || "Pause Video") : (vT.playVideo || "Play Video")}
                   >
                     {isPlaying ? (
                       <>
                         <Pause className="w-3.5 h-3.5 fill-current" />
-                        <span>Pause Video</span>
+                        <span>{vT.pauseVideo || "Pause Video"}</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                        <span>Play Video</span>
+                        <span>{vT.playVideo || "Play Video"}</span>
                       </>
                     )}
                   </button>
@@ -1091,7 +1211,7 @@ export default function NgoVideosPage() {
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-colors shadow-sm active:scale-95"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Theater Mode</span>
+                      <span>{vT.theaterMode || "Theater Mode"}</span>
                     </button>
                   )}
 
@@ -1101,7 +1221,7 @@ export default function NgoVideosPage() {
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors active:scale-95"
                   >
                     {linkCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
-                    <span>{linkCopied ? "Copied" : "Share"}</span>
+                    <span>{linkCopied ? (vT.copied || "Copied") : (vT.share || "Share")}</span>
                   </button>
 
                   {/* Watch on YouTube External */}
@@ -1123,14 +1243,15 @@ export default function NgoVideosPage() {
               {/* Title & Full Description */}
               <div className="space-y-2">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug">
-                  {activeMedia.title}
+                  {getVideoTitle(activeMedia, language)}
                 </h2>
                 <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                  {activeMedia.description}
+                  {getVideoDescription(activeMedia, language)}
                 </p>
               </div>
 
             </div>
+
 
           </div>
 
@@ -1218,6 +1339,8 @@ export default function NgoVideosPage() {
                     index={idx}
                     active={activeMedia.id === item.id}
                     onSelect={() => handlePlayMedia(item)}
+                    lang={language}
+                    vT={vT}
                   />
                 ))}
               </div>
@@ -1251,15 +1374,17 @@ export default function NgoVideosPage() {
                   item={media}
                   index={idx}
                   onPlay={() => handlePlayMedia(media)}
+                  lang={language}
+                  vT={vT}
                 />
               ))}
             </div>
           ) : (
             <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
               <Search className="w-10 h-10 text-slate-400 mx-auto" />
-              <p className="text-slate-700 dark:text-slate-300 font-bold">No video logs match your search query</p>
+              <p className="text-slate-700 dark:text-slate-300 font-bold">{vT.noResults || "No video logs match your search query"}</p>
               <button onClick={() => { setSearchQuery(""); setFilterCategory("all"); }} className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">
-                Clear Filters
+                {vT.clearFilters || "Clear Filters"}
               </button>
             </div>
           )}
@@ -1277,6 +1402,8 @@ export default function NgoVideosPage() {
           onPrev={() => setLightboxIndex(i => (i !== null && i > 0 ? i - 1 : i))}
           onNext={() => setLightboxIndex(i => (i !== null && i < MP4_ITEMS.length - 1 ? i + 1 : i))}
           onJump={i => setLightboxIndex(i)}
+          lang={language}
+          vT={vT}
         />
       )}
 

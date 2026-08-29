@@ -236,40 +236,112 @@ function formatNumber(num: number | string, withDecimals: boolean = false): stri
   return withDecimals ? `${formatted}.${parts[1]}` : formatted;
 }
 
-// Impact Calculator Micro-Copy mapping
-const IMPACT_MAPPING: Record<number, string> = {
-  500: "Provides 10 fresh hot meal packets for hospital patients and caretakers.",
-  1000: "Funds 1 essential medical supply & hygiene care kit.",
-  2000: "Supports 1 week of physical therapy and shelter assistance.",
-  5000: "Sponsors 1 full month of ration and grocery supplies for a family in need.",
-  10000: "Funds emergency medical aid equipment & physical rehabilitation gear.",
+// Multilingual Cause Name Translations (supports both DB & Fallback causes)
+const CAUSE_TRANSLATIONS: Record<string, { te: string; hi: string }> = {
+  "Tithe": { te: "దశమభాగం (Tithe)", hi: "दशमांश (Tithe)" },
+  "TITHE": { te: "దశమభాగం (Tithe)", hi: "दशमांश (Tithe)" },
+  "Online Offering": { te: "ఆన్‌లైన్ కానుక (Offering)", hi: "ऑनलाइन भेंट (Offering)" },
+  "Offering": { te: "కానుక (Offering)", hi: "भент (Offering)" },
+  "OFFERING": { te: "కానుక (Offering)", hi: "भेंट (Offering)" },
+  "Building Fund": { te: "భవన నిర్మాణ నిధి (Building Fund)", hi: "भवन निर्माण कोष (Building Fund)" },
+  "BUILDING": { te: "భవన నిర్మాణ నిధి (Building Fund)", hi: "भवन निर्माण कोष (Building Fund)" },
+  "Missions": { te: "సువార్త సేవ నిధి (Missions)", hi: "मिशनरी फंड (Missions)" },
+  "MISSIONS": { te: "సువార్త సేవ నిధి (Missions)", hi: "मिशनरी फंड (Missions)" },
+  "Benevolence": { te: "పేదల సహాయ నిధి (Benevolence)", hi: "परोपकार एवं सहायता (Benevolence)" },
+  "BENEVOLENCE": { te: "పేదల సహాయ నిధి (Benevolence)", hi: "परोपकार एवं सहायता (Benevolence)" },
+  "Special Offering": { te: "ప్రత్యేక కానుక (Special Offering)", hi: "विशेष भेंट (Special Offering)" },
+  "SPECIAL": { te: "ప్రత్యేక కానుక (Special Offering)", hi: "विशेष भेंट (Special Offering)" },
+  "CHARITY": { te: "ఆసుపత్రి రోగుల సేవ & మెడికల్ కిట్‌లు", hi: "अस्पताल सेवा एवं मेडिकल किट" },
+  "Hospital Outreach & Patient Kits": { te: "ఆసుపత్రి రోగుల సేవ & మెడికల్ కిట్‌లు", hi: "अस्पताल सेवा एवं मेडिकल किट" },
+  "ASHRAMAM": { te: "ఆశ్రమం & దివ్యాంగుల సహాయ నిధి", hi: "आश्रम एवं दिव्यांग सहायता" },
+  "Ashramam & Handicap Support": { te: "ఆశ్రమం & దివ్యాంగుల సహాయ నిధి", hi: "आश्रम एवं दिव्यांग सहायता" },
+  "FOOD": { te: "తాజా ఆహార ప్యాకెట్ల పంపిణీ", hi: "ताजा भोजन पैकेट वितरण" },
+  "Fresh Food Packets Drive": { te: "తాజా ఆహార ప్యాకెట్ల పంపిణీ", hi: "ताजा भोजन पैकेट वितरण" },
 };
 
-
-// FAQ Items
-const FAQ_ITEMS = [
-  {
-    question: "Is my donation tax-deductible under Section 80G?",
-    answer: "Yes! All donations made to Kingdom of Christ Ministries qualify for 50% tax exemption under Section 80G of the Income Tax Act. Check 'Request 80G Exemption' in Step 2 to enter your PAN number, and your official tax receipt will be issued instantly."
-  },
-  {
-    question: "How is my donation utilized?",
-    answer: "100% of direct project donations go towards purchasing hot meals, medical kits, patient care packages, and wheelchair equipment for Gandhi & NIMS hospital outreach, as well as local shelter homes."
-  },
-  {
-    question: "How do I pay using UPI on mobile or desktop?",
-    answer: "On desktop, scan the dynamic QR code using GPay, PhonePe, Paytm, or BHIM. On mobile, tap any of the UPI app buttons to open your preferred payment app directly."
-  },
-  {
-    question: "Will I get an instant receipt?",
-    answer: "Yes! As soon as your payment is processed, you can download a PDF digital receipt, share it on WhatsApp, or have it emailed directly to your inbox."
+function getCauseDisplayName(cause: CauseItem, lang: string): string {
+  if (lang === "te") {
+    if (cause.nameTe) return cause.nameTe;
+    if (cause.code && CAUSE_TRANSLATIONS[cause.code]?.te) return CAUSE_TRANSLATIONS[cause.code].te;
+    if (cause.nameEn && CAUSE_TRANSLATIONS[cause.nameEn]?.te) return CAUSE_TRANSLATIONS[cause.nameEn].te;
   }
-];
+  if (lang === "hi") {
+    if (cause.nameHi) return cause.nameHi;
+    if (cause.code && CAUSE_TRANSLATIONS[cause.code]?.hi) return CAUSE_TRANSLATIONS[cause.code].hi;
+    if (cause.nameEn && CAUSE_TRANSLATIONS[cause.nameEn]?.hi) return CAUSE_TRANSLATIONS[cause.nameEn].hi;
+  }
+  return cause.nameEn || cause.code;
+}
+
+const BRANCH_TRANSLATIONS: Record<string, { te: string; hi: string }> = {
+  "Shapur Nagar (Main)": { te: "షాపూర్ నగర్ (ప్రధాన శాఖ)", hi: "शापुर नगर (मुख्य शाखा)" },
+  "Subhash Nagar Branch": { te: "సుభాష్ నగర్ శాఖ", hi: "सुभाष नगर शाखा" },
+  "Bahadurpally Branch": { te: "బహదూర్‌పల్లి శాఖ", hi: "बहादुरपल्ली शाखा" },
+};
+
+function getBranchDisplayName(branch: BranchItem, lang: string): string {
+  if (lang === "te" && BRANCH_TRANSLATIONS[branch.name]?.te) return BRANCH_TRANSLATIONS[branch.name].te;
+  if (lang === "hi" && BRANCH_TRANSLATIONS[branch.name]?.hi) return BRANCH_TRANSLATIONS[branch.name].hi;
+  return branch.name;
+}
+
+// Multilingual Impact Micro-Copy mapping
+const IMPACT_TRANSLATIONS: Record<number, { en: string; te: string; hi: string }> = {
+  500: {
+    en: "Provides 10 fresh hot meal packets for hospital patients and caretakers.",
+    te: "ఆసుపత్రి రోగులు మరియు సహాయకులకు 10 తాజా భోజన ప్యాకెట్లను అందిస్తుంది.",
+    hi: "अस्पताल के मरीजों और तीमारदारों के लिए 10 ताजा भोजन पैकेट प्रदान करता है।"
+  },
+  1000: {
+    en: "Funds 1 essential medical supply & hygiene care kit.",
+    te: "1 అవసరమైన వైద్య సరఫరా మరియు పరిశుభ్రత సంరక్షణ కిట్‌ను సమకూరుస్తుంది.",
+    hi: "1 आवश्यक चिकित्सा आपूर्ति और स्वच्छता देखभाल किट को वित्तपोषित करता है।"
+  },
+  2000: {
+    en: "Supports 1 week of physical therapy and shelter assistance.",
+    te: "1 వారం పాటు ఫిజియోథెరపీ మరియు ఆశ్రమ వసతి సహాయాన్ని అందిస్తుంది.",
+    hi: "1 सप्ताह की फिजियोथेरेपी और आश्रम सहायता का समर्थन करता है।"
+  },
+  5000: {
+    en: "Sponsors 1 full month of ration and grocery supplies for a family in need.",
+    te: "ఒక పేద కుటుంబానికి 1 పూర్తి నెల నిత్యావసర సరుకులు మరియు ఆహార సరఫరాను సమకూరుస్తుంది.",
+    hi: "ज़रूरतमंद परिवार के लिए 1 पूरे महीने का राशन और किराना सामान प्रायोजित करता है।"
+  },
+  10000: {
+    en: "Funds emergency medical aid equipment & physical rehabilitation gear.",
+    te: "అత్యవసర వైద్య పరికరాలు మరియు శారీరక పునరావాస పరికరాలను సమకూరుస్తుంది.",
+    hi: "आपातकालीन चिकित्सा सहायता उपकरण और भौतिक पुनर्वास गियर को वित्तपोषित करता है।"
+  }
+};
+
+function getImpactDisplayCopy(amt: number, lang: string): string {
+  const item = IMPACT_TRANSLATIONS[amt];
+  if (item) {
+    if (lang === "te") return item.te;
+    if (lang === "hi") return item.hi;
+    return item.en;
+  }
+  if (lang === "te") return "ప్రతి రూపాయి నేరుగా ఆపదలో ఉన్నవారి జీవితాన్ని మార్చడానికి ఉపయోగపడుతుంది!";
+  if (lang === "hi") return "प्रत्येक रुपया सीधे ज़रूरत में किसी का जीवन बदलता है!";
+  return "Every rupee directly touches and transforms a life in need!";
+}
+
+const FORM_FIELD_TRANSLATIONS: Record<string, { te: string; hi: string }> = {
+  "donorName": { te: "పూర్తి పేరు", hi: "पूरा नाम" },
+  "donorPhone": { te: "మొబైల్ నంబర్", hi: "मोबाइल नंबर" },
+  "donorEmail": { te: "ఈమెయిల్ చిరునామా", hi: "ईमेल पता" },
+  "isAnonymous": { te: "విరాళాన్ని అనామకంగా చేయండి", hi: "दान को गुमनाम रखें" },
+  "address": { te: "చిరునామా", hi: "पता" },
+  "city": { te: "నగరం", hi: "शहर" },
+  "state": { te: "రాష్ట్రం", hi: "राज्य" },
+  "prayerRequest": { te: "ప్రార్థన విన్నపం / సందేశం", hi: "प्रार्थना अनुरोध / संदेश" },
+};
+
 
 function NgoDonationsContent() {
   const agent = useDonationAgent();
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   // Metadata state
@@ -362,6 +434,26 @@ function NgoDonationsContent() {
   }, []);
 
   const ngoT = t?.ngo || {};
+  const dp = ngoT?.donationsPage || {};
+
+  const faqItems = [
+    {
+      question: dp.faq1Q || "Is my donation tax-deductible under Section 80G?",
+      answer: dp.faq1A || "Yes! All donations made to Kingdom of Christ Ministries qualify for 50% tax exemption under Section 80G of the Income Tax Act. Check 'Request 80G Exemption' in Step 2 to enter your PAN number, and your official tax receipt will be issued instantly."
+    },
+    {
+      question: dp.faq2Q || "Where does my donation go?",
+      answer: dp.faq2A || "100% of your contributions directly fund food distribution drives, hospital patient kits, wheelchairs, medicines, and Ashramam shelter assistance across Hyderabad."
+    },
+    {
+      question: dp.faq3Q || "How do I pay using UPI on mobile or desktop?",
+      answer: dp.faq3A || "On desktop, scan the dynamic QR code using GPay, PhonePe, Paytm, or BHIM. On mobile, tap any of the UPI app buttons to open your preferred payment app directly."
+    },
+    {
+      question: dp.faq4Q || "Will I get an instant receipt?",
+      answer: dp.faq4A || "Yes! As soon as your payment is processed, you can download a PDF digital receipt, share it on WhatsApp, or have it emailed directly to your inbox."
+    }
+  ];
 
   // Fetch dynamic configuration
   useEffect(() => {
@@ -719,7 +811,7 @@ function NgoDonationsContent() {
 
   const activeCauseObj = causes.find((c) => c.code === selectedCause);
   const currentNumAmount = Number(getFinalAmount() || "0");
-  const currentImpactText = IMPACT_MAPPING[currentNumAmount] || "Every rupee directly touches and transforms a life in need!";
+  const currentImpactText = getImpactDisplayCopy(currentNumAmount, language);
 
   return (
     <div className="py-8 sm:py-14 min-h-[85vh] space-y-10 sm:space-y-14">
@@ -758,8 +850,8 @@ function NgoDonationsContent() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Regd No: 206/2024</p>
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Govt Registered NGO</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">{dp.regdNo || "Regd No: 206/2024"}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">{dp.govtRegd || "Govt Registered NGO"}</p>
             </div>
           </div>
 
@@ -768,8 +860,8 @@ function NgoDonationsContent() {
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">5,000+ Assisted</p>
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Patients &amp; Families</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">{dp.assistedCount || "5,000+ Assisted"}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">{dp.assistedDesc || "Patients & Families"}</p>
             </div>
           </div>
 
@@ -778,8 +870,8 @@ function NgoDonationsContent() {
               <Flame className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">100+ Volunteers</p>
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">Active Outreach Team</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">{dp.volunteersCount || "100+ Volunteers"}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">{dp.volunteersDesc || "Active Outreach Team"}</p>
             </div>
           </div>
 
@@ -788,8 +880,8 @@ function NgoDonationsContent() {
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">80G Tax Exempt</p>
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">50% IT Tax Benefits</p>
+              <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">{dp.taxExempt || "80G Tax Exempt"}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">{dp.taxExemptDesc || "50% IT Tax Benefits"}</p>
             </div>
           </div>
         </div>
@@ -803,15 +895,15 @@ function NgoDonationsContent() {
           <div className="lg:col-span-5 space-y-6 lg:space-y-7 text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-800 dark:text-purple-100 text-xs font-black uppercase tracking-wider shadow-sm">
               <Heart className="w-4 h-4 text-purple-500 animate-pulse fill-purple-500/20" />
-              <span>{ngoT?.donationsPage?.tag || "KCM NGO SOCIAL SERVICE"}</span>
+              <span>{dp.tag || "KCM NGO SOCIAL SERVICE"}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-slate-900 dark:text-white">
-              Support <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-500 dark:from-purple-200 dark:via-indigo-200 dark:to-rose-300 bg-clip-text text-transparent">Our Projects</span>
+              {dp.title || "Support Our Projects"}
             </h1>
 
             <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-base leading-relaxed font-medium">
-              {ngoT?.donationsPage?.desc || "Your financial contributions directly purchase fresh food packets, medical kits, support assistants, and essential gear for hospital patients and handicap shelters."}
+              {dp.desc || "Your financial contributions directly purchase fresh food packets, medical kits, support assistants, and essential gear for hospital patients and handicap shelters."}
             </p>
 
             {/* Interactive Giving Frequency Switcher */}
@@ -826,7 +918,7 @@ function NgoDonationsContent() {
                 }`}
               >
                 <Zap className={`w-4 h-4 ${frequency === "ONE_TIME" ? "text-purple-700 dark:text-white" : "text-purple-500"}`} />
-                <span>One-Time Donation</span>
+                <span>{dp.oneTime || "One-Time Donation"}</span>
               </button>
 
               <button
@@ -839,9 +931,9 @@ function NgoDonationsContent() {
                 }`}
               >
                 <Calendar className="w-4 h-4 text-white" />
-                <span>Monthly Partner</span>
+                <span>{dp.monthly || "Monthly Partner"}</span>
                 <span className="hidden sm:inline-block bg-amber-400 text-slate-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full ml-1">
-                  2x Impact
+                  {dp.impact2x || "2x Impact"}
                 </span>
               </button>
             </div>
@@ -849,7 +941,7 @@ function NgoDonationsContent() {
             {/* Live Cause Explorer Selector */}
             <div className="space-y-3 pt-1">
               <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-200 block">
-                Select Cause to Support
+                {dp.selectCause || "Select Cause to Support"}
               </label>
 
               <div className="space-y-3">
@@ -871,7 +963,7 @@ function NgoDonationsContent() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-xs sm:text-sm font-black ${isSelected ? "text-purple-950 dark:text-white" : "text-slate-900 dark:text-white"}`}>
-                          {c.nameEn}
+                          {getCauseDisplayName(c, language)}
                         </span>
                         <span className={`text-[11px] font-mono font-bold ${isSelected ? "text-purple-800 dark:text-purple-100" : "text-slate-600 dark:text-slate-300"}`}>
                           ₹{formatNumber(raised)} / ₹{formatNumber(target)} ({pct}%)
@@ -894,7 +986,7 @@ function NgoDonationsContent() {
             <div className="p-4 sm:p-5 rounded-2xl bg-purple-50 dark:bg-purple-950/70 border border-purple-200 dark:border-purple-500/40 text-xs sm:text-sm space-y-2">
               <div className="flex items-center gap-2 text-purple-900 dark:text-purple-100 font-black">
                 <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-300 flex-shrink-0 animate-spin" style={{ animationDuration: '6s' }} />
-                <span>Impact of ₹{formatNumber(currentNumAmount)}:</span>
+                <span>{dp.impactOf || "Impact of"} ₹{formatNumber(currentNumAmount)}:</span>
               </div>
               <p className="text-slate-800 dark:text-white font-semibold leading-relaxed">
                 {currentImpactText}
@@ -906,13 +998,13 @@ function NgoDonationsContent() {
               <div className="flex items-start gap-2.5">
                 <ShieldCheck className="w-4.5 h-4.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-slate-900 dark:text-white font-bold">Primary Beneficiaries:</strong> Caretakers &amp; patients at Gandhi Hospital, NIMS, and local physical handicap shelters.
+                  <strong className="text-slate-900 dark:text-white font-bold">{dp.primaryBeneficiaries || "Primary Beneficiaries:"}</strong> {dp.primaryBeneficiariesDesc || "Caretakers & patients at Gandhi Hospital, NIMS, and local physical handicap shelters."}
                 </p>
               </div>
               <div className="flex items-start gap-2.5">
                 <Lock className="w-4.5 h-4.5 text-purple-500 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong className="text-slate-900 dark:text-white font-bold">Secure &amp; 80G Tax Exempt:</strong> 256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts.
+                  <strong className="text-slate-900 dark:text-white font-bold">{dp.secureGuaranteed || "Secure & 80G Tax Exempt:"}</strong> {dp.secureGuaranteedDesc || "256-bit SSL encrypted Razorpay UPI checkout with instant PDF receipts."}
                 </p>
               </div>
             </div>
@@ -920,7 +1012,7 @@ function NgoDonationsContent() {
             {/* Supported Payment App Logos */}
             <div>
               <p className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300 mb-3">
-                Accepted Instant Payment Methods
+                {dp.acceptedMethods || "Accepted Instant Payment Methods"}
               </p>
               <div className="flex items-center gap-2.5 flex-wrap">
                 {[
@@ -948,10 +1040,10 @@ function NgoDonationsContent() {
             <div className="mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
               <div className="flex items-center justify-between relative">
                 {[
-                  { num: 1, label: "Amount" },
-                  { num: 2, label: "Details" },
-                  { num: 3, label: "UPI QR" },
-                  { num: 4, label: "Receipt" },
+                  { num: 1, label: dp.stepAmount || "Amount" },
+                  { num: 2, label: dp.stepDetails || "Details" },
+                  { num: 3, label: dp.stepUpi || "UPI QR" },
+                  { num: 4, label: dp.stepReceipt || "Receipt" },
                 ].map((s) => {
                   const isCurrent = step === s.num;
                   const isDone = step > s.num;
@@ -1011,10 +1103,10 @@ function NgoDonationsContent() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                      Step 1: Choose Donation Amount
+                      {dp.step1Title || "Step 1: Choose Donation Amount"}
                     </label>
                     <span className="text-[11px] font-extrabold text-purple-600 dark:text-purple-300">
-                      {frequency === "MONTHLY" ? "Monthly Recurring" : "One-Time Giving"}
+                      {frequency === "MONTHLY" ? (dp.monthlyRecurring || "Monthly Recurring") : (dp.oneTimeGiving || "One-Time Giving")}
                     </span>
                   </div>
 
@@ -1046,7 +1138,7 @@ function NgoDonationsContent() {
                     <div className="relative">
                       <input
                         type="number"
-                        placeholder="Custom"
+                        placeholder={dp.customPlaceholder || "Custom"}
                         value={customAmount}
                         onChange={(e) => {
                           setCustomAmount(e.target.value);
@@ -1066,7 +1158,7 @@ function NgoDonationsContent() {
 
                   {/* Quick Add Pills */}
                   <div className="pt-3 flex items-center gap-2">
-                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-300">Quick add:</span>
+                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-300">{dp.quickAdd || "Quick add:"}</span>
                     {[500, 1000, 5000].map((addVal) => (
                       <button
                         key={addVal}
@@ -1085,7 +1177,7 @@ function NgoDonationsContent() {
                   onClick={handleProceedToStep2}
                   className="w-full py-4 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm sm:text-base rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 active:scale-[0.99] transition-all"
                 >
-                  <span>Continue to Donor Details</span>
+                  <span>{dp.continueDetails || "Continue to Donor Details"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </motion.div>
@@ -1100,10 +1192,10 @@ function NgoDonationsContent() {
               >
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                    Step 2: Donor Information
+                    {dp.step2Title || "Step 2: Donor Information"}
                   </label>
                   <span className="text-xs font-extrabold text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-950/80 px-2.5 py-1 rounded-lg border border-purple-200 dark:border-purple-800/60">
-                    Amount: ₹{formatNumber(getFinalAmount())}
+                    {dp.amountPrefix || "Amount:"} ₹{formatNumber(getFinalAmount())}
                   </span>
                 </div>
 
@@ -1112,10 +1204,10 @@ function NgoDonationsContent() {
                   <div>
                     <p className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                       <Award className="w-4 h-4 text-amber-500" />
-                      <span>Request 80G Tax Exemption Receipt</span>
+                      <span>{dp.request80g || "Request 80G Tax Exemption Receipt"}</span>
                     </p>
                     <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium mt-0.5">
-                      Claim 50% tax deduction under Section 80G of Income Tax Act
+                      {dp.request80gDesc || "Claim 50% tax deduction under Section 80G of Income Tax Act"}
                     </p>
                   </div>
                   <button
@@ -1134,12 +1226,16 @@ function NgoDonationsContent() {
                   {formFields.map((field) => {
                     if (!field.isVisible) return null;
                     const val = donorDetails[field.fieldName] || "";
+                    const fieldLabel =
+                      (language === "te" && FORM_FIELD_TRANSLATIONS[field.fieldName]?.te) ||
+                      (language === "hi" && FORM_FIELD_TRANSLATIONS[field.fieldName]?.hi) ||
+                      field.label;
 
                     if (field.fieldType === "checkbox") {
                       return (
                         <div key={field.id} className="sm:col-span-2 flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/15">
                           <span className="text-xs font-extrabold text-slate-800 dark:text-white">
-                            {field.label}
+                            {fieldLabel}
                           </span>
                           <button
                             type="button"
@@ -1164,7 +1260,7 @@ function NgoDonationsContent() {
                     return (
                       <div key={field.id} className={isFullWidth ? "sm:col-span-2" : "sm:col-span-1"}>
                         <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                          {field.label} {field.isRequired ? "*" : "(Optional)"}
+                          {fieldLabel} {field.isRequired ? "*" : "(Optional)"}
                         </label>
                         <input
                           type={field.fieldType || "text"}
@@ -1191,7 +1287,7 @@ function NgoDonationsContent() {
                       className="sm:col-span-2 space-y-1 bg-amber-500/10 p-3.5 rounded-2xl border border-amber-500/30"
                     >
                       <label className="block text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                        PAN Card Number (Required for 80G Receipt) *
+                        {dp.panCard || "PAN Card Number (Required for 80G Receipt) *"}
                       </label>
                       <input
                         type="text"
@@ -1207,7 +1303,7 @@ function NgoDonationsContent() {
                         className="w-full py-3 px-4 rounded-xl border border-amber-500/40 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-mono uppercase text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/30"
                       />
                       <p className="text-[10.5px] text-slate-600 dark:text-slate-300 font-medium">
-                        Required by Govt of India Income Tax Dept for issuing Section 80G certificate.
+                        {dp.panCardDesc || "Required by Govt of India Income Tax Dept for issuing Section 80G certificate."}
                       </p>
                     </motion.div>
                   )}
@@ -1217,7 +1313,7 @@ function NgoDonationsContent() {
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                      Donation Cause
+                      {dp.donationCause || "Donation Cause"}
                     </label>
                     <select
                       value={selectedCause}
@@ -1226,7 +1322,7 @@ function NgoDonationsContent() {
                     >
                       {causes.map((c) => (
                         <option key={c.id} value={c.code}>
-                          {c.nameEn}
+                          {getCauseDisplayName(c, language)}
                         </option>
                       ))}
                     </select>
@@ -1234,7 +1330,7 @@ function NgoDonationsContent() {
 
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                      Branch
+                      {dp.branch || "Branch"}
                     </label>
                     <select
                       value={selectedBranch}
@@ -1243,7 +1339,7 @@ function NgoDonationsContent() {
                     >
                       {branches.map((b) => (
                         <option key={b.id} value={b.id}>
-                          {b.name}
+                          {getBranchDisplayName(b, language)}
                         </option>
                       ))}
                     </select>
@@ -1258,7 +1354,7 @@ function NgoDonationsContent() {
                     className="flex-1 py-3.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back</span>
+                    <span>{dp.back || "Back"}</span>
                   </button>
 
                   <button
@@ -1270,11 +1366,11 @@ function NgoDonationsContent() {
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Generating Dynamic QR…</span>
+                        <span>{dp.generatingQr || "Generating Dynamic QR…"}</span>
                       </>
                     ) : (
                       <>
-                        <span>Generate UPI QR Code</span>
+                        <span>{dp.generateQr || "Generate UPI QR Code"}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -1294,11 +1390,11 @@ function NgoDonationsContent() {
                 <div className="w-full flex items-center justify-between bg-purple-500/10 border border-purple-500/30 px-4 py-2.5 rounded-2xl text-xs font-bold text-purple-800 dark:text-purple-200">
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400" />
-                    <span>Waiting for Payment…</span>
+                    <span>{dp.waitingPayment || "Waiting for Payment…"}</span>
                   </div>
                   <div className="flex items-center gap-1 text-slate-700 dark:text-slate-200 font-mono font-bold">
                     <Clock className="w-3.5 h-3.5 text-purple-500" />
-                    <span>Expires in: {timeLeftStr}</span>
+                    <span>{dp.expiresIn || "Expires in:"} {timeLeftStr}</span>
                   </div>
                 </div>
 
@@ -1319,17 +1415,17 @@ function NgoDonationsContent() {
                   </div>
 
                   <p className="mt-3 text-sm font-black text-slate-900 dark:text-white">
-                    Scan with any UPI App to Pay ₹{formatNumber(getFinalAmount())}
+                    {dp.scanToPay || "Scan with any UPI App to Pay"} ₹{formatNumber(getFinalAmount())}
                   </p>
 
                   <p className="text-[11px] text-slate-600 dark:text-slate-300 font-mono font-bold mt-0.5">
-                    Order Ref: {referenceNumber || orderId}
+                    {dp.orderRef || "Order Ref:"} {referenceNumber || orderId}
                   </p>
 
                   {/* Merchant UPI ID Copy Box */}
                   <div className="mt-4 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
                     <span className="text-slate-800 dark:text-white font-black font-mono">
-                      UPI ID: {settings.upiId}
+                      {dp.upiId || "UPI ID:"} {settings.upiId}
                     </span>
                     <button
                       type="button"
@@ -1337,7 +1433,7 @@ function NgoDonationsContent() {
                       className="text-purple-700 dark:text-purple-200 font-extrabold hover:text-purple-400 flex items-center gap-1 min-h-[32px] px-2"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>{copiedLabel === "upi" ? "Copied!" : "Copy"}</span>
+                      <span>{copiedLabel === "upi" ? (dp.copied || "Copied!") : (dp.copy || "Copy")}</span>
                     </button>
                   </div>
                 </div>
@@ -1345,7 +1441,7 @@ function NgoDonationsContent() {
                 {/* Mobile Deep Link Apps */}
                 <div className="w-full max-w-sm space-y-2.5">
                   <p className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                    Tap to pay directly on mobile
+                    {dp.tapToPayMobile || "Tap to pay directly on mobile"}
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
@@ -1374,7 +1470,7 @@ function NgoDonationsContent() {
                     className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
                   >
                     <Smartphone className="w-4 h-4" />
-                    <span>Open in any UPI App</span>
+                    <span>{dp.openInAnyUpi || "Open in any UPI App"}</span>
                   </button>
                 </div>
 
@@ -1385,7 +1481,7 @@ function NgoDonationsContent() {
                     onClick={() => setStep(2)}
                     className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold"
                   >
-                    ← Edit Details
+                    {dp.editDetails || "← Edit Details"}
                   </button>
 
                   <button
@@ -1393,7 +1489,7 @@ function NgoDonationsContent() {
                     onClick={() => handlePaymentSuccess(donationId)}
                     className="text-purple-700 dark:text-purple-200 font-black hover:underline"
                   >
-                    [Simulate Successful Payment]
+                    {dp.simulatePayment || "[Simulate Successful Payment]"}
                   </button>
                 </div>
               </motion.div>
@@ -1426,7 +1522,7 @@ function NgoDonationsContent() {
                     transition={{ delay: 0.25 }}
                     className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight"
                   >
-                    Payment Successful! 🎉
+                    {dp.paymentSuccess || "Payment Successful! 🎉"}
                   </motion.h3>
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -1434,7 +1530,7 @@ function NgoDonationsContent() {
                     transition={{ delay: 0.35 }}
                     className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 max-w-xs font-medium"
                   >
-                    Thank you for your generous support. Your donation has been verified and recorded.
+                    {dp.paymentSuccessDesc || "Thank you for your generous support. Your donation has been verified and recorded."}
                   </motion.p>
                 </div>
 
@@ -1445,7 +1541,7 @@ function NgoDonationsContent() {
                   transition={{ delay: 0.4 }}
                   className="bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 rounded-2xl p-5 text-center shadow-xl shadow-purple-500/25"
                 >
-                  <p className="text-purple-200 text-xs font-extrabold uppercase tracking-widest mb-1">Amount Donated</p>
+                  <p className="text-purple-200 text-xs font-extrabold uppercase tracking-widest mb-1">{dp.amountDonated || "Amount Donated"}</p>
                   <p className="text-white text-4xl font-black tracking-tight">
                     ₹{formatNumber(receiptData.amount, true)}
                   </p>
@@ -1462,25 +1558,25 @@ function NgoDonationsContent() {
                   <div className="bg-purple-600/10 dark:bg-purple-900/40 px-5 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                      <span className="text-xs font-extrabold uppercase tracking-widest text-purple-800 dark:text-purple-200">Official Receipt</span>
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-purple-800 dark:text-purple-200">{dp.officialReceipt || "Official Receipt"}</span>
                     </div>
                     {wantTaxExemption && (
                       <span className="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase">
-                        80G Tax Exempt
+                        {dp.taxExemptBadge || "80G Tax Exempt"}
                       </span>
                     )}
                   </div>
 
                   <div className="divide-y divide-slate-100 dark:divide-white/10 text-xs">
                     {[
-                      { label: "Receipt Number", value: receiptData.receiptNumber, mono: true, highlight: true },
-                      { label: "Donation ID", value: donationId, mono: true },
-                      { label: "Transaction ID / UTR", value: receiptData.transactionId, mono: true },
-                      { label: "Date & Time", value: receiptData.issuedAt },
-                      { label: "Donor Name", value: receiptData.donorName },
-                      { label: "Donation Cause", value: receiptData.purpose },
-                      { label: "Branch", value: receiptData.branch },
-                      { label: "Payment Method", value: "UPI (Instant Dynamic QR)" },
+                      { label: dp.receiptNumber || "Receipt Number", value: receiptData.receiptNumber, mono: true, highlight: true },
+                      { label: dp.donationId || "Donation ID", value: donationId, mono: true },
+                      { label: dp.transactionId || "Transaction ID / UTR", value: receiptData.transactionId, mono: true },
+                      { label: dp.dateTime || "Date & Time", value: receiptData.issuedAt },
+                      { label: dp.donorName || "Donor Name", value: receiptData.donorName },
+                      { label: dp.donationCause || "Donation Cause", value: receiptData.purpose },
+                      { label: dp.branch || "Branch", value: receiptData.branch },
+                      { label: dp.paymentMethod || "Payment Method", value: "UPI (Instant Dynamic QR)" },
                     ].map((row) => (
                       <div key={row.label} className="flex justify-between items-center px-5 py-2.5 gap-3">
                         <span className="text-slate-600 dark:text-slate-300 flex-shrink-0 font-semibold">{row.label}</span>
@@ -1512,7 +1608,7 @@ function NgoDonationsContent() {
                     className="w-full py-3.5 min-h-[48px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <Download className="w-4 h-4" />
-                    Download Receipt (PDF)
+                    {dp.downloadPdf || "Download Receipt (PDF)"}
                   </a>
 
                   <div className="grid grid-cols-2 gap-2.5">
@@ -1522,7 +1618,7 @@ function NgoDonationsContent() {
                       className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Share2 className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                      Share Receipt
+                      {dp.shareReceipt || "Share Receipt"}
                     </button>
 
                     <button
@@ -1535,7 +1631,7 @@ function NgoDonationsContent() {
                       className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Mail className="w-4 h-4 text-blue-500" />
-                      Email Receipt
+                      {dp.emailReceipt || "Email Receipt"}
                     </button>
                   </div>
 
@@ -1545,7 +1641,7 @@ function NgoDonationsContent() {
                       className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <FileText className="w-4 h-4" />
-                      Donation History
+                      {dp.donationHistory || "Donation History"}
                     </Link>
 
                     <Link
@@ -1553,7 +1649,7 @@ function NgoDonationsContent() {
                       className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Home className="w-4 h-4" />
-                      Return Home
+                      {dp.returnHome || "Return Home"}
                     </Link>
                   </div>
                 </motion.div>
@@ -1572,15 +1668,15 @@ function NgoDonationsContent() {
         <div className="space-y-4 text-left max-w-4xl mx-auto">
           <div className="text-center space-y-1">
             <h3 className="text-2xl font-black text-slate-900 dark:text-white">
-              Frequently Asked Questions
+              {dp.faqTitle || "Frequently Asked Questions"}
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              Everything you need to know about giving, 80G tax exemptions, and payment security.
+              {dp.faqSubtitle || "Everything you need to know about giving, 80G tax exemptions, and payment security."}
             </p>
           </div>
 
           <div className="space-y-3">
-            {FAQ_ITEMS.map((item, idx) => {
+            {faqItems.map((item, idx) => {
               const isOpen = activeFaq === idx;
               return (
                 <div

@@ -30,7 +30,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function LeadershipPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.leadership || {};
 
   // Pastor bio tab state
@@ -38,7 +38,7 @@ export default function LeadershipPage() {
 
   // Ministry directory filter & search
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>(" ");
 
   // Selected ministry modal
   const [selectedMinistry, setSelectedMinistry] = useState<any | null>(null);
@@ -149,12 +149,12 @@ export default function LeadershipPage() {
       borderColor: "border-pink-200 dark:border-pink-800/50",
       accent: "from-pink-500 to-rose-500",
       focusAreas: [
-        "Women's Prayer Fellowship & Bible Study",
-        "Annual Women's Spiritual Conference",
-        "Community Benevolence & Hospitality",
-        "Family & Marriage Encouragement"
+        "Weekly Sisterhood Prayer Meetings",
+        "Community Outreach & Support",
+        "Women's Annual Spiritual Conference",
+        "Family & Marriage Counseling"
       ],
-      schedule: "Weekly Meeting: Friday 10:30 AM",
+      schedule: "Sisterhood Fellowship: Saturday 5:00 PM",
       roleTitle: "Ministry Leader"
     },
     {
@@ -163,18 +163,18 @@ export default function LeadershipPage() {
       desc: pageT.menDesc,
       icon: ShieldCheck,
       category: "care",
-      tag: "Spiritual Leadership",
+      tag: "Leadership & Integrity",
       color: "text-white",
-      bgColor: "bg-blue-600 shadow-md shadow-blue-600/30",
-      borderColor: "border-blue-200 dark:border-blue-800/50",
-      accent: "from-blue-500 to-indigo-500",
+      bgColor: "bg-purple-600 shadow-md shadow-purple-600/30",
+      borderColor: "border-purple-200 dark:border-purple-800/50",
+      accent: "from-purple-500 to-indigo-500",
       focusAreas: [
-        "Men's Prayer & Discipleship Gatherings",
-        "Family Spiritual Leadership Training",
-        "Church Maintenance & Logistics Support",
-        "Community Outreach & Mentorship"
+        "Men's Breakfast & Bible Study",
+        "Brotherhood Mentorship Network",
+        "Church Maintenance & Logistics",
+        "Leadership Seminars"
       ],
-      schedule: "Men's Breakfast & Prayer: Monthly 2nd Saturday",
+      schedule: "Men's Fellowship: Saturday 7:00 AM",
       roleTitle: "Ministry Leader"
     },
     {
@@ -183,18 +183,18 @@ export default function LeadershipPage() {
       desc: pageT.childrenDesc,
       icon: Baby,
       category: "youth",
-      tag: "Sunday School",
+      tag: "Kids Sunday School",
       color: "text-white",
-      bgColor: "bg-emerald-600 shadow-md shadow-emerald-600/30",
-      borderColor: "border-emerald-200 dark:border-emerald-800/50",
-      accent: "from-emerald-500 to-teal-500",
+      bgColor: "bg-pink-600 shadow-md shadow-pink-600/30",
+      borderColor: "border-pink-200 dark:border-pink-800/50",
+      accent: "from-pink-500 to-rose-500",
       focusAreas: [
-        "Age-Appropriate Sunday School Classes",
+        "Sunday School Age-Graded Classes",
         "Vacation Bible School (VBS)",
-        "Kids Memory Verse & Talent Contests",
-        "Children's Christmas & Easter Programs"
+        "Scripture Memorization Programs",
+        "Children's Choir & Pageants"
       ],
-      schedule: "Sunday School: Every Sunday during morning service",
+      schedule: "Sunday School: Sunday 9:00 AM",
       roleTitle: "Ministry Leader"
     },
     {
@@ -222,10 +222,12 @@ export default function LeadershipPage() {
   // Filtering Logic
   const filteredMinistries = ministries.filter((item) => {
     const matchesFilter = selectedFilter === "all" || item.category === selectedFilter;
+    const query = searchQuery.trim().toLowerCase();
     const matchesSearch = 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.tag.toLowerCase().includes(searchQuery.toLowerCase());
+      !query ||
+      (item.title && item.title.toLowerCase().includes(query)) ||
+      (item.desc && item.desc.toLowerCase().includes(query)) ||
+      (item.tag && item.tag.toLowerCase().includes(query));
     return matchesFilter && matchesSearch;
   });
 
@@ -234,29 +236,29 @@ export default function LeadershipPage() {
       <Navbar />
 
       {/* 🌌 Hero Section with Ambient Glows */}
-      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-slate-950 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15" />
-        <div className="hero-orb-1 opacity-70" />
-        <div className="hero-orb-2 opacity-60" />
+      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/25 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/25 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6 flex justify-center">
-              <BackToHome label={pageT.badge || "Our Leaders"} />
+              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
             </div>
 
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
-              <Users className="h-4 w-4 text-purple-300" />
-              <span>{pageT.badge || "Our Leaders"}</span>
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-sm backdrop-blur-md animate-bounce-in">
+              <Users className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+              <span>{pageT.badge || (language === "te" ? "మా నాయకత్వం" : language === "hi" ? "हमारा नेतृत्व" : "Our Leaders")}</span>
+              <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-300" />
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
-              {pageT.title}
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
+              {pageT.title || (language === "te" ? "సంఘ నాయకత్వం" : language === "hi" ? "कलीसियाई नेतृत्व" : "Leadership")}
             </h1>
 
-            <p className="text-lg sm:text-xl text-white/90 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed">
-              {pageT.subtitle}
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed">
+              {pageT.subtitle || (language === "te" ? "దేవుని ప్రజలను ప్రేమతో నడిపించడానికి పిలువబడిన కాపరులు" : language === "hi" ? "परमेश्वर के लोगों की सेवा के लिए बुलाए गए चरवाहे" : "Shepherds called to serve God's people")}
             </p>
           </div>
         </div>
@@ -302,7 +304,7 @@ export default function LeadershipPage() {
             <div className="w-20 h-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full" />
           </div>
 
-          <div className="bg-gradient-to-br from-purple-900/10 via-slate-900/5 to-indigo-900/10 dark:from-purple-950/40 dark:via-slate-900/80 dark:to-indigo-950/40 border border-purple-200/60 dark:border-purple-800/40 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-purple-50/90 via-indigo-50/50 to-white dark:from-purple-950/40 dark:via-slate-900/80 dark:to-indigo-950/40 border border-purple-200/90 dark:border-purple-800/40 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl shadow-purple-900/5 dark:shadow-black/40 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -322,7 +324,7 @@ export default function LeadershipPage() {
                   
                   <div className="absolute bottom-4 left-4 right-4 text-center z-10">
                     <span className="px-3 py-1 bg-amber-500 text-slate-950 text-xs font-black rounded-full uppercase tracking-wider shadow-lg">
-                      {pageT.role || "Senior Pastor & Founder"}
+                      {pageT.role || (language === "te" ? "ప్రధాన కాపరి & వ్యవస్థాపకులు" : language === "hi" ? "वरिष्ठ पादरी और संस्थापक" : "Senior Pastor & Founder")}
                     </span>
                   </div>
                 </div>
@@ -332,7 +334,7 @@ export default function LeadershipPage() {
                     Bishop Kurra Kristhu Raju
                   </h3>
                   <p className="text-purple-600 dark:text-purple-300 font-bold text-base sm:text-lg mt-1">
-                    {pageT.role}
+                    {pageT.role || (language === "te" ? "ప్రధాన కాపరి & వ్యవస్థాపకులు" : language === "hi" ? "वरिष्ठ पादरी और संस्थापक" : "Senior Pastor & Founder")}
                   </p>
                 </div>
               </div>
@@ -350,7 +352,7 @@ export default function LeadershipPage() {
                         : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
-                    {pageT.tabBio || "About Pastor"}
+                    {pageT.tabBio || (language === "te" ? "కాపరి పరిచయం" : language === "hi" ? "पादरी परिचय" : "About Pastor")}
                   </button>
 
                   <button
@@ -361,7 +363,7 @@ export default function LeadershipPage() {
                         : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
-                    {pageT.tabVision || "Pastoral Vision"}
+                    {pageT.tabVision || (language === "te" ? "పరిచర్య దర్శనం" : language === "hi" ? "सेवा का दृष्टिकोण" : "Pastoral Vision")}
                   </button>
 
                   <button
@@ -372,7 +374,7 @@ export default function LeadershipPage() {
                         : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
-                    {pageT.tabMessage || "Message to Church"}
+                    {pageT.tabMessage || (language === "te" ? "సంఘానికి సందేశం" : language === "hi" ? "कलीसिया को संदेश" : "Message to Church")}
                   </button>
                 </div>
 
@@ -381,16 +383,21 @@ export default function LeadershipPage() {
                   {activePastorTab === "bio" && (
                     <div className="space-y-4 animate-fade-in">
                       <p className="text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed font-medium">
-                        {pageT.bio}
+                        {pageT.bio ||
+                          (language === "te"
+                            ? "బిషప్ కుర్రా క్రీస్తు రాజు గారు 2012 నుండి కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్‌ను నమ్మకంగా నడిపిస్తున్నారు. దేవుని వాక్య బోధన, సమాజ సేవ మరియు అనాథల సంరక్షణలో వారి నిబద్ధత అనేక వేల మంది జీవితాలలో మార్పును తెచ్చింది."
+                            : language === "hi"
+                            ? "बिशप कुर्रा क्रिस्तु राजू जी 2012 से किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज का विश्वासयोग्यता से नेतृत्व कर रहे हैं। परमेश्वर के वचन का प्रचार, सामाजिक सेवा और अनाथों की देखभाल में उनकी प्रतिबद्धता ने हजारों लोगों के जीवन को बदला है।"
+                            : "Bishop Kurra Kristhu Raju has been faithfully leading Kingdom of Christ Ministries since 2012, bringing spiritual transformation, social upliftment, and charitable care across Hyderabad and beyond.")}
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                         <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
                           <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                          <span>Dedicated Pastoral Leadership</span>
+                          <span>{language === "te" ? "అంకితభావం గల ఆత్మీయ నాయకత్వం" : language === "hi" ? "समर्पित आत्मिक नेतृत्व" : "Dedicated Pastoral Leadership"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
                           <CheckCircle2 className="h-4 w-4 text-purple-500 flex-shrink-0" />
-                          <span>Visionary Church Founder</span>
+                          <span>{language === "te" ? "దర్శనంగల సంఘ వ్యవస్థాపకులు" : language === "hi" ? "दूरदर्शी कलीसिया संस्थापक" : "Visionary Church Founder"}</span>
                         </div>
                       </div>
                     </div>
@@ -400,22 +407,22 @@ export default function LeadershipPage() {
                     <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-md border border-purple-100 dark:border-purple-900/50 animate-fade-in">
                       <Quote className="h-8 w-8 text-purple-600 dark:text-purple-400 mb-2" />
                       <h4 className="text-base font-bold text-purple-600 dark:text-purple-300 mb-2">
-                        {pageT.visionTitle}
+                        {pageT.visionTitle || (language === "te" ? "దేవుని రాజ్యం కోసం దర్శనం" : language === "hi" ? "परमेश्वर के राज्य के लिए दृष्टिकोण" : "Vision for the Kingdom")}
                       </h4>
                       <p className="text-slate-800 dark:text-slate-100 italic text-base sm:text-lg leading-relaxed font-semibold">
-                        "{pageT.visionQuote}"
+                        "{pageT.visionQuote || (language === "te" ? "క్రీస్తును తెలుసుకోవడం మరియు ఆయనను అందరికీ తెలియజేయడం, ప్రతి విశ్వాసిని ఆధ్యాత్మిక పరిపక్వతకు నడిపించడం మా ప్రధాన లక్ష్యం." : language === "hi" ? "मसीह को जानना और उन्हें सभी को बताना, और हर विश्वासी को आत्मिक परिपक्वता तक पहुंचाना हमारा मुख्य लक्ष्य है।" : "To know Christ and make Him known, raising disciples who transform our city through worship, love, and community service.")}"
                       </p>
                     </div>
                   )}
 
                   {activePastorTab === "message" && (
-                    <div className="p-6 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-md space-y-3 animate-fade-in">
+                    <div className="p-6 bg-white/90 dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-md space-y-3 animate-fade-in">
                       <div className="flex items-center gap-2 text-purple-600 dark:text-purple-300 font-bold text-sm">
                         <MessageSquare className="h-4 w-4" />
-                        <span>Pastoral Heart</span>
+                        <span>{language === "te" ? "కాపరి హృదయపూర్వక సందేశం" : language === "hi" ? "पादरी का हृदयस्पर्शी संदेश" : "Pastoral Heart"}</span>
                       </div>
                       <p className="text-slate-800 dark:text-slate-100 text-sm sm:text-base leading-relaxed italic font-medium">
-                        "{pageT.messageText || "Welcome to Kingdom of Christ Ministries. Our heart is to see every individual walk in the fullness of God's love, purpose, and grace. We invite you to grow, worship, and serve together with us."}"
+                        "{pageT.messageText || (language === "te" ? "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్‌కు మీకు హృదయపూర్వక స్వాగతం. ప్రతి ఒక్కరూ దేవుని ప్రేమ, ఉద్దేశ్యం మరియు కృపలో ఎదగాలని మేము ప్రార్థిస్తున్నాము. మాతో కలిసి ఆరాధించడానికి, ఎదగడానికి మరియు సేవ చేయడానికి మిమ్మల్ని ఆహ్వానిస్తున్నాము." : language === "hi" ? "किंगडम ऑफ क्राइस्ट मिनिस्ट्रीज में आपका हार्दिक स्वागत है। हमारा उद्देश्य हर व्यक्ति को परमेश्वर के प्रेम और अनुग्रह में बढ़ते देखना है। हम आपको हमारे साथ आराधना और सेवा करने के लिए आमंत्रित करते हैं।" : "Welcome to Kingdom of Christ Ministries. Our heart is to see every individual walk in the fullness of God's love, purpose, and grace. We invite you to grow, worship, and serve together with us.")}"
                       </p>
                     </div>
                   )}
@@ -428,14 +435,14 @@ export default function LeadershipPage() {
                     className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all duration-300 flex items-center gap-2 hover:scale-105"
                   >
                     <Flame className="h-4 w-4 text-amber-300" />
-                    <span>Request Pastoral Prayer</span>
+                    <span>{language === "te" ? "పాస్టర్ గారి ప్రార్థన కోరండి" : language === "hi" ? "पादरी की प्रार्थना का अनुरोध करें" : "Request Pastoral Prayer"}</span>
                   </Link>
 
                   <Link
                     href="/#contact"
-                    className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all duration-300 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all duration-300 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-105"
                   >
-                    <span>Contact Pastoral Office</span>
+                    <span>{language === "te" ? "పాస్టరల్ కార్యాలయాన్ని సంప్రదించండి" : language === "hi" ? "कार्यालय से संपर्क करें" : "Contact Pastoral Office"}</span>
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>

@@ -23,7 +23,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function PrayerPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.prayer || {};
 
   // Form State
@@ -43,18 +43,20 @@ export default function PrayerPage() {
     { label: pageT.finance, icon: "💼" },
     { label: pageT.growth, icon: "🌱" },
     { label: pageT.guidance, icon: "🧭" },
-    { label: pageT.thanksgiving, icon: "🙌" }
+    { label: pageT.thanksgiving, icon: "🙌" },
+    { label: pageT.salvation, icon: "✝️" },
+    { label: pageT.other, icon: "✨" }
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate Network Request
+    // Simulate API submission
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 1000);
+    }, 1200);
   };
 
   const handleReset = () => {
@@ -72,31 +74,31 @@ export default function PrayerPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
 
-      {/* 🌌 Premium Dark Hero Banner (Standard Across Portal Pages) */}
-      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-slate-950 text-white overflow-hidden">
+      {/* 🌌 Hero Banner */}
+      <section className="relative pt-36 pb-24 md:pt-44 md:pb-32 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
         {/* Glow & Grid Overlays */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15" />
-        <div className="hero-orb-1 opacity-70" />
-        <div className="hero-orb-2 opacity-60" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-purple-400/25 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-400/25 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6 flex justify-center">
-              <BackToHome label={t.nav?.home || "Back to Home"} variant="glass" />
+              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
             </div>
 
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 border border-purple-400/40 rounded-full text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-md backdrop-blur-md animate-bounce-in">
-              <Heart className="h-4 w-4 text-rose-400 fill-rose-400/30 animate-pulse" />
-              <span>{pageT.heroSubtitle}</span>
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-xs sm:text-sm font-extrabold tracking-wide mb-6 shadow-sm backdrop-blur-md animate-bounce-in">
+              <Heart className="h-4 w-4 text-rose-600 dark:text-rose-400 fill-rose-600/30 dark:fill-rose-400/30 animate-pulse" />
+              <span>{pageT.heroSubtitle || (language === "te" ? "మేము ప్రార్థన శక్తిని నమ్ముతున్నాము" : language === "hi" ? "हम प्रार्थना की शक्ति में विश्वास करते हैं" : "We believe in the power of prayer")}</span>
+              <Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-300" />
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
-              {pageT.title}
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight animate-fade-in-up">
+              {pageT.title || (language === "te" ? "ప్రార్థన విన్నపాలు" : language === "hi" ? "प्रार्थना निवेदन" : "Prayer Requests")}
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-200 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed">
-              {pageT.subtitle}
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-200 animate-fade-in-up animate-delay-200 font-medium max-w-2xl mx-auto leading-relaxed">
+              {pageT.subtitle || (language === "te" ? "ఈరోజు మేము మీ కోసం ఎలా ప్రార్థించగలము?" : language === "hi" ? "आज हम आपके लिए कैसे प्रार्थना कर सकते हैं?" : "How can we pray for you today?")}
             </p>
           </div>
         </div>

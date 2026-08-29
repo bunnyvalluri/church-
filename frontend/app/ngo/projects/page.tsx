@@ -60,8 +60,43 @@ function encodeSrc(src: string | null | undefined): string {
   }
 }
 
+const PROJECT_TRANSLATIONS: Record<string, {
+  title: { te: string; hi: string };
+  desc: { te: string; hi: string };
+  location?: { te: string; hi: string };
+  beneficiaries?: { te: string; hi: string };
+}> = {
+  "preset-gandhi": {
+    title: { te: "గాంధీ జనరల్ ఆసుపత్రి సహాయ సేవ", hi: "गांधी जनरल अस्पताल सहायता सेवा" },
+    desc: {
+      te: "క్రిటికల్ కేర్ వార్డులలో రోగులు మరియు వారి సంరక్షకులకు పౌష్టిక ఆహారం, పాలు, ప్రాథమిక వైద్య సామాగ్రి మరియు పరిశుభ్రత కిట్‌ల పంపిణీ.",
+      hi: "क्रिटिकल केयर वार्डों में मरीजों और उनके सहायकों को पौष्टिक भोजन, दूध, दवाएं और स्वच्छता किट का वितरण।"
+    },
+    location: { te: "గాంధీ హాస్పిటల్, సికింద్రాబాద్", hi: "गांधी अस्पताल, सिकंदराबाद" },
+    beneficiaries: { te: "1,500+ రోగులు & కుటుంబాలు", hi: "1,500+ मरीज और परिवार" }
+  },
+  "preset-bethany": {
+    title: { te: "బెథానీ సంరక్షణ ఆశ్రమం సంరక్షణ సేవ", hi: "बेथानी संरक्षण आश्रम देखभाल सेवा" },
+    desc: {
+      te: "బెథానీ ఆశ్రమంలోని అనాథ పిల్లలు మరియు వృద్ధులకు నెలవారీ కిరాణా సరుకులు, స్కూల్ పుస్తకాలు, దుప్పట్లు మరియు సంరక్షకుల సహాయం అందించడం.",
+      hi: "बेथानी आश्रम में अनाथ बच्चों और बुजुर्गों को मासिक राशन, अध्ययन सामग्री, गर्म कंबल और देखभाल सहायता प्रदान करना।"
+    },
+    location: { te: "బెథానీ ఆశ్రమం, హైదరాబాద్", hi: "बेथानी आश्रम, हैदराबाद" },
+    beneficiaries: { te: "120+ వృద్ధులు & పిల్లలు", hi: "120+ बुजुर्ग और बच्चे" }
+  },
+  "preset-disabled": {
+    title: { te: "దివ్యాంగుల సంరక్షణ ఆశ్రమం పునరావాస సహాయం", hi: "दिव्यांग गृह पुनर्वास सहायता" },
+    desc: {
+      te: "శారీరక పునరావాస కేంద్రాలలో వీల్‌చైర్లు, వాకర్లు, నిత్యావసర సరుకులు మరియు ప్రత్యేక ఆరోగ్య పర్యవేక్షణ కార్యక్రమాల నిర్వహణ.",
+      hi: "शारीरिक पुनर्वास केंद्रों में व्हीलचेयर, वॉकर, मासिक राशन और स्वास्थ्य निगरानी कार्यक्रमों की सहायता।"
+    },
+    location: { te: "పునరావాస కేంద్రం, జీడిమెట్ల", hi: "पुनर्वास केंद्र, जीदीमेतला" },
+    beneficiaries: { te: "85+ దివ్యాంగ వ్యక్తులు", hi: "85+ दिव्यांग व्यक्ति" }
+  }
+};
+
 export default function NgoProjectsPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -145,21 +180,84 @@ export default function NgoProjectsPage() {
     fetchProjects();
   }, []);
 
+  const getProjTitle = (p: Project) => {
+    if (PROJECT_TRANSLATIONS[p.id]?.title) {
+      if (language === "te") return PROJECT_TRANSLATIONS[p.id].title.te;
+      if (language === "hi") return PROJECT_TRANSLATIONS[p.id].title.hi;
+    }
+    return p.title;
+  };
+
+  const getProjDesc = (p: Project) => {
+    if (PROJECT_TRANSLATIONS[p.id]?.desc) {
+      if (language === "te") return PROJECT_TRANSLATIONS[p.id].desc.te;
+      if (language === "hi") return PROJECT_TRANSLATIONS[p.id].desc.hi;
+    }
+    return p.description;
+  };
+
+  const getProjLocation = (p: Project) => {
+    if (PROJECT_TRANSLATIONS[p.id]?.location) {
+      if (language === "te") return PROJECT_TRANSLATIONS[p.id].location!.te;
+      if (language === "hi") return PROJECT_TRANSLATIONS[p.id].location!.hi;
+    }
+    return p.location || "Hyderabad, Telangana";
+  };
+
+  const getProjBeneficiaries = (p: Project) => {
+    if (PROJECT_TRANSLATIONS[p.id]?.beneficiaries) {
+      if (language === "te") return PROJECT_TRANSLATIONS[p.id].beneficiaries!.te;
+      if (language === "hi") return PROJECT_TRANSLATIONS[p.id].beneficiaries!.hi;
+    }
+    return p.beneficiaries || "Community in need";
+  };
+
+  const getCategoryLabel = (cat: string) => {
+    const c = cat.toUpperCase();
+    if (language === "te") {
+      if (c === "ALL") return "అన్ని ప్రాజెక్ట్‌లు";
+      if (c === "HOSPITAL") return "ఆసుపత్రి సేవ";
+      if (c === "ASHRAMAM") return "ఆశ్రమ సంరక్షణ";
+      if (c === "REHABILITATION") return "దివ్యాంగుల సాయం";
+      return cat;
+    }
+    if (language === "hi") {
+      if (c === "ALL") return "सभी परियोजनाएं";
+      if (c === "HOSPITAL") return "अस्पताल राहत";
+      if (c === "ASHRAMAM") return "आश्रम देखभाल";
+      if (c === "REHABILITATION") return "दिव्यांग सहायता";
+      return cat;
+    }
+    if (c === "ALL") return "All Projects";
+    if (c === "HOSPITAL") return "Hospital Relief";
+    if (c === "ASHRAMAM") return "Ashramam Care";
+    if (c === "REHABILITATION") return "Handicap Aid";
+    return cat;
+  };
+
   // Filtered Projects Logic
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => {
       const matchesCategory =
         selectedCategory === "ALL" ||
         (p.category && p.category.toUpperCase() === selectedCategory.toUpperCase());
-      const matchesSearch =
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const pTitle = getProjTitle(p).toLowerCase();
+      const pDesc = getProjDesc(p).toLowerCase();
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = pTitle.includes(q) || pDesc.includes(q);
       return matchesCategory && matchesSearch;
     });
-  }, [projects, selectedCategory, searchQuery]);
+  }, [projects, selectedCategory, searchQuery, language]);
 
   // Active campaign count
   const activeCampaigns = projects.filter((p) => p.status === "ACTIVE").length;
+
+  const categoryTabs = [
+    { id: "ALL", label: getCategoryLabel("ALL") },
+    { id: "HOSPITAL", label: getCategoryLabel("HOSPITAL") },
+    { id: "ASHRAMAM", label: getCategoryLabel("ASHRAMAM") },
+    { id: "REHABILITATION", label: getCategoryLabel("REHABILITATION") },
+  ];
 
   return (
     <div className="py-10 sm:py-16">
@@ -171,7 +269,9 @@ export default function NgoProjectsPage() {
             <div className="space-y-4 max-w-2xl text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase tracking-wider shadow-sm">
                 <Heart className="w-4 h-4 text-red-500 animate-pulse fill-red-500/20" />
-                <span>Active Humanitarian Relief Campaigns</span>
+                <span>
+                  {language === "te" ? "క్రియాశీల మానవతా సేవా కార్యక్రమాలు" : language === "hi" ? "सक्रिय मानव सेवा अभियान" : "Active Humanitarian Relief Campaigns"}
+                </span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-900 via-slate-800 to-purple-700 dark:from-white dark:via-slate-100 dark:to-purple-300 bg-clip-text text-transparent">
@@ -189,17 +289,21 @@ export default function NgoProjectsPage() {
               className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm whitespace-nowrap"
             >
               <Gift className="w-4 h-4" />
-              <span>Donate to All Projects</span>
+              <span>{language === "te" ? "అన్ని ప్రాజెక్టులకు విరాళం ఇవ్వండి" : language === "hi" ? "सभी परियोजनाओं के लिए दान करें" : "Donate to All Projects"}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {/* Active Campaigns Banner */}
           {activeCampaigns > 0 && (
-            <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20">
+            <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 border border-purple-500/20 text-left">
               <TrendingUp className="w-5 h-5 text-emerald-500 flex-shrink-0" />
               <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                {activeCampaigns} Active Relief Campaign{activeCampaigns !== 1 ? "s" : ""} — Your support directly helps communities in need.
+                {language === "te"
+                  ? `${activeCampaigns} క్రియాశీల సేవా కార్యక్రమాలు — మీ మద్దతు నేరుగా ఆపన్నులకు చేరుతుంది.`
+                  : language === "hi"
+                  ? `${activeCampaigns} सक्रिय सेवा अभियान — आपका सहयोग सीधे जरूरतमंदों तक पहुंचता है।`
+                  : `${activeCampaigns} Active Relief Campaigns — Your support directly helps communities in need.`}
               </span>
             </div>
           )}
@@ -211,12 +315,7 @@ export default function NgoProjectsPage() {
           <div className="w-full md:w-auto">
             {/* Mobile: 2-col grid so all 4 category names are 100% visible */}
             <div className="grid grid-cols-2 gap-2 sm:hidden w-full">
-              {[
-                { id: "ALL", label: "All Projects" },
-                { id: "HOSPITAL", label: "Hospital Relief" },
-                { id: "ASHRAMAM", label: "Ashramam Care" },
-                { id: "REHABILITATION", label: "Handicap Aid" },
-              ].map((tab) => (
+              {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedCategory(tab.id)}
@@ -233,12 +332,7 @@ export default function NgoProjectsPage() {
 
             {/* Desktop / Tablet: horizontal row */}
             <div className="hidden sm:flex items-center gap-1.5">
-              {[
-                { id: "ALL", label: "All Projects" },
-                { id: "HOSPITAL", label: "Hospital Relief" },
-                { id: "ASHRAMAM", label: "Ashramam Care" },
-                { id: "REHABILITATION", label: "Handicap Aid" },
-              ].map((tab) => (
+              {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedCategory(tab.id)}
@@ -259,7 +353,7 @@ export default function NgoProjectsPage() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search projects..."
+              placeholder={language === "te" ? "ప్రాజెక్ట్‌లను శోధించండి..." : language === "hi" ? "परियोजनाएं खोजें..." : "Search projects..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
@@ -280,8 +374,12 @@ export default function NgoProjectsPage() {
         ) : filteredProjects.length === 0 ? (
           <div className="min-h-[30vh] flex flex-col items-center justify-center p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-center space-y-3">
             <Filter className="w-10 h-10 text-slate-400" />
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">No projects found</h3>
-            <p className="text-slate-500 text-xs max-w-sm">No active initiatives match your selected filter or search query.</p>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+              {language === "te" ? "ప్రాజెక్ట్‌లు ఏవీ కనుగొనబడలేదు" : language === "hi" ? "कोई परियोजना नहीं मिली" : "No projects found"}
+            </h3>
+            <p className="text-slate-500 text-xs max-w-sm">
+              {language === "te" ? "మీ శోధనకు సరిపోయే సేవా ప్రాజెక్ట్‌లు ఏవీ లేవు." : language === "hi" ? "आपकी खोज से मेल खाने वाली कोई परियोजना नहीं मिली।" : "No active initiatives match your selected filter or search query."}
+            </p>
             <button
               onClick={() => {
                 setSelectedCategory("ALL");
@@ -289,20 +387,21 @@ export default function NgoProjectsPage() {
               }}
               className="px-4 py-2 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-bold rounded-xl text-xs hover:bg-purple-500/20 transition-all"
             >
-              Reset Filters
+              {language === "te" ? "ఫిల్టర్‌లను రీసెట్ చేయండి" : language === "hi" ? "फ़िल्टर रीसेट करें" : "Reset Filters"}
             </button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => {
-              const target = project.targetAmount || 0;
-              const raised = project.raisedAmount || 0;
-              const percent = target > 0 ? Math.min(Math.round((raised / target) * 100), 100) : 0;
+              const displayTitle = getProjTitle(project);
+              const displayDesc = getProjDesc(project);
+              const displayLoc = getProjLocation(project);
+              const displayBen = getProjBeneficiaries(project);
 
               return (
                 <div
                   key={project.id}
-                  className="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-white/10 hover:border-purple-500/40 dark:hover:border-purple-500/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1.5"
+                  className="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-white/10 hover:border-purple-500/40 dark:hover:border-purple-500/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1.5 text-left"
                 >
                   <div>
                     {/* Cover image & Floating Badges */}
@@ -310,7 +409,7 @@ export default function NgoProjectsPage() {
                       {project.imageUrl ? (
                         <img
                           src={encodeSrc(project.imageUrl)}
-                          alt={project.title}
+                          alt={displayTitle}
                           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
                           onError={(e) => {
                             const target = e.currentTarget;
@@ -332,7 +431,7 @@ export default function NgoProjectsPage() {
                       {/* Status Tag */}
                       <div className="absolute top-3.5 right-3.5 bg-slate-950/80 backdrop-blur-md border border-white/20 text-amber-400 text-[10px] font-bold font-mono uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>{project.status}</span>
+                        <span>{language === "te" ? "క్రియాశీలం" : language === "hi" ? "सक्रिय" : project.status}</span>
                       </div>
 
                       {/* Category Pill */}
@@ -343,7 +442,7 @@ export default function NgoProjectsPage() {
                             project.category.toUpperCase() === "ASHRAMAM" ? "bg-pink-400" :
                             "bg-emerald-400"
                           }`} />
-                          <span>{project.category}</span>
+                          <span>{getCategoryLabel(project.category)}</span>
                         </div>
                       )}
                     </div>
@@ -351,63 +450,47 @@ export default function NgoProjectsPage() {
                     {/* Content Details */}
                     <div className="p-6 space-y-3.5 text-left">
                       {/* Location / Beneficiary indicator */}
-                      {(project.location || project.beneficiaries) && (
+                      {(displayLoc || displayBen) && (
                         <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
-                          {project.location && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                              <span className="truncate max-w-[160px]">{project.location}</span>
-                            </span>
-                          )}
-                          {project.beneficiaries && (
-                            <span className="flex items-center gap-1">
-                              <Users className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
-                              <span>{project.beneficiaries}</span>
-                            </span>
-                          )}
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                            <span className="truncate max-w-[160px]">{displayLoc}</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
+                            <span>{displayBen}</span>
+                          </span>
                         </div>
                       )}
 
                       <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors leading-snug">
-                        {project.title}
+                        {displayTitle}
                       </h3>
 
                       <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
-                        {project.description}
+                        {displayDesc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 space-y-5">
-                    {/* Actions */}
-                    <div className="space-y-2.5">
-                      <div className="flex gap-2.5">
-                        <Link
-                          href={`/ngo/donations?project=${project.id}`}
-                          className="flex-1 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          <Heart className="w-3.5 h-3.5 fill-current" />
-                          <span>{projectsPage.donateBtn || "Donate Now"}</span>
-                        </Link>
-                        
-                        <Link
-                          href={`/ngo/volunteers?project=${project.id}`}
-                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                          <span>{projectsPage.volunteerBtn || "Volunteer"}</span>
-                        </Link>
-                      </div>
-
+                  <div className="p-6 pt-0 space-y-3">
+                    <div className="flex gap-2.5">
                       <Link
-                        href={`/ngo/projects/${project.id}`}
-                        className="w-full py-2 bg-purple-500/5 dark:bg-purple-500/10 hover:bg-purple-500/10 dark:hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/20 rounded-xl text-[11px] font-bold text-center flex items-center justify-center gap-1 transition-all"
+                        href={`/ngo/donations?project=${project.id}`}
+                        className="flex-1 py-3 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 hover:from-red-600 hover:to-purple-700 text-white font-bold text-center rounded-xl text-xs transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
                       >
-                        <Eye className="w-3.5 h-3.5 text-purple-500" />
-                        <span>View Project Details & Logs</span>
+                        <Heart className="w-3.5 h-3.5 fill-current" />
+                        <span>{projectsPage.donateBtn || "Donate Now"}</span>
+                      </Link>
+                      
+                      <Link
+                        href={`/ngo/volunteers?project=${project.id}`}
+                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 font-bold text-center rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                        <span>{projectsPage.volunteerBtn || "Volunteer"}</span>
                       </Link>
                     </div>
-
                   </div>
                 </div>
               );

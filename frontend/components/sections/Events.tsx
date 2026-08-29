@@ -289,25 +289,34 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
                   className="group bg-white dark:bg-slate-900/90 rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-2xl dark:hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1.5 border border-slate-200/80 dark:border-slate-800 dark:backdrop-blur-3xl flex flex-col justify-between"
                 >
                   <div>
-                    {/* Image Banner */}
-                    <div className="relative h-52 w-full overflow-hidden bg-slate-950">
+                    {/* Image Banner with Smart Poster Canvas */}
+                    <div className="relative h-60 w-full overflow-hidden bg-slate-950 flex items-center justify-center">
                       <Image
                         src={displayImage}
-                        alt={event.title}
+                        alt=""
+                        aria-hidden="true"
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="object-cover blur-xl opacity-45 scale-110 pointer-events-none select-none"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                      <div className="relative z-10 w-full h-full">
+                        <Image
+                          src={displayImage}
+                          alt={event.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-md"
+                        />
+                      </div>
+                      <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                       
                       {branchName && (
-                        <span className="absolute bottom-3 left-3 bg-indigo-600/95 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-sm">
+                        <span className="absolute bottom-3 left-3 z-20 bg-indigo-600/95 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-sm">
                           {branchName}
                         </span>
                       )}
 
                       {event.priority === "URGENT" && (
-                        <span className="absolute top-3 right-3 bg-rose-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
+                        <span className="absolute top-3 right-3 z-20 bg-rose-600 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
                           URGENT
                         </span>
                       )}

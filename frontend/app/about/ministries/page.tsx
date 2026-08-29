@@ -25,7 +25,7 @@ import BackToHome from "@/components/ui/BackToHome";
 import Navbar from "@/components/layout/Navbar";
 
 export default function MinistriesPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pageT = (t as any)?.pages?.ministries || {};
 
   // Filter & Search states
@@ -211,28 +211,28 @@ export default function MinistriesPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar />
 
-      {/* Hero Banner Section (Fixed Deep Obsidian Dark in both Light & Dark modes for crystal clear contrast) */}
-      <section className="relative pt-36 pb-20 md:pt-44 md:pb-24 bg-slate-950 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-15" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+      {/* Hero Banner Section */}
+      <section className="relative pt-36 pb-20 md:pt-44 md:pb-24 bg-gradient-to-b from-purple-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white overflow-hidden border-b border-purple-100/80 dark:border-slate-800/80 shadow-sm transition-colors duration-300">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-25 dark:opacity-15 pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/25 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-6 flex justify-center">
-              <BackToHome />
+              <BackToHome label={(t as any)?.nav?.home || (language === "te" ? "హోమ్" : language === "hi" ? "होम" : "Home")} />
             </div>
             
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-900/60 backdrop-blur-md border border-purple-400/40 rounded-full text-white text-sm mb-6 animate-bounce-in shadow-md">
-              <Heart className="h-4 w-4 text-pink-400 fill-pink-400" />
-              <span className="font-extrabold tracking-wide text-white">{pageT.badge || "Serving Together"}</span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-purple-100/90 dark:bg-purple-900/60 backdrop-blur-md border border-purple-200/90 dark:border-purple-400/40 rounded-full text-purple-900 dark:text-white text-sm mb-6 animate-bounce-in shadow-sm">
+              <Heart className="h-4 w-4 text-pink-600 dark:text-pink-400 fill-pink-600 dark:fill-pink-400" />
+              <span className="font-extrabold tracking-wide">{pageT.badge || (language === "te" ? "కలిసి సేవ చేద్దాం" : language === "hi" ? "साथ मिलकर सेवा करें" : "Serving Together")}</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 animate-fade-in-up">
-              {pageT.title || "Our Ministries"}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6 animate-fade-in-up">
+              {pageT.title || (language === "te" ? "మా పరిచర్యలు" : language === "hi" ? "हमारी सेवकाइयां" : "Our Ministries")}
             </h1>
             
-            <p className="text-lg md:text-xl text-slate-200 font-medium leading-relaxed animate-fade-in-up animate-delay-200">
-              {pageT.subtitle || "Find your place to serve, connect, and grow in faith"}
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-200 font-medium leading-relaxed animate-fade-in-up animate-delay-200">
+              {pageT.subtitle || (language === "te" ? "విశ్వాసంలో ఎదగడానికి మరియు సేవ చేయడానికి మీ స్థానాన్ని కనుగొనండి" : language === "hi" ? "विश्वास में बढ़ने और सेवा करने के लिए अपना स्थान खोजें" : "Find your place to serve, connect, and grow in faith")}
             </p>
           </div>
         </div>

@@ -39,9 +39,21 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 224 76% 48%;
     --radius: 0.75rem;
-    /* Slightly rounder corners for modern feel */
-    --primary-gradient-start: 224 76% 48%;
-    --primary-gradient-end: 262 83% 58%;
+    --primary-gradient-start: 258 94% 50%;
+    --primary-gradient-end: 280 90% 45%;
+
+    /* Dynamic Color Theme Palette Scales */
+    --purple-50-hsl: 258 94% 96%;
+    --purple-100-hsl: 258 94% 90%;
+    --purple-200-hsl: 258 94% 82%;
+    --purple-300-hsl: 258 94% 74%;
+    --purple-400-hsl: 258 94% 64%;
+    --purple-500-hsl: 258 94% 56%;
+    --purple-600-hsl: 258 94% 50%;
+    --purple-700-hsl: 258 94% 40%;
+    --purple-800-hsl: 258 94% 30%;
+    --purple-900-hsl: 258 94% 20%;
+    --purple-950-hsl: 258 94% 12%;
   }
 
   .dark {

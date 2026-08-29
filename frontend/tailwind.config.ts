@@ -42,19 +42,19 @@ const config = {
         },
         "gradient-start": "hsl(var(--primary-gradient-start))",
         "gradient-end": "hsl(var(--primary-gradient-end))",
-        // High-contrast Purple scale compatible with light and dark mode
+        // Dynamic Accent Theme Scale (Purple Glory, Emerald, Holy Blue, Crimson, Royal Gold, etc.)
         purple: {
-          50: "hsl(262 85% 96%)",
-          100: "hsl(262 85% 90%)",
-          200: "hsl(262 85% 82%)",
-          300: "hsl(262 85% 74%)",
-          400: "hsl(262 83% 66%)",
-          500: "hsl(262 83% 58%)",
-          600: "hsl(262 83% 52%)",
-          700: "hsl(262 83% 42%)",
-          800: "hsl(262 83% 32%)",
-          900: "hsl(262 83% 22%)",
-          950: "hsl(262 83% 14%)",
+          50: "hsl(var(--purple-50-hsl, 258 94% 96%) / <alpha-value>)",
+          100: "hsl(var(--purple-100-hsl, 258 94% 90%) / <alpha-value>)",
+          200: "hsl(var(--purple-200-hsl, 258 94% 82%) / <alpha-value>)",
+          300: "hsl(var(--purple-300-hsl, 258 94% 74%) / <alpha-value>)",
+          400: "hsl(var(--purple-400-hsl, 258 94% 64%) / <alpha-value>)",
+          500: "hsl(var(--purple-500-hsl, 258 94% 56%) / <alpha-value>)",
+          600: "hsl(var(--purple-600-hsl, 258 94% 50%) / <alpha-value>)",
+          700: "hsl(var(--purple-700-hsl, 258 94% 40%) / <alpha-value>)",
+          800: "hsl(var(--purple-800-hsl, 258 94% 30%) / <alpha-value>)",
+          900: "hsl(var(--purple-900-hsl, 258 94% 20%) / <alpha-value>)",
+          950: "hsl(var(--purple-950-hsl, 258 94% 12%) / <alpha-value>)",
         },
         // High-contrast Indigo scale
         indigo: {
