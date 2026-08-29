@@ -141,12 +141,20 @@ const ServiceCard = memo(function ServiceCard({
         }
       }}
     >
-      {/* Featured ribbon */}
-      {service.featured && (
-        <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
-          <Star className="w-3 h-3 fill-current" /> Featured
-        </div>
-      )}
+      {/* Top Badges: Location & Featured */}
+      <div className="absolute top-4 right-4 flex items-center flex-wrap justify-end gap-1.5 z-20">
+        {(service.location || service.branch?.name) && (
+          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/50 shadow-sm backdrop-blur-sm">
+            <MapPin className="w-3 h-3 text-violet-600 dark:text-violet-400 shrink-0" />
+            <span className="truncate max-w-[120px] sm:max-w-none">{service.location || service.branch?.name}</span>
+          </div>
+        )}
+        {service.featured && (
+          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 dark:bg-amber-400/10 dark:text-amber-300 border border-amber-200 dark:border-amber-400/20">
+            <Star className="w-3 h-3 fill-current" /> Featured
+          </div>
+        )}
+      </div>
 
       {/* Top border glow on hover */}
       <div
