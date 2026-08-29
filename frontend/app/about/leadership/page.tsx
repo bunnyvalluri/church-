@@ -439,7 +439,7 @@ export default function LeadershipPage() {
                   </Link>
 
                   <Link
-                    href="/#contact"
+                    href="/contact"
                     className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all duration-300 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-105"
                   >
                     <span>{language === "te" ? "పాస్టరల్ కార్యాలయాన్ని సంప్రదించండి" : language === "hi" ? "कार्यालय से संपर्क करें" : "Contact Pastoral Office"}</span>
@@ -739,7 +739,7 @@ export default function LeadershipPage() {
               </Link>
 
               <Link
-                href="/#contact"
+                href="/contact"
                 className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/25 text-white rounded-2xl font-bold hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-lg"
               >
                 Contact Us

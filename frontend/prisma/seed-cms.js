@@ -198,7 +198,7 @@ async function main() {
     { label: "Give", href: "/give", placement: "FOOTER_INVOLVED", displayOrder: 2 },
     { label: "Membership", href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 3 },
     // FOOTER_CONNECT
-    { label: "Contact Us", href: "#contact", placement: "FOOTER_CONNECT", displayOrder: 0 },
+    { label: "Contact Us", href: "/contact", placement: "FOOTER_CONNECT", displayOrder: 0 },
     { label: "Visit Us", href: "#about", placement: "FOOTER_CONNECT", displayOrder: 1 },
     { label: "Services", href: "#services", placement: "FOOTER_CONNECT", displayOrder: 2 },
     { label: "Locations", href: "/locations", placement: "FOOTER_CONNECT", displayOrder: 3 },

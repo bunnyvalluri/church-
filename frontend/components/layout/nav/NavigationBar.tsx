@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { usePathname } from "next/navigation";
 import {
-  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Menu, X,
+  Home, Info, HeartHandshake, Church, Calendar, Mic, Image as ImageIcon, Phone, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -48,6 +48,7 @@ const NavigationBar = memo(function NavigationBar() {
       { name: t.nav.events,     href: "#events",   icon: Calendar,       emoji: "🗓️" },
       { name: t.nav.sermons,    href: "#sermons",  icon: Mic,            emoji: "🎙️" },
       { name: t.nav.gallery,    href: "/gallery",  icon: ImageIcon,      emoji: "🖼️" },
+      { name: t.nav.contact || "Connect", href: "/contact", icon: Phone, emoji: "📞" },
     ],
     [t.nav]
   );

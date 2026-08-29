@@ -603,7 +603,7 @@ export default function MinistriesPage() {
               </Link>
               
               <Link
-                href="/#contact"
+                href="/contact"
                 className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white rounded-2xl font-bold hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <span>{pageT.contactUs || "Contact Us"}</span>

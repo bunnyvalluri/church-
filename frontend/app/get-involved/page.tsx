@@ -96,7 +96,7 @@ export default function GetInvolvedPage() {
             Our team would love to help you find the perfect place to get connected.
           </p>
           <Link
-            href="/#contact"
+            href="/contact"
             className="inline-flex items-center justify-center px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             Contact Us

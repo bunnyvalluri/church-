@@ -461,7 +461,7 @@ export default function VolunteerClientPage() {
               {!mounted ? "We're here to help you find the perfect place to serve" : t.pages.volunteer.questionsDesc}
             </p>
             <Link
-              href="/#contact"
+              href="/contact"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:scale-105"
             >
               <MessageSquare className="w-4 h-4" />

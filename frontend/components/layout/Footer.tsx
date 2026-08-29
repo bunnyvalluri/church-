@@ -23,6 +23,7 @@ const LINK_MAP: Record<string, { te: string; hi: string }> = {
   "/get-involved/volunteer": { te: "వాలంటీర్", hi: "स्वयंसेवक" },
   "/give": { te: "కానుకలు", hi: "दान दें" },
   "/membership": { te: "సభ్యత్వం", hi: "सदस्यता" },
+  "/contact": { te: "సంప్రదించండి", hi: "संपर्क करें" },
   "#contact": { te: "సంప్రదించండి", hi: "संपर्क करें" },
   "#about": { te: "మమ్మల్ని సందర్శించండి", hi: "हमसे मिलें" },
   "#services": { te: "ఆరాధన సమయాలు", hi: "सेवा का समय" },

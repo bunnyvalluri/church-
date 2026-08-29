@@ -541,7 +541,7 @@ export default function PrayerPage() {
             </div>
 
             <Link
-              href="/#contact"
+              href="/contact"
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 text-white rounded-2xl font-bold shadow-xl shadow-purple-600/25 hover:scale-[1.03] active:scale-[0.98] transition-all"
             >
               <span>{t.links.contact}</span>

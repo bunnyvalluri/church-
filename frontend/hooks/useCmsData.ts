@@ -316,7 +316,7 @@ export const FOOTER_NAV_FALLBACK: FooterNavGroups = {
     { id: "f-13", label: "Membership", labelTe: "సభ్యత్వం", labelHi: "सदस्यता", href: "/membership", placement: "FOOTER_INVOLVED", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
   ],
   connect: [
-    { id: "f-14", label: "Contact Us", labelTe: "సంప్రదించండి", labelHi: "संपर्क करें", href: "#contact", placement: "FOOTER_CONNECT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
+    { id: "f-14", label: "Contact Us", labelTe: "సంప్రదించండి", labelHi: "संपर्क करें", href: "/contact", placement: "FOOTER_CONNECT", displayOrder: 0, isActive: true, openInNew: false, icon: null, updatedAt: "" },
     { id: "f-15", label: "Visit Us", labelTe: "మమ్మల్ని సందర్శించండి", labelHi: "हमसे मिलें", href: "#about", placement: "FOOTER_CONNECT", displayOrder: 1, isActive: true, openInNew: false, icon: null, updatedAt: "" },
     { id: "f-16", label: "Services", labelTe: "ఆరాధన సమయాలు", labelHi: "सेवा का समय", href: "#services", placement: "FOOTER_CONNECT", displayOrder: 2, isActive: true, openInNew: false, icon: null, updatedAt: "" },
     { id: "f-17", label: "Locations", labelTe: "ప్రాంతాలు", labelHi: "स्थान", href: "/locations", placement: "FOOTER_CONNECT", displayOrder: 3, isActive: true, openInNew: false, icon: null, updatedAt: "" },

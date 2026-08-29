@@ -604,7 +604,7 @@ export default function SmallGroupsPage() {
               </button>
 
               <Link
-                href="/#contact"
+                href="/contact"
                 className="px-8 py-3.5 bg-white dark:bg-white/10 hover:bg-purple-50 dark:hover:bg-white/20 text-slate-800 dark:text-white border border-purple-200/90 dark:border-white/20 rounded-2xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 hover:scale-105"
               >
                 <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-300" />
