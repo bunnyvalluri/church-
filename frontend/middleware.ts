@@ -193,7 +193,10 @@ export async function middleware(req: NextRequest) {
     if (nextParam && nextParam.startsWith('/')) {
       if (nextParam.startsWith('/admin') && isAdminRole) return NextResponse.redirect(new URL(nextParam, req.url));
       if (nextParam.startsWith('/pastor') && isPastorRole) return NextResponse.redirect(new URL(nextParam, req.url));
-      if (nextParam.startsWith('/member')) return NextResponse.redirect(new URL(nextParam, req.url));
+      if (nextParam.startsWith('/event-manager') && isVolunteerRole) return NextResponse.redirect(new URL(nextParam, req.url));
+      if (nextParam.startsWith('/member') && !isAdminRole && effectiveRole !== 'PASTOR') {
+        return NextResponse.redirect(new URL(nextParam, req.url));
+      }
     }
     return redirectToAuthorizedPortal();
   }

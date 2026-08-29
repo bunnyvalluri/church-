@@ -55,8 +55,30 @@ export default function AdminLoginPage() {
     setError("");
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // The AuthProvider will automatically trigger updates and redirect to /admin via useEffect if ADMIN.
+      const credential = await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+      if (credential?.user) {
+        try {
+          const syncRes = await fetch("/api/auth/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: credential.user.uid,
+              email: credential.user.email || email.trim().toLowerCase(),
+              name: credential.user.displayName || email.split("@")[0],
+              photoURL: credential.user.photoURL,
+              phoneNumber: credential.user.phoneNumber || null,
+            }),
+          });
+          const syncData = await syncRes.json();
+          if (syncData?.success && (syncData?.user?.role === "ADMIN" || syncData?.user?.role === "SUPER_ADMIN")) {
+            window.location.replace("/admin/dashboard");
+            return;
+          }
+        } catch (syncErr) {
+          console.warn("[ADMIN/AUTH] Sync warn:", syncErr);
+        }
+      }
+      window.location.replace("/admin/dashboard");
     } catch (err: any) {
       console.warn("[ADMIN/AUTH] Firebase auth notice:", err?.code || err);
       const messages: Record<string, string> = {

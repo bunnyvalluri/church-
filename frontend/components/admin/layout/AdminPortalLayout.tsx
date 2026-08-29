@@ -33,7 +33,7 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
     }
   }, [mounted, status, user, router]);
 
-  if (!mounted || status === "loading" || (user && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!mounted || status === "loading" || status === "unauthenticated" || !user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-100 dark:bg-[#080914]">
         <div className="text-center space-y-3">

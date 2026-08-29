@@ -6,6 +6,7 @@ async function syncTargetUsers() {
 
   const users = [
     {
+      uid: 'JC8QamdQhhgOu44Yv57Z4iCuhyp2',
       email: 'kingofchristministries23@gmail.com',
       name: 'Super Admin',
       role: 'SUPER_ADMIN',
@@ -13,6 +14,7 @@ async function syncTargetUsers() {
       address: '15-201, Vivekananda Nagar, Jeedimetla, Hyderabad',
     },
     {
+      uid: '2vuJ6l55qngQ0aowsmv1hJE2Yam1',
       email: 'admin@kcm-church.com',
       name: 'Admin Leader',
       role: 'ADMIN',
@@ -20,6 +22,7 @@ async function syncTargetUsers() {
       address: 'Jeedimetla, Hyderabad',
     },
     {
+      uid: 's7uquVrAvXMHTBLpCHXE5ZW701q2',
       email: 'pastor.david@kcm-church.com',
       name: 'Pastor David',
       role: 'PASTOR',
@@ -27,6 +30,7 @@ async function syncTargetUsers() {
       address: 'Kukatpally, Hyderabad',
     },
     {
+      uid: 's2redV8jDHaEfqXemyK3KO6lcOG3',
       email: 'event-management@kcm-church.com',
       name: 'Event Manager',
       role: 'EVENT_MANAGER',
@@ -38,20 +42,49 @@ async function syncTargetUsers() {
   for (const u of users) {
     const existing = await prisma.user.findUnique({ where: { email: u.email } });
     if (existing) {
-      const updated = await prisma.user.update({
-        where: { email: u.email },
-        data: {
-          name: u.name,
-          role: u.role,
-          phone: u.phone,
-          address: u.address,
-        }
-      });
-      console.log(`✓ Updated ${updated.email} (${updated.role}) [ID: ${updated.id}]`);
+      if (existing.id !== u.uid) {
+        // Migrate ID to match Firebase UID
+        await prisma.user.update({
+          where: { email: u.email },
+          data: { email: `${u.email}_temp_${Date.now()}` }
+        });
+        const created = await prisma.user.upsert({
+          where: { id: u.uid },
+          update: {
+            email: u.email,
+            name: u.name,
+            role: u.role,
+            phone: u.phone,
+            address: u.address,
+          },
+          create: {
+            id: u.uid,
+            email: u.email,
+            name: u.name,
+            role: u.role,
+            phone: u.phone,
+            address: u.address,
+            password: 'firebase-authenticated'
+          }
+        });
+        await prisma.user.deleteMany({ where: { id: existing.id } });
+        console.log(`✓ Re-keyed ${created.email} (${created.role}) [UID: ${created.id}]`);
+      } else {
+        const updated = await prisma.user.update({
+          where: { id: u.uid },
+          data: {
+            name: u.name,
+            role: u.role,
+            phone: u.phone,
+            address: u.address,
+          }
+        });
+        console.log(`✓ Updated ${updated.email} (${updated.role}) [ID: ${updated.id}]`);
+      }
     } else {
       const created = await prisma.user.create({
         data: {
-          id: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          id: u.uid,
           email: u.email,
           name: u.name,
           role: u.role,

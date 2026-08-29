@@ -246,6 +246,35 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
         {/* Navigation Section */}
         <div className="space-y-1">
+          {/* Staff Privileged Gateway Link */}
+          {(user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
+            <Link
+              href="/admin/dashboard"
+              onClick={onClose}
+              className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 transition-all text-xs sm:text-sm font-extrabold group mb-2"
+            >
+              <div className="flex items-center gap-2.5">
+                <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Admin Console</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-indigo-500 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
+
+          {user?.role === "PASTOR" && (
+            <Link
+              href="/pastor/main/dashboard"
+              onClick={onClose}
+              className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 transition-all text-xs sm:text-sm font-extrabold group mb-2"
+            >
+              <div className="flex items-center gap-2.5">
+                <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span>Pastor Portal</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-purple-500 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
+
           <Link
             href="/member"
             onClick={onClose}
@@ -586,6 +615,46 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
         </header>
 
         {/* Page Content */}
+        {(user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
+          <div className="mx-3 sm:mx-6 mt-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-indigo-900/40 border border-indigo-500/30 text-indigo-200 text-xs flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              <span className="font-semibold text-white">Administrator Access Active</span>
+              <span className="hidden md:inline text-indigo-300">— You are browsing the believer area with elevated privileges.</span>
+            </div>
+            <Link
+              href="/admin/dashboard"
+              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-wider transition-all shadow-sm flex items-center gap-1 shrink-0"
+            >
+              <span>Open Admin Console</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        {user?.role === "PASTOR" && (
+          <div className="mx-3 sm:mx-6 mt-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-purple-900/40 border border-purple-500/30 text-purple-200 text-xs flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+              </span>
+              <span className="font-semibold text-white">Pastor Access Active</span>
+              <span className="hidden md:inline text-purple-300">— You are browsing with pastoral oversight.</span>
+            </div>
+            <Link
+              href="/pastor/main/dashboard"
+              className="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-wider transition-all shadow-sm flex items-center gap-1 shrink-0"
+            >
+              <span>Open Pastor Portal</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
         <main className="flex-1 p-2 sm:p-5 md:p-6 lg:p-8">
           <motion.div
             key={pathname}

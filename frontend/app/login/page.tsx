@@ -288,7 +288,7 @@ function LoginForm() {
         break;
     }
 
-    // ── Honor ?next= param only if it is same-origin and a protected path ────
+    // ── Honor ?next= param only if it is same-origin and a specific protected path ────
     // Prevents open-redirect attacks. Only allow paths the user's role permits.
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -299,10 +299,12 @@ function LoginForm() {
         !nextParam.startsWith("//") && // block protocol-relative redirects
         !nextParam.includes(":")       // block javascript: and data: URIs
       ) {
-        // Role-guard the next param so members can't bypass to /admin
-        const isAdminNext = nextParam.startsWith("/admin") || nextParam.startsWith("/pastor");
-        if (!isAdminNext || normalized === "ADMIN" || normalized === "SUPER_ADMIN" || normalized === "PASTOR") {
-          targetPath = nextParam;
+        const isGenericMemberRedirect = nextParam === "/member" || nextParam === "/member/";
+        if (!isGenericMemberRedirect || normalized === "MEMBER") {
+          const isAdminNext = nextParam.startsWith("/admin") || nextParam.startsWith("/pastor");
+          if (!isAdminNext || normalized === "ADMIN" || normalized === "SUPER_ADMIN" || normalized === "PASTOR") {
+            targetPath = nextParam;
+          }
         }
       }
     }
@@ -357,7 +359,17 @@ function LoginForm() {
     setIsLoggingIn(true);
 
     try {
-      const credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, password);
+      let credential;
+      try {
+        credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, password);
+      } catch (firstErr: any) {
+        const trimmed = (password || "").trim();
+        if (trimmed && trimmed !== password) {
+          credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, trimmed);
+        } else {
+          throw firstErr;
+        }
+      }
       const u = credential.user;
 
       if (!u) {
@@ -727,6 +739,23 @@ function LoginForm() {
                   {loginT.createAccountLink}
                 </Link>
               </motion.p>
+
+              {/* Staff Portals Direct Gateways */}
+              <motion.div variants={itemVariants} className="pt-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <Link
+                  href="/admin/login"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1"
+                >
+                  <span>🛡️ Admin Console</span>
+                </Link>
+                <span>•</span>
+                <Link
+                  href="/pastor"
+                  className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-1"
+                >
+                  <span>✝️ Pastor Portal</span>
+                </Link>
+              </motion.div>
             </motion.div>
           </form>
         </motion.div>
