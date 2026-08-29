@@ -859,23 +859,6 @@ export default function EventsPage() {
               <span className="font-extrabold tracking-wider">{t.nav?.churchName || "Kingdom of Christ"} {t.nav?.ministries || "Ministries"}</span>
               {isSocketConnected && <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse ml-1" />}
             </div>
-
-            {/* Quick Delete Shortcut Badge / Button */}
-            <button
-              onClick={() => setIsDeleteModeOpen((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-sm ${
-                isDeleteModeOpen
-                  ? "bg-rose-600 text-white border-rose-500 shadow-rose-600/30"
-                  : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60 hover:bg-rose-100"
-              }`}
-              title="Toggle Delete Events Mode (Ctrl+Shift+D)"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-              <span>{language === "te" ? "ఈవెంట్లను తొలగించు" : language === "hi" ? "कार्यक्रम हटाएं" : "Delete Events"}</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 text-[10px] font-mono font-black">
-                Ctrl+Shift+D
-              </kbd>
-            </button>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-4 font-outfit">
