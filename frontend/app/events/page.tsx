@@ -114,6 +114,67 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   OUTREACH: "from-orange-500 via-amber-500 to-yellow-500",
 };
 
+// ── Multilingual Spotlight Content ──────────────────────────────────────────
+const SPOTLIGHT_I18N = {
+  en: {
+    tag: "Special Revival Events",
+    branch: "Subhash Nagar Branch",
+    title: "Family Blessing Gathering & Prayer Festival 2026",
+    desc: "Grand Family Blessing Festival with Chief Speaker Rev. Dr. B. Shekhar Daniel Garu and Host Bishop Kurra Kristhu Raju Garu. Join with your entire family and receive God's abundant blessings.",
+    speakerHighlight: "Rev. Dr. B. Shekhar Daniel Garu",
+    hostHighlight: "Bishop Kurra Kristhu Raju Garu",
+    time: "15 August 2026, Saturday || 10:00 AM",
+    venue: "Kingdom of Christ Ministries, Subhash Nagar",
+    phone: "Phone: 9704090069, 7396433856, 9640943777",
+    host: "Cordially Invited by: Bishop Kurra Kristhu Raju Garu",
+    viewSpecial: "View Special Events",
+    viewGallery: "View Gathering Gallery",
+    poster1Tag: "Gathering Poster 1",
+    poster2Tag: "Prayer Festival 2026",
+    viewPosterBtn: "View Poster",
+    deleteBtn: "Delete",
+    specialEventsTag: "Special Events",
+  },
+  te: {
+    tag: "ప్రత్యేక పునరుజ్జీవ కూడికలు",
+    branch: "సుభాష్ నగర్ శాఖ",
+    title: "కుటుంబ ఆశీర్వాద కూడిక & ప్రార్థన పండుగ 2026",
+    desc: "ముఖ్య ప్రసంగీకులు రెవ. డా|| బి. శేఖర్ డానియెల్ గారు మరియు హోస్ట్ బిషప్ కుర్ర క్రీస్తు రాజు గారు సమక్షంలో కుటుంబ దీవెనల మహోత్సవం. తప్పకుండా కుటుంబ సమేతంగా పాల్గొని దేవుని ఆశీర్వాదాలను పొందండి.",
+    speakerHighlight: "రెవ. డా|| బి. శేఖర్ డానియెల్ గారు",
+    hostHighlight: "బిషప్ కుర్ర క్రీస్తు రాజు గారు",
+    time: "15 ఆగస్టు 2026, శనివారం || ఉదయం 10:00 గం",
+    venue: "కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్, సుభాష్ నగర్",
+    phone: "ఫోన్: 9704090069, 7396433856, 9640943777",
+    host: "ప్రేమతో ఆహ్వానించువారు: బిషప్ కుర్ర క్రీస్తు రాజు గారు",
+    viewSpecial: "ప్రత్యేక కార్యక్రమాలు చూడండి",
+    viewGallery: "కూడికల గ్యాలరీ చూడండి",
+    poster1Tag: "కూడిక పోస్టర్ 1",
+    poster2Tag: "ప్రార్థన పండుగ 2026",
+    viewPosterBtn: "పోస్టర్ చూడండి",
+    deleteBtn: "తొలగించు",
+    specialEventsTag: "ప్రత్యేక కార్యక్రమాలు",
+  },
+  hi: {
+    tag: "विशेष पुनरुद्धार कार्यक्रम",
+    branch: "सुभाष नगर शाखा",
+    title: "पारिवारिक आशीष सभा एवं प्रार्थना महोत्सव 2026",
+    desc: "मुख्य वक्ता रेव. डॉ. बी. शेखर डैनियल जी और मेज़बान बिशप कुर्रा क्रिस्तु राजू जी की उपस्थिति में भव्य पारिवारिक आशीष महोत्सव। सपरिवार पधारें और प्रभु की आशीष प्राप्त करें।",
+    speakerHighlight: "रेव. डॉ. बी. शेखर डैनियल जी",
+    hostHighlight: "बिशप कुर्रा क्रिस्तु राजू जी",
+    time: "15 अगस्त 2026, शनिवार || सुबह 10:00 बजे",
+    venue: "किंगडम ऑफ़ क्राइस्ट मिनिस्ट्रीज, सुभाष नगर",
+    phone: "फ़ोन: 9704090069, 7396433856, 9640943777",
+    host: "हार्दिक निमंत्रक: बिशप कुर्रा क्रिस्तु राजू जी",
+    viewSpecial: "विशेष कार्यक्रम देखें",
+    viewGallery: "सभा गैलरी देखें",
+    poster1Tag: "सभा पोस्टर 1",
+    poster2Tag: "प्रार्थना महोत्सव 2026",
+    viewPosterBtn: "पोस्टर देखें",
+    deleteBtn: "हटाएं",
+    specialEventsTag: "विशेष कार्यक्रम",
+  },
+};
+
 const PublicEventCard = React.memo(function PublicEventCard({
   event,
   isNew,
@@ -133,6 +194,7 @@ const PublicEventCard = React.memo(function PublicEventCard({
     setMounted(true);
   }, []);
 
+  const spot = SPOTLIGHT_I18N[(language as keyof typeof SPOTLIGHT_I18N) || "en"];
   const cat = CATEGORY_STYLES[event.category] || CATEGORY_STYLES.SPECIAL;
   const gradientClass = CATEGORY_GRADIENTS[event.category] || CATEGORY_GRADIENTS.SPECIAL;
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
@@ -155,7 +217,7 @@ const PublicEventCard = React.memo(function PublicEventCard({
             title="Delete this event (Ctrl+Shift+D)"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Delete</span>
+            <span>{spot.deleteBtn}</span>
           </button>
         </div>
       )}
@@ -234,7 +296,7 @@ const PublicEventCard = React.memo(function PublicEventCard({
               title="Click to view full poster"
             >
               <Maximize2 className="w-3.5 h-3.5" />
-              <span>View Poster</span>
+              <span>{spot.viewPosterBtn}</span>
             </button>
           )}
         </div>
@@ -248,7 +310,7 @@ const PublicEventCard = React.memo(function PublicEventCard({
         <div className="space-y-2 pt-1">
           <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
             <Clock className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-            <span>{event.time || "TBD"}</span>
+            <span>{event.time || (language === "te" ? "సమయం నిర్ణయించబడుతుంది" : language === "hi" ? "समय घोषित होगा" : "TBD")}</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
             <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
@@ -287,6 +349,8 @@ export default function EventsPage() {
   const [liveCount, setLiveCount] = useState(0);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [previewPoster, setPreviewPoster] = useState<string | null>(null);
+
+  const spot = SPOTLIGHT_I18N[(language as keyof typeof SPOTLIGHT_I18N) || "en"];
 
   // ── 🗑️ Shortcut & Delete Mode State (Ctrl + Shift + D) ──────────────────────
   const [isDeleteModeOpen, setIsDeleteModeOpen] = useState(false);
@@ -731,7 +795,7 @@ export default function EventsPage() {
                         title="Delete this event"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">{language === "te" ? "తొలగించు" : language === "hi" ? "हटाएं" : "Delete"}</span>
+                        <span className="hidden sm:inline">{spot.deleteBtn}</span>
                       </button>
                     </div>
                   );
@@ -836,7 +900,7 @@ export default function EventsPage() {
             {[
               { label: (t.events as any)?.totalEvents || "Total Events", value: events.length },
               { label: (t.events as any)?.upcoming || "Upcoming", value: upcoming.length },
-              { label: "Special Events", value: specialCount || 2 },
+              { label: spot.specialEventsTag, value: specialCount || 2 },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{s.value}</p>
@@ -847,7 +911,7 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* ── SPECIAL EVENTS SPOTLIGHT BANNER ───────────────────────────────────── */}
+      {/* ── SPECIAL EVENTS SPOTLIGHT BANNER (100% Multilingual) ───────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-20">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900/90 via-indigo-950/95 to-slate-900/95 border border-purple-500/30 shadow-2xl backdrop-blur-xl p-6 sm:p-8 text-white">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/15 blur-[90px] pointer-events-none" />
@@ -858,38 +922,38 @@ export default function EventsPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-black tracking-wider uppercase">
                   <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  Special Revival Events
+                  {spot.tag}
                 </span>
                 <span className="text-xs font-bold text-purple-300 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30">
-                  Subhash Nagar Branch
+                  {spot.branch}
                 </span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight font-outfit">
-                కుటుంబ ఆశీర్వాద కూడిక & ప్రార్థన పండుగ 2026
+                {spot.title}
               </h2>
 
               <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
-                ముఖ్య ప్రసంగీకులు <strong className="text-amber-300">రెవ. డా|| బి. శేఖర్ డానియెల్ గారు</strong> మరియు హోస్ట్ <strong className="text-purple-300">బిషప్ కుర్ర క్రీస్తు రాజు గారు</strong> సమక్షంలో కుటుంబ దీవెనల మహోత్సవం. తప్పకుండా కుటుంబ సమేతంగా పాల్గొని దేవుని ఆశీర్వాదాలను పొందండి.
+                {spot.desc}
               </p>
 
               {/* Event Metadata Chips */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
                   <Calendar className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="font-bold">15 ఆగస్టు 2026, శనివారం || ఉదయం 10:00 గం</span>
+                  <span className="font-bold">{spot.time}</span>
                 </div>
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
                   <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span className="font-bold">కింగ్‌డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్, సుభాష్ నగర్</span>
+                  <span className="font-bold">{spot.venue}</span>
                 </div>
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
                   <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="font-bold">ఫోన్: 9704090069, 7396433856, 9640943777</span>
+                  <span className="font-bold">{spot.phone}</span>
                 </div>
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/10 border border-white/10">
                   <User className="w-4 h-4 text-sky-400 shrink-0" />
-                  <span className="font-bold">ప్రేమతో ఆహ్వానించువారు: బిషప్ కుర్ర క్రీస్తు రాజు గారు</span>
+                  <span className="font-bold">{spot.host}</span>
                 </div>
               </div>
 
@@ -904,14 +968,14 @@ export default function EventsPage() {
                   className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>View Special Events ({specialCount || 2})</span>
+                  <span>{spot.viewSpecial} ({specialCount || 2})</span>
                 </button>
                 <Link
                   href="/gallery"
                   className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4 text-purple-300" />
-                  <span>View Gathering Gallery</span>
+                  <span>{spot.viewGallery}</span>
                 </Link>
               </div>
             </div>
@@ -927,16 +991,20 @@ export default function EventsPage() {
                   src="/images/events/family-blessing-poster-1.jpg"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none select-none"
                 />
                 <img
                   src="/images/events/family-blessing-poster-1.jpg"
-                  alt="కుటుంబ ఆశీర్వాద కూడిక Poster 1"
+                  alt="Poster 1"
+                  loading="lazy"
+                  decoding="async"
                   className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-md"
                 />
                 <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
                   <div className="flex items-center justify-between w-full">
-                    <span className="text-[10px] font-bold text-white drop-shadow truncate">కూడిక పోస్టర్ 1</span>
+                    <span className="text-[10px] font-bold text-white drop-shadow truncate">{spot.poster1Tag}</span>
                     <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />
                   </div>
                 </div>
@@ -951,16 +1019,20 @@ export default function EventsPage() {
                   src="/images/events/family-blessing-poster-2.jpg"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none select-none"
                 />
                 <img
                   src="/images/events/family-blessing-poster-2.jpg"
-                  alt="కుటుంబ ఆశీర్వాద ప్రార్థన పండుగ Poster 2"
+                  alt="Poster 2"
+                  loading="lazy"
+                  decoding="async"
                   className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-md"
                 />
                 <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
                   <div className="flex items-center justify-between w-full">
-                    <span className="text-[10px] font-bold text-white drop-shadow truncate">ప్రార్థన పండుగ 2026</span>
+                    <span className="text-[10px] font-bold text-white drop-shadow truncate">{spot.poster2Tag}</span>
                     <Maximize2 className="w-3.5 h-3.5 text-amber-300 opacity-80 group-hover:opacity-100" />
                   </div>
                 </div>
@@ -979,7 +1051,7 @@ export default function EventsPage() {
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search events..."
+                placeholder={(t.events as any)?.searchPlaceholder || (language === "te" ? "పేరు లేదా స్థలం ద్వారా కార్యక్రమాలను వెతకండి..." : language === "hi" ? "नाम या स्थान से कार्यक्रम खोजें..." : "Search events by name or location...")}
                 className="w-full h-10 pl-9 sm:pl-10 pr-9 sm:pr-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all"
               />
               {searchQuery && (
@@ -993,10 +1065,10 @@ export default function EventsPage() {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="h-10 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-white/15 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500 transition-all cursor-pointer"
             >
-              <option value="ALL" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{(t.events as any)?.allCategories || "All Categories"}</option>
+              <option value="ALL" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">{(t.events as any)?.allCategories || (t.events?.categories as any)?.ALL || "All Categories"}</option>
               {["SPECIAL", "WORSHIP", "PRAYER", "YOUTH", "CHILDREN", "WOMEN", "MEN"].map((c) => (
                 <option key={c} value={c} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-                  {c === "SPECIAL" ? `Special Events (${specialCount || 2})` : (t.events?.categories as any)?.[c] || c.charAt(0) + c.slice(1).toLowerCase()}
+                  {c === "SPECIAL" ? `${(t.events?.categories as any)?.SPECIAL || "Special"} (${specialCount || 2})` : (t.events?.categories as any)?.[c] || c.charAt(0) + c.slice(1).toLowerCase()}
                 </option>
               ))}
             </select>
@@ -1005,12 +1077,12 @@ export default function EventsPage() {
           {/* Quick Category Chips */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
             {[
-              { key: "ALL", label: "All Events", count: events.length },
-              { key: "SPECIAL", label: "Special Events", count: specialCount || 2, isSpecial: true },
-              { key: "WORSHIP", label: "Worship", count: events.filter((e) => e.category === "WORSHIP").length },
-              { key: "PRAYER", label: "Prayer", count: events.filter((e) => e.category === "PRAYER").length },
-              { key: "YOUTH", label: "Youth", count: events.filter((e) => e.category === "YOUTH").length },
-              { key: "CHILDREN", label: "Children", count: events.filter((e) => e.category === "CHILDREN").length },
+              { key: "ALL", label: (t.events as any)?.allCategories || (t.events?.categories as any)?.ALL || "All Events", count: events.length },
+              { key: "SPECIAL", label: (t.events?.categories as any)?.SPECIAL || "Special Events", count: specialCount || 2, isSpecial: true },
+              { key: "WORSHIP", label: (t.events?.categories as any)?.WORSHIP || "Worship", count: events.filter((e) => e.category === "WORSHIP").length },
+              { key: "PRAYER", label: (t.events?.categories as any)?.PRAYER || "Prayer", count: events.filter((e) => e.category === "PRAYER").length },
+              { key: "YOUTH", label: (t.events?.categories as any)?.YOUTH || "Youth", count: events.filter((e) => e.category === "YOUTH").length },
+              { key: "CHILDREN", label: (t.events?.categories as any)?.CHILDREN || "Children", count: events.filter((e) => e.category === "CHILDREN").length },
             ].map((cat) => {
               const isActive = categoryFilter === cat.key;
               return (
