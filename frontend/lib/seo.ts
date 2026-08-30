@@ -86,7 +86,7 @@ export function constructMetadata({
       title: fullTitle,
       description,
       url: canonical,
-      siteName: SITE_NAME,
+      siteName: "KCM Church",
       type: ogType,
       locale: "en_IN",
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],

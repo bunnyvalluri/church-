@@ -163,8 +163,13 @@ export function websiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": WEBSITE_ID,
-    name: SITE_NAME,
-    alternateName: "KCM",
+    name: "KCM Church",
+    alternateName: [
+      "Kingdom of Christ Ministries",
+      "KCM Ministries",
+      "KCM",
+      "Kingdom of Christ",
+    ],
     url: SITE_URL,
     description:
       "Official website of Kingdom of Christ Ministries (KCM) — faith, worship services, ministries, locations, sermons, events, prayer support, and community outreach in Hyderabad, India.",
