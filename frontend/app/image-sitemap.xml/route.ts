@@ -11,7 +11,7 @@ const FEATURED_IMAGES = [
     page: `${BASE_URL}/`,
     images: [
       { url: `${BASE_URL}/logo.png`, title: "Kingdom of Christ Ministries KCM Church Logo", caption: "Official Seal of Kingdom of Christ Ministries Hyderabad" },
-      { url: `${BASE_URL}/pastor.png`, title: "Bishop Kurra Kristhu Raju - Senior Pastor & Founder", caption: "Senior Pastor Bishop Kurra Kristhu Raju - KCM Church" },
+      { url: `${BASE_URL}/pastor.png`, title: "Bishop Kurra Kristhu Raju - Senior Pastor and Founder", caption: "Senior Pastor Bishop Kurra Kristhu Raju - KCM Church" },
       { url: `${BASE_URL}/dove-flying.png`, title: "Kingdom of Christ Ministries Holy Spirit Dove Emblem", caption: "Faith and Worship at Kingdom of Christ Ministries" },
     ],
   },
