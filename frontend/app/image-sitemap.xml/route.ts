@@ -47,6 +47,15 @@ const FEATURED_IMAGES = [
   },
 ];
 
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 export async function GET() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -56,7 +65,7 @@ export async function GET() {
   for (const group of FEATURED_IMAGES) {
     xml += `  <url>\n    <loc>${group.page}</loc>\n`;
     for (const img of group.images) {
-      xml += `    <image:image>\n      <image:loc>${img.url}</image:loc>\n      <image:title>${img.title}</image:title>\n      <image:caption>${img.caption}</image:caption>\n    </image:image>\n`;
+      xml += `    <image:image>\n      <image:loc>${img.url}</image:loc>\n      <image:title>${escapeXml(img.title)}</image:title>\n      <image:caption>${escapeXml(img.caption)}</image:caption>\n    </image:image>\n`;
     }
     xml += `  </url>\n`;
   }

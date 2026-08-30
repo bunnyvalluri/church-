@@ -89,12 +89,19 @@ let xml = `<?xml version="1.0" encoding="UTF-8"?>
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 `;
 
+function escapeXml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 for (const [pageUrl, images] of Object.entries(grouped)) {
   xml += `  <url>\n    <loc>${pageUrl}</loc>\n`;
   for (const img of images) {
-    const safeTitle = img.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const safeCaption = img.caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    xml += `    <image:image>\n      <image:loc>${img.url}</image:loc>\n      <image:title>${safeTitle}</image:title>\n      <image:caption>${safeCaption}</image:caption>\n    </image:image>\n`;
+    xml += `    <image:image>\n      <image:loc>${img.url}</image:loc>\n      <image:title>${escapeXml(img.title)}</image:title>\n      <image:caption>${escapeXml(img.caption)}</image:caption>\n    </image:image>\n`;
   }
   xml += `  </url>\n`;
 }
