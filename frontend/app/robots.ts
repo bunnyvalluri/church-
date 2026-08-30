@@ -36,6 +36,9 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://kcmchurch.vercel.app/sitemap.xml",
+    sitemap: [
+      "https://kcmchurch.vercel.app/sitemap.xml",
+      "https://kcmchurch.vercel.app/image-sitemap.xml",
+    ],
   };
 }

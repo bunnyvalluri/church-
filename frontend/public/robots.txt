@@ -30,3 +30,4 @@ Disallow: /offline
 Disallow: /api/
 
 Sitemap: https://kcmchurch.vercel.app/sitemap.xml
+Sitemap: https://kcmchurch.vercel.app/image-sitemap.xml
