@@ -204,7 +204,7 @@ export default function ContactPage() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           
-          {/* Header Action Bar: Back to Home + Live Pastoral Desk Badges */}
+          {/* Header Action Bar: Back to Home + Our Story + Live Pastoral Desk Badges */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <Link
               href="/"
@@ -212,6 +212,15 @@ export default function ContactPage() {
             >
               <ChevronLeft className="w-4 h-4 text-[#f95700] group-hover:-translate-x-0.5 transition-transform" />
               <span>Back to Home</span>
+            </Link>
+
+            <Link
+              href="/about/story"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-orange-300/80 dark:border-orange-500/30 text-xs font-bold text-orange-700 dark:text-orange-300 shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
+            >
+              <BookOpen className="w-4 h-4 text-[#f95700]" />
+              <span>Our Story & Vision</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-white/5 border border-orange-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-orange-600 dark:text-orange-400 backdrop-blur-md">
@@ -232,6 +241,19 @@ export default function ContactPage() {
           <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mt-3 leading-relaxed font-medium">
             We are here to pray with you, walk alongside your spiritual journey, and welcome you into the loving fellowship of Christ across our Hyderabad sanctuary campuses.
           </p>
+
+          {/* Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 mt-4 text-xs font-semibold">
+            <Link href="/" className="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors">
+              Home
+            </Link>
+            <span className="text-[#f95700]">•</span>
+            <Link href="/about/story" className="text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors">
+              Our Story
+            </Link>
+            <span className="text-[#f95700]">•</span>
+            <span className="text-[#f95700]">Contact Us</span>
+          </nav>
 
           {/* Quick Action Ribbon */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-6 pt-2">
@@ -455,6 +477,18 @@ export default function ContactPage() {
                 <BookOpen className="w-4 h-4 text-[#f95700] shrink-0 not-italic mt-0.5" />
                 <span>"Come to me, all who are weary and burdened, and I will give you rest." — Matthew 11:28</span>
               </div>
+
+              {/* Link to /about/story */}
+              <Link
+                href="/about/story"
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-orange-500/10 hover:bg-orange-500/15 border border-orange-500/20 text-[#f95700] text-xs font-bold transition-all hover:scale-[1.01] group cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[#f95700]" />
+                  <span>Read Bishop's Story &amp; 12+ Year Journey</span>
+                </div>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
 
             {/* 3. Quick Action Buttons Grid */}
