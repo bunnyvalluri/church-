@@ -503,16 +503,17 @@ export default function OurStoryPage() {
                 <div className="absolute bottom-10 left-0 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
                 
                 {/* Pastor Portrait Box */}
-                <div className="relative w-full h-[380px] sm:h-[420px] flex items-end justify-center pt-6 px-4 overflow-hidden">
+                <div className="relative w-full h-[380px] sm:h-[440px] overflow-hidden bg-white dark:bg-[#070b16]">
                   <Image
                     src="/pastor.png"
-                    alt="Sri. Kurra Kristhu Raju"
+                    alt="Bishop Kurra Kristhu Raju"
                     fill
                     sizes="(max-width: 768px) 100vw, 450px"
-                    className="object-contain object-bottom drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     priority
+                    unoptimized
                   />
-                  <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#090e1f] via-[#090e1f]/80 to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#090e1f] via-[#090e1f]/60 to-transparent pointer-events-none" />
                 </div>
 
                 {/* Name & Title Header Overlay */}

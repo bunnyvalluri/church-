@@ -319,6 +319,7 @@ export default function LeadershipPage() {
                     sizes="(max-width: 768px) 100vw, 320px"
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     priority
+                    unoptimized
                   />
                   <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent pointer-events-none" />
                   
