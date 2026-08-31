@@ -55,7 +55,14 @@ import { useBranch } from "@/components/providers/BranchProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
 import Navbar from "@/components/layout/Navbar";
-import { CURATED_GALLERY_ITEMS, GalleryItem } from "@/lib/galleryData";
+import {
+  CURATED_GALLERY_ITEMS,
+  GalleryItem,
+  isBranchMatch,
+  SHAPUR_NAGAR_BRANCH_ID,
+  SUBHASH_NAGAR_BRANCH_ID,
+  BAHADURPALLI_BRANCH_ID,
+} from "@/lib/galleryData";
 import {
   GALLERY_VIDEO_ITEMS,
   VIDEO_CATEGORIES,
@@ -682,7 +689,7 @@ export default function ChurchGalleryPage() {
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
     });
-  }, [items, activeCategory, favoritesOnly, favorites, searchQuery, sortOrder, language, gt]);
+  }, [items, activeCategory, favoritesOnly, favorites, searchQuery, sortOrder, language, gt, selectedBranch]);
 
   const visibleItems = useMemo(() => {
     return filteredItems.slice(0, displayCount);
@@ -977,7 +984,7 @@ export default function ChurchGalleryPage() {
                       : "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
                   }`}
                 >
-                  {items.length}+
+                  {filteredItems.length}+
                 </span>
               </button>
 
@@ -999,7 +1006,7 @@ export default function ChurchGalleryPage() {
                       : "bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300"
                   }`}
                 >
-                  {GALLERY_VIDEO_ITEMS.length}
+                  {filteredVideos.length}
                 </span>
               </button>
 
@@ -1021,7 +1028,7 @@ export default function ChurchGalleryPage() {
                       : "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300"
                   }`}
                 >
-                  {GALLERY_VIDEO_ITEMS.length + items.length}+
+                  {filteredVideos.length + filteredItems.length}+
                 </span>
               </button>
             </div>
@@ -1682,7 +1689,7 @@ export default function ChurchGalleryPage() {
                           <SkipBack className="w-4 h-4" />
                         </button>
                         <span className="text-xs px-2.5 font-bold text-slate-600 dark:text-slate-300 tabular-nums">
-                          {currentVideoIndexInAll + 1}/{GALLERY_VIDEO_ITEMS.length}
+                          {currentVideoIndexInAll + 1}/{filteredVideos.length || GALLERY_VIDEO_ITEMS.length}
                         </span>
                         <button
                           onClick={handleNextVideo}
@@ -1779,7 +1786,7 @@ export default function ChurchGalleryPage() {
                       >
                         <Youtube className="w-3 h-3" />
                         <span>All</span>
-                        <span className="opacity-80 font-bold">({GALLERY_VIDEO_ITEMS.length})</span>
+                        <span className="opacity-80 font-bold">({playlistItems.length})</span>
                       </button>
 
                       <button
@@ -1891,7 +1898,7 @@ export default function ChurchGalleryPage() {
                     All Church Video Logs & Sermons
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                    Showing {filteredVideos.length} broadcast records • Click any card to play in Cinema Stage
+                    Showing {filteredVideos.length} broadcast records{selectedBranch !== "all" ? ` (${selectedBranchLabel})` : ""} • Click any card to play in Cinema Stage
                   </p>
                 </div>
               </div>

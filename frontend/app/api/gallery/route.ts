@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CURATED_GALLERY_ITEMS } from "@/lib/galleryData";
+import { CURATED_GALLERY_ITEMS, isBranchMatch } from "@/lib/galleryData";
 
 export const dynamic = "force-dynamic";
 
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
         // Fallback to curated static data
         let fallback = [...CURATED_GALLERY_ITEMS];
         if (branchId && branchId !== "all") {
-          fallback = fallback.filter((it) => it.branchId === branchId);
+          fallback = fallback.filter((it) => isBranchMatch(it.branchId, it.branchName, branchId));
         }
         if (category && category !== "ALL" && category !== "All Moments" && category !== "All") {
           fallback = fallback.filter(

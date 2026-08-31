@@ -1,3 +1,4 @@
+import { isBranchMatch } from './galleryData';
 /**
  * Gallery Videos Data — Kingdom of Christ Ministries
  * All 44 embedded YouTube video entries for the /gallery Videos section.
@@ -12,6 +13,9 @@ export type VideoCategory =
   | "Special Services";
 
 export interface GalleryVideoItem {
+  branchId: string;
+  branchName: string;
+  branchSlug: string;
   id: string;
   videoId: string;
   title: string;
@@ -30,6 +34,9 @@ export interface GalleryVideoItem {
 export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   {
     id: "kcm-video-01",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "B1M_Ls_vi4o",
     title: "KCM August 2026 — Blessing Gathering Making Video",
     titleTe: "కింగ్డమ్ ఆఫ్ క్రైస్ట్ మినిస్ట్రీస్ 2026 ఆగస్టు ఆశీర్వాద కూడిక 🙏",
@@ -43,6 +50,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-02",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "WKborYLfJKY",
     title: "Christmas Event 2025 — KCM Making Video",
     titleTe: "క్రిస్మస్ ఈవెంట్ 2025 — కింగ్డమ్ ఆఫ్ క్రైస్ట్ మేకింగ్",
@@ -56,6 +66,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-03",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "pwm60SVNAJM",
     title: "KCM Church Service — December 26, 2023",
     titleTe: "KCM చర్చి సేవ — డిసెంబర్ 26, 2023",
@@ -69,6 +82,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-04",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "qoVeMtHxFdI",
     title: "KCM Christmas Celebration — December 24, 2023",
     titleTe: "KCM క్రిస్మస్ వేడుక — డిసెంబర్ 24, 2023",
@@ -82,6 +98,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-05",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "RrnjAWNPZQo",
     title: "KCM Christmas Part 2 — December 24, 2023",
     titleTe: "KCM క్రిస్మస్ భాగం 2 — డిసెంబర్ 24, 2023",
@@ -95,6 +114,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-06",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "3ECD57HpiW8",
     title: "KCM Church Gathering — December 26, 2023",
     titleTe: "KCM చర్చి కూడిక — డిసెంబర్ 26, 2023",
@@ -108,6 +130,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-07",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "n0Y1OIFUmOQ",
     title: "KCM Praise & Worship — December 26, 2023",
     titleTe: "KCM స్తుతి & ఆరాధన — డిసెంబర్ 26, 2023",
@@ -121,6 +146,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-08",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "9NC5G5FPD7w",
     title: "KCM Ministry Moments — December 26, 2023",
     titleTe: "KCM మినిస్ట్రీ క్షణాలు — డిసెంబర్ 26, 2023",
@@ -134,6 +162,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-09",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "cVgrgJGOSCQ",
     title: "KCM Service Highlights — December 26, 2023",
     titleTe: "KCM సేవా హైలైట్స్ — డిసెంబర్ 26, 2023",
@@ -147,6 +178,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-10",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "r2G7XGBMnUY",
     title: "KCM Fellowship Video — December 26, 2023",
     titleTe: "KCM సహవాస వీడియో — డిసెంబర్ 26, 2023",
@@ -160,6 +194,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-11",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "099g2qh8ed0",
     title: "KCM Christmas Programme — December 20, 2024",
     titleTe: "KCM క్రిస్మస్ కార్యక్రమం — డిసెంబర్ 20, 2024",
@@ -173,6 +210,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-12",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "099g2qh8ed0",
     title: "KCM Christmas Programme Part 2 — December 20, 2024",
     titleTe: "KCM క్రిస్మస్ కార్యక్రమం భాగం 2 — డిసెంబర్ 20, 2024",
@@ -186,6 +226,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-13",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "QXbFUyeN5Us",
     title: "KCM Youth Performance — December 20, 2024",
     titleTe: "KCM యువత ప్రదర్శన — డిసెంబర్ 20, 2024",
@@ -199,6 +242,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-14",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "czVLAc3B3mA",
     title: "KCM Children's Worship — December 20, 2024",
     titleTe: "KCM పిల్లల ఆరాధన — డిసెంబర్ 20, 2024",
@@ -212,6 +258,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-15",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "iqkhqGxmLJg",
     title: "KCM Praise Dance — December 20, 2024",
     titleTe: "KCM స్తుతి నృత్యం — డిసెంబర్ 20, 2024",
@@ -225,6 +274,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-16",
+    branchId: "cmskewevf0000lz9gnoh1n8ve",
+    branchName: "Shapur Nagar",
+    branchSlug: "shapur-nagar",
     videoId: "FQJLrS3-v_8",
     title: "KCM Musical Worship — December 20, 2024",
     titleTe: "KCM సంగీత ఆరాధన — డిసెంబర్ 20, 2024",
@@ -238,6 +290,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-17",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "36DmlTZu0Aw",
     title: "KCM Christmas Drama — December 20, 2024",
     titleTe: "KCM క్రిస్మస్ నాటకం — డిసెంబర్ 20, 2024",
@@ -251,6 +306,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-18",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "r7Wy7HopKeo",
     title: "KCM Church Service — December 20, 2024",
     titleTe: "KCM చర్చి సేవ — డిసెంబర్ 20, 2024",
@@ -264,6 +322,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-19",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "fj89pm0jQdc",
     title: "KCM Christmas Celebration — December 26, 2024",
     titleTe: "KCM క్రిస్మస్ వేడుక — డిసెంబర్ 26, 2024",
@@ -277,6 +338,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-20",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "zwaW_PJRdFY",
     title: "KCM Worship & Praise — December 26, 2024",
     titleTe: "KCM ఆరాధన & స్తుతి — డిసెంబర్ 26, 2024",
@@ -290,6 +354,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-21",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "UmHFyjvmD-g",
     title: "KCM Youth Ministry — December 26, 2024",
     titleTe: "KCM యువత మినిస్ట్రీ — డిసెంబర్ 26, 2024",
@@ -303,6 +370,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-22",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "HvrHo2VgPpg",
     title: "KCM Fellowship & Praise — December 26, 2024",
     titleTe: "KCM సహవాసం & స్తుతి — డిసెంబర్ 26, 2024",
@@ -316,6 +386,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-23",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "mDW4K285ALE",
     title: "KCM Christmas Service — December 26, 2024",
     titleTe: "KCM క్రిస్మస్ సేవ — డిసెంబర్ 26, 2024",
@@ -329,6 +402,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-24",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "6wVR2p6EvMI",
     title: "KCM Ministry Highlights — December 26, 2024",
     titleTe: "KCM మినిస్ట్రీ హైలైట్స్ — డిసెంబర్ 26, 2024",
@@ -342,6 +418,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-25",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "nV1pss0W0K4",
     title: "KCM Prayer & Worship — December 26, 2024",
     titleTe: "KCM ప్రార్థన & ఆరాధన — డిసెంబర్ 26, 2024",
@@ -355,6 +434,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-26",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "ZXwWy5IOPBQ",
     title: "KCM Special Dance Performance — December 26, 2024",
     titleTe: "KCM ప్రత్యేక నృత్య ప్రదర్శన — డిసెంబర్ 26, 2024",
@@ -368,6 +450,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-27",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "k99CkoVA0QQ",
     title: "KCM Church Service — December 27, 2024",
     titleTe: "KCM చర్చి సేవ — డిసెంబర్ 27, 2024",
@@ -381,6 +466,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-28",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "CK4Z-REUDug",
     title: "KCM Praise Night — December 27, 2024",
     titleTe: "KCM స్తుతి రాత్రి — డిసెంబర్ 27, 2024",
@@ -394,6 +482,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-29",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "Jhc4pDeswBg",
     title: "KCM Special Service — December 12, 2025",
     titleTe: "KCM ప్రత్యేక సేవ — డిసెంబర్ 12, 2025",
@@ -407,6 +498,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-30",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "EccnBhiLqcI",
     title: "KCM 2025 Christmas Celebration Dance",
     titleTe: "KCM 2025 క్రిస్మస్ వేడుక నృత్యం",
@@ -420,6 +514,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-31",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "ZkePBVVN1eE",
     title: "KCM Ministry Service — December 12, 2025",
     titleTe: "KCM మినిస్ట్రీ సేవ — డిసెంబర్ 12, 2025",
@@ -433,6 +530,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-32",
+    branchId: "cmrgwqhc30001fsk8mysbmp50",
+    branchName: "Subhash Nagar",
+    branchSlug: "subhash-nagar",
     videoId: "YttFfV1YQSE",
     title: "KCM Worship Session — December 12, 2025",
     titleTe: "KCM ఆరాధన సెషన్ — డిసెంబర్ 12, 2025",
@@ -446,6 +546,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-33",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "oawi3vqbRJs",
     title: "KCM Christmas Gathering — December 17, 2025",
     titleTe: "KCM క్రిస్మస్ కూడిక — డిసెంబర్ 17, 2025",
@@ -459,6 +562,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-34",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "pGF2psYG49c",
     title: "KCM Children's Performance — December 17, 2025",
     titleTe: "KCM పిల్లల ప్రదర్శన — డిసెంబర్ 17, 2025",
@@ -472,6 +578,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-35",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "lFQiBQPedqE",
     title: "KCM Worship & Dance — December 17, 2025",
     titleTe: "KCM ఆరాధన & నృత్యం — డిసెంబర్ 17, 2025",
@@ -485,6 +594,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-36",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "KquomxWpi88",
     title: "KCM Youth Praise — December 17, 2025",
     titleTe: "KCM యువత స్తుతి — డిసెంబర్ 17, 2025",
@@ -498,6 +610,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-37",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "stQQQ2STFOk",
     title: "KCM Christmas Festival — December 26, 2025",
     titleTe: "KCM క్రిస్మస్ పండుగ — డిసెంబర్ 26, 2025",
@@ -511,6 +626,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-38",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "EXubhARc334",
     title: "KCM Revival Service — December 26, 2025",
     titleTe: "KCM పునరుజ్జీవన సేవ — డిసెంబర్ 26, 2025",
@@ -524,6 +642,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-39",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "Fjp-x61a894",
     title: "KCM Blessing Gathering — December 26, 2025",
     titleTe: "KCM ఆశీర్వాద కూడిక — డిసెంబర్ 26, 2025",
@@ -537,6 +658,17 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-40",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
+    videoId: "2Zrw6InPMFg",
+    title: "KCM Praise & Fellowship — December 26, 2025",
+    titleTe: "KCM స్తుతి & సహవాసం — డిసెంబర్ 26, 2025",
+    titleHi: "KCM स्तुति और संगति — 26 दिसंबर 2025",
+    description: "Joyful praise and fellowship moments at Kingdom of Christ Ministries, December 26, 2025.",
+    category: "Worship & Praise",
+    date: "December 26, 2025",
+    branchSlug: "bahadurpally",
     videoId: "2Zrw6InPMFg",
     title: "KCM Praise & Fellowship — December 26, 2025",
     titleTe: "KCM స్తుతి & సహవాసం — డిసెంబర్ 26, 2025",
@@ -550,6 +682,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-41",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "Lz2JpmniW98",
     title: "KCM Ministry Dance — December 26, 2025",
     titleTe: "KCM మినిస్ట్రీ నృత్యం — డిసెంబర్ 26, 2025",
@@ -563,6 +698,8 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-42",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
     videoId: "WJ-3jOnQqZY",
     title: "KCM Christmas Worship — December 26, 2025",
     titleTe: "KCM క్రిస్మస్ ఆరాధన — డిసెంబర్ 26, 2025",
@@ -576,6 +713,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-43",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "FZE_ynHmIKU",
     title: "KCM Church Gathering — December 27, 2025",
     titleTe: "KCM చర్చి కూడిక — డిసెంబర్ 27, 2025",
@@ -589,6 +729,9 @@ export const GALLERY_VIDEO_ITEMS: GalleryVideoItem[] = [
   },
   {
     id: "kcm-video-44",
+    branchId: "cmrgwqhc30002fsk8ncn255w5",
+    branchName: "Bahadurpalli",
+    branchSlug: "bahadurpally",
     videoId: "9u6JySW_tVU",
     title: "KCM Revival Night — December 27, 2025",
     titleTe: "KCM పునరుజ్జీవన రాత్రి — డిసెంబర్ 27, 2025",
@@ -624,18 +767,25 @@ export function filterAndSearchVideos(
   items: GalleryVideoItem[],
   category: VideoCategory,
   query: string,
-  language: "en" | "te" | "hi"
+  language: "en" | "te" | "hi",
+  branchId?: string | null
 ): GalleryVideoItem[] {
   return items.filter((item) => {
+    if (branchId && branchId !== "all") {
+      if (!isBranchMatch(item.branchId, item.branchName, branchId)) {
+        return false;
+      }
+    }
     if (category !== "All" && item.category !== category) return false;
-    if (query.trim()) {
+    if (query && query.trim()) {
       const q = query.toLowerCase();
       const title = language === "te" ? (item.titleTe || item.title) : language === "hi" ? (item.titleHi || item.title) : item.title;
       return (
         title.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
         item.date.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
+        item.category.toLowerCase().includes(q) ||
+        (item.branchName && item.branchName.toLowerCase().includes(q))
       );
     }
     return true;
