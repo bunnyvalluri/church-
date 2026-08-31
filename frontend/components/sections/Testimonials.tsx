@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Star, Quote } from "lucide-react";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -122,13 +123,13 @@ export default function Testimonials() {
           <p className="text-lg text-white/80 mb-8">
             {t.testimonials.sharePrompt}
           </p>
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="inline-flex items-center gap-2 px-10 py-4 bg-white text-[hsl(var(--primary))] rounded-2xl font-bold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
           >
             {t.testimonials.shareBtn}
             <span>→</span>
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>

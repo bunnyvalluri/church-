@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Users, HeartHandshake, Award, BookOpen, Sparkles, LucideIcon, Heart, Images, Church, Globe } from "lucide-react";
+import { ArrowRight, Users, HeartHandshake, Award, BookOpen, Sparkles, LucideIcon, Heart, Images, Church, Globe, Phone } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -268,6 +268,13 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
 
   const ctaNgoHref = (hero as any)?.ctaNgoHref ?? "/ngo";
 
+  const ctaContactText =
+    language === "te"
+      ? "సంప్రదించండి"
+      : language === "hi"
+      ? "संपर्क करें"
+      : "Contact Us";
+
   return (
     <section
       id="home"
@@ -378,16 +385,6 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
               </span>
             </Link>
             <Link
-              href={hero?.ctaTertiaryHref ?? "/prayer"}
-              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:via-pink-500 hover:to-rose-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-rose-600/25 hover:shadow-rose-600/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-rose-400/30"
-            >
-              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
-              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
-                <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white/20" />
-                {ctaTertiaryText}
-              </span>
-            </Link>
-            <Link
               href={ctaNgoHref}
               className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-rose-500 via-fuchsia-600 to-purple-600 hover:from-rose-400 hover:via-fuchsia-500 hover:to-purple-500 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-pink-400/30"
             >
@@ -395,6 +392,17 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
               <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
                 <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 {ctaNgoText}
+                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+            <Link
+              href="/contact"
+              className="w-full sm:w-auto min-h-[42px] sm:min-h-[48px] group relative px-4 sm:px-7 md:px-8 py-2.5 sm:py-3.5 md:py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:via-teal-500 hover:to-cyan-500 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-extrabold overflow-hidden shadow-lg sm:shadow-xl shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 transition-all duration-300 text-center flex items-center justify-center gap-1.5 sm:gap-2 border border-emerald-400/30"
+            >
+              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 ease-out skew-x-12" />
+              <span className="relative flex items-center justify-center gap-1.5 sm:gap-2">
+                <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                {ctaContactText}
                 <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>

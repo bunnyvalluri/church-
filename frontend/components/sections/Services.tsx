@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   Music, Users2, Heart, BookHeart, Mic2, Calendar,
@@ -664,13 +665,13 @@ export default function Services({ initialServices = [] }: { initialServices?: C
             <p className="text-lg text-slate-600 dark:text-white/60 mb-8 max-w-2xl mx-auto">
               {t.services.ctaDesc}
             </p>
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-gradient-end))] text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300 hover:scale-105 active:scale-95"
             >
               {t.services.cta}
               <span className="text-white/70">→</span>
-            </a>
+            </Link>
           </motion.div>
         )}
       </div>
