@@ -410,27 +410,31 @@ export default function ContactPage() {
           
           {/* Left Column (5 cols): Bishop Kurra Kristhu Raju Founder Showcase */}
           <div className="lg:col-span-5 space-y-5">
-            {/* 1. Dedicated Unblocked Portrait Container */}
-            <div className="relative w-full h-[360px] sm:h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-white/10 bg-gradient-to-b from-orange-50 via-slate-100 to-slate-200 dark:from-[#0d1026] dark:via-[#090b1c] dark:to-[#050610] group">
+            {/* 1. Dedicated High-Definition Studio Portrait Container */}
+            <div className="relative w-full h-[400px] sm:h-[450px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 dark:border-white/15 bg-gradient-to-b from-[#181a38] via-[#0d0f26] to-[#060714] group">
+              {/* Backlight halo behind pastor */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,_rgba(249,87,0,0.22),_transparent_65%)] pointer-events-none" />
+
               <Image
                 src="/pastor.png"
                 alt="Bishop Kurra Kristhu Raju - Senior Pastor & Founder"
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
-                className="object-contain object-bottom group-hover:scale-105 transition-transform duration-700 ease-out"
+                className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                 priority
+                unoptimized
               />
               
-              {/* Subtle Ambient Glow at bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              {/* Subtle Atmospheric Vignette at Bottom */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
 
               {/* Floating Top Founder Badge */}
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest">
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#f95700]" />
                   <span>Senior Pastor & Founder</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f95700] text-white text-[10px] font-black uppercase tracking-wider shadow-md">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f95700] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
                   KCM
                 </span>
               </div>
