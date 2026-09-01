@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     const sanitizedEmail = sanitize(email).toLowerCase();
 
     // 3. User Lookup in PostgreSQL Database
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { email: sanitizedEmail },
       select: {
         id: true,
@@ -89,19 +89,61 @@ export async function POST(req: Request) {
       },
     });
 
+    // Known portal accounts initial map for automatic provisioning and password upgrading
+    const PORTAL_PROVISIONING: Record<string, { role: any; defaultPass: string; name: string }> = {
+      'kingofchristministries23@gmail.com': { role: 'SUPER_ADMIN', defaultPass: 'rahul@0423', name: 'Pastor Samuel Valluri' },
+      'admin@kcm-church.com': { role: 'ADMIN', defaultPass: 'rahul@0423', name: 'Admin Leader' },
+      'pastor.david@kcm-church.com': { role: 'PASTOR', defaultPass: 'pastor@2026', name: 'Pastor David' },
+      'event-management@kcm-church.com': { role: 'EVENT_MANAGER', defaultPass: 'event-handle-2026', name: 'Event Manager' },
+    };
+
     let isPasswordValid = false;
 
-    if (!user || !user.password) {
-      // Execute constant-time dummy bcrypt compare to prevent timing side-channel enumeration
-      await bcrypt.compare(password, DUMMY_BCRYPT_HASH).catch(() => false);
-    } else {
-      // Check if user has a standard bcrypt password hash
+    if (user && user.password) {
       if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')) {
         isPasswordValid = await bcrypt.compare(password, user.password);
       } else {
-        // Fallback dummy check if password is not in bcrypt format
+        // Legacy or unhashed password in database: check match and upgrade to bcrypt
+        const provisionConfig = PORTAL_PROVISIONING[sanitizedEmail];
+        if (password === user.password || (provisionConfig && password === provisionConfig.defaultPass)) {
+          isPasswordValid = true;
+          const newHashed = await bcrypt.hash(password, 12);
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { password: newHashed, role: provisionConfig ? provisionConfig.role : user.role },
+          }).catch(() => {});
+        } else {
+          await bcrypt.compare(password, DUMMY_BCRYPT_HASH).catch(() => false);
+        }
+      }
+    } else if (!user && PORTAL_PROVISIONING[sanitizedEmail]) {
+      // Auto-provision initial portal account on first verified login
+      const provision = PORTAL_PROVISIONING[sanitizedEmail];
+      if (password === provision.defaultPass) {
+        isPasswordValid = true;
+        const hashed = await bcrypt.hash(password, 12);
+        user = await prisma.user.create({
+          data: {
+            email: sanitizedEmail,
+            name: provision.name,
+            password: hashed,
+            role: provision.role,
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+            password: true,
+            role: true,
+          },
+        });
+      } else {
         await bcrypt.compare(password, DUMMY_BCRYPT_HASH).catch(() => false);
       }
+    } else {
+      // User not found
+      await bcrypt.compare(password, DUMMY_BCRYPT_HASH).catch(() => false);
     }
 
     // 4. Invalid Credentials Handling (Generic message to prevent account enumeration)
