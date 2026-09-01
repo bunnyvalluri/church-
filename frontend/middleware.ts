@@ -35,8 +35,6 @@ const PUBLIC_PATHS = [
   '/login',
   '/register',
   '/forgot-password',
-  '/admin/login',
-  '/admin/register',
   '/api/auth',
   '/api/donations',
   '/api/sermons',
@@ -87,6 +85,20 @@ export async function middleware(req: NextRequest) {
   // Always allow static files & next internals
   if (pathname.startsWith('/_next/') || pathname.includes('.')) {
     return NextResponse.next();
+  }
+
+  // ── Unified Portal Redirects: Route all authentication through /login & /register ──
+  if (pathname === '/admin/login' || pathname === '/admin/login/') {
+    const target = req.nextUrl.clone();
+    target.pathname = '/login';
+    target.searchParams.set('next', '/admin/dashboard');
+    return NextResponse.redirect(target, 308);
+  }
+
+  if (pathname === '/admin/register' || pathname === '/admin/register/') {
+    const target = req.nextUrl.clone();
+    target.pathname = '/register';
+    return NextResponse.redirect(target, 308);
   }
 
   // ── CSRF Protection on State-Changing API Requests ─────────────────────────
