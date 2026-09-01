@@ -257,15 +257,21 @@ export default function PastorSidebar({
         
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-            <div className="w-9 h-9 rounded-xl border border-slate-200/60 dark:border-white/10 overflow-hidden relative shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-xs">
-              {user?.name ? user.name.charAt(0) : "P"}
+            <div className="w-9 h-9 rounded-xl border border-slate-200/60 dark:border-white/10 overflow-hidden relative shrink-0 bg-slate-100 dark:bg-slate-800 shadow-sm">
+              <Image
+                src={user?.image || "/pastor.png"}
+                alt={user?.name || "Pastor Kristhuraju"}
+                fill
+                className="object-cover"
+                sizes="36px"
+              />
             </div>
             {!isCollapsed && (
               <div className="overflow-hidden min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {user?.name || "Bishop K. Kristhu Raju"}
+                  {user?.name || "Pastor Kristhuraju"}
                 </h4>
-                <p className="text-[9.5px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-wider truncate">
+                <p className="text-[9.5px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider truncate">
                   Senior Pastor
                 </p>
               </div>

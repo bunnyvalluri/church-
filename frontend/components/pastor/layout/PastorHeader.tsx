@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { 
   Menu, 
@@ -288,10 +289,16 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
           <button
             type="button"
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="w-9 h-9 rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden relative shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-black text-xs flex items-center justify-center hover:opacity-90 transition-opacity"
+            className="w-9 h-9 rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden relative shrink-0 bg-slate-100 dark:bg-slate-800 text-white font-black text-xs flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm"
             title="Profile Menu"
           >
-            {user?.name ? user.name.charAt(0) : "P"}
+            <Image
+              src={user?.image || "/pastor.png"}
+              alt={user?.name || "Pastor Kristhuraju"}
+              fill
+              className="object-cover"
+              sizes="36px"
+            />
           </button>
 
           <AnimatePresence>
@@ -301,15 +308,26 @@ export default function PastorHeader({ onToggleMobileSidebar }: PastorHeaderProp
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2.5 w-60 bg-white dark:bg-[#070814] border border-slate-200 dark:border-white/[0.12] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
+                className="absolute right-0 mt-2.5 w-64 bg-white dark:bg-[#070814] border border-slate-200 dark:border-white/[0.12] rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
               >
-                <div className="px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
-                  <p className="text-xs font-black text-slate-900 dark:text-white truncate">
-                    {user?.name || "Bishop K. Kristhu Raju"}
-                  </p>
-                  <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider block mt-0.5">
-                    Senior Pastor
-                  </span>
+                <div className="px-4 py-3 border-b border-slate-100 dark:border-white/[0.04] flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden relative border border-slate-200/80 dark:border-white/10 shrink-0 bg-slate-100 dark:bg-slate-800">
+                    <Image
+                      src={user?.image || "/pastor.png"}
+                      alt={user?.name || "Pastor Kristhuraju"}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black text-slate-900 dark:text-white truncate">
+                      {user?.name || "Pastor Kristhuraju"}
+                    </p>
+                    <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider block mt-0.5">
+                      Senior Pastor
+                    </span>
+                  </div>
                 </div>
                 <button
                   type="button"
