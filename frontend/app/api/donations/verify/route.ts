@@ -207,25 +207,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Donation ID or Session ID is required' }, { status: 400 });
     }
 
-    const isMock = razorpayOrderId?.startsWith('order_mock_') || razorpayOrderId?.startsWith('REF-') || !razorpaySignature;
+    const isProduction = process.env.NODE_ENV === 'production';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
+    const hasKeys = Boolean(keySecret) && !keySecret.startsWith('mock_razorpay');
+
     let isValid = false;
 
-    if (isMock) {
-      console.info('[RAZORPAY/VERIFY] ℹ️ Mock verification mode triggered.');
+    if (!isProduction && !hasKeys && (razorpayOrderId?.startsWith('order_mock_') || razorpayOrderId?.startsWith('REF-') || !razorpaySignature)) {
+      console.info('[RAZORPAY/VERIFY] ℹ️ Dev-only local testing verification mode triggered.');
       isValid = true;
     } else {
       // Real Razorpay Signature Verification
-      try {
-        const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
-        const generatedSignature = crypto
-          .createHmac('sha256', keySecret)
-          .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-          .digest('hex');
-
-        isValid = generatedSignature === razorpaySignature;
-      } catch (cryptoErr) {
-        console.error('[RAZORPAY/VERIFY] Crypto verification error:', cryptoErr);
+      if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature || !keySecret) {
         isValid = false;
+      } else {
+        try {
+          const generatedSignature = crypto
+            .createHmac('sha256', keySecret)
+            .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+            .digest('hex');
+
+          const a = Buffer.from(generatedSignature, 'hex');
+          const b = Buffer.from(razorpaySignature, 'hex');
+          isValid = a.length === b.length && crypto.timingSafeEqual(a, b);
+        } catch (cryptoErr) {
+          console.error('[RAZORPAY/VERIFY] Crypto verification error:', cryptoErr);
+          isValid = false;
+        }
       }
     }
 

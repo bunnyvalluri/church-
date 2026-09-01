@@ -638,6 +638,57 @@ function NgoDonationsContent() {
     };
   }, [expiresAt, step, paymentStatus]);
 
+  const loadRazorpayScript = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") return resolve(false);
+      if ((window as any).Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePaymentConfirmed = useCallback(async (targetDonationId: string, confirmedPaymentId?: string, confirmedReceiptNumber?: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    try {
+      // Authoritative receipt & donation lookup from backend
+      const res = await fetch(`/api/donations/agent?donationId=${targetDonationId}`);
+      let serverData = null;
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          serverData = json.data;
+        }
+      }
+
+      const branchObj = branches.find((b) => b.id === selectedBranch);
+      const causeObj = causes.find((c) => c.code === selectedCause);
+
+      setReceiptData({
+        receiptNumber: confirmedReceiptNumber || serverData?.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
+        transactionId: confirmedPaymentId || serverData?.razorpayPaymentId || "pay_verified",
+        amount: Number(serverData?.amount || getFinalAmount()),
+        issuedAt: new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
+        donorName: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "Beloved Donor",
+        purpose: causeObj?.nameEn || selectedCause,
+        branch: branchObj?.name || "Shapur Nagar",
+      });
+
+      setPaymentStatus("SUCCESS");
+      setStep(4);
+      showToast("🎉 Payment verified successfully!", "success");
+    } catch (err) {
+      console.error("[DONATION_PAGE] Receipt resolution failed:", err);
+      setPaymentStatus("SUCCESS");
+      setStep(4);
+    }
+  }, [branches, causes, selectedBranch, selectedCause, donorDetails, getFinalAmount]);
+
   // Real-Time Polling
   const startPollingStatus = useCallback((sid: string, donId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
@@ -649,7 +700,7 @@ function NgoDonationsContent() {
           const data = await res.json();
           if (data.success && data.status === "COMPLETED") {
             clearInterval(pollRef.current!);
-            handlePaymentSuccess(donId || data.donationId);
+            handlePaymentConfirmed(donId || data.donationId);
           } else if (data.status === "EXPIRED") {
             clearInterval(pollRef.current!);
             setPaymentStatus("EXPIRED");
@@ -662,7 +713,7 @@ function NgoDonationsContent() {
         console.warn("[DONATION_PAGE] Polling check notice:", err);
       }
     }, 3000);
-  }, []);
+  }, [handlePaymentConfirmed]);
 
   // Socket.IO Listener — dynamically imported to avoid SSR hydration issues
   const connectSocket = useCallback((sid: string, refNum: string) => {
@@ -681,11 +732,11 @@ function NgoDonationsContent() {
 
       socket.on("donation.success", (data: any) => {
         if (data.sessionId === sid || data.referenceNumber === refNum) {
-          handlePaymentSuccess(data.donationId || donationId);
+          handlePaymentConfirmed(data.donationId || donationId);
         }
       });
     });
-  }, [user, donationId]);
+  }, [user, donationId, handlePaymentConfirmed]);
 
   useEffect(() => {
     return () => {
@@ -695,43 +746,82 @@ function NgoDonationsContent() {
     };
   }, []);
 
-  const handlePaymentSuccess = async (targetDonationId: string) => {
-    if (pollRef.current) clearInterval(pollRef.current);
-    if (timerRef.current) clearInterval(timerRef.current);
+  const handleOpenRazorpayCheckout = async () => {
+    if (!orderId) {
+      showToast("Payment order not initialized. Please try again.", "error");
+      return;
+    }
+
+    const isLoaded = await loadRazorpayScript();
+    if (!isLoaded || !(window as any).Razorpay) {
+      showToast("Could not load Razorpay Checkout. Please scan the UPI QR code.", "error");
+      return;
+    }
+
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+    const finalAmt = Number(getFinalAmount());
+    const causeObj = causes.find((c) => c.code === selectedCause);
+
+    const options = {
+      key: keyId,
+      amount: Math.round(finalAmt * 100),
+      currency: "INR",
+      name: settings.merchantName || "Kingdom of Christ Ministries",
+      description: causeObj?.nameEn || "KCM Ministry Donation",
+      order_id: orderId.startsWith("order_") ? orderId : undefined,
+      prefill: {
+        name: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "",
+        email: donorDetails.donorEmail || "",
+        contact: donorDetails.donorPhone || "",
+      },
+      theme: {
+        color: "#4F1C91",
+      },
+      handler: async function (response: any) {
+        setPaymentStatus("PROCESSING");
+        try {
+          const verifyRes = await fetch("/api/payments/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              donationId,
+              razorpayOrderId: response.razorpay_order_id || orderId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            }),
+          });
+
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok && verifyData.success) {
+            handlePaymentConfirmed(verifyData.donationId || donationId, response.razorpay_payment_id, verifyData.receiptNumber);
+          } else {
+            setErrorMessage(verifyData.error || "Payment signature verification failed.");
+            showToast("Payment verification failed.", "error");
+          }
+        } catch (verifyErr) {
+          console.error("[RAZORPAY] Verification call failed:", verifyErr);
+          showToast("Network error verifying payment. Checking backend...", "error");
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          console.info("[RAZORPAY] Checkout modal dismissed");
+        },
+      },
+    };
 
     try {
-      const verifyRes = await fetch("/api/donations/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpayOrderId: orderId,
-          razorpayPaymentId: `pay_upi_${Math.random().toString(36).substring(2, 10)}`,
-          razorpaySignature: "mock_upi_verified",
-          donationId: targetDonationId,
-        }),
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", function (failResponse: any) {
+        console.warn("[RAZORPAY] Payment failed:", failResponse.error);
+        setErrorMessage(failResponse.error?.description || "Payment was not completed.");
+        showToast("Payment failed. Please try again.", "error");
       });
-
-      const verifyData = await verifyRes.json();
-      if (verifyRes.ok && verifyData.success) {
-        const branchObj = branches.find((b) => b.id === selectedBranch);
-        const causeObj = causes.find((c) => c.code === selectedCause);
-
-        setReceiptData({
-          receiptNumber: verifyData.receiptNumber || `REC-${Date.now().toString().slice(-8)}`,
-          transactionId: verifyData.transactionId || verifyData.donation?.razorpayPaymentId || "pay_upi_completed",
-          amount: Number(getFinalAmount()),
-          issuedAt: new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
-          donorName: donorDetails.isAnonymous ? "Anonymous Donor" : donorDetails.donorName || "Beloved Donor",
-          purpose: causeObj?.nameEn || selectedCause,
-          branch: branchObj?.name || "Shapur Nagar",
-        });
-
-        setPaymentStatus("SUCCESS");
-        setStep(4);
-        showToast("🎉 Payment verified successfully!", "success");
-      }
-    } catch (err) {
-      console.error("[DONATION_PAGE] Verification completion failed:", err);
+      rzp.open();
+    } catch (e: any) {
+      console.error("[RAZORPAY] Open modal error:", e);
+      showToast("Could not open Razorpay checkout modal.", "error");
     }
   };
 
@@ -1463,34 +1553,42 @@ function NgoDonationsContent() {
                     ))}
                   </div>
 
+                  {/* Razorpay Standard Checkout (Cards, NetBanking, UPI Modal, Wallets) */}
+                  <button
+                    type="button"
+                    onClick={handleOpenRazorpayCheckout}
+                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-violet-700 hover:from-purple-800 hover:to-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[46px]"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>{dp.payViaCheckout || "Pay with Cards, NetBanking, or Wallet"}</span>
+                  </button>
+
                   {/* Universal Open in UPI App Chooser Button */}
                   <button
                     type="button"
                     onClick={() => handleOpenUpiApp()}
-                    className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                    className="w-full py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-950/60 text-purple-900 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-extrabold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[44px]"
                   >
-                    <Smartphone className="w-4 h-4" />
+                    <Smartphone className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     <span>{dp.openInAnyUpi || "Open in any UPI App"}</span>
                   </button>
                 </div>
 
-                {/* Simulation Button for Testing */}
+                {/* Back / Edit Details */}
                 <div className="pt-3 w-full max-w-sm flex items-center justify-between border-t border-slate-100 dark:border-white/10 text-xs">
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold"
+                    className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center gap-1"
                   >
-                    {dp.editDetails || "← Edit Details"}
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>{dp.editDetails || "Edit Details"}</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentSuccess(donationId)}
-                    className="text-purple-700 dark:text-purple-200 font-black hover:underline"
-                  >
-                    {dp.simulatePayment || "[Simulate Successful Payment]"}
-                  </button>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>256-Bit SSL Encrypted</span>
+                  </span>
                 </div>
               </motion.div>
             )}
@@ -1635,21 +1733,30 @@ function NgoDonationsContent() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={resetDonationWizard}
+                      className="py-3 min-h-[44px] bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-800/60 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      <span>{dp.donateAgain || "Donate Again"}</span>
+                    </button>
+
                     <Link
                       href="/member/give"
                       className="py-3 min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <FileText className="w-4 h-4" />
-                      {dp.donationHistory || "Donation History"}
+                      <span>{dp.donationHistory || "History"}</span>
                     </Link>
 
                     <Link
                       href="/ngo"
-                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all"
+                      className="py-3 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-white/15 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all col-span-2 sm:col-span-1"
                     >
                       <Home className="w-4 h-4" />
-                      {dp.returnHome || "Return Home"}
+                      <span>{dp.returnHome || "NGO Home"}</span>
                     </Link>
                   </div>
                 </motion.div>

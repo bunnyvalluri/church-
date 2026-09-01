@@ -1898,7 +1898,7 @@ export default function ChurchGalleryPage() {
                     All Church Video Logs & Sermons
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                    Showing {filteredVideos.length} broadcast records{selectedBranch !== "all" ? ` (${selectedBranchLabel})` : ""} • Click any card to play in Cinema Stage
+                    Showing {filteredVideos.length} broadcast records • Click any card to play in Cinema Stage
                   </p>
                 </div>
               </div>

@@ -270,18 +270,22 @@ export const CreateOrderSchema = z
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 
 /**
- * Payment Verify request schema — requires real Razorpay identifiers.
+ * Payment Verify request schema — requires real Razorpay identifiers or session references.
  */
 export const VerifyPaymentSchema = z
   .object({
-    sessionId: z.string().min(1, 'Session ID required'),
-    razorpayOrderId: z.string().regex(/^order_/, 'Invalid Razorpay order ID format').optional(),
-    razorpayPaymentId: z.string().regex(/^pay_/, 'Invalid Razorpay payment ID format').optional(),
-    razorpaySignature: z.string().min(64).max(128).optional(),
-    // UPI simulation mode only — requires environment flag to be active
+    sessionId: z.string().min(1, 'Session ID required').optional(),
+    donationId: z.string().min(1, 'Donation ID required').optional(),
+    razorpayOrderId: z.string().min(1, 'Razorpay order ID required').optional(),
+    razorpayPaymentId: z.string().min(1, 'Razorpay payment ID required').optional(),
+    razorpaySignature: z.string().min(32).max(256).optional(),
+    // Dev-only simulation mode guard
     simulateMode: z.boolean().optional().default(false),
   })
-  .strict();
+  .refine((data) => Boolean(data.sessionId || data.donationId || data.razorpayOrderId), {
+    message: 'Either sessionId, donationId, or razorpayOrderId must be provided',
+    path: ['sessionId'],
+  });
 
 export type VerifyPaymentInput = z.infer<typeof VerifyPaymentSchema>;
 

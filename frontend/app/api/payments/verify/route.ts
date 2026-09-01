@@ -21,6 +21,7 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import Razorpay from 'razorpay';
 import { getAuthenticatedUser } from '@/lib/authMiddleware';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { completeDonationSession } from '@/lib/paymentService';
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { sessionId, razorpayOrderId, razorpayPaymentId, razorpaySignature, simulateMode } = parsed.data;
+    const { sessionId, donationId, razorpayOrderId, razorpayPaymentId, razorpaySignature, simulateMode } = parsed.data;
 
     // ── 4. Idempotency Check ───────────────────────────────────────────────
     const idempotencyKey = req.headers.get('x-idempotency-key') || '';
@@ -103,17 +104,52 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 5. Load Session ────────────────────────────────────────────────────
-    const session = await prisma.donationSession.findUnique({
-      where: { id: sessionId },
-      include: {
-        purpose: true,
-        donations: { select: { id: true, status: true, amount: true }, take: 1 },
-      },
-    });
+    // ── 5. Load Session (Resolve by sessionId, donationId, or razorpayOrderId) ───
+    let session = null;
+    if (sessionId) {
+      session = await prisma.donationSession.findUnique({
+        where: { id: sessionId },
+        include: {
+          purpose: true,
+          donations: { select: { id: true, status: true, amount: true }, take: 1 },
+        },
+      });
+    }
+
+    if (!session && donationId) {
+      const donation = await prisma.donation.findUnique({
+        where: { id: donationId },
+        select: { sessionId: true },
+      });
+      if (donation?.sessionId) {
+        session = await prisma.donationSession.findUnique({
+          where: { id: donation.sessionId },
+          include: {
+            purpose: true,
+            donations: { select: { id: true, status: true, amount: true }, take: 1 },
+          },
+        });
+      }
+    }
+
+    if (!session && razorpayOrderId) {
+      session = await prisma.donationSession.findFirst({
+        where: {
+          OR: [
+            { referenceNumber: razorpayOrderId },
+            { razorpayOrderId },
+          ],
+        },
+        include: {
+          purpose: true,
+          donations: { select: { id: true, status: true, amount: true }, take: 1 },
+        },
+      });
+    }
 
     if (!session) {
-      await logPaymentEvent('SESSION_NOT_FOUND', { sessionId: maskSensitive(sessionId, 8) }, ip);
+      const lookupRef = sessionId || donationId || razorpayOrderId || 'unknown';
+      await logPaymentEvent('SESSION_NOT_FOUND', { sessionRef: maskSensitive(lookupRef, 8) }, ip);
       return NextResponse.json({ error: 'Donation session not found.' }, { status: 404 });
     }
 
@@ -134,10 +170,10 @@ export async function POST(req: Request) {
     // ── 7. Session Expiry Check ────────────────────────────────────────────
     if (new Date() > session.expiresAt) {
       await prisma.donationSession.update({
-        where: { id: sessionId },
+        where: { id: session.id },
         data: { status: 'EXPIRED' },
       });
-      await logPaymentEvent('SESSION_EXPIRED', { sessionId: maskSensitive(sessionId, 8) }, ip);
+      await logPaymentEvent('SESSION_EXPIRED', { sessionId: maskSensitive(session.id, 8) }, ip);
       return NextResponse.json(
         { error: 'This payment session has expired. Please start a new donation.', status: 'EXPIRED' },
         { status: 400 }
@@ -167,7 +203,7 @@ export async function POST(req: Request) {
       if (!razorpayPaymentId || !razorpaySignature) {
         // UPI QR polling: check if webhook has already completed the session
         const currentSession = await prisma.donationSession.findUnique({
-          where: { id: sessionId },
+          where: { id: session.id },
           select: { status: true, donations: { select: { id: true }, take: 1 } },
         });
 
@@ -218,25 +254,20 @@ export async function POST(req: Request) {
       // ── 9c. Amount Verification ────────────────────────────────────────────
       // Fetch payment from Razorpay API to verify amount
       try {
-        const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!;
-        const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET!;
-        const auth = Buffer.from(`${razorpayKeyId}:${razorpayKeySecret}`).toString('base64');
+        const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
+        const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
 
-        const paymentRes = await fetch(`https://api.razorpay.com/v1/payments/${razorpayPaymentId}`, {
-          headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
-        });
+        if (keyId && keySecret && !keySecret.startsWith('mock_razorpay')) {
+          const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+          const rzpPayment = await razorpay.payments.fetch(razorpayPaymentId);
 
-        if (paymentRes.ok) {
-          const paymentData = await paymentRes.json();
-          const paidAmountPaise = paymentData.amount as number;
-          const amountValid = verifyPaymentAmount(paidAmountPaise, session.amount);
-
-          if (!amountValid) {
+          if (rzpPayment && !verifyPaymentAmount(Number(rzpPayment.amount), session.amount)) {
+            recordPaymentFailure(ip);
             await logPaymentEvent(
               'PAYMENT_AMOUNT_MISMATCH',
               {
-                expected: session.amount * 100,
-                received: paidAmountPaise,
+                expectedPaise: session.amount * 100,
+                receivedPaise: rzpPayment.amount,
                 paymentId: maskSensitive(razorpayPaymentId, 10),
               },
               ip,
@@ -255,7 +286,7 @@ export async function POST(req: Request) {
 
       // ── 9d. Complete with real payment credentials ─────────────────────────
       const result = await completeDonationSession(
-        sessionId,
+        session.id,
         razorpayPaymentId,
         razorpaySignature,
         { source: 'RAZORPAY_CHECKOUT', ip, razorpayOrderId, razorpayPaymentId }
@@ -286,7 +317,7 @@ export async function POST(req: Request) {
     if (simulateMode && process.env.NODE_ENV !== 'production' && process.env.ALLOW_PAYMENT_SIMULATION === 'true') {
       const mockUtr = `SIMULATED_${session.referenceNumber}_${Date.now().toString(36).toUpperCase()}`;
       const result = await completeDonationSession(
-        sessionId,
+        session.id,
         mockUtr,
         `dev_sim_sig_${generateDevToken()}`,
         { source: 'DEV_SIMULATION', ip, simulateMode: true }

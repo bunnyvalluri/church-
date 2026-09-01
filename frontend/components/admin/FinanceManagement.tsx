@@ -125,7 +125,9 @@ export default function FinanceManagement({
   const [isTransactionOpen, setIsTransactionOpen] = useState(false);
   
   const [donationFilter, setDonationFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [refundingId, setRefundingId] = useState<string | null>(null);
 
   const [newPledge, setNewPledge] = useState({ donorName: "", donorEmail: "", committedAmount: "", targetDate: "", purpose: "BUILDING" });
   const [newTx, setNewTx] = useState({ type: "OUTFLOW" as "INFLOW" | "OUTFLOW", amount: "", category: "UTILITIES", description: "", account: "General Fund" });
@@ -142,16 +144,50 @@ export default function FinanceManagement({
   }, [completedDonations]);
 
   const filteredDonations = useMemo(() => {
-    return completedDonations.filter(d => {
+    return donations.filter(d => {
       const matchesSearch = 
         (d.donorName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (d.donorEmail || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (d.razorpayPaymentId || d.stripeId || "").toLowerCase().includes(searchQuery.toLowerCase());
+        (d.donorPhone || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.razorpayPaymentId || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.razorpayOrderId || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.id || "").toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesPurpose = donationFilter === "ALL" || d.purpose === donationFilter;
-      return matchesSearch && matchesPurpose;
+      const matchesStatus = statusFilter === "ALL" || d.status === statusFilter;
+      return matchesSearch && matchesPurpose && matchesStatus;
     });
-  }, [completedDonations, searchQuery, donationFilter]);
+  }, [donations, searchQuery, donationFilter, statusFilter]);
+
+  const handleRefund = async (donationId: string, amount: number) => {
+    const confirmMsg = isTe
+      ? `₹${amount} మొత్తాన్ని రీఫండ్ చేయాలని ఖచ్చితంగా అనుకుంటున్నారా?`
+      : isHi
+      ? `क्या आप वाकई ₹${amount} की राशि वापस (रिफंड) करना चाहते हैं?`
+      : `Are you sure you want to issue an official gateway refund of ₹${amount} for this donation?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    setRefundingId(donationId);
+    try {
+      const res = await fetch("/api/admin/payments/refund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ donationId, amount, reason: "Admin requested refund" }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("Refund processed successfully.");
+        window.location.reload();
+      } else {
+        alert(data.error || "Failed to process refund.");
+      }
+    } catch (err: any) {
+      alert("Network error processing refund.");
+    } finally {
+      setRefundingId(null);
+    }
+  };
 
   const handleAddPledge = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -325,7 +361,7 @@ export default function FinanceManagement({
                 />
               </div>
 
-              <div className="relative w-44">
+              <div className="relative w-40">
                 <select
                   value={donationFilter}
                   onChange={(e) => setDonationFilter(e.target.value)}
@@ -336,6 +372,21 @@ export default function FinanceManagement({
                   <option value="OFFERING">{t.offering}</option>
                   <option value="MISSIONS">{t.missions}</option>
                   <option value="BUILDING">{t.buildingFund}</option>
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+              </div>
+
+              <div className="relative w-36">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full pl-3.5 pr-8 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                >
+                  <option value="ALL">{isTe ? "అన్ని స్థితులు" : isHi ? "सभी स्थितियां" : "All Status"}</option>
+                  <option value="COMPLETED">{isTe ? "పూర్తయినవి" : isHi ? "सफल" : "Completed"}</option>
+                  <option value="PENDING">{isTe ? "పెండింగ్" : isHi ? "लंबित" : "Pending"}</option>
+                  <option value="FAILED">{isTe ? "విఫలమైనవి" : isHi ? "विफल" : "Failed"}</option>
+                  <option value="REFUNDED">{isTe ? "రీఫండ్ అయినవి" : isHi ? "रिफंड" : "Refunded"}</option>
                 </select>
                 <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
               </div>
@@ -359,15 +410,16 @@ export default function FinanceManagement({
 
           <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700">
-              <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+              <table className="w-full text-left border-collapse whitespace-nowrap min-w-[750px]">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider bg-slate-100/90 dark:bg-slate-800/80">
                     <th className="py-4 px-6">{t.tableDonor}</th>
                     <th className="py-4 px-6">{t.tableMethod} & {t.tableUtr}</th>
                     <th className="py-4 px-6">{t.purpose}</th>
+                    <th className="py-4 px-6">Status</th>
                     <th className="py-4 px-6">{t.tableAmount}</th>
                     <th className="py-4 px-6">{t.tableDate}</th>
-                    <th className="py-4 px-6 text-center">{t.tableReceipt}</th>
+                    <th className="py-4 px-6 text-center">Actions & {t.tableReceipt}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -387,7 +439,7 @@ export default function FinanceManagement({
                         }`}>
                           {d.paymentMethod}
                         </span>
-                        <span className="block font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">{d.razorpayPaymentId || d.stripeId || "OFFLINE_RECORD"}</span>
+                        <span className="block font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">{d.razorpayPaymentId || d.razorpayOrderId || d.stripeId || "OFFLINE_RECORD"}</span>
                       </td>
                       <td className="py-4 px-6">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold border ${
@@ -402,6 +454,19 @@ export default function FinanceManagement({
                           {getCategoryTranslation(d.purpose)}
                         </span>
                       </td>
+                      <td className="py-4 px-6">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold border ${
+                          d.status === "COMPLETED"
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
+                            : d.status === "REFUNDED"
+                            ? "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-800"
+                            : d.status === "FAILED"
+                            ? "bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 border-red-300 dark:border-red-800"
+                            : "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-800"
+                        }`}>
+                          {d.status}
+                        </span>
+                      </td>
                       <td className="py-4 px-6 text-base font-black text-slate-900 dark:text-emerald-400">
                         {formatCurrency(d.amount)}
                       </td>
@@ -410,9 +475,21 @@ export default function FinanceManagement({
                       </td>
                       <td className="py-4 px-6 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <Link href={`/give/receipt/${d.id}`} className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 text-indigo-700 dark:text-indigo-300 font-bold text-xs rounded-lg transition-all active:scale-95">
-                            <FileText className="w-3.5 h-3.5" /> {isTe ? "రశీదు" : isHi ? "रसीद" : "Receipt"}
-                          </Link>
+                          {d.status === "COMPLETED" && (
+                            <Link href={`/give/receipt/${d.id}`} className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 text-indigo-700 dark:text-indigo-300 font-bold text-xs rounded-lg transition-all active:scale-95">
+                              <FileText className="w-3.5 h-3.5" /> {isTe ? "రశీదు" : isHi ? "रसीद" : "Receipt"}
+                            </Link>
+                          )}
+                          {d.status === "COMPLETED" && (
+                            <button
+                              onClick={() => handleRefund(d.id, d.amount)}
+                              disabled={refundingId === d.id}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 hover:bg-rose-600 hover:text-white dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 font-bold text-xs rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                              title="Process Razorpay Refund"
+                            >
+                              {refundingId === d.id ? "Refunding..." : "Refund"}
+                            </button>
+                          )}
                           {onDeleteDonation && (
                             <button
                               onClick={() => {
@@ -432,7 +509,7 @@ export default function FinanceManagement({
                   ))}
                   {filteredDonations.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="text-center py-16 text-xs text-slate-500 dark:text-slate-400 font-bold">{t.noRecords}</td>
+                      <td colSpan={7} className="text-center py-16 text-xs text-slate-500 dark:text-slate-400 font-bold">{t.noRecords}</td>
                     </tr>
                   )}
                 </tbody>
