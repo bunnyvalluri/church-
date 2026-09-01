@@ -1080,8 +1080,12 @@ export default function UnifiedEventManagementPortal() {
                 <Link href="/event-manager/report" className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-violet-600 via-indigo-600 to-violet-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-violet-500/20 text-center">
                   <ScrollText className="w-3 h-3" /> Create
                 </Link>
-                <button type="button" onClick={() => setShowManageEvents(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-violet-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
-                  <ListChecks className="w-3 h-3 text-white" /> Manage
+                <button
+                  type="button"
+                  onClick={() => setShowManageEvents(true)}
+                  className="flex items-center justify-center gap-1 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200/90 dark:bg-violet-950/40 dark:hover:bg-violet-900/60 dark:text-violet-200 dark:border-violet-500/30 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-xs"
+                >
+                  <ListChecks className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300" /> Manage
                 </button>
               </div>
             </div>
@@ -1106,8 +1110,12 @@ export default function UnifiedEventManagementPortal() {
                 <button onClick={() => setShowCreateService(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-indigo-600 via-cyan-600 to-indigo-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-indigo-500/20">
                   <Radio className="w-3 h-3" /> Schedule
                 </button>
-                <button type="button" onClick={() => setShowManageServices(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-indigo-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
-                  <Layers className="w-3 h-3 text-white" /> Manage
+                <button
+                  type="button"
+                  onClick={() => setShowManageServices(true)}
+                  className="flex items-center justify-center gap-1 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 dark:text-indigo-200 dark:border-indigo-500/30 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-xs"
+                >
+                  <Layers className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-300" /> Manage
                 </button>
               </div>
             </div>
@@ -1132,8 +1140,12 @@ export default function UnifiedEventManagementPortal() {
                 <button type="button" onClick={() => setShowCreateSermon(true)} className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-fuchsia-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md shadow-fuchsia-500/20">
                   <CloudUpload className="w-3 h-3" /> Upload
                 </button>
-                <button type="button" onClick={() => setShowManageSermons(true)} className="flex items-center justify-center gap-1 py-2 bg-slate-800 hover:bg-slate-700 text-white border-2 border-fuchsia-400 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-md">
-                  <BookOpen className="w-3 h-3 text-white" /> Manage
+                <button
+                  type="button"
+                  onClick={() => setShowManageSermons(true)}
+                  className="flex items-center justify-center gap-1 py-2 bg-fuchsia-50 hover:bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200/90 dark:bg-fuchsia-950/40 dark:hover:bg-fuchsia-900/60 dark:text-fuchsia-200 dark:border-fuchsia-500/30 rounded-xl text-[10px] font-black transition-all active:scale-95 shadow-xs"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-fuchsia-600 dark:text-fuchsia-300" /> Manage
                 </button>
               </div>
             </div>
@@ -1296,7 +1308,7 @@ export default function UnifiedEventManagementPortal() {
                   onClick={() => setShowManageEvents(true)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-violet-600/40 hover:bg-slate-200 dark:hover:bg-violet-600/70 text-slate-800 dark:text-white rounded-xl text-xs font-black transition-all border border-slate-200 dark:border-violet-400/60 active:scale-95 shadow-sm"
                 >
-                  <Settings className="w-4 h-4 text-white" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
+                  <Settings className="w-4 h-4 text-slate-700 dark:text-white" /> {t.eventManager?.manageEventsBtn || "Manage Events"}
                 </button>
               </div>
             </div>
