@@ -55,43 +55,39 @@ export default function AdminLoginPage() {
     setError("");
     setIsLoading(true);
     try {
-      const credential = await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
-      if (credential?.user) {
-        try {
-          const syncRes = await fetch("/api/auth/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              uid: credential.user.uid,
-              email: credential.user.email || email.trim().toLowerCase(),
-              name: credential.user.displayName || email.split("@")[0],
-              photoURL: credential.user.photoURL,
-              phoneNumber: credential.user.phoneNumber || null,
-            }),
-          });
-          const syncData = await syncRes.json();
-          if (syncData?.success && (syncData?.user?.role === "ADMIN" || syncData?.user?.role === "SUPER_ADMIN")) {
-            window.location.replace("/admin/dashboard");
-            return;
-          }
-        } catch (syncErr) {
-          console.warn("[ADMIN/AUTH] Sync warn:", syncErr);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        if (response.status === 429) {
+          setError("Too many login attempts. Please wait a moment and try again.");
+        } else if (response.status === 401) {
+          setError("Invalid email or password. Please try again.");
+        } else {
+          setError(data?.error || "Sign-in failed. Please check your credentials.");
         }
+        setIsLoading(false);
+        return;
       }
-      window.location.replace("/admin/dashboard");
+
+      const role = data.user?.role;
+      if (role === "ADMIN" || role === "SUPER_ADMIN") {
+        window.location.replace("/admin/dashboard");
+      } else {
+        setShowAccessDenied(true);
+        setIsLoading(false);
+      }
     } catch (err: any) {
-      console.warn("[ADMIN/AUTH] Firebase auth notice:", err?.code || err);
-      const messages: Record<string, string> = {
-        "auth/invalid-credential": "Invalid email or password. Please try again.",
-        "auth/invalid-login-credentials": "Invalid email or password. Please try again.",
-        "auth/user-not-found": "No account found with this email.",
-        "auth/wrong-password": "Incorrect password.",
-        "auth/too-many-requests": "Too many login attempts. Please wait a moment and try again.",
-        "auth/network-request-failed": "Network connection failed. Please check your internet connection.",
-        "auth/operation-not-allowed": "Admin sign-in is currently disabled in Firebase Console.",
-        "auth/unauthorized-domain": "This domain is not authorized in Firebase Console.",
-      };
-      setError(messages[err?.code] ?? "Sign-in failed. Please check your credentials.");
+      console.warn("[ADMIN/AUTH] Login error:", err?.message || err);
+      setError("Network connection failed. Please check your internet connection.");
       setIsLoading(false);
     }
   };

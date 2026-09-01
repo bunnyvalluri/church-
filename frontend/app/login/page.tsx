@@ -235,92 +235,56 @@ function LoginForm() {
       return;
     }
 
-    if (!isFirebaseConfigured()) {
-      setError("auth/api-key-not-valid");
-      return;
-    }
-
-    const activeAuth = getFirebaseAuth() || auth;
-    if (!activeAuth || typeof activeAuth.onAuthStateChanged !== "function") {
-      setError("auth-not-ready");
-      return;
-    }
-
     setIsLoading(true);
     setIsLoggingIn(true);
 
     try {
-      let credential;
-      try {
-        credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, password);
-      } catch (firstErr: any) {
-        const trimmed = (password || "").trim();
-        if (trimmed && trimmed !== password) {
-          credential = await signInWithEmailAndPassword(activeAuth, sanitizedEmail, trimmed);
+      // 1. Direct Real Production Authentication via PostgreSQL & bcrypt
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: sanitizedEmail,
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        if (response.status === 429) {
+          setError("auth/too-many-requests");
+        } else if (response.status === 401) {
+          setError("auth/invalid-credential");
         } else {
-          throw firstErr;
+          setError(data?.error || "sign-in-failed");
         }
-      }
-      const u = credential.user;
-
-      if (!u) {
-        throw new Error("auth/invalid-credential");
+        setIsLoading(false);
+        setIsLoggingIn(false);
+        return;
       }
 
-      // 1. Authoritative database sync to fetch assigned role
-      let role = "MEMBER";
-      try {
-        const syncRes = await fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: u.uid,
-            email: u.email || sanitizedEmail,
-            name: u.displayName || sanitizedEmail.split("@")[0],
-            photoURL: u.photoURL,
-            phoneNumber: u.phoneNumber || null,
-          }),
-        });
-        if (syncRes.ok) {
-          const syncData = await syncRes.json();
-          if (syncData?.success && syncData?.user?.role) {
-            role = syncData.user.role;
-          }
-        }
-      } catch (syncErr) {
-        console.warn("[AUTH] Sync error:", syncErr);
-      }
+      const authenticatedUser = data.user;
+      const role = authenticatedUser?.role || "MEMBER";
 
       // 2. Update client AuthProvider state
-      if (updateUser) {
+      if (updateUser && authenticatedUser) {
         updateUser({
-          uid: u.uid,
-          email: u.email || sanitizedEmail,
-          name: u.displayName || sanitizedEmail.split("@")[0],
-          image: u.photoURL || null,
+          uid: authenticatedUser.id,
+          email: authenticatedUser.email,
+          name: authenticatedUser.name || sanitizedEmail.split("@")[0],
+          image: authenticatedUser.image || null,
           role: role as any,
         });
       }
 
-      // 3. Non-blocking login email notification
-      sendLoginEmail(u.email || sanitizedEmail, u.displayName || sanitizedEmail.split("@")[0], "email");
-
-      // 4. Role-based redirect
+      // 3. Role-based redirect
       redirectForRole(role);
     } catch (err: any) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("[FIREBASE_AUTH_DIAGNOSTIC]", {
-          code: err?.code,
-          message: err?.message,
-          name: err?.name,
-        });
-      } else {
-        console.error("[AUTH] Login error:", err?.code || err?.name || "auth/invalid-credential");
-      }
+      console.error("[AUTH] Login network error:", err?.message || err);
       setIsLoading(false);
       setIsLoggingIn(false);
-      const errCode = err?.code || extractFirebaseCode(err?.message) || "auth/invalid-credential";
-      setError(errCode);
+      setError("auth/network-request-failed");
     }
   };
 

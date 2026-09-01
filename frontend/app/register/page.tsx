@@ -148,95 +148,50 @@ export default function RegisterPage() {
       return;
     }
 
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setError("auth/network-request-failed");
+      return;
+    }
+
     setIsLoading(true);
     setIsRegistering(true);
 
     try {
-      const activeAuth = getFirebaseAuth() || auth;
-      if (!activeAuth || typeof activeAuth.onAuthStateChanged !== "function") {
-        setError("auth-not-ready");
+      // 1. Direct Real Production Registration via PostgreSQL & bcrypt
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.toLowerCase().trim(),
+          phone: formData.phone.trim() || null,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          termsAccepted: formData.termsAccepted,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        if (response.status === 409) {
+          setError("auth/email-already-in-use");
+        } else if (response.status === 429) {
+          setError("auth/too-many-requests");
+        } else {
+          setError(data?.error || "registration-failed");
+        }
         setIsLoading(false);
         setIsRegistering(false);
         return;
       }
 
-      const userCredential = await createUserWithEmailAndPassword(activeAuth, formData.email.trim(), formData.password);
-      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
-      const u = userCredential.user;
-
-      if (u) {
-        await updateProfile(u, { displayName: fullName }).catch(() => {});
-      }
-
-      try {
-        const { db } = await import("@/lib/firebase");
-        if (db) {
-          const { doc, setDoc, serverTimestamp } = await import("firebase/firestore");
-          await setDoc(doc(db, "users", u.uid), {
-            uid: u.uid,
-            firstName: formData.firstName.trim(),
-            lastName: formData.lastName.trim(),
-            email: formData.email.toLowerCase().trim(),
-            phone: formData.phone.trim() || null,
-            role: "member",
-            status: "active",
-            photoURL: null,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          }, { merge: true });
-        }
-      } catch (fsErr) {
-        console.warn("[AUTH] Firestore profile write:", fsErr);
-      }
-
-      try {
-        await fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            uid: u.uid,
-            email: formData.email.toLowerCase().trim(),
-            name: fullName,
-            photoURL: null,
-            phoneNumber: formData.phone.trim() || null,
-          }),
-        });
-      } catch (syncErr) {
-        console.warn("[AUTH] Server sync warning:", syncErr);
-      }
-
-      fetch('/api/auth/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'REGISTER',
-          name: fullName,
-          email: formData.email.toLowerCase().trim(),
-          phone: formData.phone.trim() || '',
-        }),
-      }).catch(() => {});
-
-      const { signOut } = await import("firebase/auth");
-      await signOut(auth);
-
-      if (typeof document !== "undefined") {
-        document.cookie = "__kcm_session_uid=; path=/; max-age=0; SameSite=Lax";
-        document.cookie = "__kcm_session_role=; path=/; max-age=0; SameSite=Lax";
-      }
-
+      // 2. Redirect to login with registration success parameter
       router.replace("/login?registered=true");
     } catch (err: any) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("[FIREBASE_REGISTER_DIAGNOSTIC]", {
-          code: err?.code,
-          message: err?.message,
-          name: err?.name,
-        });
-      } else {
-        console.error("[AUTH] Registration error:", err?.code || err?.name || "registration-failed");
-      }
-      const errCode = err?.code || extractFirebaseCode(err?.message) || "registration-failed";
-      setError(errCode);
+      console.error("[AUTH] Registration network error:", err?.message || err);
+      setError("auth/network-request-failed");
       setIsLoading(false);
       setIsRegistering(false);
     }
