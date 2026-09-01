@@ -602,9 +602,6 @@ export default function AIChat() {
                   <Sparkles className="w-2.5 h-2.5" /> KCM Assistant
                 </span>
               </div>
-              <p className="text-[9px] text-gray-400 dark:text-gray-500 text-center mt-1">
-                🔒 General guidance only · Never share passwords or payment PINs.
-              </p>
             </div>
           </>
         )}
