@@ -125,6 +125,8 @@ const CHAT_THEME_STYLES: Record<string, {
   },
 };
 
+import { isSafeLinkUrl } from "@/lib/ai/aiSecurityPipeline";
+
 // ── Markdown renderer ──────────────────────────────────────────────────────────
 function SimpleMarkdown({ content }: { content: string }) {
   const lines = content.split("\n");
@@ -166,7 +168,24 @@ function renderInline(text: string) {
     if (part.startsWith("`") && part.endsWith("`"))
       return <code key={j} className="px-1 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded text-xs font-mono">{part.slice(1, -1)}</code>;
     const lm = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-    if (lm) return <a key={j} href={lm[2]} target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 underline hover:text-purple-700">{lm[1]}</a>;
+    if (lm) {
+      const label = lm[1];
+      const href = lm[2];
+      if (!isSafeLinkUrl(href)) {
+        return <span key={j} className="font-semibold text-gray-700 dark:text-gray-300">{label}</span>;
+      }
+      return (
+        <a
+          key={j}
+          href={href}
+          target={href.startsWith("/") ? "_self" : "_blank"}
+          rel="noopener noreferrer"
+          className="text-purple-600 dark:text-purple-400 underline hover:text-purple-700 font-medium"
+        >
+          {label}
+        </a>
+      );
+    }
     return part;
   });
 }
@@ -191,6 +210,7 @@ function CopyButton({ text }: { text: string }) {
 // ── Topic categories ────────────────────────────────────────────────────────────
 const CATEGORIES = [
   {
+    mode: "CHURCH" as const,
     label: "Church",
     icon: Heart,
     questions: [
@@ -201,6 +221,7 @@ const CATEGORIES = [
     ],
   },
   {
+    mode: "BIBLE" as const,
     label: "Bible",
     icon: BookOpen,
     questions: [
@@ -211,6 +232,7 @@ const CATEGORIES = [
     ],
   },
   {
+    mode: "GENERAL" as const,
     label: "General",
     icon: Globe,
     questions: [
@@ -255,8 +277,14 @@ export default function AIChat() {
     return () => window.removeEventListener("mobile-menu-toggle", handleMenuToggle);
   }, [isAuthPage]);
 
+  const selectedCategory = CATEGORIES[activeTab] || CATEGORIES[0];
+
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, setMessages, reload } = useChat({
     api: "/api/chat",
+    body: {
+      mode: selectedCategory.mode,
+      language: "en",
+    },
     onError: () => setHasError(true),
     onResponse: () => setHasError(false),
   });
@@ -574,6 +602,9 @@ export default function AIChat() {
                   <Sparkles className="w-2.5 h-2.5" /> KCM Assistant
                 </span>
               </div>
+              <p className="text-[9px] text-gray-400 dark:text-gray-500 text-center mt-1">
+                🔒 General guidance only · Never share passwords or payment PINs.
+              </p>
             </div>
           </>
         )}
