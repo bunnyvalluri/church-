@@ -4,7 +4,8 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/email-system.spec.ts"
+      "tests/security/chatbot-security.spec.ts",
+      "--project=chromium-desktop"
     ],
     "configFile": "C:\\K.C.M-Portal\\frontend\\playwright.config.ts",
     "rootDir": "C:/K.C.M-Portal/frontend/tests",
@@ -137,20 +138,20 @@
   },
   "suites": [
     {
-      "title": "email-system.spec.ts",
-      "file": "email-system.spec.ts",
+      "title": "security\\chatbot-security.spec.ts",
+      "file": "security/chatbot-security.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "KCM Transactional Email Architecture & Security Tests",
-          "file": "email-system.spec.ts",
+          "title": "KCM Assistant — Security Pipeline Unit Tests",
+          "file": "security/chatbot-security.spec.ts",
           "line": 28,
           "column": 6,
           "specs": [
             {
-              "title": "1. Production email template must NOT contain DEV SANDBOX NOTICE",
+              "title": "1. Input Normalization strips zero-width characters and limits length",
               "ok": true,
               "tags": [],
               "tests": [
@@ -165,12 +166,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 30,
+                      "duration": 38,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.812Z",
+                      "startTime": "2026-09-01T03:12:49.886Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -178,13 +179,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "7a0eb93431beecd09292-7a71d3390908d4f51fbc",
-              "file": "email-system.spec.ts",
+              "id": "3fa303c48a776c2c750c-fbe8de3436be30f8a2e4",
+              "file": "security/chatbot-security.spec.ts",
               "line": 30,
               "column": 7
             },
             {
-              "title": "2. Production email subject must NOT contain [Sandbox Preview] prefix",
+              "title": "2. Prompt Injection Classifier blocks instruction overrides & DAN mode",
               "ok": true,
               "tags": [],
               "tests": [
@@ -199,12 +200,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 24,
+                      "duration": 50,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.734Z",
+                      "startTime": "2026-09-01T03:12:49.829Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -212,265 +213,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "7a0eb93431beecd09292-4d7c908bdbfb2781ed4a",
-              "file": "email-system.spec.ts",
-              "line": 46,
+              "id": "3fa303c48a776c2c750c-9499e1e7d06312efdac6",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 41,
               "column": 7
             },
             {
-              "title": "3. Rendered HTML must NOT contain raw CSS text fragments leaked as body text",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 32,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.739Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-5679f0cba0c35887e154",
-              "file": "email-system.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "4. User input containing XSS and HTML injection vectors must be safely escaped",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 52,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.836Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-eaeae55e9834a641aa3d",
-              "file": "email-system.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "5. Plain-text version must exist and contain no raw HTML tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 41,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.817Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-9f7240b40b9845a0c8a0",
-              "file": "email-system.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "6. LOGIN_ALERT template must contain all required church security details and links",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 70,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.846Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8bcdcbc7817cf10b414b",
-              "file": "email-system.spec.ts",
-              "line": 115,
-              "column": 7
-            },
-            {
-              "title": "7. Missing optional fields must not render as \"undefined\" or null",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 28,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.793Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-609b1a367b759dde20cc",
-              "file": "email-system.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "8. Idempotency guard must prevent duplicate emails within deduplication window",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 7,
-                      "status": "passed",
-                      "duration": 2634,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:03:57.988Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/MOCK] Simulated email dispatch to: idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"MockProvider\",\"meta\":{\"component\":\"MockProvider\",\"subject\":\"New Sign-In to Your Kingdom of Christ Ministries Account\",\"recipients\":\"idempotency-test@example.com\",\"messageId\":\"mock_1787987037987_kqgpswj\"}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:00.585Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] ✓ Sent: [LOGIN_ALERT] to idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\",\"provider\":\"mock\",\"messageId\":\"mock_1787987037987_kqgpswj\",\"success\":true}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:00.596Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Skipped duplicate send for idempotency-test@example.com (LOGIN_ALERT) within deduplication window.\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\"}}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.857Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-b048fd2401f80950dd67",
-              "file": "email-system.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "9. Invalid recipient email addresses must be rejected safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 8,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:03:57.937Z\",\"level\":\"WARN\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Aborted send: Missing or invalid recipient email\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"WELCOME\",\"recipient\":\"invalid-email-no-at-sign\"}}\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.920Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-c347737020b28194871a",
-              "file": "email-system.spec.ts",
-              "line": 196,
-              "column": 7
-            },
-            {
-              "title": "10. Secrets, API keys, and database passwords must NEVER appear in email output",
+              "title": "3. Prompt Injection Classifier blocks System Prompt Extraction",
               "ok": true,
               "tags": [],
               "tests": [
@@ -490,7 +239,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.924Z",
+                      "startTime": "2026-09-01T03:12:49.860Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -498,13 +247,115 @@
                   "status": "expected"
                 }
               ],
-              "id": "7a0eb93431beecd09292-7d5f346f3e0ff066e0d3",
-              "file": "email-system.spec.ts",
-              "line": 210,
+              "id": "3fa303c48a776c2c750c-a29a49f0aff763eaf97f",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 51,
               "column": 7
             },
             {
-              "title": "11. All 20 email templates (A through T) must render valid HTML without exceptions",
+              "title": "4. Prompt Injection Classifier blocks Telugu and Hindi Attacks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 45,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-01T03:12:49.826Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3fa303c48a776c2c750c-15bd6a5a79fc20002647",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 61,
+              "column": 7
+            },
+            {
+              "title": "5. Output Redactor masks API keys, Database URLs, and JWTs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 61,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-01T03:12:49.901Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3fa303c48a776c2c750c-fc122ad2768342915e6b",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "6. Link Protocol Sanitizer blocks XSS vectors (javascript:, data:, vbscript:)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 61,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-01T03:12:49.894Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3fa303c48a776c2c750c-5254b177c0601d2ca5b7",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 97,
+              "column": 7
+            },
+            {
+              "title": "7. Context Builder encapsulates with XML Boundary Tags",
               "ok": true,
               "tags": [],
               "tests": [
@@ -519,12 +370,12 @@
                       "workerIndex": 6,
                       "parallelIndex": 6,
                       "status": "passed",
-                      "duration": 218,
+                      "duration": 47,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-29T07:03:57.964Z",
+                      "startTime": "2026-09-01T03:12:49.843Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -532,13 +383,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "7a0eb93431beecd09292-38eb46665cfd4cb290a9",
-              "file": "email-system.spec.ts",
-              "line": 241,
+              "id": "3fa303c48a776c2c750c-b6b20463b3366112eb95",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 110,
               "column": 7
             },
             {
-              "title": "1. Production email template must NOT contain DEV SANDBOX NOTICE",
+              "title": "8. Tool Registry denies unauthorized roles (RBAC)",
               "ok": true,
               "tags": [],
               "tests": [
@@ -546,1353 +397,19 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
                   "results": [
                     {
-                      "workerIndex": 8,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 27,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.592Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8d9d0819e2772502a57f",
-              "file": "email-system.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "2. Production email subject must NOT contain [Sandbox Preview] prefix",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 23,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.566Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-907fe7f5f3a22005cb0a",
-              "file": "email-system.spec.ts",
-              "line": 46,
-              "column": 7
-            },
-            {
-              "title": "3. Rendered HTML must NOT contain raw CSS text fragments leaked as body text",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 33,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.591Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-55a14c3576c93596ce96",
-              "file": "email-system.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "4. User input containing XSS and HTML injection vectors must be safely escaped",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 12,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 31,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.554Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-6f66b1040e5af3227c4e",
-              "file": "email-system.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "5. Plain-text version must exist and contain no raw HTML tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 24,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.589Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-f39248afd3b69d133a1c",
-              "file": "email-system.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "6. LOGIN_ALERT template must contain all required church security details and links",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 13,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 66,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.634Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-79c7d919061b13629aaa",
-              "file": "email-system.spec.ts",
-              "line": 115,
-              "column": 7
-            },
-            {
-              "title": "7. Missing optional fields must not render as \"undefined\" or null",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 14,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 25,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.746Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-32021488b6e7837be6fe",
-              "file": "email-system.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "8. Idempotency guard must prevent duplicate emails within deduplication window",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2371,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:03:59.716Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/MOCK] Simulated email dispatch to: idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"MockProvider\",\"meta\":{\"component\":\"MockProvider\",\"subject\":\"New Sign-In to Your Kingdom of Christ Ministries Account\",\"recipients\":\"idempotency-test@example.com\",\"messageId\":\"mock_1787987039716_d7y0w5t\"}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:02.078Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] ✓ Sent: [LOGIN_ALERT] to idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\",\"provider\":\"mock\",\"messageId\":\"mock_1787987039716_d7y0w5t\",\"success\":true}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:02.081Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Skipped duplicate send for idempotency-test@example.com (LOGIN_ALERT) within deduplication window.\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\"}}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.703Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-674fa33e2fc1e7e0fe42",
-              "file": "email-system.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "9. Invalid recipient email addresses must be rejected safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 12,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 4,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:03:59.709Z\",\"level\":\"WARN\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Aborted send: Missing or invalid recipient email\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"WELCOME\",\"recipient\":\"invalid-email-no-at-sign\"}}\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.698Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8b821c55c326f9c4d6a3",
-              "file": "email-system.spec.ts",
-              "line": 196,
-              "column": 7
-            },
-            {
-              "title": "10. Secrets, API keys, and database passwords must NEVER appear in email output",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 37,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.719Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-1808321498a544701e55",
-              "file": "email-system.spec.ts",
-              "line": 210,
-              "column": 7
-            },
-            {
-              "title": "11. All 20 email templates (A through T) must render valid HTML without exceptions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 12,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 184,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:03:59.720Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-75485d0055f49d05f55e",
-              "file": "email-system.spec.ts",
-              "line": 241,
-              "column": 7
-            },
-            {
-              "title": "1. Production email template must NOT contain DEV SANDBOX NOTICE",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 15,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 17,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.228Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-71dfc62116a18ce4e0c4",
-              "file": "email-system.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "2. Production email subject must NOT contain [Sandbox Preview] prefix",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 16,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 23,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.248Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-74104eb057d4fa4682d3",
-              "file": "email-system.spec.ts",
-              "line": 46,
-              "column": 7
-            },
-            {
-              "title": "3. Rendered HTML must NOT contain raw CSS text fragments leaked as body text",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 17,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 23,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.313Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-258ca8d0e5f073153616",
-              "file": "email-system.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "4. User input containing XSS and HTML injection vectors must be safely escaped",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 18,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 41,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.264Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-b7c03af4d0974412ae26",
-              "file": "email-system.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "5. Plain-text version must exist and contain no raw HTML tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 19,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 31,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.374Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8c350586e4affb935d49",
-              "file": "email-system.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "6. LOGIN_ALERT template must contain all required church security details and links",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 20,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 49,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.392Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-438f5d519ce7170c61c2",
-              "file": "email-system.spec.ts",
-              "line": 115,
-              "column": 7
-            },
-            {
-              "title": "7. Missing optional fields must not render as \"undefined\" or null",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 21,
+                      "workerIndex": 7,
                       "parallelIndex": 7,
-                      "status": "passed",
-                      "duration": 22,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:02.188Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-e7b79a93785ccfcd8a80",
-              "file": "email-system.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "8. Idempotency guard must prevent duplicate emails within deduplication window",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 15,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 2395,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:01.361Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/MOCK] Simulated email dispatch to: idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"MockProvider\",\"meta\":{\"component\":\"MockProvider\",\"subject\":\"New Sign-In to Your Kingdom of Christ Ministries Account\",\"recipients\":\"idempotency-test@example.com\",\"messageId\":\"mock_1787987041361_qimsx3k\"}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:03.748Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] ✓ Sent: [LOGIN_ALERT] to idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\",\"provider\":\"mock\",\"messageId\":\"mock_1787987041361_qimsx3k\",\"success\":true}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:03.751Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Skipped duplicate send for idempotency-test@example.com (LOGIN_ALERT) within deduplication window.\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\"}}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.349Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-dd40f97878bf97c25304",
-              "file": "email-system.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "9. Invalid recipient email addresses must be rejected safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 16,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 6,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:01.395Z\",\"level\":\"WARN\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Aborted send: Missing or invalid recipient email\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"WELCOME\",\"recipient\":\"invalid-email-no-at-sign\"}}\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.381Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-bbe73d94c96245d6cc29",
-              "file": "email-system.spec.ts",
-              "line": 196,
-              "column": 7
-            },
-            {
-              "title": "10. Secrets, API keys, and database passwords must NEVER appear in email output",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 16,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 33,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.412Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-e9453c9cb8d6ac3ac9b5",
-              "file": "email-system.spec.ts",
-              "line": 210,
-              "column": 7
-            },
-            {
-              "title": "11. All 20 email templates (A through T) must render valid HTML without exceptions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 18,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 155,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:01.415Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-fc9dae27dad5462aa69b",
-              "file": "email-system.spec.ts",
-              "line": 241,
-              "column": 7
-            },
-            {
-              "title": "1. Production email template must NOT contain DEV SANDBOX NOTICE",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 23,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 23,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:02.986Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-0073e005be203a0b5d30",
-              "file": "email-system.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "2. Production email subject must NOT contain [Sandbox Preview] prefix",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 22,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 19,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:02.968Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-6846a821875226c66e53",
-              "file": "email-system.spec.ts",
-              "line": 46,
-              "column": 7
-            },
-            {
-              "title": "3. Rendered HTML must NOT contain raw CSS text fragments leaked as body text",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 24,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 21,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.065Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-56f9ef783234e92612db",
-              "file": "email-system.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "4. User input containing XSS and HTML injection vectors must be safely escaped",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 25,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 37,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.128Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-b02846a7342693d96f53",
-              "file": "email-system.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "5. Plain-text version must exist and contain no raw HTML tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 26,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 32,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.064Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-fce2ffb318ca1ca0122f",
-              "file": "email-system.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "6. LOGIN_ALERT template must contain all required church security details and links",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 27,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 44,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.590Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-94faaf9b92f378f82d5b",
-              "file": "email-system.spec.ts",
-              "line": 115,
-              "column": 7
-            },
-            {
-              "title": "7. Missing optional fields must not render as \"undefined\" or null",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 28,
-                      "parallelIndex": 7,
-                      "status": "passed",
-                      "duration": 28,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.770Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-59fb66fc29e1bc528008",
-              "file": "email-system.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "8. Idempotency guard must prevent duplicate emails within deduplication window",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 22,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 2444,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:03.107Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/MOCK] Simulated email dispatch to: idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"MockProvider\",\"meta\":{\"component\":\"MockProvider\",\"subject\":\"New Sign-In to Your Kingdom of Christ Ministries Account\",\"recipients\":\"idempotency-test@example.com\",\"messageId\":\"mock_1787987043107_eq8qoxl\"}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:05.545Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] ✓ Sent: [LOGIN_ALERT] to idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\",\"provider\":\"mock\",\"messageId\":\"mock_1787987043107_eq8qoxl\",\"success\":true}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:05.546Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Skipped duplicate send for idempotency-test@example.com (LOGIN_ALERT) within deduplication window.\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\"}}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.093Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-305789a565ac25fe2880",
-              "file": "email-system.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "9. Invalid recipient email addresses must be rejected safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 23,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 7,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:03.144Z\",\"level\":\"WARN\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Aborted send: Missing or invalid recipient email\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"WELCOME\",\"recipient\":\"invalid-email-no-at-sign\"}}\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.129Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-dad1230994eb1216463f",
-              "file": "email-system.spec.ts",
-              "line": 196,
-              "column": 7
-            },
-            {
-              "title": "10. Secrets, API keys, and database passwords must NEVER appear in email output",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 23,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 21,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.160Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-57cd4e1842e182822bd4",
-              "file": "email-system.spec.ts",
-              "line": 210,
-              "column": 7
-            },
-            {
-              "title": "11. All 20 email templates (A through T) must render valid HTML without exceptions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-chrome",
-                  "projectName": "mobile-chrome",
-                  "results": [
-                    {
-                      "workerIndex": 23,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 157,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:03.200Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-0a192ba0576e1bc4c68a",
-              "file": "email-system.spec.ts",
-              "line": 241,
-              "column": 7
-            },
-            {
-              "title": "1. Production email template must NOT contain DEV SANDBOX NOTICE",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 29,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 29,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.688Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-b36352740e330ca12ee7",
-              "file": "email-system.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "2. Production email subject must NOT contain [Sandbox Preview] prefix",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 30,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 27,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.662Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8cfb04f23c36d9653b67",
-              "file": "email-system.spec.ts",
-              "line": 46,
-              "column": 7
-            },
-            {
-              "title": "3. Rendered HTML must NOT contain raw CSS text fragments leaked as body text",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 31,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 32,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.703Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-60d45bbb7af99111993d",
-              "file": "email-system.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "4. User input containing XSS and HTML injection vectors must be safely escaped",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 32,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 34,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.899Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-2b35ec4caaedbc78f27c",
-              "file": "email-system.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "5. Plain-text version must exist and contain no raw HTML tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 33,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 17,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:05.168Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-22e79ce2f7f2593f644d",
-              "file": "email-system.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "6. LOGIN_ALERT template must contain all required church security details and links",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 34,
-                      "parallelIndex": 2,
                       "status": "passed",
                       "duration": 35,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-29T07:04:05.196Z",
+                      "startTime": "2026-09-01T03:12:49.904Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1900,193 +417,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "7a0eb93431beecd09292-b6e6ac282948df49da12",
-              "file": "email-system.spec.ts",
-              "line": 115,
-              "column": 7
-            },
-            {
-              "title": "7. Missing optional fields must not render as \"undefined\" or null",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 35,
-                      "parallelIndex": 7,
-                      "status": "passed",
-                      "duration": 9,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:05.314Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-8e7af2cdcbc4e47e1af3",
-              "file": "email-system.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "8. Idempotency guard must prevent duplicate emails within deduplication window",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 30,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 2356,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:04.817Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/MOCK] Simulated email dispatch to: idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"MockProvider\",\"meta\":{\"component\":\"MockProvider\",\"subject\":\"New Sign-In to Your Kingdom of Christ Ministries Account\",\"recipients\":\"idempotency-test@example.com\",\"messageId\":\"mock_1787987044817_99q74gr\"}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:07.163Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] ✓ Sent: [LOGIN_ALERT] to idempotency-test@example.com\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\",\"provider\":\"mock\",\"messageId\":\"mock_1787987044817_99q74gr\",\"success\":true}}\n"
-                        },
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:07.166Z\",\"level\":\"INFO\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Skipped duplicate send for idempotency-test@example.com (LOGIN_ALERT) within deduplication window.\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"LOGIN_ALERT\",\"recipient\":\"idempotency-test@example.com\"}}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.800Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-9a7563ef7dd88bc24fd1",
-              "file": "email-system.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "9. Invalid recipient email addresses must be rejected safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 29,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 5,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [
-                        {
-                          "text": "{\"timestamp\":\"2026-08-29T07:04:04.849Z\",\"level\":\"WARN\",\"service\":\"kcm-frontend-nextjs\",\"environment\":\"production\",\"message\":\"[EMAIL/SERVICE] Aborted send: Missing or invalid recipient email\",\"correlation_id\":\"none\",\"component\":\"general\",\"meta\":{\"template\":\"WELCOME\",\"recipient\":\"invalid-email-no-at-sign\"}}\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.841Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-4c7c871180220dc1fe80",
-              "file": "email-system.spec.ts",
-              "line": 196,
-              "column": 7
-            },
-            {
-              "title": "10. Secrets, API keys, and database passwords must NEVER appear in email output",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 31,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 30,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.856Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-29c9f5feef7121f6cb4f",
-              "file": "email-system.spec.ts",
-              "line": 210,
-              "column": 7
-            },
-            {
-              "title": "11. All 20 email templates (A through T) must render valid HTML without exceptions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "mobile-safari",
-                  "projectName": "mobile-safari",
-                  "results": [
-                    {
-                      "workerIndex": 29,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 153,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-29T07:04:04.862Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7a0eb93431beecd09292-04ab4622049a5b06e113",
-              "file": "email-system.spec.ts",
-              "line": 241,
+              "id": "3fa303c48a776c2c750c-356e797d1d54e8fc976b",
+              "file": "security/chatbot-security.spec.ts",
+              "line": 127,
               "column": 7
             }
           ]
@@ -2096,9 +429,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-29T07:03:55.381Z",
-    "duration": 11824.699,
-    "expected": 55,
+    "startTime": "2026-09-01T03:12:48.142Z",
+    "duration": 2039.561,
+    "expected": 8,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

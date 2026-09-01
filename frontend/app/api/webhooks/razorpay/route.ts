@@ -1,27 +1,26 @@
 /**
  * POST /api/webhooks/razorpay
  * ─────────────────────────────────────────────────────────────────────────────
- * Authoritative Production Webhook Endpoint for Razorpay Events.
+ * Production Webhook Endpoint for Razorpay Server-to-Server Payment Events.
  *
  * Security principles:
- *  ✅ Reads raw request body BEFORE any parsing (HMAC requirement)
- *  ✅ Validates X-Razorpay-Signature with RAZORPAY_WEBHOOK_SECRET
- *  ✅ Enforces Webhook Event Idempotency (prevent replay / duplicate execution)
- *  ✅ Timestamp verification (reject stale replays > 5 mins)
- *  ✅ Strict Amount cross-check against database session amount in integer paise
+ *  ✅ Reads raw request body as binary/text before any parsing (HMAC requirement)
+ *  ✅ Validates X-Razorpay-Signature using HMAC-SHA256 constant-time comparison
+ *  ✅ Enforces Webhook Event Idempotency (prevent duplicate / replay executions)
+ *  ✅ Replay attack prevention (5-minute timestamp window check)
+ *  ✅ Strict Amount cross-check in integer paise
  *  ✅ Handles payment.captured, payment.authorized, payment.failed, payment.refunded, order.paid
- *  ✅ Atomically generates immutable receipts, financial ledger transactions, and audit trails
- *  ✅ Dispatches background email receipt & push notifications
- *  ✅ Emits Socket.IO real-time event to donor's browser room
- *  ✅ Never leaks internal errors or secrets in response
+ *  ✅ Atomically records immutable receipts, financial ledger entries, and audit trails
+ *  ✅ Dispatches background email & SMS receipts and pushes notifications
+ *  ✅ Returns 2xx only after signature verification & database settlement
  */
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { writeAuditLog } from '@/lib/auditLogger';
 import { completeDonationSession } from '@/lib/paymentService';
+import { getPaymentProvider } from '@/lib/payments';
 import {
-  verifyRazorpayWebhookSignature,
   verifyPaymentAmount,
   RazorpayWebhookSchema,
   generateWebhookEventId,
@@ -61,8 +60,9 @@ export async function POST(req: Request) {
     req.headers.get('x-razorpay-signature') ||
     req.headers.get('x-webhook-signature');
 
-  // 4. Cryptographic Signature Verification
-  const isSignatureValid = verifyRazorpayWebhookSignature(rawBody, signatureHeader);
+  // 4. Cryptographic Signature Verification via Provider
+  const provider = getPaymentProvider('RAZORPAY');
+  const isSignatureValid = provider.verifyWebhookSignature(rawBody, signatureHeader);
 
   if (!isSignatureValid) {
     await writeAuditLog({
@@ -72,7 +72,6 @@ export async function POST(req: Request) {
       ),
       ipAddress: ip,
     });
-    // Return 400 for bad signature
     return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 400 });
   }
 
@@ -168,7 +167,6 @@ export async function POST(req: Request) {
 
     // 11. Handle Event Types
     if (eventType === 'payment.captured' || eventType === 'payment.authorized' || eventType === 'order.paid') {
-      // Find matching session by Razorpay Order ID or Reference Number
       let session = await prisma.donationSession.findFirst({
         where: {
           OR: [
@@ -208,7 +206,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ received: true, processed: false, reason: 'session_not_found' }, { status: 200 });
       }
 
-      // 12. Amount Cross-Verification in Paise
+      // 12. Amount Cross-Verification in Integer Paise
       if (paidAmountPaise && session.amount) {
         const amountValid = verifyPaymentAmount(paidAmountPaise, session.amount);
         if (!amountValid) {
@@ -277,7 +275,6 @@ export async function POST(req: Request) {
     }
 
     if (eventType === 'payment.failed') {
-      // Find matching session and mark FAILED
       const session = await prisma.donationSession.findFirst({
         where: {
           OR: [{ referenceNumber: orderId }, { razorpayOrderId: orderId }],
@@ -287,7 +284,7 @@ export async function POST(req: Request) {
       if (session) {
         await prisma.donationSession.update({
           where: { id: session.id },
-          data: { status: 'FAILED' },
+          data: { status: 'FAILED', paymentState: 'FAILED' },
         });
 
         await prisma.donation.updateMany({
@@ -321,7 +318,6 @@ export async function POST(req: Request) {
       const refundId = refundEntity?.id;
       const refundedAmount = refundEntity?.amount ? refundEntity.amount / 100 : 0;
 
-      // Update donation status
       const donation = await prisma.donation.findFirst({
         where: {
           OR: [
@@ -337,14 +333,21 @@ export async function POST(req: Request) {
           data: { status: 'REFUNDED' },
         });
 
-        // Record negative financial ledger entry for audit
+        if (donation.sessionId) {
+          await prisma.donationSession.update({
+            where: { id: donation.sessionId },
+            data: { status: 'REFUNDED', paymentState: 'REFUNDED' },
+          }).catch(() => {});
+        }
+
+        // Record financial ledger outflow entry for accounting
         await prisma.transaction.create({
           data: {
             type: 'OUTFLOW',
             amount: refundedAmount || donation.amount,
             category: 'DONATION_REFUND',
-            description: `Refund for donation ${donation.id}. Razorpay Payment ID: ${paymentId}. Refund ID: ${refundId || 'N/A'}`,
-            account: 'General Fund',
+            description: `Refund for donation ${donation.id}. Payment ID: ${paymentId}. Refund ID: ${refundId || 'N/A'}`,
+            account: 'Online Giving Gateway',
           },
         });
       }
@@ -363,7 +366,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, processed: true, event: eventType });
     }
 
-    // Default: Unsupported event handled gracefully
+    // Default: Unhandled event handled gracefully
     await prisma.paymentWebhook.update({
       where: { id: webhookRecord.id },
       data: { status: 'IGNORED', processedAt: new Date() },

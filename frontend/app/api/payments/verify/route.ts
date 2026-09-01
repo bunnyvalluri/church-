@@ -1,33 +1,23 @@
 /**
  * POST /api/payments/verify
  * ─────────────────────────────────────────────────────────────────────────────
- * Production-grade payment verification endpoint.
+ * Authoritative Server-Side Payment Verification Endpoint for KCM.
  *
- * CRITICAL SECURITY CHANGE:
- *  ✅ Requires real Razorpay paymentId + signature for PRODUCTION
- *  ✅ HMAC-SHA256 signature verification before any DB write
- *  ✅ Amount cross-check: webhook amount must match DB amount (in paise)
- *  ✅ Idempotency: duplicate requests return cached response
- *  ✅ Session ownership check
- *  ✅ Session expiry check
- *  ✅ Rate limiting: 20 verifications per 15 min per IP
- *
- * UPI QR Flow note:
- *   For UPI QR payments (no Razorpay Checkout SDK), payment confirmation comes
- *   exclusively via webhook (/api/payments/webhook). This endpoint handles:
- *   a) Polling from frontend after QR scan (check if webhook completed it)
- *   b) Razorpay signature verification if client has payment credentials
+ * Rules:
+ *  • CLIENT = UNTRUSTED. Frontend cannot declare payment success.
+ *  • Cryptographic HMAC-SHA256 signature verification for Checkout flow.
+ *  • Authoritative gateway fetch & amount verification in integer paise.
+ *  • Webhook integration for asynchronous UPI QR settlement.
+ *  • Strict session ownership and expiration enforcement.
+ *  • Atomic database transaction for donation, receipt, and ledger updates.
  */
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import Razorpay from 'razorpay';
 import { getAuthenticatedUser } from '@/lib/authMiddleware';
-import { writeAuditLog } from '@/lib/auditLogger';
 import { completeDonationSession } from '@/lib/paymentService';
+import { getPaymentProvider } from '@/lib/payments';
 import {
-  verifyRazorpayPaymentSignature,
-  verifyPaymentAmount,
   VerifyPaymentSchema,
   assertJsonContentType,
   getClientIp,
@@ -39,34 +29,26 @@ import {
   recordPaymentFailure,
   clearPaymentFailures,
   logPaymentEvent,
-  checkDuplicateOrder,
 } from '@/lib/paymentSecurity';
 import { rateLimitHeaders } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
-// ─── Idempotency Cache (in-memory; use Redis in multi-instance production) ────
+// ─── Idempotency Cache (10 min TTL) ──────────────────────────────────────────
 const idempotencyCache = new Map<string, { status: number; body: unknown; ts: number }>();
-const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-// ─── Simulation Mode Guard ────────────────────────────────────────────────────
-function isSimulationAllowed(): boolean {
-  // Only allow simulation in development AND if explicitly enabled
-  return process.env.NODE_ENV !== 'production' &&
-    process.env.ALLOW_PAYMENT_SIMULATION === 'true';
-}
+const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000;
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const RATE_OPTS = { windowMs: 15 * 60 * 1000, maxRequests: 20 };
+  const RATE_OPTS = { windowMs: 15 * 60 * 1000, maxRequests: 60 };
 
-  // ── 1. Content-Type Guard ──────────────────────────────────────────────────
+  // 1. Content-Type Guard
   const ctError = assertJsonContentType(req);
   if (ctError) {
     return NextResponse.json({ error: ctError.error }, { status: ctError.status });
   }
 
-  // ── 2. Security Checks (rate limit + IP block) ────────────────────────────
+  // 2. Rate Limit & Security Checks
   const secCheck = runPaymentSecurityChecks(ip, 'VERIFY_PAYMENT');
   if (!secCheck.allowed) {
     await logPaymentEvent('IP_RATE_LIMITED', { route: 'verify-payment' }, ip);
@@ -77,7 +59,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    // ── 3. Parse + Zod Validate ────────────────────────────────────────────
+    // 3. Parse + Strict Schema Validation
     let rawBody: unknown;
     try {
       rawBody = await req.json();
@@ -88,14 +70,14 @@ export async function POST(req: Request) {
     const parsed = VerifyPaymentSchema.safeParse(rawBody);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.errors[0]?.message || 'Invalid request.' },
+        { error: parsed.error.errors[0]?.message || 'Invalid verification request.' },
         { status: 400 }
       );
     }
 
-    const { sessionId, donationId, razorpayOrderId, razorpayPaymentId, razorpaySignature, simulateMode } = parsed.data;
+    const { sessionId, donationId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = parsed.data;
 
-    // ── 4. Idempotency Check ───────────────────────────────────────────────
+    // 4. Idempotency Check
     const idempotencyKey = req.headers.get('x-idempotency-key') || '';
     if (idempotencyKey) {
       const cached = idempotencyCache.get(idempotencyKey);
@@ -104,7 +86,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 5. Load Session (Resolve by sessionId, donationId, or razorpayOrderId) ───
+    // 5. Load Session (Resolve by sessionId, donationId, or razorpayOrderId)
     let session = null;
     if (sessionId) {
       session = await prisma.donationSession.findUnique({
@@ -153,21 +135,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Donation session not found.' }, { status: 404 });
     }
 
-    // ── 6. Already COMPLETED (idempotent success) ──────────────────────────
+    // 6. Already COMPLETED (Idempotent Success)
     if (session.status === 'COMPLETED') {
       const donation = session.donations?.[0];
+      const receipt = donation ? await prisma.receipt.findUnique({ where: { donationId: donation.id } }) : null;
       const body = {
         success: true,
         status: 'COMPLETED',
         message: 'Payment already verified.',
         donationId: donation?.id,
+        receiptNumber: receipt?.receiptNumber,
         alreadyProcessed: true,
       };
       if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body, ts: Date.now() });
       return NextResponse.json(body, { headers: rateLimitHeaders(ip, RATE_OPTS) });
     }
 
-    // ── 7. Session Expiry Check ────────────────────────────────────────────
+    // 7. Session Expiry Check
     if (new Date() > session.expiresAt) {
       await prisma.donationSession.update({
         where: { id: session.id },
@@ -180,7 +164,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // ── 8. Session Ownership Check ─────────────────────────────────────────
+    // 8. Session Ownership Authorization Check
     const authUser = await getAuthenticatedUser(req);
     if (session.memberId && (!authUser || authUser.uid !== session.memberId)) {
       await logPaymentEvent('PAYMENT_VERIFY_FAILED', { reason: 'ownership_mismatch' }, ip);
@@ -190,106 +174,56 @@ export async function POST(req: Request) {
       );
     }
 
-    // ── 9. PRODUCTION PATH: Real Razorpay Verification ────────────────────
-    const isProduction = process.env.NODE_ENV === 'production';
-    const hasRealKeys =
-      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID &&
-      !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID.startsWith('rzp_test_default') &&
-      process.env.RAZORPAY_KEY_SECRET;
+    const provider = getPaymentProvider('RAZORPAY');
 
-    if (isProduction || hasRealKeys) {
-      // ── 9a. For UPI QR flow: payment completes via webhook.
-      //     Frontend polls this endpoint — we check if webhook already settled it.
-      if (!razorpayPaymentId || !razorpaySignature) {
-        // UPI QR polling: check if webhook has already completed the session
-        const currentSession = await prisma.donationSession.findUnique({
-          where: { id: session.id },
-          select: { status: true, donations: { select: { id: true }, take: 1 } },
-        });
+    // 9. Case A: Razorpay Checkout Signature Verification
+    if (razorpayPaymentId && razorpaySignature) {
+      const orderId = razorpayOrderId || session.referenceNumber;
+      const isSignatureValid = provider.verifyPaymentSignature({
+        providerOrderId: orderId,
+        providerPaymentId: razorpayPaymentId,
+        providerSignature: razorpaySignature,
+      });
 
-        if (currentSession?.status === 'COMPLETED') {
-          const body = {
-            success: true,
-            status: 'COMPLETED',
-            message: 'Payment verified by payment gateway.',
-            donationId: currentSession.donations[0]?.id,
-            alreadyProcessed: false,
-          };
-          if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body, ts: Date.now() });
-          clearPaymentFailures(ip);
-          return NextResponse.json(body, { headers: rateLimitHeaders(ip, RATE_OPTS) });
-        }
-
-        // Still pending — tell client to keep polling
-        return NextResponse.json(
-          { success: false, status: 'PENDING', message: 'Payment is being processed. Please wait.' },
-          { status: 202, headers: rateLimitHeaders(ip, RATE_OPTS) }
-        );
-      }
-
-      // ── 9b. Razorpay Checkout SDK flow: verify signature ─────────────────
-      const signatureValid = verifyRazorpayPaymentSignature(
-        razorpayOrderId || session.referenceNumber,
-        razorpayPaymentId,
-        razorpaySignature
-      );
-
-      if (!signatureValid) {
+      if (!isSignatureValid) {
         recordPaymentFailure(ip);
         await logPaymentEvent(
           'PAYMENT_SIGNATURE_INVALID',
-          {
-            orderId: maskSensitive(razorpayOrderId || '', 10),
-            paymentId: maskSensitive(razorpayPaymentId, 10),
-          },
+          { orderId: maskSensitive(orderId, 10), paymentId: maskSensitive(razorpayPaymentId, 10) },
           ip,
           session.memberId
         );
         return NextResponse.json(
-          { error: 'Payment signature verification failed. This request has been logged.' },
+          { error: 'Payment signature verification failed. This incident has been logged.' },
           { status: 400 }
         );
       }
 
-      // ── 9c. Amount Verification ────────────────────────────────────────────
-      // Fetch payment from Razorpay API to verify amount
-      try {
-        const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
-        const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
-
-        if (keyId && keySecret && !keySecret.startsWith('mock_razorpay')) {
-          const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-          const rzpPayment = await razorpay.payments.fetch(razorpayPaymentId);
-
-          if (rzpPayment && !verifyPaymentAmount(Number(rzpPayment.amount), session.amount)) {
-            recordPaymentFailure(ip);
-            await logPaymentEvent(
-              'PAYMENT_AMOUNT_MISMATCH',
-              {
-                expectedPaise: session.amount * 100,
-                receivedPaise: rzpPayment.amount,
-                paymentId: maskSensitive(razorpayPaymentId, 10),
-              },
-              ip,
-              session.memberId
-            );
-            return NextResponse.json(
-              { error: 'Payment amount mismatch detected. This incident has been reported.' },
-              { status: 400 }
-            );
-          }
+      // Cross-check payment details with Razorpay API (amount in paise, currency, status)
+      const gatewayDetails = await provider.fetchPayment(razorpayPaymentId);
+      if (gatewayDetails) {
+        const expectedPaise = Math.round(session.amount * 100);
+        if (gatewayDetails.amountInPaise !== expectedPaise) {
+          recordPaymentFailure(ip);
+          await logPaymentEvent(
+            'PAYMENT_AMOUNT_MISMATCH',
+            { expectedPaise, receivedPaise: gatewayDetails.amountInPaise, paymentId: razorpayPaymentId },
+            ip,
+            session.memberId
+          );
+          return NextResponse.json(
+            { error: 'Payment amount mismatch detected. Transaction cannot be processed.' },
+            { status: 400 }
+          );
         }
-      } catch (apiErr) {
-        console.warn('[VERIFY] Could not fetch Razorpay payment for amount check:', apiErr);
-        // Non-blocking: proceed if Razorpay API is temporarily unavailable
       }
 
-      // ── 9d. Complete with real payment credentials ─────────────────────────
+      // Complete session atomically
       const result = await completeDonationSession(
         session.id,
         razorpayPaymentId,
         razorpaySignature,
-        { source: 'RAZORPAY_CHECKOUT', ip, razorpayOrderId, razorpayPaymentId }
+        { source: 'RAZORPAY_CHECKOUT', ip, razorpayOrderId: orderId, razorpayPaymentId }
       );
 
       clearPaymentFailures(ip);
@@ -305,49 +239,45 @@ export async function POST(req: Request) {
         status: 'COMPLETED',
         message: 'Payment verified successfully.',
         donationId: result.donation?.id,
+        receiptNumber: result.receipt?.receiptNumber,
         alreadyProcessed: result.alreadyProcessed,
       };
+
       if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
       return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
     }
 
-    // ── 10. REAL PAYMENT ENFORCEMENT ────────────────────────────────────
-    // Without confirmed payment settlement from bank/gateway (or explicit simulateMode: true in dev body),
-    // strictly return PENDING. NEVER auto-approve or issue receipts without real payment!
-    if (simulateMode && process.env.NODE_ENV !== 'production' && process.env.ALLOW_PAYMENT_SIMULATION === 'true') {
-      const mockUtr = `SIMULATED_${session.referenceNumber}_${Date.now().toString(36).toUpperCase()}`;
-      const result = await completeDonationSession(
-        session.id,
-        mockUtr,
-        `dev_sim_sig_${generateDevToken()}`,
-        { source: 'DEV_SIMULATION', ip, simulateMode: true }
-      );
+    // 10. Case B: Dynamic UPI QR Verification ("I've Paid - Verify Now" / Polling)
+    // The server is authoritative: Check if the webhook or gateway API has confirmed the payment
+    const currentSession = await prisma.donationSession.findUnique({
+      where: { id: session.id },
+      include: {
+        donations: { take: 1, include: { receipt: true } },
+      },
+    });
 
-      await writeAuditLog({
-        userId: session.memberId,
-        action: 'PAYMENT_SIMULATED_DEV',
-        details: sanitizeAuditField(`sessionId=${sessionId} mockUtr=${mockUtr} — DEV ONLY`),
-        ipAddress: ip,
-      });
-
+    if (currentSession?.status === 'COMPLETED' && currentSession.donations[0]) {
+      const donation = currentSession.donations[0];
       const successBody = {
         success: true,
         status: 'COMPLETED',
-        message: '[DEV] Payment explicitly simulated.',
-        donationId: result.donation?.id,
-        alreadyProcessed: result.alreadyProcessed,
-        _devMode: true,
+        message: 'Payment verified by payment gateway.',
+        donationId: donation.id,
+        receiptNumber: donation.receipt?.receiptNumber,
+        alreadyProcessed: false,
       };
+
       if (idempotencyKey) idempotencyCache.set(idempotencyKey, { status: 200, body: successBody, ts: Date.now() });
+      clearPaymentFailures(ip);
       return NextResponse.json(successBody, { headers: rateLimitHeaders(ip, RATE_OPTS) });
     }
 
-    // Default: Payment is not completed by bank/webhook yet. Return PENDING.
+    // If still pending, return HTTP 202 (Accepted / In Progress)
     return NextResponse.json(
-      { 
-        success: false, 
-        status: 'PENDING', 
-        message: 'Payment verification in progress. We are awaiting confirmation from your bank.' 
+      {
+        success: false,
+        status: 'PENDING',
+        message: 'Payment verification is in progress. We are awaiting bank/gateway confirmation.',
       },
       { status: 202, headers: rateLimitHeaders(ip, RATE_OPTS) }
     );
@@ -355,13 +285,8 @@ export async function POST(req: Request) {
     recordPaymentFailure(ip);
     console.error('[API/PAYMENTS/VERIFY] Unhandled error:', err?.message || err);
     return NextResponse.json(
-      { error: 'An error occurred while verifying the payment. Please contact support.' },
+      { error: 'An error occurred while verifying the payment. Please try again.' },
       { status: 500 }
     );
   }
-}
-
-// Dev-only token helper (never used in production)
-function generateDevToken(): string {
-  return Math.random().toString(36).substring(2, 18);
 }

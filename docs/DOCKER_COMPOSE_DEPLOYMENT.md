@@ -20,7 +20,7 @@ cp .env.example .env
 Ensure the following variables are set in your `.env` file:
 ```env
 # Point this to your Neon PostgreSQL database
-DATABASE_URL="postgresql://user:pass@ep-rest-of-url.neon.tech/kcm?sslmode=require"
+DATABASE_URL="postgresql://<USERNAME>:<PASSWORD>@<HOST>/<DATABASE>?sslmode=require"
 
 # Cloudinary (Media Uploads)
 CLOUDINARY_CLOUD_NAME="your_cloud_name"

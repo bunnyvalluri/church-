@@ -630,6 +630,7 @@ export default function NgoDonationForm({
 
   // ── Manual verification (identical to GiveForm) ──────────────────────────────
   const handleVerifyPayment = async () => {
+    if (verificationLoading) return;
     setVerificationLoading(true);
     setErrorMessage("");
 
@@ -645,11 +646,18 @@ export default function NgoDonationForm({
       });
 
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Verification returned unpaid.");
+      if (res.ok && data.success && data.status === "COMPLETED") {
+        const donationId = data.donationId || data.donation?.id;
+        window.location.href = `/give/receipt/${donationId}`;
+        return;
       }
 
-      window.location.href = `/give/receipt/${data.donation.id}`;
+      if (res.status === 202 || data.status === "PENDING") {
+        setErrorMessage("Payment verification is still pending bank confirmation. Please wait a moment and try again.");
+        return;
+      }
+
+      throw new Error(data.error || "Payment could not be verified yet.");
     } catch (err: any) {
       console.error("[NgoDonationForm] Verification error:", err);
       setErrorMessage(

@@ -147,7 +147,7 @@ async function main() {
       id: 'user_field_volunteer_010',
       name: 'Volunteer Jacob',
       email: 'volunteer@kcm-church.com',
-      password: 'event-handle-2026',
+      password: 'firebase-authenticated',
       role: 'FIELD_VOLUNTEER',
       phone: '+91 92222 33333',
       address: 'Subhash Nagar, Hyderabad',

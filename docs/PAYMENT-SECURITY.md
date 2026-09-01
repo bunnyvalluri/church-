@@ -1,62 +1,66 @@
 # Payment Security & Fraud Prevention Guide
 
-## 1. Security Architecture Matrix
+## 1. Zero-Trust Security Posture
 
-| Layer | Threat Model | Mitigation Technique |
-| :--- | :--- | :--- |
-| **Transport** | Man-in-the-Middle, packet interception | Strict HTTPS / TLS 1.3, HSTS headers. |
-| **Client API** | Parameter tampering, script injection | Strict Zod validation schemas (`strip` / `strict`). |
-| **Business Logic** | Amount tampering (paying ₹1 instead of ₹5000) | Server converts INR to integer paise, verifies order amount via Razorpay API before settling. |
-| **Authentication** | Broken access control, IDOR | Multi-role RBAC, session ownership validation, timing-safe crypto token comparison. |
-| **Webhook Channel** | Fake webhook replay attacks | Raw text HMAC-SHA256 signature verification, 5-min timestamp window, unique SHA-256 event ID deduplication. |
-| **Rate Limiting** | Gateway abuse, brute-force card testing | IP-based token bucket rate limiter, progressive cooldown, automated IP blocking upon repeated failures. |
-| **Compliance** | 80G Tax Compliance | Mandatory PAN format validation (`[A-Z]{5}[0-9]{4}[A-Z]{1}`) for tax exemption receipts. |
+In the Kingdom of Christ Ministries platform, **all data originating from the client browser is treated as untrusted**. The system defends against common payment fraud vectors and injection attacks.
 
 ---
 
-## 2. Timing-Safe Cryptographic Verification
-To protect against timing side-channel attacks, all cryptographic comparisons use `crypto.timingSafeEqual`:
+## 2. Threat Models & Mitigation Controls
 
-```typescript
-export function timingSafeCompare(aHex: string, bHex: string): boolean {
-  try {
-    const a = Buffer.from(aHex, 'hex');
-    const b = Buffer.from(bHex, 'hex');
-    if (a.length !== b.length) return false;
-    return crypto.timingSafeEqual(a, b);
-  } catch {
-    return false;
-  }
-}
-```
+### 2.1 Amount Tampering Attack
+- **Threat**: Attacker changes ₹1,000 to ₹1 or ₹100,000 in browser state or request body before checkout.
+- **Mitigation**:
+  - Backend calculates and verifies order amount against church database limits.
+  - Razorpay order is created on server with amount in integer paise (e.g. ₹1,000 = 100,000 paise).
+  - During checkout verification and webhook receipt, the backend fetches payment details from Razorpay or verifies payload `amount` strictly equals `Math.round(session.amount * 100)`. Mismatches trigger immediate rejection, auto-block, and security audit alerts.
+
+### 2.2 Payment Signature Forgery
+- **Threat**: Attacker sends fake `razorpay_signature` or `paymentSuccess: true` to mark a donation paid.
+- **Mitigation**:
+  - `POST /api/payments/verify` requires `razorpay_order_id`, `razorpay_payment_id`, and `razorpay_signature`.
+  - Computes `HMAC-SHA256(order_id + "|" + payment_id, RAZORPAY_KEY_SECRET)` on server.
+  - Uses `crypto.timingSafeEqual` to prevent timing attacks.
+  - Fake signatures immediately return HTTP 400 and record `PAYMENT_SIGNATURE_INVALID`.
+
+### 2.3 Webhook Replay & Duplicate Processing
+- **Threat**: Attacker captures legitimate webhook payload and replays it repeatedly to manipulate receipts or balances.
+- **Mitigation**:
+  - Webhook signature is validated over raw binary/string request body with `RAZORPAY_WEBHOOK_SECRET`.
+  - Every event is assigned a deduplication key `SHA-256(order_id | payment_id | event_type)`.
+  - Database checks if `webhookEventId` was already processed; duplicate events return HTTP 200 with `{ duplicate: true }` and exit without reprocessing.
+  - Replay timestamp protection: events older than 5 minutes in production are rejected.
+
+### 2.4 Insecure Direct Object References (IDOR)
+- **Threat**: User queries `/api/payments/status/[id]` to inspect other members' donation history.
+- **Mitigation**:
+  - Endpoint resolves caller's server session.
+  - If donation is tied to a `memberId`, only the owner or an authorized administrator (`ADMIN`, `SUPER_ADMIN`, `FINANCE_ADMIN`, `PASTOR`) is allowed to query the record.
+  - Sensitive internal database fields (PII, gateway secrets) are never returned.
 
 ---
 
-## 3. Rate Limiting Configuration
+## 3. Rate Limiting & Auto-Block Policies
 
-```typescript
-export const RATE_LIMITS = {
-  CREATE_ORDER: { windowMs: 10 * 60 * 1000, maxRequests: 20 },
-  VERIFY_PAYMENT: { windowMs: 1 * 60 * 1000, maxRequests: 60 },
-  WEBHOOK: { windowMs: 1 * 60 * 1000, maxRequests: 120 },
-  RECEIPT: { windowMs: 5 * 60 * 1000, maxRequests: 30 },
-};
-```
+| Route | Window | Limit | Action on Breach |
+|---|---|---|---|
+| `/api/payments/create-order` | 10 minutes | 60 requests / IP | HTTP 429 + Rate Limit Headers |
+| `/api/payments/verify` | 15 minutes | 60 requests / IP | HTTP 429 + IP Auto-block after 10 failures |
+| `/api/webhooks/razorpay` | 1 minute | 120 requests / IP | HTTP 429 + DDoS protection |
+| `/api/receipts/[id]/pdf` | 1 minute | 60 requests / IP | HTTP 429 |
 
 ---
 
-## 4. Audit Logging & SIEM Integration
-Every payment event is recorded in the PostgreSQL `AuditLog` and MongoDB event store:
+## 4. Security Audit Logging
+
+All security-relevant financial events are logged via `writeAuditLog` to the `audit_logs` table:
 - `PAYMENT_ORDER_CREATED`
 - `PAYMENT_VERIFIED`
-- `PAYMENT_FAILED`
 - `PAYMENT_SIGNATURE_INVALID`
-- `WEBHOOK_PROCESSED`
+- `PAYMENT_AMOUNT_MISMATCH`
+- `WEBHOOK_RECEIVED`
 - `WEBHOOK_DUPLICATE_SKIPPED`
-- `ADMIN_REFUND_EXECUTED`
-- `SECURITY_IP_BLOCKED`
+- `WEBHOOK_REPLAY_PREVENTED`
+- `ADMIN_FINANCIAL_RECONCILIATION`
 
-Sensitive identifiers (e.g. Credit Card numbers, bank accounts, secret keys) are masked before persisting:
-```typescript
-maskSensitive("pay_1234567890abcdef", 8) // => "pay_1234...cdef"
-```
+**Sensitive Data Masking**: All PII, IP addresses, and gateway tokens logged are masked (e.g. `order_mock_****14`, IP `192.168.***`). API secrets, passwords, UPI PINs, and card CVVs are NEVER logged.

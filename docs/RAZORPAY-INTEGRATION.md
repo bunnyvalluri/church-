@@ -1,88 +1,78 @@
-# Razorpay Integration Guide — Kingdom of Christ Ministries
+# Razorpay Integration Guide
 
-## 1. Setup & Credentials
+## 1. Gateway Overview
 
-Configure environment variables in `.env.local` (local development) or Vercel Environment Variables (production):
+Kingdom of Christ Ministries utilizes **Razorpay Payment Gateway** supporting:
+- UPI Intent & Dynamic QR flows (GPay, PhonePe, Paytm, BHIM, FamApp)
+- Credit / Debit Cards
+- Netbanking
+- Wallets
+
+---
+
+## 2. Environment Variables Configuration
 
 ```bash
-# Server-only (NEVER prefix with NEXT_PUBLIC_)
+# Server-Side Private Secrets (NEVER expose to client bundle)
 RAZORPAY_KEY_ID="rzp_live_xxxxxxxxxxxxxxxx"
 RAZORPAY_KEY_SECRET="xxxxxxxxxxxxxxxxxxxxxxxx"
-RAZORPAY_WEBHOOK_SECRET="whsec_xxxxxxxxxxxxxxxxxxxxxxxx"
+RAZORPAY_WEBHOOK_SECRET="xxxxxxxxxxxxxxxxxxxxxxxx"
 
-# Client-accessible
+# Public-Facing Client Key (Allowed for Checkout SDK modal only)
 NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_live_xxxxxxxxxxxxxxxx"
 ```
 
-> [!CAUTION]
-> Never commit actual API keys or secrets to git. Server secrets must never be exported to the client bundle.
+> **WARNING**: Never set `NEXT_PUBLIC_RAZORPAY_KEY_SECRET` or `NEXT_PUBLIC_RAZORPAY_WEBHOOK_SECRET`.
 
 ---
 
-## 2. Order Creation Flow
-Orders are created through `POST /api/payments/create-order`.
+## 3. Razorpay Dashboard Configuration
 
-### Request Payload
-```json
-{
-  "amount": 1000,
-  "purposeCode": "BUILDING",
-  "donorName": "Pastor David",
-  "donorEmail": "david@kcmchurch.com",
-  "donorPhone": "+919876543210",
-  "isAnonymous": false,
-  "panNumber": "ABCDE1234F"
-}
-```
+### Webhook Setup:
+1. Log in to [Razorpay Dashboard](https://dashboard.razorpay.com/).
+2. Navigate to **Settings** -> **Webhooks** -> **Add New Webhook**.
+3. **Webhook URL**: `https://kcmchurch.vercel.app/api/webhooks/razorpay`
+4. **Secret**: Enter a cryptographically random 32+ character string and set it in your Vercel Environment Variables as `RAZORPAY_WEBHOOK_SECRET`.
+5. **Active Events**:
+   - `payment.captured`
+   - `payment.failed`
+   - `payment.authorized`
+   - `order.paid`
+   - `payment.refunded`
+   - `refund.created`
 
-### Server Execution:
+---
+
+## 4. Payment Flow Lifecycle
+
+### Step 1: Order Creation (Server-Side)
 ```typescript
-import Razorpay from 'razorpay';
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 const order = await razorpay.orders.create({
-  amount: amountInPaise, // 100000 for ₹1000
+  amount: amountInPaise, // e.g. 100000 paise = ₹1000.00
   currency: 'INR',
-  receipt: 'KCM-ORD-260901-XXXX',
+  receipt: 'KCM-ORD-20260901-XXXX',
   notes: {
-    purpose: 'BUILDING',
-    source: 'KCM_PORTAL',
+    purpose: 'TITHE',
+    donorName: 'Rahul Gamer',
   },
 });
 ```
 
----
-
-## 3. Client-Side Checkout Modal
-On the frontend (`/ngo/donations` and `/give`), Razorpay standard checkout is launched dynamically:
-
+### Step 2: Client-Side Checkout
 ```typescript
 const options = {
   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-  amount: order.amountInPaise,
-  currency: 'INR',
+  amount: order.amount,
+  currency: order.currency,
+  order_id: order.id,
   name: 'Kingdom of Christ Ministries',
-  description: 'Building Fund Donation',
-  order_id: order.orderId,
-  prefill: {
-    name: donorName,
-    email: donorEmail,
-    contact: donorPhone,
-  },
-  theme: {
-    color: '#4F1C91',
-  },
-  handler: async function (response) {
-    // Forward response to backend for HMAC verification
-    await fetch('/api/payments/verify', {
+  handler: function (response) {
+    // Send to backend for cryptographic signature verification
+    fetch('/api/payments/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sessionId,
+        sessionId: session.id,
         razorpayOrderId: response.razorpay_order_id,
         razorpayPaymentId: response.razorpay_payment_id,
         razorpaySignature: response.razorpay_signature,
@@ -90,54 +80,17 @@ const options = {
     });
   },
 };
-
-const rzp = new (window as any).Razorpay(options);
-rzp.open();
 ```
 
----
-
-## 4. Server-Side Signature Verification
-When the client submits checkout parameters to `POST /api/payments/verify`, the backend calculates:
-
-$$\text{Expected Signature} = \text{HMAC-SHA256}(\text{order\_id} + "|" + \text{payment\_id}, \text{RAZORPAY\_KEY\_SECRET})$$
-
-Timing-safe verification:
+### Step 3: Signature Verification
 ```typescript
-import crypto from 'crypto';
+const generatedSignature = crypto
+  .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+  .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+  .digest('hex');
 
-export function verifyRazorpayPaymentSignature(
-  razorpayOrderId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string
-): boolean {
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  if (!keySecret) return false;
-
-  const expectedSignature = crypto
-    .createHmac('sha256', keySecret)
-    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-    .digest('hex');
-
-  const a = Buffer.from(expectedSignature, 'hex');
-  const b = Buffer.from(razorpaySignature, 'hex');
-
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
-}
-```
-
----
-
-## 5. Razorpay Refunds API
-Admins can trigger refunds from `/admin/finance/donations`:
-```typescript
-const refundResult = await razorpay.payments.refund(razorpayPaymentId, {
-  amount: refundAmountPaise,
-  speed: 'optimum',
-  notes: {
-    reason: 'Administrative correction',
-    adminUserId: adminUser.uid,
-  },
-});
+const isValid = crypto.timingSafeEqual(
+  Buffer.from(generatedSignature, 'hex'),
+  Buffer.from(razorpaySignature, 'hex')
+);
 ```

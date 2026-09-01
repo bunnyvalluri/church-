@@ -6,15 +6,10 @@ import { sendPushNotification } from '@/lib/firebaseAdmin';
 import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 import { dispatchDonationNotifications, type DonationNotificationPayload } from '@/lib/donationNotificationService';
 
-// Notification dispatch is now handled entirely by donationNotificationService.ts
-// This helper is kept as a legacy stub for any direct callers outside the main flow.
-async function sendReceiptEmail(_email: string, _receiptData: any) {
-  // No-op: replaced by dispatchDonationNotifications() in completeDonationSession
-}
-
 /**
- * Completes a donation session by saving payment records, receipt, creating audit log,
- * and dispatching all real-time notifications.
+ * Completes a donation session ATOMICALLY using a database transaction.
+ * Creates payment transactions, updates donation records, issues verifiable receipts,
+ * and records comprehensive audit logs.
  */
 export async function completeDonationSession(
   sessionId: string,
@@ -22,165 +17,215 @@ export async function completeDonationSession(
   gatewaySignature?: string,
   rawPayload?: any
 ) {
-  const session = await prisma.donationSession.findUnique({
+  // 1. Pre-fetch session and check existence
+  const existingSession = await prisma.donationSession.findUnique({
     where: { id: sessionId },
     include: { purpose: true, branch: true },
   });
 
-  if (!session) {
-    throw new Error('Associated donation session not found.');
+  if (!existingSession) {
+    throw new Error(`Associated donation session ${sessionId} not found.`);
   }
 
   // Idempotency: skip if already completed
-  if (session.status === 'COMPLETED') {
+  if (existingSession.status === 'COMPLETED') {
     const existingDonation = await prisma.donation.findFirst({
-      where: { sessionId: session.id },
+      where: { sessionId: existingSession.id },
+      include: { receipt: true },
     });
-    return { success: true, alreadyProcessed: true, donation: existingDonation };
+    return {
+      success: true,
+      alreadyProcessed: true,
+      donation: existingDonation,
+      receipt: existingDonation?.receipt,
+    };
   }
 
-  // Double check UTR duplicates
-  const duplicateTransaction = await prisma.paymentTransaction.findUnique({
+  // Check duplicate UTR / payment ID
+  const duplicateTx = await prisma.paymentTransaction.findUnique({
     where: { utr },
   });
-  if (duplicateTransaction) {
-    throw new Error(`Duplicate transaction detected for UTR: ${utr}`);
+  if (duplicateTx) {
+    throw new Error(`Duplicate transaction detected for payment ID / UTR: ${utr}`);
   }
 
-  // 1. Create Payment Transaction
-  await prisma.paymentTransaction.create({
-    data: {
-      sessionId: session.id,
-      utr,
-      amount: session.amount,
-      currency: session.currency,
-      status: 'SUCCESS',
-      gateway: 'UPI_QR',
-      payload: rawPayload || { source: 'VERIFICATION_SERVICE' },
-      signature: gatewaySignature || 'manual_verified',
-    },
-  });
+  // Resolve donor information
+  let donorName = existingSession.donorName || (existingSession.memberId ? '' : 'Anonymous Giver');
+  let donorEmail = existingSession.donorEmail || (existingSession.memberId ? '' : 'kingofchristministries23@gmail.com');
+  let donorPhone = existingSession.donorPhone || '';
 
-  // 2. Update Session status
-  await prisma.donationSession.update({
-    where: { id: session.id },
-    data: { status: 'COMPLETED' },
-  });
-
-  // 3. Reconcile Donor Contact info
-  let donorName = session.memberId ? '' : 'Anonymous Giver';
-  let donorEmail = session.memberId ? '' : 'kingofchristministries23@gmail.com';
-  let donorPhone = '';
-
-  if (session.memberId) {
-    const user = await prisma.user.findUnique({ where: { id: session.memberId } });
+  if (existingSession.memberId && (!donorName || !donorEmail)) {
+    const user = await prisma.user.findUnique({ where: { id: existingSession.memberId } });
     if (user) {
-      donorName = user.name;
-      donorEmail = user.email;
-      donorPhone = user.phone || '';
+      donorName = donorName || user.name;
+      donorEmail = donorEmail || user.email;
+      donorPhone = donorPhone || user.phone || '';
     }
   }
 
-  // 4. Create Donation
-  const donation = await prisma.donation.create({
-    data: {
-      userId: session.memberId,
-      amount: session.amount,
-      currency: session.currency,
-      purpose: session.purpose.code,
-      purposeId: session.purpose.id,
-      branchId: session.branchId,
-      sessionId: session.id,
-      paymentMethod: 'UPI',
-      razorpayPaymentId: utr,
-      razorpaySignature: gatewaySignature || 'upi_verified_ledger',
-      donorName,
-      donorEmail,
-      donorPhone,
-      status: 'COMPLETED',
-    },
-  });
-
-  // 5. Generate secure verifiable Receipt
+  // Prepare Receipt metadata
   const receiptNumber = `REC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
   const verificationCode = crypto.randomBytes(16).toString('hex');
-  
-  const domain = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const verifyUrl = `${domain}/give/receipt/${donation.id}?verify=${verificationCode}`;
-  const verificationQrBase64 = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 200 });
+  const domain = process.env.NEXTAUTH_URL || 'https://kcmchurch.vercel.app';
 
-  const receipt = await prisma.receipt.create({
-    data: {
-      receiptNumber,
-      donationId: donation.id,
-      memberId: session.memberId,
-      referenceNumber: utr,
-      amount: session.amount,
-      currency: session.currency,
-      verificationCode,
-      qrCode: verificationQrBase64,
-    },
+  // 2. ATOMIC DATABASE TRANSACTION
+  const { donation, receipt } = await prisma.$transaction(async (tx) => {
+    // a. Create Payment Transaction Record
+    await tx.paymentTransaction.create({
+      data: {
+        sessionId: existingSession.id,
+        utr,
+        amount: existingSession.amount,
+        currency: existingSession.currency,
+        status: 'SUCCESS',
+        gateway: 'RAZORPAY_UPI',
+        payload: rawPayload || { source: 'VERIFICATION_SERVICE' },
+        signature: gatewaySignature || 'signature_verified',
+      },
+    });
+
+    // b. Update Donation Session Status
+    await tx.donationSession.update({
+      where: { id: existingSession.id },
+      data: {
+        status: 'COMPLETED',
+        paymentState: 'CAPTURED',
+        updatedAt: new Date(),
+      },
+    });
+
+    // c. Find or Create Donation Record
+    let donationRecord = await tx.donation.findFirst({
+      where: { sessionId: existingSession.id },
+    });
+
+    if (donationRecord) {
+      donationRecord = await tx.donation.update({
+        where: { id: donationRecord.id },
+        data: {
+          status: 'COMPLETED',
+          razorpayPaymentId: utr,
+          razorpaySignature: gatewaySignature || 'signature_verified',
+          amountVerified: true,
+          signatureVerified: Boolean(gatewaySignature),
+          verifiedBy: rawPayload?.source || 'RAZORPAY_WEBHOOK',
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      donationRecord = await tx.donation.create({
+        data: {
+          userId: existingSession.memberId,
+          amount: existingSession.amount,
+          currency: existingSession.currency,
+          purpose: existingSession.purpose.code,
+          purposeId: existingSession.purpose.id,
+          branchId: existingSession.branchId,
+          sessionId: existingSession.id,
+          paymentMethod: 'RAZORPAY_UPI',
+          razorpayPaymentId: utr,
+          razorpayOrderId: existingSession.referenceNumber,
+          razorpaySignature: gatewaySignature || 'signature_verified',
+          donorName,
+          donorEmail,
+          donorPhone,
+          amountVerified: true,
+          signatureVerified: Boolean(gatewaySignature),
+          verifiedBy: rawPayload?.source || 'RAZORPAY_WEBHOOK',
+          status: 'COMPLETED',
+        },
+      });
+    }
+
+    // d. Generate Verifiable Receipt QR
+    const verifyUrl = `${domain}/give/receipt/${donationRecord.id}?verify=${verificationCode}`;
+    const verificationQrBase64 = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 200 });
+
+    // e. Create Receipt Record
+    const receiptRecord = await tx.receipt.create({
+      data: {
+        receiptNumber,
+        donationId: donationRecord.id,
+        memberId: existingSession.memberId,
+        referenceNumber: utr,
+        amount: existingSession.amount,
+        currency: existingSession.currency,
+        verificationCode,
+        qrCode: verificationQrBase64,
+      },
+    });
+
+    // f. Create In-App Notification
+    await tx.notification.create({
+      data: {
+        type: 'DONATION',
+        title: '🎉 Donation Verified Successfully',
+        content: `Thank you ${donorName}! We received your offering of ₹${existingSession.amount.toLocaleString('en-IN')} for ${existingSession.purpose.nameEn}.`,
+        link: `/give/receipt/${donationRecord.id}`,
+      },
+    });
+
+    // g. Create Ledger Inflow Transaction
+    await tx.transaction.create({
+      data: {
+        type: 'INFLOW',
+        amount: existingSession.amount,
+        category: `DONATION_${existingSession.purpose.code}`,
+        description: `Verified online donation for ${existingSession.purpose.nameEn}. Ref: ${utr}`,
+        account: 'Online Giving Gateway',
+      },
+    });
+
+    return { donation: donationRecord, receipt: receiptRecord };
   });
 
-  // 6. Persist System Notification
-  await prisma.notification.create({
-    data: {
-      type: 'DONATION',
-      title: '🎉 Donation Verified Successfully',
-      content: `Thank you ${donorName}! We received your offering of ₹${session.amount.toLocaleString('en-IN')} for ${session.purpose.nameEn}.`,
-      link: `/give/receipt/${donation.id}`,
-    },
-  });
-
-  // 7. Write Audit Log
+  // 3. Post-Transaction Actions (Audit Log & Notifications)
   await writeAuditLog({
-    userId: session.memberId,
-    action: 'DONATION_FINALIZED',
-    details: `Donation session ${session.id} finalized successfully. Donation ID: ${donation.id}, UTR: ${utr}`,
-  });
+    userId: existingSession.memberId,
+    action: 'DONATION_CAPTURED',
+    details: `Donation session ${existingSession.id} finalized successfully. Donation ID: ${donation.id}, Payment Ref: ${utr}`,
+  }).catch(() => {});
 
-  // 8. Emit Socket.IO event updates
+  // Realtime Socket updates
   try {
     const socketPayload = {
       type: 'donation.success',
       payload: {
         popupType: 'custom',
         title: '🎉 Donation Successful!',
-        description: `Your contribution of ₹${session.amount.toLocaleString('en-IN')} for ${session.purpose.nameEn} is completed.`,
+        description: `Your contribution of ₹${existingSession.amount.toLocaleString('en-IN')} for ${existingSession.purpose.nameEn} is completed.`,
         icon: 'bell',
         link: `/give/receipt/${donation.id}`,
         donationId: donation.id,
-        sessionId: session.id,
-        referenceNumber: session.referenceNumber,
-        amount: session.amount,
+        sessionId: existingSession.id,
+        referenceNumber: existingSession.referenceNumber,
+        amount: existingSession.amount,
         utr,
-        purpose: session.purpose.nameEn,
+        purpose: existingSession.purpose.nameEn,
         donorName,
         createdAt: donation.createdAt,
       },
     };
 
-    // Emit to member room
     await safeTriggerCompanionEvent(
       socketPayload.type,
       socketPayload.payload,
-      `member:${session.memberId || 'guest'}`
+      `member:${existingSession.memberId || 'guest'}`
     );
 
-    // Broadcast dashboard updates to admin
     await safeTriggerCompanionEvent(
       'dashboard.updated',
-      { refresh: true, message: `New donation of ₹${session.amount} received.` },
+      { refresh: true, message: `New donation of ₹${existingSession.amount} received.` },
       'admin:dashboard'
     );
   } catch (socketErr) {
     console.warn('[PAYMENT_SERVICE] Socket emit skipped:', socketErr);
   }
 
-  // 9. Dispatch Firebase Push Notifications
+  // Firebase push notifications
   try {
     const deviceTokens = await prisma.deviceToken.findMany({
-      where: { userId: session.memberId || undefined },
+      where: { userId: existingSession.memberId || undefined },
       select: { token: true },
     });
     const tokens = deviceTokens.map((d) => d.token);
@@ -188,7 +233,7 @@ export async function completeDonationSession(
       await sendPushNotification(
         tokens,
         'Payment Verified Successfully! 🎉',
-        `Donation of ₹${session.amount.toLocaleString('en-IN')} for ${session.purpose.nameEn} is completed.`,
+        `Donation of ₹${existingSession.amount.toLocaleString('en-IN')} for ${existingSession.purpose.nameEn} is completed.`,
         { link: `/give/receipt/${donation.id}` }
       );
     }
@@ -196,8 +241,7 @@ export async function completeDonationSession(
     console.warn('[PAYMENT_SERVICE] Push notification dispatch failed:', pushErr);
   }
 
-  // 10. Build notification payload and dispatch all channels concurrently
-  // (domain already defined above for QR URL generation)
+  // Dispatch email & SMS receipts in background
   const notificationPayload: DonationNotificationPayload = {
     donationId: donation.id,
     receiptId: receipt.id,
@@ -206,14 +250,14 @@ export async function completeDonationSession(
     donorName,
     donorEmail,
     donorPhone,
-    isAnonymous: !session.memberId && donorName === 'Anonymous Giver',
-    memberId: session.memberId,
-    amount: session.amount,
-    currency: session.currency,
-    purpose: session.purpose.nameEn,
-    purposeCode: session.purpose.code,
-    branchName: session.branch?.name || 'General',
-    paymentMethod: 'UPI',
+    isAnonymous: !existingSession.memberId && donorName === 'Anonymous Giver',
+    memberId: existingSession.memberId,
+    amount: existingSession.amount,
+    currency: existingSession.currency,
+    purpose: existingSession.purpose.nameEn,
+    purposeCode: existingSession.purpose.code,
+    branchName: existingSession.branch?.name || 'General',
+    paymentMethod: 'RAZORPAY_UPI',
     utr,
     razorpayPaymentId: utr,
     paidAt: donation.createdAt,
@@ -222,7 +266,6 @@ export async function completeDonationSession(
     pdfUrl: `${domain}/api/receipts/${receipt.id}/pdf`,
   };
 
-  // Fire all notification channels in the background (non-blocking)
   dispatchDonationNotifications(notificationPayload).catch((notifErr) =>
     console.error('[PAYMENT_SERVICE] Notification dispatch error:', notifErr)
   );

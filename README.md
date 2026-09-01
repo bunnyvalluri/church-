@@ -72,9 +72,11 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 - **Multilingual Conversational AI (English, Telugu & Hindi)**: Provides 24/7 answers to church schedules, location details, sermon insights, and service information.
 - **Dynamic Color Theme Sync**: Chatbot interface automatically synchronizes with active accent themes.
 
-### 💳 Secure Online Giving & NGO Support
-- **PCI-Compliant Payment Processing**: Powered by Stripe for single and recurring tithes, offerings, and outreach funding.
-- **Digital Receipting**: Instant transaction confirmations and giving history summary.
+### 💳 Production Payment Gateway & Online Giving
+- **Zero-Trust Financial Architecture**: Real Razorpay payment processing with server-side HMAC-SHA256 signature verification and webhook settlement.
+- **Dynamic UPI QR & Deep Links**: Instant QR generation and one-click launch in GPay, PhonePe, Paytm, BHIM, and FamApp.
+- **Atomic Accounting & Verifiable Receipts**: Automated ledger settlement in PostgreSQL, unique verification codes, and PDF receipt downloads.
+- **Admin Reconciliation**: Automated discrepancy detection and auditing between Razorpay gateway and platform ledger.
 
 ---
 
@@ -86,11 +88,11 @@ The **Kingdom of Christ Ministries Platform** serves as a digital gateway connec
 | **Language** | TypeScript 5.4 | End-to-end type safety across client and server |
 | **Styling** | Tailwind CSS 3.4 & Radix UI | Utility-first styling with accessible UI primitives |
 | **Animations** | Framer Motion | Smooth component micro-interactions and route transitions |
-| **Backend API** | Node.js / Express | High-performance modular REST API endpoints |
+| **Backend API** | Next.js API Routes & Express | Modular REST endpoints with rate limiting and security guards |
 | **Authentication** | Firebase Auth (Google & Email) | Secure identity provider with OAuth and session tokens |
 | **Database & ORM** | PostgreSQL 16 & Prisma | Relational database management with schema migrations |
 | **AI Engine** | OpenAI & Gemini API | Natural Language Processing (NLP) & Retrieval-Augmented Generation (RAG) |
-| **Payments** | Stripe API | Secure global donation gateway |
+| **Payments** | Razorpay Gateway (UPI / Cards) | Production-grade payment provider abstraction with HMAC verification |
 | **Deployment** | Vercel & Docker | Automated CI/CD edge deployment and containerization |
 
 ---

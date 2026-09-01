@@ -1,24 +1,23 @@
 /**
  * POST /api/payments/create-order
  * ─────────────────────────────────────────────────────────────────────────────
- * Official Razorpay Payment Order Creation Endpoint for KCM Platform.
+ * Production Payment Order Creation Endpoint for KCM Platform.
  *
  * Security principles:
- *  • Strict Zod schema validation (parameter pollution prevention)
- *  • Zero trust: Server validates amount against DB church settings
- *  • Currency & Integer Paise conversion: never use floating-point for money
- *  • Razorpay Orders API server-side call using secure server credentials
- *  • Atomically stores DonationSession & Donation records
- *  • Returns only safe payload required by Razorpay Checkout & UPI QR
- *  • Never exposes secret keys or backend credentials in responses
+ *  • Client = Untrusted. Authenticated member resolved server-side from session.
+ *  • Strict Zod schema validation (parameter pollution prevention).
+ *  • Zero trust: Server validates amount against DB church settings in integer paise.
+ *  • Pluggable PaymentProvider abstraction (Razorpay).
+ *  • Atomically stores DonationSession & Donation records.
+ *  • Returns only safe payload required by Razorpay Checkout & UPI QR.
+ *  • Never exposes secret keys or backend credentials in responses.
  */
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import Razorpay from 'razorpay';
-import QRCode from 'qrcode';
-import crypto from 'crypto';
+import { getAuthenticatedUser } from '@/lib/authMiddleware';
 import { writeAuditLog } from '@/lib/auditLogger';
+import { getPaymentProvider } from '@/lib/payments';
 import {
   CreateOrderSchema,
   assertJsonContentType,
@@ -64,7 +63,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    // 3. Parse + Strict Schema Validation
+    // 3. Resolve Authenticated Member from Server Session (Never trust client-supplied userId alone)
+    const authUser = await getAuthenticatedUser(req);
+
+    // 4. Parse + Strict Schema Validation
     let rawBody: unknown;
     try {
       rawBody = await req.json();
@@ -93,10 +95,9 @@ export async function POST(req: Request) {
       amount,
       purpose: rawPurpose,
       purposeCode: rawPurposeCode,
-      donorName,
-      donorEmail,
-      donorPhone,
-      userId,
+      donorName: rawDonorName,
+      donorEmail: rawDonorEmail,
+      donorPhone: rawDonorPhone,
       branchId,
       isAnonymous,
       panNumber,
@@ -106,18 +107,15 @@ export async function POST(req: Request) {
 
     const purposeCode = rawPurpose || rawPurposeCode || 'GENERAL';
 
-    // 4. Load Dynamic Settings from DB
+    // 5. Load Dynamic Church Settings from DB
     const settings = await prisma.churchSettings.findUnique({
       where: { id: 'settings' },
     });
 
     const maxAmount = settings?.maxDonationAmount || 500000;
     const minAmount = settings?.minDonationAmount || 1;
-    const upiId = settings?.upiId || process.env.NEXT_PUBLIC_UPI_ID || 'kcm.kristhraj2004-1@okicici';
-    const merchantName = settings?.merchantName || process.env.NEXT_PUBLIC_CHURCH_NAME || 'Kingdom of Christ Ministries';
-    const expiryMins = settings?.qrExpiryMinutes || 10;
 
-    // 5. Server-Side Amount Validation
+    // 6. Server-Side Amount Validation (Integer paise precision)
     if (amount < minAmount) {
       return NextResponse.json(
         { error: `Minimum donation amount is ₹${minAmount.toLocaleString('en-IN')}` },
@@ -131,8 +129,27 @@ export async function POST(req: Request) {
       );
     }
 
-    // 6. Identity validation
-    if (!isAnonymous && !donorName) {
+    // 7. Resolve Server-side Identity & Contact Info
+    let effectiveMemberId: string | null = null;
+    let donorName = rawDonorName || '';
+    let donorEmail = rawDonorEmail || '';
+    let donorPhone = rawDonorPhone || '';
+
+    if (authUser?.uid) {
+      effectiveMemberId = authUser.uid;
+      const dbUser = await prisma.user.findUnique({
+        where: { id: authUser.uid },
+        select: { id: true, name: true, email: true, phone: true },
+      });
+      if (dbUser) {
+        effectiveMemberId = dbUser.id;
+        donorName = donorName || dbUser.name;
+        donorEmail = donorEmail || dbUser.email;
+        donorPhone = donorPhone || dbUser.phone || '';
+      }
+    }
+
+    if (!isAnonymous && !donorName.trim()) {
       return NextResponse.json(
         { error: 'Donor name is required for non-anonymous donations.' },
         { status: 400 }
@@ -140,78 +157,9 @@ export async function POST(req: Request) {
     }
 
     const amountInINR = Number(amount);
-    const amountInPaise = Math.round(amountInINR * 100);
     const referenceNumber = generateOrderReference();
-    const expiresAt = new Date(Date.now() + expiryMins * 60 * 1000);
 
-    // 7. Resolve Razorpay API Credentials
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
-
-    const hasRealKeys =
-      Boolean(keyId) &&
-      !keyId.startsWith('rzp_test_default') &&
-      Boolean(keySecret) &&
-      !keySecret.startsWith('mock_razorpay');
-
-    let razorpayOrderId: string = `order_${crypto.randomUUID().replace(/-/g, '').slice(0, 14)}`;
-
-    if (hasRealKeys) {
-      try {
-        const razorpay = new Razorpay({
-          key_id: keyId,
-          key_secret: keySecret,
-        });
-
-        const order = await razorpay.orders.create({
-          amount: amountInPaise,
-          currency: 'INR',
-          receipt: referenceNumber,
-          notes: {
-            purpose: purposeCode,
-            donorName: isAnonymous ? 'Anonymous Donor' : (donorName || 'Beloved Donor'),
-            hasPan: panNumber ? 'YES' : 'NO',
-            source: 'KCM_PORTAL',
-          },
-        });
-
-        razorpayOrderId = order.id;
-      } catch (rzpError: any) {
-        console.error('[RAZORPAY/CREATE_ORDER] Razorpay API error:', rzpError?.description || rzpError);
-        recordPaymentFailure(ip);
-        await logPaymentEvent(
-          'ORDER_CREATION_FAILED',
-          { reason: 'razorpay_api_error', error: sanitizeAuditField(rzpError?.description || 'unknown') },
-          ip,
-          userId
-        );
-        return NextResponse.json(
-          { error: 'Payment gateway error. Please try again in a moment.' },
-          { status: 503 }
-        );
-      }
-    } else {
-      console.info('[RAZORPAY/CREATE_ORDER] Development test order generated.');
-    }
-
-    // 8. Resolve Foreign Keys (User & Branch & Purpose)
-    let validMemberId: string | null = null;
-    if (userId) {
-      const userExists = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { id: true },
-      });
-      if (userExists) {
-        validMemberId = userExists.id;
-      } else if (donorEmail) {
-        const userByEmail = await prisma.user.findUnique({
-          where: { email: donorEmail },
-          select: { id: true },
-        });
-        if (userByEmail) validMemberId = userByEmail.id;
-      }
-    }
-
+    // 8. Resolve Foreign Keys (Branch & Purpose)
     let validBranchId: string | null = null;
     if (branchId) {
       const branchExists = await prisma.branch.findUnique({
@@ -241,86 +189,113 @@ export async function POST(req: Request) {
       );
     }
 
-    // 9. Persist Session & Donation in DB atomically
-    const session = await prisma.donationSession.create({
-      data: {
-        memberId: validMemberId,
-        branchId: validBranchId,
+    // 9. Delegate Gateway Order Creation to PaymentProvider
+    const provider = getPaymentProvider('RAZORPAY');
+    let orderResult;
+    try {
+      orderResult = await provider.createOrder({
+        amountInINR,
+        purpose: purposeRecord.code,
         purposeId: purposeRecord.id,
-        amount: amountInINR,
-        currency: 'INR',
-        referenceNumber: razorpayOrderId,
-        status: 'PROCESSING',
-        expiresAt,
-        ipAddress: ip,
-      },
-    });
-
-    const donation = await prisma.donation.create({
-      data: {
-        userId: validMemberId,
-        amount: amountInINR,
-        currency: 'INR',
-        purpose: purposeCode,
-        purposeId: purposeRecord.id,
-        branchId: validBranchId,
-        sessionId: session.id,
-        paymentMethod: 'RAZORPAY_UPI',
-        razorpayOrderId,
-        donorName: isAnonymous ? 'Anonymous Giver' : (donorName || 'Beloved Donor'),
+        referenceNumber,
+        donorName: isAnonymous ? 'Anonymous Donor' : (donorName || 'Beloved Donor'),
         donorEmail: donorEmail || null,
         donorPhone: donorPhone || null,
         panNumber: panNumber || null,
-        prayerRequest: prayerRequest || null,
         isAnonymous: Boolean(isAnonymous),
-        status: 'PENDING',
-      },
-    });
+        branchId: validBranchId,
+        userId: effectiveMemberId,
+      });
+    } catch (gatewayErr: any) {
+      recordPaymentFailure(ip);
+      await logPaymentEvent(
+        'ORDER_CREATION_FAILED',
+        { reason: 'gateway_error', message: sanitizeAuditField(gatewayErr?.message || 'unknown') },
+        ip,
+        effectiveMemberId
+      );
+      return NextResponse.json(
+        { error: gatewayErr?.message || 'Payment gateway order creation failed. Please try again.' },
+        { status: 503 }
+      );
+    }
 
-    // 10. Generate dynamic UPI payment URI and high-res QR code
-    const encodedName = encodeURIComponent(merchantName);
-    const txNote = `KCM Donation Ref ${referenceNumber}`;
-    const encodedNote = encodeURIComponent(txNote);
+    // 10. Persist Session & Donation in DB Atomically
+    const { session, donation } = await prisma.$transaction(async (tx) => {
+      const createdSession = await tx.donationSession.create({
+        data: {
+          memberId: effectiveMemberId,
+          branchId: validBranchId,
+          purposeId: purposeRecord!.id,
+          amount: amountInINR,
+          currency: 'INR',
+          referenceNumber: orderResult.providerOrderId,
+          razorpayOrderId: orderResult.providerOrderId,
+          campaignId: campaignId || null,
+          donorName: isAnonymous ? 'Anonymous Giver' : (donorName || 'Beloved Donor'),
+          donorEmail: donorEmail || null,
+          donorPhone: donorPhone || null,
+          panNumber: panNumber || null,
+          prayerRequest: prayerRequest || null,
+          isAnonymous: Boolean(isAnonymous),
+          status: 'PROCESSING',
+          paymentState: 'CREATED',
+          expiresAt: orderResult.expiresAt,
+          ipAddress: ip,
+        },
+      });
 
-    const upiUri =
-      `upi://pay?pa=${upiId}&pn=${encodedName}` +
-      `&am=${amountInINR.toFixed(2)}&cu=INR` +
-      `&tn=${encodedNote}&tr=${referenceNumber}`;
+      const createdDonation = await tx.donation.create({
+        data: {
+          userId: effectiveMemberId,
+          amount: amountInINR,
+          currency: 'INR',
+          purpose: purposeRecord!.code,
+          purposeId: purposeRecord!.id,
+          branchId: validBranchId,
+          sessionId: createdSession.id,
+          campaignId: campaignId || null,
+          paymentMethod: 'RAZORPAY_UPI',
+          razorpayOrderId: orderResult.providerOrderId,
+          donorName: isAnonymous ? 'Anonymous Giver' : (donorName || 'Beloved Donor'),
+          donorEmail: donorEmail || null,
+          donorPhone: donorPhone || null,
+          panNumber: panNumber || null,
+          prayerRequest: prayerRequest || null,
+          isAnonymous: Boolean(isAnonymous),
+          status: 'PENDING',
+        },
+      });
 
-    const qrCodeBase64 = await QRCode.toDataURL(upiUri, {
-      margin: 2,
-      width: 360,
-      errorCorrectionLevel: 'H',
-      color: { dark: '#4F1C91', light: '#FFFFFF' },
+      return { session: createdSession, donation: createdDonation };
     });
 
     // 11. Structured Audit Log
     writeAuditLog({
-      userId: validMemberId,
+      userId: effectiveMemberId,
       action: 'PAYMENT_ORDER_CREATED',
       details: sanitizeAuditField(
-        `orderId=${razorpayOrderId} donationId=${donation.id} amount=₹${amountInINR} purpose=${purposeCode} ip=${maskSensitive(ip, 6)}`
+        `orderId=${orderResult.providerOrderId} donationId=${donation.id} amount=₹${amountInINR} purpose=${purposeCode} ip=${maskSensitive(ip, 6)}`
       ),
       ipAddress: ip,
     }).catch(() => {});
 
-    // 12. Safe Response: Only return data needed by Razorpay Checkout & UPI UI
+    // 12. Safe Public-Facing Response
     return NextResponse.json(
       {
         success: true,
-        orderId: razorpayOrderId,
+        orderId: orderResult.providerOrderId,
         sessionId: session.id,
         donationId: donation.id,
         referenceNumber: session.referenceNumber,
         amount: amountInINR,
-        amountInPaise,
+        amountInPaise: orderResult.amountInPaise,
         currency: 'INR',
-        expiresAt: session.expiresAt,
-        upiUri,
-        qrCode: qrCodeBase64,
-        upiId,
-        merchantName,
-        isMock: !hasRealKeys,
+        expiresAt: orderResult.expiresAt,
+        upiUri: orderResult.upiUri,
+        qrCode: orderResult.qrCode,
+        isMock: orderResult.isMock,
+        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
       },
       { headers: rateLimitHeaders(ip, RATE_OPTS) }
     );

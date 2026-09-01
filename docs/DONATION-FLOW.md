@@ -1,52 +1,41 @@
-# 4-Step Donation Flow Architecture
+# End-to-End Donation Flow
 
-The KCM Giving System implements an intuitive, accessibility-compliant 4-step wizard at `/ngo/donations` and `/give`.
+## 1. Member Giving Flow (`/member/give`)
 
----
+```
+Step 1: Enter Details
+├── Select Purpose (Tithe, Online Offering, Building Fund, Missions, Benevolence, Special)
+├── Select Branch (Shapur Nagar, Subhash Nagar, Bahadurpally)
+├── Select or Enter Amount (₹500, ₹1000, ₹2500, ₹5000, ₹10000, or Custom)
+├── Provide / Prefill Donor Info (Name, Email, Phone)
+└── Click "Generate Dynamic QR & Pay"
 
-## Step 1: Donation Amount & Purpose
-- **Presets**: ₹500, ₹1,000, ₹2,000, ₹5,000, ₹10,000, or Custom Amount.
-- **Quick Increments**: `+₹500`, `+₹1,000`, `+₹5,000`.
-- **Purpose Selection**: Tithe, General Offering, Building Fund, Missions, Benevolence / Charity, Special Offering.
-- **Branch Selection**: Shapur Nagar, Subhash Nagar, Bahadurpally, or General Headquarters.
-- **Frequency Switcher**: One-Time Gift vs Recurring Monthly Partner.
+Step 2: Backend Processing
+├── Resolve Authenticated Member ID from Session Token
+├── Validate Amount against DB Church Settings bounds (Min ₹1, Max ₹5,00,000)
+├── Call Razorpay API to create official Order ID (Integer Paise)
+├── Create DB DonationSession & Donation records in PROCESSING status
+├── Generate Dynamic UPI URI & high-res SVG/Canvas QR Code
+└── Return safe payload to client
 
----
+Step 3: Scan & Pay
+├── Displays Dynamic QR with real-time 15-minute countdown
+├── Quick-launch deep links for UPI Apps: GPay, PhonePe, Paytm, BHIM, FamApp
+├── Donor completes transfer in mobile UPI application
+└── Frontend polls `/api/payments/status/[id]` every 4-5 seconds + listens to Socket.IO
 
-## Step 2: Donor Information & Tax Exemption
-- **Fields**: Full Name, Email Address, Phone Number (10–15 digits international format).
-- **Anonymous Giver Toggle**: Masks name on public walls and reports.
-- **80G Tax Exemption Toggle**: Prompts for mandatory PAN card number for verified tax exemption compliance.
-- **Prayer Request / Note**: Optional text field for pastoral prayer coverage.
-
----
-
-## Step 3: Payment Gateway & Dynamic UPI QR
-- **Dynamic UPI QR Code**: High-resolution generated QR code containing the exact amount, merchant payee VPA (`kcm.kristhraj2004-1@okicici`), and unique order reference ID.
-- **Mobile One-Tap UPI Intents**:
-  - Google Pay (`tez://upi/pay?...`)
-  - PhonePe (`phonepe://pay?...`)
-  - Paytm (`paytmmp://upi/pay?...`)
-  - BHIM (`upi://pay?...`)
-- **Razorpay Standard Checkout Trigger**:
-  - Allows paying with Debit/Credit Cards (Visa, Mastercard, RuPay), NetBanking (50+ banks), UPI apps, and Wallets.
-- **Live Countdown Timer**: 10:00 countdown indicating QR code validity.
-- **Active Real-Time Listener**: Socket.IO room subscription + 3-second database polling.
+Step 4: Verification & Settlement
+├── Option A: Authoritative Webhook arrives -> Atomic DB settle -> Socket triggers client redirect
+├── Option B: User clicks "I've Paid - Verify Now" -> Calls `/api/payments/verify` -> Server confirms with gateway
+└── Verifiable PDF Receipt generated at `/give/receipt/[donationId]`
+```
 
 ---
 
-## Step 4: Official Verified Receipt
-- **Receipt Details**:
-  - Receipt Number (`KCM-REC-XXXXXXXX`)
-  - Donation ID
-  - Gateway Transaction ID / UTR
-  - Amount in INR
-  - Date & Timestamp
-  - Donor Name & Purpose
-  - 80G Tax Exempt Badge (if requested)
-- **Donor Actions**:
-  - **Download PDF**: Direct high-res printable 80G tax receipt PDF (`/api/receipts/[id]/pdf`).
-  - **Print Receipt**: Triggers system print dialogue.
-  - **Share Receipt**: Web Share API / Copy Link.
-  - **Email Receipt**: Triggers transactional email re-dispatch.
-  - **Donate Again**: Resets wizard for another contribution.
+## 2. NGO Donation Flow (`/ngo/donations`)
+
+The NGO donation portal uses the **exact same production payment service** as Member Giving. Both routes share:
+- Unified `/api/payments/create-order`
+- Unified `/api/payments/verify`
+- Unified `/api/webhooks/razorpay`
+- Shared Receipt Engine & Ledger Accounting
