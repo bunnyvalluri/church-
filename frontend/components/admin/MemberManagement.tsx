@@ -126,33 +126,60 @@ export default function MemberManagement({
     });
   }, [users, search, roleFilter]);
 
+  // Vibrant, high-contrast gradients palette for member initials in light & dark mode
+  const AVATAR_GRADIENTS = [
+    "from-indigo-500 to-violet-600 text-white shadow-indigo-500/20",
+    "from-blue-500 to-cyan-600 text-white shadow-blue-500/20",
+    "from-emerald-500 to-teal-600 text-white shadow-emerald-500/20",
+    "from-violet-500 to-purple-600 text-white shadow-violet-500/20",
+    "from-rose-500 to-pink-600 text-white shadow-rose-500/20",
+    "from-amber-500 to-orange-600 text-white shadow-amber-500/20",
+    "from-sky-500 to-blue-600 text-white shadow-sky-500/20",
+    "from-teal-500 to-emerald-600 text-white shadow-teal-500/20",
+  ];
+
+  const getMemberAvatarGrad = (name: string, role: string) => {
+    if (role === "SUPER_ADMIN") return "from-purple-600 via-indigo-600 to-violet-700 text-white shadow-purple-500/25";
+    if (role === "ADMIN") return "from-indigo-600 to-blue-600 text-white shadow-indigo-500/25";
+    if (role === "PASTOR") return "from-amber-500 to-orange-600 text-white shadow-amber-500/25";
+    
+    // Hash the name to pick a deterministic vibrant gradient
+    let hash = 0;
+    const str = name || "User";
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const idx = Math.abs(hash) % AVATAR_GRADIENTS.length;
+    return AVATAR_GRADIENTS[idx];
+  };
+
   const getRoleBadgeStyles = (role: string) => {
     switch (role) {
       case "SUPER_ADMIN":
         return {
-          badge: "bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-100 border-purple-300 dark:border-purple-600 font-bold",
-          grad: "from-indigo-600 via-purple-600 to-violet-700",
+          badge: "bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-500/30 font-bold",
+          grad: "from-purple-600 via-indigo-600 to-violet-700",
           icon: Crown,
           label: isTe ? "రూట్ అడ్మిన్" : isHi ? "सुपर एडमिन" : "Super Admin"
         };
       case "ADMIN":
         return {
-          badge: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-100 border-indigo-300 dark:border-indigo-600 font-bold",
-          grad: "from-indigo-500 to-blue-600",
+          badge: "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border-indigo-200/80 dark:border-indigo-500/30 font-bold",
+          grad: "from-indigo-600 to-blue-600",
           icon: Shield,
           label: isTe ? "అడ్మిన్" : isHi ? "एडमिन" : "Admin"
         };
       case "PASTOR":
         return {
-          badge: "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-100 border-emerald-300 dark:border-emerald-600 font-bold",
-          grad: "from-emerald-500 to-teal-600",
+          badge: "bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-500/30 font-bold",
+          grad: "from-amber-500 to-orange-600",
           icon: Star,
-          label: isTe ? "పాస్టర్" : isHi ? "पास्टर" : "Pastor"
+          label: isTe ? "పాస్టర్" : isHi ? "పాస్టర్" : "Pastor"
         };
       default:
         return {
-          badge: "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 font-bold",
-          grad: "from-slate-600 to-slate-800",
+          badge: "bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-500/30 font-bold",
+          grad: "from-indigo-500 to-violet-600",
           icon: User,
           label: isTe ? "విశ్వాసి" : isHi ? "विश्वासी" : "Believer"
         };
@@ -394,7 +421,7 @@ export default function MemberManagement({
                 <div className="space-y-3.5 sm:space-y-4">
                   <div className="flex items-center gap-3 sm:gap-3.5 pr-6">
                     {/* Avatar Circle */}
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${badge.grad} text-white font-black rounded-xl sm:rounded-2xl flex items-center justify-center uppercase text-xs sm:text-sm shadow-md shrink-0 transition-transform duration-200 group-hover:scale-105`}>
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${getMemberAvatarGrad(u.name, u.role)} font-black rounded-xl sm:rounded-2xl flex items-center justify-center uppercase text-xs sm:text-sm shadow-md shrink-0 transition-transform duration-200 group-hover:scale-105`}>
                       {(u.name || "U").substring(0, 2)}
                     </div>
                     
@@ -502,7 +529,7 @@ export default function MemberManagement({
                 <div key={u.id} className="p-3.5 space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-8 h-8 bg-gradient-to-br ${badge.grad} text-white font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
+                      <div className={`w-8 h-8 bg-gradient-to-br ${getMemberAvatarGrad(u.name, u.role)} font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
                         {(u.name || "U").substring(0, 2)}
                       </div>
                       <div className="min-w-0">
@@ -581,7 +608,7 @@ export default function MemberManagement({
                       {/* Member Name */}
                       <td className="py-3.5 px-4 sm:px-5">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br ${badge.grad} text-white font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
+                          <div className={`w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br ${getMemberAvatarGrad(u.name, u.role)} font-black rounded-xl flex items-center justify-center uppercase text-xs shadow-sm shrink-0`}>
                             {(u.name || "U").substring(0, 2)}
                           </div>
                           <span className="font-black text-slate-900 dark:text-white block truncate max-w-[170px]" title={u.name}>{u.name || "Member"}</span>

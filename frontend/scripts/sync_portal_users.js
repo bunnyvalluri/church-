@@ -23,15 +23,15 @@ async function syncTargetUsers() {
     },
     {
       uid: 's7uquVrAvXMHTBLpCHXE5ZW701q2',
-      email: 'pastor.david@kcm-church.com',
-      name: 'Pastor David',
+      email: 'pastor.kristhuraju@kcm-church.com',
+      name: 'Pastor Kristhuraju',
       role: 'PASTOR',
       phone: '+91 87654 32109',
       address: 'Kukatpally, Hyderabad',
     },
     {
       uid: 's2redV8jDHaEfqXemyK3KO6lcOG3',
-      email: 'event-management@kcm-church.com',
+      email: 'eventmanager@kcm-church.com',
       name: 'Event Manager',
       role: 'EVENT_MANAGER',
       phone: '+91 91111 22222',

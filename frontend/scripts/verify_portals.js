@@ -26,14 +26,14 @@ const accounts = [
   },
   {
     portal: 'Pastor Portal',
-    email: process.env.TEST_PASTOR_EMAIL || 'pastor.david@kcm-church.com',
+    email: process.env.TEST_PASTOR_EMAIL || 'pastor.kristhuraju@kcm-church.com',
     pass: process.env.TEST_PASTOR_PASS || '<PASTOR_PASSWORD>',
     expectedRole: 'PASTOR',
     expectedRedirect: '/pastor/main/dashboard'
   },
   {
     portal: 'Event Management Portal',
-    email: process.env.TEST_EVENT_EMAIL || 'event-management@kcm-church.com',
+    email: process.env.TEST_EVENT_EMAIL || 'eventmanager@kcm-church.com',
     pass: process.env.TEST_EVENT_PASS || '<EVENT_MANAGER_PASSWORD>',
     expectedRole: 'EVENT_MANAGER',
     expectedRedirect: '/event-manager'

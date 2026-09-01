@@ -93,7 +93,9 @@ export async function POST(req: Request) {
     const PORTAL_PROVISIONING: Record<string, { role: any; defaultPass: string; name: string }> = {
       'kingofchristministries23@gmail.com': { role: 'SUPER_ADMIN', defaultPass: 'rahul@0423', name: 'Pastor Samuel Valluri' },
       'admin@kcm-church.com': { role: 'ADMIN', defaultPass: 'rahul@0423', name: 'Admin Leader' },
+      'pastor.kristhuraju@kcm-church.com': { role: 'PASTOR', defaultPass: 'pastor@2026', name: 'Pastor Kristhuraju' },
       'pastor.david@kcm-church.com': { role: 'PASTOR', defaultPass: 'pastor@2026', name: 'Pastor David' },
+      'eventmanager@kcm-church.com': { role: 'EVENT_MANAGER', defaultPass: 'event-handle-2026', name: 'Event Manager' },
       'event-management@kcm-church.com': { role: 'EVENT_MANAGER', defaultPass: 'event-handle-2026', name: 'Event Manager' },
     };
 
