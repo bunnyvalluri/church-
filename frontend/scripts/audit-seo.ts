@@ -124,7 +124,7 @@ for (const key of expectedPublicKeys) {
 
   assert(meta.openGraph?.title === titleStr, `[${key}] OpenGraph title matches page title`);
   assert(meta.openGraph?.url === canonical, `[${key}] OpenGraph URL matches canonical`);
-  assert(meta.openGraph?.siteName === "Kingdom of Christ Ministries", `[${key}] OpenGraph siteName is canonical`);
+  assert(meta.openGraph?.siteName === "KCM Church", `[${key}] OpenGraph siteName is canonical`);
   assert(meta.twitter?.card === "summary_large_image", `[${key}] Twitter card is summary_large_image`);
   assert(meta.robots?.index === true, `[${key}] Public page is indexable`);
 }

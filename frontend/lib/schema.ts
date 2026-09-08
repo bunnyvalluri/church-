@@ -163,12 +163,12 @@ export function websiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": WEBSITE_ID,
-    name: "Kingdom of Christ Ministries",
+    name: "KCM Church",
     alternateName: [
-      "KCM Church",
-      "Kingdom of Christ",
+      "Kingdom of Christ Ministries",
       "KCM Ministries",
       "KCM",
+      "Kingdom of Christ",
     ],
     url: `${SITE_URL}/`,
     description:
