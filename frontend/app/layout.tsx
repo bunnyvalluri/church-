@@ -6,7 +6,7 @@ import { Providers } from "@/components/providers/index";
 import BackToTop from "@/components/ui/BackToTop";
 import SkipToContent from "@/components/ui/SkipToContent";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { churchSchema, websiteSchema } from "@/lib/schema";
+import { churchSchema, websiteSchema, churchFaqSchema } from "@/lib/schema";
 import { SITE_URL } from "@/lib/seo";
 
 // Dynamically imported heavy client widgets (loaded after initial paint for fast TTFB & FCP)
@@ -143,8 +143,8 @@ export default function RootLayout({
         {/* Explicit color-scheme declaration to prevent Samsung Internet forced auto-dark mode inversion */}
         <meta name="color-scheme" content="light dark" />
 
-        {/* Global Schema.org structured data — Church + WebSite */}
-        <JsonLd data={[churchSchema(), websiteSchema()]} />
+        {/* Global Schema.org structured data — Church + WebSite + FAQ (for Google AI Overviews) */}
+        <JsonLd data={[churchSchema(), websiteSchema(), churchFaqSchema()]} />
 
         {/* Network performance optimizations: preconnect to high-priority origins */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />

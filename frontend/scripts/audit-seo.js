@@ -34,7 +34,7 @@ const layoutFile = fs.readFileSync(path.join(__dirname, "../app/layout.tsx"), "u
 assert(layoutFile.includes("metadataBase: new URL(SITE_URL)"), "metadataBase is set to SITE_URL in layout.tsx");
 assert(layoutFile.includes("canonical: SITE_URL"), "Root canonical is set in layout.tsx");
 assert(layoutFile.includes("CrXIpIzuGUYxLQOuD16DJnLmUMafzisYdXY4LGzPHMw"), "GSC site verification token is preserved in layout.tsx");
-assert(layoutFile.includes("<JsonLd data={[churchSchema(), websiteSchema()]} />"), "Global Church + WebSite Schema.org JSON-LD injected in layout.tsx");
+assert(layoutFile.includes("churchSchema()") && layoutFile.includes("websiteSchema()"), "Global Church + WebSite Schema.org JSON-LD injected in layout.tsx");
 assert(layoutFile.includes('<meta name="color-scheme" content="light dark" />'), "Samsung Internet color-scheme defense is present in layout.tsx");
 
 // 3. Check sitemap.ts

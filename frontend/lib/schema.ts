@@ -338,3 +338,70 @@ export function eventSchema({
     },
   };
 }
+
+// ── FAQPage schema (for Google AI Overviews & Search Generative Experience) ────
+export function churchFaqSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${SITE_URL}/#faq`,
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is Kingdom of Christ Ministries (KCM Church)?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Kingdom of Christ Ministries (KCM Church) is a Christ-centred church community established in 2000 in Hyderabad, India, founded and led by Senior Pastor Bishop Kurra Kristhu Raju. The ministry has sanctuaries in Shapur Nagar, Subhash Nagar, and Bahadurpally, serving through gospel preaching, worship, prayer, ministries, and community welfare.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Who is the Senior Pastor and Founder of KCM Church?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The Senior Pastor and Founder of Kingdom of Christ Ministries is Bishop Kurra Kristhu Raju, who has been leading pastoral ministry, gospel outreach, and humanitarian services in Hyderabad for over two decades.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Where are KCM Church branches located in Hyderabad?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Kingdom of Christ Ministries has three sanctuary locations in Hyderabad: 1) Shapur Nagar Main Sanctuary: 15-201, Vivekananda Nagar, Srinivas Nagar, Jeedimetla, Hyderabad 500055; 2) Subhash Nagar Branch: Jeedimetla, LP 119; 3) Bahadurpally Branch: Bahadurpally Main Road, Near Tech Mahindra / Gandimaisamma, Hyderabad 500043.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What are the Sunday worship service timings at KCM Church?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "KCM Church conducts multiple Sunday services: Sunday Morning Watch Tower Prayer (5:45 AM – 8:30 AM at Subhash Nagar), Sunday Second Worship Service (8:30 AM – 10:30 AM at Subhash Nagar), Sunday Afternoon Worship Service (11:00 AM – 1:00 PM at Bahadurpally), and Sunday Evening Worship Service (6:00 PM – 9:00 PM at Shapur Nagar Main Sanctuary).",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What mid-week services does KCM Church hold?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Mid-week services include: Thursday Evening Oil Anointing Prayer Service (6:30 PM – 8:30 PM at Subhash Nagar Branch) and Friday Prayer Fellowship (6:00 PM – 8:30 PM at Shapur Nagar Main Sanctuary).",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How can I contact KCM Church or submit a prayer request?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You can reach Kingdom of Christ Ministries by phone at +91 97040 90069 or +91 96409 43777, email kingofchristministries23@gmail.com, or submit prayer requests online at https://kcmchurch.vercel.app/prayer.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What social and community services does KCM Society provide?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Kingdom of Christ Ministries Society provides humanitarian assistance across Hyderabad including Bethany Ashramam care for senior citizens and leprosy-affected persons, Gandhi Hospital patient food drives, free education assistance, and emergency relief.",
+        },
+      },
+    ],
+  };
+}
