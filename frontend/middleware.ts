@@ -49,6 +49,8 @@ const PUBLIC_PATHS = [
   '/icon',
   '/sitemap',
   '/robots',
+  '/llms.txt',
+  '/llms',
 ];
 
 // ── Webhook Exemptions for CSRF ──────────────────────────────────────────────
