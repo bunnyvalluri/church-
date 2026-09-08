@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /member
+Disallow: /church-member
+Disallow: /pastor
+Disallow: /pastor-portal
+Disallow: /event-manager
+Disallow: /event-management
+Disallow: /field-volunteer
+Disallow: /portal-select
+Disallow: /dashboard
+Disallow: /memberships
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /select-language
+Disallow: /offline
+Disallow: /api/
+
+Sitemap: https://kcmchurch.vercel.app/sitemap.xml
+Sitemap: https://kcmchurch.vercel.app/image-sitemap.xml
