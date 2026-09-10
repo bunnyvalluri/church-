@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireEventManagerOrDev } from '@/lib/authMiddleware';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,28 +78,16 @@ export async function POST(
     });
 
     // Real-time companion broadcast
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'sermon.created',
-          payload: {
-            id: duplicatedSermon.id,
-            title: duplicatedSermon.title,
-            slug: duplicatedSermon.slug,
-            speaker: duplicatedSermon.speaker,
-            category: duplicatedSermon.category,
-            thumbnail: duplicatedSermon.thumbnail,
-            status: duplicatedSermon.status,
-            date: duplicatedSermon.date,
-          },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn('[API/SERMONS/[ID]/DUPLICATE] Socket companion broadcast failed:', socketErr);
-    }
+    await safeTriggerCompanionEvent('sermon.created', {
+      id: duplicatedSermon.id,
+      title: duplicatedSermon.title,
+      slug: duplicatedSermon.slug,
+      speaker: duplicatedSermon.speaker,
+      category: duplicatedSermon.category,
+      thumbnail: duplicatedSermon.thumbnail,
+      status: duplicatedSermon.status,
+      date: duplicatedSermon.date,
+    });
 
     return NextResponse.json({ success: true, sermon: duplicatedSermon });
   } catch (err: any) {

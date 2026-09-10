@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireEventManagerOrDev, requireFieldVolunteerOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -113,49 +114,29 @@ export async function PUT(req: Request) {
           });
 
           // Trigger Socket.io real-time update for gallery
-          try {
-            await fetch("http://localhost:3001/api/trigger-event", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                type: "gallery.image.created",
-                payload: {
-                  id: galleryItem.id,
-                  imageUrl: galleryItem.imageUrl,
-                  thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
-                  title: galleryItem.title,
-                  category: galleryItem.category,
-                  createdAt: galleryItem.createdAt,
-                  branchId: galleryItem.branchId,
-                },
-              }),
-            });
-          } catch {}
+          await safeTriggerCompanionEvent("gallery.image.created", {
+            id: galleryItem.id,
+            imageUrl: galleryItem.imageUrl,
+            thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
+            title: galleryItem.title,
+            category: galleryItem.category,
+            createdAt: galleryItem.createdAt,
+            branchId: galleryItem.branchId,
+          });
         }
 
         // 3. Trigger Socket.io real-time update for live website updates
-        try {
-          await fetch("http://localhost:3001/api/trigger-event", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "new-event",
-              payload: {
-                id: newEvent.id,
-                title: newEvent.title,
-                description: newEvent.description,
-                date: newEvent.date,
-                location: newEvent.location,
-                category: newEvent.category,
-                status: newEvent.status,
-                branchName: updatedReport.branch.name,
-                image: newEvent.image,
-              },
-            }),
-          });
-        } catch (wsErr) {
-          // Ignore websocket connection issues
-        }
+        await safeTriggerCompanionEvent("new-event", {
+          id: newEvent.id,
+          title: newEvent.title,
+          description: newEvent.description,
+          date: newEvent.date,
+          location: newEvent.location,
+          category: newEvent.category,
+          status: newEvent.status,
+          branchName: updatedReport.branch.name,
+          image: newEvent.image,
+        });
 
       } catch (pubErr) {
         console.error("[API/EVENT_MANAGER/AUTO_PUBLISH] Fail:", pubErr);
@@ -173,23 +154,12 @@ export async function PUT(req: Request) {
     });
 
     // Webhook notification to Socket.io helper
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "report_status_changed",
-          payload: {
-            id: updatedReport.id,
-            title: updatedReport.title,
-            branchName: updatedReport.branch.name,
-            status,
-          },
-        }),
-      });
-    } catch (wsErr) {
-      // Quietly log and bypass if Socket.io server is offline
-    }
+    await safeTriggerCompanionEvent("report_status_changed", {
+      id: updatedReport.id,
+      title: updatedReport.title,
+      branchName: updatedReport.branch.name,
+      status: updatedReport.status,
+    });
 
     return NextResponse.json({ success: true, report: updatedReport });
   } catch (err: any) {

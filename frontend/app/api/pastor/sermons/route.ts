@@ -4,6 +4,7 @@ import { requireAdminOrDev, requireEventManagerOrDev } from '@/lib/authMiddlewar
 import { uploadBufferToCloudinary } from '@/lib/cloudinary';
 import { validateFileSecurity } from '@/lib/uploadSecurity';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,49 +123,28 @@ export async function POST(req: Request) {
     });
 
     // 3. Trigger Socket.io real-time broadcast via companion server
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      // Emit sermon:uploaded for landing page auto refresh
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "sermon:uploaded",
-          payload: {
-            id: newSermon.id,
-            title: newSermon.title,
-            pastor: newSermon.pastor,
-            category: newSermon.category,
-            description: newSermon.description,
-            videoUrl: newSermon.videoUrl,
-            thumbnail: newSermon.thumbnail,
-            date: newSermon.date,
-            views: newSermon.views,
-            popupType: "sermon-uploaded",
-            timestamp: new Date(),
-          },
-        }),
-      });
+    await safeTriggerCompanionEvent("sermon:uploaded", {
+      id: newSermon.id,
+      title: newSermon.title,
+      pastor: newSermon.pastor,
+      category: newSermon.category,
+      description: newSermon.description,
+      videoUrl: newSermon.videoUrl,
+      thumbnail: newSermon.thumbnail,
+      date: newSermon.date,
+      views: newSermon.views,
+      popupType: "sermon-uploaded",
+      timestamp: new Date(),
+    });
 
-      // Emit notification:popup for live website header alerts
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "notification:popup",
-          payload: {
-            title: "📖 New Sermon Uploaded",
-            description: `"${newSermon.title}" by ${newSermon.pastor}`,
-            popupType: "sermon-uploaded",
-            link: "/pastor",
-            icon: "play",
-            timestamp: new Date(),
-          },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[API/PASTOR/SERMONS] Socket companion broadcast skipped/failed:", socketErr);
-    }
+    await safeTriggerCompanionEvent("notification:popup", {
+      title: "📖 New Sermon Uploaded",
+      description: `"${newSermon.title}" by ${newSermon.pastor}`,
+      popupType: "sermon-uploaded",
+      link: "/pastor",
+      icon: "play",
+      timestamp: new Date(),
+    });
 
     // 4. Trigger FCM Push Notification
     try {
@@ -305,31 +285,19 @@ export async function PATCH(req: Request) {
       data: updateData,
     });
 
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "sermon:uploaded",
-          payload: {
-            id: updatedSermon.id,
-            title: updatedSermon.title,
-            pastor: updatedSermon.pastor,
-            category: updatedSermon.category,
-            description: updatedSermon.description,
-            videoUrl: updatedSermon.videoUrl,
-            thumbnail: updatedSermon.thumbnail,
-            date: updatedSermon.date,
-            views: updatedSermon.views,
-            action: "updated",
-            timestamp: new Date(),
-          },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[API/PASTOR/SERMONS/PATCH] Socket companion broadcast failed:", socketErr);
-    }
+    await safeTriggerCompanionEvent("sermon:uploaded", {
+      id: updatedSermon.id,
+      title: updatedSermon.title,
+      pastor: updatedSermon.pastor,
+      category: updatedSermon.category,
+      description: updatedSermon.description,
+      videoUrl: updatedSermon.videoUrl,
+      thumbnail: updatedSermon.thumbnail,
+      date: updatedSermon.date,
+      views: updatedSermon.views,
+      action: "updated",
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({ success: true, sermon: updatedSermon });
   } catch (err: any) {
@@ -359,19 +327,10 @@ export async function DELETE(req: Request) {
     });
 
     // Broadcast Socket.io companion update so landing page updates instantly
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "sermon:uploaded", // Auto-refreshes landing page list
-          payload: { id: deletedSermon.id, action: "deleted" },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[API/PASTOR/SERMONS] Socket companion broadcast skipped/failed on delete:", socketErr);
-    }
+    await safeTriggerCompanionEvent("sermon:uploaded", {
+      id: deletedSermon.id,
+      action: "deleted",
+    });
 
     return NextResponse.json({ success: true, message: 'Sermon deleted successfully' });
   } catch (err: any) {

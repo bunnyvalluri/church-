@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPushNotification } from "@/lib/firebaseAdmin";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -15,26 +16,14 @@ export async function POST(req: Request) {
     }
 
     // 1. Trigger Socket.io real-time broadcast via backend companion server
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "notification:popup",
-          payload: {
-            title,
-            description: description || `Branch: ${branchName || "General"}`,
-            branchName,
-            popupType,
-            link: link || "/event-manager",
-            timestamp: new Date(),
-          },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[API/NOTIFICATIONS/SEND] Socket broadcast warning:", socketErr);
-    }
+    await safeTriggerCompanionEvent("notification:popup", {
+      title,
+      description: description || `Branch: ${branchName || "General"}`,
+      branchName,
+      popupType,
+      link: link || "/event-manager",
+      timestamp: new Date(),
+    });
 
     // 2. Fetch active FCM device tokens from PostgreSQL DB
     const deviceTokenModel = (prisma as any).deviceToken;

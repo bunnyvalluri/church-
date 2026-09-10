@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -63,15 +64,7 @@ export async function POST(req: Request) {
         });
 
         // 4. Notify companion socket server
-        const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-        fetch(`${companionUrl}/api/trigger-event`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'sms.updated',
-            payload: { id: existing.id, status, providerMessageId },
-          }),
-        }).catch(() => {});
+        safeTriggerCompanionEvent('sms.updated', { id: existing.id, status, providerMessageId }).catch(() => {});
       }
     }
 

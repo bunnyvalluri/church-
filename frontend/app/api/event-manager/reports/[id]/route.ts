@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireFieldVolunteerOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 import { promises as fs } from "fs";
 import fsSync from "fs";
 import path from "path";
@@ -208,23 +209,12 @@ export async function PUT(
     });
 
     // Notify via real-time WebSocket server
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "report_status_changed", // Re-fetch trigger on clients
-          payload: {
-            id: params.id,
-            title: updatedReport.title,
-            branchName: finalReport?.branch?.name || "Branch",
-            status: finalReport?.status || "PENDING",
-          },
-        }),
-      });
-    } catch (wsErr) {
-      // Bypassed if offline helper
-    }
+    await safeTriggerCompanionEvent("report_status_changed", {
+      id: params.id,
+      title: updatedReport.title,
+      branchName: finalReport?.branch?.name || "Branch",
+      status: finalReport?.status || "PENDING",
+    });
 
     return NextResponse.json({ success: true, report: finalReport });
   } catch (err: any) {
@@ -311,21 +301,10 @@ export async function DELETE(
     });
 
     // 3. Notify companion socket
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "report_deleted",
-          payload: {
-            id: params.id,
-            title: report.title,
-          },
-        }),
-      });
-    } catch (wsErr) {
-      // Quiet ignore
-    }
+    await safeTriggerCompanionEvent("report_deleted", {
+      id: params.id,
+      title: report.title,
+    });
 
     return NextResponse.json({ success: true, message: "Report deleted successfully." });
   } catch (err: any) {

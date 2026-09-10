@@ -9,10 +9,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001');
 
 export async function POST(req: NextRequest, { params }: { params: { agentType: string } }) {
   try {
+    if (!BACKEND_URL) {
+      return NextResponse.json({ success: false, error: 'Agent backend server is not available.' }, { status: 503 });
+    }
     const body = await req.json().catch(() => ({}));
     const targetUrl = `${BACKEND_URL}/api/agents/${params.agentType}`;
 

@@ -1,5 +1,5 @@
 // Kingdom of Christ Ministries Service Worker — Enterprise Offline-First Edition
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const STATIC_CACHE_NAME = `kcm-static-${CACHE_VERSION}`;
 const PUBLIC_CONTENT_CACHE = `kcm-public-content-${CACHE_VERSION}`;
 
@@ -89,9 +89,10 @@ self.addEventListener("fetch", (event) => {
     return; // Let browser perform direct network fetch for API requests
   }
 
-  // 2. CACHE FIRST Strategy for static assets, fonts, icons, images
+  // 2. CACHE FIRST Strategy for immutable assets, fonts, icons, images, and next.js static chunks
   if (
-    url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|avif|woff|woff2|ttf|css|js)$/i) ||
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|avif|woff|woff2|ttf|ico)$/i) ||
     url.origin.includes("images.unsplash.com") ||
     url.origin.includes("res.cloudinary.com")
   ) {
@@ -106,6 +107,26 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         });
+      })
+    );
+    return;
+  }
+
+  // 2b. STALE WHILE REVALIDATE for other scripts and stylesheets
+  if (url.pathname.match(/\.(css|js)$/i)) {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        const fetchPromise = fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const copy = networkResponse.clone();
+              caches.open(STATIC_CACHE_NAME).then((cache) => cache.put(request, copy));
+            }
+            return networkResponse;
+          })
+          .catch(() => cachedResponse);
+
+        return cachedResponse || fetchPromise;
       })
     );
     return;

@@ -4,7 +4,7 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/security/chatbot-security.spec.ts",
+      "tests/accessibility.spec.ts",
       "--project=chromium-desktop"
     ],
     "configFile": "C:\\K.C.M-Portal\\frontend\\playwright.config.ts",
@@ -19,7 +19,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 8
+      "actualWorkers": 2
     },
     "preserveOutput": "always",
     "projects": [
@@ -28,7 +28,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 8
+          "actualWorkers": 2
         },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
@@ -44,7 +44,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 8
+          "actualWorkers": 2
         },
         "id": "firefox-desktop",
         "name": "firefox-desktop",
@@ -60,7 +60,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 8
+          "actualWorkers": 2
         },
         "id": "webkit-desktop",
         "name": "webkit-desktop",
@@ -76,7 +76,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 8
+          "actualWorkers": 2
         },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
@@ -92,7 +92,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 8
+          "actualWorkers": 2
         },
         "id": "mobile-safari",
         "name": "mobile-safari",
@@ -138,20 +138,20 @@
   },
   "suites": [
     {
-      "title": "security\\chatbot-security.spec.ts",
-      "file": "security/chatbot-security.spec.ts",
+      "title": "accessibility.spec.ts",
+      "file": "accessibility.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "KCM Assistant — Security Pipeline Unit Tests",
-          "file": "security/chatbot-security.spec.ts",
-          "line": 28,
+          "title": "WCAG 2.2 AA Accessibility Audit",
+          "file": "accessibility.spec.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "1. Input Normalization strips zero-width characters and limits length",
+              "title": "renders SkipToContent link for keyboard users",
               "ok": true,
               "tags": [],
               "tests": [
@@ -166,12 +166,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 38,
+                      "duration": 3350,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.886Z",
+                      "startTime": "2026-09-10T11:34:32.939Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -179,13 +179,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "3fa303c48a776c2c750c-fbe8de3436be30f8a2e4",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 30,
+              "id": "ddd864604af8a6a0198f-db4bc05602a5778ca947",
+              "file": "accessibility.spec.ts",
+              "line": 4,
               "column": 7
             },
             {
-              "title": "2. Prompt Injection Classifier blocks instruction overrides & DAN mode",
+              "title": "main content container has focusable tabIndex",
               "ok": true,
               "tags": [],
               "tests": [
@@ -200,12 +200,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 50,
+                      "duration": 3148,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.829Z",
+                      "startTime": "2026-09-10T11:34:32.939Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -213,213 +213,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "3fa303c48a776c2c750c-9499e1e7d06312efdac6",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 41,
-              "column": 7
-            },
-            {
-              "title": "3. Prompt Injection Classifier blocks System Prompt Extraction",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 36,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.860Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-a29a49f0aff763eaf97f",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 51,
-              "column": 7
-            },
-            {
-              "title": "4. Prompt Injection Classifier blocks Telugu and Hindi Attacks",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 45,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.826Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-15bd6a5a79fc20002647",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 61,
-              "column": 7
-            },
-            {
-              "title": "5. Output Redactor masks API keys, Database URLs, and JWTs",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 61,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.901Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-fc122ad2768342915e6b",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 81,
-              "column": 7
-            },
-            {
-              "title": "6. Link Protocol Sanitizer blocks XSS vectors (javascript:, data:, vbscript:)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 61,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.894Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-5254b177c0601d2ca5b7",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 97,
-              "column": 7
-            },
-            {
-              "title": "7. Context Builder encapsulates with XML Boundary Tags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 6,
-                      "status": "passed",
-                      "duration": 47,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.843Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-b6b20463b3366112eb95",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 110,
-              "column": 7
-            },
-            {
-              "title": "8. Tool Registry denies unauthorized roles (RBAC)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 7,
-                      "status": "passed",
-                      "duration": 35,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-01T03:12:49.904Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "3fa303c48a776c2c750c-356e797d1d54e8fc976b",
-              "file": "security/chatbot-security.spec.ts",
-              "line": 127,
+              "id": "ddd864604af8a6a0198f-96d10bee56f55fd477b5",
+              "file": "accessibility.spec.ts",
+              "line": 10,
               "column": 7
             }
           ]
@@ -429,9 +225,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-01T03:12:48.142Z",
-    "duration": 2039.561,
-    "expected": 8,
+    "startTime": "2026-09-10T11:34:32.367Z",
+    "duration": 4191.67,
+    "expected": 2,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

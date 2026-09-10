@@ -1,4 +1,13 @@
-const { PrismaClient } = require('@prisma/client');
+let PrismaClient;
+try {
+  PrismaClient = require('./generated/client').PrismaClient;
+} catch {
+  try {
+    PrismaClient = require('../../frontend/prisma/generated/client').PrismaClient;
+  } catch {
+    PrismaClient = require('@prisma/client').PrismaClient;
+  }
+}
 const p = new PrismaClient();
 Promise.all([
   p.user.count(),

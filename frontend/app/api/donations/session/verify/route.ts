@@ -5,6 +5,7 @@ import { isRateLimited, rateLimitHeaders } from '@/lib/rateLimit';
 import { getClientIp, safeJson } from '@/lib/apiResponse';
 import { logEvent, LogLevel } from '@/lib/logger';
 import { createNotification } from '@/lib/notification';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -292,43 +293,20 @@ export async function POST(req: Request) {
     }
 
     // 8. Trigger Socket.IO real-time dashboard updates & popup notification via backend companion server
-    try {
-      const companionServerUrl = process.env.SOCKET_PORT 
-        ? `http://localhost:${process.env.SOCKET_PORT}/api/trigger-event`
-        : 'http://localhost:3001/api/trigger-event';
-
-      const socketPayload = {
-        type: 'donation:verified',
-        payload: {
-          popupType: 'custom',
-          title: '🎉 New Donation Received',
-          description: `${updatedDonation.donorName || 'A member'} donated ₹${updatedDonation.amount.toLocaleString('en-IN')} for ${updatedDonation.purpose}.`,
-          icon: 'bell',
-          link: '/admin/donations',
-          timestamp: new Date(),
-          donation: {
-            id: updatedDonation.id,
-            amount: updatedDonation.amount,
-            purpose: updatedDonation.purpose,
-            donorName: updatedDonation.donorName,
-          }
-        }
-      };
-
-      const companionRes = await fetch(companionServerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(socketPayload),
-      });
-
-      if (!companionRes.ok) {
-        console.warn(`[SOCKET] Companion server returned error ${companionRes.status}`);
-      } else {
-        console.info('[SOCKET] Realtime donation events emitted successfully.');
+    await safeTriggerCompanionEvent('donation:verified', {
+      popupType: 'custom',
+      title: '🎉 New Donation Received',
+      description: `${updatedDonation.donorName || 'A member'} donated ₹${updatedDonation.amount.toLocaleString('en-IN')} for ${updatedDonation.purpose}.`,
+      icon: 'bell',
+      link: '/admin/donations',
+      timestamp: new Date(),
+      donation: {
+        id: updatedDonation.id,
+        amount: updatedDonation.amount,
+        purpose: updatedDonation.purpose,
+        donorName: updatedDonation.donorName,
       }
-    } catch (socketErr: any) {
-      console.warn('[SOCKET] Failed to emit Socket.IO events to companion server:', socketErr.message);
-    }
+    });
 
     // 9. Send email receipt (non-blocking background task)
     sendDonationReceiptEmail(updatedDonation).catch((emailErr) => {

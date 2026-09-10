@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireStaffOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -79,49 +80,29 @@ export async function POST(req: Request) {
       });
 
       // Trigger Socket.io real-time update for gallery
-      try {
-        await fetch("http://localhost:3001/api/trigger-event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "gallery.image.created",
-            payload: {
-              id: galleryItem.id,
-              imageUrl: galleryItem.imageUrl,
-              thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
-              title: galleryItem.title,
-              category: galleryItem.category,
-              createdAt: galleryItem.createdAt,
-              branchId: galleryItem.branchId,
-            },
-          }),
-        });
-      } catch {}
+      await safeTriggerCompanionEvent("gallery.image.created", {
+        id: galleryItem.id,
+        imageUrl: galleryItem.imageUrl,
+        thumbnailUrl: galleryItem.thumbnailUrl || galleryItem.imageUrl,
+        title: galleryItem.title,
+        category: galleryItem.category,
+        createdAt: galleryItem.createdAt,
+        branchId: galleryItem.branchId,
+      });
     }
 
     // Trigger Socket.io real-time update
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "new-event",
-          payload: {
-            id: event.id,
-            title: event.title,
-            description: event.description,
-            date: event.date,
-            location: event.location,
-            category: event.category,
-            status: event.status,
-            branchName: report.branch.name,
-            image: event.image,
-          },
-        }),
-      });
-    } catch {
-      // Ignore websocket connection issues
-    }
+    await safeTriggerCompanionEvent("new-event", {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      location: event.location,
+      category: event.category,
+      imageUrl: event.image,
+      link: `/events/${event.slug || event.id}`,
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({ success: true, event });
   } catch (err: any) {

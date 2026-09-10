@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireEventManagerOrDev } from '@/lib/authMiddleware';
 import { uploadBufferToCloudinary, deleteCloudinaryAsset } from '@/lib/cloudinary';
 import { validateFileSecurity } from '@/lib/uploadSecurity';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -263,19 +264,11 @@ export async function PUT(
     });
 
     // Real-time broadcast
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'sermon.updated',
-          payload: { id: updatedSermon.id, title: updatedSermon.title, status: updatedSermon.status },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn('[API/SERMONS/[ID]/PUT] Socket companion broadcast failed:', socketErr);
-    }
+    await safeTriggerCompanionEvent('sermon.updated', {
+      id: updatedSermon.id,
+      title: updatedSermon.title,
+      status: updatedSermon.status,
+    });
 
     // Log audit
     try {
@@ -338,28 +331,20 @@ export async function PATCH(
     });
 
     // Real-time broadcast
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    try {
-      let eventType = 'sermon.updated';
-      if (status === 'PUBLISHED' && existingSermon.status !== 'PUBLISHED') {
-        eventType = 'sermon.published';
-      } else if (status === 'DRAFT' && existingSermon.status === 'PUBLISHED') {
-        eventType = 'sermon.unpublished';
-      } else if (status === 'ARCHIVED' && existingSermon.status !== 'ARCHIVED') {
-        eventType = 'sermon.archived';
-      }
-
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: eventType,
-          payload: { id: updatedSermon.id, title: updatedSermon.title, status: updatedSermon.status },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn('[API/SERMONS/[ID]/PATCH] Socket companion broadcast failed:', socketErr);
+    let eventType = 'sermon.updated';
+    if (status === 'PUBLISHED' && existingSermon.status !== 'PUBLISHED') {
+      eventType = 'sermon.published';
+    } else if (status === 'DRAFT' && existingSermon.status === 'PUBLISHED') {
+      eventType = 'sermon.unpublished';
+    } else if (status === 'ARCHIVED' && existingSermon.status !== 'ARCHIVED') {
+      eventType = 'sermon.archived';
     }
+
+    await safeTriggerCompanionEvent(eventType, {
+      id: updatedSermon.id,
+      title: updatedSermon.title,
+      status: updatedSermon.status,
+    });
 
     return NextResponse.json({ success: true, sermon: updatedSermon });
   } catch (err: any) {
@@ -403,19 +388,10 @@ export async function DELETE(
     });
 
     // Real-time broadcast
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'sermon.deleted',
-          payload: { id: deletedSermon.id, title: deletedSermon.title },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn('[API/SERMONS/[ID]/DELETE] Socket companion broadcast failed:', socketErr);
-    }
+    await safeTriggerCompanionEvent('sermon.deleted', {
+      id: deletedSermon.id,
+      title: deletedSermon.title,
+    });
 
     // Log Audit
     try {

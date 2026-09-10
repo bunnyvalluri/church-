@@ -39,7 +39,7 @@ test.describe("Universal Mobile & Cross-Browser Compatibility Verification", () 
     const menuButton = page.locator('button[aria-label="Open navigation menu"]');
     if (await menuButton.isVisible()) {
       await menuButton.click();
-      const mobileDrawer = page.locator("#mobile-menu");
+      const mobileDrawer = page.locator("#mobile-drawer, #mobile-menu");
       await expect(mobileDrawer).toBeVisible();
 
       // Test escape key dismissal

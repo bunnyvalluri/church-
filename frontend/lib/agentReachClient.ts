@@ -10,13 +10,21 @@ import { io, Socket } from 'socket.io-client';
 function getBackendUrl(): string {
   if (typeof window !== 'undefined') {
     const isHttps = window.location.protocol === 'https:';
-    const envUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_SOCKET_URL;
+    const envUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_SOCKET_URL || '').trim();
     if (isHttps) {
-      if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1') || envUrl.startsWith('http://')) {
+      if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1') || envUrl.startsWith('http://') || envUrl.startsWith('ws://')) {
         return '';
       }
       return envUrl;
     }
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocalhost) {
+      return envUrl || 'http://localhost:3001';
+    }
+    return envUrl;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return (process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_SOCKET_URL || '').trim();
   }
   return process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
 }
@@ -58,13 +66,30 @@ export interface ProgressEvent {
 
 let socketInstance: Socket | null = null;
 
+const createNoopSocket = (): Socket => ({
+  id: 'noop',
+  connected: false,
+  disconnected: true,
+  on: () => {},
+  off: () => {},
+  emit: () => false,
+  connect: () => {},
+  disconnect: () => {},
+  close: () => {},
+} as unknown as Socket);
+
 export function getAgentSocket(): Socket {
   if (!socketInstance) {
     const url = getBackendUrl();
+    if (!url) {
+      // In production HTTPS without a configured external backend URL, return safe noop
+      return createNoopSocket();
+    }
+
     const isLocalhostDomain = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const shouldConnect = Boolean(url && (!url.includes('localhost') || isLocalhostDomain));
 
-    socketInstance = io(url || 'http://localhost:3001', {
+    socketInstance = io(url, {
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,

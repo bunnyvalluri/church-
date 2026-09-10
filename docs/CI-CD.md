@@ -77,16 +77,21 @@ A pull request cannot be merged into `main` unless the following mandatory statu
 ## 4. Pipeline Execution Commands (Local Emulation)
 
 ```bash
-# 1. Run local lint and typecheck
-npm run lint
-npm run typecheck
+# 1. Run workspace lint and typecheck
+npm run lint -w frontend
+npm run typecheck -w frontend
 
-# 2. Run local test suite
-npm run test:health
-npm run test:rbac
+# 2. Verify database connectivity & model mapping
+node backend/prisma/check-db.js
 
-# 3. Validate Helm charts
-helm lint platform/helm/charts/*
+# 3. Run production smoke & cross-browser verification
+npx playwright test tests/smoke/production-smoke.spec.ts --project=chromium-desktop
+npx playwright test tests/cross-browser.spec.ts --project=chromium-desktop
+npx playwright test tests/responsive.spec.ts --project=chromium-desktop
+
+# 4. Backend standalone verification
+node backend/tests/socket-realtime.test.js
+node backend/tests/sms.test.js
 ```
 
 ---

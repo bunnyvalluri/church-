@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireFieldVolunteerOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -144,46 +145,25 @@ export async function POST(req: Request) {
     });
 
     // 5. Socket.io — emit report-submitted (triggers website popup + landing page refresh)
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      // Emit report-submitted for landing page auto-refresh
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "report-submitted",
-          payload: {
-            id: report.id,
-            title,
-            branchName,
-            attendanceCount,
-            offeringAmount,
-            mediaCount: uploadedMedia.length,
-            submittedBy: auth.name || "Field Volunteer",
-            timestamp: new Date(),
-          },
-        }),
-      });
+    await safeTriggerCompanionEvent("report-submitted", {
+      id: report.id,
+      title,
+      branchName,
+      attendanceCount,
+      offeringAmount,
+      mediaCount: uploadedMedia.length,
+      submittedBy: auth.name || "Field Volunteer",
+      timestamp: new Date(),
+    });
 
-      // Emit notification:popup for live website header popup
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "notification:popup",
-          payload: {
-            title: "📋 New Event Report Submitted",
-            description: `"${title}" from ${branchName} • ${attendanceCount} attended`,
-            popupType: "report-submitted",
-            link: `/event-manager`,
-            icon: "upload",
-            timestamp: new Date(),
-          },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[API/REPORT] Socket companion broadcast skipped:", socketErr);
-    }
+    await safeTriggerCompanionEvent("notification:popup", {
+      title: "📋 New Event Report Submitted",
+      description: `"${title}" from ${branchName} • ${attendanceCount} attended`,
+      popupType: "report-submitted",
+      link: `/event-manager`,
+      icon: "upload",
+      timestamp: new Date(),
+    });
 
     // 6. FCM Push Notification to all registered device tokens
     try {

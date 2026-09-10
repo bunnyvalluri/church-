@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireEventManagerOrDev } from "@/lib/authMiddleware";
 import { validateFileSecurity } from "@/lib/uploadSecurity";
 import { uploadBufferToCloudinary } from "@/lib/cloudinary";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -46,26 +47,15 @@ export async function POST(req: Request) {
     });
 
     // Phase 10: Trigger Socket.io notification
-    try {
-      await fetch("http://localhost:3001/api/trigger-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "media-uploaded",
-          payload: {
-            id: eventMedia.id,
-            eventId,
-            type: "VIDEO",
-            url: uploadResult.secure_url,
-            publicId: uploadResult.public_id,
-            uploadedBy: auth.name || "Event Manager",
-            timestamp: new Date(),
-          },
-        }),
-      });
-    } catch {
-      // Ignore socket offline
-    }
+    await safeTriggerCompanionEvent("media-uploaded", {
+      id: eventMedia.id,
+      eventId,
+      type: "VIDEO",
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      uploadedBy: auth.name || "Event Manager",
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({
       success: true,

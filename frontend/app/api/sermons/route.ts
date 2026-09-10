@@ -4,6 +4,7 @@ import { requireEventManagerOrDev } from '@/lib/authMiddleware';
 import { uploadBufferToCloudinary } from '@/lib/cloudinary';
 import { validateFileSecurity } from '@/lib/uploadSecurity';
 import { sendPushNotification } from '@/lib/firebaseAdmin';
+import { safeTriggerCompanionEvent } from '@/lib/socketTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -324,45 +325,26 @@ export async function POST(req: Request) {
     });
 
     // 7. Real-time broadcast triggers via backend companion
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'sermon.created',
-          payload: {
-            id: createdSermon.id,
-            title: createdSermon.title,
-            slug: createdSermon.slug,
-            speaker: createdSermon.speaker,
-            category: createdSermon.category,
-            thumbnail: createdSermon.thumbnail,
-            status: createdSermon.status,
-            date: createdSermon.date,
-          },
-        }),
-      });
+    await safeTriggerCompanionEvent('sermon.created', {
+      id: createdSermon.id,
+      title: createdSermon.title,
+      slug: createdSermon.slug,
+      speaker: createdSermon.speaker,
+      category: createdSermon.category,
+      thumbnail: createdSermon.thumbnail,
+      status: createdSermon.status,
+      date: createdSermon.date,
+    });
 
-      if (createdSermon.status === 'PUBLISHED') {
-        await fetch(`${companionUrl}/api/trigger-event`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'notification:popup',
-            payload: {
-              title: '📖 New Sermon Published',
-              description: `"${createdSermon.title}" by ${createdSermon.speaker}`,
-              popupType: 'sermon-uploaded',
-              link: `/sermons/${createdSermon.slug}`,
-              icon: 'play',
-              timestamp: new Date(),
-            },
-          }),
-        });
-      }
-    } catch (socketErr) {
-      console.warn('[API/SERMONS/POST] Real-time socket sync failed:', socketErr);
+    if (createdSermon.status === 'PUBLISHED') {
+      await safeTriggerCompanionEvent('notification:popup', {
+        title: '📖 New Sermon Published',
+        description: `"${createdSermon.title}" by ${createdSermon.speaker}`,
+        popupType: 'sermon-uploaded',
+        link: `/sermons/${createdSermon.slug}`,
+        icon: 'play',
+        timestamp: new Date(),
+      });
     }
 
     // 8. FCM Push Notification (if published)

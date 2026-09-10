@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireEventManagerOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -136,26 +137,16 @@ export async function POST(
     );
 
     // ── Notification & Realtime Socket ──────────────────────────────────────
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "event:uploaded",
-          payload: {
-            eventId: params.id,
-            eventTitle: event.title,
-            imagesCount: savedMedia.length,
-            title: `New Event Uploaded`,
-            description: `${savedMedia.length} Media items added to ${event.title}`,
-            uploadedBy: auth.name || auth.email,
-            thumbnailUrl: savedMedia[0]?.imageUrl,
-            popupType: "event-images-uploaded",
-          },
-        }),
-      });
-    } catch { /* Socket offline — skip */ }
+    await safeTriggerCompanionEvent("event:uploaded", {
+      eventId: params.id,
+      eventTitle: event.title,
+      imagesCount: savedMedia.length,
+      title: `New Event Uploaded`,
+      description: `${savedMedia.length} Media items added to ${event.title}`,
+      uploadedBy: auth.name || auth.email,
+      thumbnailUrl: savedMedia[0]?.imageUrl,
+      popupType: "event-images-uploaded",
+    });
 
     // ── FCM Push Notification ───────────────────────────────────────────────
     try {

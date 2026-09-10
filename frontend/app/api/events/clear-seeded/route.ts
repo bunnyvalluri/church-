@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireEventManagerOrDev } from "@/lib/authMiddleware";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -37,19 +38,10 @@ export async function POST(req: Request) {
     console.log(`[EVENTS] Cleared ${result.count} seeded events/services from database.`);
 
     // Trigger Socket.io companion to auto-refresh landing page
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "events:updated", // Auto-refreshes landing/event page lists
-          payload: { action: "bulk-deleted", count: result.count },
-        }),
-      });
-    } catch (socketErr) {
-      console.warn("[EVENTS] Socket companion broadcast skipped:", socketErr);
-    }
+    await safeTriggerCompanionEvent("events:updated", {
+      action: "bulk-deleted",
+      count: result.count,
+    });
 
     return NextResponse.json({
       success: true,

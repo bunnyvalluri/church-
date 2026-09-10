@@ -9,11 +9,13 @@ export async function GET(req: Request) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    const res = await fetch(`${companionUrl}/api/admin/sms/settings`);
-    if (res.ok) {
-      const data = await res.json();
-      return NextResponse.json(data);
+    const companionUrl = process.env.SOCKET_INTERNAL_URL || process.env.NEXT_PUBLIC_SOCKET_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001');
+    if (companionUrl) {
+      const res = await fetch(`${companionUrl}/api/admin/sms/settings`);
+      if (res.ok) {
+        const data = await res.json();
+        return NextResponse.json(data);
+      }
     }
   } catch {}
 

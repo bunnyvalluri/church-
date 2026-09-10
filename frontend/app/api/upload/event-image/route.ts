@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireEventManagerOrDev } from "@/lib/authMiddleware";
 import { validateFileSecurity } from "@/lib/uploadSecurity";
 import { uploadBufferToCloudinary, TargetFolderType } from "@/lib/cloudinary";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -55,26 +56,15 @@ export async function POST(req: Request) {
       });
 
       // Phase 10: Trigger Socket.io real-time popup
-      try {
-        await fetch("http://localhost:3001/api/trigger-event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "media-uploaded",
-            payload: {
-              id: eventMedia.id,
-              eventId,
-              type: "IMAGE",
-              url: uploadResult.secure_url,
-              publicId: uploadResult.public_id,
-              uploadedBy: auth.name || "Event Manager",
-              timestamp: new Date(),
-            },
-          }),
-        });
-      } catch {
-        // Socket server optional failover
-      }
+      await safeTriggerCompanionEvent("media-uploaded", {
+        id: eventMedia.id,
+        eventId,
+        type: "IMAGE",
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        uploadedBy: auth.name || "Event Manager",
+        timestamp: new Date(),
+      });
     }
 
     return NextResponse.json({

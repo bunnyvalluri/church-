@@ -74,7 +74,10 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+    const companionUrl = process.env.SOCKET_INTERNAL_URL || process.env.NEXT_PUBLIC_SOCKET_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001');
+    if (!companionUrl) {
+      return NextResponse.json({ success: false, error: 'SMS companion service is not available.' }, { status: 503 });
+    }
 
     const res = await fetch(`${companionUrl}/api/admin/sms/send`, {
       method: 'POST',
