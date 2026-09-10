@@ -59,4 +59,50 @@ test.describe('Production Post-Deployment Smoke Verification', () => {
       await expect(mainContent.first()).toBeVisible();
     }
   });
+
+  test('verifies Service Worker sw.js is served with Cache-Control headers and scheme security guards', async ({ request }) => {
+    const swRes = await request.get(`${BASE_URL}/sw.js`);
+    expect(swRes.status()).toBe(200);
+    const swText = await swRes.text();
+
+    // Verify version bump
+    expect(swText).toContain('CACHE_VERSION = "v6"');
+
+    // Verify protocol scheme guard exists
+    expect(swText).toContain('url.protocol !== "http:" && url.protocol !== "https:"');
+
+    // Verify safeCachePut helper is implemented
+    expect(swText).toContain('safeCachePut');
+
+    // Verify same-origin isolation for scripts and stylesheets
+    expect(swText).toContain('isSameOrigin && url.pathname.match(/\\.(css|js)$/i)');
+  });
+
+  test('verifies Web App Manifest is valid and linked', async ({ request }) => {
+    const manifestRes = await request.get(`${BASE_URL}/manifest.json`);
+    expect(manifestRes.status()).toBe(200);
+    const manifest = await manifestRes.json();
+    expect(manifest.name).toContain('Kingdom of Christ');
+    expect(manifest.start_url).toBe('/');
+    expect(manifest.display).toBe('standalone');
+  });
+
+  test('verifies live page execution does not throw chrome-extension Cache.put TypeError', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (err) => errors.push(err.message));
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        errors.push(msg.text());
+      }
+    });
+
+    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+
+    // Ensure no chrome-extension cache put errors occurred
+    const extensionCacheErrors = errors.filter((e) =>
+      e.includes("Request scheme 'chrome-extension' is unsupported") ||
+      e.includes("Failed to execute 'put' on 'Cache'")
+    );
+    expect(extensionCacheErrors).toHaveLength(0);
+  });
 });

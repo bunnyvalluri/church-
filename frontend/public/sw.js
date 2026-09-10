@@ -1,13 +1,22 @@
-// Kingdom of Christ Ministries Service Worker — Enterprise Offline-First Edition
-const CACHE_VERSION = "v5";
+// Kingdom of Christ Ministries Service Worker — Enterprise Offline-First Edition (v6)
+// Hardened for Cross-Browser Compatibility, Scheme Validation & Extension Safety
+
+const CACHE_VERSION = "v6";
 const STATIC_CACHE_NAME = `kcm-static-${CACHE_VERSION}`;
 const PUBLIC_CONTENT_CACHE = `kcm-public-content-${CACHE_VERSION}`;
+const ALLOWED_CACHES = [STATIC_CACHE_NAME, PUBLIC_CONTENT_CACHE];
 
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
   "/logo.png",
   "/offline"
+];
+
+// Whitelisted external asset domains (images / fonts only)
+const WHITELISTED_EXTERNAL_ORIGINS = [
+  "https://images.unsplash.com",
+  "https://res.cloudinary.com"
 ];
 
 // Install event — Cache core static shell and offline page
@@ -21,17 +30,16 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate event — Clean outdated legacy caches
+// Activate event — Safely clean outdated legacy caches belonging to this application
 self.addEventListener("activate", (event) => {
-  const allowedCaches = [STATIC_CACHE_NAME, PUBLIC_CONTENT_CACHE];
-
   event.waitUntil(
     caches
       .keys()
       .then((cacheNames) =>
         Promise.all(
           cacheNames.map((name) => {
-            if (!allowedCaches.includes(name)) {
+            // Only prune caches matching the 'kcm-' prefix to avoid clearing unrelated caches
+            if (name.startsWith("kcm-") && !ALLOWED_CACHES.includes(name)) {
               console.log("[SW] Purging outdated cache:", name);
               return caches.delete(name);
             }
@@ -67,16 +75,77 @@ function isPrivatePath(pathname) {
   );
 }
 
-// Fetch event router with secure caching strategies
+// Helper: Validate whether a request and response can be safely cached via Cache API
+function isCacheable(request, response) {
+  if (!request || !response) return false;
+  if (request.method !== "GET") return false;
+
+  try {
+    const parsedUrl = new URL(request.url);
+    // The Cache API only supports http: and https: request schemes.
+    // Chrome extensions (chrome-extension://), Firefox extensions (moz-extension://),
+    // browser internals (chrome://, devtools://, about:), and non-network schemes (data:, blob:, file:)
+    // are strictly unsupported by the Cache API and will throw TypeError on cache.put().
+    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  // Only cache successful 200 OK responses with basic or cors type.
+  // Never cache opaque (type 0), error, or partial responses in persistent static caches.
+  if (response.status !== 200) return false;
+  if (response.type !== "basic" && response.type !== "cors") return false;
+
+  return true;
+}
+
+// Helper: Safe Cache Put operation with defensive checks and error handling
+function safeCachePut(cacheName, request, response) {
+  if (!isCacheable(request, response)) {
+    return Promise.resolve();
+  }
+
+  const responseToCache = response.clone();
+  return caches
+    .open(cacheName)
+    .then((cache) => cache.put(request, responseToCache))
+    .catch((err) => {
+      // Prevent unhandled promise rejections while logging in local development
+      if (self.location.hostname === "localhost") {
+        console.warn("[SW] Cache.put warning for", request.url, err);
+      }
+    });
+}
+
+// Fetch event router with secure caching strategies & strict scheme validation
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  if (request.method !== "GET") return;
 
-  const url = new URL(request.url);
+  // 1. Check HTTP Method: Cache API only handles GET requests
+  if (!request || request.method !== "GET") return;
 
-  // 1. STRICT NETWORK ONLY for private/auth/payment endpoints
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch {
+    return; // Unparseable URL, let browser handle natively
+  }
+
+  // 2. STRICT SCHEME VALIDATION:
+  // Only handle http: and https: protocols.
+  // Immediately bypass chrome-extension://, moz-extension://, chrome://, devtools://, data:, blob:, file:, etc.
+  // Browser extensions and browser-internal fetches will bypass the SW and complete normally.
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return;
+  }
+
+  const isSameOrigin = url.origin === self.location.origin;
+
+  // 3. STRICT NETWORK ONLY for private/auth/payment endpoints (Same-origin only)
   // Never cache sensitive user data or authentication tokens in service worker cache
-  if (isPrivatePath(url.pathname)) {
+  if (isSameOrigin && isPrivatePath(url.pathname)) {
     if (request.mode === "navigate") {
       event.respondWith(
         fetch(request).catch(() => {
@@ -89,22 +158,22 @@ self.addEventListener("fetch", (event) => {
     return; // Let browser perform direct network fetch for API requests
   }
 
-  // 2. CACHE FIRST Strategy for immutable assets, fonts, icons, images, and next.js static chunks
-  if (
-    url.pathname.startsWith("/_next/static/") ||
-    url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|avif|woff|woff2|ttf|ico)$/i) ||
-    url.origin.includes("images.unsplash.com") ||
-    url.origin.includes("res.cloudinary.com")
-  ) {
+  // 4. CACHE FIRST Strategy for immutable assets, fonts, icons, images, and next.js static chunks
+  // Restrict to same-origin static chunks or explicitly whitelisted image CDNs
+  const isStaticAsset =
+    (isSameOrigin && (
+      url.pathname.startsWith("/_next/static/") ||
+      url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|avif|woff|woff2|ttf|ico)$/i)
+    )) ||
+    WHITELISTED_EXTERNAL_ORIGINS.includes(url.origin);
+
+  if (isStaticAsset) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) return cachedResponse;
 
         return fetch(request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(STATIC_CACHE_NAME).then((cache) => cache.put(request, copy));
-          }
+          safeCachePut(STATIC_CACHE_NAME, request, networkResponse);
           return networkResponse;
         });
       })
@@ -112,16 +181,15 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2b. STALE WHILE REVALIDATE for other scripts and stylesheets
-  if (url.pathname.match(/\.(css|js)$/i)) {
+  // 5. STALE WHILE REVALIDATE for SAME-ORIGIN scripts and stylesheets ONLY
+  // Third-party scripts (e.g. Google Auth, Firebase, YouTube, Razorpay) and extension scripts
+  // MUST NOT be intercepted or cached into the application's static cache
+  if (isSameOrigin && url.pathname.match(/\.(css|js)$/i)) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         const fetchPromise = fetch(request)
           .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              const copy = networkResponse.clone();
-              caches.open(STATIC_CACHE_NAME).then((cache) => cache.put(request, copy));
-            }
+            safeCachePut(STATIC_CACHE_NAME, request, networkResponse);
             return networkResponse;
           })
           .catch(() => cachedResponse);
@@ -132,28 +200,28 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 3. STALE WHILE REVALIDATE for public content (sermons, events, gallery, ngo, about)
-  if (
-    url.pathname.startsWith("/sermons") ||
-    url.pathname.startsWith("/events") ||
-    url.pathname.startsWith("/gallery") ||
-    url.pathname.startsWith("/ngo") ||
-    url.pathname.startsWith("/about") ||
-    url.pathname.startsWith("/prayer") ||
-    url.pathname.startsWith("/give") ||
-    url.pathname.startsWith("/api/events") ||
-    url.pathname.startsWith("/api/sermons") ||
-    url.pathname.startsWith("/api/gallery") ||
-    url.pathname.startsWith("/api/ngo")
-  ) {
+  // 6. STALE WHILE REVALIDATE for SAME-ORIGIN public content (sermons, events, gallery, ngo, about)
+  const isPublicContent =
+    isSameOrigin && (
+      url.pathname.startsWith("/sermons") ||
+      url.pathname.startsWith("/events") ||
+      url.pathname.startsWith("/gallery") ||
+      url.pathname.startsWith("/ngo") ||
+      url.pathname.startsWith("/about") ||
+      url.pathname.startsWith("/prayer") ||
+      url.pathname.startsWith("/give") ||
+      url.pathname.startsWith("/api/events") ||
+      url.pathname.startsWith("/api/sermons") ||
+      url.pathname.startsWith("/api/gallery") ||
+      url.pathname.startsWith("/api/ngo")
+    );
+
+  if (isPublicContent) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         const fetchPromise = fetch(request)
           .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              const copy = networkResponse.clone();
-              caches.open(PUBLIC_CONTENT_CACHE).then((cache) => cache.put(request, copy));
-            }
+            safeCachePut(PUBLIC_CONTENT_CACHE, request, networkResponse);
             return networkResponse;
           })
           .catch(() => cachedResponse);
@@ -164,8 +232,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 4. Default Navigation Strategy (HTML pages)
-  if (request.mode === "navigate") {
+  // 7. DEFAULT NAVIGATION Strategy for same-origin HTML pages
+  if (request.mode === "navigate" && isSameOrigin) {
     event.respondWith(
       fetch(request).catch(() => {
         return caches.match(request).then((cachedResponse) => {
@@ -176,6 +244,7 @@ self.addEventListener("fetch", (event) => {
         });
       })
     );
+    return;
   }
 });
 

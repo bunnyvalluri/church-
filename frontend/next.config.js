@@ -95,6 +95,14 @@ const nextConfig = {
   // -- Security & Caching Headers --
   async headers() {
     return [
+      // Service Worker — never cache so updates take effect immediately
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+        ],
+      },
       // Static assets — long cache
       {
         source: '/_next/static/(.*)',

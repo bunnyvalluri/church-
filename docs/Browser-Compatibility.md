@@ -30,7 +30,7 @@ The application is engineered and continuously validated against standard modern
 ## 2. Web API Feature Support Matrix
 
 | Web Feature / API | Chrome / Edge | Safari (macOS & iOS) | Firefox | Samsung Internet | Fallback Mechanism |
-| :--- | :---: | :---: | :---: | :---: | :--- |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | **Service Workers** | ✅ Full | ✅ Full (15.4+) | ✅ Full | ✅ Full | Graceful degradation to standard online HTTP |
 | **IndexedDB** | ✅ Full | ✅ Full | ✅ Full | ✅ Full | Local in-memory session cache |
 | **Web Push (FCM)** | ✅ Full | ✅ Full (iOS 16.4+ / macOS 13+) | ✅ Full | ✅ Full | Automated Email & SMS alerts |
@@ -46,6 +46,7 @@ The application is engineered and continuously validated against standard modern
 2. **Safari Date Parsing**: Safari rejects non-standard ISO date strings (`YYYY-MM-DD HH:mm`). All dates are standardized using `date-fns` before formatting in UI components.
 3. **Samsung Internet High Contrast Mode**: Ensured semantic CSS border tokens (`border-border`) remain visible when users enable Samsung Internet's forced High Contrast Theme.
 4. **Firefox Scrollbar Styling**: Configured standard `scrollbar-width: thin; scrollbar-color: ...` alongside webkit scrollbar rules.
+5. **Chrome/Edge Extension Scheme Rejection (`chrome-extension://`)**: In Chromium browsers (Chrome, Edge, Brave, Samsung Internet), installed extensions inject content scripts and fetch assets using `chrome-extension://` schemes. The W3C Cache API specification explicitly rejects non-`http(s)` schemes with `TypeError: Failed to execute 'put' on 'Cache': Request scheme 'chrome-extension' is unsupported`. The Service Worker enforces an early protocol bypass (`if (url.protocol !== "http:" && url.protocol !== "https:") return;`) and isolates script/style caching strictly to same-origin requests (`url.origin === self.location.origin`), completely protecting against extension-injected fetch rejections.
 
 ---
 
@@ -65,6 +66,7 @@ npm run test:e2e -w frontend
 | :--- | :--- | :--- |
 | PWA Install prompt not appearing in iOS Safari | iOS Safari does not support `BeforeInstallPromptEvent` | Display customized visual instructions: "Tap Share -> Add to Home Screen". |
 | Web Push notifications failing on older iOS | iOS version < 16.4 or app not installed to Home Screen | On iOS, Web Push requires PWA Home Screen installation. Prompt user to install PWA first. |
+| Cache put TypeError on Chrome Extension URLs | Browser extensions inject `chrome-extension://` requests into service worker fetch event | Top-level scheme check `url.protocol !== "http:" && url.protocol !== "https:"` bypasses non-web schemes. |
 
 ---
 
@@ -75,3 +77,4 @@ npm run test:e2e -w frontend
 - [Responsive-Design.md](Responsive-Design.md) — Viewport layout standards.
 - [Testing.md](Testing.md) — Playwright test execution guides.
 - [PWA.md](PWA.md) — Progressive Web App installation guidelines.
+- [SERVICE-WORKER.md](SERVICE-WORKER.md) — Service worker implementation manual.
