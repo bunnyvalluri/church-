@@ -17,7 +17,9 @@ export default function ServiceWorkerProvider() {
     navigator.serviceWorker
       .register("/sw.js")
       .then((reg) => {
-        console.log("[PWA] ServiceWorker registered successfully:", reg.scope);
+        if (process.env.NODE_ENV === "development") {
+          console.log("[PWA] ServiceWorker registered successfully:", reg.scope);
+        }
 
         // Check for updates
         reg.onupdatefound = () => {
@@ -25,14 +27,18 @@ export default function ServiceWorkerProvider() {
           if (installingWorker) {
             installingWorker.onstatechange = () => {
               if (installingWorker.state === "installed" && navigator.serviceWorker.controller) {
-                console.log("[PWA] New content is available; please refresh.");
+                if (process.env.NODE_ENV === "development") {
+                  console.log("[PWA] New content is available; please refresh.");
+                }
               }
             };
           }
         };
       })
       .catch((err) => {
-        console.warn("[PWA] ServiceWorker registration warning:", err);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[PWA] ServiceWorker registration warning:", err);
+        }
       });
 
     // Listen to SW messages

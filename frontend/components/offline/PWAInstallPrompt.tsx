@@ -26,7 +26,9 @@ export default function PWAInstallPrompt() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
-      console.log("[PWA] User accepted install prompt");
+      if (process.env.NODE_ENV === "development") {
+        console.log("[PWA] User accepted install prompt");
+      }
     }
     setDeferredPrompt(null);
     setShowPrompt(false);
