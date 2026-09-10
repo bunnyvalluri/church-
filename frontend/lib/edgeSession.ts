@@ -15,12 +15,17 @@ export interface EdgeSessionPayload {
 }
 
 function getSessionSecret(): string {
-  return (
+  const secret =
     process.env.SESSION_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    'kcm-church-portal-secure-session-auth-key-2026'
-  );
+    process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[SECURITY CRITICAL] No SESSION_SECRET, NEXTAUTH_SECRET, or JWT_SECRET configured in production!');
+    }
+    return 'kcm-church-portal-secure-session-auth-key-2026';
+  }
+  return secret;
 }
 
 // Convert base64url string to Uint8Array

@@ -1,102 +1,64 @@
-# Role-Based Access Control (RBAC) & Authorization
+# KCM Portal — Server-Side Role-Based Access Control (RBAC) Specification
 
-## Purpose
-This document provides the definitive technical specification for authorization boundaries, permission matrices, role hierarchies, and enforcement mechanisms across the Kingdom of Christ Ministries platform.
-
-## Scope
-Covers frontend route protection, API endpoint authorization middleware (`frontend/lib/authMiddleware.ts`), and database row-level access control.
-
-## Status
-> Status: Implemented
+**Document Version:** 2.0.0  
+**Security Classification:** Enterprise Hardened  
+**Audit Date:** September 10, 2026  
 
 ---
 
-## 1. Role Hierarchy
+## 1. Role Hierarchy Matrix
 
-```mermaid
-graph TD
-    ADMIN[ADMIN - Full System Authority] --> PASTOR[PASTOR - Pastoral & Ministry Authority]
-    ADMIN --> EVENT_MGR[EVENT_MANAGER - Event Operations]
-    PASTOR --> MEMBER[MEMBER - Standard Church Member]
-    EVENT_MGR --> VOLUNTEER[VOLUNTEER - Field Operations]
-    VOLUNTEER --> MEMBER
+The KCM platform defines 6 distinct authorization roles enforced strictly on the server:
+
+```text
+SUPER_ADMIN (Global System Authority)
+     │
+   ADMIN (Church Operations & Staff Management)
+     │
+   PASTOR (Sermons, Pastoral Care & Announcements)
+     │
+ EVENT_MANAGER (Events, Attendance & Media Publishing)
+     │
+FIELD_VOLUNTEER (Event Scanning & Volunteer Operations)
+     │
+  MEMBER (Member Portal, Giving History & Personal Requests)
 ```
 
 ---
 
-## 2. Comprehensive RBAC Permissions Matrix
+## 2. Server-Side Enforcement Architecture
 
-| Resource / Capability | MEMBER | VOLUNTEER | EVENT_MANAGER | PASTOR | ADMIN |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Browse Sermons & Public Events** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Submit Prayer Requests** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Make Donations & View Personal Receipts**| ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Edit Personal Profile & Photo** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Submit Volunteer Field Reports** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Check-in Attendees via QR Code** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Create / Edit Events & Set Seat Limits** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Upload Event Media & Banners** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Publish & Manage Sermons** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Review & Pray for All Prayer Requests** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Access OpenClaw AI Ministry Assistant** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Manage Ministry & Small Groups** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **View Attendance & Giving Growth Reports**| ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Manage Users & Reassign User Roles** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **View Infrastructure Health & System Logs**| ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Export Financial Reconciliations** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Send Church-wide Push & SMS Broadcasts** | ❌ | ❌ | ❌ | ✅ | ✅ |
+### Principle of Zero Client Trust
+No role, permission flag, or user ID submitted in request bodies or query parameters is trusted. The server derives authorization exclusively from the validated database session:
+
+1. **Edge Middleware Pre-Filter (`frontend/middleware.ts`):**
+   - Intercepts requests before reaching application code.
+   - Evaluates path prefixes against verified role claims.
+   - Denies unauthorized access with HTTP 401 (Unauthenticated) or HTTP 403 (Unauthorized).
+
+2. **Route Handler Session Resolution (`frontend/lib/session.ts`):**
+   - Protected API handlers call `getServerSession()` or `requireAuth(req, allowedRoles)`.
+   - The user ID and role are loaded from the database session record.
+   - Mutations on user resources verify resource ownership (`userId === session.uid`) to prevent Insecure Direct Object References (IDOR).
 
 ---
 
-## 3. Enforcement Mechanisms
+## 3. Route & Endpoint Access Matrix
 
-### 3.1 Next.js Edge Middleware (`frontend/middleware.ts`)
-Enforces URL path prefix restrictions before page rendering:
-- `/member/*` requires `role in ['MEMBER', 'VOLUNTEER', 'EVENT_MANAGER', 'PASTOR', 'ADMIN']`
-- `/pastor/*` requires `role in ['PASTOR', 'ADMIN']`
-- `/admin/*` requires `role in ['ADMIN']`
-- `/field-volunteer/*` requires `role in ['VOLUNTEER', 'EVENT_MANAGER', 'ADMIN']`
-
-### 3.2 API Route Authorization Guard (`frontend/lib/authMiddleware.ts`)
-Validates user permissions within API route handlers:
-```typescript
-export async function requireAuth(req: NextRequest, allowedRoles?: UserRole[]) {
-  const session = await getSession(req);
-  if (!session || !session.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (allowedRoles && !allowedRoles.includes(session.user.role)) {
-    return NextResponse.json({ error: "Forbidden: Insufficient privileges" }, { status: 403 });
-  }
-  return session.user;
-}
-```
+| Route / API Group | Minimum Role | Enforced In Middleware | Enforced In Handler | IDOR Guard |
+| :--- | :--- | :--- | :--- | :--- |
+| `/admin/*`, `/api/admin/*` | `ADMIN` / `SUPER_ADMIN` | YES | YES | Global Admin Scope |
+| `/pastor/*`, `/api/pastor/*` | `PASTOR` / `ADMIN` | YES | YES | Pastoral Scope |
+| `/event-manager/*`, `/api/event-manager/*` | `EVENT_MANAGER` / `ADMIN` | YES | YES | Event Scope |
+| `/field-volunteer/*`, `/api/field-volunteer/*` | `FIELD_VOLUNTEER` | YES | YES | Volunteer Task Scope |
+| `/member/*`, `/api/member/*` | `MEMBER` | YES | YES | `userId === session.uid` |
+| `/api/donations/session/verify` | Public Webhook / Auth | Strict HMAC Check | YES | Order Signature Validated |
+| `/api/health`, `/api/ready` | Public Monitoring | N/A | YES | Read-Only Ping |
 
 ---
 
-## 4. Row-Level Ownership Protection
+## 4. Privilege Escalation Prevention
 
-To protect data privacy:
-- A `MEMBER` requesting `/api/donations/history` receives only records where `userId == session.user.id`.
-- A `MEMBER` viewing prayer requests receives public prayers or their own confidential prayers.
-- Only users with `PASTOR` or `ADMIN` roles can query unredacted confidential prayer lists across the entire church body.
-
----
-
-## 5. Troubleshooting & Diagnostics
-
-| Symptom | Cause | Resolution |
-| :--- | :--- | :--- |
-| `403 Forbidden` on `/pastor` route | User has `MEMBER` role attempting to access pastoral console | Promote user role via Admin Portal (`/admin/users`) or assign proper test account. |
-| Role change not reflecting immediately | Cached session cookie still contains old role claim | Re-authenticate to issue a fresh `kcm_session` cookie. |
-
----
-
-## Security Considerations
-- Client-side role claims are never trusted; every mutation re-verifies role against PostgreSQL in the server session.
-- Privilege escalation attempts are logged with severity `WARN` to MongoDB audit trail.
-
-## Related Documentation
-- [Authentication.md](Authentication.md) — Login and session mechanisms.
-- [Security.md](Security.md) — Threat model and security controls.
-- [Admin-Portal.md](Admin-Portal.md) — Administrative user management.
+- **Registration Gate:** The `/api/auth/register` handler ignores any `role` field in the client request body and hardcodes `role: 'MEMBER'`.
+- **User Profile Update Gate:** Self-service profile update endpoints (`/api/member/profile`) prohibit modification of `role`, `isSuperAdmin`, `createdAt`, or `emailVerified` fields.
+- **Admin Promotion Gate:** Role elevation to `PASTOR`, `ADMIN`, or `SUPER_ADMIN` requires an active `ADMIN` or `SUPER_ADMIN` session and creates an immutable audit record in PostgreSQL.

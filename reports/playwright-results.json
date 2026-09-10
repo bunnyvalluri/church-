@@ -4,7 +4,7 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/accessibility.spec.ts",
+      "tests/smoke/production-smoke.spec.ts",
       "--project=chromium-desktop"
     ],
     "configFile": "C:\\K.C.M-Portal\\frontend\\playwright.config.ts",
@@ -19,7 +19,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "projects": [
@@ -28,7 +28,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 4
         },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
@@ -44,7 +44,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 4
         },
         "id": "firefox-desktop",
         "name": "firefox-desktop",
@@ -60,7 +60,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 4
         },
         "id": "webkit-desktop",
         "name": "webkit-desktop",
@@ -76,7 +76,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 4
         },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
@@ -92,7 +92,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 4
         },
         "id": "mobile-safari",
         "name": "mobile-safari",
@@ -138,20 +138,20 @@
   },
   "suites": [
     {
-      "title": "accessibility.spec.ts",
-      "file": "accessibility.spec.ts",
+      "title": "smoke\\production-smoke.spec.ts",
+      "file": "smoke/production-smoke.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "WCAG 2.2 AA Accessibility Audit",
-          "file": "accessibility.spec.ts",
-          "line": 3,
+          "title": "Production Post-Deployment Smoke Verification",
+          "file": "smoke/production-smoke.spec.ts",
+          "line": 13,
           "column": 6,
           "specs": [
             {
-              "title": "renders SkipToContent link for keyboard users",
+              "title": "verifies live production homepage HTTP 200 and title integrity",
               "ok": true,
               "tags": [],
               "tests": [
@@ -166,12 +166,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3350,
+                      "duration": 4568,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:34:32.939Z",
+                      "startTime": "2026-09-10T11:47:41.284Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -179,13 +179,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "ddd864604af8a6a0198f-db4bc05602a5778ca947",
-              "file": "accessibility.spec.ts",
-              "line": 4,
+              "id": "0c9032c7a0b56ba6243c-224876d9add1a3515b8c",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 16,
               "column": 7
             },
             {
-              "title": "main content container has focusable tabIndex",
+              "title": "verifies robots.txt and sitemap.xml endpoints are live and healthy",
               "ok": true,
               "tags": [],
               "tests": [
@@ -200,12 +200,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 3148,
+                      "duration": 2965,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:34:32.939Z",
+                      "startTime": "2026-09-10T11:47:41.341Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -213,9 +213,77 @@
                   "status": "expected"
                 }
               ],
-              "id": "ddd864604af8a6a0198f-96d10bee56f55fd477b5",
-              "file": "accessibility.spec.ts",
-              "line": 10,
+              "id": "0c9032c7a0b56ba6243c-b42fae94691f625b7614",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 27,
+              "column": 7
+            },
+            {
+              "title": "verifies health API endpoint responds with healthy status",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2960,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T11:47:41.327Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c9032c7a0b56ba6243c-5d105973afcec68acca9",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "verifies essential public routes load cleanly in production",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 9964,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T11:47:41.325Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c9032c7a0b56ba6243c-55f00a513b870e9fa7f2",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 42,
               "column": 7
             }
           ]
@@ -225,9 +293,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-10T11:34:32.367Z",
-    "duration": 4191.67,
-    "expected": 2,
+    "startTime": "2026-09-10T11:47:40.439Z",
+    "duration": 11248.851,
+    "expected": 4,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

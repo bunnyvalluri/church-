@@ -31,9 +31,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // Keep build errors visible but non-blocking for existing tech debt
-    // Set to false once all TS errors are resolved
-    ignoreBuildErrors: true,
+    // All TypeScript errors resolved - enforce strict compile-time checking
+    ignoreBuildErrors: false,
   },
 
   transpilePackages: [
