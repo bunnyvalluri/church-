@@ -81,15 +81,15 @@ export const metadata: Metadata = {
     apple: [{ url: "/logo.png", type: "image/png" }],
     shortcut: "/logo.png",
   },
-  applicationName: "Kingdom of Christ Ministries",
+  applicationName: "KCM Church",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Kingdom of Christ Ministries",
+    title: "KCM Church",
   },
   other: {
     "mobile-web-app-capable": "yes",
-    "site_name": "Kingdom of Christ Ministries",
+    "site_name": "KCM Church",
   },
   alternates: {
     canonical: SITE_URL,
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
     description:
       "Kingdom of Christ Ministries — a Christ-centred church in Jeedimetla & Bahadurpally, Hyderabad. Worship, sermons, prayer, ministries and community outreach.",
     url: SITE_URL,
-    siteName: "Kingdom of Christ Ministries",
+    siteName: "KCM Church",
     type: "website",
     locale: "en_IN",
     images: [
