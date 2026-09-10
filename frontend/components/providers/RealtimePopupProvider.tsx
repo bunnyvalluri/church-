@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import NotificationPopup, { NotificationData } from "@/components/NotificationPopup";
 import { requestFCMToken } from "@/lib/firebase";
+import { getSharedSocket } from "@/lib/socketClient";
 
 export default function RealtimePopupProvider({ children }: { children: React.ReactNode }) {
   const [activeNotification, setActiveNotification] = useState<NotificationData | null>(null);
@@ -12,27 +13,16 @@ export default function RealtimePopupProvider({ children }: { children: React.Re
     // ── Defer all realtime connections until after first paint (3 s idle) ──────
     // This prevents Socket.io + FCM from competing with critical rendering.
     const timer = setTimeout(async () => {
-    // 1. Dynamically import socket.io-client to avoid blocking the initial JS bundle
-    const { default: io } = await import("socket.io-client");
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-    if (!socketUrl && typeof window !== "undefined" && window.location.protocol === "https:") {
-      // In production HTTPS without configured socket companion URL, skip connection
+    // 1. Obtain shared managed socket (safely circuit-broken in production HTTPS if offline)
+    const socket = await getSharedSocket();
+    if (!socket) {
+      // Companion server is not configured or in production HTTPS without endpoint
       return;
     }
-    const resolvedUrl = socketUrl || "http://localhost:3001";
-    const socket = io(resolvedUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 3,
-    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("[SOCKET] Connected to realtime companion server:", socket.id);
-    });
-
-    socket.on("connect_error", () => {
-      // Quietly handle connection errors when optional socket companion server is offline
     });
 
     // 2. Listen for generic socket popups and event upload notifications

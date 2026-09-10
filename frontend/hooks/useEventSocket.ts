@@ -17,8 +17,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSWRConfig } from 'swr';
-
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+import { getSharedSocket } from '@/lib/socketClient';
 
 interface KcmEvent {
   id: string;
@@ -60,19 +59,12 @@ export function useEventSocket(): UseEventSocketReturn {
   }, []);
 
   useEffect(() => {
-    // Dynamically import socket.io-client to avoid SSR issues
     let isMounted = true;
 
     async function initSocket() {
       try {
-        const { io } = await import('socket.io-client');
-
-        const socket = io(SOCKET_URL, {
-          transports: ['websocket', 'polling'],
-          reconnectionAttempts: 5,
-          reconnectionDelay: 2000,
-          timeout: 10000,
-        });
+        const socket = await getSharedSocket();
+        if (!socket || !isMounted) return;
 
         socketRef.current = socket;
 

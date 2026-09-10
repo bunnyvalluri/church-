@@ -28,9 +28,38 @@ try {
   console.warn('[METRICS] Metrics module loading note:', e.message);
 }
 
+// ── Secure CORS Configuration ───────────────────────────────────────────────
+const ALLOWED_ORIGINS = [
+  'https://kcmchurch.vercel.app',
+  'https://church-valluri-rahuls-projects.vercel.app',
+  'https://church-eight-hazel.vercel.app',
+  'https://kcmchurch.org',
+  'https://www.kcmchurch.org',
+  'https://admin.kcmchurch.org',
+  'https://pastor.kcmchurch.org',
+  'https://member.kcmchurch.org',
+  'https://ngo.kcmchurch.org',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://127.0.0.1:3000',
+];
+
+function isOriginAllowed(origin) {
+  if (!origin) return true; // server-to-server or non-browser tools
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  if (/^https:\/\/[a-z0-9-]+-valluri-rahuls-projects\.vercel\.app$/.test(origin)) return true;
+  if (/^https:\/\/kcmchurch-[a-z0-9-]+\.vercel\.app$/.test(origin)) return true;
+  return false;
+}
+
 // Enable CORS
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin;
+  if (origin && isOriginAllowed(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-KCM-Webhook-Secret");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   if (req.method === 'OPTIONS') {
@@ -455,8 +484,49 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
   if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') {
     io = new Server(server, {
       cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: (origin, callback) => {
+          if (isOriginAllowed(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('CORS origin not permitted by KCM Security Policy'));
+          }
+        },
+        methods: ["GET", "POST"],
+        credentials: true
+      }
+    });
+
+    // ── Socket Authentication Middleware ────────────────────────────────────
+    io.use(async (socket, next) => {
+      try {
+        const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.replace('Bearer ', '');
+        if (!token) {
+          // Allow anonymous read-only access for public landing page listeners
+          socket.data.user = { role: 'GUEST', isAnonymous: true };
+          return next();
+        }
+
+        // Validate token via Firebase Admin if initialized
+        try {
+          const admin = require('firebase-admin');
+          if (admin.apps && admin.apps.length > 0) {
+            const decodedToken = await admin.auth().verifyIdToken(token);
+            socket.data.user = {
+              uid: decodedToken.uid,
+              email: decodedToken.email,
+              role: decodedToken.role || 'MEMBER',
+            };
+            return next();
+          }
+        } catch (authErr) {
+          console.warn('[SOCKET_AUTH] Token verification rejected:', authErr.message);
+          return next(new Error('Authentication failed: invalid session token'));
+        }
+
+        socket.data.user = { role: 'GUEST', isAnonymous: true };
+        return next();
+      } catch (err) {
+        return next(err);
       }
     });
 
@@ -479,17 +549,56 @@ if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket' || PROCESS_TYPE === 'api
     }
 
     io.on('connection', (socket) => {
-      console.log(`[SOCKET] Client connected: ${socket.id}`);
+      const userRole = socket.data?.user?.role || 'GUEST';
+      console.log(`[SOCKET] Client connected: ${socket.id} (role: ${userRole})`);
       
       socket.on('join', (room) => {
-        if (room && typeof room === 'string') {
-          socket.join(room);
-          console.log(`[SOCKET] Client ${socket.id} joined room: ${room}`);
+        if (!room || typeof room !== 'string') return;
+        const cleanRoom = room.trim();
+
+        // 1. Public rooms — any visitor or landing page listener
+        const PUBLIC_ROOMS = ['events', 'kcm-global', 'services', 'sermons', 'ngo-gallery'];
+        if (PUBLIC_ROOMS.includes(cleanRoom)) {
+          socket.join(cleanRoom);
+          console.log(`[SOCKET] Client ${socket.id} joined public room: ${cleanRoom}`);
+          return;
         }
+
+        // 2. Member personal room (member:<uid>)
+        if (cleanRoom.startsWith('member:')) {
+          const targetUid = cleanRoom.replace('member:', '');
+          const currentUser = socket.data?.user;
+          if (
+            targetUid === 'guest' ||
+            currentUser?.uid === targetUid ||
+            ['ADMIN', 'SUPER_ADMIN', 'PASTOR'].includes(currentUser?.role)
+          ) {
+            socket.join(cleanRoom);
+            console.log(`[SOCKET] Client ${socket.id} joined member room: ${cleanRoom}`);
+          } else {
+            console.warn(`[SOCKET] Blocked unauthorized join to room: ${cleanRoom} from ${socket.id}`);
+          }
+          return;
+        }
+
+        // 3. Privileged Admin & Staff rooms
+        const PRIVILEGED_ROOMS = ['admin', 'ngo:donations', 'finance', 'staff'];
+        if (PRIVILEGED_ROOMS.includes(cleanRoom)) {
+          const role = socket.data?.user?.role;
+          if (['ADMIN', 'SUPER_ADMIN', 'PASTOR'].includes(role)) {
+            socket.join(cleanRoom);
+            console.log(`[SOCKET] Authorized admin client ${socket.id} joined privileged room: ${cleanRoom}`);
+          } else {
+            console.warn(`[SOCKET] Blocked unauthorized client ${socket.id} from joining privileged room: ${cleanRoom}`);
+          }
+          return;
+        }
+
+        console.warn(`[SOCKET] Blocked unrecognized room join attempt: ${cleanRoom} from ${socket.id}`);
       });
 
-      socket.on('disconnect', () => {
-        console.log(`[SOCKET] Client disconnected: ${socket.id}`);
+      socket.on('disconnect', (reason) => {
+        console.log(`[SOCKET] Client disconnected: ${socket.id} (${reason})`);
       });
     });
 

@@ -10,6 +10,7 @@
 import crypto from "crypto";
 import { insertSystemEvent } from "../repositories/systemEventRepository";
 import { trackActivity } from "./activityService";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 export interface DomainEventPayload {
   eventId?: string;
@@ -67,29 +68,18 @@ export async function publishDomainEvent(event: DomainEventPayload): Promise<{
   // 3. Socket.io Real-time Broadcast via Companion Backend
   let socketBroadcast = false;
   if (event.broadcastSocket !== false) {
-    const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    try {
-      const response = await fetch(`${companionUrl}/api/trigger-event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: event.eventType,
-          room: event.socketRoom,
-          payload: {
-            ...event.payload,
-            eventId,
-            aggregateType: event.aggregateType,
-            aggregateId: event.aggregateId,
-            popupType: event.socketPopupType || "domain-event",
-            timestamp: new Date().toISOString(),
-          },
-        }),
-      });
-      socketBroadcast = response.ok;
-    } catch (socketErr) {
-      // Non-blocking warning
-      socketBroadcast = false;
-    }
+    socketBroadcast = await safeTriggerCompanionEvent(
+      event.eventType,
+      {
+        ...event.payload,
+        eventId,
+        aggregateType: event.aggregateType,
+        aggregateId: event.aggregateId,
+        popupType: event.socketPopupType || "domain-event",
+        timestamp: new Date().toISOString(),
+      },
+      event.socketRoom
+    );
   }
 
   return {

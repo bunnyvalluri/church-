@@ -4,13 +4,13 @@
 // ─── Content Security Policy ────────────────────────────────────────────────
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com;
-  font-src 'self' https://fonts.gstatic.com;
-  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com https://*.youtube.com https://youtube.com https://*.googlevideo.com https://*.google.com https://*.doubleclick.net;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://apis.google.com https://*.firebaseapp.com https://accounts.google.com https://www.youtube.com https://s.ytimg.com https://*.youtube.com https://*.ytimg.com https://vercel.live;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://vercel.live;
+  font-src 'self' https://fonts.gstatic.com https://vercel.live https://assets.vercel.com;
+  img-src 'self' data: blob: https://res.cloudinary.com https://firebasestorage.googleapis.com https://images.unsplash.com https://lh3.googleusercontent.com https://api.qrserver.com https://*.googleusercontent.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com https://*.youtube.com https://youtube.com https://*.googlevideo.com https://*.google.com https://*.doubleclick.net https://vercel.live https://vercel.com;
   media-src 'self' blob: data: https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.ytimg.com https://res.cloudinary.com https://firebasestorage.googleapis.com;
-  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-7d324.firebaseapp.com https://accounts.google.com https://*.googleapis.com https://oauth2.googleapis.com https://www.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://img.youtube.com https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.google.com https://googleads.g.doubleclick.net https://*.doubleclick.net;
-  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://*.youtube.com https://*.firebaseapp.com https://kcm-church-7d324.firebaseapp.com https://accounts.google.com https://www.google.com https://maps.google.com https://accounts.google.com/o/oauth2/auth https://accounts.google.com/signin;
+  connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://api.resend.com https://api.twilio.com https://graph.facebook.com https://livekit.io wss: ws: https://*.neon.tech https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://kcm-church-7d324.firebaseapp.com https://accounts.google.com https://*.googleapis.com https://oauth2.googleapis.com https://www.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://i.ytimg.com https://img.youtube.com https://*.googlevideo.com https://*.youtube.com https://youtube.com https://*.google.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://vercel.live https://*.pusher.com wss://*.pusher.com https://api.kcmchurch.org wss://api.kcmchurch.org;
+  frame-src 'self' https://checkout.razorpay.com https://razorpay.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://*.youtube.com https://*.firebaseapp.com https://kcm-church-7d324.firebaseapp.com https://accounts.google.com https://www.google.com https://maps.google.com https://accounts.google.com/o/oauth2/auth https://accounts.google.com/signin https://vercel.live;
   frame-ancestors 'self';
   base-uri 'self';
   form-action 'self';
@@ -134,7 +134,7 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=(self), interest-cohort=()' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com" "https://js.stripe.com"), fullscreen=(self)' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },

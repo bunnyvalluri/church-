@@ -38,7 +38,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import io from "socket.io-client";
+import { createDedicatedSocket } from "@/lib/socketClient";
 
 interface PurposeItem {
   id: string;
@@ -429,38 +429,25 @@ export default function GiveForm({ initialPurposes = [], initialBranches = [] }:
 
   // Connect Socket.IO for real-time success listener
   const connectSocket = useCallback((sid: string) => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "";
-    const isProduction = process.env.NODE_ENV === "production";
-    const isLocalhost = socketUrl.includes("localhost") || socketUrl.includes("127.0.0.1");
-    if (!socketUrl || (isProduction && (isLocalhost || !socketUrl))) {
-      return () => {};
-    }
+    let active = true;
 
-    const socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      timeout: 8000,
-    });
+    createDedicatedSocket().then((socket) => {
+      if (!socket || !active) return;
+      socketRef.current = socket;
 
-    socketRef.current = socket;
+      socket.on("connect", () => {
+        socket.emit("join", `member:${user?.uid || "guest"}`);
+      });
 
-    socket.on("connect", () => {
-      socket.emit("join", `member:${user?.uid || "guest"}`);
-    });
-
-    socket.on("donation.success", (data: any) => {
-      if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
-        showToast("Payment verified! Redirecting...", "success");
-        setTimeout(() => {
-          window.location.href = `/give/receipt/${data.donationId}`;
-        }, 1000);
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+      socket.on("donation.success", (data: any) => {
+        if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
+          showToast("Payment verified! Redirecting...", "success");
+          setTimeout(() => {
+            window.location.href = `/give/receipt/${data.donationId}`;
+          }, 1000);
+        }
+      });
+    }).catch(() => {});
   }, [user, referenceNumber]);
 
   useEffect(() => {

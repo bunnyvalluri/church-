@@ -6,26 +6,15 @@
 import { prisma } from "@/lib/prisma";
 import { sendPushNotification } from "@/lib/firebaseAdmin";
 import { emailService } from "@/lib/email";
+import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
-const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
 const resendKey = process.env.RESEND_API_KEY || "";
 
 /**
  * Trigger a Socket.IO broadcast via companion companion server.
  */
 export async function triggerSocketBroadcast(type: string, payload: any) {
-  try {
-    const res = await fetch(`${companionUrl}/api/trigger-event`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, payload }),
-    });
-    if (!res.ok) {
-      console.warn(`[SOCKET BROADCAST] Companion server responded with status: ${res.status}`);
-    }
-  } catch (err: any) {
-    console.error(`[SOCKET BROADCAST] Error contacting companion server:`, err.message);
-  }
+  return safeTriggerCompanionEvent(type, payload);
 }
 
 /**

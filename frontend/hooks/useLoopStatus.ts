@@ -11,7 +11,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { getSharedSocket } from '@/lib/socketClient';
 
 export interface LoopHealthTelemetry {
   status: string;
@@ -50,42 +51,42 @@ export function useLoopStatus() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-    const socket: Socket = io(socketUrl, {
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
-    });
+    let active = true;
 
-    socket.on('connect', () => {
-      setIsConnected(true);
-    });
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
 
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-    });
+      socket.on('connect', () => {
+        if (active) setIsConnected(true);
+      });
 
-    // Listen to real-time notification popups emitted by loops
-    socket.on('notification:popup', (popup: PopupAlert) => {
-      setActivePopups((prev) => [popup, ...prev].slice(0, 5));
-    });
+      socket.on('disconnect', () => {
+        if (active) setIsConnected(false);
+      });
 
-    // Listen to system alerts emitted by deployment / security loops
-    socket.on('system:alert', (alert: PopupAlert) => {
-      setActivePopups((prev) => [alert, ...prev].slice(0, 5));
-    });
+      // Listen to real-time notification popups emitted by loops
+      socket.on('notification:popup', (popup: PopupAlert) => {
+        if (active) setActivePopups((prev) => [popup, ...prev].slice(0, 5));
+      });
+
+      // Listen to system alerts emitted by deployment / security loops
+      socket.on('system:alert', (alert: PopupAlert) => {
+        if (active) setActivePopups((prev) => [alert, ...prev].slice(0, 5));
+      });
+    }).catch(() => {});
 
     // Fetch initial diagnostic health state
     fetch('/api/loops/health')
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.success && data.data) {
+        if (data && data.success && data.data && active) {
           setTelemetry(data.data);
         }
       })
       .catch((err) => console.warn('[useLoopStatus] Initial health fetch note:', err));
 
     return () => {
-      socket.disconnect();
+      active = false;
     };
   }, []);
 

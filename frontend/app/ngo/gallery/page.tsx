@@ -28,7 +28,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import io from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 
 // Encode a URL path so parentheses and spaces are safe for browsers
 function encodeSrc(src: string | null | undefined): string {
@@ -398,24 +398,25 @@ export default function NgoGalleryPage() {
 
   // 3. Realtime updates with Socket.IO
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-    });
+    let active = true;
 
-    socket.on("gallery.image.created", (newImage: GalleryItem) => {
-      queryClient.setQueryData(["ngo-gallery-all"], (old: any) => {
-        if (!old) return old;
-        return {
-          ...old,
-          images: [newImage, ...old.images]
-        };
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
+
+      socket.on("gallery.image.created", (newImage: GalleryItem) => {
+        if (!active) return;
+        queryClient.setQueryData(["ngo-gallery-all"], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            images: [newImage, ...old.images]
+          };
+        });
       });
-    });
+    }).catch(() => {});
 
     return () => {
-      socket.disconnect();
+      active = false;
     };
   }, [queryClient]);
 

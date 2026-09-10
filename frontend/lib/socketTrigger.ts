@@ -7,13 +7,16 @@
  * @param room Optional room to target
  */
 export async function safeTriggerCompanionEvent(type: string, payload: any, room?: string): Promise<boolean> {
-  const companionUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+  const companionUrl = process.env.SOCKET_INTERNAL_URL || process.env.NEXT_PUBLIC_SOCKET_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001');
+
+  if (!companionUrl) {
+    return false;
+  }
 
   const isProduction = process.env.NODE_ENV === 'production';
   const isLocalhost = companionUrl.includes('localhost') || companionUrl.includes('127.0.0.1');
 
   if (isProduction && isLocalhost) {
-    console.warn(`[SOCKET_TRIGGER] Skipped triggering '${type}' event because companion URL points to localhost in production.`);
     return false;
   }
 

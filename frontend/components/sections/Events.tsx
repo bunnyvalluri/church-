@@ -18,7 +18,7 @@ import {
   Phone,
   Ticket,
 } from "lucide-react";
-import io from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 
 interface DynamicEvent {
   id: string;
@@ -167,23 +167,20 @@ export default function Events({ initialEvents = [] }: { initialEvents?: Dynamic
       fetchEvents();
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-    if (!socketUrl || socketUrl.includes("localhost")) {
-      return;
-    }
-
-    const socket = io(socketUrl, { transports: ["websocket"], timeout: 3000, reconnectionAttempts: 2 });
-
-    // Auto update landing page on modifications
-    socket.on("event.created", () => fetchEvents());
-    socket.on("event.updated", () => fetchEvents());
-    socket.on("event.deleted", () => fetchEvents());
-    socket.on("event.published", () => fetchEvents());
-    socket.on("event.reorder", () => fetchEvents());
-    socket.on("event:uploaded", () => fetchEvents());
+    let active = true;
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
+      // Auto update landing page on modifications
+      socket.on("event.created", () => fetchEvents());
+      socket.on("event.updated", () => fetchEvents());
+      socket.on("event.deleted", () => fetchEvents());
+      socket.on("event.published", () => fetchEvents());
+      socket.on("event.reorder", () => fetchEvents());
+      socket.on("event:uploaded", () => fetchEvents());
+    }).catch(() => {});
 
     return () => {
-      socket.disconnect();
+      active = false;
     };
   }, [fetchEvents]);
 

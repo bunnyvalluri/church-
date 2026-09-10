@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { io } from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 import {
   PlusCircle,
   Calendar,
@@ -175,69 +175,77 @@ export default function EventManagement() {
 
   // ── Socket.io Listeners ────────────────────────────────────────────────────
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    let active = true;
 
-    socket.on("event.created", (payload: any) => {
-      setNotification({
-        id: String(Date.now()),
-        type: "new-event",
-        title: `New Event Published`,
-        description: `"${payload.title}" is scheduled at ${payload.location}.`,
-        timestamp: new Date(),
-        icon: "event",
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
+
+      socket.on("event.created", (payload: any) => {
+        if (!active) return;
+        setNotification({
+          id: String(Date.now()),
+          type: "new-event",
+          title: `New Event Published`,
+          description: `"${payload.title}" is scheduled at ${payload.location}.`,
+          timestamp: new Date(),
+          icon: "event",
+        });
+        setLiveActivity((prev) => [
+          {
+            id: String(Date.now()),
+            text: `New event "${payload.title}" created.`,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            type: "event",
+          },
+          ...prev.slice(0, 19),
+        ]);
+        refetch();
       });
-      setLiveActivity((prev) => [
-        {
-          id: String(Date.now()),
-          text: `New event "${payload.title}" created.`,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          type: "event",
-        },
-        ...prev.slice(0, 19),
-      ]);
-      refetch();
-    });
 
-    socket.on("event.updated", (payload: any) => {
-      setLiveActivity((prev) => [
-        {
-          id: String(Date.now()),
-          text: `Event "${payload.title}" updated (Status: ${payload.status}).`,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          type: "event",
-        },
-        ...prev.slice(0, 19),
-      ]);
-      refetch();
-    });
+      socket.on("event.updated", (payload: any) => {
+        if (!active) return;
+        setLiveActivity((prev) => [
+          {
+            id: String(Date.now()),
+            text: `Event "${payload.title}" updated (Status: ${payload.status}).`,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            type: "event",
+          },
+          ...prev.slice(0, 19),
+        ]);
+        refetch();
+      });
 
-    socket.on("event.registration.created", (payload: any) => {
-      setLiveActivity((prev) => [
-        {
-          id: String(Date.now()),
-          text: `Member "${payload.name}" registered for ticket (${payload.status}).`,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          type: "event",
-        },
-        ...prev.slice(0, 19),
-      ]);
-      refetch();
-    });
+      socket.on("event.registration.created", (payload: any) => {
+        if (!active) return;
+        setLiveActivity((prev) => [
+          {
+            id: String(Date.now()),
+            text: `Member "${payload.name}" registered for ticket (${payload.status}).`,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            type: "event",
+          },
+          ...prev.slice(0, 19),
+        ]);
+        refetch();
+      });
 
-    socket.on("event.attendance.checkin", (payload: any) => {
-      setLiveActivity((prev) => [
-        {
-          id: String(Date.now()),
-          text: `Attendee "${payload.name}" checked in successfully.`,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          type: "upload",
-        },
-        ...prev.slice(0, 19),
-      ]);
-    });
+      socket.on("event.attendance.checkin", (payload: any) => {
+        if (!active) return;
+        setLiveActivity((prev) => [
+          {
+            id: String(Date.now()),
+            text: `Attendee "${payload.name}" checked in successfully.`,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            type: "upload",
+          },
+          ...prev.slice(0, 19),
+        ]);
+      });
+    }).catch(() => {});
 
     return () => {
-      socket.disconnect();
+      active = false;
     };
   }, [refetch]);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { io } from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 import Link from "next/link";
 import {
   Calendar,
@@ -485,22 +485,19 @@ export default function EventsPage() {
 
   // ── Socket.io real-time updates ─────────────────────────────────────────
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== "undefined" && window.location.hostname === "localhost" ? "http://localhost:3001" : "");
-    if (!socketUrl) return;
+    let active = true;
 
-    const socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 2,
-      timeout: 2500,
-    });
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
 
-    socket.on("connect", () => setIsSocketConnected(true));
-    socket.on("disconnect", () => setIsSocketConnected(false));
-    socket.on("connect_error", () => setIsSocketConnected(false));
+      socket.on("connect", () => { if (active) setIsSocketConnected(true); });
+      socket.on("disconnect", () => { if (active) setIsSocketConnected(false); });
+      socket.on("connect_error", () => { if (active) setIsSocketConnected(false); });
 
-    socket.on("new-event", (payload: any) => {
-      // Add to top of list
-      const newEvent: PublicEvent = {
+      socket.on("new-event", (payload: any) => {
+        if (!active) return;
+        // Add to top of list
+        const newEvent: PublicEvent = {
         id: payload.id,
         title: payload.title,
         description: payload.description,
@@ -576,8 +573,11 @@ export default function EventsPage() {
         icon: "upload",
       });
     });
+    }).catch(() => {});
 
-    return () => { socket.disconnect(); };
+    return () => {
+      active = false;
+    };
   }, [language]);
 
   // ── Filters & Memoized Lists ─────────────────────────────────────────────

@@ -3,7 +3,7 @@
 import { Play, Calendar, User, Eye, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import io from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 import { getLatestSermons } from "@/app/actions/sermons";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { motion } from "framer-motion";
@@ -68,20 +68,17 @@ export default function Sermons({ initialSermons = [] }: { initialSermons?: any[
       fetchSermonsFromDatabase();
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-    if (!socketUrl || socketUrl.includes("localhost")) {
-      return;
-    }
-
-    const socket = io(socketUrl, { transports: ["websocket"], timeout: 3000, reconnectionAttempts: 2 });
-
-    socket.on("sermon:uploaded", (data) => {
-      console.log("[LANDING/SERMONS] Auto-refreshing sermon section due to live upload...", data);
-      fetchSermonsFromDatabase();
-    });
+    let active = true;
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
+      socket.on("sermon:uploaded", (data) => {
+        console.log("[LANDING/SERMONS] Live sermon upload update received:", data);
+        fetchSermonsFromDatabase();
+      });
+    }).catch(() => {});
 
     return () => {
-      socket.disconnect();
+      active = false;
     };
   }, []);
 

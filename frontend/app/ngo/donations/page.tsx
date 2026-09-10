@@ -46,7 +46,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-// socket.io-client is dynamically imported inside connectSocket (browser-only, prevents SSR hydration errors)
+import { createDedicatedSocket } from "@/lib/socketClient";
 import { DonationAgentProvider, useDonationAgent } from "@/components/donations/DonationAgentProvider";
 import { AgentStatusBar } from "@/components/donations/AgentStatusBar";
 import { PaymentStateMonitor } from "@/components/donations/PaymentStateMonitor";
@@ -715,14 +715,10 @@ function NgoDonationsContent() {
     }, 3000);
   }, [handlePaymentConfirmed]);
 
-  // Socket.IO Listener — dynamically imported to avoid SSR hydration issues
+  // Socket.IO Listener
   const connectSocket = useCallback((sid: string, refNum: string) => {
-    import("socket.io-client").then(({ default: io }) => {
-      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-      const socket = io(socketUrl, {
-        transports: ["websocket", "polling"],
-        reconnection: true,
-      });
+    createDedicatedSocket().then((socket) => {
+      if (!socket) return;
       socketRef.current = socket;
 
       socket.on("connect", () => {
@@ -735,7 +731,7 @@ function NgoDonationsContent() {
           handlePaymentConfirmed(data.donationId || donationId);
         }
       });
-    });
+    }).catch(() => {});
   }, [user, donationId, handlePaymentConfirmed]);
 
   useEffect(() => {

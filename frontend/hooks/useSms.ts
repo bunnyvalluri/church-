@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { getSharedSocket } from '@/lib/socketClient';
 
 export interface SmsMessageItem {
   id: string;
@@ -89,37 +90,29 @@ export function useSmsMessages(params: {
     refetchInterval: 15000,
   });
 
-  // Socket.io Realtime Listener (dynamic import for SSR safety)
+  // Socket.io Realtime Listener
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    let socket: any = null;
-    let isMounted = true;
+    let active = true;
 
-    import('socket.io-client').then(({ io }) => {
-      if (!isMounted) return;
-      try {
-        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-        socket = io(socketUrl, { transports: ['websocket', 'polling'] });
-        
-        const invalidate = () => {
-          queryClient.invalidateQueries({ queryKey: ['sms-messages'] });
-          queryClient.invalidateQueries({ queryKey: ['sms-stats'] });
-        };
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
 
-        socket.on('sms.updated', invalidate);
-        socket.on('sms.sent', invalidate);
-        socket.on('sms.delivered', invalidate);
-        socket.on('sms.failed', invalidate);
-        socket.on('sms.retrying', invalidate);
-        socket.on('sms.processing', invalidate);
-      } catch (err) {
-        console.warn('[useSms] Socket connection error:', err);
-      }
+      const invalidate = () => {
+        if (!active) return;
+        queryClient.invalidateQueries({ queryKey: ['sms-messages'] });
+        queryClient.invalidateQueries({ queryKey: ['sms-stats'] });
+      };
+
+      socket.on('sms.updated', invalidate);
+      socket.on('sms.sent', invalidate);
+      socket.on('sms.delivered', invalidate);
+      socket.on('sms.failed', invalidate);
+      socket.on('sms.retrying', invalidate);
+      socket.on('sms.processing', invalidate);
     }).catch(() => {});
 
     return () => {
-      isMounted = false;
-      if (socket) socket.disconnect();
+      active = false;
     };
   }, [queryClient]);
 

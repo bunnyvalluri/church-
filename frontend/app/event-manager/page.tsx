@@ -6,7 +6,8 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
 import { getQueuedReports, syncOfflineReports, registerAutoSync, OfflineReport } from "@/lib/offlineSync";
-import { io, Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
+import { getSharedSocket } from "@/lib/socketClient";
 import { 
   Camera, 
   PlusCircle, 
@@ -749,35 +750,41 @@ export default function UnifiedEventManagementPortal() {
   useEffect(() => { statusFilterRef.current = statusFilter; }, [statusFilter]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3001", { reconnectionDelay: 1000, reconnectionAttempts: 3 });
-    socketRef.current = socket;
+    let active = true;
 
-    socket.on("connect", () => {
-      console.info("[SOCKET] Unified portal connected to realtime companion.");
-    });
+    getSharedSocket().then((socket) => {
+      if (!socket || !active) return;
+      socketRef.current = socket;
 
-    socket.on("new_event_report", (payload: any) => {
-      showToast("🔔 New Field Report", `Branch: ${payload.branchName} · Title: ${payload.title} (${payload.imagesCount} snaps)`);
-      setFeed(prev => [{
-        id: String(Date.now()),
-        text: `Report "${payload.title}" submitted by ${payload.branchName} (${payload.attendanceCount} attended)`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: "upload"
-      }, ...prev.slice(0, 19)]);
-      loadReports(branchFilterRef.current, statusFilterRef.current);
-    });
+      socket.on("connect", () => {
+        console.info("[SOCKET] Unified portal connected to realtime companion.");
+      });
 
-    socket.on("report_status_changed", (payload: any) => {
-      setFeed(prev => [{
-        id: String(Date.now()),
-        text: `Report "${payload.title}" has been ${payload.status.toLowerCase()}`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: "status"
-      }, ...prev.slice(0, 19)]);
-      loadReports(branchFilterRef.current, statusFilterRef.current);
-    });
+      socket.on("new_event_report", (payload: any) => {
+        showToast("🔔 New Field Report", `Branch: ${payload.branchName} · Title: ${payload.title} (${payload.imagesCount} snaps)`);
+        setFeed(prev => [{
+          id: String(Date.now()),
+          text: `Report "${payload.title}" submitted by ${payload.branchName} (${payload.attendanceCount} attended)`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: "upload"
+        }, ...prev.slice(0, 19)]);
+        loadReports(branchFilterRef.current, statusFilterRef.current);
+      });
 
-    return () => { socket.disconnect(); socketRef.current = null; };
+      socket.on("report_status_changed", (payload: any) => {
+        setFeed(prev => [{
+          id: String(Date.now()),
+          text: `Report "${payload.title}" has been ${payload.status.toLowerCase()}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: "status"
+        }, ...prev.slice(0, 19)]);
+        loadReports(branchFilterRef.current, statusFilterRef.current);
+      });
+    }).catch(() => {});
+
+    return () => {
+      active = false;
+    };
   }, []); // ← intentionally empty: socket connects once
 
   // Handle manual sync trigger

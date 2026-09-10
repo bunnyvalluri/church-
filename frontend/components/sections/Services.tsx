@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getSharedSocket } from "@/lib/socketClient";
 
 // ── Icon registry — maps icon name string from DB to Lucide component ─────────────
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -531,13 +532,17 @@ export default function Services({ initialServices = [] }: { initialServices?: C
 
   // ── Socket.IO — real-time updates from admin ──────────────────────────────────
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    let socket: any = null;
+    let active = true;
+    let fallbackInterval: NodeJS.Timeout | null = null;
 
     const connectSocket = async () => {
       try {
-        const { io } = await import("socket.io-client");
-        socket = io(socketUrl, { transports: ["websocket", "polling"] });
+        const socket = await getSharedSocket();
+        if (!socket || !active) {
+          // Socket companion unavailable or disabled in production HTTPS — fall back to polling
+          fallbackInterval = setInterval(fetchServices, 30000);
+          return;
+        }
 
         socket.on("service.created", () => fetchServices());
         socket.on("service.updated", () => fetchServices());
@@ -549,17 +554,15 @@ export default function Services({ initialServices = [] }: { initialServices?: C
         socketRef.current = socket;
       } catch {
         /* Socket.IO not available — polling fallback */
-        const interval = setInterval(fetchServices, 30000);
-        return () => clearInterval(interval);
+        fallbackInterval = setInterval(fetchServices, 30000);
       }
     };
 
     connectSocket();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      active = false;
+      if (fallbackInterval) clearInterval(fallbackInterval);
     };
   }, [fetchServices]);
 

@@ -38,7 +38,7 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
-import io from "socket.io-client";
+import { createDedicatedSocket } from "@/lib/socketClient";
 import { safeTriggerCompanionEvent } from "@/lib/socketTrigger";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -416,26 +416,19 @@ export default function NgoDonationForm({
 
   // ── 6. Socket.IO real-time listener ─────────────────────────────────────────
   const connectSocket = useCallback((sid: string) => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 10,
-    });
+    let active = true;
 
-    socketRef.current = socket;
+    createDedicatedSocket().then((socket) => {
+      if (!socket || !active) return;
+      socketRef.current = socket;
 
-    socket.on("connect", () => {
-      // Join a room for NGO donations and the member room
-      socket.emit("join", `member:${user?.uid || "guest"}`);
-      socket.emit("join", "ngo:donations");
-    });
+      socket.on("connect", () => {
+        // Join a room for NGO donations and the member room
+        socket.emit("join", `member:${user?.uid || "guest"}`);
+        socket.emit("join", "ngo:donations");
+      });
 
-    socket.on("connect_error", () => {
-      // Quietly fall back to polling
-    });
-
-    socket.on("donation.success", (data: any) => {
+      socket.on("donation.success", (data: any) => {
       if (data.sessionId === sid || data.referenceNumber === referenceNumber) {
         // Emit NGO-specific Socket.IO events for admin/finance dashboards
         socket.emit("ngo.donation.success", {
@@ -456,8 +449,7 @@ export default function NgoDonationForm({
       // Silently refresh history to show updated raised amounts
       loadHistory(true);
     });
-
-    return () => { socket.disconnect(); };
+    }).catch(() => {});
   }, [user, referenceNumber, selectedCampaign, loadHistory]);
 
   // ── Cleanup ──────────────────────────────────────────────────────────────────

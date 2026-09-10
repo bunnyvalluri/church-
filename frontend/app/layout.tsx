@@ -87,6 +87,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "KCM Church",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   alternates: {
     canonical: SITE_URL,
   },
@@ -140,6 +143,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
+        {/* Standard PWA mobile capability meta tag (supersedes deprecated apple-mobile-web-app-capable in modern Chromium) */}
+        <meta name="mobile-web-app-capable" content="yes" />
+
         {/* Explicit color-scheme declaration to prevent Samsung Internet forced auto-dark mode inversion */}
         <meta name="color-scheme" content="light dark" />
 
