@@ -45,7 +45,8 @@ import {
   X,
   Cpu,
   MessageSquare,
-  Mail
+  Mail,
+  Bug
 } from "lucide-react";
 
 interface MenuItem {
@@ -75,6 +76,15 @@ const menuGroups: MenuGroup[] = [
         color: "text-indigo-500 dark:text-indigo-400",
         activeGradient: "from-indigo-600 via-indigo-700 to-purple-700",
         iconBg: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+      },
+      {
+        name: "Issue Reports & Diagnostics",
+        href: "/admin/support/reports",
+        icon: Bug,
+        badge: "LIVE",
+        color: "text-rose-500 dark:text-rose-400",
+        activeGradient: "from-rose-600 via-pink-600 to-red-700",
+        iconBg: "bg-rose-500/10 text-rose-500 dark:text-rose-400",
       },
       {
         name: "OpenClaw AI Orchestrator",
