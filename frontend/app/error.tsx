@@ -79,18 +79,26 @@ export default function Error({ error, reset }: ErrorProps) {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
           <button
             onClick={() => reset()}
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-full font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gradient-start to-gradient-end text-white rounded-full font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto text-sm"
           >
             <RotateCw className="w-4 h-4" />
             {active.tryAgain}
           </button>
+
+          <Link
+            href={`/member/report?source=error_boundary&errorDigest=${encodeURIComponent(error?.digest || "")}`}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto text-sm"
+          >
+            <AlertOctagon className="w-4 h-4" />
+            Report Problem
+          </Link>
           
           <Link
             href="/"
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white/80 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white/80 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto text-sm"
           >
             <Home className="w-4 h-4" />
             {active.home}

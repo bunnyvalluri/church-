@@ -32,6 +32,7 @@ export const CLOUDINARY_FOLDERS = {
     SUBHASH_NAGAR: "church-platform/branches/subhash-nagar",
     BAHADURPALLY: "church-platform/branches/bahadurpally",
   },
+  ISSUE_REPORTS: "church-platform/issue-reports",
 } as const;
 
 export type TargetFolderType =
@@ -43,7 +44,8 @@ export type TargetFolderType =
   | "volunteer"
   | "branch-shapur-nagar"
   | "branch-subhash-nagar"
-  | "branch-bahadurpally";
+  | "branch-bahadurpally"
+  | "issue-reports";
 
 /**
  * Maps input category/type to exact Cloudinary folder path
@@ -68,6 +70,8 @@ export function getCloudinaryFolder(folderType: TargetFolderType): string {
       return CLOUDINARY_FOLDERS.BRANCHES.SUBHASH_NAGAR;
     case "branch-bahadurpally":
       return CLOUDINARY_FOLDERS.BRANCHES.BAHADURPALLY;
+    case "issue-reports":
+      return CLOUDINARY_FOLDERS.ISSUE_REPORTS;
     default:
       return CLOUDINARY_FOLDERS.EVENTS;
   }

@@ -61,3 +61,11 @@ export async function writeAuditLog(data: {
   );
 }
 
+export async function logSecurityAudit(action: string, metadata: any) {
+  return writeAuditLog({
+    action,
+    userId: metadata?.adminId || metadata?.userId || null,
+    details: typeof metadata === 'string' ? metadata : JSON.stringify(metadata),
+  });
+}
+

@@ -19,7 +19,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 4
+      "actualWorkers": 7
     },
     "preserveOutput": "always",
     "projects": [
@@ -28,7 +28,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 7
         },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
@@ -44,7 +44,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 7
         },
         "id": "firefox-desktop",
         "name": "firefox-desktop",
@@ -60,7 +60,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 7
         },
         "id": "webkit-desktop",
         "name": "webkit-desktop",
@@ -76,7 +76,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 7
         },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
@@ -92,7 +92,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 7
         },
         "id": "mobile-safari",
         "name": "mobile-safari",
@@ -166,12 +166,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4568,
+                      "duration": 5869,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:47:41.284Z",
+                      "startTime": "2026-09-10T12:18:02.124Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -200,12 +200,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 2965,
+                      "duration": 1282,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:47:41.341Z",
+                      "startTime": "2026-09-10T12:18:02.153Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -234,12 +234,12 @@
                       "workerIndex": 2,
                       "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 2960,
+                      "duration": 502,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:47:41.327Z",
+                      "startTime": "2026-09-10T12:18:02.186Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -268,12 +268,12 @@
                       "workerIndex": 3,
                       "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 9964,
+                      "duration": 27042,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-10T11:47:41.325Z",
+                      "startTime": "2026-09-10T12:18:02.186Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -285,6 +285,108 @@
               "file": "smoke/production-smoke.spec.ts",
               "line": 42,
               "column": 7
+            },
+            {
+              "title": "verifies Service Worker sw.js is served with Cache-Control headers and scheme security guards",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 279,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T12:18:02.217Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c9032c7a0b56ba6243c-9c773d7381a418a1570b",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 63,
+              "column": 7
+            },
+            {
+              "title": "verifies Web App Manifest is valid and linked",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 518,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T12:18:02.222Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c9032c7a0b56ba6243c-51c6d160e3a15513c648",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "verifies live page execution does not throw chrome-extension Cache.put TypeError",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 6685,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T12:18:02.192Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c9032c7a0b56ba6243c-9a08d01525e46cb83198",
+              "file": "smoke/production-smoke.spec.ts",
+              "line": 90,
+              "column": 7
             }
           ]
         }
@@ -293,9 +395,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-10T11:47:40.439Z",
-    "duration": 11248.851,
-    "expected": 4,
+    "startTime": "2026-09-10T12:18:00.788Z",
+    "duration": 29314.804,
+    "expected": 7,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

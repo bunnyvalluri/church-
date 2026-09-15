@@ -44,6 +44,7 @@ model User {
   notificationPreferences MemberNotificationPreference?
   smsAuditLogs       SmsAuditLog[]
   sessions           Session[]
+  issueReports       IssueReport[]
 
   @@map("members")
 }
@@ -1726,6 +1727,85 @@ model AIChatLog {
   @@index([createdAt])
   @@map("ai_chat_logs")
 }
+
+enum IssueCategory {
+  SOMETHING_IS_BROKEN
+  PAGE_NOT_LOADING
+  LOGIN_ACCOUNT
+  MOBILE_RESPONSIVE
+  WEBSITE_DISPLAY
+  NETWORK_CONNECTION
+  BUG_UNEXPECTED
+  SUGGESTION
+  OTHER
+}
+
+enum IssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IssueStatus {
+  OPEN
+  INVESTIGATING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  DUPLICATE
+}
+
+model IssueReport {
+  id                    String        @id @default(cuid())
+  reportId              String        @unique @map("report_id")
+  userId                String        @map("user_id")
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              IssueCategory
+  title                 String
+  description           String        @db.Text
+  expectedBehavior      String?       @map("expected_behavior") @db.Text
+  actualBehavior        String?       @map("actual_behavior") @db.Text
+  severity              IssueSeverity @default(MEDIUM)
+  status                IssueStatus   @default(OPEN)
+  pageUrl               String?       @map("page_url") @db.Text
+  pagePath              String?       @map("page_path")
+  pageTitle             String?       @map("page_title")
+  referrer              String?       @db.Text
+  browser               String?
+  browserVersion        String?       @map("browser_version")
+  operatingSystem       String?       @map("operating_system")
+  deviceType            String?       @map("device_type")
+  viewportWidth         Int?          @map("viewport_width")
+  viewportHeight        Int?          @map("viewport_height")
+  screenWidth           Int?          @map("screen_width")
+  screenHeight          Int?          @map("screen_height")
+  timezone              String?
+  language              String?
+  onlineStatus          Boolean?      @map("online_status")
+  connectionType        String?       @map("connection_type")
+  appVersion            String?       @map("app_version")
+  errorType             String?       @map("error_type")
+  errorMessageSanitized String?       @map("error_message_sanitized") @db.Text
+  errorStackSanitized   String?       @map("error_stack_sanitized") @db.Text
+  correlationId         String?       @map("correlation_id")
+  screenshotUrl         String?       @map("screenshot_url") @db.Text
+  internalNotes         String?       @map("internal_notes") @db.Text
+  assignedTo            String?       @map("assigned_to")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+  resolvedAt            DateTime?     @map("resolved_at")
+  resolvedBy            String?       @map("resolved_by")
+
+  @@index([userId])
+  @@index([status])
+  @@index([severity])
+  @@index([category])
+  @@index([createdAt])
+  @@index([correlationId])
+  @@map("issue_reports")
+}
+
 
 
 
