@@ -12,7 +12,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   User, Calendar, Heart, BookOpen, Briefcase, Gift,
   LogOut, Menu, X, ChevronRight, ChevronDown, Bell, Wifi, WifiOff,
-  Home, Activity, Star, Shield, Sparkles, TrendingUp, Sliders, Loader2
+  Home, Activity, Star, Shield, Sparkles, TrendingUp, Sliders, Loader2, AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MemberFooter from "@/components/layout/MemberFooter";
@@ -39,7 +39,8 @@ const layoutTranslations = {
       prayers: { label: "Prayer Requests", desc: "Prayer wall" },
       sermons: { label: "Sermon Library", desc: "Watch & listen" },
       volunteer: { label: "Volunteer", desc: "Serve in ministry" },
-      give: { label: "Online Giving", desc: "Support the ministry" }
+      give: { label: "Online Giving", desc: "Support the ministry" },
+      report: { label: "Report Issue", desc: "Help & problem report" }
     }
   },
   te: {
@@ -63,7 +64,8 @@ const layoutTranslations = {
       prayers: { label: "ప్రార్థన విన్నపాలు", desc: "ప్రార్థన గోడ" },
       sermons: { label: "ప్రసంగాల లైబ్రరీ", desc: "వీక్షించండి & వినండి" },
       volunteer: { label: "వాలంటీర్", desc: "పరిచర్యలో సేవ చేయండి" },
-      give: { label: "ఆన్‌లైన్ కానుక", desc: "పరిచర్యకు మద్దతు" }
+      give: { label: "ఆన్‌లైన్ కానుక", desc: "పరిచర్యకు మద్దతు" },
+      report: { label: "సమస్య నివేదిక", desc: "సహాయం & లోపం నివేదిక" }
     }
   },
   hi: {
@@ -87,7 +89,8 @@ const layoutTranslations = {
       prayers: { label: "प्रार्थना निवेदन", desc: "प्रार्थना वाल" },
       sermons: { label: "प्रवचन लाइब्रेरी", desc: "देखें और सुनें" },
       volunteer: { label: "स्वयंसेवक", desc: "मंत्रालय में सेवा" },
-      give: { label: "ऑनलाइन दान", desc: "मंत्रालय का समर्थन करें" }
+      give: { label: "ऑनलाइन दान", desc: "मंत्रालय का समर्थन करें" },
+      report: { label: "समस्या रिपोर्ट", desc: "सहायता और बग रिपोर्ट" }
     }
   }
 };
@@ -112,6 +115,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
     { href: "/member/sermons", label: lt.links.sermons.label, icon: BookOpen, color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30", text: "text-blue-600 dark:text-blue-400", desc: lt.links.sermons.desc },
     { href: "/member/volunteer", label: lt.links.volunteer.label, icon: Briefcase, color: "from-amber-500 to-orange-500", bg: "bg-amber-50 dark:bg-amber-950/30", text: "text-amber-600 dark:text-amber-400", desc: lt.links.volunteer.desc },
     { href: "/member/give", label: lt.links.give.label, icon: Gift, color: "from-green-500 to-emerald-600", bg: "bg-green-50 dark:bg-green-950/30", text: "text-green-600 dark:text-green-400", desc: lt.links.give.desc },
+    { href: "/member/report", label: lt.links.report.label, icon: AlertTriangle, color: "from-rose-500 to-red-600", bg: "bg-rose-50 dark:bg-rose-950/30", text: "text-rose-600 dark:text-rose-400", desc: lt.links.report.desc },
   ];
 
   // Auth redirect — always runs (hooks must be before any return)

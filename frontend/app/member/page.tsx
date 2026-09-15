@@ -31,6 +31,7 @@ import {
   Sunset,
   Zap,
   Sliders,
+  AlertTriangle,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -86,6 +87,7 @@ const dashboardTranslations = {
       { key: "sermons", title: "Sermon Library", desc: "Watch & listen to messages", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "Watch", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
       { key: "volunteer", title: "Volunteer", desc: "Serve in active ministries", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "Apply", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
       { key: "give", title: "Giving & Tithe", desc: "Offerings & download receipts", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "Give Now", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
+      { key: "report", title: "Report a Problem", desc: "Technical issue & diagnostics", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "Support", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
     ],
     directoryHeading: "Believer Services Directory",
     statsHeading: "Quick Fellowship Overview",
@@ -103,6 +105,7 @@ const dashboardTranslations = {
       { label: "Submit a Prayer", href: "/member/prayers", icon: Heart },
       { label: "Register for Event", href: "/member/events", icon: Calendar },
       { label: "Give Online", href: "/member/give", icon: Gift },
+      { label: "Report Issue", href: "/member/report", icon: AlertTriangle },
     ],
     activityTitle: "Your Activity",
     activityLabels: {
@@ -145,6 +148,7 @@ const dashboardTranslations = {
       { key: "sermons", title: "ప్రసంగాల లైబ్రరీ", desc: "వాక్యమును చూడండి & వినండి", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "చూడండి", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
       { key: "volunteer", title: "వాలంటీర్ పరిచర్య", desc: "దేవుని పరిచర్యలో పాల్గొనండి", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "చేరండి", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
       { key: "give", title: "కానుకలు & దశమభాగాలు", desc: "కానుకలు పంపండి & రశీదులు", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "కానుక ఇవ్వండి", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
+      { key: "report", title: "సమస్య నివేదిక", desc: "సాంకేతిక సమస్య & సహాయం", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "సహాయం", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
     ],
     directoryHeading: "విశ్వాసుల సేవల జాబితా",
     statsHeading: "పరిచర్య ముఖ్యాంశాలు",
@@ -162,6 +166,7 @@ const dashboardTranslations = {
       { label: "ప్రార్థన విన్నపం సమర్పించండి", href: "/member/prayers", icon: Heart },
       { label: "కార్యక్రమంలో నమోదు అవ్వండి", href: "/member/events", icon: Calendar },
       { label: "ఆన్‌లైన్‌లో కానుక ఇవ్వండి", href: "/member/give", icon: Gift },
+      { label: "సమస్యను నివేదించండి", href: "/member/report", icon: AlertTriangle },
     ],
     activityTitle: "మీ కార్యాచరణ",
     activityLabels: {
@@ -204,6 +209,7 @@ const dashboardTranslations = {
       { key: "sermons", title: "प्रवचन लाइब्रेरी", desc: "वचन देखें और सुनें", href: "/member/sermons", icon: Play, gradient: "from-indigo-500 to-blue-700", glow: "shadow-indigo-500/25", badge: "देखें", badgeColor: "bg-purple-600 dark:bg-purple-700 text-white border border-purple-500 font-extrabold shadow-xs" },
       { key: "volunteer", title: "स्वयंसेवक सेवा", desc: "मंत्रालय में सेवा करें", href: "/member/volunteer", icon: Briefcase, gradient: "from-amber-500 to-orange-600", glow: "shadow-amber-500/25", badge: "जुड़ें", badgeColor: "bg-amber-600 dark:bg-amber-700 text-white border border-amber-500 font-extrabold shadow-xs" },
       { key: "give", title: "दान और दशांश", desc: "दान दें और रसीद डाउनलोड करें", href: "/member/give", icon: Gift, gradient: "from-emerald-500 to-green-700", glow: "shadow-emerald-500/25", badge: "दान दें", badgeColor: "bg-emerald-600 dark:bg-emerald-700 text-white border border-emerald-500 font-extrabold shadow-xs" },
+      { key: "report", title: "समस्या रिपोर्ट", desc: "तकनीकी समस्या और सहायता", href: "/member/report", icon: AlertTriangle, gradient: "from-rose-500 to-red-700", glow: "shadow-rose-500/25", badge: "सहायता", badgeColor: "bg-rose-600 dark:bg-rose-700 text-white border border-rose-500 font-extrabold shadow-xs" },
     ],
     directoryHeading: "विश्वास योग्य सेवाएं",
     statsHeading: "फैलोशिप सारांश",
@@ -221,6 +227,7 @@ const dashboardTranslations = {
       { label: "प्रार्थना निवेदन भेजें", href: "/member/prayers", icon: Heart },
       { label: "कार्यक्रम में भाग लें", href: "/member/events", icon: Calendar },
       { label: "ऑनलाइन दान दें", href: "/member/give", icon: Gift },
+      { label: "समस्या रिपोर्ट करें", href: "/member/report", icon: AlertTriangle },
     ],
     activityTitle: "आपकी गतिविधि",
     activityLabels: {
