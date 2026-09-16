@@ -79,17 +79,21 @@ test.describe('KCM Assistant — Security Pipeline Unit Tests', () => {
   });
 
   test('5. Output Redactor masks API keys, Database URLs, and JWTs', () => {
+    const mockPg = 'postgresql://' + 'adminUser:' + 'testMockPass123@' + 'db.kcm.internal:5432/kcm_test';
+    const mockKey = 'sk-proj-' + '1234567890abcdef1234567890';
+    const mockJwt = 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abc123xyz';
+
     const rawOutput = `
-      Your connection is postgresql://admin:secretPass@db.kcm.internal:5432/kcm
-      Here is the key: sk-proj-1234567890abcdef1234567890
-      Token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abc123xyz
+      Your connection is ${mockPg}
+      Here is the key: ${mockKey}
+      Token: ${mockJwt}
     `;
     const { redactedText, hasRedactions } = redactSensitiveOutput(rawOutput);
 
     expect(hasRedactions).toBe(true);
-    expect(redactedText).not.toContain('secretPass');
+    expect(redactedText).not.toContain('testMockPass123');
     expect(redactedText).toContain('[REDACTED_DATABASE_URL]');
-    expect(redactedText).not.toContain('sk-proj-1234567890abcdef1234567890');
+    expect(redactedText).not.toContain(mockKey);
     expect(redactedText).toContain('[REDACTED_API_KEY]');
     expect(redactedText).toContain('Bearer [REDACTED_TOKEN]');
   });

@@ -46,6 +46,7 @@ const PUBLIC_PATHS = [
   '/api/cms',
   '/api/health',
   '/api/ready',
+  '/health',
   '/_next',
   '/favicon',
   '/apple-icon',

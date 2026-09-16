@@ -44,10 +44,18 @@ export class EndpointHealthCheck extends BaseHealthCheck {
               const authRequired =
                 content.includes("verifySession") ||
                 content.includes("verifyAdmin") ||
+                content.includes("requireAuth") ||
+                content.includes("requireAdmin") ||
+                content.includes("requireAdminOrDev") ||
+                content.includes("requireStaffOrDev") ||
+                content.includes("requireEventManagerOrDev") ||
+                content.includes("verifyServerSession") ||
                 content.includes("auth.verifyIdToken") ||
                 content.includes("checkAuth") ||
                 relPath.startsWith("/api/admin") ||
-                relPath.startsWith("/api/pastor");
+                relPath.startsWith("/api/pastor") ||
+                relPath.startsWith("/api/event-manager") ||
+                relPath.startsWith("/api/field-volunteer");
 
               let roleHint = "PUBLIC";
               if (relPath.startsWith("/api/admin")) roleHint = "ADMIN";

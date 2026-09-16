@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KCM Platform Health Audit</title>
+  <style>
+    :root {
+      --bg: #0B0F19;
+      --card-bg: #111827;
+      --border: #1F2937;
+      --text: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --primary: #6366F1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+    h1 { font-size: 1.875rem; font-weight: 800; }
+    .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+    .stat-val { font-size: 2rem; font-weight: 800; }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th { background: #1F2937; color: var(--text-muted); font-weight: 600; }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    .rec-card {
+      background: rgba(239, 68, 68, 0.05);
+      border-left: 4px solid #EF4444;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .rec-card.WARN {
+      background: rgba(245, 158, 11, 0.05);
+      border-left-color: #F59E0B;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Kingdom of Christ Ministries</h1>
+      <p class="subtitle">Platform Diagnostics & Health Audit — 16/9/2026, 2:38:40 pm</p>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <div class="stat-lbl">Overall Status</div>
+        <div class="stat-val" style="color: #F59E0B">WARN</div>
+      </div>
+      <div class="card">
+        <div class="stat-lbl">Total Checks</div>
+        <div class="stat-val">65</div>
+      </div>
+      <div class="card">
+        <div class="stat-lbl">Passed</div>
+        <div class="stat-val" style="color: #10B981">61</div>
+      </div>
+      <div class="card">
+        <div class="stat-lbl">Warnings</div>
+        <div class="stat-val" style="color: #F59E0B">4</div>
+      </div>
+      <div class="card">
+        <div class="stat-lbl">Failed</div>
+        <div class="stat-val" style="color: #EF4444">0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Actionable Advisories (4)</h2>
+            
+              <div class="rec-card WARN">
+                <div style="font-weight: 700;">[MEDIUM] Client Bundle Budget & Chunk Sizing</div>
+                <div style="font-size: 0.875rem; margin: 0.25rem 0;">Found 1 chunk(s) exceeding 350KB limit (Total: 6.14MB)</div>
+                <div style="font-size: 0.8rem; color: #9CA3AF;"><strong>Remediation:</strong> Use dynamic imports (next/dynamic) to split large chunks.</div>
+              </div>
+            
+              <div class="rec-card WARN">
+                <div style="font-weight: 700;">[MEDIUM] Internationalization (i18n) Parity & Completeness</div>
+                <div style="font-size: 0.875rem; margin: 0.25rem 0;">Incomplete language dictionaries: en te (Telugu) hi (Hindi)</div>
+                <div style="font-size: 0.8rem; color: #9CA3AF;"><strong>Remediation:</strong> Ensure translations dictionary supports English, Telugu, and Hindi.</div>
+              </div>
+            
+              <div class="rec-card WARN">
+                <div style="font-weight: 700;">[LOW] Database Connection Pooling & Serverless Sizing</div>
+                <div style="font-size: 0.875rem; margin: 0.25rem 0;">Direct database connection detected without PgBouncer connection pooler in DATABASE_URL.</div>
+                <div style="font-size: 0.8rem; color: #9CA3AF;"><strong>Remediation:</strong> For Neon serverless, use pooled connection string to avoid connection starvation under load.</div>
+              </div>
+            
+              <div class="rec-card WARN">
+                <div style="font-weight: 700;">[MEDIUM] Cloudinary Media Asset Storage Integration</div>
+                <div style="font-size: 0.875rem; margin: 0.25rem 0;">Cloudinary cloud name is not configured in environment.</div>
+                <div style="font-size: 0.8rem; color: #9CA3AF;"><strong>Remediation:</strong> Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME for image uploads.</div>
+              </div>
+            
+          </div>
+
+    <div class="card">
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Category Breakdown</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Passed</th>
+            <th>Warned</th>
+            <th>Failed</th>
+            <th>Skipped</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>FRONTEND</strong></td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>11</td>
+              <td>9</td>
+              <td>2</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>BACKEND</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>6</td>
+              <td>6</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>AUTH</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>5</td>
+              <td>5</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>DATABASE</strong></td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>7</td>
+              <td>6</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>SECURITY</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>10</td>
+              <td>10</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>INTEGRATIONS</strong></td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>6</td>
+              <td>5</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>INFRASTRUCTURE</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>6</td>
+              <td>6</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>OBSERVABILITY</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>4</td>
+              <td>4</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>TESTING</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>5</td>
+              <td>5</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td><strong>PERFORMANCE</strong></td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>5</td>
+              <td>5</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">All Health Checks</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Check</th>
+            <th>Status</th>
+            <th>Severity</th>
+            <th>Duration</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Frontend Workspace Configuration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>327ms</td>
+              <td>Frontend configured correctly with Next.js ^14.2.0 and React ^18.3.0</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Next.js Route Topology & Integrity</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>325ms</td>
+              <td>All 13 critical platform routes verified in Next.js App Router.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Server & Client Component Boundaries</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>325ms</td>
+              <td>All App Router components properly declare client/server boundaries.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Next.js Production Build Artifacts</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>162ms</td>
+              <td>Valid production build verified (Build ID: rtpjmYyBNOoI0kMU7VoF0).</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Client Bundle Budget & Chunk Sizing</td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>MEDIUM</td>
+              <td>161ms</td>
+              <td>Found 1 chunk(s) exceeding 350KB limit (Total: 6.14MB)</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Accessibility & WCAG Compliance Standards</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>137ms</td>
+              <td>Core components adhere to WCAG accessible labeling and semantic landmarks.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>SEO Metadata & Discoverability Assets</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>8ms</td>
+              <td>SEO metadata, sitemaps, robots.ts, and OpenGraph configurations verified.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Frontend Performance & Asset Optimization</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>6ms</td>
+              <td>Frontend performance configurations (next/font, compression) are verified.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Cross-Browser & Mobile Viewport Compatibility</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>4ms</td>
+              <td>Responsive viewport meta and PostCSS Autoprefixer verified for all major mobile/desktop browsers.</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>PWA & Offline Service Worker Integrity</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>PWA assets verified (Manifest: Yes, ServiceWorker: Yes, Offline: Yes).</td>
+            </tr>
+          
+            <tr>
+              <td>frontend</td>
+              <td>Internationalization (i18n) Parity & Completeness</td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>MEDIUM</td>
+              <td>1ms</td>
+              <td>Incomplete language dictionaries: en te (Telugu) hi (Hindi)</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>Backend Runtime & Express Service Configuration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>Backend companion service configured with Express ^5.2.1 and Prisma client.</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>API Route Handlers & REST Endpoints</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>175ms</td>
+              <td>API surface active with 184 Next.js route handler(s) and 53 Express companion endpoint(s).</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>API Endpoint Catalog & Auth Inventory</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>155ms</td>
+              <td>Audited 279 API endpoint handlers. All destructive verbs enforce authorization.</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>Edge Middleware Architecture & Guard Ordering</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>4ms</td>
+              <td>Edge Middleware verified with HTTPS, CSRF, Cryptographic Session validation, and RBAC routing.</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>Error Boundaries & Exception Handling Architecture</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>4ms</td>
+              <td>Centralized error handling verified (Root boundaries: Yes, Backend traps: Active).</td>
+            </tr>
+          
+            <tr>
+              <td>backend</td>
+              <td>Input Validation & Request Schema Sanitization</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>3ms</td>
+              <td>Request sanitization verified (Schema Library: Present, Auth Input Guards: Verified).</td>
+            </tr>
+          
+            <tr>
+              <td>auth</td>
+              <td>Primary Authentication Providers & Password Hashing</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Authentication stack verified (Bcrypt Password Hashing: Active, Firebase Auth: Configured).</td>
+            </tr>
+          
+            <tr>
+              <td>auth</td>
+              <td>Role-Based Access Control (RBAC) & Boundary Enforcement</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>5ms</td>
+              <td>RBAC boundaries fully verified: Member users are strictly prevented from accessing Admin, Pastor, and Event Manager portals.</td>
+            </tr>
+          
+            <tr>
+              <td>auth</td>
+              <td>Cryptographic Edge Session Verification & TTL</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>3ms</td>
+              <td>Edge cryptographic session management verified with Web Crypto HMAC SHA-256 and expiration bounds.</td>
+            </tr>
+          
+            <tr>
+              <td>auth</td>
+              <td>Google OAuth & Social Sign-In Integration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Google OAuth sign-in integration verified with popup/redirect flow handlers.</td>
+            </tr>
+          
+            <tr>
+              <td>auth</td>
+              <td>RBAC Role Definitions & Permission Parity</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>All 6 platform roles verified across Prisma enum and application handlers.</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>Polyglot Persistence Layer Architecture</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Database tier active (Primary: PostgreSQL/Neon, Document: MongoDB Atlas, Cache/Queue: Redis).</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>PostgreSQL (Neon) Configuration & Security</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>PostgreSQL connection verified for host 'ep-morning-cloud-aic1vgvt.c-4.us-east-1.aws.neon.tech' with SSL enabled.</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>Prisma ORM Schema & Client Generation</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Prisma ORM verified with 81 data models and active generated client.</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>MongoDB Atlas Integration & Fallback Mode</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>MongoDB Atlas cluster URI configured with active client adapter.</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>Redis Cache & BullMQ Queue Integration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Redis connection configured for distributed Pub/Sub and BullMQ queues.</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>Database Schema Migration & Synchronization</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Database schema synchronized (Migrations tracked: 1 migrations).</td>
+            </tr>
+          
+            <tr>
+              <td>database</td>
+              <td>Database Connection Pooling & Serverless Sizing</td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>LOW</td>
+              <td>0ms</td>
+              <td>Direct database connection detected without PgBouncer connection pooler in DATABASE_URL.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Overall Application Security Posture</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>Base defense-in-depth posture active: .gitignore protects secret files, Edge Middleware enforces security policies.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Static Codebase Secret & Credential Leakage Scan</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>811ms</td>
+              <td>Zero hardcoded private keys, database credentials, or live API secrets detected in source code.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Dependency Vulnerability & Lockfile Integrity</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>3ms</td>
+              <td>Deterministic npm package-lock.json verified (629KB).</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>HTTP Security Headers & Transport Hardening</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Security headers verified across Next.js config and edge middleware.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Cross-Origin Resource Sharing (CORS) Policy</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Strict CORS policy verified with explicit trusted origin allowlist.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Cross-Site Request Forgery (CSRF) Defenses</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Edge Middleware CSRF protection verified for POST, PUT, PATCH, and DELETE requests with webhook exemptions.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>API Rate Limiting & Brute-Force Defense</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Rate limiting and brute-force defenses active (Backend limiters: Configured, Auth 429 response handling: Active).</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Injection Flaws & Dangerous Execution Primitives</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>640ms</td>
+              <td>Zero dangerous execution primitives ($queryRawUnsafe, eval, raw exec) detected in application code.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Administrative API Authorization Enforcement</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>34ms</td>
+              <td>Administrative API routes enforce server-side authorization and role boundaries.</td>
+            </tr>
+          
+            <tr>
+              <td>security</td>
+              <td>Resource Ownership & IDOR Protection</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>7ms</td>
+              <td>User-scoped resources bind queries to verified session identifiers to prevent IDOR attacks.</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>Cloudinary Media Asset Storage Integration</td>
+              <td><span class="badge" style="background: #F59E0B">WARN</span></td>
+              <td>MEDIUM</td>
+              <td>0ms</td>
+              <td>Cloudinary cloud name is not configured in environment.</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>Google Workspace & Apps Script Webhook Integration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>Google services integration verified (Apps Script Webhook: Active with Signature Verification).</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>Firebase Client & Admin SDK Integration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>Firebase integration verified (Client SDK: Active, Admin SDK: Configured, Firestore Security Rules: Defined).</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>Payment Gateway Security & Webhook Signatures</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>3ms</td>
+              <td>Payment gateway security active (Razorpay: Verified with HMAC signature, Stripe: Configured).</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>Transactional Email & SMS Notification Transport</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Email transport verified (Resend: Active, SMTP: Simulated Local).</td>
+            </tr>
+          
+            <tr>
+              <td>integrations</td>
+              <td>AI Service Guardrails & Model Integration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>AI subsystem verified with controlled server-side tool execution boundaries (Gemini API: Configured).</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>Docker Containerization & Image Security</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Docker containerization verified (Compose: Yes, Non-root user: Configured).</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>Kubernetes Infrastructure & Kustomize Manifests</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Enterprise Kubernetes infrastructure verified (Kustomize: Yes, ArgoCD: Yes, Argo Rollouts: Yes).</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>Helm Chart Architecture & Parameterization</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Helm infrastructure verified with 4 chart(s): kcm-backend, kcm-frontend, kcm-postgresql, kcm-redis.</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>GitHub Actions CI/CD Pipelines & Automation</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>12ms</td>
+              <td>GitHub Actions verified with 18 automated workflow(s) (CI Pipeline: Active).</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>Environment Variable Contracts & Template Safety</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>12ms</td>
+              <td>Environment templates verified with sanitized placeholder values and zero leaked credentials.</td>
+            </tr>
+          
+            <tr>
+              <td>infrastructure</td>
+              <td>Transport Layer Security (TLS) & HTTPS Redirection</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>11ms</td>
+              <td>TLS transport verified (Middleware HTTPS redirect: Active, Ingress TLS / cert-manager: Configured).</td>
+            </tr>
+          
+            <tr>
+              <td>observability</td>
+              <td>Structured Logging & Sanitized Telemetry</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Application logging operational with structured console output and secret masking filters.</td>
+            </tr>
+          
+            <tr>
+              <td>observability</td>
+              <td>Prometheus Metrics Instrumentation (/metrics)</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Prometheus metrics active with prom-client HTTP duration and status code instrumentation.</td>
+            </tr>
+          
+            <tr>
+              <td>observability</td>
+              <td>Distributed Tracing & Request Correlation</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>0ms</td>
+              <td>Request tracing verified (Correlation ID propagation: Available).</td>
+            </tr>
+          
+            <tr>
+              <td>observability</td>
+              <td>Health Probe Endpoints & Synthetic Monitoring</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>3ms</td>
+              <td>Monitoring endpoints operational (Liveness /api/health: Active, Readiness /api/ready: Active).</td>
+            </tr>
+          
+            <tr>
+              <td>testing</td>
+              <td>Unit Testing Harness & Test Runner Configuration</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Unit/E2E test suite configured (Runner: Playwright).</td>
+            </tr>
+          
+            <tr>
+              <td>testing</td>
+              <td>Integration Test Harness & Endpoint Coverage</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>2ms</td>
+              <td>Integration testing suite active with 19 test specification file(s).</td>
+            </tr>
+          
+            <tr>
+              <td>testing</td>
+              <td>End-to-End (E2E) Playwright Test Suites</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Playwright E2E suite verified with 9 spec(s) (Config: Yes).</td>
+            </tr>
+          
+            <tr>
+              <td>testing</td>
+              <td>Automated Security Test Suites & Bundle Scanners</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Automated security testing infrastructure active (Bundle Secret Scanner: Yes, Security Specs: Yes).</td>
+            </tr>
+          
+            <tr>
+              <td>testing</td>
+              <td>Cross-Browser Regression & Smoke Test Suites</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Regression testing active (Cross-Browser Viewport Matrix: Yes, Production Smoke: Yes).</td>
+            </tr>
+          
+            <tr>
+              <td>performance</td>
+              <td>Overall Performance & Core Web Vitals Targets</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>107ms</td>
+              <td>Platform Core Web Vitals targets established (LCP < 2500ms, INP < 200ms, CLS < 0.1).</td>
+            </tr>
+          
+            <tr>
+              <td>performance</td>
+              <td>Database Query Optimization & Indexing Strategy</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>107ms</td>
+              <td>Database indexing verified with 142 compound and unique index definitions.</td>
+            </tr>
+          
+            <tr>
+              <td>performance</td>
+              <td>API Response Time SLA & Edge Caching Architecture</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>107ms</td>
+              <td>API performance target SLA set to < 500ms (Read endpoint edge caching: Dynamic).</td>
+            </tr>
+          
+            <tr>
+              <td>performance</td>
+              <td>Image Optimization & Code Splitting Patterns</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>105ms</td>
+              <td>next/image optimization verified across 27 component instances.</td>
+            </tr>
+          
+            <tr>
+              <td>performance</td>
+              <td>Third-Party Dependency Weight & Tree-Shaking</td>
+              <td><span class="badge" style="background: #10B981">PASS</span></td>
+              <td>INFO</td>
+              <td>1ms</td>
+              <td>Modern tree-shakeable dependency ecosystem verified (date-fns: Yes, Heavy legacy libraries: None).</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

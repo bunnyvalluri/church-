@@ -150,6 +150,16 @@ const nextConfig = {
       },
     ];
   },
+
+  // -- Health Check Rewrites for Root Probes --
+  async rewrites() {
+    return [
+      { source: '/health', destination: '/api/health' },
+      { source: '/health/live', destination: '/api/health/live' },
+      { source: '/health/ready', destination: '/api/health/ready' },
+      { source: '/health/dependencies', destination: '/api/health/dependencies' },
+    ];
+  },
 };
 
 module.exports = nextConfig;

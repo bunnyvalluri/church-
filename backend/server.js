@@ -19,6 +19,9 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Shared Prisma Client Singleton
+const prisma = require('./src/utils/db');
+
 // Prometheus Metrics Instrumentation
 let metrics;
 try {
@@ -75,6 +78,130 @@ app.use(generalLimiter);
 // Webhook verification middleware
 const { verifyGoogleWebhook } = require('./src/middleware/webhookVerify');
 
+// ── Production Health & Diagnostic Endpoints ─────────────────────────────────
+app.get('/health/live', (req, res) => {
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'LIVE',
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    processType: process.env.PROCESS_TYPE || 'all',
+    memory: {
+      rssMb: Math.round(mem.rss / (1024 * 1024)),
+      heapUsedMb: Math.round(mem.heapUsed / (1024 * 1024)),
+      heapTotalMb: Math.round(mem.heapTotal / (1024 * 1024)),
+    },
+  });
+});
+
+app.get('/health/ready', async (req, res) => {
+  const start = Date.now();
+  try {
+    if (process.env.DB_OFFLINE === 'true') {
+      return res.status(503).json({
+        status: 'NOT_READY',
+        database: 'OFFLINE_BYPASSED',
+        timestamp: new Date().toISOString(),
+      });
+    }
+    await prisma.$queryRaw`SELECT 1`;
+    return res.json({
+      status: 'READY',
+      database: 'CONNECTED',
+      latencyMs: Date.now() - start,
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    return res.status(503).json({
+      status: 'NOT_READY',
+      database: 'DISCONNECTED',
+      latencyMs: Date.now() - start,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+app.get('/health', async (req, res) => {
+  const start = Date.now();
+  let dbStatus = 'unhealthy';
+  let dbLatencyMs = 0;
+  try {
+    if (process.env.DB_OFFLINE === 'true') {
+      dbStatus = 'offline';
+    } else {
+      const dbStart = Date.now();
+      await prisma.$queryRaw`SELECT 1`;
+      dbLatencyMs = Date.now() - dbStart;
+      dbStatus = 'healthy';
+    }
+  } catch {
+    dbStatus = 'unhealthy';
+  }
+
+  const isHealthy = dbStatus === 'healthy';
+  return res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : (dbStatus === 'offline' ? 'degraded' : 'unhealthy'),
+    processType: process.env.PROCESS_TYPE || 'all',
+    timestamp: new Date().toISOString(),
+    durationMs: Date.now() - start,
+    services: {
+      database: {
+        status: dbStatus,
+        latencyMs: dbLatencyMs,
+      },
+      queue: {
+        status: process.env.DISABLE_BULLMQ === 'true' ? 'disabled' : 'active',
+      },
+      realtime: {
+        status: 'active',
+      },
+    },
+  });
+});
+
+app.get('/health/dependencies', async (req, res) => {
+  const start = Date.now();
+  let dbStatus = 'unhealthy';
+  let dbLatencyMs = 0;
+  try {
+    if (process.env.DB_OFFLINE === 'true') {
+      dbStatus = 'offline';
+    } else {
+      const dbStart = Date.now();
+      await prisma.$queryRaw`SELECT 1`;
+      dbLatencyMs = Date.now() - dbStart;
+      dbStatus = 'healthy';
+    }
+  } catch {
+    dbStatus = 'unhealthy';
+  }
+
+  return res.status(dbStatus === 'healthy' ? 200 : 503).json({
+    status: dbStatus === 'healthy' ? 'operational' : 'degraded',
+    timestamp: new Date().toISOString(),
+    durationMs: Date.now() - start,
+    dependencies: {
+      database_postgresql: {
+        status: dbStatus,
+        latencyMs: dbLatencyMs,
+      },
+      queue_bullmq: {
+        redisConfigured: !!process.env.REDIS_URL,
+        disabled: process.env.DISABLE_BULLMQ === 'true',
+      },
+      realtime_socket: {
+        status: 'active',
+      },
+      sms_service: {
+        configured: !!(process.env.HTTPSMS_API_KEY || process.env.TWILIO_AUTH_TOKEN),
+      },
+      fcm_service: {
+        configured: !!process.env.FIREBASE_PROJECT_ID,
+      },
+    },
+  });
+});
+
 // ── AI Assistant Core Suite Routes ───────────────────────────────────────────
 const aiRoutes = require('./src/routes/aiRoutes');
 app.use('/api/ai', aiRoutes);
@@ -88,8 +215,6 @@ app.post('/api/device-tokens', async (req, res) => {
     if (!token) return res.status(400).json({ error: 'token is required' });
 
     const { registerDeviceToken } = require('./src/services/fcmService');
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
     const record = await registerDeviceToken({ token, userId, deviceType, platform }, prisma);
     return res.json({ success: true, id: record.id });
   } catch (err) {
@@ -139,8 +264,6 @@ app.post('/api/notifications/dispatch', notificationLimiter, async (req, res) =>
     const { eventId, branch, channels } = req.body;
     if (!eventId) return res.status(400).json({ error: 'eventId is required' });
 
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
     const event = await prisma.event.findUnique({ where: { id: eventId } });
     if (!event) return res.status(404).json({ error: 'Event not found' });
 
@@ -245,8 +368,6 @@ app.post('/api/agents/sermon-research', async (req, res) => {
 // 2. Church News Agent (Get cached articles & manual refresh)
 app.get('/api/agents/church-news', async (req, res) => {
   try {
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
     const articles = await prisma.churchNewsArticle.findMany({
       orderBy: { publishedAt: 'desc' },
       take: 20
@@ -926,7 +1047,6 @@ function startServer(port, attempt = 0) {
       console.log('==================================================');
       if (PROCESS_TYPE === 'worker') {
         console.log(`📡 BullMQ Worker running and listening for probes on port ${actualPort}`);
-        app.get('/health', (req, res) => res.json({ status: 'OK', type: 'worker', port: actualPort }));
       } else {
         console.log(`🚀 KCM Companion Server (${PROCESS_TYPE}) running on http://0.0.0.0:${actualPort}`);
         if (PROCESS_TYPE === 'all' || PROCESS_TYPE === 'socket') console.log('🔌 Socket.io connections are active');

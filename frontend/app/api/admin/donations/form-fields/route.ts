@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdminOrDev } from '@/lib/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
 // GET: Fetch all dynamic donor form fields
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const fields = await prisma.donationFormField.findMany({
       orderBy: { displayOrder: 'asc' },
@@ -17,6 +21,9 @@ export async function GET() {
 
 // PUT: Bulk update or update single form field control rules
 export async function PUT(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     

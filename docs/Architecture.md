@@ -1,53 +1,60 @@
-# KCM Church Platform — System Architecture & Topology
+# Kingdom of Christ Ministries (KCM) — Architecture Specification
 
-> Cross-Reference: See full architectural specification at [Architecture.md](file:///c:/K.C.M-Portal/docs/Architecture.md) and diagram catalog at [Architecture-Diagrams.md](file:///c:/K.C.M-Portal/docs/Architecture-Diagrams.md).
+> **Platform Version**: 1.0.0 Enterprise  
+> **Topology**: Polyglot Monorepo (Next.js 14 App Router + Companion Node.js/Express Realtime Worker)  
+> **Last Verified**: 2026-09-16  
 
 ---
 
-## 1. High-Level Runtime Topology
+## 1. System Overview
 
-```mermaid
-graph TD
-    User([End Users / Mobile PWA / Admin]) -->|HTTPS (TLS 1.3)| VercelEdge[Vercel Global Edge Network]
-    
-    subgraph Frontend Layer: Vercel Serverless
-        VercelEdge --> NextServer[Next.js 14 App Router]
-        NextServer --> SSR[React Server Components]
-        NextServer --> ClientHydration[Interactive React Client & Service Worker]
-        NextServer --> API[Next.js Serverless Route Handlers]
-    end
+The Kingdom of Christ Ministries platform is an enterprise-grade church management, media streaming, community engagement, and digital giving system.
 
-    subgraph Data & Storage Layer
-        API -->|Prisma ORM (Pooled TLS)| NeonPG[(Neon Serverless PostgreSQL)]
-        API -->|Redis TLS| UpstashRedis[(Upstash Redis Cache & Pub/Sub)]
-        API -->|HTTPS| Cloudinary[(Cloudinary Media Delivery)]
-        API -->|Admin SDK| Firebase[(Firebase Authentication & FCM Push)]
-    end
-
-    subgraph Companion Backend Layer (Optional Realtime Daemon)
-        API -.->|safeTriggerCompanionEvent (HTTP 1.5s Timeout)| ExpressCompanion[Express Companion Server]
-        ExpressCompanion --> SocketIO[Socket.IO Gateway]
-        SocketIO -.->|WSS| ClientHydration
-    end
+```
+                                  ┌────────────────────────┐
+                                  │      Client (Browser)  │
+                                  │   (PWA / Desktop / iOS)│
+                                  └───────────┬────────────┘
+                                              │
+                                              ▼
+                             ┌──────────────────────────────────┐
+                             │       Next.js 14 App Router      │
+                             │  (Edge Middleware + Server Action│
+                             │  + SSR + Client Component Shell) │
+                             └────────┬─────────────────┬───────┘
+                                      │                 │
+             ┌────────────────────────┘                 └─────────────────────────┐
+             ▼                                                                    ▼
+┌─────────────────────────┐                                          ┌─────────────────────────┐
+│     PostgreSQL (Neon)   │                                          │  Companion Worker/Socket│
+│  Primary Relational DB  │                                          │  (Express 5 + Socket.io │
+│   (Users, Offerings,    │                                          │  + BullMQ + Redis +     │
+│   Events, Sermons)      │                                          │   Background AI Agents) │
+└────────────┬────────────┘                                          └────────────┬────────────┘
+             │                                                                    │
+             ▼                                                                    ▼
+┌─────────────────────────┐                                          ┌─────────────────────────┐
+│    Cloudflare / CDN     │                                          │  External Services Gate │
+│  & Cloudinary Media     │                                          │  (Firebase, Razorpay,   │
+│   (Video, Audio, Img)   │                                          │   Stripe, Resend, httpSMS)│
+└─────────────────────────┘                                          └─────────────────────────┘
 ```
 
 ---
 
-## 2. Key Architectural Tenets (Post-Audit Hardening)
+## 2. Core Architecture Tenets
 
-1. **Graceful Serverless Decoupling:**
-   - The frontend application is 100% self-sufficient on Vercel serverless functions.
-   - All external companion notifications (`safeTriggerCompanionEvent`) are non-blocking with 1500ms abort signals.
-   - Client WebSocket connections cleanly fall back to mock sockets when no external companion URL is configured, eliminating mixed-content and connection refusal errors.
-
-2. **Security & Header Isolation:**
-   - `next.config.js` acts as the single source of truth for RFC 8941 Structured Headers, CSP, HSTS, and Permissions-Policy.
-   - Global duplicate headers removed from `vercel.json` to prevent edge proxy header duplication.
-
-3. **Data Integrity & Schema Mapping:**
-   - Authoritative relational data resides in PostgreSQL on Neon with schema mappings (`@@map("pastors")`) enforced across all environments.
-   - 16 models with 190 live records verified.
-
-4. **Offline-First & Mobile Resilience:**
-   - PWA Service Worker (`v5`) enforces Cache-First for immutable assets and Stale-While-Revalidate for dynamic code chunks.
-   - WCAG 2.2 AA keyboard navigation (including modal `Escape` key dismissal) and 0-horizontal-overflow across 21 responsive breakpoints (320px to 3840px).
+1. **Defense-in-Depth Authorization**:
+   - Edge level cryptographic HMAC cookie validation (`middleware.ts`).
+   - Route handler level explicit role checks (`requireAdminOrDev`, `requireEventManagerOrDev`, `requireStaffOrDev`).
+2. **Zero-Crash Resilience**:
+   - Granular React Error Boundaries at root (`app/error.tsx`, `app/global-error.tsx`).
+   - Centralized `apiClient.ts` with exponential backoff, jitter, request cancellation, and idempotency protection.
+3. **Polyglot Persistence**:
+   - **Neon PostgreSQL**: Primary transactional system of record (users, sessions, payments, receipts, events, sermons).
+   - **MongoDB Atlas**: Secondary append-only log store for system audit logs, device telemetry, and unstructured analytics.
+4. **Realtime Decoupling**:
+   - Socket.IO connection client handles companion availability gracefully without blocking browser rendering or causing white screens.
+5. **No Secret Exposure**:
+   - Diagnostic endpoints redact credentials with `[REDACTED_*]`.
+   - Client bundle strictly separates `NEXT_PUBLIC_` from private server secrets.

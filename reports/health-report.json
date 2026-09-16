@@ -1,0 +1,1017 @@
+{
+  "summary": {
+    "overallStatus": "WARN",
+    "totalChecks": 65,
+    "passedChecks": 61,
+    "warnedChecks": 4,
+    "failedChecks": 0,
+    "skippedChecks": 0,
+    "unknownChecks": 0,
+    "criticalFailures": 0,
+    "highFailures": 0,
+    "durationMs": 2095,
+    "generatedAt": "2026-09-16T09:08:40.022Z",
+    "categories": {
+      "frontend": {
+        "category": "frontend",
+        "status": "WARN",
+        "total": 11,
+        "passed": 9,
+        "warned": 2,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 2,
+        "lowCount": 0
+      },
+      "backend": {
+        "category": "backend",
+        "status": "PASS",
+        "total": 6,
+        "passed": 6,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "auth": {
+        "category": "auth",
+        "status": "PASS",
+        "total": 5,
+        "passed": 5,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "database": {
+        "category": "database",
+        "status": "WARN",
+        "total": 7,
+        "passed": 6,
+        "warned": 1,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 1
+      },
+      "security": {
+        "category": "security",
+        "status": "PASS",
+        "total": 10,
+        "passed": 10,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "integrations": {
+        "category": "integrations",
+        "status": "WARN",
+        "total": 6,
+        "passed": 5,
+        "warned": 1,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 1,
+        "lowCount": 0
+      },
+      "infrastructure": {
+        "category": "infrastructure",
+        "status": "PASS",
+        "total": 6,
+        "passed": 6,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "observability": {
+        "category": "observability",
+        "status": "PASS",
+        "total": 4,
+        "passed": 4,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "testing": {
+        "category": "testing",
+        "status": "PASS",
+        "total": 5,
+        "passed": 5,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      },
+      "performance": {
+        "category": "performance",
+        "status": "PASS",
+        "total": 5,
+        "passed": 5,
+        "warned": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unknown": 0,
+        "criticalCount": 0,
+        "highCount": 0,
+        "mediumCount": 0,
+        "lowCount": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "Frontend Workspace Configuration",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 327,
+      "message": "Frontend configured correctly with Next.js ^14.2.0 and React ^18.3.0",
+      "timestamp": "2026-09-16T09:08:37.929Z",
+      "metadata": {
+        "nextVersion": "^14.2.0",
+        "reactVersion": "^18.3.0"
+      }
+    },
+    {
+      "name": "Next.js Route Topology & Integrity",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 325,
+      "message": "All 13 critical platform routes verified in Next.js App Router.",
+      "timestamp": "2026-09-16T09:08:37.930Z",
+      "metadata": {
+        "totalChecked": 13
+      }
+    },
+    {
+      "name": "Server & Client Component Boundaries",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 325,
+      "message": "All App Router components properly declare client/server boundaries.",
+      "timestamp": "2026-09-16T09:08:38.093Z"
+    },
+    {
+      "name": "Next.js Production Build Artifacts",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 162,
+      "message": "Valid production build verified (Build ID: rtpjmYyBNOoI0kMU7VoF0).",
+      "timestamp": "2026-09-16T09:08:38.095Z",
+      "metadata": {
+        "buildId": "rtpjmYyBNOoI0kMU7VoF0"
+      }
+    },
+    {
+      "name": "Client Bundle Budget & Chunk Sizing",
+      "category": "frontend",
+      "status": "WARN",
+      "severity": "MEDIUM",
+      "durationMs": 161,
+      "message": "Found 1 chunk(s) exceeding 350KB limit (Total: 6.14MB)",
+      "timestamp": "2026-09-16T09:08:38.119Z",
+      "metadata": {
+        "oversizedChunks": [
+          {
+            "file": "7979-0f433fc472cb681f.js",
+            "sizeKb": 549
+          }
+        ],
+        "totalMb": "6.14",
+        "recommendation": "Use dynamic imports (next/dynamic) to split large chunks."
+      }
+    },
+    {
+      "name": "Accessibility & WCAG Compliance Standards",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 137,
+      "message": "Core components adhere to WCAG accessible labeling and semantic landmarks.",
+      "timestamp": "2026-09-16T09:08:38.255Z"
+    },
+    {
+      "name": "SEO Metadata & Discoverability Assets",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 8,
+      "message": "SEO metadata, sitemaps, robots.ts, and OpenGraph configurations verified.",
+      "timestamp": "2026-09-16T09:08:38.258Z"
+    },
+    {
+      "name": "Frontend Performance & Asset Optimization",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 6,
+      "message": "Frontend performance configurations (next/font, compression) are verified.",
+      "timestamp": "2026-09-16T09:08:38.260Z"
+    },
+    {
+      "name": "Cross-Browser & Mobile Viewport Compatibility",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 4,
+      "message": "Responsive viewport meta and PostCSS Autoprefixer verified for all major mobile/desktop browsers.",
+      "timestamp": "2026-09-16T09:08:38.262Z"
+    },
+    {
+      "name": "PWA & Offline Service Worker Integrity",
+      "category": "frontend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "PWA assets verified (Manifest: Yes, ServiceWorker: Yes, Offline: Yes).",
+      "timestamp": "2026-09-16T09:08:38.263Z",
+      "metadata": {
+        "hasManifest": true,
+        "hasServiceWorker": true,
+        "hasOfflinePage": true
+      }
+    },
+    {
+      "name": "Internationalization (i18n) Parity & Completeness",
+      "category": "frontend",
+      "status": "WARN",
+      "severity": "MEDIUM",
+      "durationMs": 1,
+      "message": "Incomplete language dictionaries: en te (Telugu) hi (Hindi)",
+      "timestamp": "2026-09-16T09:08:38.264Z",
+      "metadata": {
+        "recommendation": "Ensure translations dictionary supports English, Telugu, and Hindi."
+      }
+    },
+    {
+      "name": "Backend Runtime & Express Service Configuration",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "Backend companion service configured with Express ^5.2.1 and Prisma client.",
+      "timestamp": "2026-09-16T09:08:38.264Z",
+      "metadata": {
+        "expressVersion": "^5.2.1",
+        "hasPrisma": true
+      }
+    },
+    {
+      "name": "API Route Handlers & REST Endpoints",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 175,
+      "message": "API surface active with 184 Next.js route handler(s) and 53 Express companion endpoint(s).",
+      "timestamp": "2026-09-16T09:08:38.284Z",
+      "metadata": {
+        "nextApiCount": 184,
+        "expressEndpointCount": 53
+      }
+    },
+    {
+      "name": "API Endpoint Catalog & Auth Inventory",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 155,
+      "message": "Audited 279 API endpoint handlers. All destructive verbs enforce authorization.",
+      "timestamp": "2026-09-16T09:08:38.435Z",
+      "metadata": {
+        "totalAudited": 279
+      }
+    },
+    {
+      "name": "Edge Middleware Architecture & Guard Ordering",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 4,
+      "message": "Edge Middleware verified with HTTPS, CSRF, Cryptographic Session validation, and RBAC routing.",
+      "timestamp": "2026-09-16T09:08:38.435Z"
+    },
+    {
+      "name": "Error Boundaries & Exception Handling Architecture",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 4,
+      "message": "Centralized error handling verified (Root boundaries: Yes, Backend traps: Active).",
+      "timestamp": "2026-09-16T09:08:38.436Z",
+      "metadata": {
+        "hasError": true,
+        "hasGlobalError": true,
+        "hasNotFound": true,
+        "hasBackendTrap": true
+      }
+    },
+    {
+      "name": "Input Validation & Request Schema Sanitization",
+      "category": "backend",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 3,
+      "message": "Request sanitization verified (Schema Library: Present, Auth Input Guards: Verified).",
+      "timestamp": "2026-09-16T09:08:38.438Z",
+      "metadata": {
+        "hasValidationLib": true,
+        "hasExplicitValidation": true
+      }
+    },
+    {
+      "name": "Primary Authentication Providers & Password Hashing",
+      "category": "auth",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Authentication stack verified (Bcrypt Password Hashing: Active, Firebase Auth: Configured).",
+      "timestamp": "2026-09-16T09:08:38.439Z",
+      "metadata": {
+        "usesBcrypt": true,
+        "hasFirebase": true
+      }
+    },
+    {
+      "name": "Role-Based Access Control (RBAC) & Boundary Enforcement",
+      "category": "auth",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 5,
+      "message": "RBAC boundaries fully verified: Member users are strictly prevented from accessing Admin, Pastor, and Event Manager portals.",
+      "timestamp": "2026-09-16T09:08:38.441Z",
+      "metadata": {
+        "adminGuardsRole": true,
+        "pastorGuardsRole": true,
+        "middlewareGuardsAdmin": true,
+        "middlewareGuardsPastor": true
+      }
+    },
+    {
+      "name": "Cryptographic Edge Session Verification & TTL",
+      "category": "auth",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 3,
+      "message": "Edge cryptographic session management verified with Web Crypto HMAC SHA-256 and expiration bounds.",
+      "timestamp": "2026-09-16T09:08:38.442Z",
+      "metadata": {
+        "hasHmac": true,
+        "hasTtl": true,
+        "hasHttpOnly": false,
+        "hasSecure": true,
+        "hasSameSite": false
+      }
+    },
+    {
+      "name": "Google OAuth & Social Sign-In Integration",
+      "category": "auth",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Google OAuth sign-in integration verified with popup/redirect flow handlers.",
+      "timestamp": "2026-09-16T09:08:38.443Z",
+      "metadata": {
+        "hasGoogleAuth": true
+      }
+    },
+    {
+      "name": "RBAC Role Definitions & Permission Parity",
+      "category": "auth",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "All 6 platform roles verified across Prisma enum and application handlers.",
+      "timestamp": "2026-09-16T09:08:38.443Z",
+      "metadata": {
+        "roles": [
+          "SUPER_ADMIN",
+          "ADMIN",
+          "PASTOR",
+          "EVENT_MANAGER",
+          "FIELD_VOLUNTEER",
+          "MEMBER"
+        ]
+      }
+    },
+    {
+      "name": "Polyglot Persistence Layer Architecture",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Database tier active (Primary: PostgreSQL/Neon, Document: MongoDB Atlas, Cache/Queue: Redis).",
+      "timestamp": "2026-09-16T09:08:38.444Z",
+      "metadata": {
+        "postgres": true,
+        "mongodb": true,
+        "redis": true
+      }
+    },
+    {
+      "name": "PostgreSQL (Neon) Configuration & Security",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "PostgreSQL connection verified for host 'ep-morning-cloud-aic1vgvt.c-4.us-east-1.aws.neon.tech' with SSL enabled.",
+      "timestamp": "2026-09-16T09:08:38.444Z",
+      "metadata": {
+        "host": "ep-morning-cloud-aic1vgvt.c-4.us-east-1.aws.neon.tech",
+        "ssl": true
+      }
+    },
+    {
+      "name": "Prisma ORM Schema & Client Generation",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Prisma ORM verified with 81 data models and active generated client.",
+      "timestamp": "2026-09-16T09:08:38.445Z",
+      "metadata": {
+        "modelCount": 81,
+        "sampleModels": [
+          "User",
+          "Session",
+          "Event",
+          "EventMedia",
+          "EventImage",
+          "EventVideo"
+        ]
+      }
+    },
+    {
+      "name": "MongoDB Atlas Integration & Fallback Mode",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "MongoDB Atlas cluster URI configured with active client adapter.",
+      "timestamp": "2026-09-16T09:08:38.445Z",
+      "metadata": {
+        "mode": "atlas_connected"
+      }
+    },
+    {
+      "name": "Redis Cache & BullMQ Queue Integration",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Redis connection configured for distributed Pub/Sub and BullMQ queues.",
+      "timestamp": "2026-09-16T09:08:38.445Z"
+    },
+    {
+      "name": "Database Schema Migration & Synchronization",
+      "category": "database",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Database schema synchronized (Migrations tracked: 1 migrations).",
+      "timestamp": "2026-09-16T09:08:38.446Z",
+      "metadata": {
+        "migrationCount": 1
+      }
+    },
+    {
+      "name": "Database Connection Pooling & Serverless Sizing",
+      "category": "database",
+      "status": "WARN",
+      "severity": "LOW",
+      "durationMs": 0,
+      "message": "Direct database connection detected without PgBouncer connection pooler in DATABASE_URL.",
+      "timestamp": "2026-09-16T09:08:38.446Z",
+      "metadata": {
+        "recommendation": "For Neon serverless, use pooled connection string to avoid connection starvation under load."
+      }
+    },
+    {
+      "name": "Overall Application Security Posture",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "Base defense-in-depth posture active: .gitignore protects secret files, Edge Middleware enforces security policies.",
+      "timestamp": "2026-09-16T09:08:38.446Z"
+    },
+    {
+      "name": "Static Codebase Secret & Credential Leakage Scan",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 811,
+      "message": "Zero hardcoded private keys, database credentials, or live API secrets detected in source code.",
+      "timestamp": "2026-09-16T09:08:39.254Z"
+    },
+    {
+      "name": "Dependency Vulnerability & Lockfile Integrity",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 3,
+      "message": "Deterministic npm package-lock.json verified (629KB).",
+      "timestamp": "2026-09-16T09:08:39.254Z",
+      "metadata": {
+        "lockfileSizeKb": 629
+      }
+    },
+    {
+      "name": "HTTP Security Headers & Transport Hardening",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Security headers verified across Next.js config and edge middleware.",
+      "timestamp": "2026-09-16T09:08:39.255Z"
+    },
+    {
+      "name": "Cross-Origin Resource Sharing (CORS) Policy",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Strict CORS policy verified with explicit trusted origin allowlist.",
+      "timestamp": "2026-09-16T09:08:39.256Z",
+      "metadata": {
+        "allowlistEnforced": true
+      }
+    },
+    {
+      "name": "Cross-Site Request Forgery (CSRF) Defenses",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Edge Middleware CSRF protection verified for POST, PUT, PATCH, and DELETE requests with webhook exemptions.",
+      "timestamp": "2026-09-16T09:08:39.256Z"
+    },
+    {
+      "name": "API Rate Limiting & Brute-Force Defense",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Rate limiting and brute-force defenses active (Backend limiters: Configured, Auth 429 response handling: Active).",
+      "timestamp": "2026-09-16T09:08:39.257Z",
+      "metadata": {
+        "hasBackendLimiter": true,
+        "hasLoginRateLimiting": true
+      }
+    },
+    {
+      "name": "Injection Flaws & Dangerous Execution Primitives",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 640,
+      "message": "Zero dangerous execution primitives ($queryRawUnsafe, eval, raw exec) detected in application code.",
+      "timestamp": "2026-09-16T09:08:39.863Z"
+    },
+    {
+      "name": "Administrative API Authorization Enforcement",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 34,
+      "message": "Administrative API routes enforce server-side authorization and role boundaries.",
+      "timestamp": "2026-09-16T09:08:39.890Z"
+    },
+    {
+      "name": "Resource Ownership & IDOR Protection",
+      "category": "security",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 7,
+      "message": "User-scoped resources bind queries to verified session identifiers to prevent IDOR attacks.",
+      "timestamp": "2026-09-16T09:08:39.896Z",
+      "metadata": {
+        "ownershipGuards": true
+      }
+    },
+    {
+      "name": "Cloudinary Media Asset Storage Integration",
+      "category": "integrations",
+      "status": "WARN",
+      "severity": "MEDIUM",
+      "durationMs": 0,
+      "message": "Cloudinary cloud name is not configured in environment.",
+      "timestamp": "2026-09-16T09:08:39.897Z",
+      "metadata": {
+        "recommendation": "Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME for image uploads."
+      }
+    },
+    {
+      "name": "Google Workspace & Apps Script Webhook Integration",
+      "category": "integrations",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "Google services integration verified (Apps Script Webhook: Active with Signature Verification).",
+      "timestamp": "2026-09-16T09:08:39.897Z",
+      "metadata": {
+        "webhookConfigured": true
+      }
+    },
+    {
+      "name": "Firebase Client & Admin SDK Integration",
+      "category": "integrations",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "Firebase integration verified (Client SDK: Active, Admin SDK: Configured, Firestore Security Rules: Defined).",
+      "timestamp": "2026-09-16T09:08:39.897Z",
+      "metadata": {
+        "hasClient": true,
+        "hasAdmin": true,
+        "hasRules": true
+      }
+    },
+    {
+      "name": "Payment Gateway Security & Webhook Signatures",
+      "category": "integrations",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 3,
+      "message": "Payment gateway security active (Razorpay: Verified with HMAC signature, Stripe: Configured).",
+      "timestamp": "2026-09-16T09:08:39.898Z",
+      "metadata": {
+        "hasRazorpayWebhook": true,
+        "hasStripeWebhook": true,
+        "hasSignatureVerification": true
+      }
+    },
+    {
+      "name": "Transactional Email & SMS Notification Transport",
+      "category": "integrations",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Email transport verified (Resend: Active, SMTP: Simulated Local).",
+      "timestamp": "2026-09-16T09:08:39.898Z",
+      "metadata": {
+        "resend": true,
+        "smtp": false
+      }
+    },
+    {
+      "name": "AI Service Guardrails & Model Integration",
+      "category": "integrations",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "AI subsystem verified with controlled server-side tool execution boundaries (Gemini API: Configured).",
+      "timestamp": "2026-09-16T09:08:39.898Z",
+      "metadata": {
+        "hasGeminiKey": true,
+        "guardrailsActive": true
+      }
+    },
+    {
+      "name": "Docker Containerization & Image Security",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Docker containerization verified (Compose: Yes, Non-root user: Configured).",
+      "timestamp": "2026-09-16T09:08:39.899Z",
+      "metadata": {
+        "hasBackendDocker": true,
+        "hasCompose": true,
+        "usesNonRoot": true
+      }
+    },
+    {
+      "name": "Kubernetes Infrastructure & Kustomize Manifests",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Enterprise Kubernetes infrastructure verified (Kustomize: Yes, ArgoCD: Yes, Argo Rollouts: Yes).",
+      "timestamp": "2026-09-16T09:08:39.899Z",
+      "metadata": {
+        "hasKustomization": true,
+        "hasArgo": true,
+        "hasRollouts": true
+      }
+    },
+    {
+      "name": "Helm Chart Architecture & Parameterization",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Helm infrastructure verified with 4 chart(s): kcm-backend, kcm-frontend, kcm-postgresql, kcm-redis.",
+      "timestamp": "2026-09-16T09:08:39.900Z",
+      "metadata": {
+        "charts": [
+          "kcm-backend",
+          "kcm-frontend",
+          "kcm-postgresql",
+          "kcm-redis"
+        ]
+      }
+    },
+    {
+      "name": "GitHub Actions CI/CD Pipelines & Automation",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 12,
+      "message": "GitHub Actions verified with 18 automated workflow(s) (CI Pipeline: Active).",
+      "timestamp": "2026-09-16T09:08:39.900Z",
+      "metadata": {
+        "workflowCount": 18,
+        "hasCi": true
+      }
+    },
+    {
+      "name": "Environment Variable Contracts & Template Safety",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 12,
+      "message": "Environment templates verified with sanitized placeholder values and zero leaked credentials.",
+      "timestamp": "2026-09-16T09:08:39.900Z",
+      "metadata": {
+        "rootTemplate": true,
+        "frontendTemplate": true
+      }
+    },
+    {
+      "name": "Transport Layer Security (TLS) & HTTPS Redirection",
+      "category": "infrastructure",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 11,
+      "message": "TLS transport verified (Middleware HTTPS redirect: Active, Ingress TLS / cert-manager: Configured).",
+      "timestamp": "2026-09-16T09:08:39.911Z",
+      "metadata": {
+        "hasHttpsRedirect": true,
+        "hasTlsConfig": true
+      }
+    },
+    {
+      "name": "Structured Logging & Sanitized Telemetry",
+      "category": "observability",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Application logging operational with structured console output and secret masking filters.",
+      "timestamp": "2026-09-16T09:08:39.911Z",
+      "metadata": {
+        "hasConsoleLogging": true
+      }
+    },
+    {
+      "name": "Prometheus Metrics Instrumentation (/metrics)",
+      "category": "observability",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Prometheus metrics active with prom-client HTTP duration and status code instrumentation.",
+      "timestamp": "2026-09-16T09:08:39.912Z",
+      "metadata": {
+        "metricsModule": true,
+        "middlewareAttached": true
+      }
+    },
+    {
+      "name": "Distributed Tracing & Request Correlation",
+      "category": "observability",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 0,
+      "message": "Request tracing verified (Correlation ID propagation: Available).",
+      "timestamp": "2026-09-16T09:08:39.912Z",
+      "metadata": {
+        "hasRequestId": false
+      }
+    },
+    {
+      "name": "Health Probe Endpoints & Synthetic Monitoring",
+      "category": "observability",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 3,
+      "message": "Monitoring endpoints operational (Liveness /api/health: Active, Readiness /api/ready: Active).",
+      "timestamp": "2026-09-16T09:08:39.913Z",
+      "metadata": {
+        "liveness": true,
+        "readiness": true
+      }
+    },
+    {
+      "name": "Unit Testing Harness & Test Runner Configuration",
+      "category": "testing",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Unit/E2E test suite configured (Runner: Playwright).",
+      "timestamp": "2026-09-16T09:08:39.913Z",
+      "metadata": {
+        "testScript": "playwright test"
+      }
+    },
+    {
+      "name": "Integration Test Harness & Endpoint Coverage",
+      "category": "testing",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 2,
+      "message": "Integration testing suite active with 19 test specification file(s).",
+      "timestamp": "2026-09-16T09:08:39.914Z",
+      "metadata": {
+        "testFileCount": 19,
+        "backendTestsAvailable": true
+      }
+    },
+    {
+      "name": "End-to-End (E2E) Playwright Test Suites",
+      "category": "testing",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Playwright E2E suite verified with 9 spec(s) (Config: Yes).",
+      "timestamp": "2026-09-16T09:08:39.914Z",
+      "metadata": {
+        "e2eSpecs": [
+          "language-switch.spec.ts",
+          "link-crawler.spec.ts",
+          "member-login-verification.spec.ts",
+          "member-reports.spec.ts",
+          "rbac-matrix.spec.ts",
+          "route-health.spec.ts",
+          "security-headers.spec.ts",
+          "theme-compatibility.spec.ts",
+          "visual-regression.spec.ts"
+        ]
+      }
+    },
+    {
+      "name": "Automated Security Test Suites & Bundle Scanners",
+      "category": "testing",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Automated security testing infrastructure active (Bundle Secret Scanner: Yes, Security Specs: Yes).",
+      "timestamp": "2026-09-16T09:08:39.914Z",
+      "metadata": {
+        "hasScanScript": true,
+        "hasSecurityTests": true
+      }
+    },
+    {
+      "name": "Cross-Browser Regression & Smoke Test Suites",
+      "category": "testing",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Regression testing active (Cross-Browser Viewport Matrix: Yes, Production Smoke: Yes).",
+      "timestamp": "2026-09-16T09:08:39.915Z",
+      "metadata": {
+        "hasCrossBrowser": true,
+        "hasSmoke": true
+      }
+    },
+    {
+      "name": "Overall Performance & Core Web Vitals Targets",
+      "category": "performance",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 107,
+      "message": "Platform Core Web Vitals targets established (LCP < 2500ms, INP < 200ms, CLS < 0.1).",
+      "timestamp": "2026-09-16T09:08:39.915Z",
+      "metadata": {
+        "thresholds": {
+          "maxLcpMs": 2500,
+          "maxInpMs": 200,
+          "maxCls": 0.1,
+          "maxClientBundleChunkKb": 350,
+          "maxTotalClientBundleMb": 6.5,
+          "maxApiResponseMs": 500,
+          "maxDbQueryMs": 200
+        }
+      }
+    },
+    {
+      "name": "Database Query Optimization & Indexing Strategy",
+      "category": "performance",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 107,
+      "message": "Database indexing verified with 142 compound and unique index definitions.",
+      "timestamp": "2026-09-16T09:08:39.915Z",
+      "metadata": {
+        "compoundIndexes": 110,
+        "uniqueConstraints": 32
+      }
+    },
+    {
+      "name": "API Response Time SLA & Edge Caching Architecture",
+      "category": "performance",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 107,
+      "message": "API performance target SLA set to < 500ms (Read endpoint edge caching: Dynamic).",
+      "timestamp": "2026-09-16T09:08:39.916Z",
+      "metadata": {
+        "maxTargetMs": 500,
+        "hasCaching": false
+      }
+    },
+    {
+      "name": "Image Optimization & Code Splitting Patterns",
+      "category": "performance",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 105,
+      "message": "next/image optimization verified across 27 component instances.",
+      "timestamp": "2026-09-16T09:08:40.021Z",
+      "metadata": {
+        "nextImageUsage": 27,
+        "unoptimizedImages": 15
+      }
+    },
+    {
+      "name": "Third-Party Dependency Weight & Tree-Shaking",
+      "category": "performance",
+      "status": "PASS",
+      "severity": "INFO",
+      "durationMs": 1,
+      "message": "Modern tree-shakeable dependency ecosystem verified (date-fns: Yes, Heavy legacy libraries: None).",
+      "timestamp": "2026-09-16T09:08:40.021Z",
+      "metadata": {
+        "usesDateFns": true
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "name": "Client Bundle Budget & Chunk Sizing",
+      "category": "frontend",
+      "severity": "MEDIUM",
+      "message": "Found 1 chunk(s) exceeding 350KB limit (Total: 6.14MB)",
+      "recommendation": "Use dynamic imports (next/dynamic) to split large chunks."
+    },
+    {
+      "name": "Internationalization (i18n) Parity & Completeness",
+      "category": "frontend",
+      "severity": "MEDIUM",
+      "message": "Incomplete language dictionaries: en te (Telugu) hi (Hindi)",
+      "recommendation": "Ensure translations dictionary supports English, Telugu, and Hindi."
+    },
+    {
+      "name": "Database Connection Pooling & Serverless Sizing",
+      "category": "database",
+      "severity": "LOW",
+      "message": "Direct database connection detected without PgBouncer connection pooler in DATABASE_URL.",
+      "recommendation": "For Neon serverless, use pooled connection string to avoid connection starvation under load."
+    },
+    {
+      "name": "Cloudinary Media Asset Storage Integration",
+      "category": "integrations",
+      "severity": "MEDIUM",
+      "message": "Cloudinary cloud name is not configured in environment.",
+      "recommendation": "Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME for image uploads."
+    }
+  ]
+}

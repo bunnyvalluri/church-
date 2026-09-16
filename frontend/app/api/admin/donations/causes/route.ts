@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdminOrDev } from '@/lib/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
 // GET: Fetch all donation causes/purposes
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const causes = await prisma.donationPurpose.findMany({
       orderBy: { sortOrder: 'asc' },
@@ -17,6 +21,9 @@ export async function GET() {
 
 // POST: Create a new donation cause
 export async function POST(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const { code, nameEn, nameTe, nameHi, descEn, icon, category, targetAmount, sortOrder, isActive } = body;
@@ -48,6 +55,9 @@ export async function POST(req: Request) {
 
 // PUT: Update an existing donation cause
 export async function PUT(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const { id, nameEn, nameTe, nameHi, descEn, icon, category, targetAmount, sortOrder, isActive, isArchived } = body;
@@ -62,7 +72,7 @@ export async function PUT(req: Request) {
         nameEn: nameEn || undefined,
         nameTe: nameTe || undefined,
         nameHi: nameHi || undefined,
-        descEn: descEn || undefined,
+        descEn: descEn !== undefined ? descEn : undefined,
         icon: icon || undefined,
         category: category || undefined,
         targetAmount: targetAmount !== undefined ? (targetAmount ? parseFloat(targetAmount) : null) : undefined,
@@ -78,8 +88,11 @@ export async function PUT(req: Request) {
   }
 }
 
-// DELETE: Soft delete / archive or delete a donation cause
+// DELETE: Soft delete / archive a donation cause
 export async function DELETE(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
@@ -93,7 +106,7 @@ export async function DELETE(req: Request) {
       data: { isArchived: true, isActive: false },
     });
 
-    return NextResponse.json({ success: true, message: 'Donation cause archived successfully' });
+    return NextResponse.json({ success: true, message: 'Cause archived successfully' });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Failed to archive donation cause' }, { status: 500 });
   }

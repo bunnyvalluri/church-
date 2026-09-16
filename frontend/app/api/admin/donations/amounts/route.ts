@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdminOrDev } from '@/lib/authMiddleware';
 
 export const dynamic = 'force-dynamic';
 
 // GET: Fetch all donation preset amounts
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const amounts = await prisma.donationAmount.findMany({
       orderBy: { displayOrder: 'asc' },
@@ -17,6 +21,9 @@ export async function GET() {
 
 // POST: Create a new preset amount
 export async function POST(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const { amount, label, currency, displayOrder, isActive, isDefault, campaignId } = body;
@@ -53,6 +60,9 @@ export async function POST(req: Request) {
 
 // PUT: Update an existing preset amount
 export async function PUT(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const { id, amount, label, displayOrder, isActive, isDefault } = body;
@@ -87,6 +97,9 @@ export async function PUT(req: Request) {
 
 // DELETE: Delete a preset amount
 export async function DELETE(req: Request) {
+  const auth = await requireAdminOrDev(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

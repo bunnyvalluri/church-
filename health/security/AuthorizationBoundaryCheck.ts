@@ -32,6 +32,9 @@ export class AuthorizationBoundaryCheck extends BaseHealthCheck {
             const hasAuthCheck =
               content.includes("ADMIN") ||
               content.includes("SUPER_ADMIN") ||
+              content.includes("requireAdmin") ||
+              content.includes("requireAdminOrDev") ||
+              content.includes("requireStaffOrDev") ||
               content.includes("verifySession") ||
               content.includes("verifyAdmin") ||
               content.includes("checkAuth") ||

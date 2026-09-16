@@ -16,87 +16,100 @@ import { cloudinary } from "@/lib/cloudinary";
 
 export async function GET() {
   const timestamp = new Date().toISOString();
+  const startTime = Date.now();
 
   // 1. Check PostgreSQL (Neon)
-  let postgresqlStatus = "healthy";
+  let postgresqlStatus: "healthy" | "unhealthy" | "offline" = "unhealthy";
+  let pgLatencyMs = 0;
   try {
     if (process.env.DB_OFFLINE === "true") {
-      postgresqlStatus = "healthy";
+      postgresqlStatus = "offline";
     } else {
-      // 2-second timeout probe
+      const pgStart = Date.now();
       const pgCheck = prisma.$queryRaw`SELECT 1`;
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("PostgreSQL timeout")), 2000)
+        setTimeout(() => reject(new Error("PostgreSQL probe timed out")), 3000)
       );
       await Promise.race([pgCheck, timeoutPromise]);
+      pgLatencyMs = Date.now() - pgStart;
       postgresqlStatus = "healthy";
     }
-  } catch (err) {
+  } catch {
     postgresqlStatus = "unhealthy";
   }
 
   // 2. Check MongoDB Atlas
-  let mongodbStatus = "healthy";
+  let mongodbStatus: "healthy" | "unhealthy" | "offline" = "unhealthy";
+  let mongoLatencyMs = 0;
   try {
     const mongoHealth = await checkMongoHealth();
-    if (mongoHealth.status === "offline") {
-      mongodbStatus = "healthy"; // offline dev mode is an acceptable normal state in dev
-    } else if (mongoHealth.status === "healthy") {
+    mongoLatencyMs = mongoHealth.latencyMs || 0;
+    if (mongoHealth.status === "healthy") {
       mongodbStatus = "healthy";
+    } else if (mongoHealth.status === "offline") {
+      mongodbStatus = "offline";
     } else {
       mongodbStatus = "unhealthy";
     }
-  } catch (err) {
+  } catch {
     mongodbStatus = "unhealthy";
   }
 
   // 3. Check Firebase Admin SDK
-  let firebaseStatus = "healthy";
+  let firebaseStatus: "healthy" | "unconfigured" = "unconfigured";
   try {
-    if (isAdminReady()) {
-      firebaseStatus = "healthy";
-    } else if (process.env.FIRESTORE_OFFLINE === "true" || process.env.NODE_ENV === "development") {
-      firebaseStatus = "healthy";
-    } else {
-      firebaseStatus = "unhealthy";
-    }
-  } catch (err) {
-    firebaseStatus = "unhealthy";
+    firebaseStatus = isAdminReady() ? "healthy" : "unconfigured";
+  } catch {
+    firebaseStatus = "unconfigured";
   }
 
   // 4. Check Cloudinary Configuration
-  let cloudinaryStatus = "healthy";
+  let cloudinaryStatus: "healthy" | "unconfigured" = "unconfigured";
   try {
     const cloudName = cloudinary.config().cloud_name;
     const apiKey = cloudinary.config().api_key;
-    if (cloudName && apiKey) {
-      cloudinaryStatus = "healthy";
-    } else {
-      cloudinaryStatus = "unhealthy";
-    }
-  } catch (err) {
-    cloudinaryStatus = "unhealthy";
+    cloudinaryStatus = (cloudName && apiKey) ? "healthy" : "unconfigured";
+  } catch {
+    cloudinaryStatus = "unconfigured";
   }
 
-  const isAllHealthy =
-    postgresqlStatus === "healthy" &&
-    mongodbStatus === "healthy" &&
-    firebaseStatus === "healthy" &&
-    cloudinaryStatus === "healthy";
+  // Core requirement: PostgreSQL must be healthy for system to be operational
+  const isCoreHealthy = postgresqlStatus === "healthy";
+  const isFullyHealthy = isCoreHealthy && mongodbStatus === "healthy" && firebaseStatus === "healthy" && cloudinaryStatus === "healthy";
+
+  let overallStatus: "healthy" | "degraded" | "unhealthy";
+  if (isFullyHealthy) {
+    overallStatus = "healthy";
+  } else if (isCoreHealthy) {
+    overallStatus = "degraded";
+  } else {
+    overallStatus = "unhealthy";
+  }
 
   const responsePayload = {
-    status: isAllHealthy ? "healthy" : "degraded",
+    status: overallStatus,
     timestamp,
+    durationMs: Date.now() - startTime,
     services: {
-      postgresql: postgresqlStatus,
-      mongodb: mongodbStatus,
-      firebase: firebaseStatus,
-      cloudinary: cloudinaryStatus,
+      postgresql: {
+        status: postgresqlStatus,
+        latencyMs: pgLatencyMs,
+      },
+      mongodb: {
+        status: mongodbStatus,
+        latencyMs: mongoLatencyMs,
+      },
+      firebase: {
+        status: firebaseStatus,
+      },
+      cloudinary: {
+        status: cloudinaryStatus,
+      },
     },
   };
 
   return NextResponse.json(responsePayload, {
-    status: isAllHealthy ? 200 : 503,
+    status: isCoreHealthy ? 200 : 503,
   });
 }
 

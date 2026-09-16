@@ -34,7 +34,10 @@ export class InputValidationHealthCheck extends BaseHealthCheck {
           e.name !== "node_modules" &&
           e.name !== ".next" &&
           e.name !== ".git" &&
-          e.name !== "health"
+          e.name !== "health" &&
+          e.name !== "generated" &&
+          e.name !== "test-results" &&
+          e.name !== "coverage"
         ) {
           scan(full);
         } else if (
