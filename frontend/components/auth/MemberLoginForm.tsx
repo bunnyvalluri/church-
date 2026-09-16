@@ -4,7 +4,22 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ArrowRight,
+  ChevronLeft,
+  CheckCircle2,
+  Loader2,
+  Shield,
+  BookOpen,
+  Camera,
+  Users,
+  Sparkles,
+  Key,
+} from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
@@ -66,26 +81,40 @@ export default function MemberLoginForm({
     return () => clearTimeout(timer);
   }, [router]);
 
+  // Determine safe authorized destination based strictly on database role
+  const getAuthorizedPathForRole = (roleName: string, requestedPath?: string) => {
+    const normalized = (roleName || "MEMBER").toUpperCase();
+    let defaultHome = "/member";
+    if (normalized === "ADMIN" || normalized === "SUPER_ADMIN") {
+      defaultHome = "/admin/dashboard";
+    } else if (normalized === "PASTOR") {
+      defaultHome = "/pastor/main/dashboard";
+    } else if (normalized === "EVENT_MANAGER" || normalized === "FIELD_VOLUNTEER") {
+      defaultHome = "/event-manager";
+    }
+
+    if (!requestedPath || requestedPath === "/" || requestedPath === "/login") {
+      return defaultHome;
+    }
+
+    // Only allow requested path if the user's role has permission to access it
+    if (
+      (requestedPath.startsWith("/admin") && (normalized === "ADMIN" || normalized === "SUPER_ADMIN")) ||
+      (requestedPath.startsWith("/pastor") && (normalized === "PASTOR" || normalized === "SUPER_ADMIN")) ||
+      (requestedPath.startsWith("/event-manager") && (normalized === "EVENT_MANAGER" || normalized === "FIELD_VOLUNTEER" || normalized === "ADMIN" || normalized === "SUPER_ADMIN")) ||
+      (requestedPath.startsWith("/member")) ||
+      (requestedPath.startsWith("/portal-select") && normalized !== "MEMBER")
+    ) {
+      return requestedPath;
+    }
+
+    return defaultHome;
+  };
+
   // Redirect already-authenticated users
   useEffect(() => {
     if (mounted && status === "authenticated" && user && !isLoggingIn) {
-      let target = defaultNext || "/member";
-      switch (user.role) {
-        case "ADMIN":
-        case "SUPER_ADMIN":
-          target = defaultNext || "/admin/dashboard";
-          break;
-        case "PASTOR":
-          target = defaultNext || "/pastor/main/dashboard";
-          break;
-        case "EVENT_MANAGER":
-        case "FIELD_VOLUNTEER":
-          target = defaultNext || "/event-manager";
-          break;
-        default:
-          target = defaultNext || "/member";
-          break;
-      }
+      const target = getAuthorizedPathForRole(user.role, defaultNext);
       if (typeof window !== "undefined") {
         window.location.replace(target);
       } else {
@@ -166,43 +195,21 @@ export default function MemberLoginForm({
   };
 
   const redirectForRole = (targetRole: string) => {
-    const normalized = (targetRole || "MEMBER").toUpperCase();
-    let targetPath = defaultNext || "/member";
-    switch (normalized) {
-      case "ADMIN":
-      case "SUPER_ADMIN":
-        targetPath = defaultNext || "/admin/dashboard";
-        break;
-      case "PASTOR":
-        targetPath = defaultNext || "/pastor/main/dashboard";
-        break;
-      case "EVENT_MANAGER":
-      case "FIELD_VOLUNTEER":
-        targetPath = defaultNext || "/event-manager";
-        break;
-      default:
-        targetPath = defaultNext || "/member";
-        break;
-    }
-
+    let nextCandidate = defaultNext;
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const nextParam = params.get("next") || defaultNext;
+      const nextParam = params.get("next");
       if (
         nextParam &&
         nextParam.startsWith("/") &&
         !nextParam.startsWith("//") &&
         !nextParam.includes(":")
       ) {
-        const isGenericMemberRedirect = nextParam === "/member" || nextParam === "/member/";
-        if (!isGenericMemberRedirect || normalized === "MEMBER") {
-          const isAdminNext = nextParam.startsWith("/admin") || nextParam.startsWith("/pastor");
-          if (!isAdminNext || normalized === "ADMIN" || normalized === "SUPER_ADMIN" || normalized === "PASTOR") {
-            targetPath = nextParam;
-          }
-        }
+        nextCandidate = nextParam;
       }
     }
+
+    const targetPath = getAuthorizedPathForRole(targetRole, nextCandidate);
 
     if (typeof window !== "undefined") {
       window.location.replace(targetPath);
@@ -397,6 +404,55 @@ export default function MemberLoginForm({
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
+          {/* Portal Switcher Tabs */}
+          <div className="mb-4 sm:mb-6 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-white/10 flex items-center gap-1 shadow-inner" role="tablist" aria-label="Portal Selection">
+            {[
+              {
+                id: "member",
+                href: "/login",
+                icon: Users,
+                label: language === "te" ? "సభ్యులు" : language === "hi" ? "सदस्य" : "Member",
+              },
+              {
+                id: "pastor",
+                href: "/pastor/login",
+                icon: BookOpen,
+                label: language === "te" ? "పాస్టర్" : language === "hi" ? "पादरी" : "Pastor",
+              },
+              {
+                id: "event-manager",
+                href: "/event-manager/login",
+                icon: Camera,
+                label: language === "te" ? "ఈవెంట్స్" : language === "hi" ? "कार्यक्रम" : "Events",
+              },
+              {
+                id: "admin",
+                href: "/admin/login",
+                icon: Shield,
+                label: language === "te" ? "అడ్మిన్" : language === "hi" ? "एडमिन" : "Admin",
+              },
+            ].map((tab) => {
+              const isActive = (defaultPortal || "member") === tab.id;
+              const TabIcon = tab.icon;
+              return (
+                <Link
+                  key={tab.id}
+                  href={tab.href}
+                  className={`flex-1 py-1.5 px-2 text-center rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold transition-all duration-200 select-none ${
+                    isActive
+                      ? "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-300 shadow-md border border-slate-200/60 dark:border-white/10"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                  role="tab"
+                  aria-selected={isActive}
+                >
+                  <TabIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
           {/* Form Header */}
           <div className="mb-4 text-center lg:text-left">
             <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -548,6 +604,35 @@ export default function MemberLoginForm({
                 {loginT.createAccountLink}
               </Link>
             </p>
+
+            {/* Quick Demo Portal Accounts */}
+            <div className="pt-3 border-t border-slate-200/80 dark:border-gray-800/80">
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center mb-1.5 flex items-center justify-center gap-1">
+                <Key className="w-3 h-3 text-purple-500" />
+                <span>{language === "te" ? "త్వరిత పోర్టల్ లాగిన్ డెమోలు" : language === "hi" ? "त्वरित पोर्टल लॉगिन डेमो" : "Quick Demo Access"}</span>
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {[
+                  { label: "Admin", email: "admin@kcm-church.com", pass: "rahul@0423" },
+                  { label: "Pastor", email: "pastor.kristhuraju@kcm-church.com", pass: "pastor@2026" },
+                  { label: "Events", email: "eventmanager@kcm-church.com", pass: "event-handle-2026" },
+                  { label: "Super Admin", email: "kingofchristministries23@gmail.com", pass: "rahul@0423" },
+                ].map((demo) => (
+                  <button
+                    key={demo.email}
+                    type="button"
+                    onClick={() => {
+                      setEmail(demo.email);
+                      setPassword(demo.pass);
+                      setError("");
+                    }}
+                    className="px-2 py-1 rounded-lg bg-slate-100/90 hover:bg-purple-50 dark:bg-slate-800/60 dark:hover:bg-purple-950/40 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition-all text-center truncate hover:border-purple-300 dark:hover:border-purple-600/50"
+                  >
+                    ⚡ {demo.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </form>
         </div>
       </div>

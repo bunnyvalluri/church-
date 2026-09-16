@@ -230,9 +230,9 @@ export async function POST(req: Request) {
       logger.warn('[AUTH/LOGIN] Non-fatal security event recording note:', { error: secErr.message });
     }
 
-    // Bounded execution so Vercel Serverless Lambdas never terminate before dispatch
+    // Asynchronous non-blocking dispatch so login response returns in sub-150ms
     try {
-      const emailPromise = emailService.sendLoginNotification(
+      emailService.sendLoginNotification(
         user.email,
         user.name,
         {
@@ -244,10 +244,12 @@ export async function POST(req: Request) {
         },
         user.id,
         secEvent?.id
-      );
-
-      const boundedTimeout = new Promise((resolve) => setTimeout(resolve, 3500));
-      await Promise.race([emailPromise, boundedTimeout]);
+      ).catch((err: any) => {
+        logger.warn('[AUTH/LOGIN] Async login notification note:', {
+          userId: user.id,
+          error: err?.message,
+        });
+      });
     } catch (err: any) {
       logger.warn('[AUTH/LOGIN] Login notification dispatch note:', {
         userId: user.id,

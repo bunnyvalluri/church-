@@ -4,8 +4,8 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/e2e/member-reports.spec.ts",
-      "--project=mobile-chrome",
+      "tests/e2e/rbac-matrix.spec.ts",
+      "--project=chromium-desktop",
       "--workers=1"
     ],
     "configFile": "C:\\K.C.M-Portal\\frontend\\playwright.config.ts",
@@ -139,27 +139,27 @@
   },
   "suites": [
     {
-      "title": "e2e\\member-reports.spec.ts",
-      "file": "e2e/member-reports.spec.ts",
+      "title": "e2e\\rbac-matrix.spec.ts",
+      "file": "e2e/rbac-matrix.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Member Issue Reporting & Diagnostics System",
-          "file": "e2e/member-reports.spec.ts",
-          "line": 19,
+          "title": "Role-Based Access Control (RBAC) Matrix Verification",
+          "file": "e2e/rbac-matrix.spec.ts",
+          "line": 13,
           "column": 6,
           "specs": [],
           "suites": [
             {
-              "title": "Security & Unauthenticated Guards",
-              "file": "e2e/member-reports.spec.ts",
-              "line": 23,
+              "title": "Unauthenticated Access Guards",
+              "file": "e2e/rbac-matrix.spec.ts",
+              "line": 15,
               "column": 8,
               "specs": [
                 {
-                  "title": "unauthenticated visitor accessing /member/report is redirected to login",
+                  "title": "unauthenticated visitor accessing /admin/dashboard is redirected to /admin/login",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -167,19 +167,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 14135,
+                          "duration": 1236,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:24:24.972Z",
+                          "startTime": "2026-09-16T12:01:24.253Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -187,13 +187,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-7c5c746a6b5768f3e2f2",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 28,
+                  "id": "a0e98c83670bbe546d03-4054c02f5b8ced3fa005",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 20,
                   "column": 9
                 },
                 {
-                  "title": "unauthenticated visitor accessing /admin/support/reports is redirected to login",
+                  "title": "unauthenticated visitor accessing /pastor/dashboard is redirected to /login",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -201,19 +201,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 10731,
+                          "duration": 1167,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:24:39.388Z",
+                          "startTime": "2026-09-16T12:01:25.625Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -221,21 +221,123 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-5aab433941d116602c13",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 33,
+                  "id": "a0e98c83670bbe546d03-17810991fb579c231ead",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 25,
+                  "column": 9
+                },
+                {
+                  "title": "unauthenticated visitor accessing /member is redirected to /login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 887,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:26.807Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-d4d4026b318681a773d2",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 30,
+                  "column": 9
+                },
+                {
+                  "title": "unauthenticated visitor accessing /event-manager is redirected to /login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1162,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:27.714Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-a7e03b26fbf75fd3c684",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 35,
+                  "column": 9
+                },
+                {
+                  "title": "unauthenticated visitor accessing /field-volunteer is redirected to /login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 921,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:28.888Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-569859c82ae87caa2402",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 40,
                   "column": 9
                 }
               ]
             },
             {
-              "title": "Member Reporting Flow (MEMBER Role)",
-              "file": "e2e/member-reports.spec.ts",
-              "line": 40,
+              "title": "MEMBER Role Authorization Boundaries",
+              "file": "e2e/rbac-matrix.spec.ts",
+              "line": 47,
               "column": 8,
               "specs": [
                 {
-                  "title": "renders Report a Problem page with categories, severities, and direct contacts",
+                  "title": "MEMBER can access /member portal",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -243,19 +345,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 7995,
+                          "duration": 960,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:24:50.141Z",
+                          "startTime": "2026-09-16T12:01:29.819Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -263,13 +365,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-17db522c68581f151385",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 45,
+                  "id": "a0e98c83670bbe546d03-fb5fbfb970996b9b6e4e",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 52,
                   "column": 9
                 },
                 {
-                  "title": "validates required fields before submitting",
+                  "title": "MEMBER is denied /admin/dashboard and redirected to authorized portal /member",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -277,19 +379,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 5883,
+                          "duration": 974,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:24:58.154Z",
+                          "startTime": "2026-09-16T12:01:30.790Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -297,13 +399,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-345436b5be1ae549a2eb",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 67,
+                  "id": "a0e98c83670bbe546d03-7b55a6c8fefa612214d0",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 58,
                   "column": 9
                 },
                 {
-                  "title": "shows automatic client diagnostics transparency viewer",
+                  "title": "MEMBER is denied /pastor/dashboard and redirected to authorized portal /member",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -311,19 +413,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 4090,
+                          "duration": 922,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:25:04.054Z",
+                          "startTime": "2026-09-16T12:01:31.778Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -331,89 +433,21 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-f75e6cf51158cb2189e1",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 80,
-                  "column": 9
-                },
-                {
-                  "title": "submits an issue report and receives real KCM-ERR reference ID",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 18150,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-16T11:25:08.160Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "b96bf6168ff7278c03dc-014ab5ab94a31bda26f4",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 95,
-                  "column": 9
-                },
-                {
-                  "title": "switches to My Submitted Reports tab",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 6565,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-16T11:25:26.322Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "b96bf6168ff7278c03dc-829609ffa7522b091b5b",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 122,
+                  "id": "a0e98c83670bbe546d03-06d95e4cbe6b5938ac39",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 64,
                   "column": 9
                 }
               ]
             },
             {
-              "title": "Admin Support Console (ADMIN Role)",
-              "file": "e2e/member-reports.spec.ts",
-              "line": 136,
+              "title": "PASTOR Role Authorization Boundaries",
+              "file": "e2e/rbac-matrix.spec.ts",
+              "line": 72,
               "column": 8,
               "specs": [
                 {
-                  "title": "admin can access /admin/support/reports and see metrics and filters",
+                  "title": "PASTOR can access /pastor/main/sermons and /pastor/dashboard",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -421,19 +455,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 4440,
+                          "duration": 1005,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:25:32.907Z",
+                          "startTime": "2026-09-16T12:01:32.720Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -441,13 +475,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-6c726aca74b15e4372fa",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 141,
+                  "id": "a0e98c83670bbe546d03-9844ea71d89d3d4be981",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 77,
                   "column": 9
                 },
                 {
-                  "title": "regular member is denied access to /admin/support/reports",
+                  "title": "PASTOR is denied /admin/dashboard and redirected to authorized pastor portal",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -455,19 +489,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "mobile-chrome",
-                      "projectName": "mobile-chrome",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 9895,
+                          "duration": 867,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:25:37.364Z",
+                          "startTime": "2026-09-16T12:01:33.738Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -475,9 +509,263 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-ec4ad4b1d61c6de4e499",
-                  "file": "e2e/member-reports.spec.ts",
-                  "line": 159,
+                  "id": "a0e98c83670bbe546d03-d133ca39cc0af0240ba3",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 83,
+                  "column": 9
+                },
+                {
+                  "title": "PASTOR can access /member portal (pastoral care)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1007,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:34.619Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-0907f9be2e236c207ea5",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 89,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "ADMIN Role Full System Authorization",
+              "file": "e2e/rbac-matrix.spec.ts",
+              "line": 96,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "ADMIN can access /admin/dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1808,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:35.636Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-4a9be4b8678b8a3b4221",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 101,
+                  "column": 9
+                },
+                {
+                  "title": "ADMIN can access /pastor/main/sermons",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1474,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:37.457Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-5dfd7e6a78d0ca7cd463",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 107,
+                  "column": 9
+                },
+                {
+                  "title": "ADMIN can access /member",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1268,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:38.948Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-385db8ec74157f8a110a",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 112,
+                  "column": 9
+                },
+                {
+                  "title": "ADMIN can access /event-manager",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1429,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:40.229Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-ec43428350d0a743d1d4",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 117,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Tampered & Expired Session Defense",
+              "file": "e2e/rbac-matrix.spec.ts",
+              "line": 124,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "tampered session signature causes immediate rejection and cookie invalidation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3031,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:41.669Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-95cff1b11cfe8cfbe883",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 125,
+                  "column": 9
+                },
+                {
+                  "title": "expired session token causes immediate rejection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1373,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:01:44.712Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "a0e98c83670bbe546d03-a5ea1c1a51f0f3e97de7",
+                  "file": "e2e/rbac-matrix.spec.ts",
+                  "line": 144,
                   "column": 9
                 }
               ]
@@ -489,9 +777,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-16T11:24:24.055Z",
-    "duration": 83435.204,
-    "expected": 9,
+    "startTime": "2026-09-16T12:01:23.677Z",
+    "duration": 22521.307,
+    "expected": 17,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

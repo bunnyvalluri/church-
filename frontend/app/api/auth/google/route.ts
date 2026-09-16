@@ -439,9 +439,8 @@ export async function POST(req: Request) {
         )
       );
 
-      // Safe bounded await so serverless functions never hang
-      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
-      await Promise.race([Promise.allSettled(emailPromises), timeoutPromise]).catch(() => null);
+      // Asynchronous background dispatch
+      Promise.allSettled(emailPromises).catch(() => null);
     } catch (emailErr: any) {
       logger.error('[AUTH/GOOGLE] Email notification dispatch note:', {
         userId: user.id,
