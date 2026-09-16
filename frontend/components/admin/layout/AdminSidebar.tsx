@@ -676,14 +676,14 @@ export default function AdminSidebar({
 
       {/* Mobile Slide-Over Backdrop & Drawer (<1024px) */}
       {isMobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-[100] flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-slate-900/70 dark:bg-black/80 backdrop-blur-sm transition-opacity z-[90]"
             onClick={onMobileClose}
           />
           {/* Drawer */}
-          <div className="relative w-72 max-w-[80vw] h-full shadow-2xl z-10 animate-slide-in">
+          <div className="relative w-72 max-w-[82vw] h-full shadow-2xl z-[100] animate-slide-in">
             {sidebarContent}
           </div>
         </div>

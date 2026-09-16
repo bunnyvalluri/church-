@@ -304,6 +304,7 @@ export default function AIChat() {
   }, [messages, isLoading]);
 
   if (pathname?.startsWith("/admin") || pathname?.startsWith("/pastor") ||
+      pathname?.startsWith("/member") || pathname?.startsWith("/event-manager") ||
       pathname?.startsWith("/login") || pathname?.startsWith("/register") ||
       pathname?.startsWith("/gallery") || pathname?.startsWith("/ngo/videos") ||
       pathname?.startsWith("/about/story")) return null;

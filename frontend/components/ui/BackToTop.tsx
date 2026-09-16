@@ -14,12 +14,19 @@ export default function BackToTop() {
     pathname?.startsWith("/admin/login") ||
     pathname?.startsWith("/admin/register");
 
+  const isExcludedPage =
+    isAuthPage ||
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/pastor") ||
+    pathname?.startsWith("/member") ||
+    pathname?.startsWith("/event-manager");
+
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (isAuthPage) return;
+    if (isExcludedPage) return;
     setMounted(true);
     const onScroll = () => {
       const scrollY = window.scrollY;
@@ -33,9 +40,9 @@ export default function BackToTop() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isAuthPage]);
+  }, [isExcludedPage]);
 
-  if (isAuthPage) return null;
+  if (isExcludedPage) return null;
 
   const isNearTop = progress < 50;
 

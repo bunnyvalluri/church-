@@ -76,57 +76,56 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
       </div>
 
       {/* Mobile Ultra-Premium Floating Glassmorphic Bottom Dock for Admin */}
-      <div className="lg:hidden fixed bottom-3 left-3 right-3 z-50 pointer-events-auto">
-        <nav className="bg-white/90 dark:bg-[#0A0B1E]/90 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.12] rounded-3xl p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center justify-around gap-1 transition-all duration-300">
-          {[
-            { name: "DASHBOARD", href: "/admin/dashboard", icon: LayoutDashboard, color: "text-indigo-600 dark:text-indigo-400" },
-            { name: "MEMBERS", href: "/admin/members", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
-            { name: "FINANCE", href: "/admin/finance", icon: DollarSign, color: "text-amber-600 dark:text-amber-400" },
-            { name: "REPORTS", href: "/admin/support/reports", icon: Bug, color: "text-rose-600 dark:text-rose-400" },
-            { name: "SETTINGS", href: "/admin/settings", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" },
-          ].map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`relative flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 active:scale-90 ${
-                  isActive
-                    ? "bg-slate-100/80 dark:bg-white/[0.08] shadow-sm"
-                    : "hover:bg-slate-50 dark:hover:bg-white/[0.03]"
-                }`}
-              >
-                {isActive && (
-                  <span className="absolute -top-1.5 w-6 h-1 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-sm shadow-indigo-500/50" />
-                )}
-
-                <div className="relative flex items-center justify-center">
-                  <item.icon
-                    className={`w-5 h-5 transition-all duration-200 ${
-                      isActive
-                        ? `${item.color} scale-110 -translate-y-0.5`
-                        : "text-slate-400 dark:text-gray-400"
-                    }`}
-                  />
-                  {isActive && (
-                    <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-pulse" />
-                  )}
-                </div>
-
-                <span
-                  className={`text-[9px] font-black uppercase tracking-wider mt-1 transition-colors duration-200 text-center leading-none ${
+      {!isMobileSidebarOpen && (
+        <div className="lg:hidden fixed bottom-2.5 sm:bottom-4 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 pointer-events-auto select-none">
+          <nav className="bg-white/95 dark:bg-[#0c0e1a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.12] rounded-2xl p-1 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] flex items-center justify-around gap-1 transition-all duration-200">
+            {[
+              { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, color: "text-indigo-600 dark:text-indigo-400" },
+              { name: "Members", href: "/admin/members", icon: Users, color: "text-emerald-600 dark:text-emerald-400" },
+              { name: "Finance", href: "/admin/finance", icon: DollarSign, color: "text-amber-600 dark:text-amber-400" },
+              { name: "Reports", href: "/admin/support/reports", icon: Bug, color: "text-rose-600 dark:text-rose-400" },
+              { name: "Settings", href: "/admin/settings", icon: Settings, color: "text-cyan-600 dark:text-cyan-400" },
+            ].map((item) => {
+              const isActive = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative flex-1 min-w-0 flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all duration-200 active:scale-95 ${
                     isActive
-                      ? `${item.color} font-extrabold`
-                      : "text-slate-500 dark:text-gray-400"
+                      ? "bg-slate-100/90 dark:bg-white/[0.08] shadow-xs"
+                      : "hover:bg-slate-50 dark:hover:bg-white/[0.04]"
                   }`}
                 >
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+                  {isActive && (
+                    <span className="absolute top-0.5 w-5 h-0.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-xs" />
+                  )}
+
+                  <div className="relative flex items-center justify-center mt-0.5">
+                    <item.icon
+                      className={`w-5 h-5 transition-transform duration-200 ${
+                        isActive
+                          ? `${item.color} scale-105`
+                          : "text-slate-400 dark:text-gray-400"
+                      }`}
+                    />
+                  </div>
+
+                  <span
+                    className={`text-[10px] font-semibold tracking-tight mt-1 transition-colors duration-200 text-center leading-tight truncate max-w-full ${
+                      isActive
+                        ? `${item.color} font-bold`
+                        : "text-slate-500 dark:text-gray-400"
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </div>
   );
 }
