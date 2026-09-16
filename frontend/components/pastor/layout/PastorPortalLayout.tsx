@@ -24,9 +24,10 @@ export default function PastorPortalLayout({ children }: { children: React.React
   // Authentication Guard
   useEffect(() => {
     if (!mounted) return;
+    if (pathname.startsWith("/pastor/login")) return;
     if (status === "unauthenticated") {
       const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/pastor/main/dashboard";
-      router.replace(`/login?next=${encodeURIComponent(currentPath)}`);
+      router.replace(`/pastor/login?next=${encodeURIComponent(currentPath)}`);
     } else if (
       status === "authenticated" &&
       user &&
@@ -36,7 +37,11 @@ export default function PastorPortalLayout({ children }: { children: React.React
     ) {
       router.replace("/member");
     }
-  }, [mounted, status, user, router]);
+  }, [mounted, status, user, router, pathname]);
+
+  if (pathname.startsWith("/pastor/login")) {
+    return <>{children}</>;
+  }
 
   if (!mounted || status === "loading" || status === "unauthenticated" || !user || (user.role !== "PASTOR" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     return (

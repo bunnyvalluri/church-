@@ -65,17 +65,23 @@ export interface IssueReportRecord {
   } | null;
 }
 
-const NEON_CONN =
-  process.env.DATABASE_URL ||
-  'postgresql://neondb_owner:npg_a2zRCPbZKTx6@ep-divine-credit-a589ua8g-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require';
+const NEON_CONN = process.env.DATABASE_URL || '';
 
 /**
  * Direct Neon PostgreSQL HTTP execution engine over HTTPS.
  * Runs real SQL against Neon database without requiring raw TCP port 5432.
  */
 async function executeNeonSql<T = any>(query: string, params: any[] = []): Promise<T[]> {
+  if (!NEON_CONN) {
+    console.warn('[ISSUE_SERVICE] DATABASE_URL is not set. Database operations disabled.');
+    return [];
+  }
   const hostMatch = NEON_CONN.match(/@([^/:]+)/);
-  const host = hostMatch ? hostMatch[1].replace('-pooler', '') : 'ep-divine-credit-a589ua8g.us-east-2.aws.neon.tech';
+  const host = hostMatch ? hostMatch[1].replace('-pooler', '') : '';
+  if (!host) {
+    console.warn('[ISSUE_SERVICE] Could not extract database host from DATABASE_URL.');
+    return [];
+  }
   const url = `https://${host}/sql`;
 
   // Format parameterized query for Neon HTTP protocol if params present

@@ -134,8 +134,10 @@ export default function About({ initialAboutData, initialContactsData, initialPa
   const { contacts, loading: contactsLoading } = useContacts(initialContactsData);
   const { pastors, loading: pastorsLoading } = usePastors(initialPastorsData);
 
-  const primaryContact = contacts[0];
-  const primaryPastor = pastors.find((p) => p.isActive) ?? pastors[0];
+  const safeContacts = Array.isArray(contacts) ? contacts : [];
+  const safePastors = Array.isArray(pastors) ? pastors : [];
+  const primaryContact = safeContacts[0];
+  const primaryPastor = safePastors.find((p) => p.isActive) ?? safePastors[0];
 
   const handlePrimaryAddressClick = () => {
     if (!primaryContact) return;
@@ -474,7 +476,7 @@ export default function About({ initialAboutData, initialContactsData, initialPa
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {contacts.map((contact, idx) => (
+                      {safeContacts.map((contact, idx) => (
                         <BranchCard key={contact.id} contact={contact} idx={idx} language={language} />
                       ))}
                     </div>

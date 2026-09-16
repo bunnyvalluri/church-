@@ -416,7 +416,7 @@ export default function Hero({ initialHeroData, initialStatsData }: { initialHer
             >
               {statsLoading
                 ? Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
-                : statistics.map((stat, i) => (
+                : (Array.isArray(statistics) ? statistics : []).map((stat, i) => (
                     <StatCard key={stat.id} stat={stat} isInView={statsInView} index={i} />
                   ))}
             </motion.div>

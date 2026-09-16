@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "KCM Church Portal - KeyFinder Security Policy & Exclusions",
+  "version": "2.0.0",
+  "description": "Narrowly scoped exclusions and classifications for third-party scripts, residual local development state, and benign UI state identified by KeyFinder v2.0.",
+  "rules": [
+    {
+      "id": "RULE-01-LOCAL-CINEMA-ELK-RESIDUE",
+      "targetDomain": "localhost",
+      "storageType": "localStorage",
+      "pattern": "cinema_elk_*",
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Residual browser web storage from an external developer workspace project ('Cinema Elk') sharing localhost:3000 origin. Not part of KCM Church codebase or deployments.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-02-LOCAL-RUDDERSTACK-COOKIE",
+      "targetDomain": "localhost",
+      "storageType": "cookie",
+      "pattern": "rl_session*",
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Residual Rudderstack/analytics telemetry cookie left on localhost:3000 by another application session. KCM Church exclusively uses 'kcm_session' HttpOnly cookie.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-03-NEXTJS-ROUTER-INTERNALS",
+      "targetDomain": "localhost",
+      "storageType": "external_script",
+      "patterns": [
+        "__reactLoad$",
+        "${pathname}:${searchParamsString}*",
+        "/_not-found"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Next.js App Router and React runtime dynamic chunk loader function names and route cache keys incorrectly matched by keyword 'key'.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-04-LOCAL-CLINICAL-AI-RESIDUE",
+      "targetDomain": "localhost",
+      "storageType": "external_script",
+      "pattern": "clinical_ai_refresh_token",
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Residual browser cache/service worker token keyword from an unrelated project tested on the same local development port.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-05-GOOGLE-WARMUP-RECAPTCHA",
+      "targetDomain": "www.google.com",
+      "storageType": "web_storage",
+      "patterns": [
+        "cb_wlz.*",
+        "inline-promo;*",
+        "_grecaptcha-*",
+        "im;4;vcg0ZMx6Z*"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Standard Google search warmup client state, translation promo cache, and reCAPTCHA challenge tokens managed entirely within Google's origin.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-06-VERCEL-LIVE-TOOLBAR",
+      "targetDomain": "vercel.live",
+      "storageType": "web_storage",
+      "patterns": [
+        "vercel-toolbar-*",
+        "vercel-feedback-rep-cookie*"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Vercel preview toolbar infrastructure injection for deployment comments and feature flags. Exists only in development/preview environments and managed by Vercel platform.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-07-YOUTUBE-IFRAME-PLAYER",
+      "targetDomain": "www.youtube.com",
+      "storageType": "inline_script",
+      "patterns": [
+        "AIzaSyAO_F3Z5IqL8QTS1bHLSclIw_VR_I1qodE",
+        "yt-remote-device-id-*",
+        "ytembeds.base.*"
+      ],
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Official YouTube public web player embed API key, player build version tags, and remote device pairing IDs loaded in sandboxed youtube.com iframes for sermon and worship video streaming.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-08-KCM-PUSHER-TRANSPORT-METADATA",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "web_storage",
+      "pattern": "pusherTransportTLS*",
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Client-side WebSocket connection transport preference and timestamp cache stored by Pusher JS client for realtime sermon and chat updates.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-09-KCM-BRANCH-SELECTOR",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "web_storage",
+      "pattern": "kcm-selected-branch*",
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "User's chosen church branch ID (CUID) for filtering local announcements and events (e.g. Shapur, Subhash Nagar, Bahadurpally). Contains zero sensitive data.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-10-FIREBASE-AUTH-ERROR-CODES",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "external_script",
+      "patterns": [
+        "invalid-oauth-client-id",
+        "missing-multi-factor-session"
+      ],
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Firebase Authentication SDK public error code dictionary strings bundled for client-side exception handling, matched by keyword rules 'client_id' and 'credential'.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-11-I18N-UI-TRANSLATION-STRINGS",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "external_script",
+      "patterns": [
+        "Razorpay కీ ID",
+        "పాస్‌వర్డ్ చాలా బలహీనంగా ఉంది*"
+      ],
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "Multilingual UI text strings (Telugu/Kannada) translating the labels 'Razorpay Key ID' and password strength error messages ('Password is too weak. Please choose a stronger one').",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-12-KCM-THEME-STORAGE-KEY",
+      "targetDomain": "kcmchurch.vercel.app",
+      "storageType": "web_storage",
+      "pattern": "kcm-theme",
+      "classification": "PUBLIC_CONFIGURATION",
+      "rationale": "UI dark/light mode preference storage key used by next-themes provider. Stores only 'light', 'dark', or 'system'.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-13-GOOGLE-OGS-ONEGOOGLE-WIDGET",
+      "targetDomain": "ogs.google.com",
+      "storageType": "external_script",
+      "patterns": [
+        "https://www.gstatic.com/_/mss/boq-one-g*",
+        "boq-one-google.OneGoogleWidget&*"
+      ],
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Google Account switcher and OneGoogle widget assets loaded when users interact with Google Identity Services.",
+      "action": "EXCLUDE_FROM_SCAN"
+    },
+    {
+      "id": "RULE-14-EXTERNAL-DEV-PORTFOLIO-COOKIE",
+      "targetDomain": "valluri-rahul-portfolio.vercel.app",
+      "storageType": "cookie",
+      "pattern": "_vercel_session*",
+      "classification": "FALSE_POSITIVE",
+      "rationale": "Vercel deployment session cookie on an external developer portfolio site visited in the same browser profile.",
+      "action": "EXCLUDE_FROM_SCAN"
+    }
+  ]
+}

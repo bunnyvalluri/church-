@@ -27,7 +27,7 @@ import {
   Sliders,
   Terminal,
 } from "lucide-react";
-import { IssueReportRecord } from "@/lib/issueService";
+import type { IssueReportRecord } from "@/lib/issueService";
 
 const STATUS_BADGES: Record<string, { label: string; color: string; dot: string }> = {
   OPEN: { label: "Open", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20", dot: "bg-blue-500" },

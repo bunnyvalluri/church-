@@ -19,9 +19,10 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
   // Authentication Guard
   useEffect(() => {
     if (!mounted) return;
+    if (pathname.startsWith("/admin/login")) return;
     if (status === "unauthenticated") {
       const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/admin/dashboard";
-      router.replace(`/login?next=${encodeURIComponent(currentPath)}`);
+      router.replace(`/admin/login?next=${encodeURIComponent(currentPath)}`);
     } else if (
       status === "authenticated" &&
       user &&
@@ -34,7 +35,11 @@ export default function AdminPortalLayout({ children }: { children: React.ReactN
         router.replace("/member");
       }
     }
-  }, [mounted, status, user, router]);
+  }, [mounted, status, user, router, pathname]);
+
+  if (pathname.startsWith("/admin/login")) {
+    return <>{children}</>;
+  }
 
   if (!mounted || status === "loading" || status === "unauthenticated" || !user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     return (

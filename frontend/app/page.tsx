@@ -57,7 +57,8 @@ export default async function Home() {
   ]);
 
   // Format sermons for the component
-  const formattedSermons = (dbSermons || []).map((s: any) => {
+  const sermonList = Array.isArray(dbSermons) ? dbSermons : [];
+  const formattedSermons = sermonList.map((s: any) => {
     let videoId = s.videoUrl || "";
     if (s.videoUrl && s.videoUrl.includes('v=')) {
       videoId = s.videoUrl.split('v=')[1].split('&')[0];

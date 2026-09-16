@@ -21,7 +21,7 @@ function getSessionSecret(): string {
     process.env.JWT_SECRET;
   if (!secret) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('[SECURITY CRITICAL] No SESSION_SECRET, NEXTAUTH_SECRET, or JWT_SECRET configured in production!');
+      throw new Error('[SECURITY CRITICAL] SESSION_SECRET, NEXTAUTH_SECRET, or JWT_SECRET must be configured in production!');
     }
     return 'kcm-church-portal-secure-session-auth-key-2026';
   }

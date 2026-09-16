@@ -33,6 +33,9 @@ const FIELD_VOLUNTEER_API_PREFIXES = ['/api/field-volunteer'];
 // ── Public Paths ─────────────────────────────────────────────────────────────
 const PUBLIC_PATHS = [
   '/login',
+  '/admin/login',
+  '/pastor/login',
+  '/event-manager/login',
   '/register',
   '/forgot-password',
   '/api/auth',
@@ -87,14 +90,6 @@ export async function middleware(req: NextRequest) {
   // Always allow static files & next internals
   if (pathname.startsWith('/_next/') || pathname.includes('.')) {
     return NextResponse.next();
-  }
-
-  // ── Unified Portal Redirects: Route all authentication through /login & /register ──
-  if (pathname === '/admin/login' || pathname === '/admin/login/') {
-    const target = req.nextUrl.clone();
-    target.pathname = '/login';
-    target.searchParams.set('next', '/admin/dashboard');
-    return NextResponse.redirect(target, 308);
   }
 
   if (pathname === '/admin/register' || pathname === '/admin/register/') {
@@ -174,9 +169,20 @@ export async function middleware(req: NextRequest) {
   // ── Helper: redirect unauthenticated to login ─────────────────────────────
   function redirectToLogin(next?: string) {
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    if (next && next !== '/' && next !== '/login' && next !== '/register') {
-      loginUrl.searchParams.set('next', next);
+    if (next?.startsWith('/admin')) {
+      loginUrl.pathname = '/admin/login';
+      loginUrl.searchParams.delete('next');
+    } else if (next?.startsWith('/pastor')) {
+      loginUrl.pathname = '/pastor/login';
+      loginUrl.searchParams.delete('next');
+    } else if (next?.startsWith('/event-manager')) {
+      loginUrl.pathname = '/event-manager/login';
+      loginUrl.searchParams.delete('next');
+    } else {
+      loginUrl.pathname = '/login';
+      if (next && next !== '/' && next !== '/login' && next !== '/register') {
+        loginUrl.searchParams.set('next', next);
+      }
     }
     const res = NextResponse.redirect(loginUrl);
     // If an invalid session cookie was present, clear it

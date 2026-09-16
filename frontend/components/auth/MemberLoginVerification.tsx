@@ -2,48 +2,86 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export interface MemberLoginVerificationProps {
   /** Maximum duration in milliseconds before proceeding to login (default: 3000ms) */
   duration?: number;
   /** Callback fired exactly once when verification completes or times out */
   onComplete?: () => void;
+  /** Child content to render upon verification completion (e.g. MemberLoginForm) */
+  children?: React.ReactNode;
 }
 
 /**
  * MemberLoginVerification
  *
  * Professional, accessible browser readiness loading screen for Kingdom of Christ Ministries.
+ * Renders EXCLUSIVELY for the Member Login flow (/login).
+ *
  * Displays a clean white screen with the small KCM emblem, circular blue spinner,
  * cross divider, ministry tagline, and subtle bottom wave accents before the login UI.
  *
- * Guaranteed completion within 3000ms with robust error failsafe.
+ * Enforces a strict 3000ms maximum duration ceiling and contains automated
+ * route guards to prevent accidental rendering outside of the Member Login route.
  */
 export default function MemberLoginVerification({
   duration = 3000,
   onComplete,
+  children,
 }: MemberLoginVerificationProps) {
   const [status, setStatus] = useState<"checking" | "ready" | "complete">("checking");
   const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // ── Secondary Safeguard ──
+  // The primary isolation is that ONLY /login imports MemberLoginVerification.
+  // As an extra architectural safeguard, verify that the current route is indeed /login
+  // and does not carry admin, pastor, or event-manager target hints.
+  const nextParam = searchParams?.get("next") || "";
+  const portalParam = searchParams?.get("portal") || "";
+
+  const isNonMemberRedirect =
+    nextParam.startsWith("/admin") ||
+    nextParam.startsWith("/pastor") ||
+    nextParam.startsWith("/event-manager") ||
+    portalParam === "admin" ||
+    portalParam === "pastor" ||
+    portalParam === "event-manager";
+
+  const isMemberLoginRoute = pathname === "/login" && !isNonMemberRedirect;
 
   useEffect(() => {
+    // If rendered outside /login or for another portal, bypass immediately
+    if (!isMemberLoginRoute) {
+      if (!completedRef.current) {
+        completedRef.current = true;
+        setStatus("complete");
+        onCompleteRef.current?.();
+      }
+      return;
+    }
+
     let isCancelled = false;
 
     const finish = () => {
       if (completedRef.current || isCancelled) return;
       completedRef.current = true;
       setStatus("complete");
-      if (onComplete) {
-        onComplete();
-      }
+      onCompleteRef.current?.();
     };
 
-    // Hard ceiling: Guaranteed failsafe timeout (max 3000ms)
+    // Hard ceiling: Guaranteed failsafe timeout (capped at 3000ms maximum)
+    const effectiveDuration = Math.min(3000, Math.max(500, duration));
     const hardTimeoutId = setTimeout(() => {
       finish();
-    }, Math.max(500, duration));
+    }, effectiveDuration);
 
-    // Browser readiness inspection (non-invasive, secure)
+    // Browser readiness inspection (pure UX layer, non-invasive)
     try {
       const isClientReady =
         typeof window !== "undefined" &&
@@ -51,8 +89,8 @@ export default function MemberLoginVerification({
         document.readyState !== "loading" &&
         navigator.cookieEnabled !== false;
 
-      // Fast, snappy verification window (~800ms for swift, professional UX)
-      const inspectionDelay = Math.min(800, Math.max(300, duration - 300));
+      // Snappy verification window (~800ms for swift, professional UX)
+      const inspectionDelay = Math.min(800, Math.max(300, effectiveDuration - 300));
       const naturalTimerId = setTimeout(() => {
         if (!isCancelled && isClientReady) {
           setStatus("ready");
@@ -74,12 +112,17 @@ export default function MemberLoginVerification({
         clearTimeout(hardTimeoutId);
       };
     }
-  }, [duration, onComplete]);
+  }, [duration, isMemberLoginRoute]);
+
+  // If outside member login route or verification is complete, render children
+  if (!isMemberLoginRoute || status === "complete") {
+    return children ? <>{children}</> : null;
+  }
 
   return (
     <main
       className="relative min-h-screen w-full bg-white text-slate-900 flex flex-col justify-between items-center overflow-x-hidden select-none px-4 sm:px-6 transition-opacity duration-300"
-      aria-busy={status !== "complete"}
+      aria-busy={status === "checking"}
       aria-live="polite"
     >
       {/* Invisible spacer for vertical balance */}
@@ -87,7 +130,7 @@ export default function MemberLoginVerification({
 
       {/* Center Container: Logo, Spinner, Typography, Divider, Tagline */}
       <div className="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center text-center my-auto py-6 sm:py-8">
-        {/* 1. Small KCM Church Emblem */}
+        {/* 1. Small KCM Church Emblem (Mobile: 70-90px, Tablet: 80-100px, Desktop: 90-120px) */}
         <div className="relative flex items-center justify-center">
           <div className="relative w-[76px] h-[76px] sm:w-[92px] sm:h-[92px] md:w-[108px] md:h-[108px] transition-transform duration-300">
             <Image
@@ -101,7 +144,7 @@ export default function MemberLoginVerification({
           </div>
         </div>
 
-        {/* 2. Circular Blue Loading Spinner */}
+        {/* 2. Circular Blue Loading Spinner (Mobile: ~52px, Desktop: ~64px) */}
         <div
           className="mt-8 sm:mt-10 md:mt-11 flex flex-col items-center justify-center"
           role="status"
