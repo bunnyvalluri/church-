@@ -932,95 +932,115 @@ export default function MemberReportPage() {
           </div>
         </div>
 
-        {/* Hero Header Banner with Royal Ambient Orbs */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-900/5 p-4 sm:p-7 md:p-8">
-          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gradient-to-tr from-pink-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+        {/* Hero Header Banner with Royal Ambient Orbs & Glassmorphism */}
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-900/5 p-5 sm:p-8 md:p-9">
+          {/* Ambient Glow Orbs */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-purple-500/15 via-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-gradient-to-tr from-pink-500/10 via-purple-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-5">
-            <div className="flex items-start gap-3 sm:gap-4 min-w-0">
-              <div className="p-2.5 sm:p-3.5 bg-gradient-to-br from-rose-500/10 via-purple-500/15 to-indigo-500/20 text-rose-600 dark:text-rose-400 rounded-xl sm:rounded-2xl border border-rose-500/20 shadow-sm shrink-0">
-                <Bug className="w-5 h-5 sm:w-7 sm:h-7" />
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex items-start gap-4 min-w-0">
+              <div className="p-3 sm:p-4 bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-700 text-white rounded-2xl shadow-lg shadow-purple-600/20 shrink-0">
+                <Bug className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight" aria-label="Report a Problem">
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80 mb-0.5">
+                  <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                  <span>KCM Resolution & Technical Concierge • 24/7 Monitored</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight" aria-label="Report a Problem">
                   {rt.reportProblemTitle}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mt-1">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
                   {rt.reportProblemDesc}
                 </p>
               </div>
             </div>
 
-            <div className="w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+            {/* Direct Urgent Call Capsule */}
+            <div className="shrink-0 flex items-center">
               <a
                 href="tel:+919505288171"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-950/70 transition-all shadow-xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white/90 dark:bg-slate-850/90 border border-emerald-300/80 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-extrabold hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:border-emerald-400 transition-all shadow-sm hover:shadow-md group"
               >
-                <span className="relative flex h-2 w-2 shrink-0">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="truncate">{rt.urgentSupport} +919505288171</span>
+                <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:rotate-12 transition-transform" />
+                <span className="truncate">{rt.urgentSupport} +91 9505288171</span>
               </a>
             </div>
           </div>
 
-          {/* Segmented Pill Tabs Navigation */}
-          <div className="relative z-10 flex border-b border-slate-200/80 dark:border-slate-800 mt-5 sm:mt-8 -mb-2 gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
-            <button
-              onClick={() => setActiveTab("submit")}
-              aria-label="Submit Report"
-              className={`pb-3 px-2.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 shrink-0 ${
-                activeTab === "submit"
-                  ? "border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400"
-                  : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-              }`}
-            >
-              <FileText className="w-4 h-4 shrink-0" />
-              <span>{rt.tabSubmit}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("history")}
-              aria-label="My Submitted Reports"
-              className={`pb-3 px-2.5 sm:px-3 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 shrink-0 ${
-                activeTab === "history"
-                  ? "border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400"
-                  : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-              }`}
-            >
-              <Clock className="w-4 h-4 shrink-0" />
-              <span>{rt.tabHistory}</span>
-              {reports.length > 0 && (
-                <span className="ml-1 text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                  {reports.length}
-                </span>
-              )}
-            </button>
+          {/* Premium Segmented Pill Navigation */}
+          <div className="relative z-10 pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-slate-200/70 dark:border-slate-800 flex items-center justify-between gap-4 flex-wrap">
+            <div className="inline-flex p-1.5 bg-slate-100/90 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-white/10 shadow-inner gap-1" role="tablist">
+              <button
+                onClick={() => setActiveTab("submit")}
+                aria-label="Submit Report"
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 ${
+                  activeTab === "submit"
+                    ? "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-md shadow-slate-900/10 scale-[1.01]"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <FileText className="w-4 h-4 shrink-0" />
+                <span>{rt.tabSubmit}</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("history")}
+                aria-label="My Submitted Reports"
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 ${
+                  activeTab === "history"
+                    ? "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-md shadow-slate-900/10 scale-[1.01]"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Clock className="w-4 h-4 shrink-0" />
+                <span>{rt.tabHistory}</span>
+                {reports.length > 0 && (
+                  <span className="ml-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-600 text-white shadow-xs">
+                    {reports.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            <div className="hidden md:flex items-center gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span>Zero Data Exposure</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Telemetry Enabled</span>
+              </span>
+            </div>
           </div>
         </div>
 
         {/* TAB 1: SUBMIT REPORT */}
         {activeTab === "submit" && (
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-5 sm:space-y-7">
 
             {/* Submission Success Banner */}
             {submittedReportId && (
-              <div className="bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-7 text-emerald-950 dark:text-emerald-200 shadow-md">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="p-2 bg-emerald-500 text-white rounded-xl shrink-0 mt-0.5 shadow-sm">
-                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+              <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-teal-500/5 border border-emerald-500/30 rounded-2xl sm:rounded-3xl p-5 sm:p-7 text-emerald-950 dark:text-emerald-200 shadow-lg shadow-emerald-500/5">
+                <div className="flex items-start gap-4">
+                  <div className="p-2.5 bg-emerald-500 text-white rounded-2xl shrink-0 mt-0.5 shadow-md shadow-emerald-500/20">
+                    <CheckCircle className="w-6 h-6" />
                   </div>
-                  <div className="space-y-1.5 sm:space-y-2 min-w-0 flex-1">
-                    <h3 className="font-extrabold text-base sm:text-xl text-slate-900 dark:text-white leading-tight">
+                  <div className="space-y-2 min-w-0 flex-1">
+                    <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white leading-tight">
                       {rt.successTitle}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       {rt.successDesc}
                     </p>
-                    <div className="pt-2 flex flex-col xs:flex-row xs:items-center gap-2 sm:gap-3">
-                      <span className="font-mono text-xs font-bold px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 rounded-xl border border-emerald-300 dark:border-emerald-700 inline-block w-fit">
+                    <div className="pt-2 flex flex-col xs:flex-row xs:items-center gap-3">
+                      <span className="font-mono text-xs sm:text-sm font-bold px-3.5 py-1.5 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 rounded-xl border border-emerald-300 dark:border-emerald-700 inline-block w-fit shadow-xs">
                         {rt.referenceIdLabel} {submittedReportId}
                       </span>
                       <button
@@ -1028,7 +1048,7 @@ export default function MemberReportPage() {
                           setSubmittedReportId(null);
                           setActiveTab("history");
                         }}
-                        className="text-xs font-bold text-emerald-700 dark:text-emerald-300 underline hover:text-emerald-900 dark:hover:text-emerald-100 text-left"
+                        className="text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-300 underline hover:text-emerald-900 dark:hover:text-emerald-100 text-left transition-colors"
                       >
                         {rt.trackStatusBtn}
                       </button>
@@ -1040,8 +1060,8 @@ export default function MemberReportPage() {
 
             {/* Duplicate Notice Banner */}
             {duplicateWarning && (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-amber-900 dark:text-amber-200 flex items-start gap-2.5 text-xs sm:text-sm">
-                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-900 dark:text-amber-200 flex items-start gap-3 text-xs sm:text-sm shadow-sm">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold">{rt.noticeLabel}</span> {duplicateWarning}
                 </div>
@@ -1050,28 +1070,79 @@ export default function MemberReportPage() {
 
             {/* Error Message */}
             {submitError && (
-              <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-rose-900 dark:text-rose-200 flex items-center gap-2.5 text-xs sm:text-sm">
-                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
-                <span className="font-medium">{submitError}</span>
+              <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 text-rose-900 dark:text-rose-200 flex items-center gap-3 text-xs sm:text-sm shadow-sm">
+                <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                <span className="font-semibold">{submitError}</span>
               </div>
             )}
 
+            {/* Step Progress Stepper */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className="flex items-center gap-2 sm:gap-3 text-left">
+                  <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/20 shrink-0">
+                    1
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Classification</p>
+                    <p className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold truncate">
+                      Select Issue Type
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-3 text-left">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                    severity
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                  }`}>
+                    2
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Urgency</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">
+                      Select Impact Level
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-3 text-left">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                    title.trim() && description.trim()
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                  }`}>
+                    3
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">Context</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate">
+                      Summary & Telemetry
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Main Interactive Form Card */}
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-7 md:p-9 space-y-6 sm:space-y-8 shadow-xl shadow-slate-900/5">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 space-y-8 sm:space-y-10 shadow-xl shadow-slate-900/5">
               
               {/* SECTION 1: Issue Classification */}
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">{rt.step1Tag}</span>
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                  <div className="space-y-0.5">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
+                      {rt.step1Tag}
+                    </div>
+                    <h2 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
                       {rt.step1Title} <span className="text-rose-500">*</span>
                     </h2>
                   </div>
-                  <span className="text-[11px] sm:text-xs text-slate-400">{rt.selectOne}</span>
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{rt.selectOne}</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {BASE_ISSUE_CATEGORIES.map((cat) => {
                     const Icon = cat.icon;
                     const isSelected = category === cat.id;
@@ -1085,26 +1156,26 @@ export default function MemberReportPage() {
                         type="button"
                         onClick={() => setCategory(cat.id)}
                         aria-label={cat.defaultLabel}
-                        className={`group relative p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left flex items-start gap-3 transition-all duration-200 ${
+                        className={`group relative p-3.5 sm:p-4 rounded-2xl border text-left flex items-start gap-3.5 transition-all duration-200 select-none ${
                           isSelected
-                            ? "border-purple-600 dark:border-purple-400 bg-purple-50/60 dark:bg-purple-950/40 ring-2 ring-purple-600/20 shadow-md shadow-purple-950/5 scale-[1.01]"
-                            : `border-slate-200/90 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-800 hover:bg-slate-50/80 dark:hover:bg-slate-850 bg-slate-50/40 dark:bg-slate-900/40`
+                            ? "border-purple-600 dark:border-purple-400 bg-purple-50/70 dark:bg-purple-950/40 ring-2 ring-purple-600/20 shadow-md shadow-purple-950/5 scale-[1.01]"
+                            : `border-slate-200/90 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-slate-50/80 dark:hover:bg-slate-850/60 bg-slate-50/30 dark:bg-slate-900/40 hover:-translate-y-0.5`
                         }`}
                       >
-                        <div className={`p-2 sm:p-2.5 rounded-xl border shrink-0 transition-transform group-hover:scale-110 ${cat.iconBg}`}>
+                        <div className={`p-2.5 rounded-xl border shrink-0 transition-transform group-hover:scale-110 shadow-xs ${cat.iconBg}`}>
                           <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${cat.iconColor}`} />
                         </div>
-                        <div className="min-w-0 flex-1 pr-6 sm:pr-0">
-                          <div className={`text-xs sm:text-sm font-bold leading-tight ${isSelected ? "text-purple-950 dark:text-purple-200" : "text-slate-900 dark:text-slate-100"}`}>
+                        <div className="min-w-0 flex-1 pr-6 sm:pr-2">
+                          <div className={`text-xs sm:text-sm font-extrabold leading-tight ${isSelected ? "text-purple-950 dark:text-purple-200" : "text-slate-900 dark:text-slate-100"}`}>
                             {label}
                           </div>
-                          <div className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 leading-relaxed line-clamp-2">
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                             {desc}
                           </div>
                         </div>
                         {isSelected && (
-                          <div className="absolute top-3 right-3 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-sm">
-                            <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
+                          <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-sm animate-in zoom-in-50 duration-150">
+                            <Check className="w-3 h-3 stroke-[3]" />
                           </div>
                         )}
                       </button>
@@ -1114,18 +1185,20 @@ export default function MemberReportPage() {
               </div>
 
               {/* SECTION 2: Impact / Severity Rating */}
-              <div className="space-y-3 sm:space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">{rt.step2Tag}</span>
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                  <div className="space-y-0.5">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
+                      {rt.step2Tag}
+                    </div>
+                    <h2 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
                       {rt.step2Title} <span className="text-rose-500">*</span>
                     </h2>
                   </div>
-                  <span className="text-[11px] sm:text-xs text-slate-400">{rt.chooseImpact}</span>
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{rt.chooseImpact}</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
                   {BASE_SEVERITIES.map((sev) => {
                     const isSelected = severity === sev.id;
                     const localized = rt.severities[sev.id as keyof typeof rt.severities];
@@ -1138,17 +1211,17 @@ export default function MemberReportPage() {
                         type="button"
                         onClick={() => setSeverity(sev.id)}
                         aria-label={sev.defaultLabel}
-                        className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-center transition-all duration-200 flex flex-col items-center justify-center min-h-[68px] sm:min-h-[84px] ${
+                        className={`p-3.5 sm:p-5 rounded-2xl border text-center transition-all duration-200 flex flex-col items-center justify-center min-h-[76px] sm:min-h-[92px] select-none ${
                           isSelected
-                            ? sev.activeClass
-                            : "border-slate-200/90 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/40 dark:bg-slate-900/40"
+                            ? `${sev.activeClass} shadow-md scale-[1.02]`
+                            : "border-slate-200/90 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/40 dark:bg-slate-900/40 hover:-translate-y-0.5"
                         }`}
                       >
-                        <div className="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
-                          <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${sev.dotClass} ${sev.id === "CRITICAL" ? "animate-ping" : ""}`} />
-                          <span className="text-xs sm:text-sm font-extrabold">{label}</span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`w-2 h-2 rounded-full ${sev.dotClass} ${sev.id === "CRITICAL" ? "animate-ping" : ""}`} />
+                          <span className="text-xs sm:text-sm font-extrabold tracking-tight">{label}</span>
                         </div>
-                        <div className="text-[10px] sm:text-[11px] opacity-75 leading-tight line-clamp-2">
+                        <div className="text-[10px] sm:text-[11px] opacity-80 leading-snug line-clamp-2">
                           {desc}
                         </div>
                       </button>
@@ -1158,10 +1231,12 @@ export default function MemberReportPage() {
               </div>
 
               {/* SECTION 3: Problem Details */}
-              <div className="space-y-4 sm:space-y-5 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">{rt.step3Tag}</span>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              <div className="space-y-5 pt-6 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-0.5">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
+                    {rt.step3Tag}
+                  </div>
+                  <h2 className="text-base sm:text-xl font-black text-slate-900 dark:text-white">
                     {rt.step3Title}
                   </h2>
                 </div>
@@ -1179,11 +1254,11 @@ export default function MemberReportPage() {
                     placeholder={rt.problemSummaryPlaceholder}
                     maxLength={150}
                     required
-                    className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all shadow-inner"
                   />
                   <div className="flex justify-between text-[11px] sm:text-xs text-slate-400 px-1">
                     <span className="truncate">{rt.problemSummaryHelper}</span>
-                    <span className="shrink-0">{title.length}/150</span>
+                    <span className="shrink-0 font-mono">{title.length}/150</span>
                   </div>
                 </div>
 
@@ -1200,32 +1275,32 @@ export default function MemberReportPage() {
                     placeholder={rt.whatHappenedPlaceholder}
                     maxLength={3000}
                     required
-                    className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all leading-relaxed"
+                    className="w-full px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-850/60 text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-purple-500/15 focus:border-purple-500 transition-all leading-relaxed shadow-inner"
                   />
                   <div className="flex justify-between text-[11px] sm:text-xs text-slate-400 px-1">
                     <span className="truncate">{rt.whatHappenedHelper}</span>
-                    <span className="shrink-0">{description.length}/3000</span>
+                    <span className="shrink-0 font-mono">{description.length}/3000</span>
                   </div>
                 </div>
 
                 {/* Optional: Expandable Expected vs Actual Behavior Accordion */}
-                <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 p-3 sm:p-4">
+                <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/40 p-4 transition-all">
                   <button
                     type="button"
                     onClick={() => setShowOptionalFields(!showOptionalFields)}
-                    className="w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    className="w-full flex items-center justify-between text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                   >
-                    <span className="flex items-center gap-1.5 sm:gap-2 min-w-0 pr-2">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                    <span className="flex items-center gap-2 min-w-0 pr-2">
+                      <Sparkles className="w-4 h-4 text-purple-500 shrink-0" />
                       <span className="truncate">{rt.expectedVsActualTitle}</span>
                     </span>
                     <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-200 ${showOptionalFields ? "rotate-180" : ""}`} />
                   </button>
 
                   {showOptionalFields && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-800">
-                      <div className="space-y-1">
-                        <label htmlFor="expected-behavior" className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-4 pt-4 border-t border-slate-200/70 dark:border-slate-800">
+                      <div className="space-y-1.5">
+                        <label htmlFor="expected-behavior" className="block text-xs font-bold text-slate-600 dark:text-slate-400">
                           {rt.expectedLabel}
                         </label>
                         <input
@@ -1235,11 +1310,11 @@ export default function MemberReportPage() {
                           onChange={(e) => setExpectedBehavior(e.target.value)}
                           placeholder={rt.expectedPlaceholder}
                           maxLength={500}
-                          className="w-full px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label htmlFor="actual-behavior" className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      <div className="space-y-1.5">
+                        <label htmlFor="actual-behavior" className="block text-xs font-bold text-slate-600 dark:text-slate-400">
                           {rt.actualLabel}
                         </label>
                         <input
@@ -1249,7 +1324,7 @@ export default function MemberReportPage() {
                           onChange={(e) => setActualBehavior(e.target.value)}
                           placeholder={rt.actualPlaceholder}
                           maxLength={500}
-                          className="w-full px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                     </div>
@@ -1257,29 +1332,29 @@ export default function MemberReportPage() {
                 </div>
 
                 {/* Screenshot Attachment Dropzone */}
-                <div className="space-y-1.5 sm:space-y-2">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-200">
                       {rt.screenshotTitle}
                     </label>
-                    <span className="text-[11px] sm:text-xs text-slate-400">{rt.screenshotLimit}</span>
+                    <span className="text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{rt.screenshotLimit}</span>
                   </div>
 
                   {screenshotPreview ? (
-                    <div className="relative inline-block border-2 border-purple-500/30 rounded-xl sm:rounded-2xl overflow-hidden p-2 sm:p-3 bg-purple-50/30 dark:bg-purple-950/20 shadow-sm max-w-full">
+                    <div className="relative inline-block border-2 border-purple-500/30 rounded-2xl overflow-hidden p-3 bg-purple-50/40 dark:bg-purple-950/20 shadow-sm max-w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={screenshotPreview}
                         alt="Screenshot preview"
-                        className="max-h-48 sm:max-h-56 max-w-full rounded-lg sm:rounded-xl object-contain shadow-inner"
+                        className="max-h-52 sm:max-h-64 max-w-full rounded-xl object-contain shadow-inner"
                       />
                       <button
                         type="button"
                         onClick={removeScreenshot}
-                        className="absolute top-3 right-3 p-1.5 sm:p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-lg transition-transform hover:scale-110"
+                        className="absolute top-4 right-4 p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95"
                         title={rt.removeScreenshot}
                       >
-                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
@@ -1296,10 +1371,10 @@ export default function MemberReportPage() {
                         const file = e.dataTransfer.files?.[0];
                         processSelectedFile(file);
                       }}
-                      className={`border-2 border-dashed rounded-xl sm:rounded-2xl p-5 sm:p-7 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center ${
+                      className={`border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center ${
                         isDragging
                           ? "border-purple-500 bg-purple-500/10 scale-[1.01]"
-                          : "border-slate-300 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-600 bg-slate-50/40 dark:bg-slate-900/40 hover:bg-purple-50/20 dark:hover:bg-purple-950/20"
+                          : "border-slate-300 dark:border-slate-750 hover:border-purple-400 dark:hover:border-purple-600 bg-slate-50/40 dark:bg-slate-900/40 hover:bg-purple-50/20 dark:hover:bg-purple-950/20"
                       }`}
                     >
                       <input
@@ -1309,10 +1384,10 @@ export default function MemberReportPage() {
                         className="hidden"
                         onChange={handleFileChange}
                       />
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2 sm:mb-3">
-                        <Upload className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3 shadow-xs">
+                        <Upload className="w-6 h-6" />
                       </div>
-                      <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
+                      <span className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">
                         {rt.clickToUpload}
                       </span>
                       <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
@@ -1323,11 +1398,13 @@ export default function MemberReportPage() {
                 </div>
 
                 {/* Real-time Diagnostics Transparency Box */}
-                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                      <Laptop className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 shrink-0">
+                        <Laptop className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-slate-100 truncate">
                         {rt.diagnosticsTitle}
                       </span>
                     </div>
@@ -1335,7 +1412,7 @@ export default function MemberReportPage() {
                       type="button"
                       onClick={() => setShowDiagnosticsDetail(!showDiagnosticsDetail)}
                       aria-label="View Captured Data"
-                      className="text-xs text-purple-600 dark:text-purple-400 font-bold hover:underline shrink-0"
+                      className="text-xs text-purple-600 dark:text-purple-400 font-extrabold hover:underline shrink-0 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800/40"
                     >
                       {showDiagnosticsDetail ? rt.hideCapturedData : rt.viewCapturedData}
                     </button>
@@ -1346,40 +1423,40 @@ export default function MemberReportPage() {
                   </p>
 
                   {showDiagnosticsDetail && diagnostics && (
-                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs font-mono">
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs font-mono">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagBrowser}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block" title={`${diagnostics.browser} ${diagnostics.browserVersion || ""}`}>
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block mt-0.5" title={`${diagnostics.browser} ${diagnostics.browserVersion || ""}`}>
                           {diagnostics.browser} {diagnostics.browserVersion || ""}
                         </span>
                       </div>
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagOS}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block" title={diagnostics.operatingSystem}>
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block mt-0.5" title={diagnostics.operatingSystem}>
                           {diagnostics.operatingSystem}
                         </span>
                       </div>
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagDevice}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold capitalize truncate block">
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold capitalize truncate block mt-0.5">
                           {diagnostics.deviceType}
                         </span>
                       </div>
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagViewport}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block">
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block mt-0.5">
                           {diagnostics.viewportWidth} × {diagnostics.viewportHeight}
                         </span>
                       </div>
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagTimezone}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block" title={diagnostics.timezone}>
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block mt-0.5" title={diagnostics.timezone}>
                           {diagnostics.timezone}
                         </span>
                       </div>
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 min-w-0 shadow-xs">
                         <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">{rt.diagConnection}</span>
-                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block">
+                        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate block mt-0.5">
                           {diagnostics.connectionType || (diagnostics.onlineStatus ? "Online" : "Offline")}
                         </span>
                       </div>
@@ -1390,11 +1467,11 @@ export default function MemberReportPage() {
               </div>
 
               {/* Form Action Buttons with Radiant Gradient */}
-              <div className="pt-3 sm:pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => router.push("/member")}
-                  className="w-full sm:w-auto px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors text-center"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-300 dark:border-slate-750 text-xs sm:text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors text-center"
                 >
                   {rt.cancelBtn}
                 </button>
@@ -1402,7 +1479,7 @@ export default function MemberReportPage() {
                   type="submit"
                   disabled={isSubmitting || isUploadingScreenshot}
                   aria-label="Submit Problem Report"
-                  className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-700 hover:via-indigo-700 hover:to-violet-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-700 hover:via-indigo-700 hover:to-violet-700 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
                 >
                   {isSubmitting || isUploadingScreenshot ? (
                     <>
@@ -1420,31 +1497,31 @@ export default function MemberReportPage() {
 
             </form>
 
-            {/* Direct Contact Support Card */}
-            <div className="bg-gradient-to-br from-white via-purple-50/20 to-indigo-50/30 dark:from-slate-900 dark:via-purple-950/20 dark:to-slate-900 border border-purple-200/60 dark:border-purple-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5 shadow-sm">
-              <div className="flex items-start gap-3 sm:gap-3.5 min-w-0">
-                <div className="p-2.5 sm:p-3 bg-purple-600 text-white rounded-xl sm:rounded-2xl shrink-0 shadow-md shadow-purple-600/20">
-                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+            {/* Direct Contact Support Concierge Card */}
+            <div className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/40 dark:from-slate-900 dark:via-purple-950/20 dark:to-slate-900 border border-purple-200/80 dark:border-purple-500/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-lg shadow-purple-950/5">
+              <div className="flex items-start gap-4 min-w-0">
+                <div className="p-3 bg-purple-600 text-white rounded-2xl shrink-0 shadow-md shadow-purple-600/25">
+                  <Mail className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
+                  <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-snug">
                     {rt.needHelpTitle}
                   </h4>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                     {rt.needHelpDesc}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col xs:flex-row items-stretch sm:items-center gap-2 sm:gap-3 text-xs font-bold w-full md:w-auto shrink-0">
+              <div className="flex flex-col xs:flex-row items-stretch sm:items-center gap-2.5 text-xs sm:text-sm font-extrabold w-full md:w-auto shrink-0">
                 <a
                   href="mailto:codewithrahul3@gmail.com?subject=KCM%20Portal%20Support%20Request"
-                  className="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors text-center"
+                  className="px-5 py-3 rounded-2xl bg-white dark:bg-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/80 transition-all text-center shadow-xs"
                 >
                   {rt.emailSupport}
                 </a>
                 <a
                   href="tel:+919505288171"
-                  className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/25 transition-all text-center"
+                  className="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-600/25 transition-all text-center"
                 >
                   {rt.callSupport}
                 </a>
