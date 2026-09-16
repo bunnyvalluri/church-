@@ -5,7 +5,7 @@
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
       "tests/e2e/member-reports.spec.ts",
-      "--project=chromium-desktop",
+      "--project=mobile-chrome",
       "--workers=1"
     ],
     "configFile": "C:\\K.C.M-Portal\\frontend\\playwright.config.ts",
@@ -167,19 +167,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 7716,
+                          "duration": 14135,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:11:16.743Z",
+                          "startTime": "2026-09-16T11:24:24.972Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -187,7 +187,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-5807186acd31b202ea29",
+                  "id": "b96bf6168ff7278c03dc-7c5c746a6b5768f3e2f2",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 28,
                   "column": 9
@@ -201,19 +201,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 7488,
+                          "duration": 10731,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:11:24.717Z",
+                          "startTime": "2026-09-16T11:24:39.388Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -221,7 +221,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-f79e0a18ffbff537c5d0",
+                  "id": "b96bf6168ff7278c03dc-5aab433941d116602c13",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 33,
                   "column": 9
@@ -243,19 +243,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 19325,
+                          "duration": 7995,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:11:32.238Z",
+                          "startTime": "2026-09-16T11:24:50.141Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -263,7 +263,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-78f4ed35d28c1fce82db",
+                  "id": "b96bf6168ff7278c03dc-17db522c68581f151385",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 45,
                   "column": 9
@@ -277,19 +277,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 4086,
+                          "duration": 5883,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:11:51.591Z",
+                          "startTime": "2026-09-16T11:24:58.154Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -297,7 +297,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-72f56fed21ba28671021",
+                  "id": "b96bf6168ff7278c03dc-345436b5be1ae549a2eb",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 67,
                   "column": 9
@@ -311,19 +311,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 5135,
+                          "duration": 4090,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:11:55.705Z",
+                          "startTime": "2026-09-16T11:25:04.054Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -331,7 +331,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-17c296b2270777b5e6e6",
+                  "id": "b96bf6168ff7278c03dc-f75e6cf51158cb2189e1",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 80,
                   "column": 9
@@ -345,19 +345,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 16618,
+                          "duration": 18150,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:12:00.860Z",
+                          "startTime": "2026-09-16T11:25:08.160Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -365,7 +365,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-04296785aa04f0456f97",
+                  "id": "b96bf6168ff7278c03dc-014ab5ab94a31bda26f4",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 95,
                   "column": 9
@@ -379,19 +379,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 8035,
+                          "duration": 6565,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:12:17.490Z",
+                          "startTime": "2026-09-16T11:25:26.322Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -399,7 +399,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-bc4ff29ff6697f98937a",
+                  "id": "b96bf6168ff7278c03dc-829609ffa7522b091b5b",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 122,
                   "column": 9
@@ -421,19 +421,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 3612,
+                          "duration": 4440,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:12:25.555Z",
+                          "startTime": "2026-09-16T11:25:32.907Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -441,7 +441,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-69ffef83695e9b501a5e",
+                  "id": "b96bf6168ff7278c03dc-6c726aca74b15e4372fa",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 141,
                   "column": 9
@@ -455,19 +455,19 @@
                       "timeout": 30000,
                       "annotations": [],
                       "expectedStatus": "passed",
-                      "projectId": "chromium-desktop",
-                      "projectName": "chromium-desktop",
+                      "projectId": "mobile-chrome",
+                      "projectName": "mobile-chrome",
                       "results": [
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 17633,
+                          "duration": 9895,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-16T11:12:29.191Z",
+                          "startTime": "2026-09-16T11:25:37.364Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -475,7 +475,7 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "b96bf6168ff7278c03dc-bb9141ff2ed2b614c725",
+                  "id": "b96bf6168ff7278c03dc-ec4ad4b1d61c6de4e499",
                   "file": "e2e/member-reports.spec.ts",
                   "line": 159,
                   "column": 9
@@ -489,8 +489,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-16T11:11:15.373Z",
-    "duration": 91718.182,
+    "startTime": "2026-09-16T11:24:24.055Z",
+    "duration": 83435.204,
     "expected": 9,
     "skipped": 0,
     "unexpected": 0,

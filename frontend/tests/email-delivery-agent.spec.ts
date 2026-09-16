@@ -14,8 +14,7 @@
 import { test, expect } from '@playwright/test';
 import crypto from 'crypto';
 import { classifyEmailError, calculateBackoffMs } from '../lib/email/email.errors';
-import { hashRecipient, maskEmail, generateDeterministicIdempotencyKey } from '../lib/email/email.service';
-import { verifyResendWebhookSignature } from '../app/api/webhooks/resend/route';
+import { verifyResendWebhookSignature } from '../lib/email/webhookVerifier';
 import { EmailReliabilityAgent } from '../lib/email/agent/email-health.agent';
 import { CompositeEmailProvider } from '../lib/email/providers';
 
