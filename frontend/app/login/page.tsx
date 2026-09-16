@@ -13,6 +13,7 @@ import { translations } from "@/lib/translations";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
+import MemberLoginVerification from "@/components/auth/MemberLoginVerification";
 
 function LoginForm() {
   const router = useRouter();
@@ -545,18 +546,18 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const [isVerifying, setIsVerifying] = useState(true);
+
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-purple-600 dark:text-purple-400" />
-            <p className="text-xs text-slate-500 font-medium">Loading login portal...</p>
-          </div>
-        </div>
-      }
-    >
-      <LoginForm />
+    <Suspense fallback={<MemberLoginVerification duration={3000} />}>
+      {isVerifying ? (
+        <MemberLoginVerification
+          duration={3000}
+          onComplete={() => setIsVerifying(false)}
+        />
+      ) : (
+        <LoginForm />
+      )}
     </Suspense>
   );
 }
