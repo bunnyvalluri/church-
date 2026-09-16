@@ -207,8 +207,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(portalUrl);
   }
 
-  // ── Logged-In User Redirects on /login and /register ────────────────────────
-  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+  // ── Logged-In User Redirects on /login, /register, and portal login pages ──
+  const isAuthEntryPage =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/admin/login' ||
+    pathname === '/pastor/login' ||
+    pathname === '/event-manager/login';
+
+  if (isAuthenticated && isAuthEntryPage) {
     const nextParam = req.nextUrl.searchParams.get('next');
     if (nextParam && nextParam.startsWith('/')) {
       if (nextParam.startsWith('/admin') && isAdminRole) return NextResponse.redirect(new URL(nextParam, req.url));

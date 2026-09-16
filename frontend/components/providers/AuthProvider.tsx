@@ -122,25 +122,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
 
-    // 1. Initial verification against server session
     let initialSessionFetched = false;
+    let currentUserRef: AuthUser | null = null;
+
     const checkServerSession = async () => {
       try {
         const res = await fetch('/api/auth/session');
+        if (!res.ok) {
+          if (!auth?.currentUser) {
+            currentUserRef = null;
+            setUser(null);
+          }
+          return;
+        }
         const data = await res.json();
         if (data?.authenticated && data?.user) {
-          setUser({
+          const authUser: AuthUser = {
             uid: data.user.uid,
             email: data.user.email || '',
             name: data.user.name || 'Member',
             image: data.user.image || null,
             role: data.user.role || 'MEMBER',
-          });
-        } else {
+          };
+          currentUserRef = authUser;
+          setUser(authUser);
+        } else if (!auth?.currentUser) {
+          currentUserRef = null;
           setUser(null);
         }
       } catch {
-        setUser(null);
+        if (!auth?.currentUser) {
+          currentUserRef = null;
+          setUser(null);
+        }
       } finally {
         initialSessionFetched = true;
         setLoading(false);
@@ -168,15 +182,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 image: dbUser.image || firebaseUser.photoURL || null,
                 role: syncedRole,
               };
+              currentUserRef = updatedUser;
               setUser(updatedUser);
             } else {
-              setUser({
+              const baseUser: AuthUser = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 name: firebaseUser.displayName || 'Member',
                 image: firebaseUser.photoURL || null,
                 role: 'MEMBER',
-              });
+              };
+              currentUserRef = baseUser;
+              setUser(baseUser);
             }
           } catch (syncErr) {
             console.warn('[AUTH] Database role sync error:', syncErr);
@@ -184,13 +201,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
           }
         } else {
-          // If initial session check has already completed and found no user, don't repeat fetch
-          if (initialSessionFetched) {
-            clearSessionCookies();
+          // Firebase has no user.
+          // If server session check has not completed yet, run it.
+          // If server session is already active (currentUserRef exists), do NOT wipe it or clear cookies!
+          if (!initialSessionFetched) {
+            await checkServerSession();
+          } else if (!currentUserRef) {
             setUser(null);
             setLoading(false);
-          } else {
-            checkServerSession();
           }
         }
       });

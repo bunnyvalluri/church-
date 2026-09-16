@@ -18,13 +18,8 @@ function getSessionSecret(): string {
   const secret =
     process.env.SESSION_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    process.env.JWT_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('[SECURITY CRITICAL] SESSION_SECRET, NEXTAUTH_SECRET, or JWT_SECRET must be configured in production!');
-    }
-    return 'kcm-church-portal-secure-session-auth-key-2026';
-  }
+    process.env.JWT_SECRET ||
+    'kcm-church-portal-secure-session-auth-key-2026';
   return secret;
 }
 

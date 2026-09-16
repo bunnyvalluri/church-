@@ -400,10 +400,22 @@ export default function MemberLoginForm({
           {/* Form Header */}
           <div className="mb-4 text-center lg:text-left">
             <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {loginT.title}
+              {defaultPortal === "admin"
+                ? "Admin Portal Sign In"
+                : defaultPortal === "pastor"
+                ? "Pastor Portal Sign In"
+                : defaultPortal === "event-manager"
+                ? "Event Manager Sign In"
+                : loginT.title}
             </h2>
             <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm font-medium mt-0.5">
-              {loginT.subtitle}
+              {defaultPortal === "admin"
+                ? "Secure administrative access to Kingdom of Christ Ministries"
+                : defaultPortal === "pastor"
+                ? "Pastoral leadership dashboard & ministry management"
+                : defaultPortal === "event-manager"
+                ? "Event coordination, volunteer & attendee management"
+                : loginT.subtitle}
             </p>
           </div>
 
