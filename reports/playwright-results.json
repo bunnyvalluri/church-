@@ -4,7 +4,7 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\K.C.M-Portal\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/e2e/member-login-verification.spec.ts",
+      "tests/e2e/member-reports.spec.ts",
       "--project=chromium-desktop",
       "--workers=1"
     ],
@@ -139,289 +139,348 @@
   },
   "suites": [
     {
-      "title": "e2e\\member-login-verification.spec.ts",
-      "file": "e2e/member-login-verification.spec.ts",
+      "title": "e2e\\member-reports.spec.ts",
+      "file": "e2e/member-reports.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Member Login Verification Screen — Strict Route Isolation",
-          "file": "e2e/member-login-verification.spec.ts",
-          "line": 3,
+          "title": "Member Issue Reporting & Diagnostics System",
+          "file": "e2e/member-reports.spec.ts",
+          "line": 19,
           "column": 6,
-          "specs": [
+          "specs": [],
+          "suites": [
             {
-              "title": "shows verification screen only on /login and transitions within 3 seconds",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Security & Unauthenticated Guards",
+              "file": "e2e/member-reports.spec.ts",
+              "line": 23,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
+                  "title": "unauthenticated visitor accessing /member/report is redirected to login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3027,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:30.395Z",
+                      "timeout": 30000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1744,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:31:43.068Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "b96bf6168ff7278c03dc-5807186acd31b202ea29",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 28,
+                  "column": 9
+                },
+                {
+                  "title": "unauthenticated visitor accessing /admin/support/reports is redirected to login",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1555,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:31:46.561Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b96bf6168ff7278c03dc-f79e0a18ffbff537c5d0",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 33,
+                  "column": 9
                 }
-              ],
-              "id": "fa391b4038470ae643ab-c7d76732e8c273cd575e",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 4,
-              "column": 7
+              ]
             },
             {
-              "title": "does NOT show verification screen on /admin/login",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Member Reporting Flow (MEMBER Role)",
+              "file": "e2e/member-reports.spec.ts",
+              "line": 40,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
+                  "title": "renders Report a Problem page with categories, severities, and direct contacts",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1702,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:33.564Z",
+                      "timeout": 30000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 17598,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:31:48.131Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "b96bf6168ff7278c03dc-78f4ed35d28c1fce82db",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 45,
+                  "column": 9
+                },
+                {
+                  "title": "validates required fields before submitting",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5328,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:05.744Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b96bf6168ff7278c03dc-72f56fed21ba28671021",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "shows automatic client diagnostics transparency viewer",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2900,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:11.091Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b96bf6168ff7278c03dc-17c296b2270777b5e6e6",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 80,
+                  "column": 9
+                },
+                {
+                  "title": "submits an issue report and receives real KCM-ERR reference ID",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 11753,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:14.006Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b96bf6168ff7278c03dc-04296785aa04f0456f97",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 95,
+                  "column": 9
+                },
+                {
+                  "title": "switches to My Submitted Reports tab",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5800,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:25.778Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b96bf6168ff7278c03dc-bc4ff29ff6697f98937a",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 122,
+                  "column": 9
                 }
-              ],
-              "id": "fa391b4038470ae643ab-79671c4d81b6995cc0f5",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 33,
-              "column": 7
+              ]
             },
             {
-              "title": "does NOT show verification screen on /pastor/login",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Admin Support Console (ADMIN Role)",
+              "file": "e2e/member-reports.spec.ts",
+              "line": 136,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
+                  "title": "admin can access /admin/support/reports and see metrics and filters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5259,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:35.283Z",
+                      "timeout": 30000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 12017,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:31.591Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
-                }
-              ],
-              "id": "fa391b4038470ae643ab-858c32f90f0da33863f9",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 45,
-              "column": 7
-            },
-            {
-              "title": "does NOT show verification screen on /event-manager/login",
-              "ok": true,
-              "tags": [],
-              "tests": [
+                  "id": "b96bf6168ff7278c03dc-69ffef83695e9b501a5e",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 141,
+                  "column": 9
+                },
                 {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
+                  "title": "regular member is denied access to /admin/support/reports",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2106,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:40.558Z",
+                      "timeout": 30000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4811,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-16T12:32:43.621Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "b96bf6168ff7278c03dc-bb9141ff2ed2b614c725",
+                  "file": "e2e/member-reports.spec.ts",
+                  "line": 159,
+                  "column": 9
                 }
-              ],
-              "id": "fa391b4038470ae643ab-8703d383e44edb3febea",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 54,
-              "column": 7
-            },
-            {
-              "title": "does NOT show verification screen on /portal-select",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1147,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:42.678Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "fa391b4038470ae643ab-f5935afcbaf0d2e17450",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 63,
-              "column": 7
-            },
-            {
-              "title": "does NOT show verification screen on /register",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2023,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:43.842Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "fa391b4038470ae643ab-4887f373112dc79f10ec",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 70,
-              "column": 7
-            },
-            {
-              "title": "does NOT show verification screen on public homepage /",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4893,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:45.886Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "fa391b4038470ae643ab-a3d2ad6d475754d02e93",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 77,
-              "column": 7
-            },
-            {
-              "title": "bypasses verification if accessed with admin query parameters (/login?next=/admin/dashboard)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4761,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-16T12:13:50.798Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "fa391b4038470ae643ab-8e4197181f3a18b67bfa",
-              "file": "e2e/member-login-verification.spec.ts",
-              "line": 84,
-              "column": 7
+              ]
             }
           ]
         }
@@ -430,9 +489,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-16T12:13:29.883Z",
-    "duration": 25804.867000000002,
-    "expected": 8,
+    "startTime": "2026-09-16T12:31:41.255Z",
+    "duration": 67346.469,
+    "expected": 9,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

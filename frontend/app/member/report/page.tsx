@@ -49,6 +49,7 @@ const reportTranslations = {
   en: {
     backToPortal: "Back to Member Portal",
     qualityAssurance: "Support & Quality Assurance",
+    qualityAssuranceShort: "Support & QA",
     urgentSupport: "Urgent Support:",
     reportProblemTitle: "Report a Problem",
     reportProblemDesc: "Found something that isn't working correctly? Tell us what happened and our technical team will investigate it.",
@@ -208,6 +209,7 @@ const reportTranslations = {
   te: {
     backToPortal: "సభ్యుల పోర్టల్‌కు తిరిగి వెళ్లండి",
     qualityAssurance: "మద్దతు & నాణ్యత హామీ",
+    qualityAssuranceShort: "మద్దతు & QA",
     urgentSupport: "అత్యవసర సహాయం:",
     reportProblemTitle: "సమస్యను నివేదించండి",
     reportProblemDesc: "ఏదైనా సరిగ్గా పనిచేయడం లేదా? ఏమి జరిగిందో మాకు తెలపండి, మా సాంకేతిక బృందం వెంటనే పరిశీలిస్తుంది.",
@@ -367,6 +369,7 @@ const reportTranslations = {
   hi: {
     backToPortal: "सदस्य पोर्टल पर वापस जाएं",
     qualityAssurance: "सहायता और गुणवत्ता आश्वासन",
+    qualityAssuranceShort: "सहायता एवं QA",
     urgentSupport: "अत्यावश्यक सहायता:",
     reportProblemTitle: "समस्या की रिपोर्ट करें",
     reportProblemDesc: "क्या कुछ सही ढंग से काम नहीं कर रहा है? हमें बताएं कि क्या हुआ और हमारी तकनीकी टीम इसकी जांच करेगी।",
@@ -910,20 +913,21 @@ export default function MemberReportPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-100/60 to-slate-50 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 text-slate-900 dark:text-slate-100 py-4 sm:py-8 px-3 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
         
-        {/* Navigation Breadcrumb, Language Selector & QA Pill */}
-        <div className="flex items-center justify-between gap-2">
+        {/* Navigation Breadcrumb & QA Pill */}
+        <div className="flex items-center justify-between gap-2 min-w-0">
           <button
             onClick={() => router.push("/member")}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors p-1 -ml-1 rounded-lg"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors p-1 -ml-1 rounded-lg shrink-0 max-w-[50%] xs:max-w-none"
           >
             <ArrowLeft className="w-4 h-4 shrink-0" />
-            <span className="truncate max-w-[170px] xs:max-w-xs">{rt.backToPortal}</span>
+            <span className="truncate">{rt.backToPortal}</span>
           </button>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              <span>{rt.qualityAssurance}</span>
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
+            <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-purple-100/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+              <span className="hidden sm:inline whitespace-nowrap">{rt.qualityAssurance}</span>
+              <span className="sm:hidden">{rt.qualityAssuranceShort}</span>
             </span>
           </div>
         </div>

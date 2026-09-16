@@ -423,6 +423,11 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 <PaletteToggle />
               </div>
 
+              {/* Mobile Language Toggle */}
+              <div className="flex md:hidden items-center shrink-0">
+                <LanguageToggle />
+              </div>
+
               <div className={`hidden sm:flex items-center justify-center rounded-full text-[10px] font-bold border flex-shrink-0 transition-all ${
                 isOnline
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-700 dark:text-green-400"
