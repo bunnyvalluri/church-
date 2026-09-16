@@ -215,6 +215,12 @@ export async function POST(req: Request) {
       {
         success: true,
         reportId: report.reportId,
+        report: {
+          reportId: report.reportId,
+          category: report.category,
+          severity: report.severity,
+          status: report.status,
+        },
         correlationId,
         message: 'Your report has been received by our technical engineering team.',
         isPotentialDuplicate: !!duplicate,

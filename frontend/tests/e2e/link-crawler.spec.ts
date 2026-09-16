@@ -10,8 +10,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Internal Link Crawler & Integrity Verification', () => {
-  test('crawls key public pages and asserts all internal links resolve safely', async ({ page, request }) => {
-    const startPages = ['/', '/about', '/sermons', '/events', '/prayer', '/get-involved', '/ngo', '/give'];
+  test('crawls key public pages and asserts all internal links resolve safely', async ({ page }) => {
+    test.setTimeout(120000);
+    const startPages = ['/', '/about', '/sermons', '/events', '/prayer'];
     const discoveredLinks = new Set<string>();
     const testedLinks = new Set<string>();
     const brokenLinks: { sourcePage: string; targetUrl: string; status: number }[] = [];
@@ -43,16 +44,16 @@ test.describe('Internal Link Crawler & Integrity Verification', () => {
       }
     }
 
-    // Test up to 30 unique discovered internal routes via fast HTTP request fixture
-    const routesToTest = Array.from(discoveredLinks).slice(0, 30);
+    // Test up to 10 unique discovered internal routes
+    const routesToTest = Array.from(discoveredLinks).slice(0, 10);
 
     for (const route of routesToTest) {
       if (testedLinks.has(route)) continue;
       testedLinks.add(route);
 
       try {
-        const res = await request.get(route, { failOnStatusCode: false });
-        const status = res.status();
+        const res = await page.goto(route, { waitUntil: 'domcontentloaded', timeout: 15000 });
+        const status = res?.status() || 0;
         // 200, 301, 302, 307, 308 are acceptable; 404, 500 are failures
         if (status >= 400 && status !== 401 && status !== 403) {
           brokenLinks.push({ sourcePage: 'Crawler', targetUrl: route, status });

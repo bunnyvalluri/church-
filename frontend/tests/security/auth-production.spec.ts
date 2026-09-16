@@ -11,6 +11,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Production Authentication & Security Hardening Suite', () => {
+  test.describe.configure({ mode: 'serial' });
   const testEmail = `test.member.${Date.now()}@kcmchurch.org`;
   const strongPassword = 'Password@2026!Secure';
 

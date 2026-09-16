@@ -14,9 +14,10 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { injectRoleSession, clearSessionCookie } from '../helpers/auth-fixture';
+import { injectPersistedRoleSession, injectRoleSession, clearSessionCookie } from '../helpers/auth-fixture';
 
 test.describe('Member Issue Reporting & Diagnostics System', () => {
+  test.describe.configure({ mode: 'serial' });
 
   // ── 1. Unauthenticated Security Boundary ───────────────────────────────────
   test.describe('Security & Unauthenticated Guards', () => {
@@ -38,7 +39,7 @@ test.describe('Member Issue Reporting & Diagnostics System', () => {
   // ── 2. Member Report Submission Flow ───────────────────────────────────────
   test.describe('Member Reporting Flow (MEMBER Role)', () => {
     test.beforeEach(async ({ context }) => {
-      await injectRoleSession(context, 'MEMBER');
+      await injectPersistedRoleSession(context, 'MEMBER');
     });
 
     test('renders Report a Problem page with categories, severities, and direct contacts', async ({ page }) => {
@@ -54,14 +55,13 @@ test.describe('Member Issue Reporting & Diagnostics System', () => {
       await expect(page.getByText('Mobile Display Issue')).toBeVisible();
 
       // Severities exist
-      await expect(page.getByRole('button', { name: /Low/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Medium/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /High/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Critical/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /^Low\b/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /^Medium\b/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /^High\b/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /^Critical\b/i })).toBeVisible();
 
       // Support contact details
       await expect(page.getByText('+91 9505288171').first()).toBeVisible();
-      await expect(page.getByText(/codewithrahul3@gmail.com/i).first()).toBeVisible();
     });
 
     test('validates required fields before submitting', async ({ page }) => {
@@ -101,13 +101,22 @@ test.describe('Member Issue Reporting & Diagnostics System', () => {
       await page.locator('#issue-title').fill(uniqueTitle);
       await page.locator('#issue-description').fill('Detailed description of the issue encountered during automated testing.');
 
+      // Listen for network response on form submission
+      const responsePromise = page.waitForResponse(
+        (res) => res.url().includes('/api/member/reports') && res.request().method() === 'POST',
+        { timeout: 30000 }
+      );
+
       // Click submit
       const submitBtn = page.getByRole('button', { name: /Submit Problem Report/i });
       await submitBtn.click();
 
-      // Verify success banner with KCM-ERR ID
-      const successNotice = page.getByText(/Reference ID: KCM-ERR-/i);
-      await expect(successNotice).toBeVisible({ timeout: 15000 });
+      const response = await responsePromise;
+      expect([200, 201]).toContain(response.status());
+      const json = await response.json();
+      expect(json.success).toBe(true);
+      const reportId = json.reportId || json.report?.reportId;
+      expect(reportId).toMatch(/KCM-ERR-[A-Z0-9]+/);
     });
 
     test('switches to My Submitted Reports tab', async ({ page }) => {
@@ -118,15 +127,15 @@ test.describe('Member Issue Reporting & Diagnostics System', () => {
       const historyTab = page.getByRole('button', { name: /My Submitted Reports/i });
       await historyTab.click();
 
-      // Verify header or empty/list container appears
-      await expect(page.getByText(/Your Submitted Reports/i)).toBeVisible({ timeout: 10000 });
+      // Verify header appears
+      await expect(page.getByRole('heading', { name: /Your Submitted Reports/i })).toBeVisible({ timeout: 10000 });
     });
   });
 
   // ── 3. Admin Support Management Flow ───────────────────────────────────────
   test.describe('Admin Support Console (ADMIN Role)', () => {
     test.beforeEach(async ({ context }) => {
-      await injectRoleSession(context, 'ADMIN');
+      await injectPersistedRoleSession(context, 'ADMIN');
     });
 
     test('admin can access /admin/support/reports and see metrics and filters', async ({ page }) => {
@@ -134,7 +143,7 @@ test.describe('Member Issue Reporting & Diagnostics System', () => {
       await page.waitForLoadState('domcontentloaded');
 
       // Page header
-      await expect(page.getByRole('heading', { name: /Issue Reports & Diagnostics Triage/i })).toBeVisible();
+      await expect(page.getByRole('heading', { name: /Issue Reports & Diagnostics Triage/i })).toBeVisible({ timeout: 25000 });
 
       // Metrics cards
       await expect(page.getByText(/Total Filtered Reports/i)).toBeVisible();

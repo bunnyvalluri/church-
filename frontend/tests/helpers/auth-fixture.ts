@@ -84,6 +84,50 @@ export async function injectRoleSession(
   return token;
 }
 
+import { prisma } from '@/lib/prisma';
+import { createServerSession } from '@/lib/session';
+
+/**
+ * Injects an authentic PostgreSQL-persisted role session cookie into a Playwright BrowserContext.
+ * Enables full client-side React AuthProvider hydration and /api/auth/session resolution.
+ */
+export async function injectPersistedRoleSession(
+  context: BrowserContext,
+  role: UserRole,
+  baseUrl?: string
+): Promise<{ user: any; token: string }> {
+  const email = `test.${role.toLowerCase()}.${Date.now()}@kcmchurch.test`;
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: { role: role as any },
+    create: {
+      email,
+      name: `Test ${role}`,
+      password: 'TestPassword123!',
+      role: role as any,
+    },
+  });
+
+  const session = await createServerSession(user.id, role as any);
+  const targetUrl = baseUrl || process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000';
+  const domain = targetUrl.replace(/^https?:\/\//, '').split(':')[0].split('/')[0];
+
+  await context.addCookies([
+    {
+      name: SESSION_COOKIE_NAME,
+      value: session.token,
+      domain,
+      path: '/',
+      httpOnly: true,
+      secure: targetUrl.startsWith('https:'),
+      sameSite: 'Lax',
+      expires: Math.floor(session.expiresAt.getTime() / 1000),
+    },
+  ]);
+
+  return { user, token: session.token };
+}
+
 /**
  * Clears the session cookie from the context.
  */

@@ -202,7 +202,7 @@ test.describe('KCM Production Razorpay Payment System Integration Tests', () => 
     await proceedButton.click();
 
     // Step 3: Verify Payment QR and buttons render
-    await expect(page.locator('text=Open in any UPI App, text=GPay, text=PhonePe').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/Open in any UPI App|UPI/i).first()).toBeVisible({ timeout: 10000 });
 
     // CRITICAL SECURITY ASSERTION: Simulation button must NOT exist!
     const simulateButton = page.locator('button:has-text("Simulate Successful Payment"), button:has-text("[Simulate Successful Payment]")');

@@ -49,6 +49,7 @@ test.describe("Universal Mobile & Cross-Browser Compatibility Verification", () 
   });
 
   test("verifies public pages and offline page render cleanly", async ({ page }) => {
+    test.setTimeout(90000);
     const routes = [
       "/about",
       "/sermons",

@@ -11,8 +11,8 @@ import crypto from 'crypto';
 import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 
-// ── Rate Limit Configuration: 5 registration requests per 15 minutes per IP ────
-const REG_RATE_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 5 };
+// ── Rate Limit Configuration: 25 registration requests per 15 minutes per IP ───
+const REG_RATE_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 25 };
 
 // ── Input Sanitizer ───────────────────────────────────────────────────────────
 const sanitize = (s: string) =>

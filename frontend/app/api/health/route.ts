@@ -28,7 +28,7 @@ export async function GET() {
       const pgStart = Date.now();
       const pgCheck = prisma.$queryRaw`SELECT 1`;
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("PostgreSQL probe timed out")), 3000)
+        setTimeout(() => reject(new Error("PostgreSQL probe timed out")), 5000)
       );
       await Promise.race([pgCheck, timeoutPromise]);
       pgLatencyMs = Date.now() - pgStart;

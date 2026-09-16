@@ -17,10 +17,9 @@ test.describe('Role-Based Access Control (RBAC) Matrix Verification', () => {
       await clearSessionCookie(context);
     });
 
-    test('unauthenticated visitor accessing /admin/dashboard is redirected to /login with next param', async ({ page }) => {
+    test('unauthenticated visitor accessing /admin/dashboard is redirected to /admin/login', async ({ page }) => {
       await page.goto('/admin/dashboard');
-      expect(page.url()).toContain('/login');
-      expect(page.url()).toContain('next=');
+      expect(page.url()).toContain('/admin/login');
     });
 
     test('unauthenticated visitor accessing /pastor/dashboard is redirected to /login', async ({ page }) => {

@@ -12,8 +12,8 @@ import crypto from 'crypto';
 import { emailService } from '@/lib/email';
 import { logger } from '@/lib/logger';
 
-// ── Rate Limit Configuration: 5 login attempts per 15 minutes per IP ──────────
-const LOGIN_RATE_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 5 };
+// ── Rate Limit Configuration: 15 login attempts per 15 minutes per IP ─────────
+const LOGIN_RATE_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 15 };
 
 // Dummy hash for constant-time comparison when email does not exist (prevents timing side-channel attacks)
 const DUMMY_BCRYPT_HASH = '$2a$12$e8Y9nZvZJ27Z6b2jW9fHq.U8k8zH6a4L3j2h1g0f9e8d7c6b5a4s3';
