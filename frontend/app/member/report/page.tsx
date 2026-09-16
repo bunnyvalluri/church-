@@ -41,7 +41,6 @@ import {
   Sparkle,
 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import LanguageToggle from "@/components/LanguageToggle";
 import { captureBrowserDiagnostics, BrowserDiagnostics } from "@/lib/issueDiagnostics";
 import { getRecentErrorContext } from "@/lib/clientErrorCollector";
 
@@ -922,8 +921,7 @@ export default function MemberReportPage() {
           </button>
 
           <div className="flex items-center gap-2 shrink-0">
-            <LanguageToggle align="right" />
-            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40">
               <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               <span>{rt.qualityAssurance}</span>
             </span>

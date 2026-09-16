@@ -4,22 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  ArrowRight,
-  ChevronLeft,
-  CheckCircle2,
-  Loader2,
-  Shield,
-  BookOpen,
-  Camera,
-  Users,
-  Sparkles,
-  Key,
-} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { translations } from "@/lib/translations";
@@ -404,55 +389,6 @@ export default function MemberLoginForm({
           {/* Subtle glowing card accent border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 opacity-80" />
 
-          {/* Portal Switcher Tabs */}
-          <div className="mb-4 sm:mb-6 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-white/10 flex items-center gap-1 shadow-inner" role="tablist" aria-label="Portal Selection">
-            {[
-              {
-                id: "member",
-                href: "/login",
-                icon: Users,
-                label: language === "te" ? "సభ్యులు" : language === "hi" ? "सदस्य" : "Member",
-              },
-              {
-                id: "pastor",
-                href: "/pastor/login",
-                icon: BookOpen,
-                label: language === "te" ? "పాస్టర్" : language === "hi" ? "पादरी" : "Pastor",
-              },
-              {
-                id: "event-manager",
-                href: "/event-manager/login",
-                icon: Camera,
-                label: language === "te" ? "ఈవెంట్స్" : language === "hi" ? "कार्यक्रम" : "Events",
-              },
-              {
-                id: "admin",
-                href: "/admin/login",
-                icon: Shield,
-                label: language === "te" ? "అడ్మిన్" : language === "hi" ? "एडमिन" : "Admin",
-              },
-            ].map((tab) => {
-              const isActive = (defaultPortal || "member") === tab.id;
-              const TabIcon = tab.icon;
-              return (
-                <Link
-                  key={tab.id}
-                  href={tab.href}
-                  className={`flex-1 py-1.5 px-2 text-center rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold transition-all duration-200 select-none ${
-                    isActive
-                      ? "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-300 shadow-md border border-slate-200/60 dark:border-white/10"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                  role="tab"
-                  aria-selected={isActive}
-                >
-                  <TabIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{tab.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-
           {/* Form Header */}
           <div className="mb-4 text-center lg:text-left">
             <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -604,35 +540,6 @@ export default function MemberLoginForm({
                 {loginT.createAccountLink}
               </Link>
             </p>
-
-            {/* Quick Demo Portal Accounts */}
-            <div className="pt-3 border-t border-slate-200/80 dark:border-gray-800/80">
-              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center mb-1.5 flex items-center justify-center gap-1">
-                <Key className="w-3 h-3 text-purple-500" />
-                <span>{language === "te" ? "త్వరిత పోర్టల్ లాగిన్ డెమోలు" : language === "hi" ? "त्वरित पोर्टल लॉगिन डेमो" : "Quick Demo Access"}</span>
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { label: "Admin", email: "admin@kcm-church.com", pass: "rahul@0423" },
-                  { label: "Pastor", email: "pastor.kristhuraju@kcm-church.com", pass: "pastor@2026" },
-                  { label: "Events", email: "eventmanager@kcm-church.com", pass: "event-handle-2026" },
-                  { label: "Super Admin", email: "kingofchristministries23@gmail.com", pass: "rahul@0423" },
-                ].map((demo) => (
-                  <button
-                    key={demo.email}
-                    type="button"
-                    onClick={() => {
-                      setEmail(demo.email);
-                      setPassword(demo.pass);
-                      setError("");
-                    }}
-                    className="px-2 py-1 rounded-lg bg-slate-100/90 hover:bg-purple-50 dark:bg-slate-800/60 dark:hover:bg-purple-950/40 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-semibold transition-all text-center truncate hover:border-purple-300 dark:hover:border-purple-600/50"
-                  >
-                    ⚡ {demo.label}
-                  </button>
-                ))}
-              </div>
-            </div>
           </form>
         </div>
       </div>
